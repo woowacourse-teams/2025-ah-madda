@@ -18,6 +18,8 @@ module.exports = {
     }),
     new DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('development'),
+      VERSION: JSON.stringify('1.0.0'),
+      __DEV__: JSON.stringify(true),
     }),
   ],
   module: {
@@ -27,13 +29,6 @@ module.exports = {
         use: [
           {
             loader: 'babel-loader',
-            options: {
-              presets: [
-                '@babel/preset-env', // 최신 JS 문법을 변환해요
-                '@babel/preset-react', // JSX를 변환해요
-                '@babel/preset-typescript', // 타입스크립트를 변환해요
-              ],
-            },
           },
         ],
         exclude: /node_modules/,
@@ -59,7 +54,7 @@ module.exports = {
     static: {
       directory: path.join(__dirname, 'dist'), // 빌드된 파일을 이 경로에서 서빙해요
     },
-    port: 3000, // localhost:3000에서 실행
+    port: 5173, // localhost:5173에서 실행
     open: true, // 서버 실행 시 브라우저 자동 열기
     hot: true, // HMR 사용
     historyApiFallback: true, // SPA 라우팅 지원
