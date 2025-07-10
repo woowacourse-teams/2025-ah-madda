@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "esnext",
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "jsx": "react", // JSX를 React 문법으로 변환해요
+    "esModuleInterop": true // React를 ESM으로 import할 수 있게 해줘요
+  },
+  "include": ["./**/*.ts", "src/main.tsx", "global.d.ts"],
+  "exclude": ["node_modules", "dist"]
+}
