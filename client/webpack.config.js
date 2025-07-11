@@ -26,11 +26,7 @@ module.exports = {
     rules: [
       {
         test: /\.(ts|tsx)$/,
-        use: [
-          {
-            loader: 'babel-loader',
-          },
-        ],
+        use: ['babel-loader'],
         exclude: /node_modules/,
       },
       {
