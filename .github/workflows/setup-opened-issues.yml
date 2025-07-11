@@ -1,0 +1,138 @@
+name: Setup Opened Issues
+
+on:
+  issues:
+    types:
+      - opened
+
+jobs:
+  setup_issue:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - name: Set assignees
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { issue, repository } = context.payload;
+            const author = issue.user.login;
+
+            await github.rest.issues.addAssignees({
+              owner: repository.owner.login,
+              repo: repository.name,
+              issue_number: issue.number,
+              assignees: [author],
+            });
+
+      - name: Set labels
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { issue, repository } = context.payload;
+            const title = issue.title;
+
+            const titleLabelMap = {
+              '[FEAT]': 'feat',
+              '[FIX]': 'fix',
+              '[CHORE]': 'chore',
+              '[REFACTOR]': 'refactor',
+              '[TEST]': 'test',
+              '[DESIGN]': 'design',
+              '[DOCS]': 'docs',
+            };
+
+            const feTeam = ['keemsebin', 'ExceptAnyone', 'yeji0214'];
+            const beTeam = ['joon6093', 'abc5259', 'praisebak', 'jumdo12'];
+
+            const prefix = Object.keys(titleLabelMap).find(p => title.startsWith(p));
+            const author = issue.user.login;
+            const authorLabel = feTeam.includes(author) ? 'fe' : beTeam.includes(author) ? 'be' : null;
+
+            const labels = [];
+            if (prefix) labels.push(titleLabelMap[prefix]);
+            if (authorLabel) labels.push(authorLabel);
+
+            if (labels.length) {
+              await github.rest.issues.addLabels({
+                owner: repository.owner.login,
+                repo: repository.name,
+                issue_number: issue.number,
+                labels,
+              });
+            }
+
+      - name: Set Project v2
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PROJECT_V2_TOKEN }}
+          script: |
+            const { issue } = context.payload;
+            const projectNodeId = 'PVT_kwDOA_44FM4A9RQT';
+            const addItemResponse = await github.graphql(`
+              mutation($projectId: ID!, $contentId: ID!) {
+                addProjectV2ItemById(input: { projectId: $projectId, contentId: $contentId }) {
+                  item { id }
+                }
+              }
+            `, {
+              projectId: projectNodeId,
+              contentId: issue.node_id,
+            });
+
+            const itemId = addItemResponse.addProjectV2ItemById.item.id;
+
+            const statusFieldId = 'PVTSSF_lADOA_44FM4A9RQTzgxBWgo';
+            const todoOptionId = 'f75ad846';
+
+            await github.graphql(`
+              mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                updateProjectV2ItemFieldValue(input: {
+                  projectId: $projectId,
+                  itemId: $itemId,
+                  fieldId: $fieldId,
+                  value: { singleSelectOptionId: $optionId }
+                }) {
+                  projectV2Item { id }
+                }
+              }
+            `, {
+              projectId: projectNodeId,
+              itemId,
+              fieldId: statusFieldId,
+              optionId: todoOptionId,
+            });
+
+      - name: Set milestone
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { issue, repository } = context.payload;
+            const today = new Date();
+            const milestones = await github.paginate('GET /repos/' + repository.owner.login + '/' + repository.name + '/milestones', {
+              state: 'open'
+            });
+
+            const milestone = milestones.find(m => {
+              if (!m.due_on) return false;
+              const startDate = new Date(m.created_at);
+              const dueDate = new Date(m.due_on);
+              return startDate <= today && today <= dueDate;
+            });
+
+            if (milestone) {
+              await github.request('PATCH /repos/' + repository.owner.login + '/' + repository.name + '/issues/' + issue.number, {
+                milestone: milestone.number
+              });
+            } else {
+              console.log('No active milestone found for today.');
+            }
