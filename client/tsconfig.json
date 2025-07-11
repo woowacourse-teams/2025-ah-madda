@@ -11,6 +11,6 @@
     "jsxImportSource": "@emotion/react",
     "baseUrl": "."
   },
-  "include": ["./**/*.ts", "src/main.tsx", "global.d.ts"],
+  "include": ["src", "global.d.ts"],
   "exclude": ["node_modules", "dist"]
 }
