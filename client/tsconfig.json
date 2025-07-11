@@ -5,9 +5,9 @@
     "strict": true,
     "skipLibCheck": true,
     "moduleResolution": "bundler",
-    "esModuleInterop": true, // React를 ESM으로 import할 수 있게 해줘요
+    "esModuleInterop": true,
 
-    "jsx": "react-jsx", // JSX를 React 문법으로 변환해요
+    "jsx": "react-jsx",
     "jsxImportSource": "@emotion/react",
     "baseUrl": "."
   },
