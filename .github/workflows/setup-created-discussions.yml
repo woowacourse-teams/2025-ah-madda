@@ -1,0 +1,64 @@
+name: Setup Created Discussions
+
+on:
+  discussion:
+    types:
+      - created
+
+jobs:
+  label_discussion:
+    runs-on: ubuntu-latest
+    permissions:
+      discussions: write
+      contents: read
+
+    steps:
+      - name: Set labels
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { discussion, repository } = context.payload;
+            const author = discussion.user.login;
+
+            const feTeam = ['keemsebin', 'ExceptAnyone', 'yeji0214'];
+            const beTeam = ['joon6093', 'abc5259', 'praisebak', 'jumdo12'];
+
+            const LABELS = {
+              be: 'LA_kwDOPIGZA88AAAACE1Y_wg',
+              fe: 'LA_kwDOPIGZA88AAAACE1ZRBg'
+            };
+
+            let labelNodeId = null;
+            if (feTeam.includes(author)) labelNodeId = LABELS.fe;
+            else if (beTeam.includes(author)) labelNodeId = LABELS.be;
+
+            if (!labelNodeId) return;
+
+            await github.graphql(`
+              mutation($discussionId: ID!, $labelIds: [ID!]!) {
+                addLabelsToLabelable(input: {
+                  labelableId: $discussionId,
+                  labelIds: $labelIds
+                }) {
+                  clientMutationId
+                }
+              }
+            `, {
+              discussionId: discussion.node_id,
+              labelIds: [labelNodeId]
+            });
+
+      - name: Send notification
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          AUTHOR="${{ github.event.discussion.user.login }}"
+          TITLE="${{ github.event.discussion.title }}"
+          URL="${{ github.event.discussion.html_url }}"
+
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{
+              \"text\": \"💬 *새로운 Discussion이 열렸습니다!*\n한 줄이라도 좋아요. 함께 기록하고, 함께 만들어가요 :sparkles:\n\n*작성자:* ${AUTHOR}\n*제목:* ${TITLE}\n👉 <${URL}|지금 확인하기>\"
+            }" \
+            $SLACK_WEBHOOK_URL
