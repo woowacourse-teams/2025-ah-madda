@@ -9,7 +9,8 @@
     "start": "NODE_ENV=development webpack serve --mode development",
     "build": "NODE_ENV=development webpack --mode development",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "chromatic": "dotenv -- chromatic --project-token ${CHROMATIC_PROJECT_TOKEN}"
   },
   "keywords": [],
   "author": "",
@@ -35,8 +36,9 @@
     "@types/react-dom": "^19.1.6",
     "@types/storybook__react": "^5.2.1",
     "babel-loader": "^10.0.0",
-    "chromatic": "dotenv chromatic --project-token ${CHROMATIC_PROJECT_TOKEN}",
+    "chromatic": "^13.1.2",
     "css-loader": "^7.1.2",
+    "dotenv-cli": "^8.0.0",
     "eslint": "^9.31.0",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
