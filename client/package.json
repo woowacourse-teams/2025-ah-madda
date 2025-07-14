@@ -7,7 +7,6 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "test": "vitest",
     "test:run": "vitest run",
-    "coverage": "vitest run --coverage",
     "start": "NODE_ENV=development webpack serve --mode development",
     "build": "NODE_ENV=development webpack --mode development"
   },
