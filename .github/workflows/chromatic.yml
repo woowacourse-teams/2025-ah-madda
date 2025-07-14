@@ -44,7 +44,7 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: success
-          channel: '#fe/storybook'
+          channel: '#fe_storybook'
           text: |
             🎉 Storybook이 성공적으로 배포되었습니다!
 
@@ -63,7 +63,7 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: failure
-          channel: '#fe/storybook'
+          channel: '#fe_storybook'
           text: |
             ❌ Storybook 배포에 실패했습니다.
 
