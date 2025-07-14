@@ -79,7 +79,9 @@ export default tseslint.config(
     },
     settings: {
       'import/resolver': {
-        typescript: true,
+        typescript: {
+          project: './tsconfig.json',
+        },
         node: true,
       },
     },
@@ -105,7 +107,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['**/*.stories.@(ts|tsx|js|jsx|mjs|cjs)'],
+    files: ['**/*.stories.@(ts|tsx|js|jsx|mjs|cjs)', '**/*.d.ts'],
     rules: {
       'import/no-default-export': 'off',
     },
