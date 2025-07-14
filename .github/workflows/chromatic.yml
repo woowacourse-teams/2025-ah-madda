@@ -3,8 +3,13 @@ name: 'Chromatic'
 on:
   push:
     paths:
-      - 'client/**' # client 디렉토리 변경시만 실행
-      - '.github/workflows/chromatic.yml' # workflow 변경시도 실행
+      - 'client/**/*.stories.tsx'
+      - 'client/**/*.stories.ts'
+      - 'client/**/*.mdx'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   chromatic:
@@ -16,27 +21,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Storybook 설정 파일 체크
-      - name: Check for Storybook
-        id: storybook-check
-        run: |
-          if [ -f "client/.storybook/main.js" ] || [ -f "client/.storybook/main.ts" ]; then
-            echo "storybook-exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "storybook-exists=false" >> $GITHUB_OUTPUT
-            echo "⚠️ Storybook이 설치되지 않았습니다. Chromatic을 건너뜁니다."
-          fi
-
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js and pnpm
         if: steps.storybook-check.outputs.storybook-exists == 'true'
-        with:
-          node-version: 22.17.0
-
-      - name: Install pnpm
-        if: steps.storybook-check.outputs.storybook-exists == 'true'
-        uses: pnpm/action-setup@v4
-        with:
-          version: 8
+        uses: ./.github/actions/pnpm-setup-node
 
       - name: Install dependencies
         if: steps.storybook-check.outputs.storybook-exists == 'true'
@@ -50,11 +37,6 @@ jobs:
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           workingDir: ./client
-
-      # Storybook이 없으면 조용히 건너뛰기 (알림 없음)
-      - name: Skip Chromatic - No Storybook
-        if: steps.storybook-check.outputs.storybook-exists == 'false'
-        run: echo "ℹ️ Storybook 설정이 없어 Chromatic을 건너뜁니다."
 
       # Slack 알림 - 성공시
       - name: Send Slack notification on success

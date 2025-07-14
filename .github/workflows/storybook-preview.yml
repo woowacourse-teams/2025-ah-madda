@@ -1,0 +1,57 @@
+name: Preview Storybook
+
+on:
+  pull_request:
+    paths:
+      - 'client/**/*.stories.tsx'
+      - 'client/**/*.stories.ts'
+      - 'client/**/*.mdx'
+    types: [opened, reopened, synchronize]
+    branches: ['main']
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview-storybook:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/pnpm-setup-node
+
+      - name: Install dependencies
+        working-directory: ./client
+        run: pnpm install --frozen-lockfile
+
+      - name: Deploy Chromatic Preview
+        id: chromatic
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          workingDir: ./client
+          buildScriptName: build-storybook
+          token: ${{ secrets.GITHUB_TOKEN }}
+          onlyChanged: true
+          autoAcceptChanges: true
+
+      - name: Get current time
+        uses: josStorer/get-current-time@v2
+        id: current-time
+        with:
+          format: 'YYYY년 MM월 DD일 HH시 mm분 ss초'
+          utcOffset: '+09:00'
+
+      - name: PR comment
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          comment_tag: ${{ github.event.number }}-storybook
+          message: |
+            Update: ${{ steps.current-time.outputs.formattedTime }}
+            Storybook 미리보기: ${{ steps.chromatic.outputs.storybookUrl }}
