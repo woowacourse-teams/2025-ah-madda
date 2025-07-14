@@ -32,6 +32,7 @@
     "@types/react-dom": "^19.1.6",
     "@types/storybook__react": "^5.2.1",
     "babel-loader": "^10.0.0",
+    "chromatic": "dotenv chromatic --project-token ${CHROMATIC_PROJECT_TOKEN}",
     "css-loader": "^7.1.2",
     "html-webpack-plugin": "^5.6.3",
     "storybook": "^9.0.16",
