@@ -11,21 +11,80 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      # Storybook 설정 파일 체크
+      - name: Check for Storybook
+        id: storybook-check
+        run: |
+          if [ -f "client/.storybook/main.js" ] || [ -f "client/.storybook/main.ts" ]; then
+            echo "storybook-exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "storybook-exists=false" >> $GITHUB_OUTPUT
+            echo "⚠️ Storybook이 설치되지 않았습니다. Chromatic을 건너뜁니다."
+          fi
+
       - uses: actions/setup-node@v4
+        if: steps.storybook-check.outputs.storybook-exists == 'true'
         with:
           node-version: 22.17.0
-      - name: Install dependencies
 
-        run: npm ci
+      - name: Install pnpm
+        if: steps.storybook-check.outputs.storybook-exists == 'true'
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Install dependencies
+        if: steps.storybook-check.outputs.storybook-exists == 'true'
+        working-directory: ./client
+        run: pnpm install --frozen-lockfile
+
       - name: Run Chromatic
+        if: steps.storybook-check.outputs.storybook-exists == 'true'
         id: chromatic
         uses: chromaui/action@latest
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          workingDir: ./client
+
+      # Storybook 없음 알림
+      - name: Send Slack notification - Storybook not found
+        if: steps.storybook-check.outputs.storybook-exists == 'false'
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          custom_payload: |
+            {
+              "channel": "#fe/storybook",
+              "attachments": [{
+                "color": "warning",
+                "title": "⚠️ Storybook 설정이 없어 Chromatic을 건너뛰었습니다",
+                "fields": [{
+                  "title": "Repository",
+                  "value": "${{ github.repository }}",
+                  "short": true
+                }, {
+                  "title": "Branch",
+                  "value": "${{ github.ref_name }}",
+                  "short": true
+                }, {
+                  "title": "Author",
+                  "value": "${{ github.actor }}",
+                  "short": true
+                }, {
+                  "title": "Commit",
+                  "value": "${{ github.event.head_commit.message }}",
+                  "short": false
+                }],
+                "footer": "Storybook 설정이 완료되면 자동으로 실행됩니다."
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       # Slack 알림 - 성공시
       - name: Send Slack notification on success
-        if: success()
+        if: success() && steps.storybook-check.outputs.storybook-exists == 'true'
         uses: 8398a7/action-slack@v3
         with:
           status: success
@@ -44,7 +103,7 @@ jobs:
 
       # Slack 알림 - 실패시
       - name: Send Slack notification on failure
-        if: failure()
+        if: failure() && steps.storybook-check.outputs.storybook-exists == 'true'
         uses: 8398a7/action-slack@v3
         with:
           status: failure
