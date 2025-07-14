@@ -1,0 +1,61 @@
+name: 'Chromatic'
+
+on: push
+
+jobs:
+  chromatic:
+    name: Run Chromatic
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.17.0
+      - name: Install dependencies
+
+        run: npm ci
+      - name: Run Chromatic
+        id: chromatic
+        uses: chromaui/action@latest
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+
+      # Slack 알림 - 성공시
+      - name: Send Slack notification on success
+        if: success()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          channel: '#fe/storybook'
+          text: |
+            🎉 Storybook이 성공적으로 배포되었습니다!
+
+            📁 Repository: ${{ github.repository }}
+            🌿 Branch: ${{ github.ref_name }}
+            👤 Author: ${{ github.actor }}
+            💬 Commit: ${{ github.event.head_commit.message }}
+            🔗 Storybook URL: ${{ steps.chromatic.outputs.storybookUrl }}
+            🔍 Review URL: ${{ steps.chromatic.outputs.url }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      # Slack 알림 - 실패시
+      - name: Send Slack notification on failure
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          channel: '#fe/storybook'
+          text: |
+            ❌ Storybook 배포에 실패했습니다.
+
+            📁 Repository: ${{ github.repository }}
+            🌿 Branch: ${{ github.ref_name }}
+            👤 Author: ${{ github.actor }}
+            💬 Commit: ${{ github.event.head_commit.message }}
+            🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
