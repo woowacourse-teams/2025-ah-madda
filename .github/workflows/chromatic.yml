@@ -1,6 +1,10 @@
 name: 'Chromatic'
 
-on: push
+on:
+  push:
+    paths:
+      - 'client/**' # client 디렉토리 변경시만 실행
+      - '.github/workflows/chromatic.yml' # workflow 변경시도 실행
 
 jobs:
   chromatic:
@@ -47,40 +51,10 @@ jobs:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           workingDir: ./client
 
-      # Storybook 없음 알림
-      - name: Send Slack notification - Storybook not found
+      # Storybook이 없으면 조용히 건너뛰기 (알림 없음)
+      - name: Skip Chromatic - No Storybook
         if: steps.storybook-check.outputs.storybook-exists == 'false'
-        uses: 8398a7/action-slack@v3
-        with:
-          status: custom
-          custom_payload: |
-            {
-              "channel": "#fe/storybook",
-              "attachments": [{
-                "color": "warning",
-                "title": "⚠️ Storybook 설정이 없어 Chromatic을 건너뛰었습니다",
-                "fields": [{
-                  "title": "Repository",
-                  "value": "${{ github.repository }}",
-                  "short": true
-                }, {
-                  "title": "Branch",
-                  "value": "${{ github.ref_name }}",
-                  "short": true
-                }, {
-                  "title": "Author",
-                  "value": "${{ github.actor }}",
-                  "short": true
-                }, {
-                  "title": "Commit",
-                  "value": "${{ github.event.head_commit.message }}",
-                  "short": false
-                }],
-                "footer": "Storybook 설정이 완료되면 자동으로 실행됩니다."
-              }]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: echo "ℹ️ Storybook 설정이 없어 Chromatic을 건너뜁니다."
 
       # Slack 알림 - 성공시
       - name: Send Slack notification on success
