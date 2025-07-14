@@ -36,6 +36,9 @@ importers:
       '@chromatic-com/storybook':
         specifier: ^4.0.1
         version: 4.0.1(storybook@9.0.16(@testing-library/dom@10.4.0)(prettier@3.6.2))
+      '@esbuild/darwin-arm64':
+        specifier: ^0.25.6
+        version: 0.25.6
       '@eslint/js':
         specifier: ^9.31.0
         version: 9.31.0
@@ -51,6 +54,9 @@ importers:
       '@storybook/react-webpack5':
         specifier: ^9.0.16
         version: 9.0.16(@swc/core@1.12.14)(esbuild@0.25.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(storybook@9.0.16(@testing-library/dom@10.4.0)(prettier@3.6.2))(typescript@5.8.3)(webpack-cli@6.0.1)
+      '@types/node':
+        specifier: ^24.0.13
+        version: 24.0.13
       '@types/react':
         specifier: ^19.1.8
         version: 19.1.8
@@ -3163,8 +3169,8 @@ packages:
   once@1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
 
-  open@10.1.2:
-    resolution: {integrity: sha512-cxN6aIDPz6rm8hbebcP7vrQNhvRcveZoJU72Y7vskh4oIm+BZwBECnx5nTmrlres1Qapvx27Qo1Auukpf8PKXw==}
+  open@10.2.0:
+    resolution: {integrity: sha512-YgBpdJHPyQ2UE5x+hlSXcnejzAvD0b22U2OuAP+8OnlJT+PjWPxtgmGqKKc+RgTM63U9gN0YzrYc71R2WT/hTA==}
     engines: {node: '>=18'}
 
   open@8.4.2:
@@ -4063,6 +4069,10 @@ packages:
       utf-8-validate:
         optional: true
 
+  wsl-utils@0.1.0:
+    resolution: {integrity: sha512-h3Fbisa2nKGPxCpm89Hk33lBLsnaGBvctQopaBSOW/uIs6FTe1ATyAnKFJrzVs9vpGdsTe73WF3V4lIsk4Gacw==}
+    engines: {node: '>=18'}
+
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
 
@@ -4939,8 +4949,7 @@ snapshots:
   '@esbuild/android-x64@0.25.6':
     optional: true
 
-  '@esbuild/darwin-arm64@0.25.6':
-    optional: true
+  '@esbuild/darwin-arm64@0.25.6': {}
 
   '@esbuild/darwin-x64@0.25.6':
     optional: true
@@ -7495,12 +7504,12 @@ snapshots:
     dependencies:
       wrappy: 1.0.2
 
-  open@10.1.2:
+  open@10.2.0:
     dependencies:
       default-browser: 5.2.1
       define-lazy-prop: 3.0.0
       is-inside-container: 1.0.0
-      is-wsl: 3.1.0
+      wsl-utils: 0.1.0
 
   open@8.4.2:
     dependencies:
@@ -8455,7 +8464,7 @@ snapshots:
       http-proxy-middleware: 2.0.9(@types/express@4.17.23)
       ipaddr.js: 2.2.0
       launch-editor: 2.10.0
-      open: 10.1.2
+      open: 10.2.0
       p-retry: 6.2.1
       schema-utils: 4.3.2
       selfsigned: 2.4.1
@@ -8583,6 +8592,10 @@ snapshots:
   wrappy@1.0.2: {}
 
   ws@8.18.3: {}
+
+  wsl-utils@0.1.0:
+    dependencies:
+      is-wsl: 3.1.0
 
   yallist@3.1.1: {}
 
