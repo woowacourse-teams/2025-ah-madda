@@ -30,7 +30,7 @@ module.exports = {
           })
           .then((choices) => {
             if (choices === '아니요') {
-              throw new Error('hygen components shared 다시 시작해 주세요.');
+              throw new Error('컴포넌트 이름이 올바르지 않습니다. 다시 시도해 주세요.');
             }
 
             return {
