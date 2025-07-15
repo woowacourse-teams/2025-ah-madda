@@ -1,0 +1,23 @@
+name: 'setup pnpm & node'
+description: 'setup pnpm & node'
+
+inputs:
+  pnpm-version:
+    description: 'pnpm version to use'
+    required: false
+    default: '10.12.4'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: ${{ inputs.pnpm-version }}
+
+    - name: Setup Node.js with pnpm cache
+      uses: actions/setup-node@v4
+      with:
+        cache: 'pnpm'
+        cache-dependency-path: 'client/pnpm-lock.yaml'
+        node-version-file: 'client/.nvmrc'
