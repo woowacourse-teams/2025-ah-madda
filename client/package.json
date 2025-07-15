@@ -9,6 +9,10 @@
     "start": "NODE_ENV=development webpack serve --mode development",
     "build": "NODE_ENV=development webpack --mode development"
   },
+  "engines": {
+    "node": ">=20.18.0",
+    "pnpm": ">=10"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
