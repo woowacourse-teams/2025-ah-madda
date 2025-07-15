@@ -6,7 +6,6 @@
   "scripts": {
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "test": "vitest",
-    "test:run": "vitest run",
     "start": "NODE_ENV=development webpack serve --mode development",
     "build": "NODE_ENV=development webpack --mode development",
     "storybook": "storybook dev -p 6006",
