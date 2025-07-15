@@ -13,6 +13,10 @@
     "chromatic": "dotenv -- chromatic --project-token ${CHROMATIC_PROJECT_TOKEN}",
     "prepare": "cd .. && husky client/.husky"
   },
+  "engines": {
+    "node": ">=20.18.0",
+    "pnpm": ">=10.0.0"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
