@@ -1,15 +1,21 @@
 {
   "name": "client",
   "version": "1.0.0",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "NODE_ENV=development webpack serve --mode development",
     "build": "NODE_ENV=development webpack --mode development",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "chromatic": "dotenv -- chromatic --project-token ${CHROMATIC_PROJECT_TOKEN}"
+    "chromatic": "dotenv -- chromatic --project-token ${CHROMATIC_PROJECT_TOKEN}",
+    "prepare": "cd .. && husky client/.husky"
+  },
+  "engines": {
+    "node": ">=20.18.0",
+    "pnpm": ">=10.0.0"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +32,8 @@
     "@babel/preset-env": "^7.28.0",
     "@babel/preset-react": "^7.27.1",
     "@babel/preset-typescript": "^7.27.1",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@chromatic-com/storybook": "^4.0.1",
     "@eslint/js": "^9.31.0",
     "@storybook/addon-docs": "^9.0.16",
@@ -48,7 +56,8 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
     "html-webpack-plugin": "^5.6.3",
-    "hygen": "^6.2.11",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
     "prettier": "^3.6.2",
     "storybook": "^9.0.16",
     "style-loader": "^4.0.0",
@@ -58,5 +67,11 @@
     "webpack": "^5.100.0",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.2"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   }
 }
