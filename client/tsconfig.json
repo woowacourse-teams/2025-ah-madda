@@ -17,6 +17,6 @@
     "types": ["vitest/globals"]
 
   },
-  "include": ["src", "global.d.ts"],
+  "include": ["src", "global.d.ts", ".storybook/*"],
   "exclude": ["node_modules", "dist"]
 }
