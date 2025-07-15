@@ -31,14 +31,13 @@ jobs:
 
       - name: Deploy with Chromatic
         id: chromatic
-        uses: chromaui/action@v1
+        uses: chromaui/action@latest
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           workingDir: ./client
           buildScriptName: build-storybook
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # Slack 알림
       - name: Slack deployment notification
         uses: 8398a7/action-slack@v3
         with:
