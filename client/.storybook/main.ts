@@ -1,12 +1,9 @@
+/* eslint-disable import/no-default-export */
 import * as path from 'path';
-import { fileURLToPath } from 'url';
 
 import type { StorybookConfig } from '@storybook/react-webpack5';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-export const config: StorybookConfig = {
+const config: StorybookConfig = {
   stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
   addons: [
     '@storybook/addon-webpack5-compiler-swc',
@@ -30,3 +27,5 @@ export const config: StorybookConfig = {
     };
   },
 };
+
+export default config;

@@ -1,6 +1,6 @@
 import type { Preview } from '@storybook/react-webpack5';
 
-export const preview: Preview = {
+const preview: Preview = {
   parameters: {
     controls: {
       matchers: {
@@ -10,3 +10,6 @@ export const preview: Preview = {
     },
   },
 };
+
+// eslint-disable-next-line import/no-default-export
+export default preview;

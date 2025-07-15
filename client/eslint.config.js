@@ -79,8 +79,8 @@ export default tseslint.config(
     },
     settings: {
       'import/resolver': {
+        typescript: true,
         node: {
-          typescript: true,
           extensions: ['.js', '.jsx', '.ts', '.tsx'],
         },
       },
