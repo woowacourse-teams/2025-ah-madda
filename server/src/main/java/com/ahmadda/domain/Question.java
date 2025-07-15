@@ -1,6 +1,7 @@
 package com.ahmadda.domain;
 
 
+import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -42,8 +43,8 @@ public class Question extends BaseEntity {
             final boolean isRequired,
             final int orderIndex
     ) {
-        this.event = event;
-        this.questionText = questionText;
+        this.event = Assert.notNull(event, "event null이 되면 안됩니다.");
+        this.questionText = Assert.notNull(questionText, "questionText null이 되면 안됩니다.");
         this.isRequired = isRequired;
         this.orderIndex = orderIndex;
     }

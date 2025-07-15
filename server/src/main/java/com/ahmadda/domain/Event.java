@@ -1,6 +1,7 @@
 package com.ahmadda.domain;
 
 
+import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -65,15 +66,15 @@ public class Event extends BaseEntity {
                   final LocalDateTime eventStart,
                   final LocalDateTime eventEnd,
                   final int maxCapacity) {
-        this.title = title;
-        this.description = description;
-        this.place = place;
-        this.organizer = organizer;
-        this.organization = organization;
-        this.registrationStart = registrationStart;
-        this.registrationEnd = registrationEnd;
-        this.eventStart = eventStart;
-        this.eventEnd = eventEnd;
+        this.title = Assert.notNull(title, "title null이 되면 안됩니다.");
+        this.description = Assert.notNull(description, "description null이 되면 안됩니다.");
+        this.place = Assert.notNull(place, "place null이 되면 안됩니다.");
+        this.organizer = Assert.notNull(organizer, "organizer null이 되면 안됩니다.");
+        this.organization = Assert.notNull(organization, "organization null이 되면 안됩니다.");
+        this.registrationStart = Assert.notNull(registrationStart, "registrationStart null이 되면 안됩니다.");
+        this.registrationEnd = Assert.notNull(registrationEnd, "registrationEnd null이 되면 안됩니다.");
+        this.eventStart = Assert.notNull(eventStart, "eventStart null이 되면 안됩니다.");
+        this.eventEnd = Assert.notNull(eventEnd, "eventEnd null이 되면 안됩니다.");
         this.maxCapacity = maxCapacity;
     }
 

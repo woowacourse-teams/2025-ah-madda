@@ -1,6 +1,7 @@
 package com.ahmadda.domain;
 
 
+import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -35,9 +36,9 @@ public class Answer extends BaseEntity {
     private String answerText;
 
     private Answer(final Question question, final Guest guest, final String answerText) {
-        this.question = question;
-        this.guest = guest;
-        this.answerText = answerText;
+        this.question = Assert.notNull(question, "question null이 되면 안됩니다.");
+        this.guest = Assert.notNull(guest, "guest null이 되면 안됩니다.");
+        this.answerText = Assert.notNull(answerText, "answerText null이 되면 안됩니다.");
     }
 
     public static Answer create(final Question question, final Guest guest, final String answerText) {

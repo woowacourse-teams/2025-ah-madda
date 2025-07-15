@@ -1,6 +1,7 @@
 package com.ahmadda.domain;
 
 
+import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -32,8 +33,8 @@ public class Guest extends BaseEntity {
     private OrganizationMember participant;
 
     private Guest(final Event event, final OrganizationMember participant) {
-        this.event = event;
-        this.participant = participant;
+        this.event = Assert.notNull(event, "event null이 되면 안됩니다.");
+        this.participant = Assert.notNull(participant, "participant null이 되면 안됩니다.");
     }
 
     public static Guest create(final Event event, final OrganizationMember participant) {

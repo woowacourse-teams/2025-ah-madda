@@ -1,5 +1,6 @@
 package com.ahmadda.domain;
 
+import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,8 +27,8 @@ public class Member extends BaseEntity {
     private String email;
 
     private Member(final String name, final String email) {
-        this.name = name;
-        this.email = email;
+        this.name = Assert.notNull(name, "name null이 되면 안됩니다.");
+        this.email = Assert.notNull(email, "email null이 되면 안됩니다.");
     }
 
     public static Member create(final String name, final String email) {

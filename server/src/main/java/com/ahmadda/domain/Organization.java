@@ -1,6 +1,7 @@
 package com.ahmadda.domain;
 
 
+import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,9 +31,9 @@ public class Organization extends BaseEntity {
     private String imageUrl;
 
     private Organization(final String name, final String description, final String imageUrl) {
-        this.name = name;
-        this.description = description;
-        this.imageUrl = imageUrl;
+        this.name = Assert.notNull(name, "name null이 되면 안됩니다.");
+        this.description = Assert.notNull(description, "description null이 되면 안됩니다.");
+        this.imageUrl = Assert.notNull(imageUrl, "imageUrl null이 되면 안됩니다.");
     }
 
     public static Organization create(final String name, final String description, final String imageUrl) {

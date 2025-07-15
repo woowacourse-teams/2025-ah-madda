@@ -1,6 +1,7 @@
 package com.ahmadda.domain;
 
 
+import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -35,9 +36,9 @@ public class OrganizationMember extends BaseEntity {
     private Organization organization;
 
     private OrganizationMember(final String nickname, final Member member, final Organization organization) {
-        this.nickname = nickname;
-        this.member = member;
-        this.organization = organization;
+        this.nickname = Assert.notNull(nickname, "nickname null이 되면 안됩니다.");
+        this.member = Assert.notNull(member, "member null이 되면 안됩니다.");
+        this.organization = Assert.notNull(organization, "organization null이 되면 안됩니다.");
     }
 
     public static OrganizationMember create(final String nickname,
