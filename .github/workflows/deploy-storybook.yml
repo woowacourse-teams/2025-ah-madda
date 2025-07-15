@@ -48,4 +48,4 @@ jobs:
 
             👉 ${{ steps.chromatic.outputs.storybookUrl }}
         env:
-          SLACK_WEBHOOK_URL_STORYBOOK: ${{ secrets.SLACK_WEBHOOK_URL_STORYBOOK }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_STORYBOOK }}
