@@ -1,0 +1,9 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    default: local
+
+  application:
+    name: ah-madda
