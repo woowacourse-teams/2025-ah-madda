@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   deploy-storybook:
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'fe/dev'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
