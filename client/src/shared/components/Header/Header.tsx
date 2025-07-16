@@ -20,10 +20,8 @@ export type HeaderProps = {
 } & ComponentProps<'header'>;
 
 export const Header = ({ left, right, ...props }: HeaderProps) => {
-  const justifyContent = right ? 'space-between' : 'flex-start';
-
   return (
-    <StyledHeader justifyContent={justifyContent} {...props}>
+    <StyledHeader hasRight={!!right} {...props}>
       {left}
       {right}
     </StyledHeader>
