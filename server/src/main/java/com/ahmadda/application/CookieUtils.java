@@ -16,4 +16,12 @@ public class CookieUtils {
         cookie.setMaxAge(300);
         return cookie;
     }
+
+    public static Cookie deleteCookie(String name) {
+        Cookie cookie = new Cookie(name, null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        return cookie;
+    }
 }
