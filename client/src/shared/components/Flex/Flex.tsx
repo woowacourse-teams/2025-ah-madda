@@ -90,7 +90,7 @@ export const Flex = ({
   return (
     <StyledFlexBox
       as={as}
-      direction={dir}
+      dir={dir}
       justifyContent={justifyContent}
       alignItems={alignItems}
       gap={gap}
