@@ -6,7 +6,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { <%= h.changeCase.pascal(components) %> } from './<%= h.changeCase.pascal(components) %>';
 
 const meta = {
-  title: 'shared/components/<%= h.changeCase.pascal(components) %>',
+  title: 'components/<%= h.changeCase.pascal(components) %>',
   component: <%= h.changeCase.pascal(components) %>,
   tags: ['autodocs'],
 } satisfies Meta<typeof <%= h.changeCase.pascal(components) %>>;
