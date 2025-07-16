@@ -2,6 +2,7 @@ package com.ahmadda.presentation;
 
 import com.ahmadda.application.OrganizationService;
 import com.ahmadda.domain.Organization;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,7 @@ public class OrganizationController {
     private final OrganizationService organizationService;
 
     @PostMapping
-    public ResponseEntity<Void> createOrganization(@RequestBody final OrganizationCreateRequest organizationCreateRequest) {
+    public ResponseEntity<Void> createOrganization(@RequestBody @Valid final OrganizationCreateRequest organizationCreateRequest) {
         organizationService.createOrganization(organizationCreateRequest);
 
         return ResponseEntity.ok().build();
