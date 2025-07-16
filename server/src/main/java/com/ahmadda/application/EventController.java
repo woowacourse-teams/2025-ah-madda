@@ -19,7 +19,7 @@ public class EventController {
     private final EventService eventService;
     private final GuestService guestService;
 
-    @GetMapping("/{organizationId}")
+    @GetMapping("/organization/{organizationId}")
     public ResponseEntity<List<EventResponse>> getOrganizerEvent(@PathVariable Long organizationId) {
         List<Event> organizerAvailableEvents = eventService.getOrganizationAvailableEvents(organizationId);
         List<EventResponse> eventResponses = organizerAvailableEvents.stream()
@@ -29,7 +29,7 @@ public class EventController {
         return ResponseEntity.ok(eventResponses);
     }
 
-    @GetMapping("/owner/{memberId}/organization/{organizationId}")
+    @GetMapping("/organization/{organizationId}/owner/{memberId}")
     public ResponseEntity<List<EventResponse>> getOwnersEvent(@PathVariable Long memberId,
                                                               @PathVariable Long organizationId) {
         List<Event> ownerEvents = eventService.getOwnersEvent(memberId, organizationId);
@@ -41,7 +41,7 @@ public class EventController {
         return ResponseEntity.ok(eventResponses);
     }
 
-    @GetMapping("/guest/{memberId}/organization/{organizationId}")
+    @GetMapping("/organization/{organizationId}/guest/{memberId}")
     public ResponseEntity<List<EventResponse>> getJoinedEvents(@PathVariable Long memberId,
                                                                @PathVariable Long organizationId) {
         List<Event> joinedEvents = guestService.getJoinedEvents(memberId, organizationId);
