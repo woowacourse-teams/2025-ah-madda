@@ -82,6 +82,9 @@ export default tseslint.config(
         node: {
           extensions: ['.js', '.jsx', '.ts', '.tsx'],
         },
+        typescript: {
+          project: './tsconfig.json',
+        },
       },
     },
     rules: {
@@ -106,7 +109,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['**/*.stories.@(ts|tsx|js|jsx|mjs|cjs)'],
+    files: ['**/*.stories.@(ts|tsx|js|jsx|mjs|cjs)', '**/*.d.ts'],
     rules: {
       'import/no-default-export': 'off',
     },
