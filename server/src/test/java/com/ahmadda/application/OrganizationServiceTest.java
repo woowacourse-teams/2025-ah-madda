@@ -21,7 +21,7 @@ class OrganizationServiceTest {
     private OrganizationRepository organizationRepository;
 
     @Autowired
-    private OrganizationService sut;
+    private OrganizationService organizationService;
 
     private Organization createOrganization(String name, String description, String imageUrl) {
         return Organization.create(name, description, imageUrl);
@@ -40,13 +40,13 @@ class OrganizationServiceTest {
         organizationRepository.save(organization);
 
         // when
-        var found = sut.getOrganization(organization.getId());
+        var sut = this.organizationService.getOrganization(organization.getId());
 
         // then
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(found.getName()).isEqualTo("Org");
-            softly.assertThat(found.getDescription()).isEqualTo("Desc");
-            softly.assertThat(found.getImageUrl()).isEqualTo("img.png");
+            softly.assertThat(sut.getName()).isEqualTo("Org");
+            softly.assertThat(sut.getDescription()).isEqualTo("Desc");
+            softly.assertThat(sut.getImageUrl()).isEqualTo("img.png");
         });
     }
 
@@ -56,24 +56,24 @@ class OrganizationServiceTest {
         var request = createOrganizationCreateRequest("조직명", "조직 설명", "image.png");
 
         // when
-        sut.createOrganization(request);
+        organizationService.createOrganization(request);
 
         // then
         var organizations = organizationRepository.findAll();
         assertThat(organizations).hasSize(1);
-        var saved = organizations.get(0);
+        var sut = organizations.get(0);
 
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(saved.getName()).isEqualTo("조직명");
-            softly.assertThat(saved.getDescription()).isEqualTo("조직 설명");
-            softly.assertThat(saved.getImageUrl()).isEqualTo("image.png");
+            softly.assertThat(sut.getName()).isEqualTo("조직명");
+            softly.assertThat(sut.getDescription()).isEqualTo("조직 설명");
+            softly.assertThat(sut.getImageUrl()).isEqualTo("image.png");
         });
     }
 
     @Test
     void 존재하지_않는_조직_ID로_조회하면_예외가_발생한다() {
         // when // then
-        assertThatThrownBy(() -> sut.getOrganization(999L))
+        assertThatThrownBy(() -> organizationService.getOrganization(999L))
                 .isInstanceOf(BusinessFlowViolatedException.class);
     }
 }
