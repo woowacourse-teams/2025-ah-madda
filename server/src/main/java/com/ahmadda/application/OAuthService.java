@@ -20,6 +20,7 @@ public class OAuthService {
                 .queryParam("scope", googleOAuthProperties.getScope())
                 .queryParam("state", state)
                 .queryParam("access_type", "offline")
-                .build().toUriString();
+                .build()
+                .toUriString();
     }
 }
