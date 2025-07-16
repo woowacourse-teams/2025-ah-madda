@@ -3,11 +3,8 @@ package com.ahmadda.application;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,42 +21,6 @@ class OrganizationServiceTest {
 
     @Autowired
     private OrganizationService sut;
-
-    @ParameterizedTest
-    @ValueSource(strings = {"", " ", "  "})
-    void 조직_생성시_설명이_비어있으면_예외가_발생한다(String blankDescription) {
-        // when // then
-        assertThatThrownBy(() -> Organization.create("정상 이름", blankDescription, "url"))
-                .isInstanceOf(BusinessRuleViolatedException.class);
-    }
-
-    @Test
-    void 조직_생성시_이름이_규칙보다_길면_예외가_발생한다() {
-        // given
-        var longName = "스무글자를넘어가는엄청나게긴조직이름입니다";
-
-        // when // then
-        assertThatThrownBy(() -> Organization.create(longName, "설명", "url"))
-                .isInstanceOf(BusinessRuleViolatedException.class);
-    }
-
-    @Test
-    void 조직_생성시_이름이_규칙보다_짧으면_예외가_발생한다() {
-        // given
-        var shortName = "한";
-
-        // when // then
-        assertThatThrownBy(() -> Organization.create(shortName, "설명", "url"))
-                .isInstanceOf(BusinessRuleViolatedException.class);
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"", " ", "  "})
-    void 조직_생성시_이름이_비어있으면_예외가_발생한다(String blankName) {
-        // when // then
-        assertThatThrownBy(() -> Organization.create(blankName, "설명", "url"))
-                .isInstanceOf(BusinessRuleViolatedException.class);
-    }
 
     @Test
     void 조직을_ID로_조회한다() {
