@@ -168,3 +168,27 @@ jobs:
             } else {
               console.log('No active milestone found for today.');
             }
+
+      - name: Send notification
+        env:
+          SLACK_WEBHOOK_URL_FE: ${{ secrets.SLACK_WEBHOOK_URL_FE_CCTV }}
+          SLACK_WEBHOOK_URL_BE: ${{ secrets.SLACK_WEBHOOK_URL_BE_CCTV }}
+        run: |
+          TITLE="${{ github.event.pull_request.title }}"
+          AUTHOR="${{ github.event.pull_request.user.login }}"
+          URL="${{ github.event.pull_request.html_url }}"
+
+          if [[ "$TITLE" == "[FE]"* ]]; then
+            WEBHOOK_URL=$SLACK_WEBHOOK_URL_FE
+          elif [[ "$TITLE" == "[BE]"* ]]; then
+            WEBHOOK_URL=$SLACK_WEBHOOK_URL_BE
+          else
+            exit 0
+          fi
+
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{
+              \"text\": \"📦 *새로운 Pull Request가 생성되었습니다!*\n작은 리뷰 하나가 큰 개선이 됩니다 🙌\n\n*작성자:* ${AUTHOR}\n*제목:* ${TITLE}\n👉 <${URL}|지금 확인하기>\"
+            }" \
+            "$WEBHOOK_URL"
+
