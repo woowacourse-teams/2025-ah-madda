@@ -12,10 +12,9 @@
 
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["src/*"]
     },
     "types": ["vitest/globals"]
-
   },
   "include": ["src", "global.d.ts", ".storybook/*"],
   "exclude": ["node_modules", "dist"]
