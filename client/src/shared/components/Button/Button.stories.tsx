@@ -20,6 +20,10 @@ export const Basic: Story = {
     color: '#2563EB',
     fontColor: '#FFFFFF',
   },
+  argTypes: {
+    type: { control: false },
+  },
+
   render: (args) => <Button {...args} />,
 };
 

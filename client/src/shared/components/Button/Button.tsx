@@ -1,4 +1,4 @@
-import { ComponentProps, PropsWithChildren } from 'react';
+import { ComponentPropsWithRef, PropsWithChildren } from 'react';
 
 import { StyledButton } from './Button.styled';
 
@@ -36,7 +36,13 @@ export type ButtonProps = {
    * @default '#FFFFFF'
    */
   fontColor?: string;
-} & PropsWithChildren<ComponentProps<'button'>>;
+  /**
+   * The type of the button.
+   * @type {'button' | 'submit' | 'reset'}
+   * @default 'button'
+   */
+  type?: 'button' | 'submit' | 'reset';
+} & PropsWithChildren<ComponentPropsWithRef<'button'>>;
 
 // S.TODO: isLoading 추가, 아이콘이 들어가는 경우
 export const Button = ({
@@ -45,6 +51,7 @@ export const Button = ({
   variant = 'filled',
   color = '#2563EB',
   fontColor = '#FFFFFF',
+  type = 'button',
   children,
   ...props
 }: ButtonProps) => {
@@ -55,6 +62,7 @@ export const Button = ({
       variant={variant}
       color={color}
       fontColor={fontColor}
+      type={type}
       {...props}
     >
       {children}
