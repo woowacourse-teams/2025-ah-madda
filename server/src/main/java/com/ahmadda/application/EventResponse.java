@@ -1,0 +1,32 @@
+package com.ahmadda.application;
+
+import com.ahmadda.domain.Event;
+
+import java.time.LocalDateTime;
+
+public record EventResponse(
+        String title,
+        String description,
+        LocalDateTime eventStart,
+        LocalDateTime eventEnd,
+        int maxCapacity,
+        String place,
+        LocalDateTime registrationStart,
+        LocalDateTime registrationEnd,
+        String organizerName
+) {
+
+    public static EventResponse from(Event event) {
+        return new EventResponse(
+                event.getTitle(),
+                event.getDescription(),
+                event.getEventStart(),
+                event.getEventEnd(),
+                event.getMaxCapacity(),
+                event.getPlace(),
+                event.getRegistrationStart(),
+                event.getRegistrationEnd(),
+                event.getOrganizer().getNickname()
+        );
+    }
+}
