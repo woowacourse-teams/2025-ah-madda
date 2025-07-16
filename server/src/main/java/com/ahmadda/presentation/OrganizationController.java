@@ -27,9 +27,9 @@ public class OrganizationController {
                 .build();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<OrganizationReadResponse> readOrganization(@PathVariable final Long id) {
-        Organization organization = organizationService.getOrganization(id);
+    @GetMapping("/{organizationId}")
+    public ResponseEntity<OrganizationReadResponse> readOrganization(@PathVariable final Long organizationId) {
+        Organization organization = organizationService.getOrganization(organizationId);
         OrganizationReadResponse organizationReadResponse = OrganizationReadResponse.from(organization);
 
         return ResponseEntity.ok(organizationReadResponse);
