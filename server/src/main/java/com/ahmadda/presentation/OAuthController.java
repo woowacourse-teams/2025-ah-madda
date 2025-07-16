@@ -1,8 +1,11 @@
 package com.ahmadda.presentation;
 
+import com.ahmadda.application.AuthService;
 import com.ahmadda.application.CookieUtils;
 import com.ahmadda.application.GoogleOAuthUserInfo;
 import com.ahmadda.application.GoogleOAuthService;
+import com.ahmadda.application.MemberService;
+import com.ahmadda.domain.Member;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class OAuthController {
 
     private final GoogleOAuthService googleOAuthService;
+    private final MemberService memberService;
+    private final AuthService authService;
 
     @GetMapping("/login")
     public String redirectToOauthProvider(HttpServletResponse response) {
@@ -44,6 +49,11 @@ public class OAuthController {
         response.addCookie(deletedCookie);
 
         GoogleOAuthUserInfo googleOAuthUserInfo = googleOAuthService.authenticateGoogleUser(code);
+        Member loginMember = memberService.processGoogleOAuthLogin(googleOAuthUserInfo);
+        String loginToken = authService.publishLoginToken(loginMember);
+
+        Cookie loginCookie = CookieUtils.createCookie("token", loginToken);
+        response.addCookie(loginCookie);
 
         return "success"; //todo: 성공 시 처리
     }

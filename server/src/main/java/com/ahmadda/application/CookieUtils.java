@@ -17,6 +17,14 @@ public class CookieUtils {
         return cookie;
     }
 
+    public static Cookie createCookie(String name, String value) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(300);
+        return cookie;
+    }
+
     public static Cookie deleteCookie(String name) {
         Cookie cookie = new Cookie(name, null);
         cookie.setHttpOnly(true);
