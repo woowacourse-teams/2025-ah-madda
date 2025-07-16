@@ -18,7 +18,7 @@ export const Basic: Story = {
     size: 'md',
     variant: 'filled',
     color: '#2563EB',
-    fontColor: 'white',
+    fontColor: '#FFFFFF',
   },
   render: (args) => <Button {...args} />,
 };
