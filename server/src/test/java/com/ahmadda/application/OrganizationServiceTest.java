@@ -26,16 +26,6 @@ class OrganizationServiceTest {
     @Autowired
     private OrganizationService sut;
 
-    private Organization createOrganization(String name, String description, String imageUrl) {
-        return Organization.create(name, description, imageUrl);
-    }
-
-    private OrganizationCreateRequest createOrganizationCreateRequest(String name,
-                                                                      String description,
-                                                                      String imageUrl) {
-        return new OrganizationCreateRequest(name, description, imageUrl);
-    }
-
     @ParameterizedTest
     @ValueSource(strings = {"", " ", "  "})
     void 조직_생성시_설명이_비어있으면_예외가_발생한다(String blankDescription) {
@@ -114,5 +104,15 @@ class OrganizationServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getOrganization(999L))
                 .isInstanceOf(BusinessFlowViolatedException.class);
+    }
+    
+    private Organization createOrganization(String name, String description, String imageUrl) {
+        return Organization.create(name, description, imageUrl);
+    }
+
+    private OrganizationCreateRequest createOrganizationCreateRequest(String name,
+                                                                      String description,
+                                                                      String imageUrl) {
+        return new OrganizationCreateRequest(name, description, imageUrl);
     }
 }
