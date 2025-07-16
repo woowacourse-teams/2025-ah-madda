@@ -85,7 +85,6 @@ export default tseslint.config(
         typescript: {
           project: './tsconfig.json',
         },
-        node: true,
       },
     },
     rules: {
