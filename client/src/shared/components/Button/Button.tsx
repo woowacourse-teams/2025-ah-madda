@@ -33,7 +33,7 @@ export type ButtonProps = {
   /**
    * The color of the text displayed inside the button.
    * @type {string}
-   * @default 'white'
+   * @default '#FFFFFF'
    */
   fontColor?: string;
 } & PropsWithChildren<ComponentProps<'button'>>;
@@ -44,7 +44,7 @@ export const Button = ({
   size = 'md',
   variant = 'filled',
   color = '#2563EB',
-  fontColor = 'white',
+  fontColor = '#FFFFFF',
   children,
   ...props
 }: ButtonProps) => {

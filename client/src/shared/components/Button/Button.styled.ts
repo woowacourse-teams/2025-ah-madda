@@ -53,7 +53,7 @@ export const StyledButton = styled.button<ButtonProps>`
   border-radius: 0.75rem;
   line-height: 1.4;
   width: ${({ width }) => width ?? 'auto'};
-  color: ${({ fontColor }) => fontColor ?? 'white'};
+  color: ${({ fontColor }) => fontColor ?? '#FFFFFF'};
 
   ${({ size }) => sizeStyles[size ?? 'md']}
   ${({ variant, color }) => variantStyles[variant ?? 'filled'](color ?? 'black')};
