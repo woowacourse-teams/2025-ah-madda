@@ -1,6 +1,6 @@
 package com.ahmadda.application;
 
-import com.ahmadda.application.exception.BusinessFlowViolatedException;
+import com.ahmadda.application.exception.NotFoundExcpetion;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +26,6 @@ public class OrganizationService {
 
     public Organization getOrganization(final Long id) {
         return organizationRepository.findById(id)
-                .orElseThrow(() -> new BusinessFlowViolatedException("존재하지 않는 조직입니다."));
+                .orElseThrow(() -> new NotFoundExcpetion("존재하지 않는 조직입니다."));
     }
 }
