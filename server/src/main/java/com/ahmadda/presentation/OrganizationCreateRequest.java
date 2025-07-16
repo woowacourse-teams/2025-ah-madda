@@ -1,12 +1,11 @@
 package com.ahmadda.presentation;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Length;
 
-public record OrganizationCreateRequest(@NotBlank @NotNull @Min(2) @Max(20) String name,
-                                        @NotBlank @NotNull @Min(2) @Max(2000) String description,
+public record OrganizationCreateRequest(@NotBlank @NotNull @Length(min = 2, max = 20) String name,
+                                        @NotBlank @NotNull @Length(min = 2, max = 2000) String description,
                                         @NotNull String imageUrl) {
 
 }
