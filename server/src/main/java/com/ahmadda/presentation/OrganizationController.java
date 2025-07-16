@@ -23,7 +23,8 @@ public class OrganizationController {
     public ResponseEntity<Void> createOrganization(@RequestBody @Valid final OrganizationCreateRequest organizationCreateRequest) {
         organizationService.createOrganization(organizationCreateRequest);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+                .build();
     }
 
     @GetMapping("/{id}")
