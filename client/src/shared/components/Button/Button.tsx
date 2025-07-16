@@ -6,7 +6,7 @@ export type ButtonProps = {
   /**
    * The width of the button.
    * @type {string}
-   * @description It can be a string (e.g. '100%') or a number (e.g. 100).  1rem = 16px
+   * @description It can be a string (e.g. '100%')
    * @default '8rem'
    */
   width?: string;
