@@ -1,5 +1,7 @@
 package com.ahmadda.presentation;
 
+import com.ahmadda.application.OrganizationCreateRequest;
+import com.ahmadda.application.OrganizationReadResponse;
 import com.ahmadda.application.OrganizationService;
 import com.ahmadda.domain.Organization;
 import jakarta.validation.Valid;

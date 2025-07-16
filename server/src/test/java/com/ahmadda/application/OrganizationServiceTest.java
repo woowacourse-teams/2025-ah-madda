@@ -4,7 +4,6 @@ import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
-import com.ahmadda.presentation.OrganizationCreateRequest;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -105,7 +104,7 @@ class OrganizationServiceTest {
         assertThatThrownBy(() -> sut.getOrganization(999L))
                 .isInstanceOf(BusinessFlowViolatedException.class);
     }
-    
+
     private Organization createOrganization(String name, String description, String imageUrl) {
         return Organization.create(name, description, imageUrl);
     }

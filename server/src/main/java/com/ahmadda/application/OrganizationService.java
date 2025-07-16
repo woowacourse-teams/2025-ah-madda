@@ -3,7 +3,6 @@ package com.ahmadda.application;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.presentation.OrganizationCreateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

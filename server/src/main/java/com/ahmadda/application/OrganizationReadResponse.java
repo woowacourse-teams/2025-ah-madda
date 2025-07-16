@@ -1,4 +1,4 @@
-package com.ahmadda.presentation;
+package com.ahmadda.application;
 
 import com.ahmadda.domain.Organization;
 
