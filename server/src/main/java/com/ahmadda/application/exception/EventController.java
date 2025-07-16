@@ -16,41 +16,40 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/event")
+@RequestMapping("/api/events")
 public class EventController {
 
     private final EventService eventService;
     private final GuestService guestService;
 
-    @GetMapping("/{organizerId}")
-    public ResponseEntity<List<EventResponse>> getOrganizerEvent(@PathVariable Long organizerId) {
-        List<Event> organizerAvailableEvents = eventService.getOrganizerAvailableEvents(organizerId);
-        List<EventResponse> eventResponses = organizerAvailableEvents
-                .stream()
+    @GetMapping("/{organizationId}")
+    public ResponseEntity<List<EventResponse>> getOrganizerEvent(@PathVariable Long organizationId) {
+        List<Event> organizerAvailableEvents = eventService.getOrganizationAvailableEvents(organizationId);
+        List<EventResponse> eventResponses = organizerAvailableEvents.stream()
                 .map(EventResponse::from)
                 .toList();
 
         return ResponseEntity.ok(eventResponses);
     }
 
-    @GetMapping("/my/owner/{organizerId}")
-    public ResponseEntity<List<EventResponse>> getOwnersEvent(Long memberId, @PathVariable Long organizerId) {
-        List<Event> ownerEvents = eventService.getOwnersEvent(memberId, organizerId);
+    @GetMapping("/owner/{memberId}/organization/{organizationId}")
+    public ResponseEntity<List<EventResponse>> getOwnersEvent(@PathVariable Long memberId,
+                                                              @PathVariable Long organizationId) {
+        List<Event> ownerEvents = eventService.getOwnersEvent(memberId, organizationId);
 
-        List<EventResponse> eventResponses = ownerEvents
-                .stream()
+        List<EventResponse> eventResponses = ownerEvents.stream()
                 .map(EventResponse::from)
                 .toList();
 
         return ResponseEntity.ok(eventResponses);
     }
 
-    @GetMapping("/my/guest/{organizerId}")
-    public ResponseEntity<List<EventResponse>> getJoinedEvents(Long memberId, @PathVariable Long organizerId) {
-        List<Event> joinedEvents = guestService.getJoinedEvents(memberId, organizerId);
+    @GetMapping("/guest/{memberId}/organization/{organizationId}")
+    public ResponseEntity<List<EventResponse>> getJoinedEvents(@PathVariable Long memberId,
+                                                               @PathVariable Long organizationId) {
+        List<Event> joinedEvents = guestService.getJoinedEvents(memberId, organizationId);
 
-        List<EventResponse> eventResponses = joinedEvents
-                .stream()
+        List<EventResponse> eventResponses = joinedEvents.stream()
                 .map(EventResponse::from)
                 .toList();
 

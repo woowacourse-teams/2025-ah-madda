@@ -14,12 +14,11 @@ public class GuestService {
 
     private final GuestRepository guestRepository;
 
-    public List<Event> getJoinedEvents(Long memberId, Long organizerId) {
+    public List<Event> getJoinedEvents(Long memberId, Long organizationId) {
         List<Guest> guests =
-                guestRepository.findAllByParticipant_IdAndParticipant_Organization_Id(memberId, organizerId);
+                guestRepository.findAllByParticipant_IdAndParticipant_Organization_Id(memberId, organizationId);
 
-        return guests
-                .stream()
+        return guests.stream()
                 .map(Guest::getEvent)
                 .toList();
     }
