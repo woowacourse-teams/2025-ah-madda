@@ -1,9 +1,6 @@
-package com.ahmadda.application.exception;
+package com.ahmadda.application;
 
 
-import com.ahmadda.application.EventResponse;
-import com.ahmadda.application.EventService;
-import com.ahmadda.application.GuestService;
 import com.ahmadda.domain.Event;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
