@@ -54,6 +54,10 @@ public class OrganizationMember extends BaseEntity {
         return new OrganizationMember(nickname, member, organization);
     }
 
+    public boolean isBelongTo(final Organization organization) {
+        return this.organization.equals(organization);
+    }
+
     public List<Event> getParticipatedEvents() {
         return organization.getEvents().stream()
                 .filter(event -> event.hasGuest(this))

@@ -1,6 +1,7 @@
 package com.ahmadda.domain;
 
 
+import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -94,9 +95,17 @@ public class Event extends BaseEntity {
         this.eventStart = eventStart;
         this.eventEnd = eventEnd;
         this.maxCapacity = maxCapacity;
-
         guests = new ArrayList<>();
+
         organization.addEvent(this);
+        validateTitle(title);
+        validateBelongToOrganization(organizer, organization);
+    }
+
+    private void validateBelongToOrganization(OrganizationMember organizer, Organization organization) {
+        if (!organizer.isBelongTo(organization)) {
+            throw new BusinessRuleViolatedException("자신이 속한 조직에서만 이벤트를 생성할 수 있습니다.");
+        }
     }
 
     public static Event create(final String title,
@@ -108,7 +117,15 @@ public class Event extends BaseEntity {
                                final LocalDateTime registrationEnd,
                                final LocalDateTime eventStart,
                                final LocalDateTime eventEnd,
-                               final int maxCapacity) {
+                               final int maxCapacity,
+                               final LocalDateTime currentDateTime) {
+        if (eventStart.isBefore(currentDateTime)) {
+            throw new BusinessRuleViolatedException("이벤트 시작 시간은 이벤트 생성 요청 시점보다 과거일 수 없습니다.");
+        }
+        if (eventEnd.equals(eventStart) || eventEnd.isBefore(eventStart)) {
+            throw new BusinessRuleViolatedException("이벤트 종료 시간은 이벤트 시작 시간보다 과거 이거나 같을 수 없습니다.");
+        }
+
         return new Event(
                 title,
                 description,
@@ -126,10 +143,6 @@ public class Event extends BaseEntity {
     public boolean hasGuest(final OrganizationMember organizationMember) {
         return guests.stream()
                 .anyMatch(guest -> guest.isSameParticipant(organizationMember));
-    }
-
-    private void validateTitle(final String title) {
-        Assert.notBlank(title, "제목은 공백이면 안됩니다.");
     }
 
     private void validateDescription(final String description) {
@@ -162,5 +175,11 @@ public class Event extends BaseEntity {
 
     private void validateEventEnd(final LocalDateTime eventEnd) {
         Assert.notNull(eventEnd, "종료 시간은 null이 되면 안됩니다.");
+    }
+
+    private void validateTitle(String title) {
+        if (title.isBlank() || title.length() > 255) {
+            throw new BusinessRuleViolatedException("title은 최소 1글자 최대 255글자여야 합니다.");
+        }
     }
 }
