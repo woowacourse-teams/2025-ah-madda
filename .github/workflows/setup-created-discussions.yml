@@ -51,7 +51,7 @@ jobs:
 
       - name: Send notification
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL_DISCUSSION: ${{ secrets.SLACK_WEBHOOK_URL_DISCUSSION }}
         run: |
           AUTHOR="${{ github.event.discussion.user.login }}"
           TITLE="${{ github.event.discussion.title }}"
@@ -61,4 +61,4 @@ jobs:
             --data "{
               \"text\": \"💬 *새로운 Discussion이 열렸습니다!*\n한 줄이라도 좋아요. 함께 기록하고, 함께 만들어가요 :sparkles:\n\n*작성자:* ${AUTHOR}\n*제목:* ${TITLE}\n👉 <${URL}|지금 확인하기>\"
             }" \
-            $SLACK_WEBHOOK_URL
+            $SLACK_WEBHOOK_URL_DISCUSSION
