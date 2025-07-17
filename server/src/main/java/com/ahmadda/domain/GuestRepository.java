@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface GuestRepository extends JpaRepository<Guest, Long> {
 
-    List<Guest> findAllByParticipant_IdAndParticipant_Organization_Id(Long memberId, Long organizerId);
+    List<Guest> findAllByParticipant_Member_IdAndParticipant_Organization_Id(Long memberId, Long organizationId);
 }

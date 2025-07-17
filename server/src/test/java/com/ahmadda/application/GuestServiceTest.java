@@ -43,7 +43,7 @@ class GuestServiceTest {
     private OrganizationRepository organizationRepository;
 
     @Test
-    void 특정_조직에서_참여한_이벤트_목록을_정확히_조회한다() {
+    void 특정_조직에서_참여한_이벤트_목록을_조회한다() {
         // given
         var organization1 = createAndSaveOrganization("우리 조직", "설명1", "org1.png");
         var organization2 = createAndSaveOrganization("다른 조직", "설명2", "org2.png");

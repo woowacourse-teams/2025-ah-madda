@@ -130,7 +130,6 @@ class EventServiceTest {
         assertThat(result).hasSize(2);
 
         SoftAssertions.assertSoftly(softly -> {
-            // 첫 번째 이벤트 검증
             var firstEvent = result.get(0);
             softly.assertThat(firstEvent.getTitle()).isEqualTo("미래 이벤트 1");
             softly.assertThat(firstEvent.getDescription()).isEqualTo("첫 번째 미래 이벤트");
@@ -138,7 +137,6 @@ class EventServiceTest {
             softly.assertThat(firstEvent.getMaxCapacity()).isEqualTo(50);
             softly.assertThat(firstEvent.getOrganizer().getNickname()).isEqualTo("주최자닉네임");
 
-            // 두 번째 이벤트 검증
             var secondEvent = result.get(1);
             softly.assertThat(secondEvent.getTitle()).isEqualTo("미래 이벤트 2");
             softly.assertThat(secondEvent.getDescription()).isEqualTo("두 번째 미래 이벤트");
