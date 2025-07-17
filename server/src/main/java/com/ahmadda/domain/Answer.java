@@ -36,13 +36,29 @@ public class Answer extends BaseEntity {
     private String answerText;
 
     private Answer(final Question question, final Guest guest, final String answerText) {
-        this.question = Assert.notNull(question, "question null이 되면 안됩니다.");
-        this.guest = Assert.notNull(guest, "guest null이 되면 안됩니다.");
-        this.answerText = Assert.notNull(answerText, "answerText null이 되면 안됩니다.");
+        validateQuestion(question);
+        validateQuest(guest);
+        validateAnswerText(answerText);
+
+        this.question = question;
+        this.guest = guest;
+        this.answerText = answerText;
     }
 
     public static Answer create(final Question question, final Guest guest, final String answerText) {
         return new Answer(question, guest, answerText);
+    }
+
+    private void validateQuestion(final Question question) {
+        Assert.notNull(question, "question은 null이 되면 안됩니다.");
+    }
+
+    private void validateQuest(final Guest guest) {
+        Assert.notNull(guest, "guest는 null이 되면 안됩니다.");
+    }
+
+    private void validateAnswerText(final String answerText) {
+        Assert.notBlank(answerText, "answerText는 공백이면 안됩니다.");
     }
 }
 

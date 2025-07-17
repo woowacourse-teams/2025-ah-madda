@@ -33,13 +33,23 @@ public class Guest extends BaseEntity {
     private OrganizationMember participant;
 
     private Guest(final Event event, final OrganizationMember participant) {
-        this.event = Assert.notNull(event, "event null이 되면 안됩니다.");
-        this.participant = Assert.notNull(participant, "participant null이 되면 안됩니다.");
+        validateEvent(event);
+        validateParticipant(participant);
+
+        this.event = event;
+        this.participant = participant;
     }
 
     public static Guest create(final Event event, final OrganizationMember participant) {
+
         return new Guest(event, participant);
     }
+
+    private void validateEvent(final Event event) {
+        Assert.notNull(event, "event는 null이 되면 안됩니다.");
+    }
+
+    private void validateParticipant(final OrganizationMember participant) {
+        Assert.notNull(participant, "participant는 null이 되면 안됩니다.");
+    }
 }
-
-

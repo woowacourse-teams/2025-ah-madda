@@ -38,35 +38,46 @@ public class Organization extends BaseEntity {
 
 
     private Organization(final String name, final String description, final String imageUrl) {
-        this.name = Assert.notNull(name, "name null이 되면 안됩니다.");
-        this.description = Assert.notNull(description, "description null이 되면 안됩니다.");
-        this.imageUrl = Assert.notNull(imageUrl, "imageUrl null이 되면 안됩니다.");
-        validate();
+        validateName(name);
+        validateDescription(description);
+        validateImageUrl(imageUrl);
+
+        this.name = name;
+        this.description = description;
+        this.imageUrl = imageUrl;
     }
 
     public static Organization create(final String name, final String description, final String imageUrl) {
         return new Organization(name, description, imageUrl);
     }
 
-    private void validate() {
-        if (name.isBlank() || name.length() < MIN_NAME_LENGTH || name.length() > MAX_NAME_LENGTH) {
+    private void validateName(final String name) {
+        Assert.notBlank(name, "name은 공백이면 안됩니다.");
+
+        if (name.length() < MIN_NAME_LENGTH || name.length() > MAX_NAME_LENGTH) {
             throw new BusinessRuleViolatedException(
                     String.format("이름의 길이는 %d자 이상 %d자 이하이어야 합니다.",
-                                  MIN_NAME_LENGTH,
-                                  MAX_NAME_LENGTH
-                    )
-            );
-        }
-
-        if (description.isBlank() || description.length() < 2 || description.length() > 2000) {
-            throw new BusinessRuleViolatedException(
-                    String.format("설명의 길이는 %d자 이상 %d자 이하이어야 합니다.",
-                                  MIN_DESCRIPTION_LENGTH,
-                                  MAX_DESCRIPTION_LENGTH
+                            MIN_NAME_LENGTH,
+                            MAX_NAME_LENGTH
                     )
             );
         }
     }
+
+    private void validateDescription(final String description) {
+        Assert.notBlank(description, "description은 공백이면 안됩니다.");
+
+        if (description.length() < 2 || description.length() > 2000) {
+            throw new BusinessRuleViolatedException(
+                    String.format("설명의 길이는 %d자 이상 %d자 이하이어야 합니다.",
+                            MIN_DESCRIPTION_LENGTH,
+                            MAX_DESCRIPTION_LENGTH
+                    )
+            );
+        }
+    }
+
+    private void validateImageUrl(final String imageUrl) {
+        Assert.notBlank(imageUrl, "imageUrl은 공백이면 안됩니다.");
+    }
 }
-
-

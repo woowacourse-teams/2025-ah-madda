@@ -27,11 +27,22 @@ public class Member extends BaseEntity {
     private String email;
 
     private Member(final String name, final String email) {
-        this.name = Assert.notNull(name, "name null이 되면 안됩니다.");
-        this.email = Assert.notNull(email, "email null이 되면 안됩니다.");
+        validateName(name);
+        validateEmail(email);
+
+        this.name = name;
+        this.email = email;
     }
 
     public static Member create(final String name, final String email) {
         return new Member(name, email);
+    }
+
+    private void validateName(final String name) {
+        Assert.notBlank(name, "name은 공백이면 안됩니다.");
+    }
+
+    private void validateEmail(final String email) {
+        Assert.notBlank(email, "email은 공백이면 안됩니다.");
     }
 }
