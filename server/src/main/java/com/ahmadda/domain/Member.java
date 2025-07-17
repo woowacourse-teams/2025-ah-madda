@@ -46,7 +46,7 @@ public class Member extends BaseEntity {
         Assert.notBlank(email, "이메일은 공백이면 안됩니다.");
     }
 
-    public boolean isSameMember(Long memberId) {
+    public boolean isSameMember(final Long memberId) {
         return id.equals(memberId);
     }
 }

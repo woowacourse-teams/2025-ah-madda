@@ -3,7 +3,6 @@ package com.ahmadda.domain;
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.util.Assert;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -42,11 +41,8 @@ public class Organization extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization", cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
     private List<Event> events;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization", cascade = CascadeType.REMOVE)
-    private List<Guest> guests;
 
     private Organization(final String name, final String description, final String imageUrl) {
         validateName(name);
@@ -58,7 +54,6 @@ public class Organization extends BaseEntity {
         this.imageUrl = imageUrl;
 
         this.events = new ArrayList<>();
-        this.guests = new ArrayList<>();
     }
 
     public static Organization create(final String name, final String description, final String imageUrl) {
@@ -67,10 +62,6 @@ public class Organization extends BaseEntity {
 
     public void addEvent(Event event) {
         this.events.add(event);
-    }
-
-    public void addGuest(Guest guest) {
-        this.guests.add(guest);
     }
 
     private void validateName(final String name) {
