@@ -59,8 +59,12 @@ export const Modal = ({
     const modal = modalRef.current;
     if (!modal) return;
 
+    const isInIframe = window.self !== window.top;
     const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+
+    if (!isInIframe) {
+      document.body.style.overflow = 'hidden';
+    }
 
     const focusable = modal.querySelectorAll<HTMLElement>(
       'button, a[href], input, textarea, select, [tabindex]:not([tabindex="-1"])'
@@ -95,9 +99,9 @@ export const Modal = ({
   if (!isOpen) return null;
 
   return (
-    <StyledModalLayout onClick={hasBackdropClick ? onClose : undefined}>
-      <StyledModalContainer size={size} onClick={(e) => e.stopPropagation()}>
-        <StyledModalWrapper position={position} ref={modalRef}>
+    <StyledModalLayout onClick={hasBackdropClick ? onClose : undefined} position={position}>
+      <StyledModalContainer size={size} position={position} onClick={(e) => e.stopPropagation()}>
+        <StyledModalWrapper ref={modalRef}>
           {hasCloseButton && (
             <StyledCloseButtonWrapper>
               <button onClick={onClose}>X</button>
