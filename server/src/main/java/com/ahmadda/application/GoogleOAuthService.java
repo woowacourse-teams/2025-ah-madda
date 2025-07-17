@@ -22,7 +22,6 @@ public class GoogleOAuthService {
     }
 
     private String exchangeCodeForAccessToken(String code) {
-
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", code);
         params.add("client_id", googleOAuthProperties.getClientId());
@@ -43,18 +42,6 @@ public class GoogleOAuthService {
         return tokenResponse.accessToken();
     }
 
-    public String generateGoogleAuthUrl(String state) {
-        return UriComponentsBuilder.fromUriString(googleOAuthProperties.getAuthorizationUri())
-                .queryParam("client_id", googleOAuthProperties.getClientId())
-                .queryParam("redirect_uri", googleOAuthProperties.getRedirectUri())
-                .queryParam("response_type", "code")
-                .queryParam("scope", googleOAuthProperties.getScope())
-                .queryParam("state", state)
-                .queryParam("access_type", "offline")
-                .build()
-                .toUriString();
-    }
-
     private GoogleOAuthUserInfo getUserInfo(String accessToken) {
         GoogleOAuthUserInfo userInfo = restClient.get()
                 .uri(googleOAuthProperties.getUserInfoUri())
@@ -65,5 +52,17 @@ public class GoogleOAuthService {
             throw new RuntimeException("Google 사용자 정보가 비어 있습니다.");
         }
         return userInfo;
+    }
+
+    public String generateGoogleAuthUrl(String state) {
+        return UriComponentsBuilder.fromUriString(googleOAuthProperties.getAuthorizationUri())
+                .queryParam("client_id", googleOAuthProperties.getClientId())
+                .queryParam("redirect_uri", googleOAuthProperties.getRedirectUri())
+                .queryParam("response_type", "code")
+                .queryParam("scope", googleOAuthProperties.getScope())
+                .queryParam("state", state)
+                .queryParam("access_type", "offline")
+                .build()
+                .toUriString();
     }
 }
