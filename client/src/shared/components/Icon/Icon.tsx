@@ -20,7 +20,7 @@ type IconProps = {
   color?: string;
 } & SVGProps<SVGSVGElement>;
 
-export const Icon = ({ name, size, color }: IconProps) => {
+export const Icon = ({ name, size, color, ...props }: IconProps) => {
   const SvgIcon = Icons[name];
-  return <SvgIcon width={size} height={size} color={color} />;
+  return <SvgIcon width={size} height={size} color={color} {...props} />;
 };
