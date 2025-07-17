@@ -9,7 +9,17 @@ import {
 } from './Input.styled';
 
 type InputProps = {
+  /**
+   * Label text displayed above the input field.
+   * @type {string}
+   */
   title: string;
+
+  /**
+   * Helper text displayed below the input field.
+   * Useful for showing hints or validation messages.
+   * @type {string}
+   */
   helperText?: string;
 } & InputHTMLAttributes<HTMLInputElement>;
 
