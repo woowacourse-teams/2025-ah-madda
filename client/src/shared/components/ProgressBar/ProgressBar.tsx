@@ -3,9 +3,6 @@ import { ComponentProps } from 'react';
 
 import { StyledProgressContainer, StyledProgressFill } from './ProgressBar.styled';
 
-/**
- * Props for the ProgressBar component.
- */
 export type ProgressBarProps = {
   /**
    * The current progress value.
