@@ -1,16 +1,12 @@
 import styled from '@emotion/styled';
 
-export type StyledProgressProps = {
-  backgroundColor: string;
-};
+import { ProgressBarProps } from './ProgressBar';
 
-export type StyledFillProps = {
+type StyledFillProps = {
   width: number;
-  color: string;
-  animated: boolean;
-};
+} & Pick<ProgressBarProps, 'color' | 'animated'>;
 
-export const ProgressContainer = styled.div<StyledProgressProps>`
+export const ProgressContainer = styled.div<Pick<ProgressBarProps, 'backgroundColor'>>`
   width: 100%;
   height: 8px;
   background-color: ${({ backgroundColor }) => backgroundColor};
