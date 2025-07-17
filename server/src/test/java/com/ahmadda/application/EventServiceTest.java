@@ -38,6 +38,50 @@ class EventServiceTest {
     @Autowired
     private EventService sut;
 
+    private Organization createAndSaveOrganization(String name, String description, String imageUrl) {
+        var organization = Organization.create(name, description, imageUrl);
+
+        return organizationRepository.save(organization);
+    }
+
+    private Member createAndSaveMember(String name, String email) {
+        var member = Member.create(name, email);
+
+        return memberRepository.save(member);
+    }
+
+    private OrganizationMember createAndSaveOrganizationMember(String nickname,
+                                                               Member member,
+                                                               Organization organization) {
+        var organizationMember = OrganizationMember.create(nickname, member, organization);
+
+        return organizationMemberRepository.save(organizationMember);
+    }
+
+    private Event createAndSaveEvent(String title,
+                                     String description,
+                                     String place,
+                                     OrganizationMember organizer,
+                                     Organization organization,
+                                     LocalDateTime eventStart,
+                                     LocalDateTime eventEnd,
+                                     int maxCapacity) {
+        var event = Event.create(
+                title,
+                description,
+                place,
+                organizer,
+                organization,
+                LocalDateTime.now().minusDays(10), // registrationStart
+                LocalDateTime.now().minusDays(1),  // registrationEnd
+                eventStart,
+                eventEnd,
+                maxCapacity
+        );
+
+        return eventRepository.save(event);
+    }
+
     @Test
     void 조직의_미래_이벤트들을_조회한다() {
         // given
@@ -180,47 +224,87 @@ class EventServiceTest {
         assertThat(result.get(0).getTitle()).isEqualTo("경계값 이벤트");
     }
 
-    private Organization createAndSaveOrganization(String name, String description, String imageUrl) {
-        var organization = Organization.create(name, description, imageUrl);
+    @Test
+    void 내가_속한_조직에서_주최한_이벤트만_조회한다() {
+        // given
+        var organization1 = createAndSaveOrganization("우리 조직", "내 이벤트가 있는 조직", "org1.png");
+        var organization2 = createAndSaveOrganization("다른 조직", "남의 이벤트가 있는 조직", "org2.png");
 
-        return organizationRepository.save(organization);
-    }
+        var owner = createAndSaveMember("주최자 본인", "owner@test.com");
+        var otherMember = createAndSaveMember("다른 멤버", "other@test.com");
 
-    private Member createAndSaveMember(String name, String email) {
-        var member = Member.create(name, email);
+        var organizer = createAndSaveOrganizationMember("주최자닉네임", owner, organization1);
+        var otherOrganizer = createAndSaveOrganizationMember("다른주최자닉네임", otherMember, organization1);
 
-        return memberRepository.save(member);
-    }
-
-    private OrganizationMember createAndSaveOrganizationMember(String nickname,
-                                                               Member member,
-                                                               Organization organization) {
-        var organizationMember = OrganizationMember.create(nickname, member, organization);
-
-        return organizationMemberRepository.save(organizationMember);
-    }
-
-    private Event createAndSaveEvent(String title,
-                                     String description,
-                                     String place,
-                                     OrganizationMember organizer,
-                                     Organization organization,
-                                     LocalDateTime eventStart,
-                                     LocalDateTime eventEnd,
-                                     int maxCapacity) {
-        var event = Event.create(
-                title,
-                description,
-                place,
-                organizer,
-                organization,
-                LocalDateTime.now().minusDays(10), // registrationStart
-                LocalDateTime.now().minusDays(1),  // registrationEnd
-                eventStart,
-                eventEnd,
-                maxCapacity
+        createAndSaveEvent("내 이벤트 1", "설명1", "장소1", organizer, organization1,
+                           LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), 50
         );
-        
-        return eventRepository.save(event);
+        createAndSaveEvent("내 이벤트 2", "설명2", "장소2", organizer, organization1,
+                           LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(4), 50
+        );
+
+        createAndSaveEvent("남의 이벤트", "설명3", "장소3", otherOrganizer, organization1,
+                           LocalDateTime.now().plusDays(5), LocalDateTime.now().plusDays(6), 30
+        );
+
+        var organizerInOtherOrg = createAndSaveOrganizationMember("다른조직의내닉네임", owner, organization2);
+        createAndSaveEvent("내가 다른 조직에 만든 이벤트", "설명4", "장소4", organizerInOtherOrg, organization2,
+                           LocalDateTime.now().plusDays(7), LocalDateTime.now().plusDays(8), 20
+        );
+
+        // when
+        var result = sut.getOwnersEvent(owner.getId(), organization1.getId());
+
+        // then
+        assertThat(result).hasSize(2);
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(result).extracting(Event::getTitle)
+                    .containsExactlyInAnyOrder("내 이벤트 1", "내 이벤트 2");
+            softly.assertThat(result).allMatch(event -> event.getOrganization().getId().equals(organization1.getId()));
+            softly.assertThat(result).allMatch(event -> event.getOrganizer().getMember().getId().equals(owner.getId()));
+        });
+    }
+
+    @Test
+    void 내가_주최한_이벤트가_없으면_빈_리스트를_반환한다() {
+        // given
+        var organization = createAndSaveOrganization("우리 조직", "내 이벤트가 없는 조직", "org.png");
+        var owner = createAndSaveMember("주최자 본인", "owner@test.com");
+        var otherMember = createAndSaveMember("다른 멤버", "other@test.com");
+
+        createAndSaveOrganizationMember("주최자닉네임", owner, organization);
+        var otherOrganizer = createAndSaveOrganizationMember("다른주최자닉네임", otherMember, organization);
+
+        createAndSaveEvent("남의 이벤트", "설명", "장소", otherOrganizer, organization,
+                           LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), 50
+        );
+
+        // when
+        var result = sut.getOwnersEvent(owner.getId(), organization.getId());
+
+        // then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void 존재하지_않는_멤버나_조직_ID로_조회하면_빈_리스트를_반환한다() {
+        // given
+        var organization = createAndSaveOrganization("우리 조직", "조직", "org.png");
+        var owner = createAndSaveMember("주최자 본인", "owner@test.com");
+        createAndSaveOrganizationMember("주최자닉네임", owner, organization);
+
+        var nonExistentMemberId = 999L;
+        var nonExistentOrganizationId = 998L;
+
+        // when
+        var resultForNonExistentMember = sut.getOwnersEvent(nonExistentMemberId, organization.getId());
+        var resultForNonExistentOrganization = sut.getOwnersEvent(owner.getId(), nonExistentOrganizationId);
+
+        // then
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(resultForNonExistentMember).as("존재하지 않는 멤버 ID로 조회").isEmpty();
+            softly.assertThat(resultForNonExistentOrganization).as("존재하지 않는 조직 ID로 조회").isEmpty();
+        });
     }
 }
