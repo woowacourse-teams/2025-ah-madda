@@ -41,7 +41,6 @@ public class Guest extends BaseEntity {
     }
 
     public static Guest create(final Event event, final OrganizationMember participant) {
-
         return new Guest(event, participant);
     }
 

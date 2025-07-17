@@ -5,13 +5,13 @@ import com.ahmadda.domain.exception.NullPropertyException;
 
 public class Assert {
 
-    public static void notNull(Object obj, String message) {
+    public static void notNull(final Object obj, final String message) {
         if (obj == null) {
             throw new NullPropertyException(message);
         }
     }
 
-    public static void notBlank(String obj, String message) {
+    public static void notBlank(final String obj, final String message) {
         if (obj == null) {
             throw new NullPropertyException(message);
         }
