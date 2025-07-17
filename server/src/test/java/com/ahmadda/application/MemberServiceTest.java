@@ -2,7 +2,6 @@ package com.ahmadda.application;
 
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,25 +16,15 @@ class MemberServiceTest {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
-    private MemberService memberService;
+    private MemberService sut;
 
-    private GoogleOAuthUserInfo createGoogleOAuthUserInfo(String name, String email) {
-        return new GoogleOAuthUserInfo(name, email);
-    }
-
-    private Member createMember(String name, String email) {
-        return Member.create(name, email);
-    }
-
-    @DisplayName("새로운 회원이면 저장하고 새로운 회원을 반환한다.")
     @Test
-    void processGoogleOAuthLogin_newMember() {
+    void 새로운_회원이면_저장하고_새로운_회원을_반환한다() {
         // given
-        GoogleOAuthUserInfo userInfo = createGoogleOAuthUserInfo("new@test.com", "new_name");
-        createMember(userInfo.name(), userInfo.email());
+        var userInfo = new GoogleOAuthUserInfo("new@test.com", "new_name");
 
         // when
-        memberService.processGoogleOAuthLogin(userInfo);
+        sut.processGoogleOAuthLogin(userInfo);
 
         // then
         assertThat(memberRepository.existsMemberByEmail("new@test.com")).isTrue();
@@ -44,12 +33,12 @@ class MemberServiceTest {
     @Test
     void 기존_회원이면_해당_회원을_반환한다() {
         // given
-        GoogleOAuthUserInfo userInfo = createGoogleOAuthUserInfo("test@test.com", "test_name");
-        Member member = createMember("test_name", "test@test.com");
-        Member existingMember = memberRepository.save(member);
+        var userInfo = new GoogleOAuthUserInfo("test@test.com", "test_name");
+        var member = Member.create("test_name", "test@test.com");
+        var existingMember = memberRepository.save(member);
 
         // when
-        Member result = memberService.processGoogleOAuthLogin(userInfo);
+        Member result = sut.processGoogleOAuthLogin(userInfo);
 
         // then
         assertThat(result).isEqualTo(existingMember);
