@@ -10,10 +10,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -89,11 +90,6 @@ public class Event extends BaseEntity {
         this.maxCapacity = maxCapacity;
     }
 
-
-    private void validateTitle(final String title) {
-        Assert.notBlank(title, "title은 공백이면 안됩니다.");
-    }
-
     public static Event create(final String title,
                                final String description,
                                final String place,
@@ -116,6 +112,14 @@ public class Event extends BaseEntity {
                 eventEnd,
                 maxCapacity
         );
+    }
+
+    public boolean isOwner(Long memberId) {
+        return organizer.isSameMember(memberId);
+    }
+
+    private void validateTitle(final String title) {
+        Assert.notBlank(title, "title은 공백이면 안됩니다.");
     }
 
     private void validateDescription(final String description) {
