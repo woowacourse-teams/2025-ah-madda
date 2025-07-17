@@ -124,10 +124,6 @@ public class Event extends BaseEntity {
         );
     }
 
-    public boolean isOwner(Long memberId) {
-        return organizer.isSameMember(memberId);
-    }
-
     private void validateTitle(final String title) {
         Assert.notBlank(title, "제목은 공백이면 안됩니다.");
     }
