@@ -1,0 +1,20 @@
+import { Meta, IconGallery, IconItem } from '@storybook/addon-docs/blocks';
+
+import { iconNames } from './assets';
+import { Icon } from './Icon';
+
+<Meta title="Iconography" />
+
+# Icon Gallery
+
+A complete set of icons used across the application.
+
+## All Icons
+
+<IconGallery>
+  {iconNames.map((icon) => (
+    <IconItem key={icon} name={icon}>
+      <Icon name={icon} />
+    </IconItem>
+  ))}
+</IconGallery>
