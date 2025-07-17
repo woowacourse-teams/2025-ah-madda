@@ -16,7 +16,7 @@ public class GuestService {
 
     public List<Event> getJoinedEvents(Long memberId, Long organizationId) {
         List<Guest> guests =
-                guestRepository.findAllByParticipant_IdAndParticipant_Organization_Id(memberId, organizationId);
+                guestRepository.findAllByParticipant_Member_IdAndParticipant_Organization_Id(memberId, organizationId);
 
         return guests.stream()
                 .map(Guest::getEvent)
