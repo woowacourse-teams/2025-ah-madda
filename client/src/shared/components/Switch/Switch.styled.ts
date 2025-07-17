@@ -29,11 +29,7 @@ export const Background = styled.button<SwitchStateProps>`
     cursor: not-allowed;
   }
 
-  ${({ disabled }) =>
-    disabled &&
-    `
-    opacity: 0.5;
-  `}
+  ${({ disabled }) => disabled && 'opacity: 0.5'}
 `;
 
 export const Handle = styled.div<SwitchStateProps>`
