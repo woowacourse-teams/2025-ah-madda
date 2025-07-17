@@ -1,6 +1,9 @@
-package com.ahmadda.application;
+package com.ahmadda.presentation;
 
 
+import com.ahmadda.application.EventService;
+import com.ahmadda.application.GuestService;
+import com.ahmadda.application.dto.EventResponse;
 import com.ahmadda.domain.Event;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +23,7 @@ public class EventController {
     private final GuestService guestService;
 
     @GetMapping("/organization/{organizationId}")
-    public ResponseEntity<List<EventResponse>> getOrganizerEvent(@PathVariable Long organizationId) {
+    public ResponseEntity<List<EventResponse>> getOrganizerEvent(@PathVariable final Long organizationId) {
         List<Event> organizerAvailableEvents = eventService.getOrganizationAvailableEvents(organizationId);
         List<EventResponse> eventResponses = organizerAvailableEvents.stream()
                 .map(EventResponse::from)
@@ -30,8 +33,8 @@ public class EventController {
     }
 
     @GetMapping("/organization/{organizationId}/owner/{memberId}")
-    public ResponseEntity<List<EventResponse>> getOwnersEvent(@PathVariable Long memberId,
-                                                              @PathVariable Long organizationId) {
+    public ResponseEntity<List<EventResponse>> getOwnersEvent(@PathVariable final Long memberId,
+                                                              @PathVariable final Long organizationId) {
         List<Event> ownerEvents = eventService.getOwnersEvent(memberId, organizationId);
 
         List<EventResponse> eventResponses = ownerEvents.stream()
@@ -42,8 +45,8 @@ public class EventController {
     }
 
     @GetMapping("/organization/{organizationId}/guest/{memberId}")
-    public ResponseEntity<List<EventResponse>> getJoinedEvents(@PathVariable Long memberId,
-                                                               @PathVariable Long organizationId) {
+    public ResponseEntity<List<EventResponse>> getJoinedEvents(@PathVariable final Long memberId,
+                                                               @PathVariable final Long organizationId) {
         List<Event> joinedEvents = guestService.getJoinedEvents(memberId, organizationId);
 
         List<EventResponse> eventResponses = joinedEvents.stream()

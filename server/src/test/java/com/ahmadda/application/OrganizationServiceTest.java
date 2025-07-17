@@ -1,5 +1,6 @@
 package com.ahmadda.application;
 
+import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationRepository;

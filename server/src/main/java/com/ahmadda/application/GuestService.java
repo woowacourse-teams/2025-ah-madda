@@ -14,7 +14,7 @@ public class GuestService {
 
     private final GuestRepository guestRepository;
 
-    public List<Event> getJoinedEvents(Long memberId, Long organizationId) {
+    public List<Event> getJoinedEvents(final Long memberId, final Long organizationId) {
         List<Guest> guests =
                 guestRepository.findAllByParticipant_Member_IdAndParticipant_Organization_Id(memberId, organizationId);
 

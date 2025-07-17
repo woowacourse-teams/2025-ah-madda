@@ -14,13 +14,13 @@ public class EventService {
 
     private final EventRepository eventRepository;
 
-    public List<Event> getOrganizationAvailableEvents(Long organizationId) {
+    public List<Event> getOrganizationAvailableEvents(final Long organizationId) {
         LocalDateTime currentDateTime = LocalDateTime.now();
 
         return eventRepository.findAllByOrganization_IdAndEventStartAfter(organizationId, currentDateTime);
     }
 
-    public List<Event> getOwnersEvent(Long memberId, Long organizationId) {
+    public List<Event> getOwnersEvent(final Long memberId, final Long organizationId) {
         return eventRepository.findAllByOrganizer_Member_IdAndOrganization_Id(memberId, organizationId);
     }
 }

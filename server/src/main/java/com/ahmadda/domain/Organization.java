@@ -22,13 +22,13 @@ public class Organization extends BaseEntity {
     private static final int MIN_DESCRIPTION_LENGTH = 2;
     private static final int MIN_NAME_LENGTH = 2;
 
-    @Column(nullable = false)
-    private String description;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "organization_id")
     private Long id;
+
+    @Column(nullable = false)
+    private String description;
 
     @Column(nullable = false)
     private String imageUrl;

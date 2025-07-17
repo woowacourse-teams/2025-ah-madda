@@ -1,4 +1,4 @@
-package com.ahmadda.application;
+package com.ahmadda.application.dto;
 
 import com.ahmadda.domain.Event;
 
@@ -16,7 +16,7 @@ public record EventResponse(
         String organizerName
 ) {
 
-    public static EventResponse from(Event event) {
+    public static EventResponse from(final Event event) {
         return new EventResponse(
                 event.getTitle(),
                 event.getDescription(),
