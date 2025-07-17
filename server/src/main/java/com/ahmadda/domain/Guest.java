@@ -46,10 +46,10 @@ public class Guest extends BaseEntity {
     }
 
     private void validateEvent(final Event event) {
-        Assert.notNull(event, "event는 null이 되면 안됩니다.");
+        Assert.notNull(event, "이벤트는 null이 되면 안됩니다.");
     }
 
     private void validateParticipant(final OrganizationMember participant) {
-        Assert.notNull(participant, "participant는 null이 되면 안됩니다.");
+        Assert.notNull(participant, "참여자는 null이 되면 안됩니다.");
     }
 }

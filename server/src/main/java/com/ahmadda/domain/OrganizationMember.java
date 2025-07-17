@@ -53,14 +53,14 @@ public class OrganizationMember extends BaseEntity {
     }
 
     private void validateNickname(final String nickname) {
-        Assert.notBlank(nickname, "nickname은 공백이면 안됩니다.");
+        Assert.notBlank(nickname, "닉네임은 공백이면 안됩니다.");
     }
 
     private void validateMember(final Member member) {
-        Assert.notNull(member, "member는 null이 되면 안됩니다.");
+        Assert.notNull(member, "멤버는 null이 되면 안됩니다.");
     }
 
     private void validateOrganization(final Organization organization) {
-        Assert.notNull(organization, "organization은 null이 되면 안됩니다.");
+        Assert.notNull(organization, "조직은 null이 되면 안됩니다.");
     }
 }

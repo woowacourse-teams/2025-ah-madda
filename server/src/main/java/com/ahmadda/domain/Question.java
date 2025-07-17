@@ -62,10 +62,10 @@ public class Question extends BaseEntity {
     }
 
     private void validateEvent(final Event event) {
-        Assert.notNull(event, "event는 null이 되면 안됩니다.");
+        Assert.notNull(event, "이벤트는 null이 되면 안됩니다.");
     }
 
     private void validateQuestionText(final String questionText) {
-        Assert.notBlank(questionText, "questionText은 공백이면 안됩니다.");
+        Assert.notBlank(questionText, "질문은 공백이면 안됩니다.");
     }
 }

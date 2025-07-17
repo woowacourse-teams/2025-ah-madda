@@ -39,10 +39,10 @@ public class Member extends BaseEntity {
     }
 
     private void validateName(final String name) {
-        Assert.notBlank(name, "name은 공백이면 안됩니다.");
+        Assert.notBlank(name, "이름은 공백이면 안됩니다.");
     }
 
     private void validateEmail(final String email) {
-        Assert.notBlank(email, "email은 공백이면 안됩니다.");
+        Assert.notBlank(email, "이메일은 공백이면 안됩니다.");
     }
 }

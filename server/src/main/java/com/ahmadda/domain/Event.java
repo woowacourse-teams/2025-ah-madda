@@ -119,34 +119,34 @@ public class Event extends BaseEntity {
     }
 
     private void validateDescription(final String description) {
-        Assert.notBlank(description, "description은 공백이면 안됩니다.");
+        Assert.notBlank(description, "설명은 공백이면 안됩니다.");
     }
 
     private void validatePlace(final String place) {
-        Assert.notBlank(place, "place는 공백이면 안됩니다.");
+        Assert.notBlank(place, "장소는 공백이면 안됩니다.");
     }
 
     private void validateOrganizer(final OrganizationMember organizer) {
-        Assert.notNull(organizer, "organizer는 null이 되면 안됩니다.");
+        Assert.notNull(organizer, "주최자는 null이 되면 안됩니다.");
     }
 
     private void validateOrganization(final Organization organization) {
-        Assert.notNull(organization, "organization은 null이 되면 안됩니다.");
+        Assert.notNull(organization, "조직은 null이 되면 안됩니다.");
     }
 
     private void validateRegistrationStart(final LocalDateTime registrationStart) {
-        Assert.notNull(registrationStart, "registrationStart은 null이 되면 안됩니다.");
+        Assert.notNull(registrationStart, "신청 시작 시간은 null이 되면 안됩니다.");
     }
 
     private void validateRegistrationEnd(final LocalDateTime registrationEnd) {
-        Assert.notNull(registrationEnd, "registrationEnd는 null이 되면 안됩니다.");
+        Assert.notNull(registrationEnd, "신청 마감 시간은 null이 되면 안됩니다.");
     }
 
     private void validateEventStart(final LocalDateTime eventStart) {
-        Assert.notNull(eventStart, "eventStart는 null이 되면 안됩니다.");
+        Assert.notNull(eventStart, "시작 시간은 null이 되면 안됩니다.");
     }
 
     private void validateEventEnd(final LocalDateTime eventEnd) {
-        Assert.notNull(eventEnd, "eventEnd는 null이 되면 안됩니다.");
+        Assert.notNull(eventEnd, "종료 시간은 null이 되면 안됩니다.");
     }
 }

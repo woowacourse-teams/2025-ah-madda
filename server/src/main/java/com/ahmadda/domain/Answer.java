@@ -50,15 +50,15 @@ public class Answer extends BaseEntity {
     }
 
     private void validateQuestion(final Question question) {
-        Assert.notNull(question, "question은 null이 되면 안됩니다.");
+        Assert.notNull(question, "질문은 null이 되면 안됩니다.");
     }
 
     private void validateQuest(final Guest guest) {
-        Assert.notNull(guest, "guest는 null이 되면 안됩니다.");
+        Assert.notNull(guest, "게스트는 null이 되면 안됩니다.");
     }
 
     private void validateAnswerText(final String answerText) {
-        Assert.notBlank(answerText, "answerText는 공백이면 안됩니다.");
+        Assert.notBlank(answerText, "답변은 공백이면 안됩니다.");
     }
 }
 

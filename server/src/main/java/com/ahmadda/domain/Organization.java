@@ -52,7 +52,7 @@ public class Organization extends BaseEntity {
     }
 
     private void validateName(final String name) {
-        Assert.notBlank(name, "name은 공백이면 안됩니다.");
+        Assert.notBlank(name, "이름은 공백이면 안됩니다.");
 
         if (name.length() < MIN_NAME_LENGTH || name.length() > MAX_NAME_LENGTH) {
             throw new BusinessRuleViolatedException(
@@ -65,7 +65,7 @@ public class Organization extends BaseEntity {
     }
 
     private void validateDescription(final String description) {
-        Assert.notBlank(description, "description은 공백이면 안됩니다.");
+        Assert.notBlank(description, "설명은 공백이면 안됩니다.");
 
         if (description.length() < 2 || description.length() > 2000) {
             throw new BusinessRuleViolatedException(
@@ -78,6 +78,6 @@ public class Organization extends BaseEntity {
     }
 
     private void validateImageUrl(final String imageUrl) {
-        Assert.notBlank(imageUrl, "imageUrl은 공백이면 안됩니다.");
+        Assert.notBlank(imageUrl, "이미지 url은 공백이면 안됩니다.");
     }
 }
