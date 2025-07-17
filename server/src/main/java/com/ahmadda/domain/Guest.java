@@ -32,6 +32,10 @@ public class Guest extends BaseEntity {
     @JoinColumn(name = "participant_id", nullable = false)
     private OrganizationMember participant;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id", nullable = false)
+    private Organization organization;
+
     private Guest(final Event event, final OrganizationMember participant) {
         validateEvent(event);
         validateParticipant(participant);

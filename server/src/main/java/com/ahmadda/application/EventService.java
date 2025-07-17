@@ -1,7 +1,7 @@
 package com.ahmadda.application;
 
 import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventRepository;
+import com.ahmadda.domain.Organization;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,15 +12,25 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventService {
 
-    private final EventRepository eventRepository;
+    private final OrganizationService organizationService;
 
     public List<Event> getOrganizationAvailableEvents(final Long organizationId) {
         LocalDateTime currentDateTime = LocalDateTime.now();
 
-        return eventRepository.findAllByOrganization_IdAndEventStartAfter(organizationId, currentDateTime);
+        Organization organization = organizationService.getOrganization(organizationId);
+
+        return organization.getEvents()
+                .stream()
+                .filter((event) -> event.getEventStart().isAfter(currentDateTime))
+                .toList();
     }
 
     public List<Event> getOwnersEvent(final Long memberId, final Long organizationId) {
-        return eventRepository.findAllByOrganizer_Member_IdAndOrganization_Id(memberId, organizationId);
+        Organization organization = organizationService.getOrganization(organizationId);
+
+        return organization.getEvents()
+                .stream()
+                .filter((event -> event.isOwner(memberId)))
+                .toList();
     }
 }
