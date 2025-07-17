@@ -20,9 +20,9 @@ public class OrganizationEventController {
 
     private final OrganizationService organizationService;
 
-    @GetMapping("/{organizationId}/event")
-    public ResponseEntity<List<EventResponse>> getOrganizationEvent(@PathVariable final Long organizationId) {
-        List<Event> organizationEvents = organizationService.getOrganizationEvent(organizationId);
+    @GetMapping("/{organizationId}/events")
+    public ResponseEntity<List<EventResponse>> getOrganizationEvents(@PathVariable final Long organizationId) {
+        List<Event> organizationEvents = organizationService.getOrganizationEvents(organizationId);
 
         List<EventResponse> eventResponses = organizationEvents.stream()
                 .map(EventResponse::from)

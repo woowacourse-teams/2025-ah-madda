@@ -33,9 +33,9 @@ public class OrganizationService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 조직입니다."));
     }
 
-    public List<Event> getOrganizationEvent(final Long organizationId) {
+    public List<Event> getOrganizationEvents(final Long organizationId) {
         Organization organization = getOrganization(organizationId);
-        
+
         return organization.getEvents();
     }
 }
