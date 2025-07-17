@@ -14,6 +14,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequiredArgsConstructor
 public class GoogleOAuthService {
 
+    public static final String RESPONSE_TYPE_CODE = "code";
+    public static final String GRANT_TYPE_AUTHORIZATION_CODE = "authorization_code";
+    public static final String ACCESS_TYPE_OFFLINE = "offline";
+
     private final GoogleOAuthProperties googleOAuthProperties;
     private final RestClient restClient;
 
@@ -28,7 +32,7 @@ public class GoogleOAuthService {
         params.add("client_id", googleOAuthProperties.getClientId());
         params.add("client_secret", googleOAuthProperties.getClientSecret());
         params.add("redirect_uri", googleOAuthProperties.getRedirectUri());
-        params.add("grant_type", "authorization_code");
+        params.add("grant_type", GRANT_TYPE_AUTHORIZATION_CODE);
 
         GoogleTokenResponse tokenResponse = restClient.post()
                 .uri(googleOAuthProperties.getTokenUri())
@@ -59,10 +63,10 @@ public class GoogleOAuthService {
         return UriComponentsBuilder.fromUriString(googleOAuthProperties.getAuthorizationUri())
                 .queryParam("client_id", googleOAuthProperties.getClientId())
                 .queryParam("redirect_uri", googleOAuthProperties.getRedirectUri())
-                .queryParam("response_type", "code")
+                .queryParam("response_type", RESPONSE_TYPE_CODE)
                 .queryParam("scope", googleOAuthProperties.getScope())
                 .queryParam("state", state)
-                .queryParam("access_type", "offline")
+                .queryParam("access_type", ACCESS_TYPE_OFFLINE)
                 .build()
                 .toUriString();
     }
