@@ -1,6 +1,6 @@
 import { ComponentPropsWithRef } from 'react';
 
-import { Container, Background, Handle } from './Switch.styled';
+import { Background, Handle } from './Switch.styled';
 
 export type SwitchProps = {
   /**
@@ -46,19 +46,17 @@ export const Switch = ({
   };
 
   return (
-    <Container
+    <Background
       type={type}
       role="switch"
       aria-checked={checked}
       aria-disabled={disabled}
       disabled={disabled}
       onClick={handleClick}
-      $checked={checked}
+      checked={checked}
       {...props}
     >
-      <Background $checked={checked} $disabled={disabled}>
-        <Handle $checked={checked} $disabled={disabled} />
-      </Background>
-    </Container>
+      <Handle checked={checked} disabled={disabled} />
+    </Background>
   );
 };
