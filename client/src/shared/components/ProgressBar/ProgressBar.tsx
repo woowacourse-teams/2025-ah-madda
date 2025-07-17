@@ -45,13 +45,13 @@ export type ProgressBarProps = {
   animated?: boolean;
 } & ComponentProps<'div'>;
 
-export const ProgressBar: React.FC<ProgressBarProps> = ({
+export const ProgressBar = ({
   value,
   max,
   color = '#409869',
   backgroundColor = '#e2e2e2',
   animated = true,
-}) => {
+}: ProgressBarProps) => {
   const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
 
   return (
