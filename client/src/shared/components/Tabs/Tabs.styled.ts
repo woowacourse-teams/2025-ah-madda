@@ -19,8 +19,9 @@ export const StyledTabsTrigger = styled.button`
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
   white-space: nowrap;
-  border-radius: 4px;
+  border-radius: 10px;
   padding: 6px 12px;
   font-size: 14px;
   font-weight: 500;
