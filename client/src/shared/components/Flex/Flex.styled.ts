@@ -10,6 +10,6 @@ export const StyledFlexBox = styled.div<FlexProps>`
   gap: ${({ gap }) => gap};
   margin: ${({ margin }) => margin};
   padding: ${({ padding }) => padding};
-  width: ${({ width = 'auto' }) => width};
-  height: ${({ height = 'auto' }) => height};
+  width: ${({ width }) => width};
+  height: ${({ height }) => height};
 `;
