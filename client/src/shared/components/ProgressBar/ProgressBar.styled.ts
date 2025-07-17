@@ -1,27 +1,31 @@
 import styled from '@emotion/styled';
 
-export const ProgressContainer = styled.div<{
+export type StyledProgressProps = {
   height: string;
   backgroundColor: string;
   borderRadius: string;
-}>`
-  width: 100%;
-  height: ${(props) => props.height};
-  background-color: ${(props) => props.backgroundColor};
-  border-radius: ${(props) => props.borderRadius};
-  overflow: hidden;
-  position: relative;
-`;
+};
 
-export const ProgressFill = styled.div<{
+export type StyledFillProps = {
   width: number;
   color: string;
   borderRadius: string;
   animated: boolean;
-}>`
+};
+
+export const ProgressContainer = styled.div<StyledProgressProps>`
+  width: 100%;
+  height: ${({ height }) => height};
+  background-color: ${({ backgroundColor }) => backgroundColor};
+  border-radius: ${({ borderRadius }) => borderRadius};
+  overflow: hidden;
+  position: relative;
+`;
+
+export const ProgressFill = styled.div<StyledFillProps>`
   height: 100%;
-  width: ${(props) => props.width}%;
-  background-color: ${(props) => props.color};
-  border-radius: ${(props) => props.borderRadius};
-  transition: ${(props) => (props.animated ? 'width 1.3s ease-in-out' : 'none')};
+  width: ${({ width }) => `${width}%`};
+  background-color: ${({ color }) => color};
+  border-radius: ${({ borderRadius }) => borderRadius};
+  transition: ${({ animated }) => (animated ? 'width 1.3s ease-in-out' : 'none')};
 `;
