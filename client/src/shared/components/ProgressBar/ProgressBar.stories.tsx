@@ -6,6 +6,14 @@ const meta = {
   title: 'components/ProgressBar',
   component: ProgressBar,
   tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A customizable progress bar component with optional animation, colors, and rounded corners.',
+      },
+    },
+  },
 } satisfies Meta<typeof ProgressBar>;
 
 export default meta;
