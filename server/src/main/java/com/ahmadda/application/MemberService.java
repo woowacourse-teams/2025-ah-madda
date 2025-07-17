@@ -13,7 +13,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public Member processGoogleOAuthLogin(GoogleOAuthUserInfo userInfo) {
+    public Member processGoogleOAuthLogin(final GoogleOAuthUserInfo userInfo) {
         return memberRepository.findByEmail(userInfo.email())
                 .orElseGet(() -> {
                     Member newMember = Member.create(userInfo.name(), userInfo.email());

@@ -14,7 +14,7 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public String publishLoginToken(Member member) {
+    public String publishLoginToken(final Member member) {
         if (!memberRepository.existsMemberByEmail(member.getEmail())) {
             throw new NotFoundException("해당 사용자를 찾을 수 없음 email : " + member.getEmail());
         }

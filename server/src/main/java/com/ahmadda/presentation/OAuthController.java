@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -26,13 +25,12 @@ public class OAuthController {
     private final MemberService memberService;
 
     @GetMapping("/callback/google")
-    @ResponseBody
     public String googleCallback(
-            @RequestParam String code,
-            @RequestParam(required = false) String error,
-            @RequestParam String state,
-            @CookieValue(name = "oauth_state", required = false) String storedState,
-            HttpServletResponse response) {
+            @RequestParam final String code,
+            @RequestParam(required = false) final String error,
+            @RequestParam final String state,
+            @CookieValue(name = "oauth_state", required = false) final String storedState,
+            final HttpServletResponse response) {
         if (error != null || storedState == null || !storedState.equals(state)) {
             return "error";
         }
@@ -51,7 +49,7 @@ public class OAuthController {
     }
 
     @GetMapping("/login")
-    public String redirectToOauthProvider(HttpServletResponse response) {
+    public String redirectToOauthProvider(final HttpServletResponse response) {
         String state = CookieUtils.generateState();
         String redirectUrl = googleOAuthService.generateGoogleAuthUrl(state);
         Cookie stateCookie = CookieUtils.createStateCookie(state);

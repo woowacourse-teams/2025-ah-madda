@@ -2,10 +2,11 @@ package com.ahmadda.infra;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import java.util.Date;
-import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
+import javax.crypto.SecretKey;
 
 @Component
 public class JwtTokenProvider {
@@ -15,11 +16,11 @@ public class JwtTokenProvider {
     @Value("${jwt.expiration-ms}") // JWT 유효 시간 (밀리초)
     private long jwtExpirationMs;
 
-    public JwtTokenProvider(@Value("${jwt.secret-key}") String secretKeyString) {
+    public JwtTokenProvider(@Value("${jwt.secret-key}") final String secretKeyString) {
         this.secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes()); // HMAC-SHA 알고리즘에 맞는 키 생성
     }
 
-    public String createToken(String name, String email) {
+    public String createToken(final String name, final String email) {
         return Jwts.builder()
                 .subject(email)
                 .claim("email", email)

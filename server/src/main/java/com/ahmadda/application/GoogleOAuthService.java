@@ -21,12 +21,13 @@ public class GoogleOAuthService {
     private final GoogleOAuthProperties googleOAuthProperties;
     private final RestClient restClient;
 
-    public GoogleOAuthUserInfo authenticateGoogleUser(String code) {
+    public GoogleOAuthUserInfo authenticateGoogleUser(final String code) {
         String accessToken = exchangeCodeForAccessToken(code);
+
         return getUserInfo(accessToken);
     }
 
-    private String exchangeCodeForAccessToken(String code) {
+    private String exchangeCodeForAccessToken(final String code) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", code);
         params.add("client_id", googleOAuthProperties.getClientId());
@@ -44,6 +45,7 @@ public class GoogleOAuthService {
         if (tokenResponse == null || tokenResponse.accessToken() == null) {
             throw new GoogleTokenRetrievalException("Google 토큰 응답이 비어 있거나 액세스 토큰이 없습니다.");
         }
+
         return tokenResponse.accessToken();
     }
 
@@ -56,10 +58,11 @@ public class GoogleOAuthService {
         if (userInfo == null) {
             throw new GoogleTokenRetrievalException("Google 사용자 정보가 비어 있습니다.");
         }
+
         return userInfo;
     }
 
-    public String generateGoogleAuthUrl(String state) {
+    public String generateGoogleAuthUrl(final String state) {
         return UriComponentsBuilder.fromUriString(googleOAuthProperties.getAuthorizationUri())
                 .queryParam("client_id", googleOAuthProperties.getClientId())
                 .queryParam("redirect_uri", googleOAuthProperties.getRedirectUri())
