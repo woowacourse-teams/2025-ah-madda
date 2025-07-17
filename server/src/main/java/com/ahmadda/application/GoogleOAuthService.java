@@ -1,5 +1,6 @@
 package com.ahmadda.application;
 
+import com.ahmadda.application.exception.GoogleTokenRetrievalException;
 import com.ahmadda.infra.GoogleOAuthProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -37,7 +38,7 @@ public class GoogleOAuthService {
                 .body(GoogleTokenResponse.class);
 
         if (tokenResponse == null || tokenResponse.accessToken() == null) {
-            throw new RuntimeException("Google 토큰 응답이 비어 있거나 액세스 토큰이 없습니다.");
+            throw new GoogleTokenRetrievalException("Google 토큰 응답이 비어 있거나 액세스 토큰이 없습니다.");
         }
         return tokenResponse.accessToken();
     }
@@ -49,7 +50,7 @@ public class GoogleOAuthService {
                 .retrieve()
                 .body(GoogleOAuthUserInfo.class);
         if (userInfo == null) {
-            throw new RuntimeException("Google 사용자 정보가 비어 있습니다.");
+            throw new GoogleTokenRetrievalException("Google 사용자 정보가 비어 있습니다.");
         }
         return userInfo;
     }

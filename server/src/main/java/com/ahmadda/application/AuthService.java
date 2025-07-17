@@ -1,5 +1,6 @@
 package com.ahmadda.application;
 
+import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.infra.JwtTokenProvider;
@@ -14,8 +15,8 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
 
     public String publishLoginToken(Member member) {
-        if(!memberRepository.existsMemberByEmail(member.getEmail())) {
-            throw new RuntimeException("");
+        if (!memberRepository.existsMemberByEmail(member.getEmail())) {
+            throw new NotFoundException("해당 사용자를 찾을 수 없음 email : " + member.getEmail());
         }
 
         return jwtTokenProvider.createToken(member.getName(), member.getEmail());
