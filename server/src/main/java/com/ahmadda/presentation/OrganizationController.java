@@ -5,6 +5,7 @@ import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.application.dto.OrganizationReadResponse;
 import com.ahmadda.domain.Organization;
 import jakarta.validation.Valid;
+import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,10 +23,11 @@ public class OrganizationController {
     private final OrganizationService organizationService;
 
     @PostMapping
-    public ResponseEntity<Void> createOrganization(@RequestBody @Valid final OrganizationCreateRequest organizationCreateRequest) {
-        organizationService.createOrganization(organizationCreateRequest);
+    public ResponseEntity<Void> createOrganization(
+            @RequestBody @Valid final OrganizationCreateRequest organizationCreateRequest) {
+        Organization organization = organizationService.createOrganization(organizationCreateRequest);
 
-        return ResponseEntity.ok()
+        return ResponseEntity.created(URI.create("/api/organizations/" + organization.getId()))
                 .build();
     }
 

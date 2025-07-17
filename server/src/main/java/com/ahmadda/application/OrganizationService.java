@@ -1,6 +1,5 @@
 package com.ahmadda.application;
 
-import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationRepository;
@@ -15,14 +14,14 @@ public class OrganizationService {
     private final OrganizationRepository organizationRepository;
 
     @Transactional
-    public void createOrganization(final OrganizationCreateRequest organizationCreateRequest) {
+    public Organization createOrganization(final OrganizationCreateRequest organizationCreateRequest) {
         Organization organization = Organization.create(
                 organizationCreateRequest.name(),
                 organizationCreateRequest.description(),
                 organizationCreateRequest.imageUrl()
         );
 
-        organizationRepository.save(organization);
+        return organizationRepository.save(organization);
     }
 
     public Organization getOrganization(final Long id) {
