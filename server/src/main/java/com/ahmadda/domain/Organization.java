@@ -1,8 +1,12 @@
 package com.ahmadda.domain;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.util.Assert;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,9 +17,6 @@ import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter

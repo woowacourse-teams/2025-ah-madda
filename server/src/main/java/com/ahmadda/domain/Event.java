@@ -23,7 +23,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Event extends BaseEntity {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id")
@@ -45,8 +45,7 @@ public class Event extends BaseEntity {
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "guest_id", nullable = false)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
     private List<Guest> guests;
 
     @Column(nullable = false)

@@ -63,8 +63,4 @@ public class OrganizationMember extends BaseEntity {
     private void validateOrganization(final Organization organization) {
         Assert.notNull(organization, "조직은 null이 되면 안됩니다.");
     }
-
-    public boolean isSameMember(Long memberId) {
-        return member.isSameMember(memberId);
-    }
 }
