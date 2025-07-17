@@ -1,5 +1,6 @@
 package com.ahmadda.application;
 
+import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Member;
@@ -15,9 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Transactional
@@ -173,12 +174,10 @@ class EventServiceTest {
     }
 
     @Test
-    void 존재하지_않는_조직ID로_조회하면_빈_리스트를_반환한다() {
-        // when
-        List<Event> result = sut.getOrganizationAvailableEvents(999L);
-
-        // then
-        assertThat(result).isEmpty();
+    void 존재하지_않는_조직ID로_조회하면_예외가_발생한다() {
+        // when // then
+        assertThatThrownBy(() -> sut.getOrganizationAvailableEvents(999L))
+                .isInstanceOf(BusinessFlowViolatedException.class);
     }
 
     @Test
@@ -286,7 +285,7 @@ class EventServiceTest {
     }
 
     @Test
-    void 존재하지_않는_멤버나_조직_ID로_조회하면_빈_리스트를_반환한다() {
+    void 존재하지_않는_멤버나_조직_ID로_조회하면_예외가_발생한다() {
         // given
         var organization = createAndSaveOrganization("우리 조직", "조직", "org.png");
         var owner = createAndSaveMember("주최자 본인", "owner@test.com");
@@ -295,14 +294,12 @@ class EventServiceTest {
         var nonExistentMemberId = 999L;
         var nonExistentOrganizationId = 998L;
 
-        // when
-        var resultForNonExistentMember = sut.getOwnersEvent(nonExistentMemberId, organization.getId());
-        var resultForNonExistentOrganization = sut.getOwnersEvent(owner.getId(), nonExistentOrganizationId);
-
-        // then
+        // when // then
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(resultForNonExistentMember).as("존재하지 않는 멤버 ID로 조회").isEmpty();
-            softly.assertThat(resultForNonExistentOrganization).as("존재하지 않는 조직 ID로 조회").isEmpty();
+            softly.assertThatThrownBy(() -> sut.getOwnersEvent(nonExistentMemberId, organization.getId()))
+                    .isInstanceOf(BusinessFlowViolatedException.class);
+            softly.assertThatThrownBy(() -> sut.getOwnersEvent(owner.getId(), nonExistentOrganizationId))
+                    .isInstanceOf(BusinessFlowViolatedException.class);
         });
     }
 }

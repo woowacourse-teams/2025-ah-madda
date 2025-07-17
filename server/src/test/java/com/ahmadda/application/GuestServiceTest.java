@@ -1,5 +1,6 @@
 package com.ahmadda.application;
 
+import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
@@ -96,16 +97,21 @@ class GuestServiceTest {
     }
 
     @Test
-    void 존재하지_않는_멤버나_조직으로_조회하면_빈_리스트를_반환한다() {
+    void 존재하지_않는_멤버나_조직으로_조회하면_예외가_발생한다() {
         // given
+        var organization = createAndSaveOrganization("우리 조직", "조직", "org.png");
+        var participant = createAndSaveMember("참여자", "me@test.com");
+
         var nonExistentMemberId = 999L;
         var nonExistentOrganizationId = 998L;
 
-        // when
-        var result = sut.getJoinedEvents(nonExistentMemberId, nonExistentOrganizationId);
-
-        // then
-        assertThat(result).isEmpty();
+        // when // then
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThatThrownBy(() -> sut.getJoinedEvents(nonExistentMemberId, organization.getId()))
+                    .isInstanceOf(BusinessFlowViolatedException.class);
+            softly.assertThatThrownBy(() -> sut.getJoinedEvents(participant.getId(), nonExistentOrganizationId))
+                    .isInstanceOf(BusinessFlowViolatedException.class);
+        });
     }
 
     private Organization createAndSaveOrganization(String name, String description, String imageUrl) {

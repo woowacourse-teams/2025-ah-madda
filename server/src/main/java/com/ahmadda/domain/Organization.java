@@ -15,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -55,10 +56,21 @@ public class Organization extends BaseEntity {
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
+
+        this.events = new ArrayList<>();
+        this.guests = new ArrayList<>();
     }
 
     public static Organization create(final String name, final String description, final String imageUrl) {
         return new Organization(name, description, imageUrl);
+    }
+
+    public void addEvent(Event event) {
+        this.events.add(event);
+    }
+
+    public void addGuest(Guest guest) {
+        this.guests.add(guest);
     }
 
     private void validateName(final String name) {

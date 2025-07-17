@@ -88,6 +88,8 @@ public class Event extends BaseEntity {
         this.eventStart = eventStart;
         this.eventEnd = eventEnd;
         this.maxCapacity = maxCapacity;
+
+        organization.addEvent(this);
     }
 
     public static Event create(final String title,
