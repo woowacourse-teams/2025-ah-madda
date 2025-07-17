@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class OAuthController {
 
     private final AuthService authService;
     private final GoogleOAuthService googleOAuthService;
     private final MemberService memberService;
 
-    @GetMapping("/callback/google")
+    @GetMapping("/google/callback")
     public String googleCallback(
             @RequestParam final String code,
             @RequestParam(required = false) final String error,
@@ -32,7 +32,7 @@ public class OAuthController {
             @CookieValue(name = "oauth_state", required = false) final String storedState,
             final HttpServletResponse response) {
         if (error != null || storedState == null || !storedState.equals(state)) {
-            return "error";
+            return "redirect:/error";
         }
 
         Cookie deletedCookie = CookieUtils.deleteCookie("oauth_state");
@@ -45,7 +45,7 @@ public class OAuthController {
         Cookie loginCookie = CookieUtils.createCookie("token", loginToken, 36000);
         response.addCookie(loginCookie);
 
-        return "success";
+        return "redirect:/dashboard";
     }
 
     @GetMapping("/login")
