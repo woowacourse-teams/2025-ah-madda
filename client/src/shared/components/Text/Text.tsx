@@ -30,7 +30,7 @@ export type TextProps<T extends TextElementType> = {
   /**
    * The content to be displayed inside the text component.
    */
-  children: React.ReactNode;
+  children: string | number;
 } & Omit<ComponentProps<T>, 'as' | 'children' | 'color'>;
 
 export const Text = <T extends TextElementType = 'p'>({
