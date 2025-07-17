@@ -59,7 +59,7 @@ export const ProgressBar = ({
       backgroundColor={backgroundColor}
       aria-label={`Progress: ${percentage}%`}
     >
-      <StyledProgressFill width={percentage} color={color} animated={animated} />
+      <StyledProgressFill percentage={percentage} color={color} animated={animated} />
     </StyledProgressContainer>
   );
 };

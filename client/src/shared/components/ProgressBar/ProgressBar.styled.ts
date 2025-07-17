@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import { ProgressBarProps } from './ProgressBar';
 
 type StyledFillProps = {
-  width: number;
+  percentage: number;
 } & Pick<ProgressBarProps, 'color' | 'animated'>;
 
 export const StyledProgressContainer = styled.div<Pick<ProgressBarProps, 'backgroundColor'>>`
@@ -17,7 +17,7 @@ export const StyledProgressContainer = styled.div<Pick<ProgressBarProps, 'backgr
 
 export const StyledProgressFill = styled.div<StyledFillProps>`
   height: 100%;
-  width: ${({ width }) => `${width}%`};
+  width: ${({ percentage }) => `${percentage}%`};
   background-color: ${({ color }) => color};
   border-radius: 16px;
   transition: ${({ animated }) => (animated ? 'width 1.3s ease-in-out' : 'none')};
