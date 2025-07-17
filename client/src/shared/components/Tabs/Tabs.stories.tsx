@@ -7,6 +7,14 @@ const meta = {
   title: 'components/Tabs',
   component: Tabs,
   tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A flexible and accessible tabs component for organizing content into separate panels. ',
+      },
+    },
+  },
 } satisfies Meta<typeof Tabs>;
 
 export default meta;
