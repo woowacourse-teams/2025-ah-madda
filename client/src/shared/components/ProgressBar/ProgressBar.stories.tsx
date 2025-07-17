@@ -26,28 +26,19 @@ export const Basic: Story = {
   },
 };
 
-export const CustomHeightAndColor: Story = {
+export const CustomColor: Story = {
   args: {
     value: 75,
-    height: '12px',
+    max: 100,
     color: '#d0698b',
     backgroundColor: '#e2e2e2',
-  },
-};
-
-export const Squared: Story = {
-  args: {
-    value: 30,
-    borderRadius: '0px',
-    height: '10px',
-    color: '#FF6B6B',
-    backgroundColor: '#FFECEC',
   },
 };
 
 export const AnimatedOff: Story = {
   args: {
     value: 80,
+    max: 100,
     animated: false,
     color: '#2563EB',
   },
