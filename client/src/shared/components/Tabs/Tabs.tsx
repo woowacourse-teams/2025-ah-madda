@@ -10,26 +10,37 @@ type TabsContextValue = {
 };
 
 type TabsProps = {
+  /** The value of the tab that should be active by default */
   defaultValue?: string;
-  css?: SerializedStyles;
+  /** Child components including TabsList and TabsContent */
   children: ReactNode;
+  /** Custom styles using emotion CSS-in-JS */
+  css?: SerializedStyles;
 };
 
 type TabsListProps = {
-  css?: SerializedStyles;
+  /** TabsTrigger components as children */
   children: ReactNode;
+  /** Custom styles using emotion CSS-in-JS */
+  css?: SerializedStyles;
 };
 
 type TabsTriggerProps = {
+  /** Unique identifier for the tab (must match the corresponding TabsContent value) */
   value: string;
+  /** Content to display in the tab button */
   children: ReactNode;
+  /** Custom styles using emotion CSS-in-JS */
   css?: SerializedStyles;
 };
 
 type TabsContentProps = {
+  /** Unique identifier for the tab (must match the corresponding TabsTrigger value) */
   value: string;
-  css?: SerializedStyles;
+  /** Content to display when the tab is active */
   children: ReactNode;
+  /** Custom styles using emotion CSS-in-JS */
+  css?: SerializedStyles;
 };
 
 const TabsContext = createContext<TabsContextValue | null>(null);
