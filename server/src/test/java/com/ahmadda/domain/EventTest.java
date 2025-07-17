@@ -48,7 +48,7 @@ class EventTest {
     @ParameterizedTest
     @ValueSource(strings = {"", " "})
     void 이벤트_제목이_비어있다면_예외가_발생한다(String title) {
-        assertThatThrownBy(() -> createEvent(title))
+        assertThatThrownBy(() -> createEvent(title, 10))
                 .isInstanceOf(BusinessRuleViolatedException.class);
     }
 
@@ -70,9 +70,17 @@ class EventTest {
         var eventCreateRequestDateTime = LocalDateTime.of(2025, 7, 16, 10, 0);
         var eventStartDateTime = LocalDateTime.of(2025, 7, 16, 9, 0);
         var eventEndDateTime = LocalDateTime.of(2025, 7, 16, 14, 0);
+        var registrationStart = LocalDateTime.of(2025, 7, 16, 8, 0);
+        var registrationEnd = LocalDateTime.of(2025, 7, 16, 8, 30);
 
         //when //then
-        assertThatThrownBy(() -> createEvent(eventStartDateTime, eventEndDateTime, eventCreateRequestDateTime))
+        assertThatThrownBy(() -> createEvent(
+                eventStartDateTime,
+                eventEndDateTime,
+                eventCreateRequestDateTime,
+                registrationStart,
+                registrationEnd
+        ))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage("이벤트 시작 시간은 이벤트 생성 요청 시점보다 과거일 수 없습니다.");
     }
@@ -83,14 +91,116 @@ class EventTest {
         //given
         var eventCreateRequestDateTime = LocalDateTime.of(2025, 7, 16, 8, 0);
         var eventStartDateTime = LocalDateTime.of(2025, 7, 16, 9, 0);
+        var registrationStart = LocalDateTime.of(2025, 7, 16, 8, 0);
+        var registrationEnd = LocalDateTime.of(2025, 7, 16, 8, 30);
 
         //when //then
-        assertThatThrownBy(() -> createEvent(eventStartDateTime, eventEndDateTime, eventCreateRequestDateTime))
+        assertThatThrownBy(() -> createEvent(
+                eventStartDateTime,
+                eventEndDateTime,
+                eventCreateRequestDateTime,
+                registrationStart,
+                registrationEnd
+        ))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage("이벤트 종료 시간은 이벤트 시작 시간보다 과거 이거나 같을 수 없습니다.");
     }
 
-    private Event createEvent(final String title) {
+    @Test
+    void 이벤트_신청_시작_시간이_이벤트_생성_요청_시점보다_과거인_경우_예외가_발생한다() {
+        //given
+        var eventCreateRequestDateTime = LocalDateTime.of(2025, 7, 16, 8, 0);
+        var eventStartDateTime = LocalDateTime.of(2025, 7, 16, 8, 30);
+        var eventEndDateTime = LocalDateTime.of(2025, 7, 16, 14, 0);
+        var registrationStart = LocalDateTime.of(2025, 7, 16, 7, 59);
+        var registrationEnd = LocalDateTime.of(2025, 7, 16, 8, 30);
+
+        //when //then
+        assertThatThrownBy(() -> createEvent(
+                eventStartDateTime,
+                eventEndDateTime,
+                eventCreateRequestDateTime,
+                registrationStart,
+                registrationEnd
+        ))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("이벤트 신청 시작 시간은 이벤트 생성 요청 시점보다 과거일 수 없습니다.");
+    }
+
+    @ParameterizedTest
+    @CsvSource({"2025-07-16T08:30", "2025-07-16T08:31"})
+    void 이벤트_신청_시작_시간이_이벤트_시작_시간보다_과거가_아닌_경우_예외가_발생한다(LocalDateTime registrationStart) {
+        //given
+        var eventCreateRequestDateTime = LocalDateTime.of(2025, 7, 16, 8, 0);
+        var eventStartDateTime = LocalDateTime.of(2025, 7, 16, 8, 30);
+        var eventEndDateTime = LocalDateTime.of(2025, 7, 16, 14, 0);
+        var registrationEnd = LocalDateTime.of(2025, 7, 16, 8, 50);
+
+        //when //then
+        assertThatThrownBy(() -> createEvent(
+                eventStartDateTime,
+                eventEndDateTime,
+                eventCreateRequestDateTime,
+                registrationStart,
+                registrationEnd
+        ))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("이벤트 신청 시작 시간은 이벤트 시작 시간보다 과거여야 합니다.");
+    }
+
+    @ParameterizedTest
+    @CsvSource({"2025-07-16T08:10", "2025-07-16T08:09"})
+    void 이벤트_신청_마감_시간이_이벤트_신청_시작_시간보다_미래가_아니라면_예외가_발생한다(LocalDateTime registrationEnd) {
+        //given
+        var eventCreateRequestDateTime = LocalDateTime.of(2025, 7, 16, 8, 0);
+        var eventStartDateTime = LocalDateTime.of(2025, 7, 16, 8, 30);
+        var eventEndDateTime = LocalDateTime.of(2025, 7, 16, 14, 0);
+        var registrationStart = LocalDateTime.of(2025, 7, 16, 8, 10);
+
+        //when //then
+        assertThatThrownBy(() -> createEvent(
+                eventStartDateTime,
+                eventEndDateTime,
+                eventCreateRequestDateTime,
+                registrationStart,
+                registrationEnd
+        ))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("이벤트 신청 마감 시간은 이벤트 신청 시작 시간보다 미래여야 합니다.");
+    }
+
+    @ParameterizedTest
+    @CsvSource({"2025-07-16T08:30", "2025-07-16T08:31"})
+    void 이벤트_신청_마감_시간이_이벤트_시작_시간보다_미래라면_예외가_발생한다(LocalDateTime registrationEnd) {
+        //given
+        var eventCreateRequestDateTime = LocalDateTime.of(2025, 7, 16, 8, 0);
+        var eventStartDateTime = LocalDateTime.of(2025, 7, 16, 8, 30);
+        var eventEndDateTime = LocalDateTime.of(2025, 7, 16, 14, 0);
+        var registrationStart = LocalDateTime.of(2025, 7, 16, 8, 10);
+
+        //when //then
+        assertThatThrownBy(() -> createEvent(
+                eventStartDateTime,
+                eventEndDateTime,
+                eventCreateRequestDateTime,
+                registrationStart,
+                registrationEnd
+        ))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("이벤트 신청 마감 시간은 이벤트 시작 시간보다 미래일 수 없습니다.");
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {-1, 0, 2_100_000_001})
+    void 이벤트_최대_수용_인원이_1명보다_적거나_21억_보다_클경우_예외가_발생한다(int maxCapacity) {
+        assertThatThrownBy(() -> createEvent(
+                "title", maxCapacity
+        ))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("최대 수용 인원은 1명보다 적거나 21억보다 클 수 없습니다.");
+    }
+
+    private Event createEvent(final String title, final int maxCapacity) {
         return Event.create(
                 title,
                 "description",
@@ -99,25 +209,30 @@ class EventTest {
                 createOrganization("우테코"),
                 LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().plusDays(2),
-                LocalDateTime.now(),
-                LocalDateTime.now().plusDays(1),
-                10,
+                LocalDateTime.now().plusDays(3),
+                LocalDateTime.now().plusDays(4),
+                maxCapacity,
                 LocalDateTime.now()
         );
     }
 
-    private Event createEvent(final LocalDateTime eventStart,
-                              final LocalDateTime eventEnd,
-                              final LocalDateTime currentDateTime) {
+    private Event createEvent(
+            final LocalDateTime eventStart,
+            final LocalDateTime eventEnd,
+            final LocalDateTime currentDateTime,
+            final LocalDateTime registrationStart,
+            final LocalDateTime registrationEnd
+    ) {
         Organization organization = createOrganization("우테코");
+
         return Event.create(
                 "title",
                 "description",
                 "place",
                 createOrganizationMember(createMember(), organization),
                 organization,
-                LocalDateTime.now().plusDays(1),
-                LocalDateTime.now().plusDays(2),
+                registrationStart,
+                registrationEnd,
                 eventStart,
                 eventEnd,
                 10,

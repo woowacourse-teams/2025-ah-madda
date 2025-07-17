@@ -84,6 +84,7 @@ public class Event extends BaseEntity {
         validateRegistrationEnd(registrationEnd);
         validateEventStart(eventStart);
         validateEventEnd(eventEnd);
+        validateBelongToOrganization(organizer, organization);
 
         this.title = title;
         this.description = description;
@@ -108,22 +109,39 @@ public class Event extends BaseEntity {
         }
     }
 
-    public static Event create(final String title,
-                               final String description,
-                               final String place,
-                               final OrganizationMember organizer,
-                               final Organization organization,
-                               final LocalDateTime registrationStart,
-                               final LocalDateTime registrationEnd,
-                               final LocalDateTime eventStart,
-                               final LocalDateTime eventEnd,
-                               final int maxCapacity,
-                               final LocalDateTime currentDateTime) {
+    public static Event create(
+            final String title,
+            final String description,
+            final String place,
+            final OrganizationMember organizer,
+            final Organization organization,
+            final LocalDateTime registrationStart,
+            final LocalDateTime registrationEnd,
+            final LocalDateTime eventStart,
+            final LocalDateTime eventEnd,
+            final int maxCapacity,
+            final LocalDateTime currentDateTime
+    ) {
         if (eventStart.isBefore(currentDateTime)) {
             throw new BusinessRuleViolatedException("이벤트 시작 시간은 이벤트 생성 요청 시점보다 과거일 수 없습니다.");
         }
         if (eventEnd.equals(eventStart) || eventEnd.isBefore(eventStart)) {
             throw new BusinessRuleViolatedException("이벤트 종료 시간은 이벤트 시작 시간보다 과거 이거나 같을 수 없습니다.");
+        }
+        if (registrationStart.isBefore(currentDateTime)) {
+            throw new BusinessRuleViolatedException("이벤트 신청 시작 시간은 이벤트 생성 요청 시점보다 과거일 수 없습니다.");
+        }
+        if (registrationStart.equals(eventStart) || registrationStart.isAfter(eventStart)) {
+            throw new BusinessRuleViolatedException("이벤트 신청 시작 시간은 이벤트 시작 시간보다 과거여야 합니다.");
+        }
+        if (registrationEnd.equals(registrationStart) || registrationEnd.isBefore(registrationStart)) {
+            throw new BusinessRuleViolatedException("이벤트 신청 마감 시간은 이벤트 신청 시작 시간보다 미래여야 합니다.");
+        }
+        if (registrationEnd.equals(eventStart) || registrationEnd.isAfter(eventStart)) {
+            throw new BusinessRuleViolatedException("이벤트 신청 마감 시간은 이벤트 시작 시간보다 미래일 수 없습니다.");
+        }
+        if (maxCapacity < 1 || maxCapacity > 2_100_000_000) {
+            throw new BusinessRuleViolatedException("최대 수용 인원은 1명보다 적거나 21억보다 클 수 없습니다.");
         }
 
         return new Event(
@@ -143,6 +161,14 @@ public class Event extends BaseEntity {
     public boolean hasGuest(final OrganizationMember organizationMember) {
         return guests.stream()
                 .anyMatch(guest -> guest.isSameParticipant(organizationMember));
+    }
+
+    private void validateTitle(final String title) {
+        Assert.notBlank(title, "title은 공백이면 안됩니다.");
+
+        if (title.length() > 255) {
+            throw new BusinessRuleViolatedException("title은 최소 1글자 최대 255글자여야 합니다.");
+        }
     }
 
     private void validateDescription(final String description) {
@@ -175,11 +201,5 @@ public class Event extends BaseEntity {
 
     private void validateEventEnd(final LocalDateTime eventEnd) {
         Assert.notNull(eventEnd, "종료 시간은 null이 되면 안됩니다.");
-    }
-
-    private void validateTitle(String title) {
-        if (title.isBlank() || title.length() > 255) {
-            throw new BusinessRuleViolatedException("title은 최소 1글자 최대 255글자여야 합니다.");
-        }
     }
 }
