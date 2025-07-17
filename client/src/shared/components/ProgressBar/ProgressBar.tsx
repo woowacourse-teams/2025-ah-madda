@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentProps } from 'react';
 
-import { ProgressContainer, ProgressFill } from './ProgressBar.styled';
+import { StyledProgressContainer, StyledProgressFill } from './ProgressBar.styled';
 
 /**
  * Props for the ProgressBar component.
@@ -55,8 +55,11 @@ export const ProgressBar = ({
   const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
 
   return (
-    <ProgressContainer backgroundColor={backgroundColor} aria-label={`Progress: ${percentage}%`}>
-      <ProgressFill width={percentage} color={color} animated={animated} />
-    </ProgressContainer>
+    <StyledProgressContainer
+      backgroundColor={backgroundColor}
+      aria-label={`Progress: ${percentage}%`}
+    >
+      <StyledProgressFill width={percentage} color={color} animated={animated} />
+    </StyledProgressContainer>
   );
 };

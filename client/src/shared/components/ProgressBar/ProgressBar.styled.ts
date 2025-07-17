@@ -6,7 +6,7 @@ type StyledFillProps = {
   width: number;
 } & Pick<ProgressBarProps, 'color' | 'animated'>;
 
-export const ProgressContainer = styled.div<Pick<ProgressBarProps, 'backgroundColor'>>`
+export const StyledProgressContainer = styled.div<Pick<ProgressBarProps, 'backgroundColor'>>`
   width: 100%;
   height: 8px;
   background-color: ${({ backgroundColor }) => backgroundColor};
@@ -15,7 +15,7 @@ export const ProgressContainer = styled.div<Pick<ProgressBarProps, 'backgroundCo
   position: relative;
 `;
 
-export const ProgressFill = styled.div<StyledFillProps>`
+export const StyledProgressFill = styled.div<StyledFillProps>`
   height: 100%;
   width: ${({ width }) => `${width}%`};
   background-color: ${({ color }) => color};
