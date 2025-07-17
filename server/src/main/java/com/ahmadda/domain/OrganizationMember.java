@@ -36,16 +36,31 @@ public class OrganizationMember extends BaseEntity {
     private Organization organization;
 
     private OrganizationMember(final String nickname, final Member member, final Organization organization) {
-        this.nickname = Assert.notNull(nickname, "nickname null이 되면 안됩니다.");
-        this.member = Assert.notNull(member, "member null이 되면 안됩니다.");
-        this.organization = Assert.notNull(organization, "organization null이 되면 안됩니다.");
+        validateNickname(nickname);
+        validateMember(member);
+        validateOrganization(organization);
+
+        this.nickname = nickname;
+        this.member = member;
+        this.organization = organization;
     }
 
     public static OrganizationMember create(final String nickname,
                                             final Member member,
-                                            final Organization organization) {
+                                            final Organization organization
+    ) {
         return new OrganizationMember(nickname, member, organization);
     }
+
+    private void validateNickname(final String nickname) {
+        Assert.notBlank(nickname, "닉네임은 공백이면 안됩니다.");
+    }
+
+    private void validateMember(final Member member) {
+        Assert.notNull(member, "멤버는 null이 되면 안됩니다.");
+    }
+
+    private void validateOrganization(final Organization organization) {
+        Assert.notNull(organization, "조직은 null이 되면 안됩니다.");
+    }
 }
-
-
