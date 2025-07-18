@@ -33,14 +33,14 @@ public class JwtTokenProvider {
         this.refreshExpiration = Duration.ofHours(accessExpirationTime);
     }
 
-    public AuthTokens publishLoginTokens(Member member) {
+    public AuthTokens publishLoginTokens(final Member member) {
         String refreshToken = createRefreshToken(member);
         String accessToken = createAccessToken(member);
 
         return new AuthTokens(refreshToken, accessToken);
     }
 
-    private String createRefreshToken(Member member) {
+    private String createRefreshToken(final Member member) {
         Instant now = Instant.now();
         Instant expire = now.plus(refreshExpiration);
 
@@ -54,7 +54,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String createAccessToken(Member member) {
+    public String createAccessToken(final Member member) {
         Instant now = Instant.now();
         Instant expire = now.plus(accessExpiration);
 
@@ -68,7 +68,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public long extractId(String token) {
+    public long extractId(final String token) {
         try {
             String memberId = parseClaims(token).getSubject();
 
@@ -78,7 +78,7 @@ public class JwtTokenProvider {
         }
     }
 
-    private Claims parseClaims(String token) {
+    private Claims parseClaims(final String token) {
         try {
             Jws<Claims> jws = Jwts.parser()
                     .verifyWith(secretKey)

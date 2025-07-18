@@ -32,7 +32,7 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
             final ModelAndViewContainer mavContainer,
             final NativeWebRequest webRequest,
             final WebDataBinderFactory binderFactory
-    ) throws Exception {
+    ) {
         HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
         String accessToken = extractAccessToken(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
 
@@ -41,7 +41,7 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
         return new LoginMember(memberId);
     }
 
-    private String extractAccessToken(String header) {
+    private String extractAccessToken(final String header) {
         if (header != null && header.startsWith(BEARER_TYPE)) {
             return header.substring(BEARER_TYPE.length()).trim();
         }

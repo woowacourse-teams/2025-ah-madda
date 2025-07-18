@@ -35,13 +35,13 @@ public class GoogleOAuthProvider {
         this.restClient = RestClient.builder().build();
     }
 
-    public OAuthUserInfoResponse getUserInfo(String code) {
+    public OAuthUserInfoResponse getUserInfo(final String code) {
         String googleAccessToken = requestGoogleAccessToken(code);
 
         return requestGoogleUserInfo(googleAccessToken);
     }
 
-    private String requestGoogleAccessToken(String code) {
+    private String requestGoogleAccessToken(final String code) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", code);
         params.add("client_id", clientId);
@@ -62,7 +62,7 @@ public class GoogleOAuthProvider {
         return accessToken;
     }
 
-    private OAuthUserInfoResponse requestGoogleUserInfo(String accessToken) {
+    private OAuthUserInfoResponse requestGoogleUserInfo(final String accessToken) {
         OAuthUserInfoResponse userInfo = restClient.get()
                 .uri(userUri)
                 .header("Authorization", "Bearer " + accessToken)

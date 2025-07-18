@@ -25,8 +25,10 @@ public class LoginController {
     private final LoginService loginService;
 
     @PostMapping("/login")
-    public ResponseEntity<AccessTokenResponse> login(@RequestBody LoginRequest loginRequest,
-                                                     HttpServletResponse response) {
+    public ResponseEntity<AccessTokenResponse> login(
+            final @RequestBody LoginRequest loginRequest,
+            final HttpServletResponse response
+    ) {
         AuthTokens authTokens = loginService.login(loginRequest.code());
 
         ResponseCookie cookie = ResponseCookie.from("refresh-token", authTokens.refreshToken())
@@ -43,7 +45,9 @@ public class LoginController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AccessTokenResponse> extendsToken(@CookieValue(name = "refresh-token") String refreshToken) {
+    public ResponseEntity<AccessTokenResponse> extendsToken(
+            final @CookieValue(name = "refresh-token") String refreshToken
+    ) {
         String accessToken = loginService.renewAuthTokens(refreshToken);
         AccessTokenResponse accessTokenResponse = new AccessTokenResponse(accessToken);
 
@@ -51,7 +55,7 @@ public class LoginController {
     }
 
     @DeleteMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
+    public ResponseEntity<Void> logout(final HttpServletResponse response) {
         ResponseCookie logoutCookie = ResponseCookie.from("refresh-token", "")
                 .secure(true)
                 .httpOnly(true)

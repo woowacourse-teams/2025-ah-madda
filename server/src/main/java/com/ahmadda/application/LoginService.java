@@ -22,7 +22,7 @@ public class LoginService {
         return jwtTokenProvider.publishLoginTokens(member);
     }
 
-    private Member findOrCreateMember(final String email, String name) {
+    private Member findOrCreateMember(final String email, final String name) {
         return memberRepository.findByEmail(email)
                 .orElseGet(() -> {
                     Member newMember = Member.create(name, email);
