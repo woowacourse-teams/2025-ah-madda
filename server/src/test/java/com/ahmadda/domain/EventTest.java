@@ -117,23 +117,6 @@ class EventTest {
         });
     }
 
-    private Event createEvent(final String title, final int maxCapacity) {
-        var organization = createOrganization("우테코");
-
-        return Event.create(
-                title,
-                "description",
-                "place",
-                createOrganizationMember(createMember(), organization),
-                organization,
-                EventOperationPeriod.create(
-                        new Period(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2)),
-                        new Period(LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(4)),
-                        LocalDateTime.now()
-                ),
-                maxCapacity
-        );
-    }
 
     @Test
     void 이벤트에_참여하지_않은_조직원을_조회할_수_있다() {
@@ -155,6 +138,24 @@ class EventTest {
             softly.assertThat(nonGuests)
                     .containsExactlyInAnyOrder(nonGuest1, nonGuest2);
         });
+    }
+
+    private Event createEvent(final String title, final int maxCapacity) {
+        var organization = createOrganization("우테코");
+
+        return Event.create(
+                title,
+                "description",
+                "place",
+                createOrganizationMember(createMember(), organization),
+                organization,
+                EventOperationPeriod.create(
+                        new Period(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2)),
+                        new Period(LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(4)),
+                        LocalDateTime.now()
+                ),
+                maxCapacity
+        );
     }
 
     private Event createEvent() {
