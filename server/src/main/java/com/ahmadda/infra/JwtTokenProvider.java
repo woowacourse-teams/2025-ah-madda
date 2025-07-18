@@ -20,22 +20,19 @@ import javax.crypto.SecretKey;
 public class JwtTokenProvider {
 
     private final SecretKey secretKey;
-    private final Duration accessExpirationMin;
-    private final Duration refreshExpirationDays;
+    private final Duration accessExpirationDay;
 
     public JwtTokenProvider(
             @Value("${jwt.secret-key}") String jwtSecretKey,
-            @Value("${jwt.access-expiration-min}") long accessExpirationMin,
-            @Value("${jwt.refresh-expiration-days}") long refreshExpirationDays
+            @Value("${jwt.access-expiration-day}") long accessExpirationDay
     ) {
         this.secretKey = Keys.hmacShaKeyFor(jwtSecretKey.getBytes(StandardCharsets.UTF_8));
-        this.accessExpirationMin = Duration.ofMinutes(accessExpirationMin);
-        this.refreshExpirationDays = Duration.ofDays(refreshExpirationDays);
+        this.accessExpirationDay = Duration.ofDays(accessExpirationDay);
     }
 
     public String createAccessToken(final Member member) {
         Instant now = Instant.now();
-        Instant expire = now.plus(accessExpirationMin);
+        Instant expire = now.plus(accessExpirationDay);
 
         String memberId = member.getId().toString();
 
