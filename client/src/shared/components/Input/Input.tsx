@@ -13,7 +13,7 @@ type InputProps = {
    * Label text displayed above the input field.
    * @type {string}
    */
-  title: string;
+  label: string;
 
   /**
    * Helper text displayed below the input field.
@@ -23,11 +23,11 @@ type InputProps = {
   helperText?: string;
 } & InputHTMLAttributes<HTMLInputElement>;
 
-export const Input = ({ title, helperText, required = false, ...props }: InputProps) => {
+export const Input = ({ label, helperText, required = false, ...props }: InputProps) => {
   return (
     <StyledWrapper>
       <StyledLabel htmlFor={props.id || props.name}>
-        {title}
+        {label}
         {required && <StyledRequiredMark>*</StyledRequiredMark>}
       </StyledLabel>
       <StyledInput {...props} required={required} />
