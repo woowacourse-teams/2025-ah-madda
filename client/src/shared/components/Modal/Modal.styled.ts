@@ -1,32 +1,7 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
-export type Position = 'center' | 'top' | 'bottom';
 export type Size = 'small' | 'medium' | 'large';
-
-export const positionStyles = {
-  center: css`
-    align-items: center;
-  `,
-  top: css`
-    align-items: flex-start;
-  `,
-  bottom: css`
-    align-items: flex-end;
-  `,
-} as const;
-
-export const radiusStyles = {
-  center: css`
-    border-radius: 8px;
-  `,
-  top: css`
-    border-radius: 0 0 8px 8px;
-  `,
-  bottom: css`
-    border-radius: 8px 8px 0 0;
-  `,
-} as const;
 
 const sizeStyles = {
   small: css`
@@ -40,23 +15,24 @@ const sizeStyles = {
   `,
 } as const;
 
-export const StyledModalLayout = styled.div<{ position: Position }>`
+export const StyledModalLayout = styled.div`
   position: fixed;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  ${({ position }) => positionStyles[position]};
+  align-items: center;
   z-index: 1000;
 `;
 
-export const StyledModalContainer = styled.div<{ size: Size; position: Position }>`
+export const StyledModalContainer = styled.div<{ size: Size }>`
   background-color: #ffffff;
   min-height: 216px;
   padding: 24px 32px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   position: relative;
-  ${({ position }) => radiusStyles[position]};
+  align-items: center;
+  border-radius: 8px;
   ${({ size }) => sizeStyles[size]};
 `;
 

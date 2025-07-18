@@ -26,11 +26,6 @@ export type ModalProps = {
    */
   size?: 'small' | 'medium' | 'large';
   /**
-   * Modal vertical position.
-   * @default 'center'
-   */
-  position?: 'center' | 'top' | 'bottom';
-  /**
    * Whether clicking the backdrop should close the modal.
    * @default true
    */
@@ -47,7 +42,6 @@ export const Modal = ({
   onClose,
   children,
   size = 'small',
-  position = 'center',
   hasBackdropClick = true,
   hasCloseButton = true,
 }: ModalProps) => {
@@ -99,8 +93,8 @@ export const Modal = ({
   if (!isOpen) return null;
 
   return (
-    <StyledModalLayout onClick={hasBackdropClick ? onClose : undefined} position={position}>
-      <StyledModalContainer size={size} position={position} onClick={(e) => e.stopPropagation()}>
+    <StyledModalLayout onClick={hasBackdropClick ? onClose : undefined}>
+      <StyledModalContainer size={size} onClick={(e) => e.stopPropagation()}>
         <StyledModalWrapper ref={modalRef}>
           {hasCloseButton && (
             <StyledCloseButtonWrapper>
