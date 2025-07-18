@@ -1,4 +1,4 @@
-import { InputHTMLAttributes } from 'react';
+import { ComponentProps } from 'react';
 
 import {
   StyledWrapper,
@@ -40,7 +40,7 @@ export type InputProps = {
    * Message displayed when the input is invalid.
    */
   errorMessage?: string;
-} & InputHTMLAttributes<HTMLInputElement>;
+} & ComponentProps<'input'>;
 
 export const Input = ({
   label,
