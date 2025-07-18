@@ -1,12 +1,8 @@
 package com.ahmadda.domain;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.util.Assert;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,6 +13,10 @@ import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -93,5 +93,12 @@ public class Organization extends BaseEntity {
 
     private void validateImageUrl(final String imageUrl) {
         Assert.notBlank(imageUrl, "이미지 url은 공백이면 안됩니다.");
+    }
+
+    public List<Event> getActiveEvents() {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        return events.stream()
+                .filter((event) -> event.getEventStart().isAfter(currentDateTime))
+                .toList();
     }
 }

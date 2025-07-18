@@ -36,6 +36,6 @@ public class OrganizationService {
     public List<Event> getOrganizationEvents(final Long organizationId) {
         Organization organization = getOrganization(organizationId);
 
-        return organization.getEvents();
+        return organization.getActiveEvents();
     }
 }
