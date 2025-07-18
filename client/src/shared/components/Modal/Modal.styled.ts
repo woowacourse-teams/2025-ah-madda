@@ -29,7 +29,6 @@ export const StyledModalLayout = styled.div`
 
 export const StyledModalContainer = styled.div<Pick<ModalProps, 'size'>>`
   background-color: #ffffff;
-  min-height: 216px;
   padding: 24px 32px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   position: relative;
