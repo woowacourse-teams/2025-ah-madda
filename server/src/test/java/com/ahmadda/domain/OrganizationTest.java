@@ -3,9 +3,14 @@ package com.ahmadda.domain;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -48,113 +53,42 @@ class OrganizationTest {
                 .isInstanceOf(BusinessRuleViolatedException.class);
     }
 
-    @Test
-    void 과거_이벤트는_활성_이벤트에서_제외된다() {
+    @ParameterizedTest(name = "[{index}] {0}")
+    @MethodSource("getActiveEventsScenarios")
+    void 활성_이벤트_목록을_정확히_반환한다(String description, List<Event> initialEvents, List<String> expectedTitles) {
         // given
         var sut = Organization.create("테스트 조직", "조직 설명", "image.png");
-        var now = LocalDateTime.now();
-
-        var pastEvent = createEvent(
-                "과거 이벤트",
-                "과거 이벤트 설명",
-                "과거 장소",
-                now.minusDays(2), // eventStart: 2일 전
-                now.minusDays(1)  // eventEnd: 1일 전
-        );
-
-        sut.addEvent(pastEvent);
+        initialEvents.forEach(sut::addEvent);
 
         // when
         var activeEvents = sut.getActiveEvents();
 
         // then
-        assertThat(activeEvents).isEmpty();
-    }
-
-    @Test
-    void 미래_이벤트는_활성_이벤트로_반환된다() {
-        // given
-        var sut = Organization.create("테스트 조직", "조직 설명", "image.png");
-        var now = LocalDateTime.now();
-
-        var futureEvent = createEvent(
-                "미래 이벤트",
-                "미래 이벤트 설명",
-                "미래 장소",
-                now.plusDays(1), // eventStart: 1일 후
-                now.plusDays(2)  // eventEnd: 2일 후
-        );
-
-        sut.addEvent(futureEvent);
-
-        // when
-        var activeEvents = sut.getActiveEvents();
-
-        // then
-        assertThat(activeEvents).hasSize(1);
-        assertThat(activeEvents.get(0).getTitle()).isEqualTo("미래 이벤트");
-    }
-
-    @Test
-    void 활성_이벤트가_없으면_빈_리스트를_반환한다() {
-        // given
-        var sut = Organization.create("테스트 조직", "조직 설명", "image.png");
-
-        // when
-        var activeEvents = sut.getActiveEvents();
-
-        // then
-        assertThat(activeEvents).isEmpty();
-    }
-
-    @Test
-    void 과거와_미래_이벤트가_섞여있을_때_미래_이벤트만_반환한다() {
-        // given
-        var sut = Organization.create("테스트 조직", "조직 설명", "image.png");
-        var now = LocalDateTime.now();
-
-        // 과거 이벤트
-        var pastEvent = createEvent(
-                "과거 이벤트",
-                "과거 이벤트 설명",
-                "과거 장소",
-                now.minusDays(3),
-                now.minusDays(2)
-        );
-
-        // 미래 이벤트 1
-        var futureEvent1 = createEvent(
-                "미래 이벤트 1",
-                "미래 이벤트 1 설명",
-                "미래 장소 1",
-                now.plusDays(1),
-                now.plusDays(2)
-        );
-
-        // 미래 이벤트 2
-        var futureEvent2 = createEvent(
-                "미래 이벤트 2",
-                "미래 이벤트 2 설명",
-                "미래 장소 2",
-                now.plusDays(3),
-                now.plusDays(4)
-        );
-
-        sut.addEvent(pastEvent);
-        sut.addEvent(futureEvent1);
-        sut.addEvent(futureEvent2);
-
-        // when
-        var activeEvents = sut.getActiveEvents();
-
-        // then
-        assertThat(activeEvents).hasSize(2);
+        assertThat(activeEvents).hasSize(expectedTitles.size());
         assertThat(activeEvents).extracting(Event::getTitle)
-                .containsExactlyInAnyOrder("미래 이벤트 1", "미래 이벤트 2");
+                .containsExactlyInAnyOrderElementsOf(expectedTitles);
     }
 
-    private Event createEvent(String title, String description, String place,
-                              LocalDateTime eventStart, LocalDateTime eventEnd) {
+    private static Stream<Arguments> getActiveEventsScenarios() {
+        var now = LocalDateTime.now();
+        var pastEvent = createEvent("과거 이벤트", "설명", "장소", now.minusDays(2), now.minusDays(1));
+        var futureEvent = createEvent("미래 이벤트", "설명", "장소", now.plusDays(1), now.plusDays(2));
+        var futureEvent1 = createEvent("미래 이벤트 1", "설명", "장소", now.plusDays(1), now.plusDays(2));
+        var futureEvent2 = createEvent("미래 이벤트 2", "설명", "장소", now.plusDays(3), now.plusDays(4));
+
+        return Stream.of(
+                Arguments.of("미래 이벤트만 있을 경우", List.of(futureEvent), List.of("미래 이벤트")),
+                Arguments.of("과거 이벤트만 있을 경우", List.of(pastEvent), Collections.emptyList()),
+                Arguments.of("이벤트가 아예 없는 경우", Collections.emptyList(), Collections.emptyList()),
+                Arguments.of("과거와 미래 이벤트가 섞여 있을 경우",
+                             List.of(pastEvent, futureEvent1, futureEvent2),
+                             List.of("미래 이벤트 1", "미래 이벤트 2")
+                )
+        );
+    }
+
+    private static Event createEvent(String title, String description, String place,
+                                     LocalDateTime eventStart, LocalDateTime eventEnd) {
         var member = Member.create("테스트 멤버", "test@example.com");
         var organization = Organization.create("테스트 조직", "조직 설명", "image.png");
         var organizer = OrganizationMember.create("주최자", member, organization);
