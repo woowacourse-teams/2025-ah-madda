@@ -82,7 +82,7 @@ class EventTest {
                 registrationEnd
         ))
                 .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("이벤트 시작 시간은 이벤트 생성 요청 시점보다 과거일 수 없습니다.");
+                .hasMessage("이벤트 신청 시작 시간은 현재 시점보다 미래여야 합니다.");
     }
 
     @ParameterizedTest
@@ -103,7 +103,7 @@ class EventTest {
                 registrationEnd
         ))
                 .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("이벤트 종료 시간은 이벤트 시작 시간보다 과거 이거나 같을 수 없습니다.");
+                .hasMessage("종료 시간은 시작 시간보다 미래여야 합니다.");
     }
 
     @Test
@@ -124,7 +124,7 @@ class EventTest {
                 registrationEnd
         ))
                 .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("이벤트 신청 시작 시간은 이벤트 생성 요청 시점보다 과거일 수 없습니다.");
+                .hasMessage("이벤트 신청 시작 시간은 현재 시점보다 미래여야 합니다.");
     }
 
     @ParameterizedTest
@@ -145,7 +145,7 @@ class EventTest {
                 registrationEnd
         ))
                 .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("이벤트 신청 시작 시간은 이벤트 시작 시간보다 과거여야 합니다.");
+                .hasMessage("등록 기간과 이벤트 기간이 겹칠 수 없습니다.");
     }
 
     @ParameterizedTest
@@ -166,7 +166,7 @@ class EventTest {
                 registrationEnd
         ))
                 .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("이벤트 신청 마감 시간은 이벤트 신청 시작 시간보다 미래여야 합니다.");
+                .hasMessage("종료 시간은 시작 시간보다 미래여야 합니다.");
     }
 
     @ParameterizedTest
@@ -187,7 +187,7 @@ class EventTest {
                 registrationEnd
         ))
                 .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("이벤트 신청 마감 시간은 이벤트 시작 시간보다 미래일 수 없습니다.");
+                .hasMessage("등록 기간과 이벤트 기간이 겹칠 수 없습니다.");
     }
 
     @ParameterizedTest
@@ -201,16 +201,15 @@ class EventTest {
     }
 
     private Event createEvent(final String title, final int maxCapacity) {
+        Organization organization = createOrganization("우테코");
         return Event.create(
                 title,
                 "description",
                 "place",
-                createOrganizationMember(createMember(), createOrganization("우테코")),
-                createOrganization("우테코"),
-                LocalDateTime.now().plusDays(1),
-                LocalDateTime.now().plusDays(2),
-                LocalDateTime.now().plusDays(3),
-                LocalDateTime.now().plusDays(4),
+                createOrganizationMember(createMember(), organization),
+                organization,
+                new Period(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2)),
+                new Period(LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(4)),
                 maxCapacity,
                 LocalDateTime.now()
         );
@@ -231,10 +230,8 @@ class EventTest {
                 "place",
                 createOrganizationMember(createMember(), organization),
                 organization,
-                registrationStart,
-                registrationEnd,
-                eventStart,
-                eventEnd,
+                new Period(registrationStart, registrationEnd),
+                new Period(eventStart, eventEnd),
                 10,
                 currentDateTime
         );
@@ -247,10 +244,8 @@ class EventTest {
                 "place",
                 organizationMember,
                 organization,
-                LocalDateTime.now().plusDays(1),
-                LocalDateTime.now().plusDays(2),
-                LocalDateTime.now(),
-                LocalDateTime.now().plusDays(1),
+                new Period(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2)),
+                new Period(LocalDateTime.now(), LocalDateTime.now().plusDays(1)),
                 10,
                 LocalDateTime.now()
         );
