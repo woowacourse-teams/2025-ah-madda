@@ -1,7 +1,5 @@
 import { createContext, useContext, useState, ReactNode, ComponentProps } from 'react';
 
-import { SerializedStyles } from '@emotion/react';
-
 import { StyledTabs, StyledTabsList, StyledTabsTrigger, StyledTabsContent } from './Tabs.styled';
 
 type TabsContextValue = {
@@ -14,15 +12,11 @@ type TabsProps = {
   defaultValue?: string;
   /** Child components including TabsList and TabsContent */
   children: ReactNode;
-  /** Custom styles using emotion CSS-in-JS */
-  css?: SerializedStyles;
 };
 
 type TabsListProps = {
   /** TabsTrigger components as children */
   children: ReactNode;
-  /** Custom styles using emotion CSS-in-JS */
-  css?: SerializedStyles;
 };
 
 type TabsTriggerProps = {
@@ -30,17 +24,13 @@ type TabsTriggerProps = {
   value: string;
   /** Content to display in the tab button */
   children: ReactNode;
-  /** Custom styles using emotion CSS-in-JS */
-  css?: SerializedStyles;
 } & ComponentProps<'button'>;
 
 type TabsContentProps = {
-  /** Unique identifier for the tab (must match the corresponding TabsTrigger value) */
+  /** Unique identifier for the tab (must match the corresponding TabsContent value) */
   value: string;
   /** Content to display when the tab is active */
   children: ReactNode;
-  /** Custom styles using emotion CSS-in-JS */
-  css?: SerializedStyles;
 };
 
 const TabsContext = createContext<TabsContextValue | null>(null);
@@ -53,25 +43,21 @@ const useTabsContext = () => {
   return context;
 };
 
-export const Tabs = ({ defaultValue, css: cssProp, children }: TabsProps) => {
+export const Tabs = ({ defaultValue, children }: TabsProps) => {
   const [activeTab, setActiveTab] = useState(defaultValue || '');
 
   return (
     <TabsContext.Provider value={{ activeTab, setActiveTab }}>
-      <StyledTabs css={cssProp}>{children}</StyledTabs>
+      <StyledTabs>{children}</StyledTabs>
     </TabsContext.Provider>
   );
 };
 
-export const TabsList = ({ css: cssProp, children }: TabsListProps) => {
-  return (
-    <StyledTabsList css={cssProp} role="tablist">
-      {children}
-    </StyledTabsList>
-  );
+export const TabsList = ({ children }: TabsListProps) => {
+  return <StyledTabsList role="tablist">{children}</StyledTabsList>;
 };
 
-export const TabsTrigger = ({ value, children, css: cssProp, ...props }: TabsTriggerProps) => {
+export const TabsTrigger = ({ value, children, ...props }: TabsTriggerProps) => {
   const { activeTab, setActiveTab } = useTabsContext();
   const isActive = activeTab === value;
 
@@ -82,7 +68,6 @@ export const TabsTrigger = ({ value, children, css: cssProp, ...props }: TabsTri
   return (
     <StyledTabsTrigger
       type="button"
-      css={cssProp}
       role="tab"
       aria-selected={isActive}
       aria-controls={`tabpanel-${value}`}
@@ -96,20 +81,19 @@ export const TabsTrigger = ({ value, children, css: cssProp, ...props }: TabsTri
   );
 };
 
-export const TabsContent = ({ value, css: cssProp, children }: TabsContentProps) => {
+export const TabsContent = ({ value, children }: TabsContentProps) => {
   const { activeTab } = useTabsContext();
   const isActive = activeTab === value;
 
   if (!isActive) return null;
 
   return (
-    <StyledTabsContent
-      css={cssProp}
-      role="tabpanel"
-      aria-labelledby={`tab-${value}`}
-      id={`tabpanel-${value}`}
-    >
+    <StyledTabsContent role="tabpanel" aria-labelledby={`tab-${value}`} id={`tabpanel-${value}`}>
       {children}
     </StyledTabsContent>
   );
 };
+
+Tabs.Trigger = TabsTrigger;
+Tabs.List = TabsList;
+Tabs.Content = TabsContent;
