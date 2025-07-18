@@ -5,6 +5,7 @@ import com.ahmadda.domain.Event;
 import java.time.LocalDateTime;
 
 public record EventResponse(
+        Long eventId,
         String title,
         String description,
         LocalDateTime eventStart,
@@ -18,6 +19,7 @@ public record EventResponse(
 
     public static EventResponse from(final Event event) {
         return new EventResponse(
+                event.getId(),
                 event.getTitle(),
                 event.getDescription(),
                 event.getEventStart(),
