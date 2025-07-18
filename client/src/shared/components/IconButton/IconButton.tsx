@@ -19,7 +19,7 @@ export type IconButtonProps = {
    * The color of the icon.
    * @default '#2B2B2B'
    */
-  color: string;
+  color?: string;
 } & ComponentProps<'button'>;
 
 export const IconButton = ({ name, size = 20, color, ...props }: IconButtonProps) => {
