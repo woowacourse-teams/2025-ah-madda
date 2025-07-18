@@ -23,7 +23,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Event extends BaseEntity {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id")
@@ -121,6 +121,11 @@ public class Event extends BaseEntity {
                 eventEnd,
                 maxCapacity
         );
+    }
+
+    public boolean hasGuest(final OrganizationMember organizationMember) {
+        return guests.stream()
+                .anyMatch(guest -> guest.isSameParticipant(organizationMember));
     }
 
     private void validateTitle(final String title) {

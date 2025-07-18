@@ -2,8 +2,8 @@ package com.ahmadda.presentation;
 
 import com.ahmadda.application.OrganizationService;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
-import com.ahmadda.application.dto.OrganizationReadResponse;
 import com.ahmadda.domain.Organization;
+import com.ahmadda.presentation.dto.OrganizationReadResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
