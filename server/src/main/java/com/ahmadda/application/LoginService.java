@@ -1,8 +1,10 @@
 package com.ahmadda.application;
 
-import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
+import com.ahmadda.infra.GoogleOAuthProvider;
+import com.ahmadda.infra.JwtTokenProvider;
+import com.ahmadda.infra.OAuthUserInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,12 +18,12 @@ public class LoginService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public AuthTokens login(final String code) {
+    public String login(final String code) {
         OAuthUserInfoResponse userInfo = googleOAuthProvider.getUserInfo(code);
 
         Member member = findOrCreateMember(userInfo.email(), userInfo.name());
 
-        return jwtTokenProvider.publishLoginTokens(member);
+        return jwtTokenProvider.createAccessToken(member);
     }
 
     private Member findOrCreateMember(final String email, final String name) {
@@ -31,14 +33,5 @@ public class LoginService {
 
                     return memberRepository.save(newMember);
                 });
-    }
-
-    public String renewAuthTokens(final String refreshToken) {
-        long memberId = jwtTokenProvider.extractId(refreshToken);
-
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException("member를 찾을 수 없습니다."));
-
-        return jwtTokenProvider.createAccessToken(member);
     }
 }

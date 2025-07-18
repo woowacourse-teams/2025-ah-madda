@@ -1,4 +1,4 @@
-package com.ahmadda.presentation.dto;
+package com.ahmadda.presentation;
 
 import jakarta.validation.constraints.NotNull;
 

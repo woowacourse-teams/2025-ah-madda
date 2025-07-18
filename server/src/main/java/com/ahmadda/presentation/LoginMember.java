@@ -1,4 +1,4 @@
-package com.ahmadda.infra;
+package com.ahmadda.presentation;
 
 public record LoginMember(
         Long memberId

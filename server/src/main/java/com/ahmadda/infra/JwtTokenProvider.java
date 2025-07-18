@@ -1,4 +1,4 @@
-package com.ahmadda.application;
+package com.ahmadda.infra;
 
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
@@ -31,27 +31,6 @@ public class JwtTokenProvider {
         this.secretKey = Keys.hmacShaKeyFor(jwtSecretKey.getBytes(StandardCharsets.UTF_8));
         this.accessExpirationMin = Duration.ofMinutes(accessExpirationMin);
         this.refreshExpirationDays = Duration.ofDays(refreshExpirationDays);
-    }
-
-    public AuthTokens publishLoginTokens(final Member member) {
-        String refreshToken = createRefreshToken(member);
-        String accessToken = createAccessToken(member);
-
-        return new AuthTokens(refreshToken, accessToken);
-    }
-
-    private String createRefreshToken(final Member member) {
-        Instant now = Instant.now();
-        Instant expire = now.plus(refreshExpirationDays);
-
-        String memberId = member.getId().toString();
-
-        return Jwts.builder()
-                .subject(memberId)
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(expire))
-                .signWith(secretKey)
-                .compact();
     }
 
     public String createAccessToken(final Member member) {
