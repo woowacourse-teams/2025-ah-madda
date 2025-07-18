@@ -1,5 +1,6 @@
 package com.ahmadda.application;
 
+import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,5 +27,12 @@ public class LoginService {
                     Member newMember = Member.create(name, email);
                     return memberRepository.save(newMember);
                 });
+    }
+
+    public String renewAuthTokens(final String refreshToken) {
+        long memberId = jwtTokenProvider.extractId(refreshToken);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException("member를 찾을 수 없습니다."));
+        return jwtTokenProvider.createAccessToken(member);
     }
 }

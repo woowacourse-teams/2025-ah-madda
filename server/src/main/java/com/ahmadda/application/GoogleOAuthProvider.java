@@ -49,14 +49,14 @@ public class GoogleOAuthProvider {
         params.add("redirect_uri", redirectUri);
         params.add("grant_type", GRANT_TYPE_AUTHORIZATION_CODE);
 
-        GoogleAccessToken googleAccessToken = restClient.post()
+        GoogleAccessTokenResponse googleAccessTokenResponse = restClient.post()
                 .uri(tokenUri)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(params)
                 .retrieve()
-                .body(GoogleAccessToken.class);
+                .body(GoogleAccessTokenResponse.class);
 
-        String accessToken = googleAccessToken.accessToken();
+        String accessToken = googleAccessTokenResponse.accessToken();
         Assert.notNull(accessToken, "accessToken null이 되면 안됩니다.");
 
         return accessToken;

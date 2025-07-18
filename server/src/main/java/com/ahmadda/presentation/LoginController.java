@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,6 +40,13 @@ public class LoginController {
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new AccessTokenResponse(authTokens.accessToken()));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AccessTokenResponse> extendsToken(@CookieValue(name = "refresh-token") String refreshToken) {
+        String accessToken = loginService.renewAuthTokens(refreshToken);
+        AccessTokenResponse accessTokenResponse = new AccessTokenResponse(accessToken);
+        return ResponseEntity.status(HttpStatus.CREATED).body(accessTokenResponse);
     }
 
     @DeleteMapping("/logout")

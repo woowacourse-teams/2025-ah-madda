@@ -54,7 +54,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    private String createAccessToken(Member member) {
+    public String createAccessToken(Member member) {
         Instant now = Instant.now();
         Instant expire = now.plus(accessExpiration);
 
@@ -84,7 +84,11 @@ public class JwtTokenProvider {
                     .build()
                     .parseSignedClaims(token);
             Claims claims = jws.getPayload();
-            if (claims.getExpiration().before(new Date())) {
+
+            Date expiration = claims.getExpiration();
+            Date now = new Date();
+
+            if (expiration.before(now)) {
                 throw new BusinessRuleViolatedException("토큰이 만료되었습니다.");
             }
             return claims;

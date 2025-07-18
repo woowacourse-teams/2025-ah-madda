@@ -2,7 +2,7 @@ package com.ahmadda.application;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record GoogleAccessToken(
+public record GoogleAccessTokenResponse(
         @JsonProperty("access_token") String accessToken,
         @JsonProperty("expires_in") Integer expiresIn,
         @JsonProperty("scope") String scope,
