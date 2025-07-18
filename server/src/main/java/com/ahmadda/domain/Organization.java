@@ -53,7 +53,6 @@ public class Organization extends BaseEntity {
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
-
         this.events = new ArrayList<>();
     }
 

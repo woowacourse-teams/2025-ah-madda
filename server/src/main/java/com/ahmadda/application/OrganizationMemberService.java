@@ -30,7 +30,7 @@ public class OrganizationMemberService {
         return events.stream()
                 .filter(event -> event.getGuests()
                         .stream()
-                        .anyMatch(guest -> guest.isSameGuest(organizationMember))
+                        .anyMatch(guest -> guest.isSameParticipant(organizationMember))
                 )
                 .toList();
     }
