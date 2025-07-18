@@ -5,6 +5,7 @@ import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -14,6 +15,7 @@ public class LoginService {
     private final GoogleOAuthProvider googleOAuthProvider;
     private final JwtTokenProvider jwtTokenProvider;
 
+    @Transactional
     public AuthTokens login(final String code) {
         OAuthUserInfoResponse userInfo = googleOAuthProvider.getUserInfo(code);
 
