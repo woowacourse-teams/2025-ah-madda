@@ -25,14 +25,8 @@ public class OrganizationMemberService {
 
     public List<Event> getParticipantEvents(final Long organizationMemberId) {
         OrganizationMember organizationMember = getOrganizationMember(organizationMemberId);
-        List<Event> events = organizationMember.getOrganization().getEvents();
 
-        return events.stream()
-                .filter(event -> event.getGuests()
-                        .stream()
-                        .anyMatch(guest -> guest.isSameParticipant(organizationMember))
-                )
-                .toList();
+        return organizationMember.getParticipatedEvents();
     }
 
     private OrganizationMember getOrganizationMember(final Long organizationMemberId) {

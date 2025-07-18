@@ -2,8 +2,8 @@ package com.ahmadda.presentation;
 
 
 import com.ahmadda.application.OrganizationService;
-import com.ahmadda.application.dto.EventResponse;
 import com.ahmadda.domain.Event;
+import com.ahmadda.presentation.dto.EventResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
