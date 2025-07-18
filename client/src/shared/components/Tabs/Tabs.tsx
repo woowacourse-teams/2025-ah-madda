@@ -1,37 +1,34 @@
-import { createContext, useContext, useState, ReactNode, ComponentProps } from 'react';
+import { createContext, useContext, useState, ComponentProps } from 'react';
+
+import { PropsWithRequiredChildren } from '@/shared/utils/utility';
 
 import { StyledTabs, StyledTabsContent, StyledTabsList, StyledTabsTrigger } from './Tabs.styled';
+
+type DivComponentProps = PropsWithRequiredChildren<ComponentProps<'div'>>;
+type ButtonComponentProps = PropsWithRequiredChildren<ComponentProps<'button'>>;
+
+type ValueProps = {
+  /** Unique identifier for the tab */
+  value: string;
+};
+
+type DefaultValueProps = {
+  /** The value of the tab that should be active by default */
+  defaultValue: string;
+};
 
 type TabsContextValue = {
   activeTab: string;
   setActiveTab: (value: string) => void;
 };
 
-type TabsProps = {
-  /** The value of the tab that should be active by default */
-  defaultValue?: string;
-  /** Child components including TabsList and TabsContent */
-  children: ReactNode;
-} & ComponentProps<'div'>;
+type TabsProps = DivComponentProps & DefaultValueProps;
 
-type TabsListProps = {
-  /** TabsTrigger components as children */
-  children: ReactNode;
-} & ComponentProps<'div'>;
+type TabsListProps = DivComponentProps;
 
-type TabsTriggerProps = {
-  /** Unique identifier for the tab (must match the corresponding TabsContent value) */
-  value: string;
-  /** Content to display in the tab button */
-  children: ReactNode;
-} & ComponentProps<'button'>;
+type TabsTriggerProps = ButtonComponentProps & ValueProps;
 
-type TabsContentProps = {
-  /** Unique identifier for the tab (must match the corresponding TabsContent value) */
-  value: string;
-  /** Content to display when the tab is active */
-  children: ReactNode;
-} & ComponentProps<'div'>;
+type TabsContentProps = DivComponentProps & ValueProps;
 
 const TabsContext = createContext<TabsContextValue | null>(null);
 
@@ -44,7 +41,7 @@ const useTabsContext = () => {
 };
 
 export const Tabs = ({ defaultValue, children, ...props }: TabsProps) => {
-  const [activeTab, setActiveTab] = useState(defaultValue || '');
+  const [activeTab, setActiveTab] = useState(defaultValue);
 
   return (
     <TabsContext.Provider value={{ activeTab, setActiveTab }}>
