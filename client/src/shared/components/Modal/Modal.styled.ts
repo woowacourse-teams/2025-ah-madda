@@ -20,7 +20,7 @@ const sizeStyles = {
 export const StyledModalLayout = styled.div`
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(123, 123, 123, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
