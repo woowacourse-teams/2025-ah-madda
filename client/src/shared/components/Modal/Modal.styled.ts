@@ -3,16 +3,16 @@ import styled from '@emotion/styled';
 
 import { ModalProps } from './Modal';
 
-export type Size = 'small' | 'medium' | 'large';
+export type Size = 'sm' | 'md' | 'lg';
 
 const sizeStyles = {
-  small: css`
+  sm: css`
     width: 304px;
   `,
-  medium: css`
+  md: css`
     width: 40%;
   `,
-  large: css`
+  lg: css`
     width: 70%;
   `,
 } as const;

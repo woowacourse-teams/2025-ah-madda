@@ -22,9 +22,9 @@ export type ModalProps = {
   children: React.ReactNode;
   /**
    * Modal size.
-   * @default 'small'
+   * @default 'sm'
    */
-  size?: 'small' | 'medium' | 'large';
+  size?: 'sm' | 'md' | 'lg';
   /**
    * Whether clicking the backdrop should close the modal.
    * @default true
@@ -41,7 +41,7 @@ export const Modal = ({
   isOpen,
   onClose,
   children,
-  size = 'small',
+  size = 'sm',
   hasBackdropClick = true,
   hasCloseButton = true,
 }: ModalProps) => {
