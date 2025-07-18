@@ -66,7 +66,7 @@ export const Modal = ({
 
   return (
     <StyledModalLayout onClick={handleBackdropClick}>
-      <StyledModalContainer size={size} onClick={(e) => e.stopPropagation()} {...props}>
+      <StyledModalContainer size={size} {...props}>
         <StyledModalWrapper ref={modalRef}>
           {showCloseButton && (
             <StyledCloseButtonWrapper>
