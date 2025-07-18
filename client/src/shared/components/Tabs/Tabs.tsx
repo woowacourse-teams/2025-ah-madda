@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, ReactNode, ComponentProps } from 'react';
 
-import { StyledTabs, StyledTabsList, StyledTabsTrigger, StyledTabsContent } from './Tabs.styled';
+import { StyledTabs, StyledTabsContent, StyledTabsList, StyledTabsTrigger } from './Tabs.styled';
 
 type TabsContextValue = {
   activeTab: string;
@@ -12,12 +12,12 @@ type TabsProps = {
   defaultValue?: string;
   /** Child components including TabsList and TabsContent */
   children: ReactNode;
-};
+} & ComponentProps<'div'>;
 
 type TabsListProps = {
   /** TabsTrigger components as children */
   children: ReactNode;
-};
+} & ComponentProps<'div'>;
 
 type TabsTriggerProps = {
   /** Unique identifier for the tab (must match the corresponding TabsContent value) */
@@ -31,7 +31,7 @@ type TabsContentProps = {
   value: string;
   /** Content to display when the tab is active */
   children: ReactNode;
-};
+} & ComponentProps<'div'>;
 
 const TabsContext = createContext<TabsContextValue | null>(null);
 
@@ -43,18 +43,22 @@ const useTabsContext = () => {
   return context;
 };
 
-export const Tabs = ({ defaultValue, children }: TabsProps) => {
+export const Tabs = ({ defaultValue, children, ...props }: TabsProps) => {
   const [activeTab, setActiveTab] = useState(defaultValue || '');
 
   return (
     <TabsContext.Provider value={{ activeTab, setActiveTab }}>
-      <StyledTabs>{children}</StyledTabs>
+      <StyledTabs {...props}>{children}</StyledTabs>
     </TabsContext.Provider>
   );
 };
 
-export const TabsList = ({ children }: TabsListProps) => {
-  return <StyledTabsList role="tablist">{children}</StyledTabsList>;
+export const TabsList = ({ children, ...props }: TabsListProps) => {
+  return (
+    <StyledTabsList role="tablist" {...props}>
+      {children}
+    </StyledTabsList>
+  );
 };
 
 export const TabsTrigger = ({ value, children, ...props }: TabsTriggerProps) => {
@@ -81,14 +85,19 @@ export const TabsTrigger = ({ value, children, ...props }: TabsTriggerProps) => 
   );
 };
 
-export const TabsContent = ({ value, children }: TabsContentProps) => {
+export const TabsContent = ({ value, children, ...props }: TabsContentProps) => {
   const { activeTab } = useTabsContext();
   const isActive = activeTab === value;
 
   if (!isActive) return null;
 
   return (
-    <StyledTabsContent role="tabpanel" aria-labelledby={`tab-${value}`} id={`tabpanel-${value}`}>
+    <StyledTabsContent
+      role="tabpanel"
+      aria-labelledby={`tab-${value}`}
+      id={`tabpanel-${value}`}
+      {...props}
+    >
       {children}
     </StyledTabsContent>
   );

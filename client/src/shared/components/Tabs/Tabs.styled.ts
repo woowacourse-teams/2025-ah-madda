@@ -42,14 +42,6 @@ export const StyledTabsTrigger = styled.button`
       0 1px 3px 0 rgba(0, 0, 0, 0.1),
       0 1px 2px 0 rgba(0, 0, 0, 0.06);
   }
-
-  &:focus {
-    outline: 2px solid #3b82f6;
-    outline-offset: 2px;
-  }
 `;
 
-export const StyledTabsContent = styled.div`
-  margin-top: 8px;
-  outline: none;
-`;
+export const StyledTabsContent = styled.div``;
