@@ -20,17 +20,17 @@ import javax.crypto.SecretKey;
 public class JwtTokenProvider {
 
     private final SecretKey secretKey;
-    private final Duration accessExpiration;
-    private final Duration refreshExpiration;
+    private final Duration accessExpirationMin;
+    private final Duration refreshExpirationDays;
 
     public JwtTokenProvider(
             @Value("${jwt.secret-key}") String jwtSecretKey,
-            @Value("${jwt.access-expiration}") long accessExpirationTime,
-            @Value("${jwt.refresh-expiration}") long refreshExpirationTime
+            @Value("${jwt.access-expiration-min}") long accessExpirationMin,
+            @Value("${jwt.refresh-expiration-days}") long refreshExpirationDays
     ) {
         this.secretKey = Keys.hmacShaKeyFor(jwtSecretKey.getBytes(StandardCharsets.UTF_8));
-        this.accessExpiration = Duration.ofDays(refreshExpirationTime);
-        this.refreshExpiration = Duration.ofHours(accessExpirationTime);
+        this.accessExpirationMin = Duration.ofMinutes(accessExpirationMin);
+        this.refreshExpirationDays = Duration.ofDays(refreshExpirationDays);
     }
 
     public AuthTokens publishLoginTokens(final Member member) {
@@ -42,7 +42,7 @@ public class JwtTokenProvider {
 
     private String createRefreshToken(final Member member) {
         Instant now = Instant.now();
-        Instant expire = now.plus(refreshExpiration);
+        Instant expire = now.plus(refreshExpirationDays);
 
         String memberId = member.getId().toString();
 
@@ -56,7 +56,7 @@ public class JwtTokenProvider {
 
     public String createAccessToken(final Member member) {
         Instant now = Instant.now();
-        Instant expire = now.plus(accessExpiration);
+        Instant expire = now.plus(accessExpirationMin);
 
         String memberId = member.getId().toString();
 
