@@ -47,7 +47,7 @@ export const Required: Story = {
   args: {
     label: '이름',
     name: 'name',
-    required: true,
+    isRequired: true,
     placeholder: '이름을 입력하세요',
     value: '',
     onChange: () => {},

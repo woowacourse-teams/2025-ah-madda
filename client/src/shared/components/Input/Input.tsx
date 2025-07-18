@@ -23,6 +23,14 @@ export type InputProps = {
   helperText?: string;
 
   /**
+   * Whether the input is required.
+   * When true, a red asterisk (*) will be shown next to the label.
+   * This does not trigger browser-native validation unless you also pass it to the DOM via `required`.
+   * @default false
+   */
+  isRequired?: boolean;
+
+  /**
    * Whether the input is in an error state.
    * When true, errorMessage will be shown instead of helperText.
    */
@@ -37,7 +45,7 @@ export type InputProps = {
 export const Input = ({
   label,
   helperText,
-  required = false,
+  isRequired = false,
   error = false,
   errorMessage,
   ...props
@@ -46,9 +54,9 @@ export const Input = ({
     <StyledWrapper>
       <StyledLabel htmlFor={props.id || props.name}>
         {label}
-        {required && <StyledRequiredMark>*</StyledRequiredMark>}
+        {isRequired && <StyledRequiredMark>*</StyledRequiredMark>}
       </StyledLabel>
-      <StyledInput {...props} required={required} error={error} />
+      <StyledInput {...props} error={error} />
       {error && errorMessage ? (
         <StyledHelperText error={error}>{errorMessage}</StyledHelperText>
       ) : (
