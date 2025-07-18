@@ -17,7 +17,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,10 +100,8 @@ public class Event extends BaseEntity {
             final String place,
             final OrganizationMember organizer,
             final Organization organization,
-            final Period registrationPeriod,
-            final Period eventPeriod,
-            final int maxCapacity,
-            final LocalDateTime currentDateTime
+            final EventOperationPeriod eventOperationPeriod,
+            final int maxCapacity
     ) {
         return new Event(
                 title,
@@ -112,7 +109,7 @@ public class Event extends BaseEntity {
                 place,
                 organizer,
                 organization,
-                EventOperationPeriod.create(registrationPeriod, eventPeriod, currentDateTime),
+                eventOperationPeriod,
                 maxCapacity
         );
     }

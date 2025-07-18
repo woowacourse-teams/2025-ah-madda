@@ -208,10 +208,12 @@ class EventTest {
                 "place",
                 createOrganizationMember(createMember(), organization),
                 organization,
-                new Period(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2)),
-                new Period(LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(4)),
-                maxCapacity,
-                LocalDateTime.now()
+                EventOperationPeriod.create(
+                        new Period(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2)),
+                        new Period(LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(4)),
+                        LocalDateTime.now()
+                ),
+                maxCapacity
         );
     }
 
@@ -230,10 +232,12 @@ class EventTest {
                 "place",
                 createOrganizationMember(createMember(), organization),
                 organization,
-                new Period(registrationStart, registrationEnd),
-                new Period(eventStart, eventEnd),
-                10,
-                currentDateTime
+                EventOperationPeriod.create(
+                        new Period(registrationStart, registrationEnd),
+                        new Period(eventStart, eventEnd),
+                        currentDateTime
+                ),
+                10
         );
     }
 
@@ -244,10 +248,12 @@ class EventTest {
                 "place",
                 organizationMember,
                 organization,
-                new Period(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2)),
-                new Period(LocalDateTime.now(), LocalDateTime.now().plusDays(1)),
-                10,
-                LocalDateTime.now()
+                EventOperationPeriod.create(
+                        new Period(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2)),
+                        new Period(LocalDateTime.now(), LocalDateTime.now().plusDays(1)),
+                        LocalDateTime.now()
+                ),
+                10
         );
     }
 

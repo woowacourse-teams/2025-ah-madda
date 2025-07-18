@@ -8,24 +8,32 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Embeddable
-public record EventOperationPeriod(
-        @Embedded
-        @AttributeOverrides({
-                @AttributeOverride(name = "start", column = @Column(name = "registration_start")),
-                @AttributeOverride(name = "end", column = @Column(name = "registration_end"))
-        })
-        Period registrationPeriod,
+@Getter
+@EqualsAndHashCode
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class EventOperationPeriod {
 
-        @Embedded
-        @AttributeOverrides({
-                @AttributeOverride(name = "start", column = @Column(name = "event_start")),
-                @AttributeOverride(name = "end", column = @Column(name = "event_end"))
-        })
-        Period eventPeriod
-) {
-    public EventOperationPeriod {
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "start", column = @Column(name = "registration_start")),
+            @AttributeOverride(name = "end", column = @Column(name = "registration_end"))
+    })
+    private Period registrationPeriod;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "start", column = @Column(name = "event_start")),
+            @AttributeOverride(name = "end", column = @Column(name = "event_end"))
+    })
+    private Period eventPeriod;
+
+    private EventOperationPeriod(Period registrationPeriod, Period eventPeriod) {
         Assert.notNull(registrationPeriod, "이벤트 신청 기간은 null이 되면 안됩니다.");
         Assert.notNull(eventPeriod, "이벤트 신청 기간은 null이 되면 안됩니다.");
 
@@ -35,6 +43,9 @@ public record EventOperationPeriod(
         if (registrationPeriod.isAfter(eventPeriod)) {
             throw new BusinessRuleViolatedException("등록 기간은 이벤트 기간보다 앞서야 합니다.");
         }
+
+        this.registrationPeriod = registrationPeriod;
+        this.eventPeriod = eventPeriod;
     }
 
     public static EventOperationPeriod create(
