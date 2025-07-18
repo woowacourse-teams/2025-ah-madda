@@ -1,6 +1,8 @@
 import { ComponentProps, PropsWithChildren, useRef } from 'react';
 
+import { useEscapeKey } from '@/shared/hooks/useEscapeKey';
 import { useFocusTrap } from '@/shared/hooks/useFocusTrap';
+import { useLockScroll } from '@/shared/hooks/useLockScroll';
 
 import {
   StyledModalLayout,
@@ -50,7 +52,9 @@ export const Modal = ({
 }: ModalProps) => {
   const modalRef = useRef<HTMLDivElement | null>(null);
 
-  useFocusTrap(modalRef, onClose);
+  useFocusTrap(modalRef);
+  useEscapeKey(onClose);
+  useLockScroll();
 
   if (!isOpen) return null;
 
