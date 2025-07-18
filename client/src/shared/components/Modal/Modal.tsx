@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { ComponentProps, PropsWithChildren, useEffect, useRef } from 'react';
 
 import {
   StyledModalLayout,
@@ -35,7 +35,7 @@ export type ModalProps = {
    * @default true
    */
   hasCloseButton?: boolean;
-};
+} & PropsWithChildren<ComponentProps<'div'>>;
 
 export const Modal = ({
   isOpen,
@@ -44,6 +44,7 @@ export const Modal = ({
   size = 'sm',
   hasBackdropClick = true,
   hasCloseButton = true,
+  ...props
 }: ModalProps) => {
   const modalRef = useRef<HTMLDivElement | null>(null);
 
@@ -94,7 +95,7 @@ export const Modal = ({
 
   return (
     <StyledModalLayout onClick={hasBackdropClick ? onClose : undefined}>
-      <StyledModalContainer size={size} onClick={(e) => e.stopPropagation()}>
+      <StyledModalContainer size={size} onClick={(e) => e.stopPropagation()} {...props}>
         <StyledModalWrapper ref={modalRef}>
           {hasCloseButton && (
             <StyledCloseButtonWrapper>
