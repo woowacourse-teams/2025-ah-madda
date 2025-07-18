@@ -14,6 +14,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -50,6 +52,12 @@ public class OrganizationMember extends BaseEntity {
                                             final Organization organization
     ) {
         return new OrganizationMember(nickname, member, organization);
+    }
+
+    public List<Event> getParticipatedEvents() {
+        return organization.getEvents().stream()
+                .filter(event -> event.hasGuest(this))
+                .toList();
     }
 
     private void validateNickname(final String nickname) {

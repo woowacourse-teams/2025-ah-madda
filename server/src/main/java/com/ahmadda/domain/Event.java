@@ -10,10 +10,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
+import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -40,6 +44,9 @@ public class Event extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
+    private List<Guest> guests;
 
     @Column(nullable = false)
     private LocalDateTime registrationStart;
@@ -87,11 +94,9 @@ public class Event extends BaseEntity {
         this.eventStart = eventStart;
         this.eventEnd = eventEnd;
         this.maxCapacity = maxCapacity;
-    }
 
-
-    private void validateTitle(final String title) {
-        Assert.notBlank(title, "title은 공백이면 안됩니다.");
+        guests = new ArrayList<>();
+        organization.addEvent(this);
     }
 
     public static Event create(final String title,
@@ -116,6 +121,15 @@ public class Event extends BaseEntity {
                 eventEnd,
                 maxCapacity
         );
+    }
+
+    public boolean hasGuest(final OrganizationMember organizationMember) {
+        return guests.stream()
+                .anyMatch(guest -> guest.isSameParticipant(organizationMember));
+    }
+
+    private void validateTitle(final String title) {
+        Assert.notBlank(title, "제목은 공백이면 안됩니다.");
     }
 
     private void validateDescription(final String description) {
