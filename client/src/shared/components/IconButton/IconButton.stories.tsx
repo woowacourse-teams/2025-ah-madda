@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { render } from '@testing-library/react';
 
 import { iconNames } from '../Icon/assets';
 
