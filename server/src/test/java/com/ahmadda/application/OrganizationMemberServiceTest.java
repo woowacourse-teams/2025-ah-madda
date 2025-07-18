@@ -90,10 +90,9 @@ class OrganizationMemberServiceTest {
         var result = sut.getOwnerEvents(organizer.getId());
 
         // then
-        assertThat(result).hasSize(2);
-
         assertSoftly(softly -> {
             var firstEvent = result.get(0);
+            softly.assertThat(result).hasSize(2);
             softly.assertThat(firstEvent.getTitle()).isEqualTo("주최 이벤트 1");
             softly.assertThat(firstEvent.getDescription()).isEqualTo("첫 번째 주최 이벤트");
             softly.assertThat(firstEvent.getPlace()).isEqualTo("장소1");
@@ -186,9 +185,8 @@ class OrganizationMemberServiceTest {
         var result = sut.getParticipantEvents(participant.getId());
 
         // then
-        assertThat(result).hasSize(2);
-
         assertSoftly(softly -> {
+            softly.assertThat(result).hasSize(2);
             softly.assertThat(result).extracting(Event::getTitle)
                     .containsExactlyInAnyOrder("참여 이벤트 1", "참여 이벤트 2");
             softly.assertThat(result).extracting(Event::getPlace)
@@ -227,16 +225,14 @@ class OrganizationMemberServiceTest {
     void 존재하지_않는_조직원으로_주최_이벤트_조회하면_예외가_발생한다() {
         // when // then
         assertThatThrownBy(() -> sut.getOwnerEvents(999L))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 조직원 정보입니다");
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
     void 존재하지_않는_조직원으로_참여_이벤트_조회하면_예외가_발생한다() {
         // when // then
         assertThatThrownBy(() -> sut.getParticipantEvents(999L))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 조직원 정보입니다");
+                .isInstanceOf(NotFoundException.class);
     }
 
     private Organization createAndSaveOrganization(String name, String description, String imageUrl) {

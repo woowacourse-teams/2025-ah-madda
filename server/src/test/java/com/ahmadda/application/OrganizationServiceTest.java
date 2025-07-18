@@ -10,7 +10,6 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +19,7 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @SpringBootTest
 @Transactional
@@ -50,7 +50,7 @@ class OrganizationServiceTest {
         var found = sut.getOrganization(organization.getId());
 
         // then
-        SoftAssertions.assertSoftly(softly -> {
+        assertSoftly(softly -> {
             softly.assertThat(found.getName()).isEqualTo("Org");
             softly.assertThat(found.getDescription()).isEqualTo("Desc");
             softly.assertThat(found.getImageUrl()).isEqualTo("img.png");
@@ -67,10 +67,9 @@ class OrganizationServiceTest {
 
         // then
         var organizations = organizationRepository.findAll();
-        assertThat(organizations).hasSize(1);
-        var saved = organizations.get(0);
-
-        SoftAssertions.assertSoftly(softly -> {
+        assertSoftly(softly -> {
+            var saved = organizations.get(0);
+            softly.assertThat(organizations).hasSize(1);
             softly.assertThat(saved.getName()).isEqualTo("조직명");
             softly.assertThat(saved.getDescription()).isEqualTo("조직 설명");
             softly.assertThat(saved.getImageUrl()).isEqualTo("image.png");
@@ -123,7 +122,7 @@ class OrganizationServiceTest {
                               String title,
                               LocalDateTime start,
                               LocalDateTime end) {
-        
+
         return Event.create(
                 title,
                 "description",
