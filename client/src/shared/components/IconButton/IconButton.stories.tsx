@@ -27,7 +27,6 @@ export const Basic: Story = {
     name: 'back',
     color: '#2B2B2B',
     size: 20,
-    type: 'button',
   },
   argTypes: {
     name: {
