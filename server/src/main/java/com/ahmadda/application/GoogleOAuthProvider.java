@@ -56,10 +56,9 @@ public class GoogleOAuthProvider {
                 .retrieve()
                 .body(GoogleAccessTokenResponse.class);
 
-        String accessToken = googleAccessTokenResponse.accessToken();
-        Assert.notNull(accessToken, "accessToken null이 되면 안됩니다.");
+        Assert.notNull(googleAccessTokenResponse.accessToken(), "accessToken null이 되면 안됩니다.");
 
-        return accessToken;
+        return googleAccessTokenResponse.accessToken();
     }
 
     private OAuthUserInfoResponse requestGoogleUserInfo(final String accessToken) {
