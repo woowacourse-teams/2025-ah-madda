@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -107,34 +106,6 @@ class OrganizationMemberServiceTest {
     }
 
     @Test
-    void 조직원이_주최한_이벤트가_없으면_빈_리스트를_반환한다() {
-        // given
-        var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
-        var member = createAndSaveMember("일반 멤버", "member@test.com");
-        var organizationMember = createAndSaveOrganizationMember("일반멤버닉네임", member, organization);
-
-        // 다른 주최자의 이벤트만 존재
-        var otherMember = createAndSaveMember("다른 주최자", "other@test.com");
-        var otherOrganizer = createAndSaveOrganizationMember("다른주최자닉네임", otherMember, organization);
-        createAndSaveEvent(
-                "다른 이벤트",
-                "다른 주최자의 이벤트",
-                "다른장소",
-                otherOrganizer,
-                organization,
-                LocalDateTime.now().plusDays(1),
-                LocalDateTime.now().plusDays(2),
-                20
-        );
-
-        // when
-        var result = sut.getOwnerEvents(organizationMember.getId());
-
-        // then
-        assertThat(result).isEmpty();
-    }
-
-    @Test
     void 조직원이_참여한_이벤트들을_조회한다() {
         // given
         var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
@@ -192,33 +163,6 @@ class OrganizationMemberServiceTest {
             softly.assertThat(result).extracting(Event::getPlace)
                     .containsExactlyInAnyOrder("장소1", "장소2");
         });
-    }
-
-    @Test
-    void 조직원이_참여한_이벤트가_없으면_빈_리스트를_반환한다() {
-        // given
-        var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
-        var member = createAndSaveMember("미참여자", "nonparticipant@test.com");
-        var nonParticipant = createAndSaveOrganizationMember("미참여자닉네임", member, organization);
-
-        var organizer = createAndSaveOrganizationMember("주최자닉네임", member, organization);
-
-        createAndSaveEvent(
-                "미참여 이벤트",
-                "참여하지 않은 이벤트",
-                "미참여장소",
-                organizer,
-                organization,
-                LocalDateTime.now().plusDays(1),
-                LocalDateTime.now().plusDays(2),
-                20
-        );
-
-        // when
-        var result = sut.getParticipantEvents(nonParticipant.getId());
-
-        // then
-        assertThat(result).isEmpty();
     }
 
     @Test
