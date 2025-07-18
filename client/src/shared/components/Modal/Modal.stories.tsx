@@ -1,8 +1,8 @@
-import { useState } from 'react';
-
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Modal } from './Modal';
+import { useModal } from '@/shared/hooks/useModal';
+
+import { Modal, ModalProps } from './Modal';
 
 const meta = {
   title: 'components/Modal',
@@ -21,13 +21,13 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof Modal>;
 
-const ModalExample = (args: any) => {
-  const [open, setOpen] = useState(true);
+const ModalExample = (args: Partial<ModalProps>) => {
+  const { isOpen, open, close } = useModal(true);
 
   return (
     <>
-      <button onClick={() => setOpen(true)}>Open Modal</button>
-      <Modal {...args} isOpen={open} onClose={() => setOpen(false)}>
+      <button onClick={open}>Open Modal</button>
+      <Modal {...args} isOpen={isOpen} onClose={close}>
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ margin: 0 }}>회원 탈퇴</h2>
         </header>
@@ -35,7 +35,7 @@ const ModalExample = (args: any) => {
         <footer
           style={{ marginTop: '120px', display: 'flex', justifyContent: 'center', gap: '8px' }}
         >
-          <button onClick={() => setOpen(false)}>취소</button>
+          <button onClick={close}>취소</button>
           <button>확인</button>
         </footer>
       </Modal>
@@ -50,10 +50,9 @@ export const Basic: Story = {
     </div>
   ),
   args: {
-    hasCloseButton: true,
-    hasBackdropClick: true,
-    position: 'center',
-    size: 'small',
+    showCloseButton: true,
+    shouldCloseOnBackdropClick: true,
+    size: 'sm',
   },
 };
 
@@ -64,10 +63,9 @@ export const WithoutBackdropClick: Story = {
     </div>
   ),
   args: {
-    hasCloseButton: true,
-    hasBackdropClick: false,
-    position: 'center',
-    size: 'small',
+    showCloseButton: true,
+    shouldCloseOnBackdropClick: false,
+    size: 'sm',
   },
 };
 
@@ -78,23 +76,21 @@ export const WithoutCloseButton: Story = {
     </div>
   ),
   args: {
-    hasCloseButton: false,
-    hasBackdropClick: true,
-    position: 'center',
-    size: 'small',
+    showCloseButton: false,
+    shouldCloseOnBackdropClick: true,
+    size: 'sm',
   },
 };
 
-export const LargeBottomModal: Story = {
+export const LargeModal: Story = {
   render: (args) => (
     <div style={{ minHeight: '30vh' }}>
       <ModalExample {...args} />
     </div>
   ),
   args: {
-    hasCloseButton: true,
-    hasBackdropClick: true,
-    position: 'bottom',
-    size: 'large',
+    showCloseButton: true,
+    shouldCloseOnBackdropClick: true,
+    size: 'lg',
   },
 };
