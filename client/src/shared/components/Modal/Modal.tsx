@@ -36,7 +36,7 @@ export type ModalProps = {
    * Whether to show the close (X) button at the top-right corner.
    * @default true
    */
-  hasCloseButton?: boolean;
+  showCloseButton?: boolean;
 } & PropsWithChildren<ComponentProps<'div'>>;
 
 export const Modal = ({
@@ -45,7 +45,7 @@ export const Modal = ({
   children,
   size = 'sm',
   hasBackdropClick = true,
-  hasCloseButton = true,
+  showCloseButton = true,
   ...props
 }: ModalProps) => {
   const modalRef = useRef<HTMLDivElement | null>(null);
@@ -64,7 +64,7 @@ export const Modal = ({
     <StyledModalLayout onClick={handleBackdropClick}>
       <StyledModalContainer size={size} onClick={(e) => e.stopPropagation()} {...props}>
         <StyledModalWrapper ref={modalRef}>
-          {hasCloseButton && (
+          {showCloseButton && (
             <StyledCloseButtonWrapper>
               <button onClick={onClose}>X</button>
             </StyledCloseButtonWrapper>
