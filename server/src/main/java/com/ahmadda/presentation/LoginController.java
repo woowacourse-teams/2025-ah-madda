@@ -46,6 +46,7 @@ public class LoginController {
     public ResponseEntity<AccessTokenResponse> extendsToken(@CookieValue(name = "refresh-token") String refreshToken) {
         String accessToken = loginService.renewAuthTokens(refreshToken);
         AccessTokenResponse accessTokenResponse = new AccessTokenResponse(accessToken);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(accessTokenResponse);
     }
 

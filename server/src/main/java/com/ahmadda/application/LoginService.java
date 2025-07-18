@@ -16,6 +16,7 @@ public class LoginService {
 
     public AuthTokens login(final String code) {
         OAuthUserInfoResponse userInfo = googleOAuthProvider.getUserInfo(code);
+
         Member member = findOrCreateMember(userInfo.email(), userInfo.name());
 
         return jwtTokenProvider.publishLoginTokens(member);
@@ -25,14 +26,17 @@ public class LoginService {
         return memberRepository.findByEmail(email)
                 .orElseGet(() -> {
                     Member newMember = Member.create(name, email);
+
                     return memberRepository.save(newMember);
                 });
     }
 
     public String renewAuthTokens(final String refreshToken) {
         long memberId = jwtTokenProvider.extractId(refreshToken);
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("member를 찾을 수 없습니다."));
+
         return jwtTokenProvider.createAccessToken(member);
     }
 }

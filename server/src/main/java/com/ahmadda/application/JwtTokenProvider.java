@@ -71,6 +71,7 @@ public class JwtTokenProvider {
     public long extractId(String token) {
         try {
             String memberId = parseClaims(token).getSubject();
+
             return Long.parseLong(memberId);
         } catch (NumberFormatException e) {
             throw new BusinessRuleViolatedException("");
@@ -91,6 +92,7 @@ public class JwtTokenProvider {
             if (expiration.before(now)) {
                 throw new BusinessRuleViolatedException("토큰이 만료되었습니다.");
             }
+
             return claims;
         } catch (JwtException | IllegalArgumentException e) {
             throw new BusinessRuleViolatedException("유효하지 않은 토큰입니다.");

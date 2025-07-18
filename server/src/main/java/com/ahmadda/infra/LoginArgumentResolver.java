@@ -35,7 +35,9 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
     ) throws Exception {
         HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
         String accessToken = extractAccessToken(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
+
         long memberId = jwtTokenProvider.extractId(accessToken);
+
         return new LoginMember(memberId);
     }
 
