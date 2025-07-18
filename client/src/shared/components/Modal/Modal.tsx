@@ -31,7 +31,7 @@ export type ModalProps = {
    * Whether clicking the backdrop should close the modal.
    * @default true
    */
-  hasBackdropClick?: boolean;
+  shouldCloseOnBackdropClick?: boolean;
   /**
    * Whether to show the close (X) button at the top-right corner.
    * @default true
@@ -44,7 +44,7 @@ export const Modal = ({
   onClose,
   children,
   size = 'sm',
-  hasBackdropClick = true,
+  shouldCloseOnBackdropClick = true,
   showCloseButton = true,
   ...props
 }: ModalProps) => {
@@ -55,7 +55,7 @@ export const Modal = ({
   if (!isOpen) return null;
 
   const handleBackdropClick = (e: React.MouseEvent) => {
-    if (hasBackdropClick && e.target === e.currentTarget) {
+    if (shouldCloseOnBackdropClick && e.target === e.currentTarget) {
       onClose();
     }
   };
