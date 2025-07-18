@@ -1,6 +1,8 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
+import { ModalProps } from './Modal';
+
 export type Size = 'small' | 'medium' | 'large';
 
 const sizeStyles = {
@@ -25,7 +27,7 @@ export const StyledModalLayout = styled.div`
   z-index: 1000;
 `;
 
-export const StyledModalContainer = styled.div<{ size: Size }>`
+export const StyledModalContainer = styled.div<Pick<ModalProps, 'size'>>`
   background-color: #ffffff;
   min-height: 216px;
   padding: 24px 32px;
@@ -33,7 +35,7 @@ export const StyledModalContainer = styled.div<{ size: Size }>`
   position: relative;
   align-items: center;
   border-radius: 8px;
-  ${({ size }) => sizeStyles[size]};
+  ${({ size }) => size && sizeStyles[size]};
 `;
 
 export const StyledModalWrapper = styled.div`
