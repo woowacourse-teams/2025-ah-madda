@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, ComponentProps } from 'react';
 
 import { SerializedStyles } from '@emotion/react';
 
@@ -32,7 +32,7 @@ type TabsTriggerProps = {
   children: ReactNode;
   /** Custom styles using emotion CSS-in-JS */
   css?: SerializedStyles;
-};
+} & ComponentProps<'button'>;
 
 type TabsContentProps = {
   /** Unique identifier for the tab (must match the corresponding TabsTrigger value) */
@@ -71,7 +71,7 @@ export const TabsList = ({ css: cssProp, children }: TabsListProps) => {
   );
 };
 
-export const TabsTrigger = ({ value, children, css: cssProp }: TabsTriggerProps) => {
+export const TabsTrigger = ({ value, children, css: cssProp, ...props }: TabsTriggerProps) => {
   const { activeTab, setActiveTab } = useTabsContext();
   const isActive = activeTab === value;
 
@@ -81,6 +81,7 @@ export const TabsTrigger = ({ value, children, css: cssProp }: TabsTriggerProps)
 
   return (
     <StyledTabsTrigger
+      type="button"
       css={cssProp}
       role="tab"
       aria-selected={isActive}
@@ -88,6 +89,7 @@ export const TabsTrigger = ({ value, children, css: cssProp }: TabsTriggerProps)
       id={`tab-${value}`}
       onClick={handleClick}
       data-active={isActive}
+      {...props}
     >
       {children}
     </StyledTabsTrigger>
