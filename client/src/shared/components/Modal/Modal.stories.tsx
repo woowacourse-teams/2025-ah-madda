@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { useModal } from '@/shared/hooks/useModal';
+import { useBooleanState } from '@/shared/hooks/useBooleanState';
 
 import { Modal, ModalProps } from './Modal';
 
@@ -22,12 +22,12 @@ export default meta;
 type Story = StoryObj<typeof Modal>;
 
 const ModalExample = (args: Partial<ModalProps>) => {
-  const { isOpen, open, close } = useModal(true);
+  const { value, setTrue, setFalse } = useBooleanState(true);
 
   return (
     <>
-      <button onClick={open}>Open Modal</button>
-      <Modal {...args} isOpen={isOpen} onClose={close}>
+      <button onClick={setTrue}>Open Modal</button>
+      <Modal {...args} isOpen={value} onClose={setFalse}>
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ margin: 0 }}>회원 탈퇴</h2>
         </header>
@@ -35,7 +35,7 @@ const ModalExample = (args: Partial<ModalProps>) => {
         <footer
           style={{ marginTop: '120px', display: 'flex', justifyContent: 'center', gap: '8px' }}
         >
-          <button onClick={close}>취소</button>
+          <button onClick={setFalse}>취소</button>
           <button>확인</button>
         </footer>
       </Modal>
