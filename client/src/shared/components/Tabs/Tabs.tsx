@@ -1,11 +1,9 @@
-import { createContext, useContext, useState, ComponentProps } from 'react';
-
-import { PropsWithRequiredChildren } from '@/shared/utils/utility';
+import { createContext, useContext, useState, ComponentProps, ReactNode } from 'react';
 
 import { StyledTabs, StyledTabsContent, StyledTabsList, StyledTabsTrigger } from './Tabs.styled';
 
-type DivComponentProps = PropsWithRequiredChildren<ComponentProps<'div'>>;
-type ButtonComponentProps = PropsWithRequiredChildren<ComponentProps<'button'>>;
+type DivComponentProps = ComponentProps<'div'>;
+type ButtonComponentProps = ComponentProps<'button'>;
 
 type ValueProps = {
   /** Unique identifier for the tab */
@@ -22,13 +20,24 @@ type TabsContextValue = {
   setActiveTab: (value: string) => void;
 };
 
-type TabsProps = DivComponentProps & DefaultValueProps;
+type TabsProps = DivComponentProps &
+  DefaultValueProps & {
+    children: ReactNode;
+  };
 
-type TabsListProps = DivComponentProps;
+type TabsListProps = DivComponentProps & {
+  children: ReactNode;
+};
 
-type TabsTriggerProps = ButtonComponentProps & ValueProps;
+type TabsTriggerProps = ButtonComponentProps &
+  ValueProps & {
+    children: ReactNode;
+  };
 
-type TabsContentProps = DivComponentProps & ValueProps;
+type TabsContentProps = DivComponentProps &
+  ValueProps & {
+    children: ReactNode;
+  };
 
 const TabsContext = createContext<TabsContextValue | null>(null);
 
