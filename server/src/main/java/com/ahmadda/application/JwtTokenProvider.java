@@ -1,6 +1,10 @@
 package com.ahmadda.application;
 
 import com.ahmadda.domain.Member;
+import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,5 +66,30 @@ public class JwtTokenProvider {
                 .expiration(Date.from(expire))
                 .signWith(secretKey)
                 .compact();
+    }
+
+    public long extractId(String token) {
+        try {
+            String memberId = parseClaims(token).getSubject();
+            return Long.parseLong(memberId);
+        } catch (NumberFormatException e) {
+            throw new BusinessRuleViolatedException("");
+        }
+    }
+
+    private Claims parseClaims(String token) {
+        try {
+            Jws<Claims> jws = Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token);
+            Claims claims = jws.getPayload();
+            if (claims.getExpiration().before(new Date())) {
+                throw new BusinessRuleViolatedException("토큰이 만료되었습니다.");
+            }
+            return claims;
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new BusinessRuleViolatedException("유효하지 않은 토큰입니다.");
+        }
     }
 }
