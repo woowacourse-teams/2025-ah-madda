@@ -10,6 +10,10 @@ import {
 
 export type InputProps = {
   /**
+   * Unique id to link the label and input for accessibility.
+   */
+  id: string;
+  /**
    * Label text displayed above the input field.
    * @type {string}
    */
@@ -43,6 +47,7 @@ export type InputProps = {
 } & ComponentProps<'input'>;
 
 export const Input = ({
+  id,
   label,
   helperText,
   isRequired = false,
@@ -52,7 +57,7 @@ export const Input = ({
 }: InputProps) => {
   return (
     <StyledWrapper>
-      <StyledLabel htmlFor={props.id || props.name}>
+      <StyledLabel htmlFor={id}>
         {label}
         {isRequired && <StyledRequiredMark>*</StyledRequiredMark>}
       </StyledLabel>
