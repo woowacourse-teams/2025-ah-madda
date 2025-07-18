@@ -1,4 +1,6 @@
-import { ComponentProps, PropsWithChildren, useEffect, useRef } from 'react';
+import { ComponentProps, PropsWithChildren, useRef } from 'react';
+
+import { useFocusTrap } from '@/shared/hooks/useFocusTrap';
 
 import {
   StyledModalLayout,
@@ -48,48 +50,7 @@ export const Modal = ({
 }: ModalProps) => {
   const modalRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const modal = modalRef.current;
-    if (!modal) return;
-
-    const isInIframe = window.self !== window.top;
-    const originalOverflow = document.body.style.overflow;
-
-    if (!isInIframe) {
-      document.body.style.overflow = 'hidden';
-    }
-
-    const focusable = modal.querySelectorAll<HTMLElement>(
-      'button, a[href], input, textarea, select, [tabindex]:not([tabindex="-1"])'
-    );
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    first?.focus();
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onClose();
-      }
-      if (e.key === 'Tab' && first && last) {
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    };
-
-    modal.addEventListener('keydown', handleKeyDown);
-    return () => {
-      modal.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = originalOverflow;
-    };
-  }, [isOpen, onClose]);
+  useFocusTrap(modalRef, onClose);
 
   if (!isOpen) return null;
 
