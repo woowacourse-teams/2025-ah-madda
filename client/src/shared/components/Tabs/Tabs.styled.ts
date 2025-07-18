@@ -6,20 +6,14 @@ export const StyledTabs = styled.div`
 `;
 
 export const StyledTabsList = styled.div`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: flex;
   border-radius: 6px;
   background-color: #f1f5f9;
   padding: 4px;
 `;
 
 export const StyledTabsTrigger = styled.button`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   width: 100%;
-  white-space: nowrap;
   border-radius: 10px;
   padding: 6px 12px;
   font-size: 14px;
