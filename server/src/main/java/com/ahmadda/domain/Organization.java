@@ -64,6 +64,14 @@ public class Organization extends BaseEntity {
         this.events.add(event);
     }
 
+    public List<Event> getActiveEvents() {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+
+        return events.stream()
+                .filter((event) -> event.getEventStart().isAfter(currentDateTime))
+                .toList();
+    }
+
     private void validateName(final String name) {
         Assert.notBlank(name, "이름은 공백이면 안됩니다.");
 
@@ -92,13 +100,5 @@ public class Organization extends BaseEntity {
 
     private void validateImageUrl(final String imageUrl) {
         Assert.notBlank(imageUrl, "이미지 url은 공백이면 안됩니다.");
-    }
-
-    public List<Event> getActiveEvents() {
-        LocalDateTime currentDateTime = LocalDateTime.now();
-
-        return events.stream()
-                .filter((event) -> event.getEventStart().isAfter(currentDateTime))
-                .toList();
     }
 }
