@@ -54,8 +54,14 @@ export const Modal = ({
 
   if (!isOpen) return null;
 
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (hasBackdropClick && e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <StyledModalLayout onClick={hasBackdropClick ? onClose : undefined}>
+    <StyledModalLayout onClick={handleBackdropClick}>
       <StyledModalContainer size={size} onClick={(e) => e.stopPropagation()} {...props}>
         <StyledModalWrapper ref={modalRef}>
           {hasCloseButton && (
