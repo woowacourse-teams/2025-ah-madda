@@ -24,6 +24,8 @@ export const Basic: Story = {
     label: '이메일',
     name: 'email',
     placeholder: '이메일을 입력하세요',
+    error: true,
+    errorMessage: '이메일 형식이 올바르지 않아요',
     value: '',
     onChange: () => {},
   },

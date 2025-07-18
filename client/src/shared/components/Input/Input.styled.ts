@@ -1,5 +1,7 @@
 import styled from '@emotion/styled';
 
+import { InputProps } from './Input';
+
 export const StyledWrapper = styled.div`
   width: 100%;
 `;
@@ -18,11 +20,11 @@ export const StyledRequiredMark = styled.span`
   font-size: 14px;
 `;
 
-export const StyledInput = styled.input`
+export const StyledInput = styled.input<Pick<InputProps, 'error'>>`
   width: 100%;
   padding: 8px 12px;
   font-size: 14px;
-  border: 1px solid #ccc;
+  border: 1px solid ${({ error }) => (error ? '#FF5A5A' : '#ccc')};
   border-radius: 6px;
   box-sizing: border-box;
   background: white;
@@ -30,12 +32,12 @@ export const StyledInput = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #333;
+    border-color: ${({ error }) => (error ? '#FF5A5A' : '#333')};
   }
 `;
 
-export const StyledHelperText = styled.p`
+export const StyledHelperText = styled.p<Pick<InputProps, 'error'>>`
   margin-top: 4px;
   font-size: 12px;
-  color: #888;
+  color: ${({ error }) => (error ? '#FF5A5A' : '#888')};
 `;
