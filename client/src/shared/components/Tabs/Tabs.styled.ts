@@ -12,7 +12,6 @@ export const StyledTabsList = styled.div`
   border-radius: 6px;
   background-color: #f1f5f9;
   padding: 4px;
-  text-align: center;
 `;
 
 export const StyledTabsTrigger = styled.button`
