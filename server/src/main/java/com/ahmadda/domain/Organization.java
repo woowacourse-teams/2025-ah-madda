@@ -97,6 +97,7 @@ public class Organization extends BaseEntity {
 
     public List<Event> getActiveEvents() {
         LocalDateTime currentDateTime = LocalDateTime.now();
+
         return events.stream()
                 .filter((event) -> event.getEventStart().isAfter(currentDateTime))
                 .toList();

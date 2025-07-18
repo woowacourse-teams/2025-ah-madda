@@ -45,6 +45,10 @@ public class Guest extends BaseEntity {
         return new Guest(event, participant);
     }
 
+    public boolean isSameGuest(final OrganizationMember organizationMember) {
+        return this.participant.equals(organizationMember);
+    }
+
     private void validateEvent(final Event event) {
         Assert.notNull(event, "이벤트는 null이 되면 안됩니다.");
     }

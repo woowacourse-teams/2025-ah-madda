@@ -118,7 +118,12 @@ class OrganizationServiceTest {
         return Organization.create(name, description, imageUrl);
     }
 
-    private Event createEvent(OrganizationMember organizer, Organization organization, String title, LocalDateTime start, LocalDateTime end) {
+    private Event createEvent(OrganizationMember organizer,
+                              Organization organization,
+                              String title,
+                              LocalDateTime start,
+                              LocalDateTime end) {
+        
         return Event.create(
                 title,
                 "description",
