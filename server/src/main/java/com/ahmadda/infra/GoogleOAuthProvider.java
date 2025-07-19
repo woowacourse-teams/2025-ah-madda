@@ -2,37 +2,40 @@ package com.ahmadda.infra;
 
 
 import com.ahmadda.domain.util.Assert;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
 @Component
+@EnableConfigurationProperties(GoogleOAuthProperties.class)
 public class GoogleOAuthProvider {
 
     public static final String GRANT_TYPE_AUTHORIZATION_CODE = "authorization_code";
 
-    private final String clientId;
-    private final String clientSecret;
-    private final String redirectUri;
-    private final String tokenUri;
-    private final String userUri;
+    private final GoogleOAuthProperties googleOAuthProperties;
     private final RestClient restClient;
 
     public GoogleOAuthProvider(
-            @Value("${google.oauth2.client-id}") String clientId,
-            @Value("${google.oauth2.client-secret}") String clientSecret,
-            @Value("${google.oauth2.redirect-uri}") String redirectUri,
-            @Value("${google.oauth2.token-uri}") String tokenUri,
-            @Value("${google.oauth2.user-info-uri}") String userUri) {
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.redirectUri = redirectUri;
-        this.tokenUri = tokenUri;
-        this.userUri = userUri;
-        this.restClient = RestClient.builder().build();
+            final GoogleOAuthProperties googleOAuthProperties,
+            final RestClient.Builder restClientBuilder
+    ) {
+        this.googleOAuthProperties = googleOAuthProperties;
+        this.restClient = restClientBuilder
+                .requestFactory(bufferingClientHttpRequestFactory())
+                .build();
+    }
+
+    private BufferingClientHttpRequestFactory bufferingClientHttpRequestFactory() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(googleOAuthProperties.getConnectTimeout());
+        factory.setReadTimeout(googleOAuthProperties.getReadTimeout());
+        return new BufferingClientHttpRequestFactory(factory);
     }
 
     public OAuthUserInfoResponse getUserInfo(final String code) {
@@ -44,13 +47,13 @@ public class GoogleOAuthProvider {
     private String requestGoogleAccessToken(final String code) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", code);
-        params.add("client_id", clientId);
-        params.add("client_secret", clientSecret);
-        params.add("redirect_uri", redirectUri);
+        params.add("client_id", googleOAuthProperties.getClientId());
+        params.add("client_secret", googleOAuthProperties.getClientSecret());
+        params.add("redirect_uri", googleOAuthProperties.getRedirectUri());
         params.add("grant_type", GRANT_TYPE_AUTHORIZATION_CODE);
 
         GoogleAccessTokenResponse googleAccessTokenResponse = restClient.post()
-                .uri(tokenUri)
+                .uri(googleOAuthProperties.getTokenUri())
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(params)
                 .retrieve()
@@ -63,8 +66,8 @@ public class GoogleOAuthProvider {
 
     private OAuthUserInfoResponse requestGoogleUserInfo(final String accessToken) {
         OAuthUserInfoResponse userInfo = restClient.get()
-                .uri(userUri)
-                .header("Authorization", "Bearer " + accessToken)
+                .uri(googleOAuthProperties.getUserUri())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .retrieve()
                 .body(OAuthUserInfoResponse.class);
 
