@@ -56,6 +56,30 @@ class LoginServiceTest {
         assertThat(memberRepository.findByEmail(email)).isPresent();
     }
 
+    @Test
+    void 기존회원이면_저장하지_않는다() {
+        // given
+        var code = "code";
+        var name = "홍길동";
+        var email = "test@example.com";
+        var accessToken = "access_token";
+
+        given(googleOAuthProvider.getUserInfo(code))
+                .willReturn(new OAuthUserInfoResponse(email, name));
+
+        given(jwtTokenProvider.createAccessToken(any(Member.class)))
+                .willReturn(accessToken);
+
+        Member member = Member.create(name, email);
+        memberRepository.save(member);
+
+        // when
+        sut.login(code);
+
+        // then
+        assertThat(memberRepository.count()).isEqualTo(1);
+    }
+
     @TestConfiguration
     static class TestBeans {
 
