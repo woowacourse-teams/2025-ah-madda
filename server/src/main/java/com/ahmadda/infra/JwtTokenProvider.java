@@ -20,6 +20,8 @@ import javax.crypto.SecretKey;
 @Component
 public class JwtTokenProvider {
 
+    private static final String NAME_ID_KEY = "name";
+
     private final SecretKey secretKey;
     private final Duration accessExpirationDay;
 
@@ -41,7 +43,7 @@ public class JwtTokenProvider {
                 .subject(memberId)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expire))
-                .claim("name", member.getName())
+                .claim(NAME_ID_KEY, member.getName())
                 .signWith(secretKey)
                 .compact();
     }
@@ -51,7 +53,7 @@ public class JwtTokenProvider {
             Claims claims = parseClaims(token);
 
             String memberId = claims.getSubject();
-            String name = claims.get("name", String.class);
+            String name = claims.get(NAME_ID_KEY, String.class);
 
             return new LoginMember(Long.parseLong(memberId), name);
         } catch (NumberFormatException e) {
