@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { useModal } from '@/shared/hooks/useModal';
+import { useModal } from '../../hooks/useModal';
 
 import { Modal, ModalProps } from './Modal';
 

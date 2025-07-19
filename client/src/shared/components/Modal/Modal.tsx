@@ -2,9 +2,9 @@ import { ComponentProps, useRef } from 'react';
 
 import { createPortal } from 'react-dom';
 
-import { useEscapeKey } from '@/shared/hooks/useEscapeKey';
-import { useFocusTrap } from '@/shared/hooks/useFocusTrap';
-import { useLockScroll } from '@/shared/hooks/useLockScroll';
+import { useEscapeKey } from '../../hooks/useEscapeKey';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
+import { useLockScroll } from '../../hooks/useLockScroll';
 
 import {
   StyledModalLayout,
