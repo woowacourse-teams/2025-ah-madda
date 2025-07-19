@@ -9,12 +9,12 @@ import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
-public class LoginArgumentConfig implements WebMvcConfigurer {
+public class LoginMemberArgumentConfig implements WebMvcConfigurer {
 
-    private final LoginArgumentResolver loginArgumentResolver;
+    private final LoginMemberArgumentResolver loginMemberArgumentResolver;
 
     @Override
     public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(loginArgumentResolver);
+        resolvers.add(loginMemberArgumentResolver);
     }
 }

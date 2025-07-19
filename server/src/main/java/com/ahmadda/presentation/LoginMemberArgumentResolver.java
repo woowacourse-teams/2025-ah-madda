@@ -15,7 +15,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Component
 @RequiredArgsConstructor
-public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
+public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private static final String BEARER_TYPE = "Bearer ";
 
@@ -23,7 +23,7 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(Auth.class) &&
+        return parameter.hasParameterAnnotation(AuthMember.class) &&
                 parameter.getParameterType().equals(LoginMember.class);
     }
 
