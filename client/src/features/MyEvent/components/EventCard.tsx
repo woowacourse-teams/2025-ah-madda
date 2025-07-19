@@ -29,7 +29,7 @@ export const EventCard = ({ event }: EventCardProps) => {
         padding: '14px',
         backgroundColor: '#1E2939',
         borderRadius: '8.75px',
-        minWidth: '300px',
+        maxWidth: '350px',
       }}
     >
       <Flex justifyContent="space-between" alignItems="flex-start">
