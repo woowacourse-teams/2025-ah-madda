@@ -2,6 +2,7 @@ package com.ahmadda.infra;
 
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import com.ahmadda.presentation.LoginMember;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
@@ -40,17 +41,21 @@ public class JwtTokenProvider {
                 .subject(memberId)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expire))
+                .claim("name", member.getName())
                 .signWith(secretKey)
                 .compact();
     }
 
-    public long extractId(final String token) {
+    public LoginMember extractLoginMember(final String token) {
         try {
-            String memberId = parseClaims(token).getSubject();
+            Claims claims = parseClaims(token);
 
-            return Long.parseLong(memberId);
+            String memberId = claims.getSubject();
+            String name = claims.get("name", String.class);
+
+            return new LoginMember(Long.parseLong(memberId), name);
         } catch (NumberFormatException e) {
-            throw new BusinessRuleViolatedException("");
+            throw new BusinessRuleViolatedException("memberId가 옳바르지 않습니다.");
         }
     }
 

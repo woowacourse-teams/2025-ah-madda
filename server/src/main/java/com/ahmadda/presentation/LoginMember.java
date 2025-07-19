@@ -1,7 +1,8 @@
 package com.ahmadda.presentation;
 
 public record LoginMember(
-        Long memberId
+        Long memberId,
+        String name
 ) {
 
 }
