@@ -34,10 +34,6 @@ export type ModalProps = {
    */
   onClose: () => void;
   /**
-   * Content to render inside the modal (includes header, body, footer, etc.).
-   */
-  children: React.ReactNode;
-  /**
    * Modal size.
    * @default 'sm'
    */
@@ -52,7 +48,7 @@ export type ModalProps = {
    * @default true
    */
   showCloseButton?: boolean;
-} & PropsWithChildren<ComponentProps<'div'>>;
+} & ComponentProps<'div'>;
 
 const isStorybook = typeof window !== 'undefined' && (window as any).__STORYBOOK__;
 
