@@ -1,4 +1,4 @@
-import { ComponentProps, PropsWithChildren, useRef } from 'react';
+import { ComponentProps, useRef } from 'react';
 
 import { createPortal } from 'react-dom';
 
