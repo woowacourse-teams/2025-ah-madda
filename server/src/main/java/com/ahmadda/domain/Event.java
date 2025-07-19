@@ -65,17 +65,33 @@ public class Event extends BaseEntity {
                   final LocalDateTime registrationEnd,
                   final LocalDateTime eventStart,
                   final LocalDateTime eventEnd,
-                  final int maxCapacity) {
-        this.title = Assert.notNull(title, "title null이 되면 안됩니다.");
-        this.description = Assert.notNull(description, "description null이 되면 안됩니다.");
-        this.place = Assert.notNull(place, "place null이 되면 안됩니다.");
-        this.organizer = Assert.notNull(organizer, "organizer null이 되면 안됩니다.");
-        this.organization = Assert.notNull(organization, "organization null이 되면 안됩니다.");
-        this.registrationStart = Assert.notNull(registrationStart, "registrationStart null이 되면 안됩니다.");
-        this.registrationEnd = Assert.notNull(registrationEnd, "registrationEnd null이 되면 안됩니다.");
-        this.eventStart = Assert.notNull(eventStart, "eventStart null이 되면 안됩니다.");
-        this.eventEnd = Assert.notNull(eventEnd, "eventEnd null이 되면 안됩니다.");
+                  final int maxCapacity
+    ) {
+        validateTitle(title);
+        validateDescription(description);
+        validatePlace(place);
+        validateOrganizer(organizer);
+        validateOrganization(organization);
+        validateRegistrationStart(registrationStart);
+        validateRegistrationEnd(registrationEnd);
+        validateEventStart(eventStart);
+        validateEventEnd(eventEnd);
+
+        this.title = title;
+        this.description = description;
+        this.place = place;
+        this.organizer = organizer;
+        this.organization = organization;
+        this.registrationStart = registrationStart;
+        this.registrationEnd = registrationEnd;
+        this.eventStart = eventStart;
+        this.eventEnd = eventEnd;
         this.maxCapacity = maxCapacity;
+    }
+
+
+    private void validateTitle(final String title) {
+        Assert.notBlank(title, "title은 공백이면 안됩니다.");
     }
 
     public static Event create(final String title,
@@ -98,8 +114,39 @@ public class Event extends BaseEntity {
                 registrationEnd,
                 eventStart,
                 eventEnd,
-                maxCapacity);
+                maxCapacity
+        );
+    }
+
+    private void validateDescription(final String description) {
+        Assert.notBlank(description, "설명은 공백이면 안됩니다.");
+    }
+
+    private void validatePlace(final String place) {
+        Assert.notBlank(place, "장소는 공백이면 안됩니다.");
+    }
+
+    private void validateOrganizer(final OrganizationMember organizer) {
+        Assert.notNull(organizer, "주최자는 null이 되면 안됩니다.");
+    }
+
+    private void validateOrganization(final Organization organization) {
+        Assert.notNull(organization, "조직은 null이 되면 안됩니다.");
+    }
+
+    private void validateRegistrationStart(final LocalDateTime registrationStart) {
+        Assert.notNull(registrationStart, "신청 시작 시간은 null이 되면 안됩니다.");
+    }
+
+    private void validateRegistrationEnd(final LocalDateTime registrationEnd) {
+        Assert.notNull(registrationEnd, "신청 마감 시간은 null이 되면 안됩니다.");
+    }
+
+    private void validateEventStart(final LocalDateTime eventStart) {
+        Assert.notNull(eventStart, "시작 시간은 null이 되면 안됩니다.");
+    }
+
+    private void validateEventEnd(final LocalDateTime eventEnd) {
+        Assert.notNull(eventEnd, "종료 시간은 null이 되면 안됩니다.");
     }
 }
-
-
