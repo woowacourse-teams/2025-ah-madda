@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class LoginController {
 
-    public static final int COOKIE_AGE_SECONDS = 604800;
-
     private final LoginService loginService;
 
     @PostMapping("/login")
