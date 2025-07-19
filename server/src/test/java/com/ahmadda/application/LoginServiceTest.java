@@ -36,7 +36,7 @@ class LoginServiceTest {
     private JwtTokenProvider jwtTokenProvider;
 
     @Test
-    void login_신규회원이면_DB에_저장된다() {
+    void 신규회원이면_저장한다() {
         // given
         var code = "code";
         var name = "홍길동";
