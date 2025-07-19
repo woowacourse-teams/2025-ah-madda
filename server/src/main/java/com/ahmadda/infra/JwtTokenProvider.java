@@ -57,7 +57,7 @@ public class JwtTokenProvider {
 
             return new LoginMember(Long.parseLong(memberId), name);
         } catch (NumberFormatException e) {
-            throw new BusinessRuleViolatedException("memberId가 옳바르지 않습니다.");
+            throw new BusinessRuleViolatedException("memberId가 올바르지 않습니다.");
         }
     }
 
