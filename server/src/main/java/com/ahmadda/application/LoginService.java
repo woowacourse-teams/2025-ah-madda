@@ -21,12 +21,12 @@ public class LoginService {
     public String login(final String code) {
         OAuthUserInfoResponse userInfo = googleOAuthProvider.getUserInfo(code);
 
-        Member member = findOrCreateMember(userInfo.email(), userInfo.name());
+        Member member = findOrCreateMember(userInfo.name(), userInfo.email());
 
         return jwtTokenProvider.createAccessToken(member);
     }
 
-    private Member findOrCreateMember(final String email, final String name) {
+    private Member findOrCreateMember(final String name, final String email) {
         return memberRepository.findByEmail(email)
                 .orElseGet(() -> {
                     Member newMember = Member.create(name, email);
