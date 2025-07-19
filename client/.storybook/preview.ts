@@ -1,5 +1,9 @@
 import type { Preview } from '@storybook/react-webpack5';
 
+if (typeof window !== 'undefined') {
+  (window as any).__STORYBOOK__ = true;
+}
+
 const preview: Preview = {
   parameters: {
     controls: {
