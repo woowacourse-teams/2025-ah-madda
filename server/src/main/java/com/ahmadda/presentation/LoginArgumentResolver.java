@@ -2,6 +2,7 @@ package com.ahmadda.presentation;
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.infra.JwtTokenProvider;
+import com.ahmadda.presentation.dto.LoginMember;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;

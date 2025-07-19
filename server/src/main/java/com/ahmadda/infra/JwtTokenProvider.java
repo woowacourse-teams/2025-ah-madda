@@ -2,7 +2,7 @@ package com.ahmadda.infra;
 
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
-import com.ahmadda.presentation.LoginMember;
+import com.ahmadda.presentation.dto.LoginMember;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;

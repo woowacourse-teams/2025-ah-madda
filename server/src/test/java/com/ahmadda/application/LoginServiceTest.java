@@ -4,7 +4,7 @@ import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.infra.GoogleOAuthProvider;
 import com.ahmadda.infra.JwtTokenProvider;
-import com.ahmadda.infra.OAuthUserInfoResponse;
+import com.ahmadda.infra.dto.OAuthUserInfoResponse;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;

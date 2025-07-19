@@ -1,4 +1,4 @@
-package com.ahmadda.infra;
+package com.ahmadda.infra.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
