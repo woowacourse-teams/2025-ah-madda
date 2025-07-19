@@ -35,6 +35,7 @@ public class GoogleOAuthProvider {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(googleOAuthProperties.getConnectTimeout());
         factory.setReadTimeout(googleOAuthProperties.getReadTimeout());
+
         return new BufferingClientHttpRequestFactory(factory);
     }
 
