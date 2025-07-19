@@ -48,17 +48,12 @@ public class GoogleOAuthProvider {
     }
 
     private String requestGoogleAccessToken(final String code) {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("code", code);
-        params.add("client_id", googleOAuthProperties.getClientId());
-        params.add("client_secret", googleOAuthProperties.getClientSecret());
-        params.add("redirect_uri", googleOAuthProperties.getRedirectUri());
-        params.add("grant_type", GRANT_TYPE_AUTHORIZATION_CODE);
+        MultiValueMap<String, String> tokenRequestParams = createTokenRequestParams(code);
 
         GoogleAccessTokenResponse googleAccessTokenResponse = restClient.post()
                 .uri(googleOAuthProperties.getTokenUri())
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(params)
+                .body(tokenRequestParams)
                 .retrieve()
                 .body(GoogleAccessTokenResponse.class);
 
@@ -77,5 +72,16 @@ public class GoogleOAuthProvider {
         Assert.notNull(userInfo, "userInfo null이 되면 안됩니다.");
 
         return userInfo;
+    }
+
+    private MultiValueMap<String, String> createTokenRequestParams(final String code) {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("code", code);
+        params.add("client_id", googleOAuthProperties.getClientId());
+        params.add("client_secret", googleOAuthProperties.getClientSecret());
+        params.add("redirect_uri", googleOAuthProperties.getRedirectUri());
+        params.add("grant_type", GRANT_TYPE_AUTHORIZATION_CODE);
+
+        return params;
     }
 }
