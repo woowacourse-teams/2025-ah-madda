@@ -53,31 +53,35 @@ class EventServiceTest {
                 "UI/UX 이벤트",
                 "UI/UX 이벤트 입니다",
                 "선릉",
-                new Period(now.plusDays(3), now.plusDays(4)),
-                new Period(now.plusDays(5), now.plusDays(6)),
-                100,
-                organizationMember.getId(),
-                organization.getId()
+                now.plusDays(3), now.plusDays(4),
+                now.plusDays(5), now.plusDays(6),
+                100
         );
 
         //when
-        var event = sut.createEvent(eventCreateRequest);
+        var event = sut.createEvent(organization.getId(), organizationMember.getId(), eventCreateRequest);
 
         //then
         assertThat(eventRepository.findById(event.getId()))
                 .isPresent()
                 .hasValueSatisfying(savedEvent -> {
                     assertSoftly(softly -> {
-                        softly.assertThat(savedEvent.getTitle()).isEqualTo("UI/UX 이벤트");
-                        softly.assertThat(savedEvent.getDescription()).isEqualTo("UI/UX 이벤트 입니다");
-                        softly.assertThat(savedEvent.getPlace()).isEqualTo("선릉");
-                        softly.assertThat(savedEvent.getOrganization()).isEqualTo(organization);
-                        softly.assertThat(savedEvent.getOrganizer()).isEqualTo(organizationMember);
-                        softly.assertThat(savedEvent.getEventOperationPeriod()).isEqualTo(EventOperationPeriod.create(
-                                new Period(now.plusDays(3), now.plusDays(4)),
-                                new Period(now.plusDays(5), now.plusDays(6)),
-                                now
-                        ));
+                        softly.assertThat(savedEvent.getTitle())
+                                .isEqualTo("UI/UX 이벤트");
+                        softly.assertThat(savedEvent.getDescription())
+                                .isEqualTo("UI/UX 이벤트 입니다");
+                        softly.assertThat(savedEvent.getPlace())
+                                .isEqualTo("선릉");
+                        softly.assertThat(savedEvent.getOrganization())
+                                .isEqualTo(organization);
+                        softly.assertThat(savedEvent.getOrganizer())
+                                .isEqualTo(organizationMember);
+                        softly.assertThat(savedEvent.getEventOperationPeriod())
+                                .isEqualTo(EventOperationPeriod.create(
+                                        new Period(now.plusDays(3), now.plusDays(4)),
+                                        new Period(now.plusDays(5), now.plusDays(6)),
+                                        now
+                                ));
                     });
                 });
     }
@@ -92,15 +96,13 @@ class EventServiceTest {
                 "UI/UX 이벤트",
                 "UI/UX 이벤트 입니다",
                 "선릉",
-                new Period(now.plusDays(3), now.plusDays(4)),
-                new Period(now.plusDays(5), now.plusDays(6)),
-                100,
-                organizationMember.getId(),
-                999L
+                now.plusDays(3), now.plusDays(4),
+                now.plusDays(5), now.plusDays(6),
+                100
         );
 
         //when //then
-        assertThatThrownBy(() -> sut.createEvent(eventCreateRequest))
+        assertThatThrownBy(() -> sut.createEvent(999L, organizationMember.getId(), eventCreateRequest))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("999에 해당하는 조직을 찾을 수 없습니다.");
     }
@@ -115,15 +117,13 @@ class EventServiceTest {
                 "UI/UX 이벤트",
                 "UI/UX 이벤트 입니다",
                 "선릉",
-                new Period(now.plusDays(3), now.plusDays(4)),
-                new Period(now.plusDays(5), now.plusDays(6)),
-                100,
-                999L,
-                organization.getId()
+                now.plusDays(3), now.plusDays(4),
+                now.plusDays(5), now.plusDays(6),
+                100
         );
 
         //when //then
-        assertThatThrownBy(() -> sut.createEvent(eventCreateRequest))
+        assertThatThrownBy(() -> sut.createEvent(organization.getId(), 999L, eventCreateRequest))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("999에 해당하는 조직원을 찾을 수 없습니다.");
     }

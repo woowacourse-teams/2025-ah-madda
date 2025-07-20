@@ -9,6 +9,7 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.domain.Period;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,13 +25,17 @@ public class EventService {
     private final OrganizationMemberRepository organizationMemberRepository;
 
     @Transactional
-    public Event createEvent(final EventCreateRequest eventCreateRequest) {
-        Organization organization = getOrganization(eventCreateRequest.organizationId());
-        OrganizationMember organizer = getOrganizationMember(eventCreateRequest.organizerId());
+    public Event createEvent(
+            final Long organizationId,
+            final Long organizerId,
+            final EventCreateRequest eventCreateRequest
+    ) {
+        Organization organization = getOrganization(organizationId);
+        OrganizationMember organizer = getOrganizationMember(organizerId);
 
         EventOperationPeriod eventOperationPeriod = EventOperationPeriod.create(
-                eventCreateRequest.registrationPeriod(),
-                eventCreateRequest.eventPeriod(),
+                new Period(eventCreateRequest.registrationStart(), eventCreateRequest.registrationEnd()),
+                new Period(eventCreateRequest.eventStart(), eventCreateRequest.eventEnd()),
                 LocalDateTime.now()
         );
         Event event = Event.create(
