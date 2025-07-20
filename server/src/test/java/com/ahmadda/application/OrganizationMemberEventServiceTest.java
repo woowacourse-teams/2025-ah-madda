@@ -193,14 +193,16 @@ class OrganizationMemberEventServiceTest {
     void 존재하지_않는_조직원으로_주최_이벤트_조회하면_예외가_발생한다() {
         // when // then
         assertThatThrownBy(() -> sut.getOwnerEvents(999L))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않은 조직원 정보입니다.");
     }
 
     @Test
     void 존재하지_않는_조직원으로_참여_이벤트_조회하면_예외가_발생한다() {
         // when // then
         assertThatThrownBy(() -> sut.getParticipantEvents(999L))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않은 조직원 정보입니다.");
     }
 
     private Organization createAndSaveOrganization(String name, String description, String imageUrl) {
@@ -251,7 +253,7 @@ class OrganizationMemberEventServiceTest {
 
     private Guest createAndSaveGuest(Event event, OrganizationMember participant) {
         var guest = Guest.create(event, participant);
-        
+
         return guestRepository.save(guest);
     }
 }

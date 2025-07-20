@@ -87,14 +87,16 @@ class OrganizationServiceTest {
     void 존재하지_않는_조직_ID로_조회하면_예외가_발생한다() {
         // when // then
         assertThatThrownBy(() -> sut.getOrganization(999L))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 조직입니다.");
     }
 
     @Test
     void 존재하지_않는_조직의_이벤트를_조회하면_예외가_발생한다() {
         // when // then
         assertThatThrownBy(() -> sut.getOrganizationEvents(999L))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 조직입니다.");
     }
 
     @Test

@@ -95,13 +95,15 @@ class EventGuestServiceTest {
     @Test
     void 존재하지_않는_이벤트로_게스트_조회시_예외가_발생한다() {
         assertThatThrownBy(() -> sut.getGuestOrganizationMembers(999L))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 이벤트입니다.");
     }
 
     @Test
     void 존재하지_않는_이벤트로_비게스트_조회시_예외가_발생한다() {
         assertThatThrownBy(() -> sut.getNonGuestOrganizationMembers(999L))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 이벤트입니다.");
     }
 
     private Member createAndSaveMember(String name, String email) {
