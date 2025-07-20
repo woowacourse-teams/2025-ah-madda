@@ -3,7 +3,7 @@ package com.ahmadda.presentation;
 import com.ahmadda.application.OrganizationService;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.domain.Organization;
-import com.ahmadda.presentation.dto.OrganizationReadResponse;
+import com.ahmadda.presentation.dto.OrganizationResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,10 +34,10 @@ public class OrganizationController {
     }
 
     @GetMapping("/{organizationId}")
-    public ResponseEntity<OrganizationReadResponse> readOrganization(@PathVariable final Long organizationId) {
+    public ResponseEntity<OrganizationResponse> readOrganization(@PathVariable final Long organizationId) {
         Organization organization = organizationService.getOrganization(organizationId);
-        OrganizationReadResponse organizationReadResponse = OrganizationReadResponse.from(organization);
+        OrganizationResponse organizationResponse = OrganizationResponse.from(organization);
 
-        return ResponseEntity.ok(organizationReadResponse);
+        return ResponseEntity.ok(organizationResponse);
     }
 }
