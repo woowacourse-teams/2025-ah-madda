@@ -57,7 +57,7 @@ class EventGuestServiceTest {
         createAndSaveGuest(event, guest2);
 
         // when
-        var result = sut.getGuestMembers(event.getId());
+        var result = sut.getGuestOrganizationMembers(event.getId());
 
         // then
         assertSoftly(softly -> {
@@ -82,7 +82,7 @@ class EventGuestServiceTest {
         createAndSaveGuest(event, guest);
 
         // when
-        var result = sut.getNonGuestMembers(event.getId());
+        var result = sut.getNonGuestOrganizationMembers(event.getId());
 
         // then
         assertSoftly(softly -> {
@@ -96,13 +96,13 @@ class EventGuestServiceTest {
 
     @Test
     void 존재하지_않는_이벤트로_게스트_조회시_예외가_발생한다() {
-        assertThatThrownBy(() -> sut.getGuestMembers(999L))
+        assertThatThrownBy(() -> sut.getGuestOrganizationMembers(999L))
                 .isInstanceOf(NotFoundException.class);
     }
 
     @Test
     void 존재하지_않는_이벤트로_비게스트_조회시_예외가_발생한다() {
-        assertThatThrownBy(() -> sut.getNonGuestMembers(999L))
+        assertThatThrownBy(() -> sut.getNonGuestOrganizationMembers(999L))
                 .isInstanceOf(NotFoundException.class);
     }
 
@@ -132,7 +132,7 @@ class EventGuestServiceTest {
                 now.plusDays(2),
                 100
         );
-        
+
         return eventRepository.save(event);
     }
 

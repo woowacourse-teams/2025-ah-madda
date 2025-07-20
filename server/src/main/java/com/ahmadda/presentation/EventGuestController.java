@@ -19,9 +19,9 @@ public class EventGuestController {
 
     private final EventGuestService eventGuestService;
 
-    @GetMapping("/{eventId}/guest-members")
-    public ResponseEntity<List<OrganizationMemberResponse>> getGuestMembers(@PathVariable final Long eventId) {
-        List<OrganizationMember> guestMembers = eventGuestService.getGuestMembers(eventId);
+    @GetMapping("/{eventId}/guest-organization-members")
+    public ResponseEntity<List<OrganizationMemberResponse>> getGuestOrganizationMembers(@PathVariable final Long eventId) {
+        List<OrganizationMember> guestMembers = eventGuestService.getGuestOrganizationMembers(eventId);
 
         List<OrganizationMemberResponse> responses = guestMembers.stream()
                 .map(OrganizationMemberResponse::from)
@@ -30,9 +30,9 @@ public class EventGuestController {
         return ResponseEntity.ok(responses);
     }
 
-    @GetMapping("/{eventId}/non-guest-members")
-    public ResponseEntity<List<OrganizationMemberResponse>> getNonGuestMembers(@PathVariable final Long eventId) {
-        List<OrganizationMember> nonGuestMembers = eventGuestService.getNonGuestMembers(eventId);
+    @GetMapping("/{eventId}/non-guest-organization-members")
+    public ResponseEntity<List<OrganizationMemberResponse>> getNonGuestOrganizationMembers(@PathVariable final Long eventId) {
+        List<OrganizationMember> nonGuestMembers = eventGuestService.getNonGuestOrganizationMembers(eventId);
 
         List<OrganizationMemberResponse> responses = nonGuestMembers.stream()
                 .map(OrganizationMemberResponse::from)

@@ -17,14 +17,14 @@ public class EventGuestService {
     private final EventRepository eventRepository;
 
     // TODO. 추후 주최자에 대한 인가 처리 필요
-    public List<OrganizationMember> getGuestMembers(final Long eventId) {
+    public List<OrganizationMember> getGuestOrganizationMembers(final Long eventId) {
         final Event event = getEvent(eventId);
 
         return event.getGuestOrganizationMembers();
     }
 
     // TODO. 추후 주최자에 대한 인가 처리 필요
-    public List<OrganizationMember> getNonGuestMembers(final Long eventId) {
+    public List<OrganizationMember> getNonGuestOrganizationMembers(final Long eventId) {
         final Event event = getEvent(eventId);
         final Organization organization = event.getOrganization();
         final List<OrganizationMember> allMembers = organization.getOrganizationMembers();
