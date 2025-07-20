@@ -29,20 +29,10 @@ export const EventCard = ({ event }: EventCardProps) => {
         padding: '14px',
         backgroundColor: '#1E2939',
         borderRadius: '8.75px',
-        maxWidth: '350px',
+        width: '380px',
+        gap: '12px',
       }}
     >
-      <Flex justifyContent="space-between" alignItems="flex-start">
-        <Flex dir="column">
-          <Text type="caption" weight="regular" color="#A0A0A0">
-            {`마감 · ${deadlineTime}`}
-          </Text>
-          <Text type="caption" weight="regular" color="#A0A0A0">
-            {`시작 · ${startTime} · 종료 · ${endTime}`}
-          </Text>
-        </Flex>
-      </Flex>
-
       <Flex dir="column" gap="3.5px">
         <Text type="Title" weight="semibold" color="white">
           {title}
@@ -52,11 +42,27 @@ export const EventCard = ({ event }: EventCardProps) => {
         </Text>
       </Flex>
 
-      <Flex gap="7px" alignItems="center">
-        <Icon name="location" size={10.5} color="#A0A0A0" />
-        <Text type="caption" weight="regular" color="#A0A0A0">
-          {location}
-        </Text>
+      <Flex dir="column" gap="10px">
+        <Flex alignItems="baseline" gap="3.5px">
+          <Icon name="calendar" size={14} color="#A0A0A0" />
+          <Text type="caption" weight="regular" color="#A0A0A0">
+            {`신청 마감 ${deadlineTime}`}
+          </Text>
+        </Flex>
+
+        <Flex alignItems="baseline" gap="3.5px">
+          <Icon name="clock" size={14} color="#A0A0A0" />
+          <Text type="caption" weight="regular" color="#A0A0A0">
+            {`이벤트 시간 ${startTime} - ${endTime}`}
+          </Text>
+        </Flex>
+
+        <Flex gap="7px" alignItems="center">
+          <Icon name="location" size={10.5} color="#A0A0A0" />
+          <Text type="caption" weight="regular" color="#A0A0A0">
+            {`장소 ${location}`}
+          </Text>
+        </Flex>
       </Flex>
 
       <Flex dir="column" gap="14px" alignItems="flex-end">
