@@ -1,27 +1,18 @@
 package com.ahmadda.domain;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
-import java.time.LocalDateTime;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+
 class EventTest {
 
-    private Member member;
-    private Organization organization;
-    private OrganizationMember organizer;
-
-    @BeforeEach
-    void setUp() {
-        member = Member.create("테스트 멤버", "test@example.com");
-        organization = Organization.create("테스트 조직", "조직 설명", "image.png");
-        organizer = OrganizationMember.create("주최자", member, organization);
-    }
+    private Organization organization = Organization.create("테스트 조직", "조직 설명", "image.png");
 
     @Test
     void 게스트가_이벤트에_참여했는지_알_수_있다() {
@@ -60,7 +51,8 @@ class EventTest {
 
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization2))
-                .isInstanceOf(BusinessRuleViolatedException.class);
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("자신이 속한 조직에서만 이벤트를 생성할 수 있습니다.");
     }
 
     @ParameterizedTest
@@ -91,6 +83,7 @@ class EventTest {
     }
 
     private Event createEvent(final OrganizationMember organizationMember, final Organization organization) {
+        LocalDateTime now = LocalDateTime.now();
         return Event.create(
                 "title",
                 "description",
@@ -98,9 +91,9 @@ class EventTest {
                 organizationMember,
                 organization,
                 EventOperationPeriod.create(
-                        new Period(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2)),
-                        new Period(LocalDateTime.now(), LocalDateTime.now().plusDays(1)),
-                        LocalDateTime.now()
+                        new Period(now.plusDays(1), now.plusDays(2)),
+                        new Period(now.plusDays(3), now.plusDays(4)),
+                        now
                 ),
                 10
         );

@@ -119,10 +119,6 @@ public class Event extends BaseEntity {
 
     private void validateTitle(final String title) {
         Assert.notBlank(title, "title은 공백이면 안됩니다.");
-
-        if (title.length() > 255) {
-            throw new BusinessRuleViolatedException("title은 최소 1글자 최대 255글자여야 합니다.");
-        }
     }
 
     private void validateDescription(final String description) {
