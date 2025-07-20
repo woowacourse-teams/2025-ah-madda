@@ -5,6 +5,7 @@ import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.infra.GoogleOAuthProvider;
 import com.ahmadda.infra.JwtTokenProvider;
 import com.ahmadda.infra.dto.OAuthUserInfoResponse;
+import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,9 +49,8 @@ class LoginServiceTest {
         given(googleOAuthProvider.getUserInfo(code))
                 .willReturn(new OAuthUserInfoResponse(email, name));
 
-        given(jwtTokenProvider.createAccessToken(any(Member.class)))
+        given(jwtTokenProvider.createToken(any(Claims.class), any(Duration.class)))
                 .willReturn(accessToken);
-
         // when
         sut.login(code);
 
@@ -67,7 +69,7 @@ class LoginServiceTest {
         given(googleOAuthProvider.getUserInfo(code))
                 .willReturn(new OAuthUserInfoResponse(email, name));
 
-        given(jwtTokenProvider.createAccessToken(any(Member.class)))
+        given(jwtTokenProvider.createToken(any(Claims.class), any(Duration.class)))
                 .willReturn(accessToken);
 
         Member member = Member.create(name, email);
