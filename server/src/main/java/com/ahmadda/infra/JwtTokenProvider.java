@@ -4,8 +4,7 @@ import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.infra.config.JwtTokenProperties;
 import com.ahmadda.presentation.dto.LoginMember;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -52,21 +51,12 @@ public class JwtTokenProvider {
 
     private Claims parseClaims(final String token) {
         try {
-            Jws<Claims> jws = Jwts.parser()
+            return Jwts.parser()
                     .verifyWith(jwtTokenProperties.getSecretKey())
                     .build()
-                    .parseSignedClaims(token);
-            Claims claims = jws.getPayload();
-
-            Date expiration = claims.getExpiration();
-            Date now = new Date();
-
-            if (expiration.before(now)) {
-                throw new BusinessRuleViolatedException("토큰이 만료되었습니다.");
-            }
-
-            return claims;
-        } catch (JwtException | IllegalArgumentException e) {
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
             throw new BusinessRuleViolatedException("유효하지 않은 토큰입니다.");
         }
     }
