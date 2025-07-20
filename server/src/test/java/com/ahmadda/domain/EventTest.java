@@ -66,7 +66,8 @@ class EventTest {
     }
 
     private Event createEvent(final String title, final int maxCapacity) {
-        Organization organization = createOrganization("우테코");
+        var organization = createOrganization("우테코");
+
         return Event.create(
                 title,
                 "description",
@@ -83,7 +84,8 @@ class EventTest {
     }
 
     private Event createEvent(final OrganizationMember organizationMember, final Organization organization) {
-        LocalDateTime now = LocalDateTime.now();
+        var now = LocalDateTime.now();
+
         return Event.create(
                 "title",
                 "description",

@@ -1,12 +1,13 @@
 package com.ahmadda.domain;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
-import java.time.LocalDateTime;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class PeriodTest {
 
@@ -35,11 +36,11 @@ class PeriodTest {
             boolean expected
     ) {
         //given
-        Period period1 = new Period(start1, end1);
-        Period period2 = new Period(start2, end2);
+        var period1 = new Period(start1, end1);
+        var period2 = new Period(start2, end2);
 
         //when
-        boolean result = period1.overlaps(period2);
+        var result = period1.overlaps(period2);
 
         //then
         assertThat(result).isEqualTo(expected);

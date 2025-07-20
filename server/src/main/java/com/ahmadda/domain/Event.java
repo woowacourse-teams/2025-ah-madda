@@ -86,12 +86,6 @@ public class Event extends BaseEntity {
         organization.addEvent(this);
     }
 
-    private void validateBelongToOrganization(OrganizationMember organizer, Organization organization) {
-        if (!organizer.isBelongTo(organization)) {
-            throw new BusinessRuleViolatedException("자신이 속한 조직에서만 이벤트를 생성할 수 있습니다.");
-        }
-    }
-
     public static Event create(
             final String title,
             final String description,
@@ -135,6 +129,12 @@ public class Event extends BaseEntity {
 
     private void validateOrganization(final Organization organization) {
         Assert.notNull(organization, "조직은 null이 되면 안됩니다.");
+    }
+
+    private void validateBelongToOrganization(OrganizationMember organizer, Organization organization) {
+        if (!organizer.isBelongTo(organization)) {
+            throw new BusinessRuleViolatedException("자신이 속한 조직에서만 이벤트를 생성할 수 있습니다.");
+        }
     }
 
     private void validateMaxCapacity(final int maxCapacity) {
