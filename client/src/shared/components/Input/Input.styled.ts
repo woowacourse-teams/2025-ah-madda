@@ -21,14 +21,13 @@ export const StyledRequiredMark = styled.span`
 `;
 
 export const StyledInput = styled.input<Pick<InputProps, 'error'>>`
-  width: 100%;
-  padding: 8px 12px;
+  background-color: #f7f7f8;
+  border-radius: 8px;
+  padding: 12px;
+  border: none;
   font-size: 14px;
-  border: 1px solid ${({ error }) => (error ? '#FF5A5A' : '#ccc')};
-  border-radius: 6px;
+  width: 100%;
   box-sizing: border-box;
-  background: white;
-  color: black;
 
   &:focus {
     outline: none;
