@@ -1,7 +1,7 @@
 package com.ahmadda.infra;
 
-import com.ahmadda.domain.Member;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import com.ahmadda.infra.config.JwtTokenProperties;
 import com.ahmadda.presentation.dto.LoginMember;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 
@@ -23,18 +24,15 @@ public class JwtTokenProvider {
 
     private final JwtTokenProperties jwtTokenProperties;
 
-
-    public String createAccessToken(final Member member) {
+    public String createToken(Claims claims, Duration duration) {
         Instant now = Instant.now();
-        Instant expire = now.plus(jwtTokenProperties.getAccessExpirationDay());
-
-        String memberId = member.getId().toString();
+        Instant expire = now.plus(duration);
 
         return Jwts.builder()
-                .subject(memberId)
+                .subject(claims.getSubject())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expire))
-                .claim(NAME_ID_KEY, member.getName())
+                .claims(claims)
                 .signWith(jwtTokenProperties.getSecretKey())
                 .compact();
     }
