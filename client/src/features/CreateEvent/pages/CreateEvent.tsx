@@ -11,6 +11,7 @@ export const CreateEvent = () => {
         margin: '0 auto',
         padding: '28px 14px',
         gap: '24px',
+        boxSizing: 'border-box',
       }}
     >
       <EventCreateForm />
