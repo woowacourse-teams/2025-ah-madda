@@ -10,12 +10,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -67,7 +68,7 @@ public class Organization extends BaseEntity {
         LocalDateTime currentDateTime = LocalDateTime.now();
 
         return events.stream()
-                .filter((event) -> event.getEventOperationPeriod().getEventPeriod().start().isAfter(currentDateTime))
+                .filter((event) -> event.isNotStarted(currentDateTime))
                 .toList();
     }
 

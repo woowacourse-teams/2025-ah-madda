@@ -65,6 +65,28 @@ class EventTest {
                 .hasMessage("최대 수용 인원은 1명보다 적거나 21억명 보다 클 수 없습니다.");
     }
 
+    @Test
+    void 이벤트가_아직_시작되지_않았는지_확인할_수_있다() {
+        //given
+        var now = LocalDateTime.now();
+        var eventOperationPeriod = EventOperationPeriod.create(
+                new Period(now.plusDays(1), now.plusDays(2)),
+                new Period(now.plusDays(3), now.plusDays(4)),
+                now
+        );
+        var event = createEvent("우테코", eventOperationPeriod);
+
+        //when
+        var result1 = event.isNotStarted(now);
+        var result2 = event.isNotStarted(now.plusDays(3));
+
+        //then
+        assertSoftly(softly -> {
+            softly.assertThat(result1).isTrue();
+            softly.assertThat(result2).isFalse();
+        });
+    }
+
     private Event createEvent(final String title, final int maxCapacity) {
         var organization = createOrganization("우테코");
 
@@ -98,6 +120,20 @@ class EventTest {
                         now
                 ),
                 10
+        );
+    }
+
+    private Event createEvent(final String title, EventOperationPeriod eventOperationPeriod) {
+        var organization = createOrganization("우테코");
+
+        return Event.create(
+                title,
+                "description",
+                "place",
+                createOrganizationMember(createMember(), organization),
+                organization,
+                eventOperationPeriod,
+                100
         );
     }
 

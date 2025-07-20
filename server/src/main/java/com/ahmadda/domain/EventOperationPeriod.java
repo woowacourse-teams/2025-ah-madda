@@ -52,6 +52,10 @@ public class EventOperationPeriod {
         return new EventOperationPeriod(registrationPeriod, eventPeriod);
     }
 
+    public boolean isNotStarted(LocalDateTime currentDateTime) {
+        return eventPeriod.isNotStarted(currentDateTime);
+    }
+
     private static void validateRegistrationPeriod(final Period registrationPeriod, final LocalDateTime currentDateTime) {
         Assert.notNull(registrationPeriod, "이벤트 신청 기간은 null이 되면 안됩니다.");
 

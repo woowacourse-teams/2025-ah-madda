@@ -134,6 +134,10 @@ public class Event extends BaseEntity {
                 .anyMatch(guest -> guest.isSameParticipant(organizationMember));
     }
 
+    public boolean isNotStarted(LocalDateTime currentDateTime) {
+        return eventOperationPeriod.isNotStarted(currentDateTime);
+    }
+
     private void validateTitle(final String title) {
         Assert.notBlank(title, "제목은 공백이면 안됩니다.");
     }

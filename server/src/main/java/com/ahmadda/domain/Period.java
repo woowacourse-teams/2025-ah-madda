@@ -32,4 +32,8 @@ public record Period(
     public boolean overlaps(final Period other) {
         return !this.isAfter(other) && !this.isBefore(other);
     }
+
+    public boolean isNotStarted(LocalDateTime currentDateTime) {
+        return start.isAfter(currentDateTime);
+    }
 }
