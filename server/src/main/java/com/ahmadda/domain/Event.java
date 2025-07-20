@@ -18,6 +18,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -129,6 +131,22 @@ public class Event extends BaseEntity {
     public boolean hasGuest(final OrganizationMember organizationMember) {
         return guests.stream()
                 .anyMatch(guest -> guest.isSameParticipant(organizationMember));
+    }
+
+    public List<OrganizationMember> getGuestOrganizationMembers() {
+        return guests.stream()
+                .map(Guest::getParticipant)
+                .toList();
+    }
+
+    public List<OrganizationMember> getNonGuestOrganizationMembers(final List<OrganizationMember> organizationMembers) {
+        Set<OrganizationMember> participants = guests.stream()
+                .map(Guest::getParticipant)
+                .collect(Collectors.toSet());
+
+        return organizationMembers.stream()
+                .filter(organizationMember -> !participants.contains(organizationMember))
+                .toList();
     }
 
     private void validateTitle(final String title) {
