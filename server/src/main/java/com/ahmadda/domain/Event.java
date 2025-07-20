@@ -132,7 +132,7 @@ public class Event extends BaseEntity {
 
     public boolean hasGuest(final OrganizationMember organizationMember) {
         return guests.stream()
-                .anyMatch(guest -> guest.isSameParticipant(organizationMember));
+                .anyMatch(guest -> guest.isSameOrganizationMember(organizationMember));
     }
 
     public List<OrganizationMember> getNonGuestOrganizationMembers(final List<OrganizationMember> organizationMembers) {
@@ -150,11 +150,25 @@ public class Event extends BaseEntity {
         return eventOperationPeriod.isNotStarted(currentDateTime);
     }
 
-    public void participate(final Guest guest) {
+    public void participate(final Guest guest, final LocalDateTime participantDateTime) {
+        validateParticipate(guest, participantDateTime);
+
+        this.guests.add(guest);
+    }
+
+    private void validateParticipate(final Guest guest, final LocalDateTime participantDateTime) {
+        if (eventOperationPeriod.canNotRegistration(participantDateTime)) {
+            throw new BusinessRuleViolatedException("이벤트 신청 기간이 아닙니다.");
+        }
+        if (guests.size() >= maxCapacity) {
+            throw new BusinessRuleViolatedException("수용 인원이 가득차 이벤트에 참여할 수 없습니다.");
+        }
         if (guests.contains(guest)) {
             throw new BusinessRuleViolatedException("이미 참여중인 게스트입니다.");
         }
-        this.guests.add(guest);
+        if (guest.isSameOrganizationMember(organizer)) {
+            throw new BusinessRuleViolatedException("이벤트의 주최자는 게스트로 참여할 수 없습니다.");
+        }
     }
 
     private void validateTitle(final String title) {

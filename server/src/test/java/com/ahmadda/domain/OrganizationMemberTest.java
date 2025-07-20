@@ -1,11 +1,12 @@
 package com.ahmadda.domain;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class OrganizationMemberTest {
 
@@ -30,8 +31,8 @@ class OrganizationMemberTest {
         var event2 = createEventForTest("이벤트 2");
         var event3 = createEventForTest("이벤트 3");
 
-        Guest.create(event1, participant);
-        Guest.create(event3, participant);
+        Guest.create(event1, participant, event1.getRegistrationStart());
+        Guest.create(event3, participant, event3.getRegistrationStart());
 
         // when
         List<Event> participatedEvents = participant.getParticipatedEvents();

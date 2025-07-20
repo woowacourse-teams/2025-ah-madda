@@ -6,6 +6,7 @@ import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
+import com.ahmadda.domain.OrganizationMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.util.List;
 public class EventGuestService {
 
     private final EventRepository eventRepository;
+    private final OrganizationMemberRepository organizationMemberRepository;
 
     // TODO. 추후 주최자에 대한 인가 처리 필요
     public List<Guest> getGuests(final Long eventId) {
@@ -33,8 +35,20 @@ public class EventGuestService {
         return event.getNonGuestOrganizationMembers(allMembers);
     }
 
+    public void participantEvent(final Long eventId, final Long organizationMemberId) {
+        Event event = getEvent(eventId);
+        OrganizationMember organizationMember = getOrganizationMember(organizationMemberId);
+
+//        Guest guest = Guest.create(event, organizationMember);
+    }
+
     private Event getEvent(final Long eventId) {
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 이벤트입니다."));
+    }
+
+    private OrganizationMember getOrganizationMember(final Long organizationMemberId) {
+        return organizationMemberRepository.findById(organizationMemberId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직원입니다."));
     }
 }

@@ -144,6 +144,6 @@ class EventGuestServiceTest {
     }
 
     private Guest createAndSaveGuest(Event event, OrganizationMember member) {
-        return guestRepository.save(Guest.create(event, member));
+        return guestRepository.save(Guest.create(event, member, event.getRegistrationStart()));
     }
 }

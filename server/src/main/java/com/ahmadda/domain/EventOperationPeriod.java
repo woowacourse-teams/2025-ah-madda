@@ -56,10 +56,18 @@ public class EventOperationPeriod {
         return eventPeriod.isNotStarted(currentDateTime);
     }
 
-    private static void validateRegistrationPeriod(final Period registrationPeriod, final LocalDateTime currentDateTime) {
+    public boolean canNotRegistration(LocalDateTime currentDateTime) {
+        return !registrationPeriod.includes(currentDateTime);
+    }
+
+    private static void validateRegistrationPeriod(
+            final Period registrationPeriod,
+            final LocalDateTime currentDateTime
+    ) {
         Assert.notNull(registrationPeriod, "이벤트 신청 기간은 null이 되면 안됩니다.");
 
-        if (registrationPeriod.start().isBefore(currentDateTime)) {
+        if (registrationPeriod.start()
+                .isBefore(currentDateTime)) {
             throw new BusinessRuleViolatedException("이벤트 신청 시작 시간은 현재 시점보다 미래여야 합니다.");
         }
     }
@@ -67,7 +75,8 @@ public class EventOperationPeriod {
     private static void validateEventPeriod(final Period eventPeriod, final LocalDateTime currentDateTime) {
         Assert.notNull(eventPeriod, "이벤트 기간은 null이 되면 안됩니다.");
 
-        if (eventPeriod.start().isBefore(currentDateTime)) {
+        if (eventPeriod.start()
+                .isBefore(currentDateTime)) {
             throw new BusinessRuleViolatedException("이벤트 시작 시간은 현재 시점보다 미래여야 합니다.");
         }
     }

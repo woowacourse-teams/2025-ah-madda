@@ -36,4 +36,9 @@ public record Period(
     public boolean isNotStarted(final LocalDateTime currentDateTime) {
         return start.isAfter(currentDateTime);
     }
+
+    public boolean includes(final LocalDateTime dateTime) {
+        return (start.isEqual(dateTime) || start.isBefore(dateTime)) &&
+                (end.isEqual(dateTime) || end.isAfter(dateTime));
+    }
 }

@@ -1,8 +1,5 @@
 package com.ahmadda.application;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventOperationPeriod;
@@ -15,10 +12,7 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-
 import com.ahmadda.domain.Period;
-import java.time.LocalDateTime;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -143,8 +137,10 @@ class OrganizationMemberEventServiceTest {
                 "장소1",
                 organizer,
                 organization,
-                LocalDateTime.now().plusDays(1),
-                LocalDateTime.now().plusDays(2),
+                LocalDateTime.now()
+                        .plusDays(1),
+                LocalDateTime.now()
+                        .plusDays(2),
                 50
         );
 
@@ -248,14 +244,17 @@ class OrganizationMemberEventServiceTest {
                 organization,
                 EventOperationPeriod.create(
                         new Period(
-                                LocalDateTime.now().minusDays(10),
-                                LocalDateTime.now().minusDays(1)
+                                LocalDateTime.now()
+                                        .minusDays(10),
+                                LocalDateTime.now()
+                                        .minusDays(1)
                         ),
                         new Period(
                                 eventStart,
                                 eventEnd
                         ),
-                        LocalDateTime.now().minusDays(20)
+                        LocalDateTime.now()
+                                .minusDays(20)
                 ),
                 maxCapacity
         );
@@ -263,7 +262,7 @@ class OrganizationMemberEventServiceTest {
     }
 
     private Guest createAndSaveGuest(Event event, OrganizationMember participant) {
-        var guest = Guest.create(event, participant);
+        var guest = Guest.create(event, participant, event.getRegistrationStart());
 
         return guestRepository.save(guest);
     }

@@ -27,10 +27,17 @@ class EventTest {
     @Test
     void 게스트가_이벤트에_참여했는지_알_수_있다() {
         // given
-        var sut = createEvent();
+        LocalDateTime now = LocalDateTime.now();
+        Period registrationPeriod = new Period(
+                LocalDateTime.now()
+                        .plusDays(1),
+                LocalDateTime.now()
+                        .plusDays(2)
+        );
+        var sut = createEvent(now, registrationPeriod);
         var guest = createOrganizationMember("조직원", createMember("참가자1", "guest1@example.com"), baseOrganization);
         var notGuest = createOrganizationMember("다른 조직원", createMember("참가자2", "guest2@example.com"), baseOrganization);
-        Guest.create(sut, guest);
+        Guest.create(sut, guest, registrationPeriod.start());
 
         // when
         var actual = sut.hasGuest(guest);
@@ -48,15 +55,19 @@ class EventTest {
     @Test
     void 이벤트에_참여한_게스트들을_조회할_수_있다() {
         // given
-        var sut = createEvent();
+        LocalDateTime now = LocalDateTime.now();
+        Period registrationPeriod = new Period(now.plusDays(1), now.plusDays(2));
+        var sut = createEvent(now, registrationPeriod);
 
         var guest1 = Guest.create(
                 sut,
-                createOrganizationMember("게스트1", createMember("게스트1", "g1@email.com"), baseOrganization)
+                createOrganizationMember("게스트1", createMember("게스트1", "g1@email.com"), baseOrganization),
+                registrationPeriod.start()
         );
         var guest2 = Guest.create(
                 sut,
-                createOrganizationMember("게스트2", createMember("게스트2", "g2@email.com"), baseOrganization)
+                createOrganizationMember("게스트2", createMember("게스트2", "g2@email.com"), baseOrganization),
+                registrationPeriod.start()
         );
 
         // when
@@ -122,11 +133,18 @@ class EventTest {
     @Test
     void 이벤트에_참여하지_않은_조직원을_조회할_수_있다() {
         // given
-        var sut = createEvent();
+        LocalDateTime now = LocalDateTime.now();
+        Period registrationPeriod = new Period(
+                LocalDateTime.now()
+                        .plusDays(1),
+                LocalDateTime.now()
+                        .plusDays(2)
+        );
+        var sut = createEvent(now, registrationPeriod);
         var guest = createOrganizationMember("게스트", createMember("게스트", "guest@email.com"), baseOrganization);
         var nonGuest1 = createOrganizationMember("비게스트1", createMember("비게스트1", "non1@email.com"), baseOrganization);
         var nonGuest2 = createOrganizationMember("비게스트2", createMember("비게스트2", "non2@email.com"), baseOrganization);
-        Guest.create(sut, guest);
+        Guest.create(sut, guest, registrationPeriod.start());
         var allMembers = List.of(baseOrganizer, guest, nonGuest1, nonGuest2);
 
         // when
@@ -144,13 +162,20 @@ class EventTest {
     @Test
     void 이벤트에_참여중인_게스트가_또_참여한다면_예외가_발생한다() {
         //given
-        var sut = createEvent();
+        LocalDateTime now = LocalDateTime.now();
+        Period registrationPeriod = new Period(
+                LocalDateTime.now()
+                        .plusDays(1),
+                LocalDateTime.now()
+                        .plusDays(2)
+        );
+        var sut = createEvent(now, registrationPeriod);
         var organizationMember =
                 createOrganizationMember("게스트", createMember("게스트", "guest@email.com"), baseOrganization);
-        var guest = Guest.create(sut, organizationMember);
+        var guest = Guest.create(sut, organizationMember, registrationPeriod.start());
 
         //when //then
-        assertThatThrownBy(() -> sut.participate(guest))
+        assertThatThrownBy(() -> sut.participate(guest, registrationPeriod.start()))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage("이미 참여중인 게스트입니다.");
     }
@@ -183,9 +208,7 @@ class EventTest {
         );
     }
 
-    private Event createEvent() {
-        var now = LocalDateTime.now();
-
+    private Event createEvent(LocalDateTime now, Period registrationPeriod) {
         return Event.create(
                 "title",
                 "description",
@@ -193,7 +216,7 @@ class EventTest {
                 baseOrganizer,
                 baseOrganization,
                 EventOperationPeriod.create(
-                        new Period(now.plusDays(1), now.plusDays(2)),
+                        registrationPeriod,
                         new Period(now.plusDays(3), now.plusDays(4)),
                         now
                 ),
