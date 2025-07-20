@@ -135,7 +135,7 @@ class EventGuestServiceTest {
                 EventOperationPeriod.create(
                         new Period(now.minusDays(3), now.minusDays(1)),
                         new Period(now.plusDays(1), now.plusDays(2)),
-                        now
+                        now.minusDays(6)
                 ),
                 100
         );
