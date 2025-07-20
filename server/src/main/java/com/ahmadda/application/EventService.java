@@ -33,11 +33,7 @@ public class EventService {
         Organization organization = getOrganization(organizationId);
         OrganizationMember organizer = getOrganizationMember(organizerId);
 
-        EventOperationPeriod eventOperationPeriod = EventOperationPeriod.create(
-                new Period(eventCreateRequest.registrationStart(), eventCreateRequest.registrationEnd()),
-                new Period(eventCreateRequest.eventStart(), eventCreateRequest.eventEnd()),
-                LocalDateTime.now()
-        );
+        EventOperationPeriod eventOperationPeriod = createEventOperationPeriod(eventCreateRequest);
         Event event = Event.create(
                 eventCreateRequest.title(),
                 eventCreateRequest.description(),
@@ -49,6 +45,18 @@ public class EventService {
         );
 
         return eventRepository.save(event);
+    }
+
+    private EventOperationPeriod createEventOperationPeriod(final EventCreateRequest eventCreateRequest) {
+        Period registrationPeriod =
+                new Period(eventCreateRequest.registrationStart(), eventCreateRequest.registrationEnd());
+        Period eventPeriod = new Period(eventCreateRequest.eventStart(), eventCreateRequest.eventEnd());
+
+        return EventOperationPeriod.create(
+                registrationPeriod,
+                eventPeriod,
+                LocalDateTime.now()
+        );
     }
 
     private Organization getOrganization(final Long organizationId) {

@@ -2,9 +2,12 @@ package com.ahmadda.domain;
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.LocalDateTime;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -20,29 +23,59 @@ class PeriodTest {
     }
 
     @ParameterizedTest
-    @CsvSource({
-            "2025-07-18T04:21, 2025-07-19T04:23, 2025-07-18T04:21, 2025-07-19T04:23, true",
-            "2025-07-17T00:00, 2025-07-19T00:00, 2025-07-18T00:00, 2025-07-19T00:00, true",
-            "2025-07-17T00:00, 2025-07-19T00:00, 2025-07-19T00:00, 2025-07-20T00:00, true",
-            "2025-07-17T00:00, 2025-07-20T00:00, 2025-07-18T00:00, 2025-07-19T00:00, true",
-            "2025-07-10T00:00, 2025-07-11T00:00, 2025-07-12T00:00, 2025-07-13T00:00, false",
-            "2025-07-10T00:00, 2025-07-11T00:00, 2025-07-11T00:01, 2025-07-13T00:00, false",
-    })
-    void 두_기간이_겹치는지_확인할_수_있다(
-            LocalDateTime start1,
-            LocalDateTime end1,
-            LocalDateTime start2,
-            LocalDateTime end2,
-            boolean expected
-    ) {
-        //given
-        var period1 = new Period(start1, end1);
-        var period2 = new Period(start2, end2);
+    @MethodSource("periods")
+    void 두_기간이_겹치는지_확인할_수_있다(Period period1, Period period2, boolean expected) {
+        // when
+        boolean result = period1.isOverlappedWith(period2);
 
-        //when
-        var result = period1.isOverlappedWith(period2);
-
-        //then
+        // then
         assertThat(result).isEqualTo(expected);
+    }
+
+    private static Stream<Arguments> periods() {
+        return Stream.of(
+                Arguments.of(
+                        new Period(LocalDateTime.of(2025, 7, 18, 4, 21),
+                                LocalDateTime.of(2025, 7, 19, 4, 23)),
+                        new Period(LocalDateTime.of(2025, 7, 18, 4, 21),
+                                LocalDateTime.of(2025, 7, 19, 4, 23)),
+                        true
+                ),
+                Arguments.of(
+                        new Period(LocalDateTime.of(2025, 7, 17, 0, 0),
+                                LocalDateTime.of(2025, 7, 19, 0, 0)),
+                        new Period(LocalDateTime.of(2025, 7, 18, 0, 0),
+                                LocalDateTime.of(2025, 7, 19, 0, 0)),
+                        true
+                ),
+                Arguments.of(
+                        new Period(LocalDateTime.of(2025, 7, 17, 0, 0),
+                                LocalDateTime.of(2025, 7, 19, 0, 0)),
+                        new Period(LocalDateTime.of(2025, 7, 19, 0, 0),
+                                LocalDateTime.of(2025, 7, 20, 0, 0)),
+                        true
+                ),
+                Arguments.of(
+                        new Period(LocalDateTime.of(2025, 7, 17, 0, 0),
+                                LocalDateTime.of(2025, 7, 20, 0, 0)),
+                        new Period(LocalDateTime.of(2025, 7, 18, 0, 0),
+                                LocalDateTime.of(2025, 7, 19, 0, 0)),
+                        true
+                ),
+                Arguments.of(
+                        new Period(LocalDateTime.of(2025, 7, 10, 0, 0),
+                                LocalDateTime.of(2025, 7, 11, 0, 0)),
+                        new Period(LocalDateTime.of(2025, 7, 12, 0, 0),
+                                LocalDateTime.of(2025, 7, 13, 0, 0)),
+                        false
+                ),
+                Arguments.of(
+                        new Period(LocalDateTime.of(2025, 7, 10, 0, 0),
+                                LocalDateTime.of(2025, 7, 11, 0, 0)),
+                        new Period(LocalDateTime.of(2025, 7, 11, 0, 1),
+                                LocalDateTime.of(2025, 7, 13, 0, 0)),
+                        false
+                )
+        );
     }
 }

@@ -33,7 +33,7 @@ public record Period(
         return !this.isAfter(other) && !this.isBefore(other);
     }
 
-    public boolean isNotStarted(LocalDateTime currentDateTime) {
+    public boolean isNotStarted(final LocalDateTime currentDateTime) {
         return start.isAfter(currentDateTime);
     }
 }
