@@ -29,7 +29,7 @@ public record Period(
         return this.end.isBefore(other.start);
     }
 
-    public boolean overlaps(final Period other) {
+    public boolean isOverlappedWith(final Period other) {
         return !this.isAfter(other) && !this.isBefore(other);
     }
 

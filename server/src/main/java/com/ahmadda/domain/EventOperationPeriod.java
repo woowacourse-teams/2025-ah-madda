@@ -76,7 +76,7 @@ public class EventOperationPeriod {
         Assert.notNull(registrationPeriod, "이벤트 신청 기간은 null이 되면 안됩니다.");
         Assert.notNull(eventPeriod, "이벤트 기간은 null이 되면 안됩니다.");
 
-        if (registrationPeriod.overlaps(eventPeriod)) {
+        if (registrationPeriod.isOverlappedWith(eventPeriod)) {
             throw new BusinessRuleViolatedException("등록 기간과 이벤트 기간이 겹칠 수 없습니다.");
         }
         if (registrationPeriod.isAfter(eventPeriod)) {

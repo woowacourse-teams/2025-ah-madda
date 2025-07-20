@@ -40,7 +40,7 @@ class PeriodTest {
         var period2 = new Period(start2, end2);
 
         //when
-        var result = period1.overlaps(period2);
+        var result = period1.isOverlappedWith(period2);
 
         //then
         assertThat(result).isEqualTo(expected);
