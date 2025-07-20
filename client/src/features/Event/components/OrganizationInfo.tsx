@@ -24,4 +24,5 @@ const Img = styled.img`
   max-width: clamp(160px, 30vw, 252px);
   height: auto;
   margin-right: 20px;
+  padding: 20px 0;
 `;
