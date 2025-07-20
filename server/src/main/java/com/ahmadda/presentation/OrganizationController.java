@@ -25,7 +25,8 @@ public class OrganizationController {
 
     @PostMapping
     public ResponseEntity<Void> createOrganization(
-            @RequestBody @Valid final OrganizationCreateRequest organizationCreateRequest) {
+            @RequestBody @Valid final OrganizationCreateRequest organizationCreateRequest
+    ) {
         Organization organization = organizationService.createOrganization(organizationCreateRequest);
 
         return ResponseEntity.created(URI.create("/api/organizations/" + organization.getId()))

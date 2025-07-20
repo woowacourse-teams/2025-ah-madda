@@ -63,16 +63,17 @@ public class Event extends BaseEntity {
     @Column(nullable = false)
     private int maxCapacity;
 
-    private Event(final String title,
-                  final String description,
-                  final String place,
-                  final OrganizationMember organizer,
-                  final Organization organization,
-                  final LocalDateTime registrationStart,
-                  final LocalDateTime registrationEnd,
-                  final LocalDateTime eventStart,
-                  final LocalDateTime eventEnd,
-                  final int maxCapacity
+    private Event(
+            final String title,
+            final String description,
+            final String place,
+            final OrganizationMember organizer,
+            final Organization organization,
+            final LocalDateTime registrationStart,
+            final LocalDateTime registrationEnd,
+            final LocalDateTime eventStart,
+            final LocalDateTime eventEnd,
+            final int maxCapacity
     ) {
         validateTitle(title);
         validateDescription(description);
@@ -99,16 +100,18 @@ public class Event extends BaseEntity {
         organization.addEvent(this);
     }
 
-    public static Event create(final String title,
-                               final String description,
-                               final String place,
-                               final OrganizationMember organizer,
-                               final Organization organization,
-                               final LocalDateTime registrationStart,
-                               final LocalDateTime registrationEnd,
-                               final LocalDateTime eventStart,
-                               final LocalDateTime eventEnd,
-                               final int maxCapacity) {
+    public static Event create(
+            final String title,
+            final String description,
+            final String place,
+            final OrganizationMember organizer,
+            final Organization organization,
+            final LocalDateTime registrationStart,
+            final LocalDateTime registrationEnd,
+            final LocalDateTime eventStart,
+            final LocalDateTime eventEnd,
+            final int maxCapacity
+    ) {
         return new Event(
                 title,
                 description,

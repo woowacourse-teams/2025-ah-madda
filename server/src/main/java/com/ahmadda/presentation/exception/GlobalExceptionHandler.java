@@ -3,7 +3,6 @@ package com.ahmadda.presentation.exception;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +15,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -30,14 +31,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 "서버에서 알 수 없는 오류가 발생했습니다.",
                 null,
                 null,
-                request);
+                request
+        );
 
         return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
     @ExceptionHandler({BusinessRuleViolatedException.class, BusinessFlowViolatedException.class})
     public ResponseEntity<Object> handleUnprocessableEntity(final Exception ex, final WebRequest request) {
-        ProblemDetail body = super.createProblemDetail(ex, HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), null, null, request);
+        ProblemDetail body =
+                super.createProblemDetail(ex, HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), null, null, request);
 
         return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY, request);
     }
@@ -68,6 +71,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 problemDetail,
                 httpHeaders,
                 httpStatusCode,
-                request);
+                request
+        );
     }
 }

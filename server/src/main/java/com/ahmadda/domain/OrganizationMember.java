@@ -47,15 +47,17 @@ public class OrganizationMember extends BaseEntity {
         this.organization = organization;
     }
 
-    public static OrganizationMember create(final String nickname,
-                                            final Member member,
-                                            final Organization organization
+    public static OrganizationMember create(
+            final String nickname,
+            final Member member,
+            final Organization organization
     ) {
         return new OrganizationMember(nickname, member, organization);
     }
 
     public List<Event> getParticipatedEvents() {
-        return organization.getEvents().stream()
+        return organization.getEvents()
+                .stream()
                 .filter(event -> event.hasGuest(this))
                 .toList();
     }
