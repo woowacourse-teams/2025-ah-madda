@@ -1,4 +1,4 @@
-package com.ahmadda.presentation;
+package com.ahmadda.presentation.resolver;
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.infra.JwtTokenProvider;
@@ -15,7 +15,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Component
 @RequiredArgsConstructor
-public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
+public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private static final String BEARER_TYPE = "Bearer ";
 

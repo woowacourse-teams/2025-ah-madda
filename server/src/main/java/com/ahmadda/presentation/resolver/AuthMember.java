@@ -1,4 +1,4 @@
-package com.ahmadda.presentation;
+package com.ahmadda.presentation.resolver;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
