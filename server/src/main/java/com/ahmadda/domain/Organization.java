@@ -43,7 +43,10 @@ public class Organization extends BaseEntity {
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
-    private List<Event> events;
+    private final List<Event> events = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
+    private final List<OrganizationMember> organizationMembers = new ArrayList<>();
 
     private Organization(final String name, final String description, final String imageUrl) {
         validateName(name);
@@ -53,7 +56,6 @@ public class Organization extends BaseEntity {
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
-        this.events = new ArrayList<>();
     }
 
     public static Organization create(final String name, final String description, final String imageUrl) {
@@ -68,7 +70,8 @@ public class Organization extends BaseEntity {
         LocalDateTime currentDateTime = LocalDateTime.now();
 
         return events.stream()
-                .filter((event) -> event.getEventStart().isAfter(currentDateTime))
+                .filter((event) -> event.getEventStart()
+                        .isAfter(currentDateTime))
                 .toList();
     }
 
@@ -77,9 +80,10 @@ public class Organization extends BaseEntity {
 
         if (name.length() < MIN_NAME_LENGTH || name.length() > MAX_NAME_LENGTH) {
             throw new BusinessRuleViolatedException(
-                    String.format("이름의 길이는 %d자 이상 %d자 이하이어야 합니다.",
-                                  MIN_NAME_LENGTH,
-                                  MAX_NAME_LENGTH
+                    String.format(
+                            "이름의 길이는 %d자 이상 %d자 이하이어야 합니다.",
+                            MIN_NAME_LENGTH,
+                            MAX_NAME_LENGTH
                     )
             );
         }
@@ -90,9 +94,10 @@ public class Organization extends BaseEntity {
 
         if (description.length() < 2 || description.length() > 2000) {
             throw new BusinessRuleViolatedException(
-                    String.format("설명의 길이는 %d자 이상 %d자 이하이어야 합니다.",
-                                  MIN_DESCRIPTION_LENGTH,
-                                  MAX_DESCRIPTION_LENGTH
+                    String.format(
+                            "설명의 길이는 %d자 이상 %d자 이하이어야 합니다.",
+                            MIN_DESCRIPTION_LENGTH,
+                            MAX_DESCRIPTION_LENGTH
                     )
             );
         }

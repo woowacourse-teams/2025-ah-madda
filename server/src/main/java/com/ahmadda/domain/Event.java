@@ -18,6 +18,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -63,16 +65,17 @@ public class Event extends BaseEntity {
     @Column(nullable = false)
     private int maxCapacity;
 
-    private Event(final String title,
-                  final String description,
-                  final String place,
-                  final OrganizationMember organizer,
-                  final Organization organization,
-                  final LocalDateTime registrationStart,
-                  final LocalDateTime registrationEnd,
-                  final LocalDateTime eventStart,
-                  final LocalDateTime eventEnd,
-                  final int maxCapacity
+    private Event(
+            final String title,
+            final String description,
+            final String place,
+            final OrganizationMember organizer,
+            final Organization organization,
+            final LocalDateTime registrationStart,
+            final LocalDateTime registrationEnd,
+            final LocalDateTime eventStart,
+            final LocalDateTime eventEnd,
+            final int maxCapacity
     ) {
         validateTitle(title);
         validateDescription(description);
@@ -99,16 +102,18 @@ public class Event extends BaseEntity {
         organization.addEvent(this);
     }
 
-    public static Event create(final String title,
-                               final String description,
-                               final String place,
-                               final OrganizationMember organizer,
-                               final Organization organization,
-                               final LocalDateTime registrationStart,
-                               final LocalDateTime registrationEnd,
-                               final LocalDateTime eventStart,
-                               final LocalDateTime eventEnd,
-                               final int maxCapacity) {
+    public static Event create(
+            final String title,
+            final String description,
+            final String place,
+            final OrganizationMember organizer,
+            final Organization organization,
+            final LocalDateTime registrationStart,
+            final LocalDateTime registrationEnd,
+            final LocalDateTime eventStart,
+            final LocalDateTime eventEnd,
+            final int maxCapacity
+    ) {
         return new Event(
                 title,
                 description,
@@ -126,6 +131,17 @@ public class Event extends BaseEntity {
     public boolean hasGuest(final OrganizationMember organizationMember) {
         return guests.stream()
                 .anyMatch(guest -> guest.isSameParticipant(organizationMember));
+    }
+
+    public List<OrganizationMember> getNonGuestOrganizationMembers(final List<OrganizationMember> organizationMembers) {
+        Set<OrganizationMember> participants = guests.stream()
+                .map(Guest::getOrganizationMember)
+                .collect(Collectors.toSet());
+        participants.add(organizer);
+
+        return organizationMembers.stream()
+                .filter(organizationMember -> !participants.contains(organizationMember))
+                .toList();
     }
 
     private void validateTitle(final String title) {
