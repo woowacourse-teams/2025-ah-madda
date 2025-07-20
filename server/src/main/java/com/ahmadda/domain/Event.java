@@ -4,6 +4,7 @@ package com.ahmadda.domain;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -16,6 +17,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +54,7 @@ public class Event extends BaseEntity {
     private List<Guest> guests;
 
     @Column(nullable = false)
+    @Embedded
     private EventOperationPeriod eventOperationPeriod;
 
     @Column(nullable = false)
@@ -106,6 +109,26 @@ public class Event extends BaseEntity {
         );
     }
 
+    public LocalDateTime getRegistrationStart() {
+        return eventOperationPeriod.getRegistrationPeriod()
+                .start();
+    }
+
+    public LocalDateTime getRegistrationEnd() {
+        return eventOperationPeriod.getRegistrationPeriod()
+                .end();
+    }
+
+    public LocalDateTime geEventStart() {
+        return eventOperationPeriod.getEventPeriod()
+                .start();
+    }
+
+    public LocalDateTime geEventEnd() {
+        return eventOperationPeriod.getEventPeriod()
+                .end();
+    }
+
     public boolean hasGuest(final OrganizationMember organizationMember) {
         return guests.stream()
                 .anyMatch(guest -> guest.isSameParticipant(organizationMember));
@@ -139,7 +162,7 @@ public class Event extends BaseEntity {
 
     private void validateMaxCapacity(final int maxCapacity) {
         if (maxCapacity < MIN_CAPACITY || maxCapacity > MAX_CAPACITY) {
-            throw new BusinessRuleViolatedException("최대 수용 인원은 1명보다 적거나 21억보다 클 수 없습니다.");
+            throw new BusinessRuleViolatedException("최대 수용 인원은 1명보다 적거나 21억명 보다 클 수 없습니다.");
         }
     }
 }

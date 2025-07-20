@@ -62,7 +62,7 @@ class EventTest {
                 "title", maxCapacity
         ))
                 .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("최대 수용 인원은 1명보다 적거나 21억보다 클 수 없습니다.");
+                .hasMessage("최대 수용 인원은 1명보다 적거나 21억명 보다 클 수 없습니다.");
     }
 
     private Event createEvent(final String title, final int maxCapacity) {
