@@ -150,6 +150,13 @@ public class Event extends BaseEntity {
         return eventOperationPeriod.isNotStarted(currentDateTime);
     }
 
+    public void participate(final Guest guest) {
+        if (guests.contains(guest)) {
+            throw new BusinessRuleViolatedException("이미 참여중인 게스트입니다.");
+        }
+        this.guests.add(guest);
+    }
+
     private void validateTitle(final String title) {
         Assert.notBlank(title, "제목은 공백이면 안됩니다.");
     }

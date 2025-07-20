@@ -38,8 +38,8 @@ public class Guest extends BaseEntity {
 
         this.event = event;
         this.organizationMember = organizationMember;
-        event.getGuests()
-                .add(this);
+
+        event.participate(this);
     }
 
     public static Guest create(final Event event, final OrganizationMember participant) {

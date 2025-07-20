@@ -111,8 +111,10 @@ class EventTest {
 
         //then
         assertSoftly(softly -> {
-            softly.assertThat(result1).isTrue();
-            softly.assertThat(result2).isFalse();
+            softly.assertThat(result1)
+                    .isTrue();
+            softly.assertThat(result2)
+                    .isFalse();
         });
     }
 
@@ -139,6 +141,20 @@ class EventTest {
         });
     }
 
+    @Test
+    void 이벤트에_참여중인_게스트가_또_참여한다면_예외가_발생한다() {
+        //given
+        var sut = createEvent();
+        var organizationMember =
+                createOrganizationMember("게스트", createMember("게스트", "guest@email.com"), baseOrganization);
+        var guest = Guest.create(sut, organizationMember);
+
+        //when //then
+        assertThatThrownBy(() -> sut.participate(guest))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("이미 참여중인 게스트입니다.");
+    }
+
     private Event createEvent(final String title, final int maxCapacity) {
         var organization = createOrganization("우테코");
 
@@ -149,8 +165,18 @@ class EventTest {
                 createOrganizationMember(createMember(), organization),
                 organization,
                 EventOperationPeriod.create(
-                        new Period(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2)),
-                        new Period(LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(4)),
+                        new Period(
+                                LocalDateTime.now()
+                                        .plusDays(1),
+                                LocalDateTime.now()
+                                        .plusDays(2)
+                        ),
+                        new Period(
+                                LocalDateTime.now()
+                                        .plusDays(3),
+                                LocalDateTime.now()
+                                        .plusDays(4)
+                        ),
                         LocalDateTime.now()
                 ),
                 maxCapacity

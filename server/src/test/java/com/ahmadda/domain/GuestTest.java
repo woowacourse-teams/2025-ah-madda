@@ -1,10 +1,11 @@
 package com.ahmadda.domain;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class GuestTest {
 
@@ -56,5 +57,15 @@ class GuestTest {
 
         // then
         assertThat(isSame).isFalse();
+    }
+
+    @Test
+    void 게스트를_생성하면_이벤트에_참여된다() {
+        //when
+        var guest = Guest.create(event, participant);
+
+        //then
+        assertThat(event.getGuests()
+                .contains(guest)).isTrue();
     }
 }
