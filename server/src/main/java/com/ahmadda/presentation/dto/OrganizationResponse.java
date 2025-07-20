@@ -3,7 +3,7 @@ package com.ahmadda.presentation.dto;
 import com.ahmadda.domain.Organization;
 
 public record OrganizationResponse(
-        Long id,
+        Long organizationId,
         String name,
         String description,
         String imageUrl

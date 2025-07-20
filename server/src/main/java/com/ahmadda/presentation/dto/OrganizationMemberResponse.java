@@ -3,7 +3,7 @@ package com.ahmadda.presentation.dto;
 import com.ahmadda.domain.OrganizationMember;
 
 public record OrganizationMemberResponse(
-        Long id,
+        Long organizationMemberId,
         String nickname
 ) {
 

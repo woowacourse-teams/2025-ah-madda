@@ -20,7 +20,7 @@ public class OrganizationMemberEventController {
 
     private final OrganizationMemberEventService organizationMemberEventService;
 
-    @GetMapping("/{organizationMemberId}/owned-events")
+    @GetMapping("/{organizationMemberId}/events/owned")
     public ResponseEntity<List<EventResponse>> getOwnerEvents(@PathVariable final Long organizationMemberId) {
         List<Event> organizationEvents = organizationMemberEventService.getOwnerEvents(organizationMemberId);
 
@@ -31,7 +31,7 @@ public class OrganizationMemberEventController {
         return ResponseEntity.ok(eventResponses);
     }
 
-    @GetMapping("/{organizationMemberId}/participated-events")
+    @GetMapping("/{organizationMemberId}/events/participated")
     public ResponseEntity<List<EventResponse>> getParticipantEvents(@PathVariable final Long organizationMemberId) {
         List<Event> organizationEvents = organizationMemberEventService.getParticipantEvents(organizationMemberId);
 

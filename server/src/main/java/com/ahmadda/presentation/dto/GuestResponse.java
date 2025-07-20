@@ -4,7 +4,7 @@ import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.OrganizationMember;
 
 public record GuestResponse(
-        Long id,
+        Long guestId,
         Long organizationMemberId,
         String nickname
 ) {
