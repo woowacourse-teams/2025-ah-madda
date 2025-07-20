@@ -5,33 +5,14 @@ import { IconButton } from '../../../shared/components/IconButton';
 import { Tabs } from '../../../shared/components/Tabs';
 import { Text } from '../../../shared/components/Text';
 import { EventCard } from '../components/EventCard';
+import { MyEventContainer } from '../containers/MyEventContainer';
 import { useEvents } from '../hooks/useEvents';
 
 export const MyEvent = () => {
-  const { events, loading, error } = useEvents();
-
-  if (loading) {
-    return (
-      <Flex dir="column" justifyContent="center" alignItems="center">
-        <Text type="Body" weight="regular" color="#666">
-          이벤트를 불러오는 중...
-        </Text>
-      </Flex>
-    );
-  }
-
-  if (error) {
-    return (
-      <Flex dir="column" justifyContent="center" alignItems="center">
-        <Text type="Body" weight="regular" color="#ff4444">
-          {error}
-        </Text>
-      </Flex>
-    );
-  }
+  const { events } = useEvents();
 
   return (
-    <Flex dir="column">
+    <MyEventContainer>
       <Header
         left={
           <Flex alignItems="center" gap="12px">
@@ -64,8 +45,8 @@ export const MyEvent = () => {
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
-                  gap: '16px',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+                  gap: '20px',
                 }}
               >
                 {events.hostEvents.map((event) => (
@@ -93,8 +74,8 @@ export const MyEvent = () => {
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-                  gap: '16px',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+                  gap: '20px',
                 }}
               >
                 {events.participateEvents.map((event) => (
@@ -109,6 +90,6 @@ export const MyEvent = () => {
           </Flex>
         </Tabs.Content>
       </Tabs>
-    </Flex>
+    </MyEventContainer>
   );
 };
