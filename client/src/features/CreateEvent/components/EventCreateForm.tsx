@@ -1,0 +1,77 @@
+import { Button } from '../../../shared/components/Button';
+import { Card } from '../../../shared/components/Card';
+import { Flex } from '../../../shared/components/Flex';
+import { Input } from '../../../shared/components/Input';
+import { Text } from '../../../shared/components/Text';
+
+export const EventCreateForm = () => {
+  return (
+    <Flex dir="column" css={{ gap: '20px', padding: '40px 0', width: '100%' }}>
+      <Text type="Title" weight="bold">
+        새 이벤트 만들기
+      </Text>
+      <Text type="caption" color="gray">
+        이벤트 정보를 입력해 주세요
+      </Text>
+
+      <Card>
+        <Text type="caption">기본 질문</Text>
+        <Flex dir="column" gap="24px">
+          <Flex dir="column" gap="8px">
+            <Input id="title" label="이벤트 이름" placeholder="이벤트 이름을 입력해 주세요" />
+          </Flex>
+
+          <Flex gap="16px">
+            <Flex dir="column" gap="8px" css={{ flex: 1 }}>
+              <Input id="startDate" label="시작 날짜" placeholder="연도. 월. 일." />
+            </Flex>
+            <Flex dir="column" gap="8px" css={{ flex: 1 }}>
+              <Input id="endDate" label="종료 날짜" placeholder="연도. 월. 일." />
+            </Flex>
+          </Flex>
+
+          <Flex gap="16px">
+            <Flex dir="column" gap="8px" css={{ flex: 1 }}>
+              <Input id="startTime" label="시작 시간" placeholder="-- --:--" />
+            </Flex>
+            <Flex dir="column" gap="8px" css={{ flex: 1 }}>
+              <Input id="endTime" label="종료 시간" placeholder="-- --:--" />
+            </Flex>
+          </Flex>
+
+          <Flex dir="column" gap="8px">
+            <Input id="location" label="장소" placeholder="이벤트 장소를 입력해 주세요" />
+          </Flex>
+
+          <Flex dir="column" gap="8px">
+            <Input id="description" label="설명" placeholder="이벤트에 대한 설명을 입력해 주세요" />
+          </Flex>
+
+          <Flex gap="16px">
+            <Flex dir="column" gap="8px" css={{ flex: 1 }}>
+              <Input id="author" label="주최자 이름" placeholder="주최자 이름을 입력해 주세요" />
+            </Flex>
+            <Flex dir="column" gap="8px" css={{ flex: 1 }}>
+              <Input
+                id="maxParticipants"
+                label="수용 인원"
+                placeholder="최대 참가 인원을 입력해 주세요"
+              />
+            </Flex>
+          </Flex>
+        </Flex>
+      </Card>
+
+      <Flex justifyContent="flex-end">
+        <Button
+          type="submit"
+          color="black"
+          size="sm"
+          css={{ borderRadius: '5px', fontSize: '12px', padding: '7px' }}
+        >
+          이벤트 만들기
+        </Button>
+      </Flex>
+    </Flex>
+  );
+};
