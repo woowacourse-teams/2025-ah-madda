@@ -16,7 +16,7 @@ import org.springframework.web.client.RestClient;
 @EnableConfigurationProperties(GoogleOAuthProperties.class)
 public class GoogleOAuthProvider {
 
-    public static final String GRANT_TYPE_AUTHORIZATION_CODE = "authorization_code";
+    private static final String GRANT_TYPE_AUTHORIZATION_CODE = "authorization_code";
 
     private final GoogleOAuthProperties googleOAuthProperties;
     private final RestClient restClient;
