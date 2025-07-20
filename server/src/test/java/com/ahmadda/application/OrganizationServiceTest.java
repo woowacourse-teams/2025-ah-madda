@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Transactional
 class OrganizationServiceTest {
 
@@ -52,9 +52,12 @@ class OrganizationServiceTest {
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(found.getName()).isEqualTo("Org");
-            softly.assertThat(found.getDescription()).isEqualTo("Desc");
-            softly.assertThat(found.getImageUrl()).isEqualTo("img.png");
+            softly.assertThat(found.getName())
+                    .isEqualTo("Org");
+            softly.assertThat(found.getDescription())
+                    .isEqualTo("Desc");
+            softly.assertThat(found.getImageUrl())
+                    .isEqualTo("img.png");
         });
     }
 
@@ -70,10 +73,14 @@ class OrganizationServiceTest {
         var organizations = organizationRepository.findAll();
         assertSoftly(softly -> {
             var saved = organizations.get(0);
-            softly.assertThat(organizations).hasSize(1);
-            softly.assertThat(saved.getName()).isEqualTo("조직명");
-            softly.assertThat(saved.getDescription()).isEqualTo("조직 설명");
-            softly.assertThat(saved.getImageUrl()).isEqualTo("image.png");
+            softly.assertThat(organizations)
+                    .hasSize(1);
+            softly.assertThat(saved.getName())
+                    .isEqualTo("조직명");
+            softly.assertThat(saved.getDescription())
+                    .isEqualTo("조직 설명");
+            softly.assertThat(saved.getImageUrl())
+                    .isEqualTo("image.png");
         });
     }
 
@@ -81,14 +88,16 @@ class OrganizationServiceTest {
     void 존재하지_않는_조직_ID로_조회하면_예외가_발생한다() {
         // when // then
         assertThatThrownBy(() -> sut.getOrganization(999L))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 조직입니다.");
     }
 
     @Test
     void 존재하지_않는_조직의_이벤트를_조회하면_예외가_발생한다() {
         // when // then
         assertThatThrownBy(() -> sut.getOrganizationEvents(999L))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 조직입니다.");
     }
 
     @Test
@@ -119,11 +128,13 @@ class OrganizationServiceTest {
         return Organization.create(name, description, imageUrl);
     }
 
-    private Event createEvent(OrganizationMember organizer,
-                              Organization organization,
-                              String title,
-                              LocalDateTime start,
-                              LocalDateTime end) {
+    private Event createEvent(
+            OrganizationMember organizer,
+            Organization organization,
+            String title,
+            LocalDateTime start,
+            LocalDateTime end
+    ) {
 
         return Event.create(
                 title,
@@ -140,9 +151,11 @@ class OrganizationServiceTest {
         );
     }
 
-    private OrganizationCreateRequest createOrganizationCreateRequest(String name,
-                                                                      String description,
-                                                                      String imageUrl) {
+    private OrganizationCreateRequest createOrganizationCreateRequest(
+            String name,
+            String description,
+            String imageUrl
+    ) {
         return new OrganizationCreateRequest(name, description, imageUrl);
     }
 }

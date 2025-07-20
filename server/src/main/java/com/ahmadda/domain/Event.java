@@ -20,6 +20,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -53,7 +55,6 @@ public class Event extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
     private List<Guest> guests;
 
-    @Column(nullable = false)
     @Embedded
     private EventOperationPeriod eventOperationPeriod;
 
@@ -132,6 +133,17 @@ public class Event extends BaseEntity {
     public boolean hasGuest(final OrganizationMember organizationMember) {
         return guests.stream()
                 .anyMatch(guest -> guest.isSameParticipant(organizationMember));
+    }
+
+    public List<OrganizationMember> getNonGuestOrganizationMembers(final List<OrganizationMember> organizationMembers) {
+        Set<OrganizationMember> participants = guests.stream()
+                .map(Guest::getOrganizationMember)
+                .collect(Collectors.toSet());
+        participants.add(organizer);
+
+        return organizationMembers.stream()
+                .filter(organizationMember -> !participants.contains(organizationMember))
+                .toList();
     }
 
     public boolean isNotStarted(LocalDateTime currentDateTime) {

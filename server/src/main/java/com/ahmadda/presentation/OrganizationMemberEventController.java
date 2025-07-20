@@ -1,7 +1,7 @@
 package com.ahmadda.presentation;
 
 
-import com.ahmadda.application.OrganizationMemberService;
+import com.ahmadda.application.OrganizationMemberEventService;
 import com.ahmadda.domain.Event;
 import com.ahmadda.presentation.dto.EventResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,15 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/organization-member")
+@RequestMapping("/api/organization-members")
 @RequiredArgsConstructor
-public class OrganizationMemberController {
+public class OrganizationMemberEventController {
 
-    private final OrganizationMemberService organizationMemberService;
+    private final OrganizationMemberEventService organizationMemberEventService;
 
-    @GetMapping("/{organizationMemberId}/event-owner")
+    @GetMapping("/{organizationMemberId}/events/owned")
     public ResponseEntity<List<EventResponse>> getOwnerEvents(@PathVariable final Long organizationMemberId) {
-        List<Event> organizationEvents = organizationMemberService.getOwnerEvents(organizationMemberId);
+        List<Event> organizationEvents = organizationMemberEventService.getOwnerEvents(organizationMemberId);
 
         List<EventResponse> eventResponses = organizationEvents.stream()
                 .map(EventResponse::from)
@@ -31,9 +31,9 @@ public class OrganizationMemberController {
         return ResponseEntity.ok(eventResponses);
     }
 
-    @GetMapping("/{organizationMemberId}/event-participant")
+    @GetMapping("/{organizationMemberId}/events/participated")
     public ResponseEntity<List<EventResponse>> getParticipantEvents(@PathVariable final Long organizationMemberId) {
-        List<Event> organizationEvents = organizationMemberService.getParticipantEvents(organizationMemberId);
+        List<Event> organizationEvents = organizationMemberEventService.getParticipantEvents(organizationMemberId);
 
         List<EventResponse> eventResponses = organizationEvents.stream()
                 .map(EventResponse::from)

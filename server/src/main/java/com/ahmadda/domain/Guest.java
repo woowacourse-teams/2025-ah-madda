@@ -30,15 +30,16 @@ public class Guest extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "participant_id", nullable = false)
-    private OrganizationMember participant;
+    private OrganizationMember organizationMember;
 
-    private Guest(final Event event, final OrganizationMember participant) {
+    private Guest(final Event event, final OrganizationMember organizationMember) {
         validateEvent(event);
-        validateParticipant(participant);
+        validateOrganizationMember(organizationMember);
 
         this.event = event;
-        this.participant = participant;
-        event.getGuests().add(this);
+        this.organizationMember = organizationMember;
+        event.getGuests()
+                .add(this);
     }
 
     public static Guest create(final Event event, final OrganizationMember participant) {
@@ -46,14 +47,14 @@ public class Guest extends BaseEntity {
     }
 
     public boolean isSameParticipant(final OrganizationMember participant) {
-        return this.participant.equals(participant);
+        return this.organizationMember.equals(participant);
     }
 
     private void validateEvent(final Event event) {
         Assert.notNull(event, "이벤트는 null이 되면 안됩니다.");
     }
 
-    private void validateParticipant(final OrganizationMember participant) {
+    private void validateOrganizationMember(final OrganizationMember participant) {
         Assert.notNull(participant, "참여자는 null이 되면 안됩니다.");
     }
 }
