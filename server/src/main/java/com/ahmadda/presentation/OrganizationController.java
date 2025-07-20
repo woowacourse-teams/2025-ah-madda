@@ -3,6 +3,7 @@ package com.ahmadda.presentation;
 import com.ahmadda.application.OrganizationService;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.domain.Organization;
+import com.ahmadda.presentation.dto.OrganizationCreateResponse;
 import com.ahmadda.presentation.dto.OrganizationResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +25,13 @@ public class OrganizationController {
     private final OrganizationService organizationService;
 
     @PostMapping
-    public ResponseEntity<Void> createOrganization(
+    public ResponseEntity<OrganizationCreateResponse> createOrganization(
             @RequestBody @Valid final OrganizationCreateRequest organizationCreateRequest
     ) {
         Organization organization = organizationService.createOrganization(organizationCreateRequest);
 
         return ResponseEntity.created(URI.create("/api/organizations/" + organization.getId()))
-                .build();
+                .body(new OrganizationCreateResponse(organization.getId()));
     }
 
     @GetMapping("/{organizationId}")

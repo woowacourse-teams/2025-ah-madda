@@ -1,12 +1,11 @@
 package com.ahmadda.domain;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class OrganizationTest {
 
@@ -42,8 +41,11 @@ class OrganizationTest {
     private Event createEventForTest(String title, LocalDateTime start, LocalDateTime end) {
         return Event.create(
                 title, "설명", "장소", organizer, sut,
-                start.minusDays(5), start.minusDays(1),
-                start, end,
+                EventOperationPeriod.create(
+                        new Period(start.minusDays(5), start.minusDays(1)),
+                        new Period(start, end),
+                        start.minusDays(6)
+                ),
                 50
         );
     }

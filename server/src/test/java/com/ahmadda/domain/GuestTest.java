@@ -1,11 +1,10 @@
 package com.ahmadda.domain;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class GuestTest {
 
@@ -22,8 +21,11 @@ class GuestTest {
         var now = LocalDateTime.now();
         event = Event.create(
                 "테스트 이벤트", "설명", "장소", organizer, organization,
-                now.plusDays(1), now.plusDays(5),
-                now.plusDays(10), now.plusDays(11),
+                EventOperationPeriod.create(
+                        new Period(now.plusDays(1), now.plusDays(5)),
+                        new Period(now.plusDays(10), now.plusDays(11)),
+                        now
+                ),
                 50
         );
         member = Member.create("참가자 멤버", "guest@example.com");
