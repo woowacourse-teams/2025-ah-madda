@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/organization-member")
+@RequestMapping("/api/organization-members")
 @RequiredArgsConstructor
-public class OrganizationMemberController {
+public class OrganizationMemberEventController {
 
     private final OrganizationMemberService organizationMemberService;
 
-    @GetMapping("/{organizationMemberId}/event-owner")
+    @GetMapping("/{organizationMemberId}/owned-events")
     public ResponseEntity<List<EventResponse>> getOwnerEvents(@PathVariable final Long organizationMemberId) {
         List<Event> organizationEvents = organizationMemberService.getOwnerEvents(organizationMemberId);
 
@@ -31,7 +31,7 @@ public class OrganizationMemberController {
         return ResponseEntity.ok(eventResponses);
     }
 
-    @GetMapping("/{organizationMemberId}/event-participant")
+    @GetMapping("/{organizationMemberId}/participated-events")
     public ResponseEntity<List<EventResponse>> getParticipantEvents(@PathVariable final Long organizationMemberId) {
         List<Event> organizationEvents = organizationMemberService.getParticipantEvents(organizationMemberId);
 
