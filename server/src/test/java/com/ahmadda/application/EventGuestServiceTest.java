@@ -64,8 +64,7 @@ class EventGuestServiceTest {
             softly.assertThat(result)
                     .hasSize(2);
             softly.assertThat(result)
-                    .extracting(OrganizationMember::getNickname)
-                    .containsExactlyInAnyOrder("게스트1", "게스트2");
+                    .containsExactlyInAnyOrder(guest1, guest2);
         });
     }
 
@@ -89,8 +88,7 @@ class EventGuestServiceTest {
             softly.assertThat(result)
                     .hasSize(2);
             softly.assertThat(result)
-                    .extracting(OrganizationMember::getNickname)
-                    .containsExactlyInAnyOrder("비게스트1", "비게스트2");
+                    .containsExactlyInAnyOrder(nonGuest1, nonGuest2);
         });
     }
 
