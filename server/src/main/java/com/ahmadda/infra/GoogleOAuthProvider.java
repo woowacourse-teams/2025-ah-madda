@@ -1,7 +1,6 @@
 package com.ahmadda.infra;
 
 
-import com.ahmadda.domain.util.Assert;
 import com.ahmadda.infra.dto.GoogleAccessTokenResponse;
 import com.ahmadda.infra.dto.OAuthUserInfoResponse;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -56,21 +55,15 @@ public class GoogleOAuthProvider {
                 .retrieve()
                 .body(GoogleAccessTokenResponse.class);
 
-        Assert.notNull(googleAccessTokenResponse.accessToken(), "accessToken null이 되면 안됩니다.");
-
         return googleAccessTokenResponse.accessToken();
     }
 
     private OAuthUserInfoResponse requestGoogleUserInfo(final String accessToken) {
-        OAuthUserInfoResponse userInfo = restClient.get()
+        return restClient.get()
                 .uri(googleOAuthProperties.getUserUri())
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .retrieve()
                 .body(OAuthUserInfoResponse.class);
-
-        Assert.notNull(userInfo, "userInfo null이 되면 안됩니다.");
-
-        return userInfo;
     }
 
     private MultiValueMap<String, String> createTokenRequestParams(final String code) {
