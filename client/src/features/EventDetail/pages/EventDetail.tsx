@@ -1,5 +1,4 @@
 import { Flex } from '../../../shared/components/Flex';
-import { Icon } from '../../../shared/components/Icon';
 import { Text } from '../../../shared/components/Text';
 import { DescriptionCard } from '../components/DescriptionCard';
 import { EventHeader } from '../components/EventHeader';
@@ -8,8 +7,41 @@ import { ParticipantsCard } from '../components/ParticipantsCard';
 import { PreQuestionCard } from '../components/PreQuestionCard';
 import { SubmitButtonCard } from '../components/SubmitButtonCard';
 import { TimeInfoCard } from '../components/TimeInfoCard';
+import { useEventDetail } from '../hooks/useEventDetail';
 
 export const EventDetail = () => {
+  const { event, loading, error } = useEventDetail('1');
+
+  if (!event) {
+    return (
+      <Flex dir="column" justifyContent="center" alignItems="center">
+        <Text type="Body" weight="regular" color="#666">
+          이벤트를 찾을 수 없습니다.
+        </Text>
+      </Flex>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Flex dir="column" justifyContent="center" alignItems="center">
+        <Text type="Body" weight="regular" color="#666">
+          이벤트 정보를 불러오는 중...
+        </Text>
+      </Flex>
+    );
+  }
+
+  if (error) {
+    return (
+      <Flex dir="column" justifyContent="center" alignItems="center">
+        <Text type="Body" weight="regular" color="#ff4444">
+          {error}
+        </Text>
+      </Flex>
+    );
+  }
+
   return (
     <Flex
       dir="column"
@@ -23,7 +55,7 @@ export const EventDetail = () => {
         boxSizing: 'border-box',
       }}
     >
-      <EventHeader />
+      <EventHeader title={event.title} author={event.author} />
       <Flex
         css={{
           display: 'flex',
@@ -35,13 +67,20 @@ export const EventDetail = () => {
           },
         }}
       >
-        <TimeInfoCard />
-        <LocationCard />
+        <TimeInfoCard
+          deadlineTime={event.deadlineTime}
+          startTime={event.startTime}
+          endTime={event.endTime}
+        />
+        <LocationCard location={event.location} />
       </Flex>
 
-      <ParticipantsCard />
-      <DescriptionCard />
-      <PreQuestionCard />
+      <ParticipantsCard
+        currentParticipants={event.currentParticipants}
+        maxParticipants={event.maxParticipants}
+      />
+      <DescriptionCard description={event.description} />
+      <PreQuestionCard preQuestions={event.preQuestions} />
       <SubmitButtonCard />
     </Flex>
   );

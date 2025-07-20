@@ -1,12 +1,15 @@
 import { Card } from '../../../shared/components/Card';
 import { Flex } from '../../../shared/components/Flex';
 import { Text } from '../../../shared/components/Text';
+import type { EventDetail } from '../types/index';
 
-export const DescriptionCard = () => (
+type DescriptionCardProps = Pick<EventDetail, 'description'>;
+
+export const DescriptionCard = ({ description }: DescriptionCardProps) => (
   <Card>
     <Flex dir="column" gap="8px">
       <Text type="caption">이벤트 소개</Text>
-      <Text type="caption">UX/UI에 관심있는 사람들을 위한 특강</Text>
+      <Text type="caption">{description}</Text>
     </Flex>
   </Card>
 );

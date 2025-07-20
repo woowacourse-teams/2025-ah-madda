@@ -3,8 +3,14 @@ import { Flex } from '../../../shared/components/Flex';
 import { Icon } from '../../../shared/components/Icon';
 import { ProgressBar } from '../../../shared/components/ProgressBar';
 import { Text } from '../../../shared/components/Text';
+import type { EventDetail } from '../types/index';
 
-export const ParticipantsCard = () => (
+type ParticipantsCardProps = Pick<EventDetail, 'currentParticipants' | 'maxParticipants'>;
+
+export const ParticipantsCard = ({
+  currentParticipants,
+  maxParticipants,
+}: ParticipantsCardProps) => (
   <Card>
     <Flex dir="column" gap="16px">
       <Flex gap="8px">
@@ -14,7 +20,7 @@ export const ParticipantsCard = () => (
       <Flex dir="column" gap="8px">
         <Flex justifyContent="space-between">
           <Text type="caption">현재 신청자</Text>
-          <Text type="caption">42 / 50명</Text>
+          <Text type="caption">{`${currentParticipants} / ${maxParticipants}명`}</Text>
         </Flex>
         <ProgressBar value={42} max={50} color="black" />
       </Flex>
