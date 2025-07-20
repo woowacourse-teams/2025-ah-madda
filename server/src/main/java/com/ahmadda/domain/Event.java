@@ -118,7 +118,7 @@ public class Event extends BaseEntity {
     }
 
     private void validateTitle(final String title) {
-        Assert.notBlank(title, "title은 공백이면 안됩니다.");
+        Assert.notBlank(title, "제목은 공백이면 안됩니다.");
     }
 
     private void validateDescription(final String description) {
