@@ -45,6 +45,8 @@ public class OrganizationMember extends BaseEntity {
         this.nickname = nickname;
         this.member = member;
         this.organization = organization;
+        organization.getOrganizationMembers()
+                .add(this);
     }
 
     public static OrganizationMember create(

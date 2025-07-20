@@ -251,6 +251,7 @@ class OrganizationMemberEventServiceTest {
 
     private Guest createAndSaveGuest(Event event, OrganizationMember participant) {
         var guest = Guest.create(event, participant);
+        
         return guestRepository.save(guest);
     }
 }

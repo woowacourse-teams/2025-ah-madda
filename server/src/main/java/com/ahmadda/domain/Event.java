@@ -143,6 +143,7 @@ public class Event extends BaseEntity {
         Set<OrganizationMember> participants = guests.stream()
                 .map(Guest::getParticipant)
                 .collect(Collectors.toSet());
+        participants.add(organizer);
 
         return organizationMembers.stream()
                 .filter(organizationMember -> !participants.contains(organizationMember))

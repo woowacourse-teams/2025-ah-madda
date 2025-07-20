@@ -43,7 +43,10 @@ public class Organization extends BaseEntity {
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
-    private List<Event> events;
+    private final List<Event> events = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
+    private final List<OrganizationMember> organizationMembers = new ArrayList<>();
 
     private Organization(final String name, final String description, final String imageUrl) {
         validateName(name);
@@ -53,7 +56,6 @@ public class Organization extends BaseEntity {
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
-        this.events = new ArrayList<>();
     }
 
     public static Organization create(final String name, final String description, final String imageUrl) {

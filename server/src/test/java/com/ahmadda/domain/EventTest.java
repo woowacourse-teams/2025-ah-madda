@@ -71,7 +71,7 @@ class EventTest {
         var nonGuest1 = createOrganizationMember("비게스트1", createMember("비게스트1", "non1@email.com"), baseOrganization);
         var nonGuest2 = createOrganizationMember("비게스트2", createMember("비게스트2", "non2@email.com"), baseOrganization);
         Guest.create(sut, guest);
-        var allMembers = List.of(guest, nonGuest1, nonGuest2);
+        var allMembers = List.of(baseOrganizer, guest, nonGuest1, nonGuest2);
 
         // when
         var nonGuests = sut.getNonGuestOrganizationMembers(allMembers);
