@@ -23,7 +23,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Transactional
-class OrganizationMemberServiceTest {
+class OrganizationMemberEventServiceTest {
 
     @Autowired
     private EventRepository eventRepository;
@@ -41,7 +41,7 @@ class OrganizationMemberServiceTest {
     private GuestRepository guestRepository;
 
     @Autowired
-    private OrganizationMemberService sut;
+    private OrganizationMemberEventService sut;
 
     @Test
     void 조직원이_주최한_이벤트들을_조회한다() {
@@ -56,8 +56,10 @@ class OrganizationMemberServiceTest {
                 "장소1",
                 organizer,
                 organization,
-                LocalDateTime.now().plusDays(1),
-                LocalDateTime.now().plusDays(2),
+                LocalDateTime.now()
+                        .plusDays(1),
+                LocalDateTime.now()
+                        .plusDays(2),
                 50
         );
 
@@ -67,8 +69,10 @@ class OrganizationMemberServiceTest {
                 "장소2",
                 organizer,
                 organization,
-                LocalDateTime.now().plusDays(3),
-                LocalDateTime.now().plusDays(4),
+                LocalDateTime.now()
+                        .plusDays(3),
+                LocalDateTime.now()
+                        .plusDays(4),
                 30
         );
 
@@ -80,8 +84,10 @@ class OrganizationMemberServiceTest {
                 "다른장소",
                 otherOrganizer,
                 organization,
-                LocalDateTime.now().plusDays(5),
-                LocalDateTime.now().plusDays(6),
+                LocalDateTime.now()
+                        .plusDays(5),
+                LocalDateTime.now()
+                        .plusDays(6),
                 20
         );
 
@@ -91,17 +97,26 @@ class OrganizationMemberServiceTest {
         // then
         assertSoftly(softly -> {
             var firstEvent = result.get(0);
-            softly.assertThat(result).hasSize(2);
-            softly.assertThat(firstEvent.getTitle()).isEqualTo("주최 이벤트 1");
-            softly.assertThat(firstEvent.getDescription()).isEqualTo("첫 번째 주최 이벤트");
-            softly.assertThat(firstEvent.getPlace()).isEqualTo("장소1");
-            softly.assertThat(firstEvent.getMaxCapacity()).isEqualTo(50);
+            softly.assertThat(result)
+                    .hasSize(2);
+            softly.assertThat(firstEvent.getTitle())
+                    .isEqualTo("주최 이벤트 1");
+            softly.assertThat(firstEvent.getDescription())
+                    .isEqualTo("첫 번째 주최 이벤트");
+            softly.assertThat(firstEvent.getPlace())
+                    .isEqualTo("장소1");
+            softly.assertThat(firstEvent.getMaxCapacity())
+                    .isEqualTo(50);
 
             var secondEvent = result.get(1);
-            softly.assertThat(secondEvent.getTitle()).isEqualTo("주최 이벤트 2");
-            softly.assertThat(secondEvent.getDescription()).isEqualTo("두 번째 주최 이벤트");
-            softly.assertThat(secondEvent.getPlace()).isEqualTo("장소2");
-            softly.assertThat(secondEvent.getMaxCapacity()).isEqualTo(30);
+            softly.assertThat(secondEvent.getTitle())
+                    .isEqualTo("주최 이벤트 2");
+            softly.assertThat(secondEvent.getDescription())
+                    .isEqualTo("두 번째 주최 이벤트");
+            softly.assertThat(secondEvent.getPlace())
+                    .isEqualTo("장소2");
+            softly.assertThat(secondEvent.getMaxCapacity())
+                    .isEqualTo(30);
         });
     }
 
@@ -120,8 +135,10 @@ class OrganizationMemberServiceTest {
                 "장소1",
                 organizer,
                 organization,
-                LocalDateTime.now().plusDays(1),
-                LocalDateTime.now().plusDays(2),
+                LocalDateTime.now()
+                        .plusDays(1),
+                LocalDateTime.now()
+                        .plusDays(2),
                 50
         );
 
@@ -131,8 +148,10 @@ class OrganizationMemberServiceTest {
                 "장소2",
                 organizer,
                 organization,
-                LocalDateTime.now().plusDays(3),
-                LocalDateTime.now().plusDays(4),
+                LocalDateTime.now()
+                        .plusDays(3),
+                LocalDateTime.now()
+                        .plusDays(4),
                 30
         );
 
@@ -143,8 +162,10 @@ class OrganizationMemberServiceTest {
                 "미참여장소",
                 organizer,
                 organization,
-                LocalDateTime.now().plusDays(5),
-                LocalDateTime.now().plusDays(6),
+                LocalDateTime.now()
+                        .plusDays(5),
+                LocalDateTime.now()
+                        .plusDays(6),
                 20
         );
 
@@ -157,10 +178,13 @@ class OrganizationMemberServiceTest {
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(result).hasSize(2);
-            softly.assertThat(result).extracting(Event::getTitle)
+            softly.assertThat(result)
+                    .hasSize(2);
+            softly.assertThat(result)
+                    .extracting(Event::getTitle)
                     .containsExactlyInAnyOrder("참여 이벤트 1", "참여 이벤트 2");
-            softly.assertThat(result).extracting(Event::getPlace)
+            softly.assertThat(result)
+                    .extracting(Event::getPlace)
                     .containsExactlyInAnyOrder("장소1", "장소2");
         });
     }
@@ -189,29 +213,35 @@ class OrganizationMemberServiceTest {
         return memberRepository.save(member);
     }
 
-    private OrganizationMember createAndSaveOrganizationMember(String nickname,
-                                                               Member member,
-                                                               Organization organization) {
+    private OrganizationMember createAndSaveOrganizationMember(
+            String nickname,
+            Member member,
+            Organization organization
+    ) {
         var organizationMember = OrganizationMember.create(nickname, member, organization);
         return organizationMemberRepository.save(organizationMember);
     }
 
-    private Event createAndSaveEvent(String title,
-                                     String description,
-                                     String place,
-                                     OrganizationMember organizer,
-                                     Organization organization,
-                                     LocalDateTime eventStart,
-                                     LocalDateTime eventEnd,
-                                     int maxCapacity) {
+    private Event createAndSaveEvent(
+            String title,
+            String description,
+            String place,
+            OrganizationMember organizer,
+            Organization organization,
+            LocalDateTime eventStart,
+            LocalDateTime eventEnd,
+            int maxCapacity
+    ) {
         var event = Event.create(
                 title,
                 description,
                 place,
                 organizer,
                 organization,
-                LocalDateTime.now().minusDays(10), // registrationStart
-                LocalDateTime.now().minusDays(1),  // registrationEnd
+                LocalDateTime.now()
+                        .minusDays(10), // registrationStart
+                LocalDateTime.now()
+                        .minusDays(1),  // registrationEnd
                 eventStart,
                 eventEnd,
                 maxCapacity

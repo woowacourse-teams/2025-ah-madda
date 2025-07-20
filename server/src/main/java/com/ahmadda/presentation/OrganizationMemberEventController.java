@@ -1,7 +1,7 @@
 package com.ahmadda.presentation;
 
 
-import com.ahmadda.application.OrganizationMemberService;
+import com.ahmadda.application.OrganizationMemberEventService;
 import com.ahmadda.domain.Event;
 import com.ahmadda.presentation.dto.EventResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +18,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrganizationMemberEventController {
 
-    private final OrganizationMemberService organizationMemberService;
+    private final OrganizationMemberEventService organizationMemberEventService;
 
     @GetMapping("/{organizationMemberId}/owned-events")
     public ResponseEntity<List<EventResponse>> getOwnerEvents(@PathVariable final Long organizationMemberId) {
-        List<Event> organizationEvents = organizationMemberService.getOwnerEvents(organizationMemberId);
+        List<Event> organizationEvents = organizationMemberEventService.getOwnerEvents(organizationMemberId);
 
         List<EventResponse> eventResponses = organizationEvents.stream()
                 .map(EventResponse::from)
@@ -33,7 +33,7 @@ public class OrganizationMemberEventController {
 
     @GetMapping("/{organizationMemberId}/participated-events")
     public ResponseEntity<List<EventResponse>> getParticipantEvents(@PathVariable final Long organizationMemberId) {
-        List<Event> organizationEvents = organizationMemberService.getParticipantEvents(organizationMemberId);
+        List<Event> organizationEvents = organizationMemberEventService.getParticipantEvents(organizationMemberId);
 
         List<EventResponse> eventResponses = organizationEvents.stream()
                 .map(EventResponse::from)

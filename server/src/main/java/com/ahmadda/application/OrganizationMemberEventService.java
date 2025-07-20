@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class OrganizationMemberService {
+public class OrganizationMemberEventService {
 
     private final EventRepository eventRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
