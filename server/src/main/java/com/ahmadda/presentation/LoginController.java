@@ -20,6 +20,6 @@ public class LoginController {
 
         AccessTokenResponse accessTokenResponse = new AccessTokenResponse(authTokens);
 
-        return ResponseEntity.ok().body(accessTokenResponse);
+        return ResponseEntity.ok(accessTokenResponse);
     }
 }
