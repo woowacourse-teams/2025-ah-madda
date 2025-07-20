@@ -1,9 +1,10 @@
-import { Flex } from '../../../shared/components/Flex';
-import { Header } from '../../../shared/components/Header';
-import { Icon } from '../../../shared/components/Icon';
-import { IconButton } from '../../../shared/components/IconButton';
-import { Tabs } from '../../../shared/components/Tabs';
-import { Text } from '../../../shared/components/Text';
+import { Flex } from '@/shared/components/Flex';
+import { Header } from '@/shared/components/Header';
+import { Icon } from '@/shared/components/Icon';
+import { IconButton } from '@/shared/components/IconButton';
+import { Tabs } from '@/shared/components/Tabs';
+import { Text } from '@/shared/components/Text';
+
 import { EventCard } from '../components/EventCard';
 import { MyEventContainer } from '../containers/MyEventContainer';
 import { useEvents } from '../hooks/useEvents';

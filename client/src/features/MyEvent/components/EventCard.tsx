@@ -1,7 +1,8 @@
-import { Flex } from '../../../shared/components/Flex';
-import { Icon } from '../../../shared/components/Icon';
-import { ProgressBar } from '../../../shared/components/ProgressBar';
-import { Text } from '../../../shared/components/Text';
+import { Flex } from '@/shared/components/Flex';
+import { Icon } from '@/shared/components/Icon';
+import { ProgressBar } from '@/shared/components/ProgressBar';
+import { Text } from '@/shared/components/Text';
+
 import type { Event } from '../types';
 
 type EventCardProps = {

@@ -1,7 +1,8 @@
 import { ReactNode } from 'react';
 
-import { Flex } from '../../../shared/components/Flex';
-import { Text } from '../../../shared/components/Text';
+import { Flex } from '@/shared/components/Flex';
+import { Text } from '@/shared/components/Text';
+
 import { useEvents } from '../hooks/useEvents';
 
 type MyEventContainerProps = {
