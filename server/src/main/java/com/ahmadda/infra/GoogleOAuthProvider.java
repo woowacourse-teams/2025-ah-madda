@@ -7,7 +7,6 @@ import com.ahmadda.infra.dto.OAuthUserInfoResponse;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -29,16 +28,16 @@ public class GoogleOAuthProvider {
     ) {
         this.googleOAuthProperties = googleOAuthProperties;
         this.restClient = restClientBuilder
-                .requestFactory(bufferingClientHttpRequestFactory())
+                .requestFactory(simpleClientHttpRequestFactory())
                 .build();
     }
 
-    private BufferingClientHttpRequestFactory bufferingClientHttpRequestFactory() {
+    private SimpleClientHttpRequestFactory simpleClientHttpRequestFactory() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(googleOAuthProperties.getConnectTimeout());
         factory.setReadTimeout(googleOAuthProperties.getReadTimeout());
 
-        return new BufferingClientHttpRequestFactory(factory);
+        return factory;
     }
 
     public OAuthUserInfoResponse getUserInfo(final String code) {
