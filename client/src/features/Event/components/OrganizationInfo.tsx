@@ -21,7 +21,7 @@ export const OrganizationInfo = () => {
 
 const Img = styled.img`
   width: 100%;
-  max-width: clamp(200px, 30vw, 252px);
+  max-width: clamp(160px, 30vw, 252px);
   height: auto;
   margin-right: 20px;
 `;

@@ -12,6 +12,7 @@ export const EventContainer = ({ children }: Props) => {
 const Container = styled.main`
   display: flex;
   flex-direction: column;
+  border-radius: 10px;
   gap: 40px;
   width: 100%;
   padding: 20px;
