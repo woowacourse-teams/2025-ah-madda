@@ -51,12 +51,12 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-    private Organization getOrganization(Long organizationId) {
+    private Organization getOrganization(final Long organizationId) {
         return organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new NotFoundException(organizationId + "에 해당하는 조직을 찾을 수 없습니다."));
     }
 
-    private OrganizationMember getOrganizationMember(Long organizationMemberId) {
+    private OrganizationMember getOrganizationMember(final Long organizationMemberId) {
         return organizationMemberRepository.findById(organizationMemberId)
                 .orElseThrow(() -> new NotFoundException(organizationMemberId + "에 해당하는 조직원을 찾을 수 없습니다."));
     }

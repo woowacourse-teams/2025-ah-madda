@@ -34,7 +34,7 @@ public class EventOperationPeriod {
     })
     private Period eventPeriod;
 
-    private EventOperationPeriod(Period registrationPeriod, Period eventPeriod) {
+    private EventOperationPeriod(final Period registrationPeriod, final Period eventPeriod) {
         validate(registrationPeriod, eventPeriod);
 
         this.registrationPeriod = registrationPeriod;
@@ -52,7 +52,7 @@ public class EventOperationPeriod {
         return new EventOperationPeriod(registrationPeriod, eventPeriod);
     }
 
-    private static void validateRegistrationPeriod(Period registrationPeriod, LocalDateTime currentDateTime) {
+    private static void validateRegistrationPeriod(final Period registrationPeriod, final LocalDateTime currentDateTime) {
         Assert.notNull(registrationPeriod, "이벤트 신청 기간은 null이 되면 안됩니다.");
 
         if (registrationPeriod.start().isBefore(currentDateTime)) {
@@ -60,7 +60,7 @@ public class EventOperationPeriod {
         }
     }
 
-    private static void validateEventPeriod(Period eventPeriod, LocalDateTime currentDateTime) {
+    private static void validateEventPeriod(final Period eventPeriod, final LocalDateTime currentDateTime) {
         Assert.notNull(eventPeriod, "이벤트 기간은 null이 되면 안됩니다.");
 
         if (eventPeriod.start().isBefore(currentDateTime)) {
@@ -68,7 +68,7 @@ public class EventOperationPeriod {
         }
     }
 
-    private void validate(Period registrationPeriod, Period eventPeriod) {
+    private void validate(final Period registrationPeriod, final Period eventPeriod) {
         Assert.notNull(registrationPeriod, "이벤트 신청 기간은 null이 되면 안됩니다.");
         Assert.notNull(eventPeriod, "이벤트 기간은 null이 되면 안됩니다.");
 
