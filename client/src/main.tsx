@@ -3,12 +3,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 
-import { router } from './router/route';
-import { GlobalStyle } from './shared/styles/GrobalStyles';
+import './reset.css';
+import { App } from './App';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <GlobalStyle />
-    <RouterProvider router={router} />
+    <App />
   </React.StrictMode>
 );
