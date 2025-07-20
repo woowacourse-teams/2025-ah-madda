@@ -1,8 +1,9 @@
 import { Flex } from '@/shared/components/Flex';
 
-import { EventInfoSection, GuestManageSection } from '../components';
+import { EventInfoSection } from '../components/EventInfoSection';
+import { GuestManageSection } from '../components/GuestManageSection';
 import { EventManageContainer } from '../containers/EventManageContainer';
-import { useEventManage } from '../hooks';
+import { useEventManage } from '../hooks/useEventManage';
 
 export const EventManage = () => {
   const { data } = useEventManage();

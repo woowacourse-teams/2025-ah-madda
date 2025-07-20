@@ -3,7 +3,7 @@ import { Header } from '@/shared/components/Header';
 import { IconButton } from '@/shared/components/IconButton';
 import { Text } from '@/shared/components/Text';
 
-import { useEventManage } from '../hooks';
+import { useEventManage } from '../hooks/useEventManage';
 
 type EventManageContainerProps = {
   children: React.ReactNode;
