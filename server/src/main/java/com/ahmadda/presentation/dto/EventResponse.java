@@ -1,7 +1,6 @@
 package com.ahmadda.presentation.dto;
 
 import com.ahmadda.domain.Event;
-
 import java.time.LocalDateTime;
 
 public record EventResponse(
@@ -22,12 +21,12 @@ public record EventResponse(
                 event.getId(),
                 event.getTitle(),
                 event.getDescription(),
-                event.getEventStart(),
-                event.getEventEnd(),
+                event.getEventOperationPeriod().getEventPeriod().start(),
+                event.getEventOperationPeriod().getEventPeriod().end(),
                 event.getMaxCapacity(),
                 event.getPlace(),
-                event.getRegistrationStart(),
-                event.getRegistrationEnd(),
+                event.getEventOperationPeriod().getRegistrationPeriod().start(),
+                event.getEventOperationPeriod().getRegistrationPeriod().end(),
                 event.getOrganizer().getNickname()
         );
     }

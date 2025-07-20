@@ -1,8 +1,13 @@
 package com.ahmadda.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+
 import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
@@ -10,16 +15,12 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.domain.Period;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @SpringBootTest
 @Transactional
@@ -97,12 +98,13 @@ class OrganizationServiceTest {
         var orgA = organizationRepository.save(createOrganization("OrgA", "DescA", "a.png"));
         var orgB = organizationRepository.save(createOrganization("OrgB", "DescB", "b.png"));
         var orgMemberA = organizationMemberRepository.save(OrganizationMember.create("nickname", member, orgA));
+        var orgMemberB = organizationMemberRepository.save(OrganizationMember.create("nickname", member, orgB));
 
         var now = LocalDateTime.now();
         eventRepository.save(createEvent(orgMemberA, orgA, "EventA1", now.plusDays(1), now.plusDays(2)));
         eventRepository.save(createEvent(orgMemberA, orgA, "EventA2", now.plusDays(2), now.plusDays(3)));
         eventRepository.save(createEvent(orgMemberA, orgA, "EventA3", now.minusDays(2), now.minusDays(1))); // inactive
-        eventRepository.save(createEvent(orgMemberA, orgB, "EventB1", now.plusDays(1), now.plusDays(2)));
+        eventRepository.save(createEvent(orgMemberB, orgB, "EventB1", now.plusDays(1), now.plusDays(2)));
 
         // when
         var events = sut.getOrganizationEvents(orgA.getId());
@@ -129,10 +131,11 @@ class OrganizationServiceTest {
                 "place",
                 organizer,
                 organization,
-                start,
-                end,
-                start.plusHours(1),
-                end.plusHours(1),
+                EventOperationPeriod.create(
+                        new Period(start, end),
+                        new Period(end.plusHours(1), end.plusHours(2)),
+                        start.minusDays(1)
+                ),
                 100
         );
     }
