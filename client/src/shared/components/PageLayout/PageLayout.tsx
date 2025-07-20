@@ -32,6 +32,7 @@ export const PageLayout = ({ header, children }: PageLayoutProps) => {
         dir="column"
         width="100%"
         css={css`
+          flex-grow: 1;
           max-width: 1120px;
         `}
       >
