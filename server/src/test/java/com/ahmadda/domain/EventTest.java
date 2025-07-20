@@ -45,13 +45,18 @@ class EventTest {
     void 이벤트에_참여한_게스트들을_조회할_수_있다() {
         // given
         var sut = createEvent();
-        var guest1 = createOrganizationMember("게스트1", createMember("게스트1", "g1@email.com"), baseOrganization);
-        var guest2 = createOrganizationMember("게스트2", createMember("게스트2", "g2@email.com"), baseOrganization);
-        Guest.create(sut, guest1);
-        Guest.create(sut, guest2);
+
+        var guest1 = Guest.create(
+                sut,
+                createOrganizationMember("게스트1", createMember("게스트1", "g1@email.com"), baseOrganization)
+        );
+        var guest2 = Guest.create(
+                sut,
+                createOrganizationMember("게스트2", createMember("게스트2", "g2@email.com"), baseOrganization)
+        );
 
         // when
-        var guests = sut.getGuestOrganizationMembers();
+        var guests = sut.getGuests();
 
         // then
         assertSoftly(softly -> {

@@ -1,7 +1,9 @@
 package com.ahmadda.presentation;
 
 import com.ahmadda.application.EventGuestService;
+import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.OrganizationMember;
+import com.ahmadda.presentation.dto.GuestResponse;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +21,12 @@ public class EventGuestController {
 
     private final EventGuestService eventGuestService;
 
-    @GetMapping("/{eventId}/guest-organization-members")
-    public ResponseEntity<List<OrganizationMemberResponse>> getGuestOrganizationMembers(@PathVariable final Long eventId) {
-        List<OrganizationMember> guestMembers = eventGuestService.getGuestOrganizationMembers(eventId);
+    @GetMapping("/{eventId}/guests")
+    public ResponseEntity<List<GuestResponse>> getGuestOrganizationMembers(@PathVariable final Long eventId) {
+        List<Guest> guestMembers = eventGuestService.getGuests(eventId);
 
-        List<OrganizationMemberResponse> responses = guestMembers.stream()
-                .map(OrganizationMemberResponse::from)
+        List<GuestResponse> responses = guestMembers.stream()
+                .map(GuestResponse::from)
                 .toList();
 
         return ResponseEntity.ok(responses);

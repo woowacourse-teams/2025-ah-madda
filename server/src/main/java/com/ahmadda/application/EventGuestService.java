@@ -3,6 +3,7 @@ package com.ahmadda.application;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventRepository;
+import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +18,10 @@ public class EventGuestService {
     private final EventRepository eventRepository;
 
     // TODO. 추후 주최자에 대한 인가 처리 필요
-    public List<OrganizationMember> getGuestOrganizationMembers(final Long eventId) {
+    public List<Guest> getGuests(final Long eventId) {
         final Event event = getEvent(eventId);
 
-        return event.getGuestOrganizationMembers();
+        return event.getGuests();
     }
 
     // TODO. 추후 주최자에 대한 인가 처리 필요

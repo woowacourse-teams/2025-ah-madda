@@ -51,13 +51,17 @@ class EventGuestServiceTest {
                 createAndSaveOrganizationMember("주최자", createAndSaveMember("홍길동", "host@email.com"), organization);
         var event = createAndSaveEvent(organizer, organization);
 
-        var guest1 = createAndSaveOrganizationMember("게스트1", createAndSaveMember("게스트1", "g1@email.com"), organization);
-        var guest2 = createAndSaveOrganizationMember("게스트2", createAndSaveMember("게스트2", "g2@email.com"), organization);
-        createAndSaveGuest(event, guest1);
-        createAndSaveGuest(event, guest2);
+        var guest1 = createAndSaveGuest(
+                event,
+                createAndSaveOrganizationMember("게스트1", createAndSaveMember("게스트1", "g1@email.com"), organization)
+        );
+        var guest2 = createAndSaveGuest(
+                event,
+                createAndSaveOrganizationMember("게스트2", createAndSaveMember("게스트2", "g2@email.com"), organization)
+        );
 
         // when
-        var result = sut.getGuestOrganizationMembers(event.getId());
+        var result = sut.getGuests(event.getId());
 
         // then
         assertSoftly(softly -> {
@@ -94,7 +98,7 @@ class EventGuestServiceTest {
 
     @Test
     void 존재하지_않는_이벤트로_게스트_조회시_예외가_발생한다() {
-        assertThatThrownBy(() -> sut.getGuestOrganizationMembers(999L))
+        assertThatThrownBy(() -> sut.getGuests(999L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 이벤트입니다.");
     }
