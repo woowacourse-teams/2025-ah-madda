@@ -3,6 +3,7 @@ package com.ahmadda.domain;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Embeddable;
+
 import java.time.LocalDateTime;
 
 @Embeddable
