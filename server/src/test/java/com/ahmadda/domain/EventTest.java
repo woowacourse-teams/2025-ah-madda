@@ -1,18 +1,16 @@
 package com.ahmadda.domain;
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.time.LocalDateTime;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class EventTest {
 
@@ -235,21 +233,5 @@ class EventTest {
                 ),
                 10
         );
-    }
-
-    private Member createMember(String name, String email) {
-        return Member.create(name, email);
-    }
-
-    private Organization createOrganization() {
-        return Organization.create("테스트 조직", "설명", "image.png");
-    }
-
-    private OrganizationMember createOrganizationMember(
-            String nickname,
-            Member member,
-            Organization organization
-    ) {
-        return OrganizationMember.create(nickname, member, organization);
     }
 }
