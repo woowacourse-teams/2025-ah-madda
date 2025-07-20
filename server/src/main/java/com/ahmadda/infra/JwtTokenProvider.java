@@ -7,35 +7,26 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
-import javax.crypto.SecretKey;
 
+@EnableConfigurationProperties(JwtTokenProperties.class)
 @Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
     private static final String NAME_ID_KEY = "name";
 
-    private final SecretKey secretKey;
-    private final Duration accessExpirationDay;
+    private final JwtTokenProperties jwtTokenProperties;
 
-    public JwtTokenProvider(
-            @Value("${jwt.secret-key}") String jwtSecretKey,
-            @Value("${jwt.access-expiration-day}") long accessExpirationDay
-    ) {
-        this.secretKey = Keys.hmacShaKeyFor(jwtSecretKey.getBytes(StandardCharsets.UTF_8));
-        this.accessExpirationDay = Duration.ofDays(accessExpirationDay);
-    }
 
     public String createAccessToken(final Member member) {
         Instant now = Instant.now();
-        Instant expire = now.plus(accessExpirationDay);
+        Instant expire = now.plus(jwtTokenProperties.getAccessExpirationDay());
 
         String memberId = member.getId().toString();
 
@@ -44,7 +35,7 @@ public class JwtTokenProvider {
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expire))
                 .claim(NAME_ID_KEY, member.getName())
-                .signWith(secretKey)
+                .signWith(jwtTokenProperties.getSecretKey())
                 .compact();
     }
 
@@ -64,7 +55,7 @@ public class JwtTokenProvider {
     private Claims parseClaims(final String token) {
         try {
             Jws<Claims> jws = Jwts.parser()
-                    .verifyWith(secretKey)
+                    .verifyWith(jwtTokenProperties.getSecretKey())
                     .build()
                     .parseSignedClaims(token);
             Claims claims = jws.getPayload();
