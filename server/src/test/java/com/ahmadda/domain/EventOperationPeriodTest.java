@@ -1,14 +1,34 @@
 package com.ahmadda.domain;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 class EventOperationPeriodTest {
+
+    @Test
+    void 정상적인_이벤트_운영_기간을_생성한다() {
+        // given
+        var currentTime = LocalDateTime.of(2025, 7, 16, 8, 0);
+        Period registrationPeriod = new Period(
+                currentTime.plusDays(1),
+                currentTime.plusDays(5)
+        );
+        Period eventPeriod = new Period(
+                currentTime.plusDays(6),
+                currentTime.plusDays(7)
+        );
+
+        // when // then
+        assertThatCode(() -> EventOperationPeriod.create(registrationPeriod, eventPeriod, currentTime))
+                .doesNotThrowAnyException();
+    }
 
     @Test
     void 이벤트_시작_시간이_이벤트_생성_요청_시점보다_과거라면_예외가_발생한다() {

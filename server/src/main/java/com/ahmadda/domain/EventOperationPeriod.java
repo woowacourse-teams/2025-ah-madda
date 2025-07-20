@@ -61,7 +61,7 @@ public class EventOperationPeriod {
     }
 
     private static void validateEventPeriod(Period eventPeriod, LocalDateTime currentDateTime) {
-        Assert.notNull(eventPeriod, "이벤트 신청 기간은 null이 되면 안됩니다.");
+        Assert.notNull(eventPeriod, "이벤트 기간은 null이 되면 안됩니다.");
 
         if (eventPeriod.start().isBefore(currentDateTime)) {
             throw new BusinessRuleViolatedException("이벤트 시작 시간은 현재 시점보다 미래여야 합니다.");
@@ -70,7 +70,7 @@ public class EventOperationPeriod {
 
     private void validate(Period registrationPeriod, Period eventPeriod) {
         Assert.notNull(registrationPeriod, "이벤트 신청 기간은 null이 되면 안됩니다.");
-        Assert.notNull(eventPeriod, "이벤트 신청 기간은 null이 되면 안됩니다.");
+        Assert.notNull(eventPeriod, "이벤트 기간은 null이 되면 안됩니다.");
 
         if (registrationPeriod.overlaps(eventPeriod)) {
             throw new BusinessRuleViolatedException("등록 기간과 이벤트 기간이 겹칠 수 없습니다.");
