@@ -38,11 +38,15 @@ public class EventGuestService {
         return event.getNonGuestOrganizationMembers(allMembers);
     }
 
-    public void participantEvent(final Long eventId, final Long organizationMemberId, final LocalDateTime dateTime) {
+    public void participantEvent(
+            final Long eventId,
+            final Long organizationMemberId,
+            final LocalDateTime currentDateTime
+    ) {
         Event event = getEvent(eventId);
         OrganizationMember organizationMember = getOrganizationMember(organizationMemberId);
 
-        Guest guest = Guest.create(event, organizationMember, dateTime);
+        Guest guest = Guest.create(event, organizationMember, currentDateTime);
 
         guestRepository.save(guest);
     }
