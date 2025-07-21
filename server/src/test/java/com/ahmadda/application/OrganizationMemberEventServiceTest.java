@@ -242,7 +242,7 @@ class OrganizationMemberEventServiceTest {
                 place,
                 organizer,
                 organization,
-                EventOperationPeriod.create(
+                new EventOperationPeriod(
                         new Period(
                                 LocalDateTime.now()
                                         .minusDays(10),

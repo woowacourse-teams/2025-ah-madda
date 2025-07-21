@@ -34,22 +34,17 @@ public class EventOperationPeriod {
     })
     private Period eventPeriod;
 
-    private EventOperationPeriod(final Period registrationPeriod, final Period eventPeriod) {
-        validate(registrationPeriod, eventPeriod);
-
-        this.registrationPeriod = registrationPeriod;
-        this.eventPeriod = eventPeriod;
-    }
-
-    public static EventOperationPeriod create(
+    public EventOperationPeriod(
             final Period registrationPeriod,
             final Period eventPeriod,
             final LocalDateTime currentDateTime
     ) {
         validateRegistrationPeriod(registrationPeriod, currentDateTime);
         validateEventPeriod(eventPeriod, currentDateTime);
+        validate(registrationPeriod, eventPeriod);
 
-        return new EventOperationPeriod(registrationPeriod, eventPeriod);
+        this.registrationPeriod = registrationPeriod;
+        this.eventPeriod = eventPeriod;
     }
 
     public boolean isNotStarted(final LocalDateTime currentDateTime) {
@@ -82,9 +77,6 @@ public class EventOperationPeriod {
     }
 
     private void validate(final Period registrationPeriod, final Period eventPeriod) {
-        Assert.notNull(registrationPeriod, "이벤트 신청 기간은 null이 되면 안됩니다.");
-        Assert.notNull(eventPeriod, "이벤트 기간은 null이 되면 안됩니다.");
-
         if (registrationPeriod.isOverlappedWith(eventPeriod)) {
             throw new BusinessRuleViolatedException("등록 기간과 이벤트 기간이 겹칠 수 없습니다.");
         }

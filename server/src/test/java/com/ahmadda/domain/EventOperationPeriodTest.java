@@ -26,7 +26,7 @@ class EventOperationPeriodTest {
         );
 
         // when // then
-        assertThatCode(() -> EventOperationPeriod.create(registrationPeriod, eventPeriod, currentTime))
+        assertThatCode(() -> new EventOperationPeriod(registrationPeriod, eventPeriod, currentTime))
                 .doesNotThrowAnyException();
     }
 
@@ -44,7 +44,7 @@ class EventOperationPeriodTest {
         var currentTime = LocalDateTime.of(2025, 7, 16, 10, 0);
 
         //when //then
-        assertThatThrownBy(() -> EventOperationPeriod.create(eventRegistrationPeriod, eventPeriod, currentTime))
+        assertThatThrownBy(() -> new EventOperationPeriod(eventRegistrationPeriod, eventPeriod, currentTime))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage("이벤트 신청 시작 시간은 현재 시점보다 미래여야 합니다.");
     }
@@ -63,7 +63,7 @@ class EventOperationPeriodTest {
         var currentTime = LocalDateTime.of(2025, 7, 16, 8, 0);
 
         //when //then
-        assertThatThrownBy(() -> EventOperationPeriod.create(eventRegistrationPeriod, eventPeriod, currentTime))
+        assertThatThrownBy(() -> new EventOperationPeriod(eventRegistrationPeriod, eventPeriod, currentTime))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage("이벤트 신청 시작 시간은 현재 시점보다 미래여야 합니다.");
     }
@@ -83,7 +83,7 @@ class EventOperationPeriodTest {
         var currentTime = LocalDateTime.of(2025, 7, 16, 8, 0);
 
         //when //then
-        assertThatThrownBy(() -> EventOperationPeriod.create(eventRegistrationPeriod, eventPeriod, currentTime))
+        assertThatThrownBy(() -> new EventOperationPeriod(eventRegistrationPeriod, eventPeriod, currentTime))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage("등록 기간과 이벤트 기간이 겹칠 수 없습니다.");
     }
@@ -103,7 +103,7 @@ class EventOperationPeriodTest {
         var currentTime = LocalDateTime.of(2025, 7, 16, 8, 0);
 
         //when //then
-        assertThatThrownBy(() -> EventOperationPeriod.create(eventRegistrationPeriod, eventPeriod, currentTime))
+        assertThatThrownBy(() -> new EventOperationPeriod(eventRegistrationPeriod, eventPeriod, currentTime))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage("등록 기간과 이벤트 기간이 겹칠 수 없습니다.");
     }

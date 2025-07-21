@@ -109,7 +109,7 @@ class EventTest {
     void 이벤트가_아직_시작되지_않았는지_확인할_수_있다() {
         //given
         var now = LocalDateTime.now();
-        var eventOperationPeriod = EventOperationPeriod.create(
+        var eventOperationPeriod = new EventOperationPeriod(
                 new Period(now.plusDays(1), now.plusDays(2)),
                 new Period(now.plusDays(3), now.plusDays(4)),
                 now
@@ -189,7 +189,7 @@ class EventTest {
                 "place",
                 createOrganizationMember(createMember(), organization),
                 organization,
-                EventOperationPeriod.create(
+                new EventOperationPeriod(
                         new Period(
                                 LocalDateTime.now()
                                         .plusDays(1),
@@ -215,7 +215,7 @@ class EventTest {
                 "place",
                 baseOrganizer,
                 baseOrganization,
-                EventOperationPeriod.create(
+                new EventOperationPeriod(
                         registrationPeriod,
                         new Period(now.plusDays(3), now.plusDays(4)),
                         now
@@ -275,7 +275,7 @@ class EventTest {
                 "place",
                 organizationMember,
                 organization,
-                EventOperationPeriod.create(
+                new EventOperationPeriod(
                         new Period(now.plusDays(1), now.plusDays(2)),
                         new Period(now.plusDays(3), now.plusDays(4)),
                         now

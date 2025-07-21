@@ -1,9 +1,5 @@
 package com.ahmadda.application;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-
 import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
@@ -16,7 +12,6 @@ import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Period;
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -148,7 +143,7 @@ class OrganizationServiceTest {
                 "place",
                 organizer,
                 organization,
-                EventOperationPeriod.create(
+                new EventOperationPeriod(
                         new Period(start, end),
                         new Period(end.plusHours(1), end.plusHours(2)),
                         start.minusDays(1)

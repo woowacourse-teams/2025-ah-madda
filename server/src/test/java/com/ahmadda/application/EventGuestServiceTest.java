@@ -159,7 +159,7 @@ class EventGuestServiceTest {
                 "장소",
                 organizer,
                 organization,
-                EventOperationPeriod.create(
+                new EventOperationPeriod(
                         new Period(now.minusDays(3), now.minusDays(1)),
                         new Period(now.plusDays(1), now.plusDays(2)),
                         now.minusDays(6)

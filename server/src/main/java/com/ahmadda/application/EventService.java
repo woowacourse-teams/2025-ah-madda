@@ -52,7 +52,7 @@ public class EventService {
                 new Period(eventCreateRequest.registrationStart(), eventCreateRequest.registrationEnd());
         Period eventPeriod = new Period(eventCreateRequest.eventStart(), eventCreateRequest.eventEnd());
 
-        return EventOperationPeriod.create(
+        return new EventOperationPeriod(
                 registrationPeriod,
                 eventPeriod,
                 LocalDateTime.now()
