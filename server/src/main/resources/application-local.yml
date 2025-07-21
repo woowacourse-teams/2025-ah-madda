@@ -16,3 +16,6 @@ api:
 jwt:
   secret-key: ${jwt.local.secret-key}
   access-expiration: ${jwt.local.access-expiration}
+
+mail:
+  mock: true

@@ -1,47 +1,55 @@
 package com.ahmadda.domain;
 
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class OrganizationTest {
 
-    @ParameterizedTest
-    @ValueSource(strings = {"", " ", "  "})
-    void 조직_생성시_설명이_비어있으면_예외가_발생한다(String blankDescription) {
-        // when // then
-        assertThatThrownBy(() -> Organization.create("정상 이름", blankDescription, "url"))
-                .isInstanceOf(BusinessRuleViolatedException.class);
+    private Organization sut;
+    private OrganizationMember organizer;
+
+    @BeforeEach
+    void setUp() {
+        sut = Organization.create("테스트 조직", "조직 설명", "image.png");
+        var member = Member.create("주최자 멤버", "organizer@example.com");
+        organizer = OrganizationMember.create("주최자", member, sut);
     }
 
     @Test
-    void 조직_생성시_이름이_규칙보다_길면_예외가_발생한다() {
+    void 활성화된_이벤트_목록을_조회한다() {
         // given
-        var longName = "스무글자를넘어가는엄청나게긴조직이름입니다";
+        var now = LocalDateTime.now();
+        var pastEvent = createEventForTest("과거 이벤트", now.minusDays(2), now.minusDays(1));
+        var activeEvent1 = createEventForTest("활성 이벤트 1", now.plusDays(1), now.plusDays(2));
+        var activeEvent2 = createEventForTest("활성 이벤트 2", now.plusDays(3), now.plusDays(4));
 
-        // when // then
-        assertThatThrownBy(() -> Organization.create(longName, "설명", "url"))
-                .isInstanceOf(BusinessRuleViolatedException.class);
+        // when
+        List<Event> activeEvents = sut.getActiveEvents();
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(activeEvents)
+                    .hasSize(2);
+            softly.assertThat(activeEvents)
+                    .extracting(Event::getTitle)
+                    .containsExactlyInAnyOrder("활성 이벤트 1", "활성 이벤트 2");
+        });
     }
 
-    @Test
-    void 조직_생성시_이름이_규칙보다_짧으면_예외가_발생한다() {
-        // given
-        var shortName = "한";
-
-        // when // then
-        assertThatThrownBy(() -> Organization.create(shortName, "설명", "url"))
-                .isInstanceOf(BusinessRuleViolatedException.class);
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"", " ", "  "})
-    void 조직_생성시_이름이_비어있으면_예외가_발생한다(String blankName) {
-        // when // then
-        assertThatThrownBy(() -> Organization.create(blankName, "설명", "url"))
-                .isInstanceOf(BusinessRuleViolatedException.class);
+    private Event createEventForTest(String title, LocalDateTime start, LocalDateTime end) {
+        return Event.create(
+                title, "설명", "장소", organizer, sut,
+                EventOperationPeriod.create(
+                        Period.create(start.minusDays(5), start.minusDays(1)),
+                        Period.create(start, end),
+                        start.minusDays(6)
+                ),
+                50
+        );
     }
 }

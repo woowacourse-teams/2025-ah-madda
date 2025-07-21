@@ -1,11 +1,11 @@
 package com.ahmadda.presentation;
 
-import com.ahmadda.application.OrganizationCreateRequest;
-import com.ahmadda.application.OrganizationReadResponse;
 import com.ahmadda.application.OrganizationService;
+import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.domain.Organization;
+import com.ahmadda.presentation.dto.OrganizationCreateResponse;
+import com.ahmadda.presentation.dto.OrganizationResponse;
 import jakarta.validation.Valid;
-import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
+
 @RestController
 @RequestMapping("/api/organizations")
 @RequiredArgsConstructor
@@ -23,19 +25,20 @@ public class OrganizationController {
     private final OrganizationService organizationService;
 
     @PostMapping
-    public ResponseEntity<Void> createOrganization(
-            @RequestBody @Valid final OrganizationCreateRequest organizationCreateRequest) {
+    public ResponseEntity<OrganizationCreateResponse> createOrganization(
+            @RequestBody @Valid final OrganizationCreateRequest organizationCreateRequest
+    ) {
         Organization organization = organizationService.createOrganization(organizationCreateRequest);
 
         return ResponseEntity.created(URI.create("/api/organizations/" + organization.getId()))
-                .build();
+                .body(new OrganizationCreateResponse(organization.getId()));
     }
 
     @GetMapping("/{organizationId}")
-    public ResponseEntity<OrganizationReadResponse> readOrganization(@PathVariable final Long organizationId) {
+    public ResponseEntity<OrganizationResponse> readOrganization(@PathVariable final Long organizationId) {
         Organization organization = organizationService.getOrganization(organizationId);
-        OrganizationReadResponse organizationReadResponse = OrganizationReadResponse.from(organization);
+        OrganizationResponse organizationResponse = OrganizationResponse.from(organization);
 
-        return ResponseEntity.ok(organizationReadResponse);
+        return ResponseEntity.ok(organizationResponse);
     }
 }

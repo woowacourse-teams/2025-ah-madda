@@ -5,12 +5,18 @@ import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,13 +28,13 @@ public class Organization extends BaseEntity {
     private static final int MIN_DESCRIPTION_LENGTH = 2;
     private static final int MIN_NAME_LENGTH = 2;
 
-    @Column(nullable = false)
-    private String description;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "organization_id")
     private Long id;
+
+    @Column(nullable = false)
+    private String description;
 
     @Column(nullable = false)
     private String imageUrl;
@@ -36,6 +42,11 @@ public class Organization extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
+    private final List<Event> events = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
+    private final List<OrganizationMember> organizationMembers = new ArrayList<>();
 
     private Organization(final String name, final String description, final String imageUrl) {
         validateName(name);
@@ -51,12 +62,25 @@ public class Organization extends BaseEntity {
         return new Organization(name, description, imageUrl);
     }
 
+    public void addEvent(Event event) {
+        this.events.add(event);
+    }
+
+    public List<Event> getActiveEvents() {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+
+        return events.stream()
+                .filter((event) -> event.isNotStarted(currentDateTime))
+                .toList();
+    }
+
     private void validateName(final String name) {
         Assert.notBlank(name, "이름은 공백이면 안됩니다.");
 
         if (name.length() < MIN_NAME_LENGTH || name.length() > MAX_NAME_LENGTH) {
             throw new BusinessRuleViolatedException(
-                    String.format("이름의 길이는 %d자 이상 %d자 이하이어야 합니다.",
+                    String.format(
+                            "이름의 길이는 %d자 이상 %d자 이하이어야 합니다.",
                             MIN_NAME_LENGTH,
                             MAX_NAME_LENGTH
                     )
@@ -69,7 +93,8 @@ public class Organization extends BaseEntity {
 
         if (description.length() < 2 || description.length() > 2000) {
             throw new BusinessRuleViolatedException(
-                    String.format("설명의 길이는 %d자 이상 %d자 이하이어야 합니다.",
+                    String.format(
+                            "설명의 길이는 %d자 이상 %d자 이하이어야 합니다.",
                             MIN_DESCRIPTION_LENGTH,
                             MAX_DESCRIPTION_LENGTH
                     )
