@@ -28,7 +28,7 @@ public record EventDetailResponse(
             int orderIndex
     ) {
 
-        public static QuestionResponse from(Question question) {
+        public static QuestionResponse from(final Question question) {
             return new QuestionResponse(
                     question.getId(),
                     question.getQuestionText(),
@@ -38,7 +38,7 @@ public record EventDetailResponse(
         }
     }
 
-    public static EventDetailResponse from(Event event) {
+    public static EventDetailResponse from(final Event event) {
         return new EventDetailResponse(
                 event.getId(),
                 event.getTitle(),

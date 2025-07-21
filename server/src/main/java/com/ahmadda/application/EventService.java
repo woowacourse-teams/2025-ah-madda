@@ -47,7 +47,7 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-    public Event getEvent(Long eventId) {
+    public Event getEvent(final Long eventId) {
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(eventId + "에 해당하는 이벤트를 찾을 수 없습니다."));
     }
