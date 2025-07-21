@@ -66,7 +66,7 @@ public class JwtTokenProvider {
                     .parseSignedClaims(token)
                     .getPayload();
         } catch (ExpiredJwtException e) {
-            throw new InvalidTokenException("유효하지 않은 인증정보 입니다.");
+            throw new InvalidTokenException("유효하지 않은 인증 정보 입니다.");
         }
     }
 }

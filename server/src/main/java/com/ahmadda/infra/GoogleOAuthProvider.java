@@ -3,6 +3,7 @@ package com.ahmadda.infra;
 
 import com.ahmadda.infra.dto.GoogleAccessTokenResponse;
 import com.ahmadda.infra.dto.OAuthUserInfoResponse;
+import com.ahmadda.infra.exception.InvalidTokenException;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -54,6 +55,10 @@ public class GoogleOAuthProvider {
                 .body(tokenRequestParams)
                 .retrieve()
                 .body(GoogleAccessTokenResponse.class);
+
+        if (googleAccessTokenResponse == null) {
+            throw new InvalidTokenException("유효하지 않은 인증 정보 입니다.");
+        }
 
         return googleAccessTokenResponse.accessToken();
     }
