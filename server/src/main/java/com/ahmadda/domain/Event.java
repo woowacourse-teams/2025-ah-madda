@@ -53,7 +53,10 @@ public class Event extends BaseEntity {
     private Organization organization;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
-    private List<Guest> guests;
+    private List<Guest> guests = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
+    private List<Question> questions = new ArrayList<>();
 
     @Embedded
     private EventOperationPeriod eventOperationPeriod;
@@ -85,7 +88,6 @@ public class Event extends BaseEntity {
         this.organization = organization;
         this.eventOperationPeriod = eventOperationPeriod;
         this.maxCapacity = maxCapacity;
-        guests = new ArrayList<>();
 
         organization.addEvent(this);
     }

@@ -47,6 +47,11 @@ public class EventService {
         return eventRepository.save(event);
     }
 
+    public Event getEvent(Long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException(eventId + "에 해당하는 이벤트를 찾을 수 없습니다."));
+    }
+
     private EventOperationPeriod createEventOperationPeriod(final EventCreateRequest eventCreateRequest) {
         Period registrationPeriod =
                 new Period(eventCreateRequest.registrationStart(), eventCreateRequest.registrationEnd());
