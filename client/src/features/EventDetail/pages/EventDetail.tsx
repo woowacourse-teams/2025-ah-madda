@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import { Flex } from '../../../shared/components/Flex';
 import { Header } from '../../../shared/components/Header';
 import { IconButton } from '../../../shared/components/IconButton';
+import { PageLayout } from '../../../shared/components/PageLayout';
 import { Text } from '../../../shared/components/Text';
 import { DescriptionCard } from '../components/DescriptionCard';
 import { EventHeader } from '../components/EventHeader';
@@ -47,18 +48,21 @@ export const EventDetail = () => {
   }
 
   return (
-    <>
-      <Header
-        left={
-          <Flex alignItems="center" gap="12px">
-            <IconButton name="back" size={14} />
-            <Text type="caption">돌아가기</Text>
-          </Flex>
-        }
-        css={{
-          backgroundColor: 'white',
-        }}
-      />
+    <PageLayout
+      header={
+        <Header
+          left={
+            <Flex alignItems="center" gap="12px">
+              <IconButton name="back" size={14} />
+              <Text type="caption">돌아가기</Text>
+            </Flex>
+          }
+          css={{
+            backgroundColor: 'white',
+          }}
+        />
+      }
+    >
       <Flex
         dir="column"
         width="100%"
@@ -99,6 +103,6 @@ export const EventDetail = () => {
         <PreQuestionCard preQuestions={event.preQuestions} />
         <SubmitButtonCard />
       </Flex>
-    </>
+    </PageLayout>
   );
 };
