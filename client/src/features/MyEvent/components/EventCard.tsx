@@ -20,12 +20,11 @@ export const EventCard = ({
     <Flex
       dir="column"
       gap="12px"
+      padding="14px"
+      width="380px"
       css={{
-        padding: '14px',
         backgroundColor: '#1E2939',
         borderRadius: '8.75px',
-        width: '380px',
-        gap: '12px',
       }}
     >
       <Flex dir="column" gap="3.5px">
