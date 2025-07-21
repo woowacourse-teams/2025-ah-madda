@@ -35,14 +35,14 @@ export const GuestModal = ({ isOpen, onClose, guest }: GuestModalProps) => {
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} size="md">
-      <Flex dir="column" css={{ padding: '16px' }}>
+      <Flex dir="column" padding="16px">
         <Flex dir="row" gap="12px">
           <Text type="Body" weight="semibold" color="#0A0A0A">
             {guest.name}
           </Text>
           <Flex
+            padding="3.75px 7.8px 4.75px 8px"
             css={{
-              padding: '3.75px 7.8px 4.75px 8px',
               borderRadius: '6.75px',
               background: guest.status === '신청 완료' ? '#DCFCE7' : '#ECEEF2',
             }}

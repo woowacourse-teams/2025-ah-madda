@@ -14,7 +14,7 @@ export const EventManageContainer = ({ children }: EventManageContainerProps) =>
 
   if (loading) {
     return (
-      <Flex dir="column" justifyContent="center" alignItems="center" style={{ minHeight: '100vh' }}>
+      <Flex dir="column" justifyContent="center" alignItems="center" css={{ minHeight: '100vh' }}>
         <Text type="Body" weight="regular" color="#666">
           이벤트 데이터를 불러오는 중...
         </Text>
@@ -24,7 +24,7 @@ export const EventManageContainer = ({ children }: EventManageContainerProps) =>
 
   if (error) {
     return (
-      <Flex dir="column" justifyContent="center" alignItems="center" style={{ minHeight: '100vh' }}>
+      <Flex dir="column" justifyContent="center" alignItems="center" css={{ minHeight: '100vh' }}>
         <Text type="Body" weight="regular" color="#ff4444">
           {error}
         </Text>

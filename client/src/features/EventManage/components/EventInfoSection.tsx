@@ -24,9 +24,9 @@ export const EventInfoSection = ({ eventInfo }: EventInfoSectionProps) => {
   } = eventInfo;
 
   return (
-    <Flex as="section" dir="column" gap="24px" css={{ width: '100%' }}>
+    <Flex as="section" dir="column" gap="24px" width="100%">
       <Card>
-        <Flex dir="column" gap="16px" css={{ padding: '24px' }}>
+        <Flex dir="column" gap="16px" padding="24px">
           <Flex alignItems="center" gap="8px">
             <Icon name="calendar" size={17.5} color="#4A5565" />
             <Text type="Body" weight="regular" color="#4A5565">
