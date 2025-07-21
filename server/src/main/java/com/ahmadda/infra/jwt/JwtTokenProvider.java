@@ -1,21 +1,21 @@
-package com.ahmadda.infra;
+package com.ahmadda.infra.jwt;
 
 import com.ahmadda.domain.Member;
-import com.ahmadda.infra.config.JwtTokenProperties;
-import com.ahmadda.infra.config.TokenPolicyProperties;
-import com.ahmadda.infra.dto.MemberPayload;
-import com.ahmadda.infra.exception.InvalidTokenException;
+import com.ahmadda.infra.jwt.config.JwtTokenProperties;
+import com.ahmadda.infra.jwt.exception.InvalidTokenException;
+import com.ahmadda.infra.oauth.dto.MemberPayload;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.Date;
 
+@Slf4j
 @EnableConfigurationProperties(JwtTokenProperties.class)
 @Component
 @RequiredArgsConstructor
@@ -25,12 +25,10 @@ public class JwtTokenProvider {
     private static final String EMAIL_ID_KEY = "email";
 
     private final JwtTokenProperties jwtTokenProperties;
-    private final TokenPolicyProperties tokenPolicyProperties;
-
 
     public String createToken(final Member member) {
         Instant now = Instant.now();
-        Instant expire = now.plus(tokenPolicyProperties.getAccessExpiration());
+        Instant expire = now.plus(jwtTokenProperties.getAccessExpiration());
 
         Claims claims = createAccessTokenClaims(member);
 
@@ -68,11 +66,8 @@ public class JwtTokenProvider {
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
-        } catch (ExpiredJwtException e) {
-            throw new InvalidTokenException("유효하지 않은 인증 정보입니다.");
-        } catch (JwtException e) {
-            throw new InvalidTokenException("유효하지 않은 인증 정보입니다.");
-        } catch (IllegalArgumentException e) {
+        } catch (JwtException | IllegalArgumentException e) {
+            log.error("jwtError : {} ", e.getMessage(), e);
             throw new InvalidTokenException("유효하지 않은 인증 정보입니다.");
         }
     }

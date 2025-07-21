@@ -1,4 +1,4 @@
-package com.ahmadda.infra.dto;
+package com.ahmadda.infra.oauth.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

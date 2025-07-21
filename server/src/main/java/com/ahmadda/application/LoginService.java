@@ -2,18 +2,15 @@ package com.ahmadda.application;
 
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.infra.GoogleOAuthProvider;
-import com.ahmadda.infra.JwtTokenProvider;
-import com.ahmadda.infra.config.TokenPolicyProperties;
-import com.ahmadda.infra.dto.OAuthUserInfoResponse;
+import com.ahmadda.infra.jwt.JwtTokenProvider;
+import com.ahmadda.infra.oauth.GoogleOAuthProvider;
+import com.ahmadda.infra.oauth.dto.OAuthUserInfoResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@EnableConfigurationProperties(TokenPolicyProperties.class)
 public class LoginService {
 
     private final MemberRepository memberRepository;

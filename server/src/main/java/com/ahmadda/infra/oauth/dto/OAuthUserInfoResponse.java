@@ -1,4 +1,4 @@
-package com.ahmadda.infra.dto;
+package com.ahmadda.infra.oauth.dto;
 
 public record OAuthUserInfoResponse(
         String email,

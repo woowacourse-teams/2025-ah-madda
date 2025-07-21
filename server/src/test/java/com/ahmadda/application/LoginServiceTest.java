@@ -2,9 +2,9 @@ package com.ahmadda.application;
 
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.infra.GoogleOAuthProvider;
-import com.ahmadda.infra.JwtTokenProvider;
-import com.ahmadda.infra.dto.OAuthUserInfoResponse;
+import com.ahmadda.infra.jwt.JwtTokenProvider;
+import com.ahmadda.infra.oauth.GoogleOAuthProvider;
+import com.ahmadda.infra.oauth.dto.OAuthUserInfoResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

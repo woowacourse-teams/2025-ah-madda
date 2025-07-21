@@ -1,9 +1,9 @@
-package com.ahmadda.infra;
+package com.ahmadda.infra.oauth;
 
 
-import com.ahmadda.infra.dto.GoogleAccessTokenResponse;
-import com.ahmadda.infra.dto.OAuthUserInfoResponse;
-import com.ahmadda.infra.exception.InvalidTokenException;
+import com.ahmadda.infra.jwt.exception.InvalidTokenException;
+import com.ahmadda.infra.oauth.dto.GoogleAccessTokenResponse;
+import com.ahmadda.infra.oauth.dto.OAuthUserInfoResponse;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

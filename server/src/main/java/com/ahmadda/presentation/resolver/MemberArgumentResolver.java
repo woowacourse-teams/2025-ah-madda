@@ -1,7 +1,7 @@
 package com.ahmadda.presentation.resolver;
 
-import com.ahmadda.infra.JwtTokenProvider;
-import com.ahmadda.infra.dto.MemberPayload;
+import com.ahmadda.infra.jwt.JwtTokenProvider;
+import com.ahmadda.infra.oauth.dto.MemberPayload;
 import com.ahmadda.presentation.dto.LoginMember;
 import com.ahmadda.presentation.exception.InvalidAuthorizationException;
 import jakarta.servlet.http.HttpServletRequest;
