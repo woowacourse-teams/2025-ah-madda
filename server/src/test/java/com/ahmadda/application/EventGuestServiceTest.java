@@ -73,7 +73,7 @@ class EventGuestServiceTest {
     }
 
     @Test
-    void 이벤트에_참여하지_않은_조직원들을_조회한다() {
+    void 이벤트에_참여하지_않은_비게스트_조직원들을_조회한다() {
         // given
         var org = createAndSaveOrganization();
         var organizer = createAndSaveOrganizationMember("주최자", createAndSaveMember("홍길동", "host@email.com"), org);

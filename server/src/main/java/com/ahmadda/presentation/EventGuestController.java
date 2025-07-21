@@ -22,7 +22,7 @@ public class EventGuestController {
     private final EventGuestService eventGuestService;
 
     @GetMapping("/{eventId}/guests")
-    public ResponseEntity<List<GuestResponse>> getGuestOrganizationMembers(@PathVariable final Long eventId) {
+    public ResponseEntity<List<GuestResponse>> getGuests(@PathVariable final Long eventId) {
         List<Guest> guestMembers = eventGuestService.getGuests(eventId);
 
         List<GuestResponse> responses = guestMembers.stream()
@@ -32,8 +32,8 @@ public class EventGuestController {
         return ResponseEntity.ok(responses);
     }
 
-    @GetMapping("/{eventId}/non-guest-organization-members")
-    public ResponseEntity<List<OrganizationMemberResponse>> getNonGuestOrganizationMembers(@PathVariable final Long eventId) {
+    @GetMapping("/{eventId}/non-guests")
+    public ResponseEntity<List<OrganizationMemberResponse>> getNonGuests(@PathVariable final Long eventId) {
         List<OrganizationMember> nonGuestMembers = eventGuestService.getNonGuestOrganizationMembers(eventId);
 
         List<OrganizationMemberResponse> responses = nonGuestMembers.stream()
