@@ -19,14 +19,13 @@ export const EventCreateForm = () => {
       <Card>
         <Text type="caption">기본 질문</Text>
         <Flex dir="column" gap="24px">
-          <Flex dir="column" gap="8px">
+          <Flex dir="column">
             <Input id="title" label="이벤트 이름" placeholder="이벤트 이름을 입력해 주세요" />
           </Flex>
 
           <Flex gap="16px">
             <Flex
               dir="column"
-              gap="8px"
               css={css`
                 flex: 1;
               `}
@@ -35,7 +34,6 @@ export const EventCreateForm = () => {
             </Flex>
             <Flex
               dir="column"
-              gap="8px"
               css={css`
                 flex: 1;
               `}
@@ -47,7 +45,6 @@ export const EventCreateForm = () => {
           <Flex gap="16px">
             <Flex
               dir="column"
-              gap="8px"
               css={css`
                 flex: 1;
               `}
@@ -56,7 +53,6 @@ export const EventCreateForm = () => {
             </Flex>
             <Flex
               dir="column"
-              gap="8px"
               css={css`
                 flex: 1;
               `}
@@ -65,18 +61,17 @@ export const EventCreateForm = () => {
             </Flex>
           </Flex>
 
-          <Flex dir="column" gap="8px">
+          <Flex dir="column">
             <Input id="location" label="장소" placeholder="이벤트 장소를 입력해 주세요" />
           </Flex>
 
-          <Flex dir="column" gap="8px">
+          <Flex dir="column">
             <Input id="description" label="설명" placeholder="이벤트에 대한 설명을 입력해 주세요" />
           </Flex>
 
           <Flex gap="16px">
             <Flex
               dir="column"
-              gap="8px"
               css={css`
                 flex: 1;
               `}
@@ -85,7 +80,6 @@ export const EventCreateForm = () => {
             </Flex>
             <Flex
               dir="column"
-              gap="8px"
               css={css`
                 flex: 1;
               `}
