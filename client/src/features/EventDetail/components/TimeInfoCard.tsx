@@ -1,3 +1,5 @@
+import { css } from '@emotion/react';
+
 import { Card } from '../../../shared/components/Card';
 import { Flex } from '../../../shared/components/Flex';
 import { Icon } from '../../../shared/components/Icon';
@@ -7,9 +9,15 @@ import type { EventDetail } from '../types/index';
 type TimeInfoCardProps = Pick<EventDetail, 'deadlineTime' | 'startTime' | 'endTime'>;
 
 export const TimeInfoCard = ({ deadlineTime, startTime, endTime }: TimeInfoCardProps) => (
-  <Flex dir="column" css={{ flex: 1, minHeight: '235px' }}>
+  <Flex
+    dir="column"
+    css={css`
+      flex: 1;
+      min-height: 235px;
+    `}
+  >
     <Card>
-      <Flex gap="8px" css={{ marginBottom: '16px' }}>
+      <Flex gap="8px" margin="0 0 16px 0">
         <Icon name="clock" size={18} />
         <Text type="caption">시간 정보</Text>
       </Flex>

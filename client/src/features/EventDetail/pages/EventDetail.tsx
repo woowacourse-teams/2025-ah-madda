@@ -1,3 +1,5 @@
+import { css } from '@emotion/react';
+
 import { Flex } from '../../../shared/components/Flex';
 import { Header } from '../../../shared/components/Header';
 import { IconButton } from '../../../shared/components/IconButton';
@@ -60,26 +62,26 @@ export const EventDetail = () => {
       <Flex
         dir="column"
         width="100%"
-        css={{
-          maxWidth: '784px',
-          width: '100%',
-          margin: '0 auto',
-          padding: '28px 14px',
-          gap: '24px',
-          boxSizing: 'border-box',
-        }}
+        margin="0 auto"
+        padding="28px 14px"
+        gap="24px"
+        css={css`
+          max-width: 784px;
+          box-sizing: border-box;
+        `}
       >
         <EventHeader title={event.title} author={event.author} />
         <Flex
-          css={{
-            display: 'flex',
-            flexDirection: 'row',
-            gap: '24px',
-            width: '100%',
-            '@media (max-width: 768px)': {
-              flexDirection: 'column',
-            },
-          }}
+          dir="row"
+          gap="24px"
+          width="100%"
+          css={css`
+            display: flex;
+
+            @media (max-width: 768px) {
+              flex-direction: column;
+            }
+          `}
         >
           <TimeInfoCard
             deadlineTime={event.deadlineTime}

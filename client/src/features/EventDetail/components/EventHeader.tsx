@@ -1,3 +1,5 @@
+import { css } from '@emotion/react';
+
 import { Flex } from '../../../shared/components/Flex';
 import { Icon } from '../../../shared/components/Icon';
 import { Text } from '../../../shared/components/Text';
@@ -7,7 +9,13 @@ type EventHeaderProps = Pick<EventDetail, 'title' | 'author'>;
 
 export const EventHeader = ({ title, author }: EventHeaderProps) => (
   <Flex dir="column" gap="12px">
-    <Text type="Title" weight="bold" css={{ textAlign: 'left' }}>
+    <Text
+      type="Title"
+      weight="bold"
+      css={css`
+        text-align: left;
+      `}
+    >
       {title}
     </Text>
     <Flex alignItems="center" gap="4px">
