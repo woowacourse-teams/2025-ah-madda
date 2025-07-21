@@ -7,12 +7,9 @@ import com.ahmadda.infra.JwtTokenProvider;
 import com.ahmadda.infra.dto.OAuthUserInfoResponse;
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
@@ -23,7 +20,6 @@ import static org.mockito.BDDMockito.given;
 
 @SpringBootTest
 @Transactional
-@Import(LoginServiceTest.TestBeans.class)
 class LoginServiceTest {
 
     @Autowired
@@ -32,10 +28,10 @@ class LoginServiceTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    @Autowired
+    @MockitoBean
     private GoogleOAuthProvider googleOAuthProvider;
 
-    @Autowired
+    @MockitoBean
     private JwtTokenProvider jwtTokenProvider;
 
     @Test
@@ -51,6 +47,7 @@ class LoginServiceTest {
 
         given(jwtTokenProvider.createToken(any(Claims.class), any(Duration.class)))
                 .willReturn(accessToken);
+
         // when
         sut.login(code);
 
@@ -80,19 +77,5 @@ class LoginServiceTest {
 
         // then
         assertThat(memberRepository.count()).isEqualTo(1);
-    }
-
-    @TestConfiguration
-    static class TestBeans {
-
-        @Bean
-        public GoogleOAuthProvider googleOAuthProvider() {
-            return Mockito.mock(GoogleOAuthProvider.class);
-        }
-
-        @Bean
-        public JwtTokenProvider jwtTokenProvider() {
-            return Mockito.mock(JwtTokenProvider.class);
-        }
     }
 }
