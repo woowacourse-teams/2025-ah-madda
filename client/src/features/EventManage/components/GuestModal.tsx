@@ -77,7 +77,7 @@ export const GuestModal = ({ isOpen, onClose, guest }: GuestModalProps) => {
               variant="outlined"
               color="#666"
               css={{
-                width: '62px',
+                width: '65px',
                 height: '32px',
                 borderRadius: '4px',
                 outline: 'none',
@@ -96,7 +96,7 @@ export const GuestModal = ({ isOpen, onClose, guest }: GuestModalProps) => {
               variant="filled"
               color="#0A0A0A"
               css={{
-                width: '62px',
+                width: '65px',
                 height: '32px',
                 borderRadius: '4px',
                 outline: 'none',
