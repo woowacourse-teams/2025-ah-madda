@@ -78,8 +78,14 @@ class EventGuestServiceTest {
 
     @Test
     void 존재하지_않는_이벤트로_게스트_조회시_예외가_발생한다() {
+        // given
+        var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
+        var organizer =
+                createAndSaveOrganizationMember("주최자", createAndSaveMember("주최자", "host@email.com"), organization);
+        var loginMember = createLoginMember(organizer);
+
         // when // then
-        assertThatThrownBy(() -> sut.getGuests(999L, null))
+        assertThatThrownBy(() -> sut.getGuests(999L, loginMember))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 이벤트입니다.");
     }
@@ -126,8 +132,14 @@ class EventGuestServiceTest {
 
     @Test
     void 존재하지_않는_이벤트로_비게스트_조회시_예외가_발생한다() {
+        // given
+        var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
+        var organizer =
+                createAndSaveOrganizationMember("주최자", createAndSaveMember("주최자", "host@email.com"), organization);
+        var loginMember = createLoginMember(organizer);
+
         // when // then
-        assertThatThrownBy(() -> sut.getNonGuestOrganizationMembers(999L, null))
+        assertThatThrownBy(() -> sut.getNonGuestOrganizationMembers(999L, loginMember))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 이벤트입니다.");
     }
