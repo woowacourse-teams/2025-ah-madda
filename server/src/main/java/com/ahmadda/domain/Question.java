@@ -50,6 +50,9 @@ public class Question extends BaseEntity {
         this.questionText = questionText;
         this.isRequired = isRequired;
         this.orderIndex = orderIndex;
+        
+        event.getQuestions()
+                .add(this);
     }
 
     public static Question create(

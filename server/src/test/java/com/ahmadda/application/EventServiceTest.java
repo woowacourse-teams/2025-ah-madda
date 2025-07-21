@@ -1,6 +1,7 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.EventCreateRequest;
+import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
@@ -11,12 +12,16 @@ import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Period;
+import com.ahmadda.domain.Question;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -55,7 +60,8 @@ class EventServiceTest {
                 "선릉",
                 now.plusDays(3), now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
-                100
+                100,
+                List.of(new QuestionCreateRequest("1번 질문", true), new QuestionCreateRequest("2번 질문", false))
         );
 
         //when
@@ -82,6 +88,11 @@ class EventServiceTest {
                                         Period.create(now.plusDays(5), now.plusDays(6)),
                                         now
                                 ));
+                        List<Question> questions = savedEvent.getQuestions();
+                        softly.assertThat(questions)
+                                .hasSize(2)
+                                .extracting("questionText", "isRequired", "orderIndex")
+                                .containsExactly(Tuple.tuple("1번 질문", true, 0), Tuple.tuple("2번 질문", false, 1));
                     });
                 });
     }
@@ -98,7 +109,8 @@ class EventServiceTest {
                 "선릉",
                 now.plusDays(3), now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
-                100
+                100,
+                List.of(new QuestionCreateRequest("1번 질문", true), new QuestionCreateRequest("2번 질문", false))
         );
 
         //when //then
@@ -119,7 +131,8 @@ class EventServiceTest {
                 "선릉",
                 now.plusDays(3), now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
-                100
+                100,
+                new ArrayList<>()
         );
 
         //when //then
