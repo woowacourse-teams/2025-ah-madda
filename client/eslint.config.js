@@ -4,11 +4,13 @@ import eslint from '@eslint/js';
 import reactPlugin from 'eslint-plugin-react';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import hooksPlugin from 'eslint-plugin-react-hooks';
+import pluginQuery from '@tanstack/eslint-plugin-query';
 import eslintPluginImport from 'eslint-plugin-import';
 
 export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
+  ...pluginQuery.configs.recommended,
   {
     rules: {
       'no-var': 'error',
