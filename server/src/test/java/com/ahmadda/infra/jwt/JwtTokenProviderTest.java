@@ -71,11 +71,11 @@ class JwtTokenProviderTest {
         var payload = sut.parsePayload(token);
 
         assertSoftly(softly -> {
-            softly.assertThat(payload.memberId())
+            softly.assertThat(payload.getMemberId())
                     .isEqualTo(2L);
-            softly.assertThat(payload.name())
+            softly.assertThat(payload.getName())
                     .isEqualTo("홍길동");
-            softly.assertThat(payload.email())
+            softly.assertThat(payload.getEmail())
                     .isEqualTo("user@example.com");
         });
     }

@@ -11,12 +11,12 @@ public class MemberPayload {
 
     private final long memberId;
     private final String name;
-    private final String getEmail;
+    private final String email;
 
-    private MemberPayload(final long memberId, final String name, final String getEmail) {
+    private MemberPayload(final long memberId, final String name, final String email) {
         this.memberId = memberId;
         this.name = name;
-        this.getEmail = getEmail;
+        this.email = email;
     }
 
     public static MemberPayload create(final Claims claims) {
