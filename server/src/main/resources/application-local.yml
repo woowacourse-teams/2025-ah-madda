@@ -9,3 +9,6 @@ spring:
 logging:
   level:
     org.hibernate.orm.jdbc.bind: trace
+
+mail:
+  mock: true
