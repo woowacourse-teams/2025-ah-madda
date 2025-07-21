@@ -6,6 +6,14 @@ const meta = {
   title: 'components/Spacing',
   component: Spacing,
   tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A simple spacing component that provides a flexible way to add vertical or horizontal space between elements.',
+      },
+    },
+  },
 } satisfies Meta<typeof Spacing>;
 
 export default meta;
