@@ -104,7 +104,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.createEvent(999L, organizationMember.getId(), eventCreateRequest))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("999에 해당하는 조직을 찾을 수 없습니다.");
+                .hasMessage("존재하지 않은 조직 정보입니다.");
     }
 
     @Test
@@ -125,7 +125,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.createEvent(organization.getId(), 999L, eventCreateRequest))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("999에 해당하는 조직원을 찾을 수 없습니다.");
+                .hasMessage("존재하지 않은 조직원 정보입니다.");
     }
 
     private Organization appendOrganization() {

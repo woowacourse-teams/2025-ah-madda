@@ -55,6 +55,9 @@ public class Event extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
     private List<Guest> guests = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
+    private List<Question> questions = new ArrayList<>();
+
     @Embedded
     private EventOperationPeriod eventOperationPeriod;
 
@@ -119,12 +122,12 @@ public class Event extends BaseEntity {
                 .end();
     }
 
-    public LocalDateTime geEventStart() {
+    public LocalDateTime getEventStart() {
         return eventOperationPeriod.getEventPeriod()
                 .start();
     }
 
-    public LocalDateTime geEventEnd() {
+    public LocalDateTime getEventEnd() {
         return eventOperationPeriod.getEventPeriod()
                 .end();
     }

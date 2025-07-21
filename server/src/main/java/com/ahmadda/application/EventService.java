@@ -47,6 +47,11 @@ public class EventService {
         return eventRepository.save(event);
     }
 
+    public Event getEvent(final Long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않은 이벤트 정보입니다."));
+    }
+
     private EventOperationPeriod createEventOperationPeriod(final EventCreateRequest eventCreateRequest) {
         Period registrationPeriod =
                 Period.create(eventCreateRequest.registrationStart(), eventCreateRequest.registrationEnd());
@@ -61,11 +66,11 @@ public class EventService {
 
     private Organization getOrganization(final Long organizationId) {
         return organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new NotFoundException(organizationId + "에 해당하는 조직을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않은 조직 정보입니다."));
     }
 
     private OrganizationMember getOrganizationMember(final Long organizationMemberId) {
         return organizationMemberRepository.findById(organizationMemberId)
-                .orElseThrow(() -> new NotFoundException(organizationMemberId + "에 해당하는 조직원을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않은 조직원 정보입니다."));
     }
 }

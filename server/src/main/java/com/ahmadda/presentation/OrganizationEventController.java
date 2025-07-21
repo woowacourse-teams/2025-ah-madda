@@ -6,6 +6,7 @@ import com.ahmadda.application.OrganizationService;
 import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.domain.Event;
 import com.ahmadda.presentation.dto.EventCreateResponse;
+import com.ahmadda.presentation.dto.EventDetailResponse;
 import com.ahmadda.presentation.dto.EventResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -50,5 +51,12 @@ public class OrganizationEventController {
 
         return ResponseEntity.created(URI.create("/api/organizations/" + organizationId + "/events/" + event.getId()))
                 .body(new EventCreateResponse(event.getId()));
+    }
+
+    @GetMapping("/events/{eventId}")
+    public ResponseEntity<EventDetailResponse> getOrganizationEvent(@PathVariable final Long eventId) {
+        Event event = eventService.getEvent(eventId);
+
+        return ResponseEntity.ok(EventDetailResponse.from(event));
     }
 }
