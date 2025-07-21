@@ -4,7 +4,9 @@ import com.ahmadda.application.EventGuestService;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.presentation.dto.GuestResponse;
+import com.ahmadda.presentation.dto.LoginMember;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
+import com.ahmadda.presentation.resolver.AuthMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,8 +26,11 @@ public class EventGuestController {
     private final EventGuestService eventGuestService;
 
     @GetMapping("/{eventId}/guests")
-    public ResponseEntity<List<GuestResponse>> getGuests(@PathVariable final Long eventId) {
-        List<Guest> guestMembers = eventGuestService.getGuests(eventId);
+    public ResponseEntity<List<GuestResponse>> getGuests(
+            @PathVariable final Long eventId,
+            @AuthMember final LoginMember loginMember
+    ) {
+        List<Guest> guestMembers = eventGuestService.getGuests(eventId, loginMember);
 
         List<GuestResponse> responses = guestMembers.stream()
                 .map(GuestResponse::from)

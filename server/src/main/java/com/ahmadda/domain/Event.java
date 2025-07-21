@@ -158,6 +158,12 @@ public class Event extends BaseEntity {
         this.guests.add(guest);
     }
 
+    public boolean isOrganizer(final Long memberId) {
+        return organizer.getMember()
+                .getId()
+                .equals(memberId);
+    }
+
     private void validateParticipate(final Guest guest, final LocalDateTime participantDateTime) {
         if (eventOperationPeriod.canNotRegistration(participantDateTime)) {
             throw new BusinessRuleViolatedException("이벤트 신청 기간이 아닙니다.");
