@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "google.oauth2")
+@ConfigurationProperties(prefix = "oauth.google")
 @RequiredArgsConstructor
 @Getter
 public class GoogleOAuthProperties {
