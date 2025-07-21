@@ -163,7 +163,7 @@ public class Event extends BaseEntity {
         if (guests.size() >= maxCapacity) {
             throw new BusinessRuleViolatedException("수용 인원이 가득차 이벤트에 참여할 수 없습니다.");
         }
-        if (guests.contains(guest)) {
+        if (hasGuest(guest.getOrganizationMember())) {
             throw new BusinessRuleViolatedException("이미 참여중인 게스트입니다.");
         }
         if (guest.isSameOrganizationMember(organizer)) {

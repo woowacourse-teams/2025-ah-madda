@@ -4,18 +4,21 @@ import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
+import com.ahmadda.domain.GuestRepository;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class EventGuestService {
 
+    private final GuestRepository guestRepository;
     private final EventRepository eventRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
 
@@ -35,11 +38,13 @@ public class EventGuestService {
         return event.getNonGuestOrganizationMembers(allMembers);
     }
 
-    public void participantEvent(final Long eventId, final Long organizationMemberId) {
+    public void participantEvent(final Long eventId, final Long organizationMemberId, final LocalDateTime dateTime) {
         Event event = getEvent(eventId);
         OrganizationMember organizationMember = getOrganizationMember(organizationMemberId);
 
-//        Guest guest = Guest.create(event, organizationMember);
+        Guest guest = Guest.create(event, organizationMember, dateTime);
+
+        guestRepository.save(guest);
     }
 
     private Event getEvent(final Long eventId) {
