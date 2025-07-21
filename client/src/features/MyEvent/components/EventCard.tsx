@@ -5,23 +5,17 @@ import { Text } from '@/shared/components/Text';
 
 import type { Event } from '../types';
 
-type EventCardProps = {
-  event: Event;
-};
-
-export const EventCard = ({ event }: EventCardProps) => {
-  const {
-    title,
-    description,
-    author,
-    deadlineTime,
-    startTime,
-    endTime,
-    location,
-    currentParticipants,
-    maxParticipants,
-  } = event;
-
+export const EventCard = ({
+  title,
+  description,
+  author,
+  deadlineTime,
+  startTime,
+  endTime,
+  location,
+  currentParticipants,
+  maxParticipants,
+}: Event) => {
   return (
     <Flex
       dir="column"

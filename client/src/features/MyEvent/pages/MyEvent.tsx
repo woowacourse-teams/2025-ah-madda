@@ -51,7 +51,7 @@ export const MyEvent = () => {
                 }}
               >
                 {events.hostEvents.map((event) => (
-                  <EventCard key={event.id} event={event} />
+                  <EventCard key={event.id} {...event} />
                 ))}
               </div>
             ) : (
@@ -80,7 +80,7 @@ export const MyEvent = () => {
                 }}
               >
                 {events.participateEvents.map((event) => (
-                  <EventCard key={event.id} event={event} />
+                  <EventCard key={event.id} {...event} />
                 ))}
               </div>
             ) : (
