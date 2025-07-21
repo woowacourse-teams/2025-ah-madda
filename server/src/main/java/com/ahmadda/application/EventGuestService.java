@@ -32,11 +32,12 @@ public class EventGuestService {
         return event.getGuests();
     }
 
-    // TODO. 추후 주최자에 대한 인가 처리 필요
-    public List<OrganizationMember> getNonGuestOrganizationMembers(final Long eventId) {
-        final Event event = getEvent(eventId);
-        final Organization organization = event.getOrganization();
-        final List<OrganizationMember> allMembers = organization.getOrganizationMembers();
+    public List<OrganizationMember> getNonGuestOrganizationMembers(final Long eventId, final LoginMember loginMember) {
+        Event event = getEvent(eventId);
+        validateOrganizer(event, loginMember.memberId());
+
+        Organization organization = event.getOrganization();
+        List<OrganizationMember> allMembers = organization.getOrganizationMembers();
 
         return event.getNonGuestOrganizationMembers(allMembers);
     }

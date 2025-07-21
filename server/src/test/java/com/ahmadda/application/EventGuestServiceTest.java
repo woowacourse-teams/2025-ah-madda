@@ -133,11 +133,19 @@ class EventGuestServiceTest {
     }
 
     @Test
-    void 존재하지_않는_이벤트로_비게스트_조회시_예외가_발생한다() {
+    void 주최자가_아닌_회원이_비게스트_조회시_예외가_발생한다() {
+        // given
+        var organization = createAndSaveOrganization();
+        var organizer =
+                createAndSaveOrganizationMember("주최자", createAndSaveMember("홍길동", "host@email.com"), organization);
+        var otherMember =
+                createAndSaveOrganizationMember("다른사람", createAndSaveMember("user", "user@email.com"), organization);
+        var event = createAndSaveEvent(organizer, organization);
+
         // when // then
-        assertThatThrownBy(() -> sut.getNonGuestOrganizationMembers(999L))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 이벤트입니다.");
+        assertThatThrownBy(() -> sut.getNonGuestOrganizationMembers(event.getId(), createLoginMember(otherMember)))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessage("이벤트 주최자가 아닙니다.");
     }
 
     @Test
