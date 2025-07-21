@@ -26,7 +26,21 @@ class PeriodTest {
     @MethodSource("periods")
     void 두_기간이_겹치는지_확인할_수_있다(Period period1, Period period2, boolean expected) {
         // when
-        boolean result = period1.isOverlappedWith(period2);
+        var result = period1.isOverlappedWith(period2);
+
+        // then
+        assertThat(result).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideDateTimesForIncludesTest")
+    void 특정_날짜가_기간에_포함되는지_알_수_있다(LocalDateTime testDate, boolean expected) {
+        var start = LocalDateTime.of(2025, 7, 1, 12, 0);
+        var end = LocalDateTime.of(2025, 7, 1, 14, 0);
+        var sut = Period.create(start, end);
+
+        // when
+        var result = sut.includes(testDate);
 
         // then
         assertThat(result).isEqualTo(expected);
@@ -100,6 +114,16 @@ class PeriodTest {
                         ),
                         false
                 )
+        );
+    }
+
+    private static Stream<Arguments> provideDateTimesForIncludesTest() {
+        return Stream.of(
+                Arguments.of(LocalDateTime.of(2025, 7, 1, 11, 59), false),
+                Arguments.of(LocalDateTime.of(2025, 7, 1, 12, 0), true),
+                Arguments.of(LocalDateTime.of(2025, 7, 1, 13, 0), true),
+                Arguments.of(LocalDateTime.of(2025, 7, 1, 14, 0), true),
+                Arguments.of(LocalDateTime.of(2025, 7, 1, 14, 1), false)
         );
     }
 }
