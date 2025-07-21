@@ -20,11 +20,10 @@ public class EventNotificationService {
     // TODO. 추후 주최자에 대한 인가 처리 필요
     public void notifyNonGuestOrganizationMembers(final Long eventId, final String content) {
         Event event = getEvent(eventId);
+        List<OrganizationMember> organizationMembers = event.getOrganization()
+                .getOrganizationMembers();
 
-        List<OrganizationMember> recipients = event.getNonGuestOrganizationMembers(
-                event.getOrganization()
-                        .getOrganizationMembers()
-        );
+        List<OrganizationMember> recipients = event.getNonGuestOrganizationMembers(organizationMembers);
         String subject = generateSubject(event);
 
         sendNotificationToRecipients(recipients, subject, content);
