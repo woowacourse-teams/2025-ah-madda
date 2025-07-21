@@ -10,6 +10,7 @@ import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,6 +39,7 @@ public class EventGuestService {
         return event.getNonGuestOrganizationMembers(allMembers);
     }
 
+    @Transactional
     public void participantEvent(
             final Long eventId,
             final Long organizationMemberId,
