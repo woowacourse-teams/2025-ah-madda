@@ -28,7 +28,23 @@ export const EventManage = () => {
       }
     >
       <EventManageContainer>
-        <Flex as="main" gap="40px" css={{ marginTop: '32px' }} width="100%">
+        <Flex
+          as="main"
+          gap="40px"
+          width="100%"
+          dir="row"
+          css={{
+            marginTop: '32px',
+            '@media (max-width: 1024px)': {
+              flexDirection: 'column',
+              gap: '32px',
+            },
+            '@media (max-width: 768px)': {
+              gap: '24px',
+              marginTop: '24px',
+            },
+          }}
+        >
           <EventInfoSection eventInfo={data.eventInfo} />
           <GuestManageSection
             completedGuests={data.completedGuests}
