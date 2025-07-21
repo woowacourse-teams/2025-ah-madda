@@ -34,7 +34,7 @@ public class EventOperationPeriod {
     })
     private Period eventPeriod;
 
-    public EventOperationPeriod(
+    private EventOperationPeriod(
             final Period registrationPeriod,
             final Period eventPeriod,
             final LocalDateTime currentDateTime
@@ -47,6 +47,14 @@ public class EventOperationPeriod {
         this.eventPeriod = eventPeriod;
     }
 
+    public static EventOperationPeriod create(
+            final Period registrationPeriod,
+            final Period eventPeriod,
+            final LocalDateTime currentDateTime
+    ) {
+        return new EventOperationPeriod(registrationPeriod, eventPeriod, currentDateTime);
+    }
+
     public boolean isNotStarted(final LocalDateTime currentDateTime) {
         return eventPeriod.isNotStarted(currentDateTime);
     }
@@ -55,7 +63,7 @@ public class EventOperationPeriod {
         return !registrationPeriod.includes(currentDateTime);
     }
 
-    private static void validateRegistrationPeriod(
+    private void validateRegistrationPeriod(
             final Period registrationPeriod,
             final LocalDateTime currentDateTime
     ) {
@@ -67,7 +75,7 @@ public class EventOperationPeriod {
         }
     }
 
-    private static void validateEventPeriod(final Period eventPeriod, final LocalDateTime currentDateTime) {
+    private void validateEventPeriod(final Period eventPeriod, final LocalDateTime currentDateTime) {
         Assert.notNull(eventPeriod, "이벤트 기간은 null이 되면 안됩니다.");
 
         if (eventPeriod.start()

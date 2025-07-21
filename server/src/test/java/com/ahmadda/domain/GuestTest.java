@@ -24,9 +24,9 @@ class GuestTest {
         var now = LocalDateTime.now();
         event = Event.create(
                 "테스트 이벤트", "설명", "장소", organizer, organization,
-                new EventOperationPeriod(
-                        new Period(now.plusDays(1), now.plusDays(5)),
-                        new Period(now.plusDays(10), now.plusDays(11)),
+                EventOperationPeriod.create(
+                        Period.create(now.plusDays(1), now.plusDays(5)),
+                        Period.create(now.plusDays(10), now.plusDays(11)),
                         now
                 ),
                 50
@@ -83,9 +83,9 @@ class GuestTest {
         var now = LocalDateTime.now();
         var event = Event.create(
                 "테스트 이벤트", "설명", "장소", organizationMember1, organization1,
-                new EventOperationPeriod(
-                        new Period(now.plusDays(1), now.plusDays(5)),
-                        new Period(now.plusDays(10), now.plusDays(11)),
+                EventOperationPeriod.create(
+                        Period.create(now.plusDays(1), now.plusDays(5)),
+                        Period.create(now.plusDays(10), now.plusDays(11)),
                         now
                 ),
                 50
@@ -106,9 +106,9 @@ class GuestTest {
         var now = LocalDateTime.now();
         var event = Event.create(
                 "테스트 이벤트", "설명", "장소", organizationMember, organization,
-                new EventOperationPeriod(
-                        new Period(now.plusDays(1), now.plusDays(5)),
-                        new Period(now.plusDays(10), now.plusDays(11)),
+                EventOperationPeriod.create(
+                        Period.create(now.plusDays(1), now.plusDays(5)),
+                        Period.create(now.plusDays(10), now.plusDays(11)),
                         now
                 ),
                 50
@@ -131,9 +131,9 @@ class GuestTest {
         var now = LocalDateTime.now();
         var event = Event.create(
                 "테스트 이벤트", "설명", "장소", organizationMember1, organization,
-                new EventOperationPeriod(
-                        new Period(now.plusDays(1), now.plusDays(5)),
-                        new Period(now.plusDays(10), now.plusDays(11)),
+                EventOperationPeriod.create(
+                        Period.create(now.plusDays(1), now.plusDays(5)),
+                        Period.create(now.plusDays(10), now.plusDays(11)),
                         now
                 ),
                 1

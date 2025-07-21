@@ -28,7 +28,7 @@ class EventTest {
     void 게스트가_이벤트에_참여했는지_알_수_있다() {
         // given
         var now = LocalDateTime.now();
-        var registrationPeriod = new Period(
+        var registrationPeriod = Period.create(
                 LocalDateTime.now()
                         .plusDays(1),
                 LocalDateTime.now()
@@ -56,7 +56,7 @@ class EventTest {
     void 이벤트에_참여한_게스트들을_조회할_수_있다() {
         // given
         var now = LocalDateTime.now();
-        var registrationPeriod = new Period(now.plusDays(1), now.plusDays(2));
+        var registrationPeriod = Period.create(now.plusDays(1), now.plusDays(2));
         var sut = createEvent(now, registrationPeriod);
 
         var guest1 = Guest.create(
@@ -109,9 +109,9 @@ class EventTest {
     void 이벤트가_아직_시작되지_않았는지_확인할_수_있다() {
         //given
         var now = LocalDateTime.now();
-        var eventOperationPeriod = new EventOperationPeriod(
-                new Period(now.plusDays(1), now.plusDays(2)),
-                new Period(now.plusDays(3), now.plusDays(4)),
+        var eventOperationPeriod = EventOperationPeriod.create(
+                Period.create(now.plusDays(1), now.plusDays(2)),
+                Period.create(now.plusDays(3), now.plusDays(4)),
                 now
         );
         var event = createEvent("우테코", eventOperationPeriod);
@@ -134,7 +134,7 @@ class EventTest {
     void 이벤트에_참여하지_않은_조직원을_조회할_수_있다() {
         // given
         var now = LocalDateTime.now();
-        var registrationPeriod = new Period(
+        var registrationPeriod = Period.create(
                 LocalDateTime.now()
                         .plusDays(1),
                 LocalDateTime.now()
@@ -163,7 +163,7 @@ class EventTest {
     void 이벤트에_참여중인_게스트가_또_참여한다면_예외가_발생한다() {
         //given
         var now = LocalDateTime.now();
-        var registrationPeriod = new Period(
+        var registrationPeriod = Period.create(
                 LocalDateTime.now()
                         .plusDays(1),
                 LocalDateTime.now()
@@ -189,14 +189,14 @@ class EventTest {
                 "place",
                 createOrganizationMember(createMember(), organization),
                 organization,
-                new EventOperationPeriod(
-                        new Period(
+                EventOperationPeriod.create(
+                        Period.create(
                                 LocalDateTime.now()
                                         .plusDays(1),
                                 LocalDateTime.now()
                                         .plusDays(2)
                         ),
-                        new Period(
+                        Period.create(
                                 LocalDateTime.now()
                                         .plusDays(3),
                                 LocalDateTime.now()
@@ -215,9 +215,9 @@ class EventTest {
                 "place",
                 baseOrganizer,
                 baseOrganization,
-                new EventOperationPeriod(
+                EventOperationPeriod.create(
                         registrationPeriod,
-                        new Period(now.plusDays(3), now.plusDays(4)),
+                        Period.create(now.plusDays(3), now.plusDays(4)),
                         now
                 ),
                 10
@@ -275,9 +275,9 @@ class EventTest {
                 "place",
                 organizationMember,
                 organization,
-                new EventOperationPeriod(
-                        new Period(now.plusDays(1), now.plusDays(2)),
-                        new Period(now.plusDays(3), now.plusDays(4)),
+                EventOperationPeriod.create(
+                        Period.create(now.plusDays(1), now.plusDays(2)),
+                        Period.create(now.plusDays(3), now.plusDays(4)),
                         now
                 ),
                 10

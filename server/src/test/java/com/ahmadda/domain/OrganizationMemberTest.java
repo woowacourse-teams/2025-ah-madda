@@ -47,9 +47,9 @@ class OrganizationMemberTest {
         var now = LocalDateTime.now();
         return Event.create(
                 title, "설명", "장소", sut, organization,
-                new EventOperationPeriod(
-                        new Period(now.plusDays(1), now.plusDays(5)),
-                        new Period(now.plusDays(10), now.plusDays(11)),
+                EventOperationPeriod.create(
+                        Period.create(now.plusDays(1), now.plusDays(5)),
+                        Period.create(now.plusDays(10), now.plusDays(11)),
                         now
                 ),
                 50

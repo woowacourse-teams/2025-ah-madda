@@ -143,9 +143,9 @@ class OrganizationServiceTest {
                 "place",
                 organizer,
                 organization,
-                new EventOperationPeriod(
-                        new Period(start, end),
-                        new Period(end.plusHours(1), end.plusHours(2)),
+                EventOperationPeriod.create(
+                        Period.create(start, end),
+                        Period.create(end.plusHours(1), end.plusHours(2)),
                         start.minusDays(1)
                 ),
                 100

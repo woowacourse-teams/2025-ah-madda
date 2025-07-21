@@ -45,7 +45,7 @@ public class EventGuestController {
         return ResponseEntity.ok(responses);
     }
 
-    @PostMapping("/{eventId}/guests")
+    @PostMapping("/{eventId}/participation")
     public ResponseEntity<Void> participateEvent(@PathVariable final Long eventId) {
         Long fakeOrganizationMemberId = 1L;
 

@@ -44,9 +44,9 @@ class OrganizationTest {
     private Event createEventForTest(String title, LocalDateTime start, LocalDateTime end) {
         return Event.create(
                 title, "설명", "장소", organizer, sut,
-                new EventOperationPeriod(
-                        new Period(start.minusDays(5), start.minusDays(1)),
-                        new Period(start, end),
+                EventOperationPeriod.create(
+                        Period.create(start.minusDays(5), start.minusDays(1)),
+                        Period.create(start, end),
                         start.minusDays(6)
                 ),
                 50

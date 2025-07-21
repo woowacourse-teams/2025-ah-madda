@@ -77,9 +77,9 @@ class EventServiceTest {
                         softly.assertThat(savedEvent.getOrganizer())
                                 .isEqualTo(organizationMember);
                         softly.assertThat(savedEvent.getEventOperationPeriod())
-                                .isEqualTo(new EventOperationPeriod(
-                                        new Period(now.plusDays(3), now.plusDays(4)),
-                                        new Period(now.plusDays(5), now.plusDays(6)),
+                                .isEqualTo(EventOperationPeriod.create(
+                                        Period.create(now.plusDays(3), now.plusDays(4)),
+                                        Period.create(now.plusDays(5), now.plusDays(6)),
                                         now
                                 ));
                     });

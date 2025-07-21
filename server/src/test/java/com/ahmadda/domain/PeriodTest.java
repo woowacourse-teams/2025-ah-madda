@@ -17,7 +17,7 @@ class PeriodTest {
     @ParameterizedTest
     @CsvSource({"2025-07-18T04:21, 2025-07-18T04:21", "2025-07-18T04:21, 2025-07-18T04:20"})
     void 종료_시간이_시작_시간보다_미래가_아니라면_예외가_발생한다(LocalDateTime start, LocalDateTime end) {
-        assertThatThrownBy(() -> new Period(start, end))
+        assertThatThrownBy(() -> Period.create(start, end))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage("종료 시간은 시작 시간보다 미래여야 합니다.");
     }
@@ -35,45 +35,69 @@ class PeriodTest {
     private static Stream<Arguments> periods() {
         return Stream.of(
                 Arguments.of(
-                        new Period(LocalDateTime.of(2025, 7, 18, 4, 21),
-                                LocalDateTime.of(2025, 7, 19, 4, 23)),
-                        new Period(LocalDateTime.of(2025, 7, 18, 4, 21),
-                                LocalDateTime.of(2025, 7, 19, 4, 23)),
+                        Period.create(
+                                LocalDateTime.of(2025, 7, 18, 4, 21),
+                                LocalDateTime.of(2025, 7, 19, 4, 23)
+                        ),
+                        Period.create(
+                                LocalDateTime.of(2025, 7, 18, 4, 21),
+                                LocalDateTime.of(2025, 7, 19, 4, 23)
+                        ),
                         true
                 ),
                 Arguments.of(
-                        new Period(LocalDateTime.of(2025, 7, 17, 0, 0),
-                                LocalDateTime.of(2025, 7, 19, 0, 0)),
-                        new Period(LocalDateTime.of(2025, 7, 18, 0, 0),
-                                LocalDateTime.of(2025, 7, 19, 0, 0)),
+                        Period.create(
+                                LocalDateTime.of(2025, 7, 17, 0, 0),
+                                LocalDateTime.of(2025, 7, 19, 0, 0)
+                        ),
+                        Period.create(
+                                LocalDateTime.of(2025, 7, 18, 0, 0),
+                                LocalDateTime.of(2025, 7, 19, 0, 0)
+                        ),
                         true
                 ),
                 Arguments.of(
-                        new Period(LocalDateTime.of(2025, 7, 17, 0, 0),
-                                LocalDateTime.of(2025, 7, 19, 0, 0)),
-                        new Period(LocalDateTime.of(2025, 7, 19, 0, 0),
-                                LocalDateTime.of(2025, 7, 20, 0, 0)),
+                        Period.create(
+                                LocalDateTime.of(2025, 7, 17, 0, 0),
+                                LocalDateTime.of(2025, 7, 19, 0, 0)
+                        ),
+                        Period.create(
+                                LocalDateTime.of(2025, 7, 19, 0, 0),
+                                LocalDateTime.of(2025, 7, 20, 0, 0)
+                        ),
                         true
                 ),
                 Arguments.of(
-                        new Period(LocalDateTime.of(2025, 7, 17, 0, 0),
-                                LocalDateTime.of(2025, 7, 20, 0, 0)),
-                        new Period(LocalDateTime.of(2025, 7, 18, 0, 0),
-                                LocalDateTime.of(2025, 7, 19, 0, 0)),
+                        Period.create(
+                                LocalDateTime.of(2025, 7, 17, 0, 0),
+                                LocalDateTime.of(2025, 7, 20, 0, 0)
+                        ),
+                        Period.create(
+                                LocalDateTime.of(2025, 7, 18, 0, 0),
+                                LocalDateTime.of(2025, 7, 19, 0, 0)
+                        ),
                         true
                 ),
                 Arguments.of(
-                        new Period(LocalDateTime.of(2025, 7, 10, 0, 0),
-                                LocalDateTime.of(2025, 7, 11, 0, 0)),
-                        new Period(LocalDateTime.of(2025, 7, 12, 0, 0),
-                                LocalDateTime.of(2025, 7, 13, 0, 0)),
+                        Period.create(
+                                LocalDateTime.of(2025, 7, 10, 0, 0),
+                                LocalDateTime.of(2025, 7, 11, 0, 0)
+                        ),
+                        Period.create(
+                                LocalDateTime.of(2025, 7, 12, 0, 0),
+                                LocalDateTime.of(2025, 7, 13, 0, 0)
+                        ),
                         false
                 ),
                 Arguments.of(
-                        new Period(LocalDateTime.of(2025, 7, 10, 0, 0),
-                                LocalDateTime.of(2025, 7, 11, 0, 0)),
-                        new Period(LocalDateTime.of(2025, 7, 11, 0, 1),
-                                LocalDateTime.of(2025, 7, 13, 0, 0)),
+                        Period.create(
+                                LocalDateTime.of(2025, 7, 10, 0, 0),
+                                LocalDateTime.of(2025, 7, 11, 0, 0)
+                        ),
+                        Period.create(
+                                LocalDateTime.of(2025, 7, 11, 0, 1),
+                                LocalDateTime.of(2025, 7, 13, 0, 0)
+                        ),
                         false
                 )
         );

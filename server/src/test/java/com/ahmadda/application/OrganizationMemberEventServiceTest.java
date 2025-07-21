@@ -242,14 +242,14 @@ class OrganizationMemberEventServiceTest {
                 place,
                 organizer,
                 organization,
-                new EventOperationPeriod(
-                        new Period(
+                EventOperationPeriod.create(
+                        Period.create(
                                 LocalDateTime.now()
                                         .minusDays(10),
                                 LocalDateTime.now()
                                         .minusDays(1)
                         ),
-                        new Period(
+                        Period.create(
                                 eventStart,
                                 eventEnd
                         ),
