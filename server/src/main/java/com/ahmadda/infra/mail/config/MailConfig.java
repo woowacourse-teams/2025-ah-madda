@@ -1,4 +1,4 @@
-package com.ahmadda.infra.config;
+package com.ahmadda.infra.mail.config;
 
 import com.ahmadda.domain.NotificationMailer;
 import com.ahmadda.infra.mail.MockNotificationMailer;
