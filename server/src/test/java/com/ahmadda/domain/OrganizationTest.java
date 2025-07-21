@@ -33,8 +33,10 @@ class OrganizationTest {
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(activeEvents).hasSize(2);
-            softly.assertThat(activeEvents).extracting(Event::getTitle)
+            softly.assertThat(activeEvents)
+                    .hasSize(2);
+            softly.assertThat(activeEvents)
+                    .extracting(Event::getTitle)
                     .containsExactlyInAnyOrder("활성 이벤트 1", "활성 이벤트 2");
         });
     }
@@ -42,8 +44,11 @@ class OrganizationTest {
     private Event createEventForTest(String title, LocalDateTime start, LocalDateTime end) {
         return Event.create(
                 title, "설명", "장소", organizer, sut,
-                start.minusDays(5), start.minusDays(1),
-                start, end,
+                EventOperationPeriod.create(
+                        Period.create(start.minusDays(5), start.minusDays(1)),
+                        Period.create(start, end),
+                        start.minusDays(6)
+                ),
                 50
         );
     }

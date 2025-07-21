@@ -2,6 +2,7 @@ package com.ahmadda.application;
 
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.GuestRepository;
@@ -11,6 +12,7 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.domain.Period;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -240,19 +242,27 @@ class OrganizationMemberEventServiceTest {
                 place,
                 organizer,
                 organization,
-                LocalDateTime.now()
-                        .minusDays(10), // registrationStart
-                LocalDateTime.now()
-                        .minusDays(1),  // registrationEnd
-                eventStart,
-                eventEnd,
+                EventOperationPeriod.create(
+                        Period.create(
+                                LocalDateTime.now()
+                                        .minusDays(10),
+                                LocalDateTime.now()
+                                        .minusDays(1)
+                        ),
+                        Period.create(
+                                eventStart,
+                                eventEnd
+                        ),
+                        LocalDateTime.now()
+                                .minusDays(20)
+                ),
                 maxCapacity
         );
         return eventRepository.save(event);
     }
 
     private Guest createAndSaveGuest(Event event, OrganizationMember participant) {
-        var guest = Guest.create(event, participant);
+        var guest = Guest.create(event, participant, event.getRegistrationStart());
 
         return guestRepository.save(guest);
     }

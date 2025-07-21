@@ -10,6 +10,7 @@ public record EventResponse(
         String description,
         LocalDateTime eventStart,
         LocalDateTime eventEnd,
+        int currentGuestCount,
         int maxCapacity,
         String place,
         LocalDateTime registrationStart,
@@ -24,6 +25,8 @@ public record EventResponse(
                 event.getDescription(),
                 event.getEventStart(),
                 event.getEventEnd(),
+                event.getGuests()
+                        .size(),
                 event.getMaxCapacity(),
                 event.getPlace(),
                 event.getRegistrationStart(),

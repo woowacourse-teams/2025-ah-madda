@@ -70,8 +70,7 @@ public class Organization extends BaseEntity {
         LocalDateTime currentDateTime = LocalDateTime.now();
 
         return events.stream()
-                .filter((event) -> event.getEventStart()
-                        .isAfter(currentDateTime))
+                .filter((event) -> event.isNotStarted(currentDateTime))
                 .toList();
     }
 

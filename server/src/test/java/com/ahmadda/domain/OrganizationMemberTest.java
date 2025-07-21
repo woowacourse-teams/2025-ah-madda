@@ -31,8 +31,8 @@ class OrganizationMemberTest {
         var event2 = createEventForTest("이벤트 2");
         var event3 = createEventForTest("이벤트 3");
 
-        Guest.create(event1, participant);
-        Guest.create(event3, participant);
+        Guest.create(event1, participant, event1.getRegistrationStart());
+        Guest.create(event3, participant, event3.getRegistrationStart());
 
         // when
         List<Event> participatedEvents = participant.getParticipatedEvents();
@@ -47,8 +47,11 @@ class OrganizationMemberTest {
         var now = LocalDateTime.now();
         return Event.create(
                 title, "설명", "장소", sut, organization,
-                now.plusDays(1), now.plusDays(5),
-                now.plusDays(10), now.plusDays(11),
+                EventOperationPeriod.create(
+                        Period.create(now.plusDays(1), now.plusDays(5)),
+                        Period.create(now.plusDays(10), now.plusDays(11)),
+                        now
+                ),
                 50
         );
     }

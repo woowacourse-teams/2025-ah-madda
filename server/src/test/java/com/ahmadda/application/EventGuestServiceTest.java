@@ -2,6 +2,7 @@ package com.ahmadda.application;
 
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.GuestRepository;
@@ -11,6 +12,7 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.domain.Period;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -112,6 +114,33 @@ class EventGuestServiceTest {
                 .hasMessage("존재하지 않는 이벤트입니다.");
     }
 
+    @Test
+    void 조직원은_이벤트의_게스트로_참여할_수_있다() {
+        //given
+        var organization = createAndSaveOrganization();
+        var member = createAndSaveMember("name", "email@ahmadda.com");
+        var organizationMember1 = createAndSaveOrganizationMember("surf1", member, organization);
+        var organizationMember2 = createAndSaveOrganizationMember("surf2", member, organization);
+        var event = createAndSaveEvent(organizationMember1, organization);
+
+        //when
+        sut.participantEvent(event.getId(), organizationMember2.getId(), event.getRegistrationStart());
+
+        //then
+        var guests = guestRepository.findAll();
+
+        assertSoftly(softly -> {
+            softly.assertThat(guests)
+                    .hasSize(1);
+
+            var guest = guests.getFirst();
+            softly.assertThat(guest.getEvent())
+                    .isEqualTo(event);
+            softly.assertThat(guest.getOrganizationMember())
+                    .isEqualTo(organizationMember2);
+        });
+    }
+
     private Member createAndSaveMember(String name, String email) {
         return memberRepository.save(Member.create(name, email));
     }
@@ -132,10 +161,11 @@ class EventGuestServiceTest {
                 "장소",
                 organizer,
                 organization,
-                now.minusDays(3),
-                now.minusDays(1),
-                now.plusDays(1),
-                now.plusDays(2),
+                EventOperationPeriod.create(
+                        Period.create(now.minusDays(3), now.minusDays(1)),
+                        Period.create(now.plusDays(1), now.plusDays(2)),
+                        now.minusDays(6)
+                ),
                 100
         );
 
@@ -143,6 +173,6 @@ class EventGuestServiceTest {
     }
 
     private Guest createAndSaveGuest(Event event, OrganizationMember member) {
-        return guestRepository.save(Guest.create(event, member));
+        return guestRepository.save(Guest.create(event, member, event.getRegistrationStart()));
     }
 }
