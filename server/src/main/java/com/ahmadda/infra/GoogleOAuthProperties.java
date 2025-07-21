@@ -12,8 +12,8 @@ public class GoogleOAuthProperties {
     private final String clientId;
     private final String clientSecret;
     private final String redirectUri;
-    private final String getTokenUri;
-    private final String getUserUri;
+    private final String tokenUri;
+    private final String userUri;
     private final int connectTimeout;
     private final int readTimeout;
 }
