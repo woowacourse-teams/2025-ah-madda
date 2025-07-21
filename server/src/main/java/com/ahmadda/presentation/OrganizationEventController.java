@@ -54,7 +54,7 @@ public class OrganizationEventController {
     }
 
     @GetMapping("/{organizationId}/events/{eventId}")
-    public ResponseEntity<EventDetailResponse> getOrganizationEvents(
+    public ResponseEntity<EventDetailResponse> getOrganizationEvent(
             @PathVariable final Long organizationId,
             @PathVariable final Long eventId
     ) {

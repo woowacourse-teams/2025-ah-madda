@@ -46,8 +46,8 @@ public record EventDetailResponse(
                 event.getPlace(),
                 event.getOrganizer()
                         .getNickname(),
-                event.geEventStart(),
-                event.geEventEnd(),
+                event.getEventStart(),
+                event.getEventEnd(),
                 event.getRegistrationStart(),
                 event.getRegistrationEnd(),
                 event.getGuests()

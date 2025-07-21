@@ -122,12 +122,12 @@ public class Event extends BaseEntity {
                 .end();
     }
 
-    public LocalDateTime geEventStart() {
+    public LocalDateTime getEventStart() {
         return eventOperationPeriod.getEventPeriod()
                 .start();
     }
 
-    public LocalDateTime geEventEnd() {
+    public LocalDateTime getEventEnd() {
         return eventOperationPeriod.getEventPeriod()
                 .end();
     }
