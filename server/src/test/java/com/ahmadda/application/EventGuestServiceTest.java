@@ -98,6 +98,7 @@ class EventGuestServiceTest {
 
     @Test
     void 존재하지_않는_이벤트로_게스트_조회시_예외가_발생한다() {
+        // when // then
         assertThatThrownBy(() -> sut.getGuests(999L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 이벤트입니다.");
@@ -105,6 +106,7 @@ class EventGuestServiceTest {
 
     @Test
     void 존재하지_않는_이벤트로_비게스트_조회시_예외가_발생한다() {
+        // when // then
         assertThatThrownBy(() -> sut.getNonGuestOrganizationMembers(999L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 이벤트입니다.");

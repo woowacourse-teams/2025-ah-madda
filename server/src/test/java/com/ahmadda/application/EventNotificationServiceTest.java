@@ -115,6 +115,7 @@ class EventNotificationServiceTest {
 
     @Test
     void 존재하지_않는_이벤트로_메일_전송시_예외가_발생한다() {
+        // when // then
         assertThatThrownBy(() -> sut.notifyNonGuestOrganizationMembers(999L, "이메일 내용입니다."))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 이벤트입니다.");
