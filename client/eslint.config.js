@@ -10,13 +10,21 @@ import eslintPluginImport from 'eslint-plugin-import';
 export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
-  ...pluginQuery.configs.recommended,
   {
     rules: {
       'no-var': 'error',
       '@typescript-eslint/no-unused-vars': 'warn',
       '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
       '@typescript-eslint/no-explicit-any': 'warn',
+    },
+  },
+  {
+    files: ['**/*.{ts,tsx}'],
+    plugins: {
+      '@tanstack/query': pluginQuery,
+    },
+    rules: {
+      ...pluginQuery.configs.recommended.rules,
     },
   },
   {
