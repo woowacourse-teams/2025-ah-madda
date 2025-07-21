@@ -180,6 +180,47 @@ class EventTest {
                 .hasMessage("이미 참여중인 게스트입니다.");
     }
 
+    @Test
+    void 이벤트에_질문이_포함되어있는지_확인할_수_있다() {
+        // given
+        var sut = createEvent("이벤트", 10);
+        var question = Question.create(sut, "필수 질문", true, 0);
+
+        var otherEvent = createEvent("이벤트2", 10);
+        var notIncludedQuestion = Question.create(otherEvent, "없는 질문", true, 1);
+
+        // when
+        var actual1 = sut.hasQuestion(question);
+        var actual2 = sut.hasQuestion(notIncludedQuestion);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(actual1)
+                    .isTrue();
+            softly.assertThat(actual2)
+                    .isFalse();
+        });
+    }
+
+    @Test
+    void 필수_질문만_조회할_수_있다() {
+        // given
+        var sut = createEvent("이벤트", 10);
+        var requiredQuestion = Question.create(sut, "필수 질문", true, 0);
+        var optionalQuestion = Question.create(sut, "선택 질문", false, 1);
+
+        // when
+        var result = sut.getRequiredQuestions();
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(result)
+                    .hasSize(1);
+            softly.assertThat(result)
+                    .containsExactly(requiredQuestion);
+        });
+    }
+
     private Event createEvent(final String title, final int maxCapacity) {
         var organization = createOrganization("우테코");
 

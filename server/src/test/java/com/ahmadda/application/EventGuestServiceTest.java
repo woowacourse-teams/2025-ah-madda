@@ -1,6 +1,9 @@
 package com.ahmadda.application;
 
+import com.ahmadda.application.dto.AnswerCreateRequest;
+import com.ahmadda.application.dto.EventParticipateRequest;
 import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.domain.Answer;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
@@ -13,12 +16,16 @@ import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Period;
+import com.ahmadda.domain.Question;
+import com.ahmadda.domain.QuestionRepository;
+import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -35,6 +42,9 @@ class EventGuestServiceTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private QuestionRepository questionRepository;
 
     @Autowired
     private OrganizationRepository organizationRepository;
@@ -116,29 +126,111 @@ class EventGuestServiceTest {
 
     @Test
     void 조직원은_이벤트의_게스트로_참여할_수_있다() {
-        //given
+        // given
         var organization = createAndSaveOrganization();
         var member = createAndSaveMember("name", "email@ahmadda.com");
         var organizationMember1 = createAndSaveOrganizationMember("surf1", member, organization);
         var organizationMember2 = createAndSaveOrganizationMember("surf2", member, organization);
         var event = createAndSaveEvent(organizationMember1, organization);
 
-        //when
-        sut.participantEvent(event.getId(), organizationMember2.getId(), event.getRegistrationStart());
+        // when
+        sut.participantEvent(
+                event.getId(),
+                organizationMember2.getId(),
+                event.getRegistrationStart(),
+                new EventParticipateRequest(List.of())
+        );
 
-        //then
+        // then
         var guests = guestRepository.findAll();
-
         assertSoftly(softly -> {
             softly.assertThat(guests)
                     .hasSize(1);
-
             var guest = guests.getFirst();
             softly.assertThat(guest.getEvent())
                     .isEqualTo(event);
             softly.assertThat(guest.getOrganizationMember())
                     .isEqualTo(organizationMember2);
         });
+    }
+
+    @Test
+    void 필수_질문에_모두_답변하면_참여할_수_있다() {
+        // given
+        var organization = createAndSaveOrganization();
+        var member = createAndSaveMember("name", "email@ahmadda.com");
+        var organizer = createAndSaveOrganizationMember("organizer", member, organization);
+        var participant = createAndSaveOrganizationMember("participant", member, organization);
+        var event = createAndSaveEvent(organizer, organization);
+
+        var question1 = createAndSaveQuestion(event, "필수 질문", true, 0);
+        var question2 = createAndSaveQuestion(event, "선택 질문", false, 1);
+
+        var request = new EventParticipateRequest(List.of(
+                new AnswerCreateRequest(question1.getId(), "답변1"),
+                new AnswerCreateRequest(question2.getId(), "답변2")
+        ));
+
+        // when
+        sut.participantEvent(event.getId(), participant.getId(), event.getRegistrationStart(), request);
+
+        // then
+        var guest = guestRepository.findAll()
+                .getFirst();
+        assertSoftly(softly -> {
+            softly.assertThat(guest.getAnswers())
+                    .hasSize(2);
+            softly.assertThat(guest.getAnswers())
+                    .extracting(Answer::getAnswerText)
+                    .containsExactlyInAnyOrder("답변1", "답변2");
+        });
+    }
+
+    @Test
+    void 필수_질문이_누락되면_예외가_발생한다() {
+        // given
+        var organization = createAndSaveOrganization();
+        var member = createAndSaveMember("name", "email@ahmadda.com");
+        var organizer = createAndSaveOrganizationMember("organizer", member, organization);
+        var participant = createAndSaveOrganizationMember("participant", member, organization);
+        var event = createAndSaveEvent(organizer, organization);
+
+        var question1 = createAndSaveQuestion(event, "필수 질문", true, 0);
+        var question2 = createAndSaveQuestion(event, "선택 질문", false, 1);
+
+        var request = new EventParticipateRequest(List.of(
+                new AnswerCreateRequest(question2.getId(), "선택 답변")
+        ));
+
+        // when // then
+        assertThatThrownBy(() ->
+                sut.participantEvent(event.getId(), participant.getId(), event.getRegistrationStart(), request)
+        )
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessageContaining("필수 질문에 대한 답변이 누락되었습니다");
+    }
+
+    @Test
+    void 존재하지_않는_질문에_답변하면_예외가_발생한다() {
+        // given
+        var organization = createAndSaveOrganization();
+        var member = createAndSaveMember("name", "email@ahmadda.com");
+        var organizer = createAndSaveOrganizationMember("organizer", member, organization);
+        var participant = createAndSaveOrganizationMember("participant", member, organization);
+        var event = createAndSaveEvent(organizer, organization);
+
+        var invalidQuestionId = 999L;
+
+        var request = new EventParticipateRequest(List.of(
+                new AnswerCreateRequest(invalidQuestionId, "답변")
+        ));
+
+        // when // then
+        assertThatThrownBy(() ->
+                sut.participantEvent(event.getId(), participant.getId(), event.getRegistrationStart(), request)
+        )
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining("존재하지 않는 질문입니다.");
     }
 
     private Member createAndSaveMember(String name, String email) {
@@ -174,5 +266,9 @@ class EventGuestServiceTest {
 
     private Guest createAndSaveGuest(Event event, OrganizationMember member) {
         return guestRepository.save(Guest.create(event, member, event.getRegistrationStart()));
+    }
+
+    private Question createAndSaveQuestion(Event event, String text, boolean required, int order) {
+        return questionRepository.save(Question.create(event, text, required, order));
     }
 }

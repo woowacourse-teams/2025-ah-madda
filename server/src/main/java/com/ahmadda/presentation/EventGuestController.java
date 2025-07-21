@@ -1,15 +1,18 @@
 package com.ahmadda.presentation;
 
 import com.ahmadda.application.EventGuestService;
+import com.ahmadda.application.dto.EventParticipateRequest;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.presentation.dto.GuestResponse;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,10 +49,18 @@ public class EventGuestController {
     }
 
     @PostMapping("/{eventId}/participation")
-    public ResponseEntity<Void> participateEvent(@PathVariable final Long eventId) {
+    public ResponseEntity<Void> participateEvent(
+            @PathVariable final Long eventId,
+            @RequestBody @Valid final EventParticipateRequest eventParticipateRequest
+    ) {
         Long fakeOrganizationMemberId = 1L;
 
-        eventGuestService.participantEvent(eventId, fakeOrganizationMemberId, LocalDateTime.now());
+        eventGuestService.participantEvent(
+                eventId,
+                fakeOrganizationMemberId,
+                LocalDateTime.now(),
+                eventParticipateRequest
+        );
 
         return ResponseEntity.ok()
                 .build();

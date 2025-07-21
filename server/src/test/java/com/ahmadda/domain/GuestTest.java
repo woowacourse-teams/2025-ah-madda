@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -156,5 +157,90 @@ class GuestTest {
         ))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage("이벤트 신청 기간이 아닙니다.");
+    }
+
+    @Test
+    void 필수_질문에_대한_답변이_모두_있다면_정상적으로_답변이_등록된다() {
+        // given
+        var now = LocalDateTime.now();
+        var event = createEvent("이벤트", participant, now);
+
+        var question1 = Question.create(event, "필수 질문1", true, 0);
+        var question2 = Question.create(event, "선택 질문2", false, 1);
+
+        var guest = Guest.create(event, otherParticipant, now);
+
+        var answers = Map.of(
+                question1, "답변1",
+                question2, "답변2"
+        );
+
+        // when
+        guest.submitAnswers(answers);
+
+        // then
+        assertThat(guest.getAnswers()).hasSize(2);
+        assertThat(guest.getAnswers())
+                .extracting(Answer::getAnswerText)
+                .containsExactlyInAnyOrder("답변1", "답변2");
+    }
+
+    @Test
+    void 필수_질문에_대한_답변이_누락되면_예외가_발생한다() {
+        // given
+        var now = LocalDateTime.now();
+        var event = createEvent("이벤트", participant, now);
+
+        var question1 = Question.create(event, "필수 질문1", true, 0);
+        var question2 = Question.create(event, "선택 질문2", false, 1);
+
+        var guest = Guest.create(event, otherParticipant, now);
+
+        var answers = Map.of(
+                question2, "답변2"
+        );
+
+        // when // then
+        assertThatThrownBy(() -> guest.submitAnswers(answers))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessageContaining("필수 질문에 대한 답변이 누락되었습니다");
+    }
+
+    @Test
+    void 이벤트에_없는_질문에_답변하면_예외가_발생한다() {
+        // given
+        var now = LocalDateTime.now();
+
+        var event = createEvent("이벤트", participant, now);
+        var guest = Guest.create(event, otherParticipant, now);
+
+        var otherEvent = createEvent("다른 이벤트", participant, now);
+        var externalQuestion = Question.create(otherEvent, "외부 질문", true, 0);
+
+        var answers = Map.of(
+                externalQuestion, "외부 답변"
+        );
+
+        // when // then
+        assertThatThrownBy(() -> guest.submitAnswers(answers))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessageContaining("이벤트에 포함되지 않은 질문입니다");
+    }
+
+    private Event createEvent(
+            String title,
+            OrganizationMember organizer,
+            LocalDateTime now
+    ) {
+        return Event.create(
+                title, "설명", "장소", organizer,
+                organizer.getOrganization(),
+                EventOperationPeriod.create(
+                        Period.create(now, now.plusDays(1)),
+                        Period.create(now.plusDays(2), now.plusDays(3)),
+                        now
+                ),
+                10
+        );
     }
 }
