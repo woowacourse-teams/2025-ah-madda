@@ -21,9 +21,6 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    private static final String NAME_ID_KEY = "name";
-    private static final String EMAIL_ID_KEY = "email";
-
     private final JwtTokenProperties jwtTokenProperties;
 
     public String createToken(final Member member) {
@@ -52,11 +49,7 @@ public class JwtTokenProvider {
     public MemberPayload parsePayload(final String token) {
         Claims claims = parseClaims(token);
 
-        long memberId = Long.parseLong(claims.getSubject());
-        String name = claims.get(NAME_ID_KEY, String.class);
-        String email = claims.get(EMAIL_ID_KEY, String.class);
-
-        return new MemberPayload(memberId, name, email);
+        return MemberPayload.create(claims);
     }
 
     private Claims parseClaims(final String token) {
