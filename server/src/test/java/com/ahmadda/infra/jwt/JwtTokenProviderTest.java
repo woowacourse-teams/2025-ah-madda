@@ -5,56 +5,28 @@ import com.ahmadda.infra.jwt.exception.InvalidTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
-import javax.crypto.SecretKey;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.mockito.BDDMockito.given;
 
-@SpringBootTest
 class JwtTokenProviderTest {
 
-    @Autowired
-    private JwtTokenProvider sut;
+    private String secretKey = UUID.randomUUID()
+            .toString();
+    private Duration expiration = Duration.ofHours(1);
+    private JwtTokenProperties jwtTokenProperties = new JwtTokenProperties(secretKey, expiration);
 
-    @MockitoBean
-    private JwtTokenProperties jwtTokenProperties;
-
-    private SecretKey secretKey;
-    private Duration expiration;
-
-    @BeforeEach
-    void setUp() {
-        secretKey = Keys.hmacShaKeyFor(UUID.randomUUID()
-                                               .toString()
-                                               .getBytes());
-        expiration = Duration.ofHours(1);
-        given(jwtTokenProperties.getSecretKey()).willReturn(secretKey);
-        given(jwtTokenProperties.getAccessExpiration()).willReturn(expiration);
-    }
-
-    private Claims createClaims(Long memberId, String name, String email, Instant iat, Instant exp) {
-        return Jwts.claims()
-                .subject(memberId.toString())
-                .add("name", name)
-                .add("email", email)
-                .issuedAt(Date.from(iat))
-                .expiration(Date.from(exp))
-                .build();
-    }
+    private JwtTokenProvider sut = new JwtTokenProvider(jwtTokenProperties);
 
     @Test
-    void parsePayload_정상_토큰() {
+    void 페이로드_변환시_토큰을_반환한다() {
+        // given
         var claims = createClaims(2L,
                                   "홍길동",
                                   "user@example.com",
@@ -65,11 +37,13 @@ class JwtTokenProviderTest {
 
         var token = Jwts.builder()
                 .claims(claims)
-                .signWith(secretKey)
+                .signWith(jwtTokenProperties.getSecretKey())
                 .compact();
 
+        // when
         var payload = sut.parsePayload(token);
 
+        // then
         assertSoftly(softly -> {
             softly.assertThat(payload.getMemberId())
                     .isEqualTo(2L);
@@ -81,7 +55,8 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    void parsePayload_만료된_토큰_예외() {
+    void 페이로드_변환시_만료된_토큰일시_예외가_발생한다() {
+        // given
         var claims = createClaims(3L, "만료됨", "expired@example.com",
                                   Instant.now()
                                           .minus(Duration.ofHours(2)),
@@ -91,15 +66,17 @@ class JwtTokenProviderTest {
 
         var token = Jwts.builder()
                 .claims(claims)
-                .signWith(secretKey)
+                .signWith(jwtTokenProperties.getSecretKey())
                 .compact();
 
+        // when // then
         assertThatThrownBy(() -> sut.parsePayload(token))
                 .isInstanceOf(InvalidTokenException.class);
     }
 
     @Test
-    void parsePayload_잘못된_서명_예외() {
+    void 페이로드_변환시_잘못된_서명_예외가_발생한다() {
+        // given
         var key = Keys.hmacShaKeyFor(UUID.randomUUID()
                                              .toString()
                                              .getBytes());
@@ -117,25 +94,39 @@ class JwtTokenProviderTest {
                 .signWith(key)
                 .compact();
 
+        // when // then
         assertThatThrownBy(() -> sut.parsePayload(token))
                 .isInstanceOf(InvalidTokenException.class);
     }
 
     @Test
-    void parsePayload_빈_토큰_예외() {
+    void 페이로드_변환시_빈_토큰_예외가_발생한다() {
+        // when // then
         assertThatThrownBy(() -> sut.parsePayload(""))
                 .isInstanceOf(InvalidTokenException.class);
     }
 
     @Test
-    void parsePayload_null_토큰_예외() {
+    void 페이로드_변환시_null_토큰_예외가_발생한다() {
+        // when // then
         assertThatThrownBy(() -> sut.parsePayload(null))
                 .isInstanceOf(InvalidTokenException.class);
     }
 
     @Test
-    void parsePayload_형식_잘못된_토큰_예외() {
+    void 페이로드_변환시_형식_잘못된_토큰_예외가_발생한다() {
+        // when // then
         assertThatThrownBy(() -> sut.parsePayload("this.is.not.jwt"))
                 .isInstanceOf(InvalidTokenException.class);
+    }
+
+    private Claims createClaims(Long memberId, String name, String email, Instant iat, Instant exp) {
+        return Jwts.claims()
+                .subject(memberId.toString())
+                .add("name", name)
+                .add("email", email)
+                .issuedAt(Date.from(iat))
+                .expiration(Date.from(exp))
+                .build();
     }
 }
