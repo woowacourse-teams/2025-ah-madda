@@ -1,8 +1,9 @@
 package com.ahmadda.infra;
 
+import com.ahmadda.domain.Member;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.infra.config.JwtTokenProperties;
-import com.ahmadda.presentation.dto.LoginMember;
+import com.ahmadda.infra.dto.JwtPayload;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -20,12 +21,15 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private static final String NAME_ID_KEY = "name";
+    private static final String EMAIL_ID_KEY = "email";
 
     private final JwtTokenProperties jwtTokenProperties;
 
-    public String createToken(Claims claims, Duration duration) {
+    public String createToken(final Member member, final Duration duration) {
         Instant now = Instant.now();
         Instant expire = now.plus(duration);
+
+        Claims claims = createAccessTokenClaims(member);
 
         return Jwts.builder()
                 .subject(claims.getSubject())
@@ -36,17 +40,22 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public LoginMember extractLoginMember(final String token) {
-        try {
-            Claims claims = parseClaims(token);
+    private Claims createAccessTokenClaims(final Member member) {
+        Long memberId = member.getId();
 
-            String memberId = claims.getSubject();
-            String name = claims.get(NAME_ID_KEY, String.class);
+        return Jwts.claims()
+                .subject(memberId.toString())
+                .build();
+    }
 
-            return new LoginMember(Long.parseLong(memberId), name);
-        } catch (NumberFormatException e) {
-            throw new BusinessRuleViolatedException("memberId가 올바르지 않습니다.");
-        }
+    public JwtPayload parsePayload(final String token) {
+        Claims claims = parseClaims(token);
+
+        long memberId = Long.parseLong(claims.getSubject());
+        String name = claims.get(NAME_ID_KEY, String.class);
+        String email = claims.get(EMAIL_ID_KEY, String.class);
+
+        return new JwtPayload(memberId, name, email);
     }
 
     private Claims parseClaims(final String token) {

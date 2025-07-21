@@ -2,6 +2,7 @@ package com.ahmadda.presentation.resolver;
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.infra.JwtTokenProvider;
+import com.ahmadda.infra.dto.JwtPayload;
 import com.ahmadda.presentation.dto.LoginMember;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,8 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
         return parameter.hasParameterAnnotation(AuthMember.class) &&
-                parameter.getParameterType().equals(LoginMember.class);
+                parameter.getParameterType()
+                        .equals(LoginMember.class);
     }
 
     @Override
@@ -37,12 +39,15 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
         String accessToken = extractAccessToken(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
 
-        return jwtTokenProvider.extractLoginMember(accessToken);
+        JwtPayload jwtPayload = jwtTokenProvider.parsePayload(accessToken);
+
+        return new LoginMember(jwtPayload.memberId(), jwtPayload.name(), jwtPayload.email());
     }
 
     private String extractAccessToken(final String header) {
         if (header != null && header.startsWith(BEARER_TYPE)) {
-            return header.substring(BEARER_TYPE.length()).trim();
+            return header.substring(BEARER_TYPE.length())
+                    .trim();
         }
         throw new BusinessRuleViolatedException("accessToken이 옳바르지 않습니다.");
     }
