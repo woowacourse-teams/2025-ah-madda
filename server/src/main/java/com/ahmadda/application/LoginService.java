@@ -1,10 +1,10 @@
 package com.ahmadda.application;
 
-import com.ahmadda.application.config.TokenPolicyProperties;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.infra.GoogleOAuthProvider;
 import com.ahmadda.infra.JwtTokenProvider;
+import com.ahmadda.infra.config.TokenPolicyProperties;
 import com.ahmadda.infra.dto.OAuthUserInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -19,7 +19,6 @@ public class LoginService {
     private final MemberRepository memberRepository;
     private final GoogleOAuthProvider googleOAuthProvider;
     private final JwtTokenProvider jwtTokenProvider;
-    private final TokenPolicyProperties tokenPolicyProperties;
 
     @Transactional
     public String login(final String code) {
@@ -27,7 +26,7 @@ public class LoginService {
 
         Member member = findOrCreateMember(userInfo.name(), userInfo.email());
 
-        return jwtTokenProvider.createToken(member, tokenPolicyProperties.getAccessExpiration());
+        return jwtTokenProvider.createToken(member);
     }
 
     private Member findOrCreateMember(final String name, final String email) {

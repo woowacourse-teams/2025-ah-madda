@@ -11,8 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -44,7 +42,7 @@ class LoginServiceTest {
         given(googleOAuthProvider.getUserInfo(code))
                 .willReturn(new OAuthUserInfoResponse(email, name));
 
-        given(jwtTokenProvider.createToken(any(Member.class), any(Duration.class)))
+        given(jwtTokenProvider.createToken(any(Member.class)))
                 .willReturn(accessToken);
 
         // when
@@ -65,7 +63,7 @@ class LoginServiceTest {
         given(googleOAuthProvider.getUserInfo(code))
                 .willReturn(new OAuthUserInfoResponse(email, name));
 
-        given(jwtTokenProvider.createToken(any(Member.class), any(Duration.class)))
+        given(jwtTokenProvider.createToken(any(Member.class)))
                 .willReturn(accessToken);
 
         Member member = Member.create(name, email);

@@ -1,4 +1,4 @@
-package com.ahmadda.application.config;
+package com.ahmadda.infra.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
