@@ -1,4 +1,6 @@
 import { Flex } from '../../../shared/components/Flex';
+import { Header } from '../../../shared/components/Header';
+import { IconButton } from '../../../shared/components/IconButton';
 import { Text } from '../../../shared/components/Text';
 import { DescriptionCard } from '../components/DescriptionCard';
 import { EventHeader } from '../components/EventHeader';
@@ -43,45 +45,58 @@ export const EventDetail = () => {
   }
 
   return (
-    <Flex
-      dir="column"
-      width="100%"
-      css={{
-        maxWidth: '784px',
-        width: '100%',
-        margin: '0 auto',
-        padding: '28px 14px',
-        gap: '24px',
-        boxSizing: 'border-box',
-      }}
-    >
-      <EventHeader title={event.title} author={event.author} />
-      <Flex
+    <>
+      <Header
+        left={
+          <Flex alignItems="center" gap="12px">
+            <IconButton name="back" size={14} />
+            <Text type="caption">돌아가기</Text>
+          </Flex>
+        }
         css={{
-          display: 'flex',
-          flexDirection: 'row',
-          gap: '24px',
+          backgroundColor: 'white',
+        }}
+      />
+      <Flex
+        dir="column"
+        width="100%"
+        css={{
+          maxWidth: '784px',
           width: '100%',
-          '@media (max-width: 768px)': {
-            flexDirection: 'column',
-          },
+          margin: '0 auto',
+          padding: '28px 14px',
+          gap: '24px',
+          boxSizing: 'border-box',
         }}
       >
-        <TimeInfoCard
-          deadlineTime={event.deadlineTime}
-          startTime={event.startTime}
-          endTime={event.endTime}
-        />
-        <LocationCard location={event.location} />
-      </Flex>
+        <EventHeader title={event.title} author={event.author} />
+        <Flex
+          css={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: '24px',
+            width: '100%',
+            '@media (max-width: 768px)': {
+              flexDirection: 'column',
+            },
+          }}
+        >
+          <TimeInfoCard
+            deadlineTime={event.deadlineTime}
+            startTime={event.startTime}
+            endTime={event.endTime}
+          />
+          <LocationCard location={event.location} />
+        </Flex>
 
-      <ParticipantsCard
-        currentParticipants={event.currentParticipants}
-        maxParticipants={event.maxParticipants}
-      />
-      <DescriptionCard description={event.description} />
-      <PreQuestionCard preQuestions={event.preQuestions} />
-      <SubmitButtonCard />
-    </Flex>
+        <ParticipantsCard
+          currentParticipants={event.currentParticipants}
+          maxParticipants={event.maxParticipants}
+        />
+        <DescriptionCard description={event.description} />
+        <PreQuestionCard preQuestions={event.preQuestions} />
+        <SubmitButtonCard />
+      </Flex>
+    </>
   );
 };
