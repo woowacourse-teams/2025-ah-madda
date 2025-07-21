@@ -3,8 +3,7 @@ import { Text } from '@/shared/components/Text';
 
 import { Guest } from '../types';
 
-import { GuestItem } from './GuestItem';
-import { type GuestVariant } from './GuestItem.styled';
+import { GuestItem, type GuestVariant } from './GuestItem';
 
 type GuestListProps = {
   title: string;
@@ -22,13 +21,8 @@ export const GuestList = ({ title, titleColor, guests, variant, onGuestClick }: 
       </Text>
 
       <Flex dir="column" gap="12px">
-        {guests.map((guest) => (
-          <GuestItem
-            key={crypto.randomUUID()}
-            guest={guest}
-            onClick={onGuestClick}
-            variant={variant}
-          />
+        {guests.map((guest, index) => (
+          <GuestItem key={index} guest={guest} onClick={onGuestClick} variant={variant} />
         ))}
       </Flex>
     </Flex>
