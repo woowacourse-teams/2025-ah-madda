@@ -5,7 +5,7 @@ export const groupEventsByDate = (events: Event[]) => {
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  const groups: { [key: string]: Event[] } = {
+  const groups: Record<string, Event[]> = {
     오늘: [],
     내일: [],
   };
