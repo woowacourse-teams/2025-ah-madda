@@ -1,9 +1,9 @@
 package com.ahmadda.presentation.resolver;
 
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.infra.JwtTokenProvider;
 import com.ahmadda.infra.dto.JwtPayload;
 import com.ahmadda.presentation.dto.LoginMember;
+import com.ahmadda.presentation.exception.InvalidAuthorizationException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -49,6 +49,6 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
             return header.substring(BEARER_TYPE.length())
                     .trim();
         }
-        throw new BusinessRuleViolatedException("accessToken이 옳바르지 않습니다.");
+        throw new InvalidAuthorizationException("유효하지 않은 인증 정보 입니다.");
     }
 }

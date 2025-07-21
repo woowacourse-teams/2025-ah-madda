@@ -1,9 +1,9 @@
 package com.ahmadda.infra;
 
 import com.ahmadda.domain.Member;
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.infra.config.JwtTokenProperties;
 import com.ahmadda.infra.dto.JwtPayload;
+import com.ahmadda.infra.exception.InvalidTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -66,7 +66,7 @@ public class JwtTokenProvider {
                     .parseSignedClaims(token)
                     .getPayload();
         } catch (ExpiredJwtException e) {
-            throw new BusinessRuleViolatedException("유효하지 않은 토큰입니다.");
+            throw new InvalidTokenException("유효하지 않은 인증정보 입니다.");
         }
     }
 }
