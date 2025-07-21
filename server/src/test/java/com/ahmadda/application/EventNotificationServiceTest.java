@@ -1,5 +1,6 @@
 package com.ahmadda.application;
 
+import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @ExtendWith(OutputCaptureExtension.class)
@@ -110,6 +112,14 @@ class EventNotificationServiceTest {
                     .contains("Content: " + emailContent);
         });
     }
+
+    @Test
+    void 존재하지_않는_이벤트로_메일_전송시_예외가_발생한다() {
+        assertThatThrownBy(() -> sut.notifyNonGuestOrganizationMembers(999L, "이메일 내용입니다."))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 이벤트입니다.");
+    }
+
 
     private OrganizationMember createAndSaveOrganizationMember(
             String nickname,
