@@ -7,7 +7,7 @@ import type { EventDetail } from '../types/index';
 
 type EventHeaderProps = Pick<EventDetail, 'title' | 'author'>;
 
-export const EventHeader = ({ title, author }: EventHeaderProps) => (
+export const EventDetailTitle = ({ title, author }: EventHeaderProps) => (
   <Flex dir="column" gap="12px">
     <Text
       type="Title"

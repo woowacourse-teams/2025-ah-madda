@@ -6,7 +6,7 @@ import { IconButton } from '../../../shared/components/IconButton';
 import { PageLayout } from '../../../shared/components/PageLayout';
 import { Text } from '../../../shared/components/Text';
 import { DescriptionCard } from '../components/DescriptionCard';
-import { EventHeader } from '../components/EventHeader';
+import { EventDetailTitle } from '../components/EventDetailTitle';
 import { LocationCard } from '../components/LocationCard';
 import { ParticipantsCard } from '../components/ParticipantsCard';
 import { PreQuestionCard } from '../components/PreQuestionCard';
@@ -74,7 +74,7 @@ export const EventDetail = () => {
           box-sizing: border-box;
         `}
       >
-        <EventHeader title={event.title} author={event.author} />
+        <EventDetailTitle title={event.title} author={event.author} />
         <Flex
           dir="row"
           gap="24px"
