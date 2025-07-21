@@ -49,7 +49,7 @@ export const EventCreateForm = () => {
                 flex: 1;
               `}
             >
-              <Input id="startTime" label="시작 시간" placeholder="-- --:--" />
+              <Input id="startTime" label="시작 시간" placeholder="13:00" />
             </Flex>
             <Flex
               dir="column"
@@ -57,7 +57,7 @@ export const EventCreateForm = () => {
                 flex: 1;
               `}
             >
-              <Input id="endTime" label="종료 시간" placeholder="-- --:--" />
+              <Input id="endTime" label="종료 시간" placeholder="15:00" />
             </Flex>
           </Flex>
 
