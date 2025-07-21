@@ -8,6 +8,8 @@ spring:
   config:
     import:
       - security/smtp.yml
+      - security/oauth.yml
+      - security/jwt.yml
 
   application:
     name: ah-madda
@@ -24,3 +26,13 @@ spring:
           timeout: 1000
           starttls:
             enable: true
+
+oauth:
+  google:
+    client-id: ${oauth.google.client-id}
+    client-secret: ${oauth.google.client-secret}
+    redirect-uri: ${oauth.google.redirect-uri}
+    token-uri: ${oauth.google.token-uri}
+    user-uri: ${oauth.google.user-uri}
+    connect-timeout: 3000
+    read-timeout: 5000

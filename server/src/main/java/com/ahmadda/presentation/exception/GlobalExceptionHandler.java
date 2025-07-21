@@ -3,6 +3,7 @@ package com.ahmadda.presentation.exception;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import com.ahmadda.infra.jwt.exception.InvalidTokenException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
@@ -50,6 +51,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemDetail body = super.createProblemDetail(ex, HttpStatus.NOT_FOUND, ex.getMessage(), null, null, request);
 
         return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler({InvalidTokenException.class, InvalidAuthorizationException.class})
+    public ResponseEntity<Object> handleInvalidToken(final Exception ex, final WebRequest request) {
+        ProblemDetail body =
+                super.createProblemDetail(ex, HttpStatus.UNAUTHORIZED, ex.getMessage(), null, null, request);
+
+        return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
     }
 
     @Override
