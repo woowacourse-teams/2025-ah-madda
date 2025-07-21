@@ -32,7 +32,6 @@ export const CreateEvent = () => {
         gap="24px"
         css={css`
           max-width: 784px;
-          box-sizing: border-box;
         `}
       >
         <EventCreateForm />
