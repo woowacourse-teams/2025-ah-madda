@@ -71,7 +71,6 @@ export const EventDetail = () => {
         gap="24px"
         css={css`
           max-width: 784px;
-          box-sizing: border-box;
         `}
       >
         <EventDetailTitle title={event.title} author={event.author} />
