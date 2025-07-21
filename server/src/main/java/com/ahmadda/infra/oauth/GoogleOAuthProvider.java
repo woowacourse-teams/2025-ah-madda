@@ -2,6 +2,7 @@ package com.ahmadda.infra.oauth;
 
 
 import com.ahmadda.infra.jwt.exception.InvalidTokenException;
+import com.ahmadda.infra.oauth.config.GoogleOAuthProperties;
 import com.ahmadda.infra.oauth.dto.GoogleAccessTokenResponse;
 import com.ahmadda.infra.oauth.dto.OAuthUserInfoResponse;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

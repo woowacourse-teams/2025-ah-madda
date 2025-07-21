@@ -1,4 +1,4 @@
-package com.ahmadda.infra.oauth;
+package com.ahmadda.infra.oauth.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
