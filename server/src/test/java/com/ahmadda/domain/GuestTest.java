@@ -1,10 +1,13 @@
 package com.ahmadda.domain;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDateTime;
+import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class GuestTest {
 
@@ -22,8 +25,8 @@ class GuestTest {
         event = Event.create(
                 "테스트 이벤트", "설명", "장소", organizer, organization,
                 EventOperationPeriod.create(
-                        new Period(now.plusDays(1), now.plusDays(5)),
-                        new Period(now.plusDays(10), now.plusDays(11)),
+                        Period.create(now.plusDays(1), now.plusDays(5)),
+                        Period.create(now.plusDays(10), now.plusDays(11)),
                         now
                 ),
                 50
@@ -37,10 +40,10 @@ class GuestTest {
     @Test
     void 동일한_참가자인지_확인한다() {
         // given
-        var guest = Guest.create(event, participant);
+        var guest = Guest.create(event, participant, event.getRegistrationStart());
 
         // when
-        var isSame = guest.isSameParticipant(participant);
+        var isSame = guest.isSameOrganizationMember(participant);
 
         // then
         assertThat(isSame).isTrue();
@@ -49,12 +52,109 @@ class GuestTest {
     @Test
     void 다른_참가자인지_확인한다() {
         // given
-        var guest = Guest.create(event, participant);
+        var guest = Guest.create(event, participant, event.getRegistrationStart());
 
         // when
-        var isSame = guest.isSameParticipant(otherParticipant);
+        var isSame = guest.isSameOrganizationMember(otherParticipant);
 
         // then
         assertThat(isSame).isFalse();
+    }
+
+    @Test
+    void 게스트를_생성하면_이벤트에_참여된다() {
+        //when
+        var guest = Guest.create(event, participant, event.getRegistrationStart());
+
+        //then
+        assertThat(event.getGuests()
+                .contains(guest)).isTrue();
+    }
+
+    @Test
+    void 같은_조직이_아닌_이벤트의_조직원이_참여한다면_예외가_발생한다() {
+        //given
+        var organization1 = Organization.create("테스트 조직1", "조직 설명", "image.png");
+        var organization2 = Organization.create("테스트 조직2", "조직 설명", "image.png");
+
+        var organizationMember1 = OrganizationMember.create("테스트 닉네임", member, organization1);
+        var organizationMember2 = OrganizationMember.create("테스트 닉네임", member, organization2);
+
+        var now = LocalDateTime.now();
+        var event = Event.create(
+                "테스트 이벤트", "설명", "장소", organizationMember1, organization1,
+                EventOperationPeriod.create(
+                        Period.create(now.plusDays(1), now.plusDays(5)),
+                        Period.create(now.plusDays(10), now.plusDays(11)),
+                        now
+                ),
+                50
+        );
+
+        //when //then
+        assertThatThrownBy(() -> Guest.create(event, organizationMember2, event.getRegistrationStart()))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("같은 조직의 이벤트에만 게스트로 참여가능합니다.");
+    }
+
+    @Test
+    void 이벤트의_주최자가_게스트가_된다면_예외가_발생한다() {
+        //given
+        var organization = Organization.create("테스트 조직1", "조직 설명", "image.png");
+        var organizationMember = OrganizationMember.create("테스트 닉네임", member, organization);
+
+        var now = LocalDateTime.now();
+        var event = Event.create(
+                "테스트 이벤트", "설명", "장소", organizationMember, organization,
+                EventOperationPeriod.create(
+                        Period.create(now.plusDays(1), now.plusDays(5)),
+                        Period.create(now.plusDays(10), now.plusDays(11)),
+                        now
+                ),
+                50
+        );
+
+        //when //then
+        assertThatThrownBy(() -> Guest.create(event, organizationMember, event.getRegistrationStart()))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("이벤트의 주최자는 게스트로 참여할 수 없습니다.");
+    }
+
+    @Test
+    void 이벤트_수용인원이_가득찼다면_게스트를_생성할_경우_예외가_발생한다() {
+        //given
+        var organization = Organization.create("테스트 조직1", "조직 설명", "image.png");
+        var organizationMember1 = OrganizationMember.create("테스트 닉네임1", member, organization);
+        var organizationMember2 = OrganizationMember.create("테스트 닉네임2", member, organization);
+        var organizationMember3 = OrganizationMember.create("테스트 닉네임3", member, organization);
+
+        var now = LocalDateTime.now();
+        var event = Event.create(
+                "테스트 이벤트", "설명", "장소", organizationMember1, organization,
+                EventOperationPeriod.create(
+                        Period.create(now.plusDays(1), now.plusDays(5)),
+                        Period.create(now.plusDays(10), now.plusDays(11)),
+                        now
+                ),
+                1
+        );
+        Guest.create(event, organizationMember2, event.getRegistrationStart());
+
+        //when //then
+        assertThatThrownBy(() -> Guest.create(event, organizationMember3, event.getRegistrationStart()))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("수용 인원이 가득차 이벤트에 참여할 수 없습니다.");
+    }
+
+    @Test
+    void 이벤트_신청_기간이_아니라면_게스트_생성시_예외가_발생한다() {
+        assertThatThrownBy(() -> Guest.create(
+                event,
+                participant,
+                event.getRegistrationStart()
+                        .minusDays(1)
+        ))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("이벤트 신청 기간이 아닙니다.");
     }
 }

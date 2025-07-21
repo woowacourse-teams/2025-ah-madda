@@ -49,8 +49,8 @@ public class EventService {
 
     private EventOperationPeriod createEventOperationPeriod(final EventCreateRequest eventCreateRequest) {
         Period registrationPeriod =
-                new Period(eventCreateRequest.registrationStart(), eventCreateRequest.registrationEnd());
-        Period eventPeriod = new Period(eventCreateRequest.eventStart(), eventCreateRequest.eventEnd());
+                Period.create(eventCreateRequest.registrationStart(), eventCreateRequest.registrationEnd());
+        Period eventPeriod = Period.create(eventCreateRequest.eventStart(), eventCreateRequest.eventEnd());
 
         return EventOperationPeriod.create(
                 registrationPeriod,

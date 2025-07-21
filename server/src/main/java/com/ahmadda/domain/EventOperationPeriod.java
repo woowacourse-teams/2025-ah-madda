@@ -34,7 +34,13 @@ public class EventOperationPeriod {
     })
     private Period eventPeriod;
 
-    private EventOperationPeriod(final Period registrationPeriod, final Period eventPeriod) {
+    private EventOperationPeriod(
+            final Period registrationPeriod,
+            final Period eventPeriod,
+            final LocalDateTime currentDateTime
+    ) {
+        validateRegistrationPeriod(registrationPeriod, currentDateTime);
+        validateEventPeriod(eventPeriod, currentDateTime);
         validate(registrationPeriod, eventPeriod);
 
         this.registrationPeriod = registrationPeriod;
@@ -46,36 +52,39 @@ public class EventOperationPeriod {
             final Period eventPeriod,
             final LocalDateTime currentDateTime
     ) {
-        validateRegistrationPeriod(registrationPeriod, currentDateTime);
-        validateEventPeriod(eventPeriod, currentDateTime);
-
-        return new EventOperationPeriod(registrationPeriod, eventPeriod);
+        return new EventOperationPeriod(registrationPeriod, eventPeriod, currentDateTime);
     }
 
-    public boolean isNotStarted(LocalDateTime currentDateTime) {
+    public boolean isNotStarted(final LocalDateTime currentDateTime) {
         return eventPeriod.isNotStarted(currentDateTime);
     }
 
-    private static void validateRegistrationPeriod(final Period registrationPeriod, final LocalDateTime currentDateTime) {
+    public boolean canNotRegistration(final LocalDateTime currentDateTime) {
+        return !registrationPeriod.includes(currentDateTime);
+    }
+
+    private void validateRegistrationPeriod(
+            final Period registrationPeriod,
+            final LocalDateTime currentDateTime
+    ) {
         Assert.notNull(registrationPeriod, "이벤트 신청 기간은 null이 되면 안됩니다.");
 
-        if (registrationPeriod.start().isBefore(currentDateTime)) {
+        if (registrationPeriod.start()
+                .isBefore(currentDateTime)) {
             throw new BusinessRuleViolatedException("이벤트 신청 시작 시간은 현재 시점보다 미래여야 합니다.");
         }
     }
 
-    private static void validateEventPeriod(final Period eventPeriod, final LocalDateTime currentDateTime) {
+    private void validateEventPeriod(final Period eventPeriod, final LocalDateTime currentDateTime) {
         Assert.notNull(eventPeriod, "이벤트 기간은 null이 되면 안됩니다.");
 
-        if (eventPeriod.start().isBefore(currentDateTime)) {
+        if (eventPeriod.start()
+                .isBefore(currentDateTime)) {
             throw new BusinessRuleViolatedException("이벤트 시작 시간은 현재 시점보다 미래여야 합니다.");
         }
     }
 
     private void validate(final Period registrationPeriod, final Period eventPeriod) {
-        Assert.notNull(registrationPeriod, "이벤트 신청 기간은 null이 되면 안됩니다.");
-        Assert.notNull(eventPeriod, "이벤트 기간은 null이 되면 안됩니다.");
-
         if (registrationPeriod.isOverlappedWith(eventPeriod)) {
             throw new BusinessRuleViolatedException("등록 기간과 이벤트 기간이 겹칠 수 없습니다.");
         }

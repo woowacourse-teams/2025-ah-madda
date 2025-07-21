@@ -1,11 +1,12 @@
 package com.ahmadda.domain;
 
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class OrganizationTest {
 
@@ -32,8 +33,10 @@ class OrganizationTest {
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(activeEvents).hasSize(2);
-            softly.assertThat(activeEvents).extracting(Event::getTitle)
+            softly.assertThat(activeEvents)
+                    .hasSize(2);
+            softly.assertThat(activeEvents)
+                    .extracting(Event::getTitle)
                     .containsExactlyInAnyOrder("활성 이벤트 1", "활성 이벤트 2");
         });
     }
@@ -42,8 +45,8 @@ class OrganizationTest {
         return Event.create(
                 title, "설명", "장소", organizer, sut,
                 EventOperationPeriod.create(
-                        new Period(start.minusDays(5), start.minusDays(1)),
-                        new Period(start, end),
+                        Period.create(start.minusDays(5), start.minusDays(1)),
+                        Period.create(start, end),
                         start.minusDays(6)
                 ),
                 50

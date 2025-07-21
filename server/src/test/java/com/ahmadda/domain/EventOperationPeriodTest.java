@@ -16,11 +16,11 @@ class EventOperationPeriodTest {
     void 정상적인_이벤트_운영_기간을_생성한다() {
         // given
         var currentTime = LocalDateTime.of(2025, 7, 16, 8, 0);
-        var registrationPeriod = new Period(
+        var registrationPeriod = Period.create(
                 currentTime.plusDays(1),
                 currentTime.plusDays(5)
         );
-        var eventPeriod = new Period(
+        var eventPeriod = Period.create(
                 currentTime.plusDays(6),
                 currentTime.plusDays(7)
         );
@@ -33,11 +33,11 @@ class EventOperationPeriodTest {
     @Test
     void 이벤트_시작_시간이_이벤트_생성_요청_시점보다_과거라면_예외가_발생한다() {
         //given
-        var eventRegistrationPeriod = new Period(
+        var eventRegistrationPeriod = Period.create(
                 LocalDateTime.of(2025, 7, 16, 8, 0),
                 LocalDateTime.of(2025, 7, 16, 8, 30)
         );
-        var eventPeriod = new Period(
+        var eventPeriod = Period.create(
                 LocalDateTime.of(2025, 7, 16, 9, 0),
                 LocalDateTime.of(2025, 7, 16, 14, 0)
         );
@@ -52,11 +52,11 @@ class EventOperationPeriodTest {
     @Test
     void 이벤트_신청_시작_시간이_이벤트_생성_요청_시점보다_과거인_경우_예외가_발생한다() {
         //given
-        var eventRegistrationPeriod = new Period(
+        var eventRegistrationPeriod = Period.create(
                 LocalDateTime.of(2025, 7, 16, 7, 59),
                 LocalDateTime.of(2025, 7, 16, 8, 30)
         );
-        var eventPeriod = new Period(
+        var eventPeriod = Period.create(
                 LocalDateTime.of(2025, 7, 16, 8, 30),
                 LocalDateTime.of(2025, 7, 16, 14, 0)
         );
@@ -72,11 +72,11 @@ class EventOperationPeriodTest {
     @CsvSource({"2025-07-16T08:30", "2025-07-16T08:31"})
     void 이벤트_신청_시작_시간이_이벤트_시작_시간보다_과거가_아닌_경우_예외가_발생한다(LocalDateTime registrationStart) {
         //given
-        var eventRegistrationPeriod = new Period(
+        var eventRegistrationPeriod = Period.create(
                 registrationStart,
                 LocalDateTime.of(2025, 7, 16, 8, 50)
         );
-        var eventPeriod = new Period(
+        var eventPeriod = Period.create(
                 LocalDateTime.of(2025, 7, 16, 8, 30),
                 LocalDateTime.of(2025, 7, 16, 14, 0)
         );
@@ -92,11 +92,11 @@ class EventOperationPeriodTest {
     @CsvSource({"2025-07-16T08:30", "2025-07-16T08:31"})
     void 이벤트_신청_마감_시간이_이벤트_시작_시간보다_미래라면_예외가_발생한다(LocalDateTime registrationEnd) {
         //given
-        var eventRegistrationPeriod = new Period(
+        var eventRegistrationPeriod = Period.create(
                 LocalDateTime.of(2025, 7, 16, 8, 0),
                 registrationEnd
         );
-        var eventPeriod = new Period(
+        var eventPeriod = Period.create(
                 LocalDateTime.of(2025, 7, 16, 8, 30),
                 LocalDateTime.of(2025, 7, 16, 14, 0)
         );
