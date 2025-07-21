@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 
+import { STATUS_MESSAGES } from '../constants';
 import { useEvents } from '../hooks/useEvents';
 
 type MyEventContainerProps = {
@@ -16,7 +17,7 @@ export const MyEventContainer = ({ children }: MyEventContainerProps) => {
     return (
       <Flex dir="column" justifyContent="center" alignItems="center">
         <Text type="Body" weight="regular" color="#666">
-          이벤트를 불러오는 중...
+          {STATUS_MESSAGES.LOADING_EVENTS}
         </Text>
       </Flex>
     );

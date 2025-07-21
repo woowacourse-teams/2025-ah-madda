@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 
+import { STATUS_MESSAGES } from '../constants';
 import type { EventsResponse } from '../types';
 
 const mockEvents: EventsResponse = {
@@ -108,7 +109,7 @@ export const useEvents = () => {
         const data = await fetchEvents();
         setEvents(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : '이벤트를 불러오는데 실패했습니다.');
+        setError(err instanceof Error ? err.message : STATUS_MESSAGES.FETCH_ERROR);
       } finally {
         setLoading(false);
       }
