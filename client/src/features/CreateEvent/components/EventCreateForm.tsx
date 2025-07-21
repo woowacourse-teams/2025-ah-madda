@@ -18,7 +18,7 @@ export const EventCreateForm = () => {
 
       <Card>
         <Text type="caption">기본 질문</Text>
-        <Flex dir="column" gap="24px">
+        <Flex dir="column" gap="8px">
           <Flex dir="column">
             <Input id="title" label="이벤트 이름" placeholder="이벤트 이름을 입력해 주세요" />
           </Flex>
