@@ -1,5 +1,5 @@
-import { Event } from './features/Event';
+import { Outlet } from 'react-router-dom';
 
 export const App = () => {
-  return <Event />;
+  return <Outlet />;
 };
