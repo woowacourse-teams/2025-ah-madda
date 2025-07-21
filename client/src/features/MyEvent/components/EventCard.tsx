@@ -1,3 +1,5 @@
+import styled from '@emotion/styled';
+
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { ProgressBar } from '@/shared/components/ProgressBar';
@@ -17,16 +19,7 @@ export const EventCard = ({
   maxParticipants,
 }: Event) => {
   return (
-    <Flex
-      dir="column"
-      gap="12px"
-      padding="14px"
-      width="380px"
-      css={{
-        backgroundColor: '#1E2939',
-        borderRadius: '8.75px',
-      }}
-    >
+    <EventCardWrapper>
       <Flex dir="column" gap="3.5px">
         <Text type="Title" weight="semibold" color="white">
           {title}
@@ -71,6 +64,23 @@ export const EventCard = ({
           {`${currentParticipants}/${maxParticipants}명 참여`}
         </Text>
       </Flex>
-    </Flex>
+    </EventCardWrapper>
   );
 };
+
+const EventCardWrapper = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  width: 100%;
+  min-width: 300px;
+  max-width: 400px;
+  background-color: #1e2939;
+  border-radius: 8.75px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #2e3b4d;
+  }
+`;
