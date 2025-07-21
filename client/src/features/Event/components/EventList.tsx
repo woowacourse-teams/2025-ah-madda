@@ -31,13 +31,13 @@ export const EventList = () => {
 export const EventGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem; /* gap-6 */
+  gap: 1.5rem;
 
   @media (min-width: 768px) {
-    grid-template-columns: repeat(2, 1fr); /* md:grid-cols-2 */
+    grid-template-columns: repeat(2, 1fr);
   }
 
   @media (min-width: 1024px) {
-    grid-template-columns: repeat(3, 1fr); /* lg:grid-cols-3 */
+    grid-template-columns: repeat(3, 1fr);
   }
 `;
