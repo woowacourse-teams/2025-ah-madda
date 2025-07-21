@@ -67,9 +67,6 @@ public class Guest extends BaseEntity {
     }
 
     private void validateSameOrganization(final Event event, final OrganizationMember organizationMember) {
-        Assert.notNull(event, "이벤트는 null이 되면 안됩니다.");
-        Assert.notNull(organizationMember, "참여자는 null이 되면 안됩니다.");
-
         if (!organizationMember.isBelongTo(event.getOrganization())) {
             throw new BusinessRuleViolatedException("같은 조직의 이벤트에만 게스트로 참여가능합니다.");
         }

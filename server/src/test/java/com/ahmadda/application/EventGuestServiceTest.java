@@ -13,14 +13,12 @@ import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Period;
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -46,9 +44,6 @@ class EventGuestServiceTest {
 
     @Autowired
     private GuestRepository guestRepository;
-
-    @Autowired
-    private EntityManager entityManager;
 
     @Test
     void 이벤트에_참여한_게스트들을_조회한다() {
@@ -120,23 +115,23 @@ class EventGuestServiceTest {
     @Test
     void 조직원은_이벤트의_게스트로_참여할_수_있다() {
         //given
-        Organization organization = createAndSaveOrganization();
-        Member member = createAndSaveMember("name", "email@ahmadda.com");
-        OrganizationMember organizationMember1 = createAndSaveOrganizationMember("surf1", member, organization);
-        OrganizationMember organizationMember2 = createAndSaveOrganizationMember("surf2", member, organization);
-        Event event = createAndSaveEvent(organizationMember1, organization);
+        var organization = createAndSaveOrganization();
+        var member = createAndSaveMember("name", "email@ahmadda.com");
+        var organizationMember1 = createAndSaveOrganizationMember("surf1", member, organization);
+        var organizationMember2 = createAndSaveOrganizationMember("surf2", member, organization);
+        var event = createAndSaveEvent(organizationMember1, organization);
 
         //when
         sut.participantEvent(event.getId(), organizationMember2.getId(), event.getRegistrationStart());
 
         //then
-        List<Guest> guests = guestRepository.findAll();
+        var guests = guestRepository.findAll();
 
         assertSoftly(softly -> {
             softly.assertThat(guests)
                     .hasSize(1);
 
-            Guest guest = guests.getFirst();
+            var guest = guests.getFirst();
             softly.assertThat(guest.getEvent())
                     .isEqualTo(event);
             softly.assertThat(guest.getOrganizationMember())

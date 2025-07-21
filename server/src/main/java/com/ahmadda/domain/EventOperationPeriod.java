@@ -52,11 +52,11 @@ public class EventOperationPeriod {
         return new EventOperationPeriod(registrationPeriod, eventPeriod);
     }
 
-    public boolean isNotStarted(LocalDateTime currentDateTime) {
+    public boolean isNotStarted(final LocalDateTime currentDateTime) {
         return eventPeriod.isNotStarted(currentDateTime);
     }
 
-    public boolean canNotRegistration(LocalDateTime currentDateTime) {
+    public boolean canNotRegistration(final LocalDateTime currentDateTime) {
         return !registrationPeriod.includes(currentDateTime);
     }
 

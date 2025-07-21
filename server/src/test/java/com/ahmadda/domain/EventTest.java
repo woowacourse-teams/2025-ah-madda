@@ -27,8 +27,8 @@ class EventTest {
     @Test
     void 게스트가_이벤트에_참여했는지_알_수_있다() {
         // given
-        LocalDateTime now = LocalDateTime.now();
-        Period registrationPeriod = new Period(
+        var now = LocalDateTime.now();
+        var registrationPeriod = new Period(
                 LocalDateTime.now()
                         .plusDays(1),
                 LocalDateTime.now()
@@ -55,8 +55,8 @@ class EventTest {
     @Test
     void 이벤트에_참여한_게스트들을_조회할_수_있다() {
         // given
-        LocalDateTime now = LocalDateTime.now();
-        Period registrationPeriod = new Period(now.plusDays(1), now.plusDays(2));
+        var now = LocalDateTime.now();
+        var registrationPeriod = new Period(now.plusDays(1), now.plusDays(2));
         var sut = createEvent(now, registrationPeriod);
 
         var guest1 = Guest.create(
@@ -133,8 +133,8 @@ class EventTest {
     @Test
     void 이벤트에_참여하지_않은_조직원을_조회할_수_있다() {
         // given
-        LocalDateTime now = LocalDateTime.now();
-        Period registrationPeriod = new Period(
+        var now = LocalDateTime.now();
+        var registrationPeriod = new Period(
                 LocalDateTime.now()
                         .plusDays(1),
                 LocalDateTime.now()
@@ -162,8 +162,8 @@ class EventTest {
     @Test
     void 이벤트에_참여중인_게스트가_또_참여한다면_예외가_발생한다() {
         //given
-        LocalDateTime now = LocalDateTime.now();
-        Period registrationPeriod = new Period(
+        var now = LocalDateTime.now();
+        var registrationPeriod = new Period(
                 LocalDateTime.now()
                         .plusDays(1),
                 LocalDateTime.now()
