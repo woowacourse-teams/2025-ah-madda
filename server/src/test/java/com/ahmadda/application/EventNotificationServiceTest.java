@@ -2,6 +2,7 @@ package com.ahmadda.application;
 
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.GuestRepository;
@@ -11,6 +12,7 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.domain.Period;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,27 +64,26 @@ class EventNotificationServiceTest {
 
         var organization = organizationRepository.save(Organization.create(organizationName, "설명", "img.png"));
         var organizer = createAndSaveOrganizationMember(organizerNickname, "host@email.com", organization);
+        LocalDateTime now = LocalDateTime.now();
         var event = eventRepository.save(Event.create(
                 eventTitle,
                 "설명",
                 "장소",
                 organizer,
                 organization,
-                LocalDateTime.now()
-                        .minusDays(2),
-                LocalDateTime.now()
-                        .minusDays(1),
-                LocalDateTime.now()
-                        .plusDays(1),
-                LocalDateTime.now()
-                        .plusDays(2),
+                EventOperationPeriod.create(
+                        Period.create(now.minusDays(2), now.minusDays(1)),
+                        Period.create(now.plusDays(1), now.plusDays(2)),
+                        now.minusDays(3)
+                ),
                 100
         ));
 
         var guestEmail = "guest@email.com";
         guestRepository.save(Guest.create(
                 event,
-                createAndSaveOrganizationMember("게스트", guestEmail, organization)
+                createAndSaveOrganizationMember("게스트", guestEmail, organization),
+                event.getRegistrationStart()
         ));
 
         var nonGuest1Email = "ng1@email.com";
