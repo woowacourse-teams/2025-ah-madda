@@ -1,4 +1,4 @@
-package com.ahmadda.infra.exception;
+package com.ahmadda.infra.mail.exception;
 
 public class MailSendFailedException extends RuntimeException {
 

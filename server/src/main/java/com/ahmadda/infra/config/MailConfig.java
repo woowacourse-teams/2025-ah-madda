@@ -1,8 +1,8 @@
 package com.ahmadda.infra.config;
 
 import com.ahmadda.domain.NotificationMailer;
-import com.ahmadda.infra.MockNotificationMailer;
-import com.ahmadda.infra.SmtpNotificationMailer;
+import com.ahmadda.infra.mail.MockNotificationMailer;
+import com.ahmadda.infra.mail.SmtpNotificationMailer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

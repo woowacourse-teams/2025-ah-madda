@@ -1,4 +1,4 @@
-package com.ahmadda.infra;
+package com.ahmadda.infra.mail;
 
 import com.ahmadda.domain.NotificationMailer;
 import lombok.extern.slf4j.Slf4j;

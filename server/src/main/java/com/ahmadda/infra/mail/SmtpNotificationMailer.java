@@ -1,7 +1,7 @@
-package com.ahmadda.infra;
+package com.ahmadda.infra.mail;
 
 import com.ahmadda.domain.NotificationMailer;
-import com.ahmadda.infra.exception.MailSendFailedException;
+import com.ahmadda.infra.mail.exception.MailSendFailedException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
