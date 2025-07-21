@@ -9,3 +9,10 @@ spring:
 logging:
   level:
     org.hibernate.orm.jdbc.bind: trace
+
+api:
+  url: http://localhost:8080
+
+jwt:
+  secret-key: ${jwt.local.secret-key}
+  access-expiration: ${jwt.local.access-expiration}
