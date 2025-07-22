@@ -1,6 +1,12 @@
 FROM amazoncorretto:21
 
-COPY build/libs/*.jar /app.jar
+COPY . .
+
+RUN chmod +x ./gradlew
+
+RUN ./gradlew bootJar
+
+RUN cp $(ls -t build/libs/*.jar | head -n 1) app.jar
 
 ENV TZ=Asia/Seoul
 
