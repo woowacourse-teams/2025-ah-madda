@@ -21,7 +21,7 @@ public class OrganizationMemberController {
 
     @GetMapping("/{organizationId}/profile")
     public ResponseEntity<OrganizationMemberResponse> getOrganizationProfile(
-            @PathVariable Long organizationId,
+            @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember
     ) {
         OrganizationMember organizationMember =
