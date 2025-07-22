@@ -18,7 +18,6 @@ export const EventContainer = ({ children }: Props) => {
       padding="20px"
       css={css`
         background-color: rgba(231, 231, 231, 0.47);
-        border-radius: 10px;
       `}
     >
       {children}
