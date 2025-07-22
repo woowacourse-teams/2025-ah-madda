@@ -5,7 +5,7 @@ import { css } from '@emotion/react';
 import { Flex } from '@/shared/components/Flex';
 import { useModal } from '@/shared/hooks/useModal';
 
-import type { Guest } from '../types/Guest';
+import { Guest } from '../types';
 
 import { AlarmSection } from './AlarmSection';
 import { GuestModal } from './GuestModal';

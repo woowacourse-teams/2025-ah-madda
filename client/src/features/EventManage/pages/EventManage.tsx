@@ -29,7 +29,7 @@ export const EventManage = () => {
     >
       <EventManageContainer>
         <Flex as="main" gap="40px" width="100%" dir="column">
-          <EventInfoSection eventInfo={data.eventInfo} />
+          <EventInfoSection {...data.eventInfo} />
           <GuestManageSection
             completedGuests={data.completedGuests}
             pendingGuests={data.pendingGuests}

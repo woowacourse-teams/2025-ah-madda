@@ -16,7 +16,7 @@ type GuestListProps = {
 export const GuestList = ({ title, titleColor, guests, variant, onGuestClick }: GuestListProps) => {
   return (
     <Flex dir="column" gap="16px">
-      <Text type="Body" weight="medium" color={titleColor}>
+      <Text type="caption" weight="medium" color={titleColor}>
         {title}
       </Text>
 

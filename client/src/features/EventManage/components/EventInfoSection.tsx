@@ -4,27 +4,22 @@ import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { ProgressBar } from '@/shared/components/ProgressBar';
+import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 
 import type { EventInfo } from '../types';
 
-type EventInfoSectionProps = {
-  eventInfo: EventInfo;
-};
-
-export const EventInfoSection = ({ eventInfo }: EventInfoSectionProps) => {
-  const {
-    title,
-    description,
-    organizer,
-    location,
-    deadlineTime,
-    startTime,
-    endTime,
-    currentParticipants,
-    maxParticipants,
-  } = eventInfo;
-
+export const EventInfoSection = ({
+  title,
+  description,
+  organizer,
+  location,
+  deadlineTime,
+  startTime,
+  endTime,
+  currentParticipants,
+  maxParticipants,
+}: EventInfo) => {
   return (
     <Flex
       as="section"
@@ -55,7 +50,7 @@ export const EventInfoSection = ({ eventInfo }: EventInfoSectionProps) => {
             </Text>
           </Flex>
 
-          <Text type="Title" weight="semibold" color="#0A0A0A">
+          <Text type="Body" weight="semibold" color="#0A0A0A">
             {title}
           </Text>
 
@@ -90,6 +85,7 @@ export const EventInfoSection = ({ eventInfo }: EventInfoSectionProps) => {
               {`이벤트 일시: ${startTime} ~ ${endTime}`}
             </Text>
           </Flex>
+          <Spacing height="1px" color="#ECEEF2" />
 
           <Flex dir="column" gap="12px">
             <Flex justifyContent="space-between" alignItems="center">
