@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { css } from '@emotion/react';
+
 import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
@@ -88,19 +90,19 @@ export const GuestManageSection = ({ completedGuests, pendingGuests }: GuestMana
             placeholder="알람 메시지를 입력하세요..."
             value={alarmMessage}
             onChange={(e) => setAlarmMessage(e.target.value)}
-            css={{
-              '& input': {
-                backgroundColor: '#F3F3F5',
-                border: 'none',
-                borderRadius: '6.75px',
-                padding: '8px 12px',
-                fontSize: '12.3px',
-                color: '#717182',
-                '&::placeholder': {
-                  color: '#717182',
-                },
-              },
-            }}
+            css={css`
+              & input {
+                background-color: #f3f3f5;
+                border: none;
+                border-radius: 6.75px;
+                padding: 8px 12px;
+                font-size: 12.3px;
+                color: #717182;
+                &::placeholder {
+                  color: #717182;
+                }
+              }
+            `}
           />
 
           <Button
@@ -109,11 +111,11 @@ export const GuestManageSection = ({ completedGuests, pendingGuests }: GuestMana
             color="#F54900"
             disabled={!alarmMessage.trim()}
             onClick={handleSendAlarm}
-            css={{
-              borderRadius: '6.75px',
-              opacity: alarmMessage.trim() ? 1 : 0.5,
-              cursor: alarmMessage.trim() ? 'pointer' : 'not-allowed',
-            }}
+            css={css`
+              border-radius: 6.75px;
+              opacity: ${alarmMessage.trim() ? 1 : 0.5};
+              cursor: ${alarmMessage.trim() ? 'pointer' : 'not-allowed'};
+            `}
           >
             보내기
           </Button>

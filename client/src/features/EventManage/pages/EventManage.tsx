@@ -1,3 +1,5 @@
+import { css } from '@emotion/react';
+
 import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
 import { IconButton } from '@/shared/components/IconButton';
@@ -18,7 +20,7 @@ export const EventManage = () => {
         <Header
           left={
             <Flex alignItems="center" gap="12px">
-              <IconButton name="back" size={14} />
+              <IconButton name="back" size={14} aria-label="이전 페이지로 돌아가기" />
               <Text as="h1" type="Title" weight="semibold">
                 이벤트 관리
               </Text>
@@ -33,17 +35,17 @@ export const EventManage = () => {
           gap="40px"
           width="100%"
           dir="row"
-          css={{
-            marginTop: '32px',
-            '@media (max-width: 1024px)': {
-              flexDirection: 'column',
-              gap: '32px',
-            },
-            '@media (max-width: 768px)': {
-              gap: '24px',
-              marginTop: '24px',
-            },
-          }}
+          css={css`
+            margin-top: 32px;
+            @media (max-width: 1024px) {
+              flex-direction: column;
+              gap: 32px;
+            }
+            @media (max-width: 768px) {
+              gap: 24px;
+              margin-top: 24px;
+            }
+          `}
         >
           <EventInfoSection eventInfo={data.eventInfo} />
           <GuestManageSection
