@@ -15,6 +15,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -103,10 +104,12 @@ class LoginServiceTest {
                 organizationMemberRepository.findByOrganizationIdAndMemberId(foundOrganization.getId(), member.getId())
                         .orElseThrow();
 
-        assertThat(foundOrganizationMember).isNotNull();
-        assertThat(foundOrganizationMember.getMember()).isEqualTo(member);
-        assertThat(foundOrganizationMember.getOrganization()).isEqualTo(foundOrganization);
-        assertThat(foundOrganization.getOrganizationMembers()).contains(foundOrganizationMember);
+        assertSoftly(softly -> {
+            softly.assertThat(foundOrganizationMember).isNotNull();
+            softly.assertThat(foundOrganizationMember.getMember()).isEqualTo(member);
+            softly.assertThat(foundOrganizationMember.getOrganization()).isEqualTo(foundOrganization);
+            softly.assertThat(foundOrganization.getOrganizationMembers()).contains(foundOrganizationMember);
+        });
     }
 
     @Test
