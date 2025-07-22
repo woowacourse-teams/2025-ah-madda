@@ -18,7 +18,7 @@ export const TimeInfoCard = ({ deadlineTime, startTime, endTime }: TimeInfoCardP
       `}
     >
       <Card>
-        <Flex gap="8px" margin="0 0 16px 0">
+        <Flex gap="8px" margin="0 0 16px 0" alignItems="center">
           <Icon name="clock" size={18} />
           <Text type="caption">시간 정보</Text>
         </Flex>

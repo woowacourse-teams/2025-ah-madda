@@ -23,7 +23,7 @@ export const LocationCard = ({ location }: LocationCardProps) => {
         `}
       >
         <Flex dir="column" gap="16px">
-          <Flex gap="8px">
+          <Flex gap="8px" alignItems="center">
             <Icon name="location" size={18} />
             <Text type="caption">장소</Text>
           </Flex>

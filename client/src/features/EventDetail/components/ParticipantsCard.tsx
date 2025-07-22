@@ -14,7 +14,7 @@ export const ParticipantsCard = ({
   return (
     <Card>
       <Flex dir="column" gap="16px">
-        <Flex gap="8px">
+        <Flex gap="8px" alignItems="center">
           <Icon name="users" size={18} />
           <Text type="caption">참여 현황</Text>
         </Flex>
