@@ -153,6 +153,11 @@ public class Event extends BaseEntity {
     public void addQuestions(final Question... question) {
         questions.addAll(List.of(question));
     }
+  
+    public boolean isOrganizer(final Member member) {
+        return organizer.getMember()
+                .equals(member);
+    }
 
     private void validateParticipate(final Guest guest, final LocalDateTime participantDateTime) {
         if (eventOperationPeriod.canNotRegistration(participantDateTime)) {
