@@ -2,6 +2,7 @@ package com.ahmadda.application;
 
 import com.ahmadda.application.dto.AnswerCreateRequest;
 import com.ahmadda.application.dto.EventParticipateRequest;
+import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Answer;
@@ -20,7 +21,6 @@ import com.ahmadda.domain.Period;
 import com.ahmadda.domain.Question;
 import com.ahmadda.domain.QuestionRepository;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
-import com.ahmadda.presentation.dto.LoginMember;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -319,11 +319,11 @@ class EventGuestServiceTest {
     private Guest createAndSaveGuest(Event event, OrganizationMember member) {
         return guestRepository.save(Guest.create(event, member, event.getRegistrationStart()));
     }
-  
+
     private Question createAndSaveQuestion(Event event, String text, boolean required, int order) {
         return questionRepository.save(Question.create(event, text, required, order));
     }
-  
+
     private LoginMember createLoginMember(OrganizationMember organizationMember) {
         var member = organizationMember.getMember();
 

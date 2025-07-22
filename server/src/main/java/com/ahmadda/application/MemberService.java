@@ -1,9 +1,9 @@
 package com.ahmadda.application;
 
+import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.presentation.dto.LoginMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
