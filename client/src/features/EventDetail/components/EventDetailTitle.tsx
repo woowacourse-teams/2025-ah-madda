@@ -10,13 +10,7 @@ type EventHeaderProps = Pick<EventDetail, 'title' | 'author'>;
 export const EventDetailTitle = ({ title, author }: EventHeaderProps) => {
   return (
     <Flex dir="column" gap="12px">
-      <Text
-        type="Title"
-        weight="bold"
-        css={css`
-          text-align: left;
-        `}
-      >
+      <Text type="Title" weight="bold">
         {title}
       </Text>
       <Flex alignItems="center" gap="4px">
