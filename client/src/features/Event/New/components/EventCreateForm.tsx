@@ -30,7 +30,7 @@ export const EventCreateForm = () => {
                 flex: 1;
               `}
             >
-              <Input id="eventStart" label="시작 날짜" placeholder="연도. 월. 일." />
+              <Input id="eventStart" label="이벤트 시작 날짜/시간" placeholder="2025.07.30 13:00" />
             </Flex>
             <Flex
               dir="column"
@@ -38,7 +38,7 @@ export const EventCreateForm = () => {
                 flex: 1;
               `}
             >
-              <Input id="eventEnd" label="종료 날짜" placeholder="연도. 월. 일." />
+              <Input id="eventEnd" label="이벤트 종료 날짜/시간" placeholder="2025.07.30 15:00" />
             </Flex>
           </Flex>
 
@@ -49,7 +49,11 @@ export const EventCreateForm = () => {
                 flex: 1;
               `}
             >
-              <Input id="eventStartTime" label="시작 시간" placeholder="13:00" />
+              <Input
+                id="eventStartTime"
+                label="신청 시작 날짜/시간"
+                placeholder="2025.07.25 13:00"
+              />
             </Flex>
             <Flex
               dir="column"
@@ -57,7 +61,7 @@ export const EventCreateForm = () => {
                 flex: 1;
               `}
             >
-              <Input id="eventEndTime" label="종료 시간" placeholder="15:00" />
+              <Input id="eventEndTime" label="신청 종료 날짜/시간" placeholder="2025.07.25 15:00" />
             </Flex>
           </Flex>
 
