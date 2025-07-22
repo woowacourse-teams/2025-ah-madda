@@ -2,6 +2,7 @@ package com.ahmadda.application;
 
 import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.QuestionCreateRequest;
+import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
@@ -141,7 +142,33 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.createEvent(organization.getId(), 999L, eventCreateRequest))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 조직원 정보입니다.");
+                .hasMessage("존재하지 않는 회원입니다.");
+    }
+
+    @Test
+    void 이벤트_생성시_요청한_조직에_소속되지_않았다면_예외가_발생한다() {
+        //given
+        var organization1 = appendOrganization();
+        var organization2 = appendOrganization();
+        Member member = appendMember();
+        appendOrganizationMember(organization2, member);
+
+        var now = LocalDateTime.now();
+        var eventCreateRequest = new EventCreateRequest(
+                "UI/UX 이벤트",
+                "UI/UX 이벤트 입니다",
+                "선릉",
+                now.plusDays(3), now.plusDays(4),
+                now.plusDays(5), now.plusDays(6),
+                "이밴트 근로",
+                100,
+                new ArrayList<>()
+        );
+
+        //when //then
+        assertThatThrownBy(() -> sut.createEvent(organization1.getId(), member.getId(), eventCreateRequest))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessage("조직에 소속되지 않은 멤버입니다.");
     }
 
     private Organization appendOrganization() {
