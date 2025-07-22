@@ -88,6 +88,9 @@ public class Guest extends BaseEntity {
             if (!event.hasQuestion(question)) {
                 throw new BusinessRuleViolatedException("이벤트에 포함되지 않은 질문입니다.");
             }
+            if (answerText == null || answerText.isBlank()) {
+                return;
+            }
             this.answers.add(Answer.create(question, this, answerText));
         });
     }
