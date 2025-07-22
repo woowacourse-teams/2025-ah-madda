@@ -49,7 +49,7 @@ export const GuestManageSection = ({ completedGuests, pendingGuests }: GuestMana
   return (
     <Flex as="section" dir="column" gap="24px" width="100%">
       <Card>
-        <Flex dir="column" gap="20px" padding="24px">
+        <Flex dir="column" gap="20px">
           <Flex alignItems="center" gap="8px">
             <Icon name="users" size={14} color="#4A5565" />
             <Text type="Body" weight="regular" color="#4A5565">
@@ -76,7 +76,7 @@ export const GuestManageSection = ({ completedGuests, pendingGuests }: GuestMana
       </Card>
 
       <Card>
-        <Flex dir="column" gap="16px" padding="24px">
+        <Flex dir="column" gap="16px">
           <Flex alignItems="flex-end">
             <Icon name="alarm" size={24} color="#F54900" />
             <Text type="Body" weight="medium" color="#F54900">

@@ -25,7 +25,7 @@ export const GuestItem = ({ guest, onClick, variant }: GuestItemProps) => {
       padding="12px 16px"
       variant={variant}
     >
-      <Text type="Body" weight="regular" color={GUEST_STYLES.common.nameTextColor}>
+      <Text type="caption" weight="regular" color={GUEST_STYLES.common.nameTextColor}>
         {guest.name}
       </Text>
       <StyledGuestBadge
