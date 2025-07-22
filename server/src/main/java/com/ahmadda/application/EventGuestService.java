@@ -49,12 +49,12 @@ public class EventGuestService {
     @Transactional
     public void participantEvent(
             final Long eventId,
-            final Long organizationMemberId,
+            final Long memberId,
             final LocalDateTime currentDateTime,
             final EventParticipateRequest eventParticipateRequest
     ) {
         Event event = getEvent(eventId);
-        OrganizationMember organizationMember = getOrganizationMember(organizationMemberId);
+        OrganizationMember organizationMember = getOrganizationMember(eventId, memberId);
 
         Guest guest = Guest.create(event, organizationMember, currentDateTime);
 
@@ -69,8 +69,8 @@ public class EventGuestService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 이벤트입니다."));
     }
 
-    private OrganizationMember getOrganizationMember(final Long organizationMemberId) {
-        return organizationMemberRepository.findById(organizationMemberId)
+    private OrganizationMember getOrganizationMember(final Long eventId, final Long memberId) {
+        return organizationMemberRepository.findByOrganizationIdAndMemberId(eventId, memberId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 조직원입니다."));
     }
 

@@ -5,7 +5,9 @@ import com.ahmadda.application.dto.EventParticipateRequest;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.presentation.dto.GuestResponse;
+import com.ahmadda.presentation.dto.LoginMember;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
+import com.ahmadda.presentation.resolver.AuthMember;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -51,13 +53,12 @@ public class EventGuestController {
     @PostMapping("/{eventId}/participation")
     public ResponseEntity<Void> participateEvent(
             @PathVariable final Long eventId,
-            @RequestBody @Valid final EventParticipateRequest eventParticipateRequest
+            @RequestBody @Valid final EventParticipateRequest eventParticipateRequest,
+            @AuthMember final LoginMember loginMember
     ) {
-        Long fakeOrganizationMemberId = 1L;
-
         eventGuestService.participantEvent(
                 eventId,
-                fakeOrganizationMemberId,
+                loginMember.memberId(),
                 LocalDateTime.now(),
                 eventParticipateRequest
         );

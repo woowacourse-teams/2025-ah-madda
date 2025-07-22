@@ -128,15 +128,16 @@ class EventGuestServiceTest {
     void 조직원은_이벤트의_게스트로_참여할_수_있다() {
         // given
         var organization = createAndSaveOrganization();
-        var member = createAndSaveMember("name", "email@ahmadda.com");
-        var organizationMember1 = createAndSaveOrganizationMember("surf1", member, organization);
-        var organizationMember2 = createAndSaveOrganizationMember("surf2", member, organization);
+        var member1 = createAndSaveMember("name1", "email1@ahmadda.com");
+        var member2 = createAndSaveMember("name2", "email2@ahmadda.com");
+        var organizationMember1 = createAndSaveOrganizationMember("surf1", member1, organization);
+        var organizationMember2 = createAndSaveOrganizationMember("surf2", member2, organization);
         var event = createAndSaveEvent(organizationMember1, organization);
 
         // when
         sut.participantEvent(
                 event.getId(),
-                organizationMember2.getId(),
+                member2.getId(),
                 event.getRegistrationStart(),
                 new EventParticipateRequest(List.of())
         );
@@ -158,9 +159,10 @@ class EventGuestServiceTest {
     void 필수_질문에_모두_답변하면_참여할_수_있다() {
         // given
         var organization = createAndSaveOrganization();
-        var member = createAndSaveMember("name", "email@ahmadda.com");
-        var organizer = createAndSaveOrganizationMember("organizer", member, organization);
-        var participant = createAndSaveOrganizationMember("participant", member, organization);
+        var member1 = createAndSaveMember("name1", "email1@ahmadda.com");
+        var member2 = createAndSaveMember("name2", "email2@ahmadda.com");
+        var organizer = createAndSaveOrganizationMember("organizer", member1, organization);
+        var participant = createAndSaveOrganizationMember("participant", member2, organization);
         var event = createAndSaveEvent(organizer, organization);
 
         var question1 = createAndSaveQuestion(event, "필수 질문", true, 0);
@@ -173,7 +175,7 @@ class EventGuestServiceTest {
         ));
 
         // when
-        sut.participantEvent(event.getId(), participant.getId(), event.getRegistrationStart(), request);
+        sut.participantEvent(event.getId(), member2.getId(), event.getRegistrationStart(), request);
 
         // then
         var guest = guestRepository.findAll()
@@ -191,9 +193,10 @@ class EventGuestServiceTest {
     void 필수_질문이_누락되면_예외가_발생한다() {
         // given
         var organization = createAndSaveOrganization();
-        var member = createAndSaveMember("name", "email@ahmadda.com");
-        var organizer = createAndSaveOrganizationMember("organizer", member, organization);
-        var participant = createAndSaveOrganizationMember("participant", member, organization);
+        var member1 = createAndSaveMember("name1", "email1@ahmadda.com");
+        var member2 = createAndSaveMember("name2", "email2@ahmadda.com");
+        var organizer = createAndSaveOrganizationMember("organizer", member1, organization);
+        var participant = createAndSaveOrganizationMember("participant", member2, organization);
         var event = createAndSaveEvent(organizer, organization);
 
         var question1 = createAndSaveQuestion(event, "필수 질문", true, 0);
@@ -206,7 +209,7 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.participantEvent(event.getId(), participant.getId(), event.getRegistrationStart(), request)
+                sut.participantEvent(event.getId(), member2.getId(), event.getRegistrationStart(), request)
         )
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessageContaining("필수 질문에 대한 답변이 누락되었습니다");
@@ -216,9 +219,10 @@ class EventGuestServiceTest {
     void 존재하지_않는_질문에_답변하면_예외가_발생한다() {
         // given
         var organization = createAndSaveOrganization();
-        var member = createAndSaveMember("name", "email@ahmadda.com");
-        var organizer = createAndSaveOrganizationMember("organizer", member, organization);
-        var participant = createAndSaveOrganizationMember("participant", member, organization);
+        var member1 = createAndSaveMember("name1", "email1@ahmadda.com");
+        var member2 = createAndSaveMember("name2", "email2@ahmadda.com");
+        var organizer = createAndSaveOrganizationMember("organizer", member1, organization);
+        var participant = createAndSaveOrganizationMember("participant", member2, organization);
         var event = createAndSaveEvent(organizer, organization);
 
         var invalidQuestionId = 999L;
@@ -229,7 +233,7 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.participantEvent(event.getId(), participant.getId(), event.getRegistrationStart(), request)
+                sut.participantEvent(event.getId(), member2.getId(), event.getRegistrationStart(), request)
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("존재하지 않는 질문입니다.");

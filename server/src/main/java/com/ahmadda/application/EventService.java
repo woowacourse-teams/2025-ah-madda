@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -82,10 +83,11 @@ public class EventService {
             final Event event,
             final List<QuestionCreateRequest> questionCreateRequests
     ) {
-        for (int i = 0; i < questionCreateRequests.size(); i++) {
-            QuestionCreateRequest request = questionCreateRequests.get(i);
-            Question question = Question.create(event, request.questionText(), request.isRequired(), i);
-            event.addQuestions(question);
-        }
+        IntStream.range(0, questionCreateRequests.size())
+                .forEach(i -> {
+                    QuestionCreateRequest request = questionCreateRequests.get(i);
+                    Question question = Question.create(event, request.questionText(), request.isRequired(), i);
+                    event.addQuestions(question);
+                });
     }
 }
