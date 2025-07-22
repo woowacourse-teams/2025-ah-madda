@@ -79,7 +79,6 @@ export const EventCreateForm = () => {
               <Input id="author" label="주최자 이름" placeholder="주최자 이름을 입력해 주세요" />
             </Flex>
             <Flex
-              dir="column"
               css={css`
                 flex: 1;
               `}
