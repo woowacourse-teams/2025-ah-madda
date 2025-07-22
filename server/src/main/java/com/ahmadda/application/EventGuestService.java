@@ -1,5 +1,7 @@
 package com.ahmadda.application;
 
+import com.ahmadda.application.dto.AnswerCreateRequest;
+import com.ahmadda.application.dto.EventParticipateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
@@ -11,6 +13,8 @@ import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
+import com.ahmadda.domain.Question;
+import com.ahmadda.domain.QuestionRepository;
 import com.ahmadda.presentation.dto.LoginMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +31,7 @@ public class EventGuestService {
 
     private final GuestRepository guestRepository;
     private final EventRepository eventRepository;
+    private final QuestionRepository questionRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
     private final MemberRepository memberRepository;
 
@@ -48,13 +55,18 @@ public class EventGuestService {
     @Transactional
     public void participantEvent(
             final Long eventId,
-            final Long organizationMemberId,
-            final LocalDateTime currentDateTime
+            final Long memberId,
+            final LocalDateTime currentDateTime,
+            final EventParticipateRequest eventParticipateRequest
     ) {
         Event event = getEvent(eventId);
-        OrganizationMember organizationMember = getOrganizationMember(organizationMemberId);
+        Organization organization = event.getOrganization();
+        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), memberId);
 
         Guest guest = Guest.create(event, organizationMember, currentDateTime);
+
+        Map<Question, String> questionAnswers = getQuestionAnswers(eventParticipateRequest.answers());
+        guest.submitAnswers(questionAnswers);
 
         guestRepository.save(guest);
     }
@@ -73,8 +85,20 @@ public class EventGuestService {
         }
     }
 
-    private OrganizationMember getOrganizationMember(final Long organizationMemberId) {
-        return organizationMemberRepository.findById(organizationMemberId)
+    private OrganizationMember getOrganizationMember(final Long organizationId, final Long memberId) {
+        return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 조직원입니다."));
+    }
+
+    private Map<Question, String> getQuestionAnswers(final List<AnswerCreateRequest> answerCreateRequests) {
+        return answerCreateRequests
+                .stream()
+                .map(answerRequest -> Map.entry(getQuestion(answerRequest.questionId()), answerRequest.answerText()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    private Question getQuestion(final Long questionId) {
+        return questionRepository.findById(questionId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 질문입니다."));
     }
 }

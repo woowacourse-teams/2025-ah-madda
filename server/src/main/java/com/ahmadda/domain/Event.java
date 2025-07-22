@@ -3,6 +3,7 @@ package com.ahmadda.domain;
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.util.Assert;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -55,7 +56,7 @@ public class Event extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
     private List<Guest> guests = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
     @Embedded
@@ -112,26 +113,6 @@ public class Event extends BaseEntity {
         );
     }
 
-    public LocalDateTime getRegistrationStart() {
-        return eventOperationPeriod.getRegistrationPeriod()
-                .start();
-    }
-
-    public LocalDateTime getRegistrationEnd() {
-        return eventOperationPeriod.getRegistrationPeriod()
-                .end();
-    }
-
-    public LocalDateTime getEventStart() {
-        return eventOperationPeriod.getEventPeriod()
-                .start();
-    }
-
-    public LocalDateTime getEventEnd() {
-        return eventOperationPeriod.getEventPeriod()
-                .end();
-    }
-
     public boolean hasGuest(final OrganizationMember organizationMember) {
         return guests.stream()
                 .anyMatch(guest -> guest.isSameOrganizationMember(organizationMember));
@@ -158,6 +139,21 @@ public class Event extends BaseEntity {
         this.guests.add(guest);
     }
 
+    public boolean hasQuestion(final Question question) {
+        return questions.contains(question);
+    }
+
+    public Set<Question> getRequiredQuestions() {
+        return getQuestions()
+                .stream()
+                .filter(Question::isRequired)
+                .collect(Collectors.toSet());
+    }
+
+    public void addQuestions(final Question... question) {
+        questions.addAll(List.of(question));
+    }
+  
     public boolean isOrganizer(final Member member) {
         return organizer.getMember()
                 .equals(member);
@@ -208,5 +204,25 @@ public class Event extends BaseEntity {
         if (maxCapacity < MIN_CAPACITY || maxCapacity > MAX_CAPACITY) {
             throw new BusinessRuleViolatedException("최대 수용 인원은 1명보다 적거나 21억명 보다 클 수 없습니다.");
         }
+    }
+
+    public LocalDateTime getRegistrationStart() {
+        return eventOperationPeriod.getRegistrationPeriod()
+                .start();
+    }
+
+    public LocalDateTime getRegistrationEnd() {
+        return eventOperationPeriod.getRegistrationPeriod()
+                .end();
+    }
+
+    public LocalDateTime getEventStart() {
+        return eventOperationPeriod.getEventPeriod()
+                .start();
+    }
+
+    public LocalDateTime getEventEnd() {
+        return eventOperationPeriod.getEventPeriod()
+                .end();
     }
 }

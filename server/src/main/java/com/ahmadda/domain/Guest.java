@@ -3,6 +3,7 @@ package com.ahmadda.domain;
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.util.Assert;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,11 +12,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -34,6 +40,9 @@ public class Guest extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "participant_id", nullable = false)
     private OrganizationMember organizationMember;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "guest", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Answer> answers = new ArrayList<>();
 
     private Guest(final Event event, final OrganizationMember organizationMember, final LocalDateTime currentDateTime) {
         validateEvent(event);
@@ -56,6 +65,34 @@ public class Guest extends BaseEntity {
 
     public boolean isSameOrganizationMember(final OrganizationMember organizationMember) {
         return this.organizationMember.equals(organizationMember);
+    }
+
+    public void submitAnswers(final Map<Question, String> questionAnswers) {
+        validateRequiredQuestions(questionAnswers.keySet());
+
+        addAnswers(questionAnswers);
+    }
+
+    private void validateRequiredQuestions(final Set<Question> answeredQuestions) {
+        Set<Question> requiredQuestions = event.getRequiredQuestions();
+
+        for (Question required : requiredQuestions) {
+            if (!answeredQuestions.contains(required)) {
+                throw new BusinessRuleViolatedException("필수 질문에 대한 답변이 누락되었습니다.");
+            }
+        }
+    }
+
+    private void addAnswers(final Map<Question, String> answers) {
+        answers.forEach((question, answerText) -> {
+            if (!event.hasQuestion(question)) {
+                throw new BusinessRuleViolatedException("이벤트에 포함되지 않은 질문입니다.");
+            }
+            if (answerText == null || answerText.isBlank()) {
+                return;
+            }
+            this.answers.add(Answer.create(question, this, answerText));
+        });
     }
 
     private void validateEvent(final Event event) {
