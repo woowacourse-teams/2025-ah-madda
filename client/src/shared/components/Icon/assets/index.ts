@@ -1,3 +1,4 @@
+import { Alarm } from './alarm';
 import { Back } from './back';
 import { Calendar } from './calendar';
 import { Clock } from './clock';
@@ -16,6 +17,7 @@ export const Icons = {
   location: Location,
   plus: Plus,
   users: Users,
+  alarm: Alarm,
 };
 
 export type IconName = keyof typeof Icons;

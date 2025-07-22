@@ -66,7 +66,7 @@ export const EventCard = ({
 
 const CardWrapper = styled.div`
   cursor: pointer;
-  background-color: #304151;
+  background-color: #232838;
   box-shadow: rgba(0, 0, 0, 0.3) 0px 4px 12px;
   padding: 22px;
   border-radius: 12px;

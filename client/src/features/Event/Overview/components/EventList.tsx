@@ -1,3 +1,5 @@
+import { css } from '@emotion/react';
+
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,23 +19,33 @@ export const EventList = () => {
 
   return (
     <EventContainer>
-      <Flex justifyContent="flex-end" alignItems="center">
-        <Button width="130px" size="md" onClick={() => navigate('/event/new')}>
-          + 이벤트 생성
-        </Button>
+      <Flex
+        dir="column"
+        width="100%"
+        gap="20px"
+        css={css`
+          max-width: 1120px;
+          margin: 0 auto;
+        `}
+      >
+        <Flex justifyContent="flex-end" alignItems="center">
+          <Button width="130px" size="md" onClick={() => navigate('/event/new')}>
+            + 이벤트 생성
+          </Button>
+        </Flex>
+        {Object.entries(groupedEvents).map(
+          ([dateTitle, events]) =>
+            events.length > 0 && (
+              <EventSection key={dateTitle} title={dateTitle}>
+                <EventGrid>
+                  {events.map((event, index) => (
+                    <EventCard key={index} {...event} />
+                  ))}
+                </EventGrid>
+              </EventSection>
+            )
+        )}
       </Flex>
-      {Object.entries(groupedEvents).map(
-        ([dateTitle, events]) =>
-          events.length > 0 && (
-            <EventSection key={dateTitle} title={dateTitle}>
-              <EventGrid>
-                {events.map((event, index) => (
-                  <EventCard key={index} {...event} />
-                ))}
-              </EventGrid>
-            </EventSection>
-          )
-      )}
     </EventContainer>
   );
 };

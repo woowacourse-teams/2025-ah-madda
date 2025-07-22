@@ -4,20 +4,20 @@ import { css } from '@emotion/react';
 
 import { Flex } from '@/shared/components/Flex';
 
-type Props = {
+type MyEventContainerProps = {
   children: ReactNode;
 };
 
-export const EventContainer = ({ children }: Props) => {
+export const MyEventContainer = ({ children }: MyEventContainerProps) => {
   return (
     <Flex
-      as="main"
       dir="column"
-      width="100%"
-      gap="15px"
-      padding="20px"
+      margin="0 10px"
       css={css`
-        background-color: rgba(231, 231, 231, 0.47);
+        padding-top: 60px;
+        @media (max-width: 768px) {
+          align-items: center;
+        }
       `}
     >
       {children}
