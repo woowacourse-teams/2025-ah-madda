@@ -1,5 +1,3 @@
-import { css } from '@emotion/react';
-
 import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
 import { IconButton } from '@/shared/components/IconButton';
@@ -30,23 +28,7 @@ export const EventManage = () => {
       }
     >
       <EventManageContainer>
-        <Flex
-          as="main"
-          gap="40px"
-          width="100%"
-          dir="row"
-          css={css`
-            padding-top: 92px;
-            @media (max-width: 1024px) {
-              flex-direction: column;
-              gap: 32px;
-            }
-            @media (max-width: 768px) {
-              gap: 24px;
-              margin-top: 24px;
-            }
-          `}
-        >
+        <Flex as="main" gap="40px" width="100%" dir="column">
           <EventInfoSection eventInfo={data.eventInfo} />
           <GuestManageSection
             completedGuests={data.completedGuests}

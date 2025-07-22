@@ -1,3 +1,5 @@
+import { css } from '@emotion/react';
+
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
@@ -24,12 +26,31 @@ export const EventInfoSection = ({ eventInfo }: EventInfoSectionProps) => {
   } = eventInfo;
 
   return (
-    <Flex as="section" dir="column" gap="24px" width="100%">
+    <Flex
+      as="section"
+      dir="column"
+      gap="24px"
+      width="100%"
+      margin="10px"
+      css={css`
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 16px;
+
+        @media (max-width: 768px) {
+          padding: 0 20px;
+        }
+
+        @media (max-width: 480px) {
+          padding: 0 16px;
+        }
+      `}
+    >
       <Card>
         <Flex dir="column" gap="16px">
           <Flex alignItems="center" gap="8px">
             <Icon name="calendar" size={17.5} color="#4A5565" />
-            <Text type="Body" weight="regular" color="#4A5565">
+            <Text type="caption" weight="regular" color="#4A5565">
               이벤트 정보
             </Text>
           </Flex>
@@ -38,7 +59,7 @@ export const EventInfoSection = ({ eventInfo }: EventInfoSectionProps) => {
             {title}
           </Text>
 
-          <Text type="Body" weight="regular" color="#4A5565">
+          <Text type="caption" weight="regular" color="#4A5565">
             {description}
           </Text>
 
@@ -56,20 +77,18 @@ export const EventInfoSection = ({ eventInfo }: EventInfoSectionProps) => {
             </Text>
           </Flex>
 
-          <Flex dir="column" gap="8px">
-            <Flex alignItems="center" gap="8px">
-              <Icon name="calendar" size={14} color="#4A5565" />
-              <Text type="caption" weight="regular" color="#4A5565">
-                {`신청 마감: ${deadlineTime}`}
-              </Text>
-            </Flex>
+          <Flex alignItems="center" gap="8px">
+            <Icon name="calendar" size={14} color="#4A5565" />
+            <Text type="caption" weight="regular" color="#4A5565">
+              {`신청 마감: ${deadlineTime}`}
+            </Text>
+          </Flex>
 
-            <Flex alignItems="center" gap="8px">
-              <Icon name="clock" size={14} color="#4A5565" />
-              <Text type="caption" weight="regular" color="#4A5565">
-                {`이벤트 일시: ${startTime} ~ ${endTime}`}
-              </Text>
-            </Flex>
+          <Flex alignItems="center" gap="8px">
+            <Icon name="clock" size={14} color="#4A5565" />
+            <Text type="caption" weight="regular" color="#4A5565">
+              {`이벤트 일시: ${startTime} ~ ${endTime}`}
+            </Text>
           </Flex>
 
           <Flex dir="column" gap="12px">

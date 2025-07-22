@@ -22,7 +22,7 @@ export const GuestItem = ({ guest, onClick, variant }: GuestItemProps) => {
       justifyContent="space-between"
       alignItems="center"
       onClick={() => onClick(guest)}
-      padding="12px 16px"
+      padding="4px 8px"
       variant={variant}
     >
       <Text type="caption" weight="regular" color={GUEST_STYLES.common.nameTextColor}>

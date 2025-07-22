@@ -29,5 +29,9 @@ export const EventManageContainer = ({ children }: EventManageContainerProps) =>
       </Flex>
     );
   }
-  return <Flex dir="column">{children}</Flex>;
+  return (
+    <Flex dir="column" margin="24px">
+      {children}
+    </Flex>
+  );
 };
