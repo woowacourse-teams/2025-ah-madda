@@ -4,7 +4,7 @@ import { EventTabs } from '../components/EventTabs';
 import { MyEventHeader } from '../components/MyEventHeader';
 import { MyEventContainer } from '../containers/MyEventContainer';
 
-export const MyEvent = () => {
+export const MyEventPage = () => {
   return (
     <PageLayout header={<MyEventHeader />}>
       <MyEventContainer>

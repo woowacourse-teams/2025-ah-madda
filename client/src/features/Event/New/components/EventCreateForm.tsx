@@ -8,7 +8,7 @@ import { Text } from '../../../../shared/components/Text';
 
 export const EventCreateForm = () => {
   return (
-    <Flex dir="column" gap="20px" padding="40px 0" width="100%">
+    <Flex dir="column" gap="20px" padding="60px 0" width="100%">
       <Text type="Title" weight="bold">
         새 이벤트 만들기
       </Text>

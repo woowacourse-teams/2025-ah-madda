@@ -1,12 +1,14 @@
+import { useNavigate } from 'react-router-dom';
+
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
-import { PageLayout } from '@/shared/components/PageLayout';
 
 import { EventList } from '../components/EventList';
 import { OrganizationInfo } from '../components/OrganizationInfo';
 
 export const OverviewPage = () => {
+  const navigate = useNavigate();
   return (
     <>
       <Header
@@ -16,7 +18,7 @@ export const OverviewPage = () => {
             <Button width="80px" size="sm" variant="outlined" fontColor="#2563EB">
               로그아웃
             </Button>
-            <Button width="80px" size="sm">
+            <Button width="80px" size="sm" onClick={() => navigate('/event/my')}>
               내 이벤트
             </Button>
           </Flex>

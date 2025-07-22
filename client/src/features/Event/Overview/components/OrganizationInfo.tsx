@@ -1,5 +1,4 @@
 import { css } from '@emotion/react';
-
 import styled from '@emotion/styled';
 
 import Wowaw from '@/assets/icon/wowaw.png';
@@ -12,6 +11,7 @@ export const OrganizationInfo = () => {
       dir="column"
       width="100%"
       gap="20px"
+      padding="60px 0 0 0"
       css={css`
         max-width: 1120px;
         margin: 0 auto;

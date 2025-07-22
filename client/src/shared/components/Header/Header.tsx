@@ -1,7 +1,5 @@
 import { ComponentProps, ReactNode } from 'react';
 
-import { Flex } from '../Flex';
-
 import { StyledHeader, StyledHeaderContent } from './Header.styled';
 
 export type HeaderProps = {

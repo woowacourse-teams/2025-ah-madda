@@ -34,7 +34,7 @@ export const EventDetailContent = ({ event }: EventDetailContentProps) => {
       dir="column"
       width="100%"
       margin="0 auto"
-      padding="28px 14px"
+      padding="80px 24px 0"
       gap="24px"
       css={css`
         max-width: 784px;

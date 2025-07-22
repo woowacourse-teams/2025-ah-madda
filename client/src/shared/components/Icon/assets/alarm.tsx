@@ -7,6 +7,7 @@ export const Alarm = ({ width, height, color, ...props }: SVGProps<SVGSVGElement
     height={height ?? 24}
     viewBox="0 0 14 15"
     fill="none"
+    {...props}
   >
     <path
       d="M5.98975 13C6.09215 13.1773 6.23942 13.3246 6.41677 13.427C6.59412 13.5294 6.7953 13.5833 7.00008 13.5833C7.20486 13.5833 7.40604 13.5294 7.58339 13.427C7.76074 13.3246 7.90801 13.1773 8.01041 13"

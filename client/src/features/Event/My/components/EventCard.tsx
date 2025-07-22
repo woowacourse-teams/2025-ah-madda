@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
@@ -18,8 +19,10 @@ export const EventCard = ({
   currentParticipants,
   maxParticipants,
 }: Event) => {
+  const navigate = useNavigate();
+
   return (
-    <EventCardWrapper>
+    <EventCardWrapper onClick={() => navigate('/event/manage')}>
       <Flex dir="column" gap="3.5px">
         <Text type="Title" weight="semibold" color="white">
           {title}
@@ -56,7 +59,7 @@ export const EventCard = ({
         <Text type="caption" weight="regular" color="white">
           {author}
         </Text>
-        <ProgressBar value={currentParticipants} max={maxParticipants} />
+        <ProgressBar value={currentParticipants} max={maxParticipants} color="black" />
       </Flex>
 
       <Flex>

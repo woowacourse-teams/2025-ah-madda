@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
@@ -8,6 +9,7 @@ import { Text } from '@/shared/components/Text';
 import { Event } from '../../types/Event';
 
 export const EventCard = ({
+  eventId,
   title,
   description,
   registrationEnd,
@@ -15,9 +17,11 @@ export const EventCard = ({
   eventEnd,
   place,
   organizerName,
-}: Omit<Event, 'id'>) => {
+}: Event) => {
+  const navigate = useNavigate();
+  // S.TODO : 추후 href=`/event/${eventId}`로 변경
   return (
-    <CardWrapper>
+    <CardWrapper onClick={() => navigate('/event/detail')}>
       <Flex dir="column" gap="8px">
         <Text type="Title" color="#ffffff" weight="semibold">
           {title}
