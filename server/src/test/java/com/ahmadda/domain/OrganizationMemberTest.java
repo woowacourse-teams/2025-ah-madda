@@ -52,6 +52,7 @@ class OrganizationMemberTest {
                         Period.create(now.plusDays(10), now.plusDays(11)),
                         now
                 ),
+                "이벤트 근로",
                 50
         );
     }

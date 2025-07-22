@@ -310,6 +310,7 @@ class EventGuestServiceTest {
                         Period.create(now.plusDays(1), now.plusDays(2)),
                         now.minusDays(6)
                 ),
+                organizer.getNickname(),
                 100
         );
 

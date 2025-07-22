@@ -49,6 +49,7 @@ class OrganizationTest {
                         Period.create(start, end),
                         start.minusDays(6)
                 ),
+                organizer.getNickname(),
                 50
         );
     }

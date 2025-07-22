@@ -79,6 +79,7 @@ class EventNotificationServiceTest {
                         Period.create(now.plusDays(1), now.plusDays(2)),
                         now.minusDays(3)
                 ),
+                organizerNickname,
                 100
         ));
 
@@ -153,6 +154,7 @@ class EventNotificationServiceTest {
                         Period.create(now.plusDays(2), now.plusDays(3)),
                         now.minusDays(2)
                 ),
+                organizer.getNickname(),
                 100
         ));
 

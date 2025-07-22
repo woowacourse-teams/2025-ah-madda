@@ -45,6 +45,7 @@ public class EventService {
                 organizer,
                 organization,
                 eventOperationPeriod,
+                eventCreateRequest.organizerNickname(),
                 eventCreateRequest.maxCapacity()
         );
         addQuestionsToEvent(event, eventCreateRequest.questions());

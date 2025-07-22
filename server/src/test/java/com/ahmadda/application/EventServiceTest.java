@@ -60,6 +60,7 @@ class EventServiceTest {
                 "선릉",
                 now.plusDays(3), now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
+                "이벤트 근로",
                 100,
                 List.of(new QuestionCreateRequest("1번 질문", true), new QuestionCreateRequest("2번 질문", false))
         );
@@ -109,6 +110,7 @@ class EventServiceTest {
                 "선릉",
                 now.plusDays(3), now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
+                "이벤트 근로",
                 100,
                 List.of(new QuestionCreateRequest("1번 질문", true), new QuestionCreateRequest("2번 질문", false))
         );
@@ -131,6 +133,7 @@ class EventServiceTest {
                 "선릉",
                 now.plusDays(3), now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
+                "이밴트 근로",
                 100,
                 new ArrayList<>()
         );

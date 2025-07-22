@@ -63,6 +63,9 @@ public class Event extends BaseEntity {
     private EventOperationPeriod eventOperationPeriod;
 
     @Column(nullable = false)
+    private String organizerNickname;
+
+    @Column(nullable = false)
     private int maxCapacity;
 
     private Event(
@@ -72,6 +75,7 @@ public class Event extends BaseEntity {
             final OrganizationMember organizer,
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
+            final String organizerNickname,
             final int maxCapacity
     ) {
         validateTitle(title);
@@ -80,6 +84,7 @@ public class Event extends BaseEntity {
         validateOrganizer(organizer);
         validateOrganization(organization);
         validateBelongToOrganization(organizer, organization);
+        validateOrganizerNickname(organizerNickname);
         validateMaxCapacity(maxCapacity);
 
         this.title = title;
@@ -88,6 +93,7 @@ public class Event extends BaseEntity {
         this.organizer = organizer;
         this.organization = organization;
         this.eventOperationPeriod = eventOperationPeriod;
+        this.organizerNickname = organizerNickname;
         this.maxCapacity = maxCapacity;
 
         organization.addEvent(this);
@@ -100,6 +106,7 @@ public class Event extends BaseEntity {
             final OrganizationMember organizer,
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
+            final String organizerNickname,
             final int maxCapacity
     ) {
         return new Event(
@@ -109,6 +116,7 @@ public class Event extends BaseEntity {
                 organizer,
                 organization,
                 eventOperationPeriod,
+                organizerNickname,
                 maxCapacity
         );
     }
@@ -153,7 +161,7 @@ public class Event extends BaseEntity {
     public void addQuestions(final Question... question) {
         questions.addAll(List.of(question));
     }
-  
+
     public boolean isOrganizer(final Member member) {
         return organizer.getMember()
                 .equals(member);
@@ -198,6 +206,10 @@ public class Event extends BaseEntity {
         if (!organizer.isBelongTo(organization)) {
             throw new BusinessRuleViolatedException("자신이 속한 조직에서만 이벤트를 생성할 수 있습니다.");
         }
+    }
+
+    private void validateOrganizerNickname(String organizerNickname) {
+        Assert.notBlank(organizerNickname, "주최자 이름은 공백이면 안됩니다.");
     }
 
     private void validateMaxCapacity(final int maxCapacity) {

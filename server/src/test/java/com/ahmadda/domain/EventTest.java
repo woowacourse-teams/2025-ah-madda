@@ -203,7 +203,7 @@ class EventTest {
                     .isFalse();
         });
     }
-  
+
     void 이벤트의_주최자인지_판단한다() {
         // given
         var now = LocalDateTime.now();
@@ -273,6 +273,7 @@ class EventTest {
                         ),
                         LocalDateTime.now()
                 ),
+                "이벤트 근로",
                 maxCapacity
         );
     }
@@ -289,6 +290,7 @@ class EventTest {
                         Period.create(now.plusDays(3), now.plusDays(4)),
                         now
                 ),
+                "이벤트 근로",
                 10
         );
     }
@@ -319,6 +321,7 @@ class EventTest {
                 createOrganizationMember(createMember(), organization),
                 organization,
                 eventOperationPeriod,
+                "이벤트 근로",
                 100
         );
     }
@@ -349,6 +352,7 @@ class EventTest {
                         Period.create(now.plusDays(3), now.plusDays(4)),
                         now
                 ),
+                "이벤트 근로",
                 10
         );
     }
