@@ -22,7 +22,7 @@ export default meta;
 type Story = StoryObj<typeof Modal>;
 
 const ModalExample = (args: Partial<ModalProps>) => {
-  const { isOpen, open, close } = useModal(true);
+  const { isOpen, open, close } = useModal(false);
 
   return (
     <>
@@ -45,7 +45,7 @@ const ModalExample = (args: Partial<ModalProps>) => {
 
 export const Basic: Story = {
   render: (args) => (
-    <div style={{ minHeight: '30vh' }}>
+    <div style={{ minHeight: '50vh' }}>
       <ModalExample {...args} />
     </div>
   ),
@@ -53,44 +53,5 @@ export const Basic: Story = {
     showCloseButton: true,
     shouldCloseOnBackdropClick: true,
     size: 'sm',
-  },
-};
-
-export const WithoutBackdropClick: Story = {
-  render: (args) => (
-    <div style={{ minHeight: '30vh' }}>
-      <ModalExample {...args} />
-    </div>
-  ),
-  args: {
-    showCloseButton: true,
-    shouldCloseOnBackdropClick: false,
-    size: 'sm',
-  },
-};
-
-export const WithoutCloseButton: Story = {
-  render: (args) => (
-    <div style={{ minHeight: '30vh' }}>
-      <ModalExample {...args} />
-    </div>
-  ),
-  args: {
-    showCloseButton: false,
-    shouldCloseOnBackdropClick: true,
-    size: 'sm',
-  },
-};
-
-export const LargeModal: Story = {
-  render: (args) => (
-    <div style={{ minHeight: '30vh' }}>
-      <ModalExample {...args} />
-    </div>
-  ),
-  args: {
-    showCloseButton: true,
-    shouldCloseOnBackdropClick: true,
-    size: 'lg',
   },
 };

@@ -13,17 +13,6 @@ import {
   StyledCloseButtonWrapper,
 } from './Modal.styled';
 
-const getModalRoot = () => {
-  let root = document.getElementById('modal-root');
-  if (!root) {
-    root = document.createElement('div');
-    root.id = 'modal-root';
-    document.body.appendChild(root);
-    console.warn('💡 modal-root가 없어서 동적으로 생성했습니다.');
-  }
-  return root;
-};
-
 export type ModalProps = {
   /**
    * Whether the modal is open.
@@ -50,8 +39,6 @@ export type ModalProps = {
   showCloseButton?: boolean;
 } & ComponentProps<'div'>;
 
-const isStorybook = typeof window !== 'undefined' && (window as any).__STORYBOOK__;
-
 export const Modal = ({
   isOpen,
   onClose,
@@ -75,9 +62,6 @@ export const Modal = ({
     }
   };
 
-  const modalRoot = document.getElementById('modal-root');
-  if (!modalRoot) return null;
-
   const modalContent = (
     <StyledModalLayout onClick={handleBackdropClick}>
       <StyledModalContainer size={size} {...props}>
@@ -93,5 +77,5 @@ export const Modal = ({
     </StyledModalLayout>
   );
 
-  return isStorybook ? modalContent : createPortal(modalContent, getModalRoot());
+  return createPortal(modalContent, document.body);
 };
