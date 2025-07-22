@@ -1,10 +1,10 @@
 import { css } from '@emotion/react';
 
-import { Button } from '../../../shared/components/Button';
-import { Card } from '../../../shared/components/Card';
-import { Flex } from '../../../shared/components/Flex';
-import { Input } from '../../../shared/components/Input';
-import { Text } from '../../../shared/components/Text';
+import { Button } from '../../../../shared/components/Button';
+import { Card } from '../../../../shared/components/Card';
+import { Flex } from '../../../../shared/components/Flex';
+import { Input } from '../../../../shared/components/Input';
+import { Text } from '../../../../shared/components/Text';
 
 export const EventCreateForm = () => {
   return (
