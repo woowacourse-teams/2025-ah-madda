@@ -5,8 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-import java.util.Optional;
-
 public interface OrganizationMemberRepository extends JpaRepository<OrganizationMember, Long> {
 
     @Query("""

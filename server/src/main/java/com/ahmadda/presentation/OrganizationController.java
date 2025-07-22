@@ -41,4 +41,14 @@ public class OrganizationController {
 
         return ResponseEntity.ok(organizationResponse);
     }
+
+    //TODO 07.25 이후 리팩터링 및 제거하기
+    @Deprecated
+    @GetMapping("/woowacourse")
+    public ResponseEntity<OrganizationResponse> getOrganization() {
+        Organization organization = organizationService.alwaysGetWoowacourse();
+        OrganizationResponse organizationResponse = OrganizationResponse.from(organization);
+
+        return ResponseEntity.ok(organizationResponse);
+    }
 }
