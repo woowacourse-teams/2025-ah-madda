@@ -7,5 +7,16 @@ type MyEventContainerProps = {
 };
 
 export const MyEventContainer = ({ children }: MyEventContainerProps) => {
-  return <Flex dir="column">{children}</Flex>;
+  return (
+    <Flex
+      dir="column"
+      css={{
+        '@media (max-width: 768px)': {
+          alignItems: 'center',
+        },
+      }}
+    >
+      {children}
+    </Flex>
+  );
 };
