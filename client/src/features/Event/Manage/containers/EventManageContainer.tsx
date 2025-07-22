@@ -30,7 +30,7 @@ export const EventManageContainer = ({ children }: EventManageContainerProps) =>
     );
   }
   return (
-    <Flex dir="column" margin="24px">
+    <Flex dir="column" margin="24px" padding="60px 0 0 0">
       {children}
     </Flex>
   );
