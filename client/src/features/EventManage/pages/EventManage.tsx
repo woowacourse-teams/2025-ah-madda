@@ -36,7 +36,7 @@ export const EventManage = () => {
           width="100%"
           dir="row"
           css={css`
-            margin-top: 32px;
+            padding-top: 92px;
             @media (max-width: 1024px) {
               flex-direction: column;
               gap: 32px;
