@@ -5,6 +5,8 @@ import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventRepository;
+import com.ahmadda.domain.Member;
+import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.NotificationMailer;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.presentation.dto.LoginMember;
@@ -19,6 +21,7 @@ public class EventNotificationService {
 
     private final EventRepository eventRepository;
     private final NotificationMailer notificationMailer;
+    private final MemberRepository memberRepository;
 
     public void notifyNonGuestOrganizationMembers(
             final Long eventId,
@@ -42,7 +45,10 @@ public class EventNotificationService {
     }
 
     private void validateOrganizer(final Event event, final Long memberId) {
-        if (!event.isOrganizer(memberId)) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
+
+        if (!event.isOrganizer(member)) {
             throw new AccessDeniedException("이벤트 주최자가 아닙니다.");
         }
     }

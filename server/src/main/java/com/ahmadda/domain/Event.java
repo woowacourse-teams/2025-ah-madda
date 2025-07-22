@@ -158,10 +158,9 @@ public class Event extends BaseEntity {
         this.guests.add(guest);
     }
 
-    public boolean isOrganizer(final Long memberId) {
+    public boolean isOrganizer(final Member member) {
         return organizer.getMember()
-                .getId()
-                .equals(memberId);
+                .equals(member);
     }
 
     private void validateParticipate(final Guest guest, final LocalDateTime participantDateTime) {
