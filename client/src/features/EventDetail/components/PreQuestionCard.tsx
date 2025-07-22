@@ -11,7 +11,6 @@ export const PreQuestionCard = ({ preQuestions }: PreQuestionCardProps) => {
       <Flex dir="column" gap="16px">
         <Text type="caption">사전 질문</Text>
         <Flex dir="column" gap="16px">
-          d
           {preQuestions.map((question, index) => (
             <Flex key={index} dir="column" gap="8px">
               <Text type="caption" weight="bold">
