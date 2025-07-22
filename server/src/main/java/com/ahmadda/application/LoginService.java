@@ -49,11 +49,11 @@ public class LoginService {
     //TODO 07.25 이후 리팩터링 및 제거하기
     public void addMemberToWoowacourse(final Member member) {
         Optional<Organization> findOrganization =
-                organizationRepository.findByName("우아한테크코스");
+                organizationRepository.findByName(OrganizationService.WOOWACOURSE_NAME);
 
         Organization organization =
                 findOrganization.orElseGet(() -> organizationRepository.save(
-                        Organization.create("우아한테크코스",
+                        Organization.create(OrganizationService.WOOWACOURSE_NAME,
                                             "우아한테크코스입니당딩동",
                                             "imageUrl"
                         )
