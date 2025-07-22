@@ -19,6 +19,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class LoginService {
 
+    private static final String imageUrl = "techcourse-project-2025.s3.ap-northeast-2.amazonaws.com/ah-madda/woowa.png";
+    
     private final MemberRepository memberRepository;
     private final GoogleOAuthProvider googleOAuthProvider;
     private final JwtTokenProvider jwtTokenProvider;
@@ -55,7 +57,7 @@ public class LoginService {
                 findOrganization.orElseGet(() -> organizationRepository.save(
                         Organization.create(OrganizationService.WOOWACOURSE_NAME,
                                             "우아한테크코스입니다",
-                                            "imageUrl"
+                                            imageUrl
                         )
                 ));
 
