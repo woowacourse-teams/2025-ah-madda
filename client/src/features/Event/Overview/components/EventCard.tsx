@@ -5,16 +5,16 @@ import { Icon } from '@/shared/components/Icon';
 import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Text } from '@/shared/components/Text';
 
-import { Event } from '../types/Event';
+import { Event } from '../../types/Event';
 
 export const EventCard = ({
   title,
   description,
-  registrationEndDate,
-  eventStartDate,
-  eventEndDate,
-  location,
-  organizer,
+  registrationEnd,
+  eventStart,
+  eventEnd,
+  place,
+  organizerName,
 }: Omit<Event, 'id'>) => {
   return (
     <CardWrapper>
@@ -28,20 +28,17 @@ export const EventCard = ({
         <Flex alignItems="center" gap="4px" height="100%">
           <Icon name="calendar" color="#99A1AF" size={15} />
           <Text type="caption" color="#99A1AF">
-            {`신청 마감 ${registrationEndDate}`}
+            {`신청 마감 ${registrationEnd}`}
           </Text>
         </Flex>
         <Flex alignItems="center" gap="4px" height="100%">
           <Icon name="clock" color="#99A1AF" size={15} />
-          <Text
-            type="caption"
-            color="#99A1AF"
-          >{`이벤트 시간 ${eventStartDate} - ${eventEndDate}`}</Text>
+          <Text type="caption" color="#99A1AF">{`이벤트 시간 ${eventStart} - ${eventEnd}`}</Text>
         </Flex>
         <Flex alignItems="center" gap="4px" height="100%">
           <Icon name="location" color="#99A1AF" size={15} />
           <Text type="caption" color="#99A1AF">
-            {`장소 ${location}`}
+            {`장소 ${place}`}
           </Text>
         </Flex>
         <Spacing />
@@ -50,7 +47,7 @@ export const EventCard = ({
             주최자
           </Text>
           <Text type="caption" color="#99A1AF">
-            {organizer}
+            {organizerName}
           </Text>
         </Flex>
         <Flex width="100%" justifyContent="space-between" alignItems="center">
@@ -69,7 +66,7 @@ export const EventCard = ({
 
 const CardWrapper = styled.div`
   cursor: pointer;
-  background-color: #304151;
+  background-color: #232838;
   box-shadow: rgba(0, 0, 0, 0.3) 0px 4px 12px;
   padding: 22px;
   border-radius: 12px;

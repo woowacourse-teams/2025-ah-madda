@@ -1,4 +1,4 @@
-import { Event } from '../types/Event';
+import { Event } from '../../types/Event';
 
 export const groupEventsByDate = (events: Event[]) => {
   const today = new Date();
@@ -11,7 +11,7 @@ export const groupEventsByDate = (events: Event[]) => {
   };
 
   events.forEach((event) => {
-    const eventDate = new Date(event.registrationEndDate);
+    const eventDate = new Date(event.registrationEnd);
 
     if (eventDate.toDateString() === today.toDateString()) {
       groups['오늘'].push(event);

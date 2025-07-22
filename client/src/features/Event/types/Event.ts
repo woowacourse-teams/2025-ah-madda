@@ -1,10 +1,13 @@
 export type Event = {
-  id: number;
+  eventId: number;
   title: string;
   description: string;
-  registrationEndDate: string;
-  eventStartDate: string;
-  eventEndDate: string;
-  location: string;
-  organizer: string;
+  eventStart: string;
+  eventEnd: string;
+  currentGuestCount: string;
+  maxCapacity: number;
+  place: string;
+  registrationStart: string;
+  registrationEnd: string;
+  organizerName: string;
 };

@@ -1,10 +1,15 @@
 import { createBrowserRouter } from 'react-router-dom';
 
-import { App } from '@/App';
+import { OverviewPage } from '@/features/Event/Overview/pages/OverviewPage';
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <App />,
+    children: [
+      {
+        index: true,
+        Component: OverviewPage,
+      },
+    ],
   },
 ]);
