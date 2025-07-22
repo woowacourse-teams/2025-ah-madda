@@ -100,7 +100,8 @@ class LoginServiceTest {
         // then
         var foundOrganization = organizationRepository.findByName(OrganizationService.WOOWACOURSE_NAME).orElseThrow();
         var foundOrganizationMember =
-                organizationMemberRepository.findByMemberAndOrganization(member, foundOrganization).orElseThrow();
+                organizationMemberRepository.findByOrganizationIdAndMemberId(foundOrganization.getId(), member.getId())
+                        .orElseThrow();
 
         assertThat(foundOrganizationMember).isNotNull();
         assertThat(foundOrganizationMember.getMember()).isEqualTo(member);
