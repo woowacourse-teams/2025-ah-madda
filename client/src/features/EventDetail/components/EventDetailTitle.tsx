@@ -7,20 +7,22 @@ import type { EventDetail } from '../types/index';
 
 type EventHeaderProps = Pick<EventDetail, 'title' | 'author'>;
 
-export const EventDetailTitle = ({ title, author }: EventHeaderProps) => (
-  <Flex dir="column" gap="12px">
-    <Text
-      type="Title"
-      weight="bold"
-      css={css`
-        text-align: left;
-      `}
-    >
-      {title}
-    </Text>
-    <Flex alignItems="center" gap="4px">
-      <Icon name="users" size={18} />
-      <Text type="caption">{`주최: ${author}`}</Text>
+export const EventDetailTitle = ({ title, author }: EventHeaderProps) => {
+  return (
+    <Flex dir="column" gap="12px">
+      <Text
+        type="Title"
+        weight="bold"
+        css={css`
+          text-align: left;
+        `}
+      >
+        {title}
+      </Text>
+      <Flex alignItems="center" gap="4px">
+        <Icon name="users" size={18} />
+        <Text type="caption">{`주최: ${author}`}</Text>
+      </Flex>
     </Flex>
-  </Flex>
-);
+  );
+};

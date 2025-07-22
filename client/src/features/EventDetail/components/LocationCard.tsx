@@ -8,26 +8,28 @@ import type { EventDetail } from '../types/index';
 
 type LocationCardProps = Pick<EventDetail, 'location'>;
 
-export const LocationCard = ({ location }: LocationCardProps) => (
-  <Flex
-    dir="column"
-    height="235px"
-    css={css`
-      flex: 1;
-    `}
-  >
-    <Card
+export const LocationCard = ({ location }: LocationCardProps) => {
+  return (
+    <Flex
+      dir="column"
+      height="235px"
       css={css`
-        height: 100%;
+        flex: 1;
       `}
     >
-      <Flex dir="column" gap="16px">
-        <Flex gap="8px">
-          <Icon name="location" size={18} />
-          <Text type="caption">장소</Text>
+      <Card
+        css={css`
+          height: 100%;
+        `}
+      >
+        <Flex dir="column" gap="16px">
+          <Flex gap="8px">
+            <Icon name="location" size={18} />
+            <Text type="caption">장소</Text>
+          </Flex>
+          <Text type="caption">{location}</Text>
         </Flex>
-        <Text type="caption">{location}</Text>
-      </Flex>
-    </Card>
-  </Flex>
-);
+      </Card>
+    </Flex>
+  );
+};

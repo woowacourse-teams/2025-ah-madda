@@ -8,35 +8,37 @@ import type { EventDetail } from '../types/index';
 
 type TimeInfoCardProps = Pick<EventDetail, 'deadlineTime' | 'startTime' | 'endTime'>;
 
-export const TimeInfoCard = ({ deadlineTime, startTime, endTime }: TimeInfoCardProps) => (
-  <Flex
-    dir="column"
-    css={css`
-      flex: 1;
-      min-height: 235px;
-    `}
-  >
-    <Card>
-      <Flex gap="8px" margin="0 0 16px 0">
-        <Icon name="clock" size={18} />
-        <Text type="caption">시간 정보</Text>
-      </Flex>
-      <Flex dir="column" gap="4px">
-        <Text type="caption" color="gray">
-          신청 마감
-        </Text>
-        <Text type="caption" color="red">
-          {deadlineTime}
-        </Text>
-        <Text type="caption" color="gray">
-          이벤트 시작
-        </Text>
-        <Text type="caption">{startTime}</Text>
-        <Text type="caption" color="gray">
-          이벤트 종료
-        </Text>
-        <Text type="caption">{endTime}</Text>
-      </Flex>
-    </Card>
-  </Flex>
-);
+export const TimeInfoCard = ({ deadlineTime, startTime, endTime }: TimeInfoCardProps) => {
+  return (
+    <Flex
+      dir="column"
+      css={css`
+        flex: 1;
+        min-height: 235px;
+      `}
+    >
+      <Card>
+        <Flex gap="8px" margin="0 0 16px 0">
+          <Icon name="clock" size={18} />
+          <Text type="caption">시간 정보</Text>
+        </Flex>
+        <Flex dir="column" gap="4px">
+          <Text type="caption" color="gray">
+            신청 마감
+          </Text>
+          <Text type="caption" color="red">
+            {deadlineTime}
+          </Text>
+          <Text type="caption" color="gray">
+            이벤트 시작
+          </Text>
+          <Text type="caption">{startTime}</Text>
+          <Text type="caption" color="gray">
+            이벤트 종료
+          </Text>
+          <Text type="caption">{endTime}</Text>
+        </Flex>
+      </Card>
+    </Flex>
+  );
+};

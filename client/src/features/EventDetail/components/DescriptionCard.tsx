@@ -5,11 +5,13 @@ import type { EventDetail } from '../types/index';
 
 type DescriptionCardProps = Pick<EventDetail, 'description'>;
 
-export const DescriptionCard = ({ description }: DescriptionCardProps) => (
-  <Card>
-    <Flex dir="column" gap="8px">
-      <Text type="caption">이벤트 소개</Text>
-      <Text type="caption">{description}</Text>
-    </Flex>
-  </Card>
-);
+export const DescriptionCard = ({ description }: DescriptionCardProps) => {
+  return (
+    <Card>
+      <Flex dir="column" gap="8px">
+        <Text type="caption">이벤트 소개</Text>
+        <Text type="caption">{description}</Text>
+      </Flex>
+    </Card>
+  );
+};
