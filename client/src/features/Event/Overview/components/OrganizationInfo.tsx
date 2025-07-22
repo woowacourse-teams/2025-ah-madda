@@ -1,11 +1,18 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
-import Wowaw from '@/assets/icon/wowaw.png';
+import Woowa from '@/assets/icon/wowaw.png';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 
-export const OrganizationInfo = () => {
+import { Organization } from '../../types/Event';
+
+type Props = {
+  totalEvents: number;
+} & Omit<Organization, 'organizationId'>;
+
+// S.TODO : 추후 imageUrl 적용
+export const OrganizationInfo = ({ name, description, imageUrl, totalEvents = 0 }: Props) => {
   return (
     <Flex
       dir="column"
@@ -20,12 +27,12 @@ export const OrganizationInfo = () => {
       <Flex padding="20px 10px" justifyContent="space-between" alignItems="center" width="100%">
         <Flex dir="column" gap="8px">
           <Text type="Head" weight="bold">
-            우아한테크코스 7기
+            {name}
           </Text>
-          <Text type="Body">우아한테크코스의 이벤트를 모두 받아보세요.</Text>
-          <Text type="caption">6개의 이벤트가 열려있어요!</Text>
+          <Text type="Body">{description}</Text>
+          <Text type="caption">{`${totalEvents}개의 이벤트가 열려있어요!`}</Text>
         </Flex>
-        <Img src={Wowaw} />
+        <Img src={Woowa} />
       </Flex>
     </Flex>
   );
