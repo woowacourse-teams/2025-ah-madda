@@ -1,4 +1,5 @@
 import { css } from '@emotion/react';
+import { useNavigate } from 'react-router-dom';
 
 import { Flex } from '../../../../shared/components/Flex';
 import { Header } from '../../../../shared/components/Header';
@@ -7,14 +8,15 @@ import { PageLayout } from '../../../../shared/components/PageLayout';
 import { Text } from '../../../../shared/components/Text';
 import { EventCreateForm } from '../components/EventCreateForm';
 
-export const CreateEvent = () => {
+export const NewEventPage = () => {
+  const navigate = useNavigate();
   return (
     <PageLayout
       header={
         <Header
           left={
             <Flex alignItems="center" gap="12px">
-              <IconButton name="back" size={14} />
+              <IconButton name="back" size={14} onClick={() => navigate(-1)} />
               <Text type="caption">돌아가기</Text>
             </Flex>
           }
