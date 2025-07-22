@@ -69,7 +69,7 @@ export const EventCard = ({
             {`${currentGuestCount}/${maxCapacity} 명`}
           </Text>
         </Flex>
-        <ProgressBar value={45} max={50} color="black" />
+        <ProgressBar value={currentGuestCount} max={maxCapacity} color="black" />
       </Flex>
     </CardWrapper>
   );
