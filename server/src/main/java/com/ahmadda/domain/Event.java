@@ -208,7 +208,7 @@ public class Event extends BaseEntity {
         }
     }
 
-    private void validateOrganizerNickname(String organizerNickname) {
+    private void validateOrganizerNickname(final String organizerNickname) {
         Assert.notBlank(organizerNickname, "주최자 이름은 공백이면 안됩니다.");
     }
 
