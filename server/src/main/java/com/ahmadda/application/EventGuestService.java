@@ -60,7 +60,8 @@ public class EventGuestService {
             final EventParticipateRequest eventParticipateRequest
     ) {
         Event event = getEvent(eventId);
-        OrganizationMember organizationMember = getOrganizationMember(eventId, memberId);
+        Organization organization = event.getOrganization();
+        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), memberId);
 
         Guest guest = Guest.create(event, organizationMember, currentDateTime);
 
@@ -84,8 +85,8 @@ public class EventGuestService {
         }
     }
 
-    private OrganizationMember getOrganizationMember(final Long organizationMemberId) {
-        return organizationMemberRepository.findById(organizationMemberId)
+    private OrganizationMember getOrganizationMember(final Long organizationId, final Long memberId) {
+        return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 조직원입니다."));
     }
 
