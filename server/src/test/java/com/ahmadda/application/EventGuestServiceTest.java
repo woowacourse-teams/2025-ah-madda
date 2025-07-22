@@ -190,7 +190,7 @@ class EventGuestServiceTest {
     }
 
     @Test
-    void 필수_질문이_누락되면_예외가_발생한다() {
+    void 필수_질문에_대한_답변이_누락되면_예외가_발생한다() {
         // given
         var organization = createAndSaveOrganization();
         var member1 = createAndSaveMember("name1", "email1@ahmadda.com");
