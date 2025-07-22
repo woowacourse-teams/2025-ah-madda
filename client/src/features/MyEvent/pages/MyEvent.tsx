@@ -1,3 +1,5 @@
+import styled from '@emotion/styled';
+
 import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
 import { Icon } from '@/shared/components/Icon';
@@ -31,7 +33,7 @@ export const MyEvent = () => {
     >
       <MyEventContainer>
         <Tabs defaultValue={TAB_VALUES.HOST}>
-          <Flex width="392px" css={{ marginTop: '20px' }}>
+          <Flex width="392px" margin="20px 0 0 0">
             <Tabs.List css={{ width: '100%' }}>
               <Tabs.Trigger value={TAB_VALUES.HOST}>{UI_LABELS.HOST_TAB}</Tabs.Trigger>
               <Tabs.Trigger value={TAB_VALUES.PARTICIPATE}>
@@ -50,17 +52,11 @@ export const MyEvent = () => {
               </Flex>
 
               {events.hostEvents.length > 0 ? (
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
-                    gap: '24px',
-                  }}
-                >
+                <EventCardContainer>
                   {events.hostEvents.map((event) => (
                     <EventCard key={event.id} {...event} />
                   ))}
-                </div>
+                </EventCardContainer>
               ) : (
                 <Text type="Body" weight="regular" color="#666">
                   {STATUS_MESSAGES.NO_HOST_EVENTS}
@@ -79,17 +75,11 @@ export const MyEvent = () => {
               </Flex>
 
               {events.participateEvents.length > 0 ? (
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                    gap: '24px',
-                  }}
-                >
+                <EventCardContainer>
                   {events.participateEvents.map((event) => (
                     <EventCard key={event.id} {...event} />
                   ))}
-                </div>
+                </EventCardContainer>
               ) : (
                 <Text type="Body" weight="regular" color="#666">
                   {STATUS_MESSAGES.NO_PARTICIPATE_EVENTS}
@@ -102,3 +92,9 @@ export const MyEvent = () => {
     </PageLayout>
   );
 };
+
+export const EventCardContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 24px;
+`;
