@@ -56,11 +56,14 @@ public class Event extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
     private List<Guest> guests = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
     @Embedded
     private EventOperationPeriod eventOperationPeriod;
+
+    @Column(nullable = false)
+    private String organizerNickname;
 
     @Column(nullable = false)
     private int maxCapacity;
@@ -72,7 +75,9 @@ public class Event extends BaseEntity {
             final OrganizationMember organizer,
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
-            final int maxCapacity
+            final String organizerNickname,
+            final int maxCapacity,
+            final List<Question> questions
     ) {
         validateTitle(title);
         validateDescription(description);
@@ -80,6 +85,7 @@ public class Event extends BaseEntity {
         validateOrganizer(organizer);
         validateOrganization(organization);
         validateBelongToOrganization(organizer, organization);
+        validateOrganizerNickname(organizerNickname);
         validateMaxCapacity(maxCapacity);
 
         this.title = title;
@@ -88,9 +94,11 @@ public class Event extends BaseEntity {
         this.organizer = organizer;
         this.organization = organization;
         this.eventOperationPeriod = eventOperationPeriod;
+        this.organizerNickname = organizerNickname;
         this.maxCapacity = maxCapacity;
 
         organization.addEvent(this);
+        this.questions.addAll(questions);
     }
 
     public static Event create(
@@ -100,7 +108,9 @@ public class Event extends BaseEntity {
             final OrganizationMember organizer,
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
-            final int maxCapacity
+            final String organizerNickname,
+            final int maxCapacity,
+            final Question... questions
     ) {
         return new Event(
                 title,
@@ -109,7 +119,33 @@ public class Event extends BaseEntity {
                 organizer,
                 organization,
                 eventOperationPeriod,
-                maxCapacity
+                organizerNickname,
+                maxCapacity,
+                new ArrayList<>(List.of(questions))
+        );
+    }
+
+    public static Event create(
+            final String title,
+            final String description,
+            final String place,
+            final OrganizationMember organizer,
+            final Organization organization,
+            final EventOperationPeriod eventOperationPeriod,
+            final String organizerNickname,
+            final int maxCapacity,
+            final List<Question> questions
+    ) {
+        return new Event(
+                title,
+                description,
+                place,
+                organizer,
+                organization,
+                eventOperationPeriod,
+                organizerNickname,
+                maxCapacity,
+                questions
         );
     }
 
@@ -150,10 +186,6 @@ public class Event extends BaseEntity {
                 .collect(Collectors.toSet());
     }
 
-    public void addQuestions(final Question... question) {
-        questions.addAll(List.of(question));
-    }
-  
     public boolean isOrganizer(final Member member) {
         return organizer.getMember()
                 .equals(member);
@@ -198,6 +230,10 @@ public class Event extends BaseEntity {
         if (!organizer.isBelongTo(organization)) {
             throw new BusinessRuleViolatedException("자신이 속한 조직에서만 이벤트를 생성할 수 있습니다.");
         }
+    }
+
+    private void validateOrganizerNickname(final String organizerNickname) {
+        Assert.notBlank(organizerNickname, "주최자 이름은 공백이면 안됩니다.");
     }
 
     private void validateMaxCapacity(final int maxCapacity) {

@@ -256,6 +256,7 @@ class OrganizationMemberEventServiceTest {
                         LocalDateTime.now()
                                 .minusDays(20)
                 ),
+                organizer.getNickname(),
                 maxCapacity
         );
         return eventRepository.save(event);

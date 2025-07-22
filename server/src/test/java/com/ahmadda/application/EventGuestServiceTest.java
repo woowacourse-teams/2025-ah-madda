@@ -19,7 +19,6 @@ import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Period;
 import com.ahmadda.domain.Question;
-import com.ahmadda.domain.QuestionRepository;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +43,6 @@ class EventGuestServiceTest {
 
     @Autowired
     private MemberRepository memberRepository;
-
-    @Autowired
-    private QuestionRepository questionRepository;
 
     @Autowired
     private OrganizationRepository organizationRepository;
@@ -209,11 +205,11 @@ class EventGuestServiceTest {
         var member2 = createAndSaveMember("name2", "email2@ahmadda.com");
         var organizer = createAndSaveOrganizationMember("organizer", member1, organization);
         var participant = createAndSaveOrganizationMember("participant", member2, organization);
-        var event = createAndSaveEvent(organizer, organization);
 
-        var question1 = createAndSaveQuestion(event, "필수 질문", true, 0);
-        var question2 = createAndSaveQuestion(event, "선택 질문", false, 1);
-        event.addQuestions(question1, question2);
+        var question1 = Question.create("필수 질문", true, 0);
+        var question2 = Question.create("선택 질문", false, 1);
+        var event = createAndSaveEvent(organizer, organization, question1, question2);
+
 
         var request = new EventParticipateRequest(List.of(
                 new AnswerCreateRequest(question1.getId(), "답변1"),
@@ -243,11 +239,15 @@ class EventGuestServiceTest {
         var member2 = createAndSaveMember("name2", "email2@ahmadda.com");
         var organizer = createAndSaveOrganizationMember("organizer", member1, organization);
         var participant = createAndSaveOrganizationMember("participant", member2, organization);
-        var event = createAndSaveEvent(organizer, organization);
 
-        var question1 = createAndSaveQuestion(event, "필수 질문", true, 0);
-        var question2 = createAndSaveQuestion(event, "선택 질문", false, 1);
-        event.addQuestions(question1, question2);
+        Question question1 = Question.create("필수 질문", true, 0);
+        Question question2 = Question.create("선택 질문", false, 1);
+        var event = createAndSaveEvent(
+                organizer,
+                organization,
+                question1,
+                question2
+        );
 
         var request = new EventParticipateRequest(List.of(
                 new AnswerCreateRequest(question2.getId(), "선택 답변")
@@ -297,7 +297,7 @@ class EventGuestServiceTest {
         return organizationMemberRepository.save(OrganizationMember.create(nickname, member, org));
     }
 
-    private Event createAndSaveEvent(OrganizationMember organizer, Organization organization) {
+    private Event createAndSaveEvent(OrganizationMember organizer, Organization organization, Question... questions) {
         var now = LocalDateTime.now();
         var event = Event.create(
                 "이벤트",
@@ -310,7 +310,9 @@ class EventGuestServiceTest {
                         Period.create(now.plusDays(1), now.plusDays(2)),
                         now.minusDays(6)
                 ),
-                100
+                organizer.getNickname(),
+                100,
+                questions
         );
 
         return eventRepository.save(event);
@@ -318,10 +320,6 @@ class EventGuestServiceTest {
 
     private Guest createAndSaveGuest(Event event, OrganizationMember member) {
         return guestRepository.save(Guest.create(event, member, event.getRegistrationStart()));
-    }
-
-    private Question createAndSaveQuestion(Event event, String text, boolean required, int order) {
-        return questionRepository.save(Question.create(event, text, required, order));
     }
 
     private LoginMember createLoginMember(OrganizationMember organizationMember) {

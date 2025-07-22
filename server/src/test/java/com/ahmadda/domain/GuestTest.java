@@ -30,6 +30,7 @@ class GuestTest {
                         Period.create(now.plusDays(10), now.plusDays(11)),
                         now
                 ),
+                organizer.getNickname(),
                 50
         );
         member = Member.create("참가자 멤버", "guest@example.com");
@@ -89,6 +90,7 @@ class GuestTest {
                         Period.create(now.plusDays(10), now.plusDays(11)),
                         now
                 ),
+                organizationMember1.getNickname(),
                 50
         );
 
@@ -112,6 +114,7 @@ class GuestTest {
                         Period.create(now.plusDays(10), now.plusDays(11)),
                         now
                 ),
+                organizationMember.getNickname(),
                 50
         );
 
@@ -137,6 +140,7 @@ class GuestTest {
                         Period.create(now.plusDays(10), now.plusDays(11)),
                         now
                 ),
+                organizationMember1.getNickname(),
                 1
         );
         Guest.create(event, organizationMember2, event.getRegistrationStart());
@@ -163,11 +167,10 @@ class GuestTest {
     void 필수_질문에_대한_답변이_모두_있다면_정상적으로_답변이_등록된다() {
         // given
         var now = LocalDateTime.now();
-        var event = createEvent("이벤트", participant, now);
 
-        var question1 = Question.create(event, "필수 질문1", true, 0);
-        var question2 = Question.create(event, "선택 질문2", false, 1);
-        event.addQuestions(question1, question2);
+        var question1 = Question.create("필수 질문1", true, 0);
+        var question2 = Question.create("선택 질문2", false, 1);
+        var event = createEvent("이벤트", participant, now, question1, question2);
 
         var guest = Guest.create(event, otherParticipant, now);
 
@@ -190,11 +193,10 @@ class GuestTest {
     void 필수_질문에_대한_답변이_누락되면_예외가_발생한다() {
         // given
         var now = LocalDateTime.now();
-        var event = createEvent("이벤트", participant, now);
 
-        var question1 = Question.create(event, "필수 질문1", true, 0);
-        var question2 = Question.create(event, "선택 질문2", false, 1);
-        event.addQuestions(question1, question2);
+        var question1 = Question.create("필수 질문1", true, 0);
+        var question2 = Question.create("선택 질문2", false, 1);
+        var event = createEvent("이벤트", participant, now, question1, question2);
 
         var guest = Guest.create(event, otherParticipant, now);
 
@@ -216,8 +218,8 @@ class GuestTest {
         var event = createEvent("이벤트", participant, now);
         var guest = Guest.create(event, otherParticipant, now);
 
-        var otherEvent = createEvent("다른 이벤트", participant, now);
-        var externalQuestion = Question.create(otherEvent, "외부 질문", true, 0);
+        var externalQuestion = Question.create("외부 질문", true, 0);
+        var otherEvent = createEvent("다른 이벤트", participant, now, externalQuestion);
 
         var answers = Map.of(
                 externalQuestion, "외부 답변"
@@ -232,7 +234,8 @@ class GuestTest {
     private Event createEvent(
             String title,
             OrganizationMember organizer,
-            LocalDateTime now
+            LocalDateTime now,
+            Question... questions
     ) {
         return Event.create(
                 title, "설명", "장소", organizer,
@@ -242,7 +245,9 @@ class GuestTest {
                         Period.create(now.plusDays(2), now.plusDays(3)),
                         now
                 ),
-                10
+                organizer.getNickname(),
+                10,
+                questions
         );
     }
 }

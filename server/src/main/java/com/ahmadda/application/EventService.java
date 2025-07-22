@@ -2,10 +2,12 @@ package com.ahmadda.application;
 
 import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.QuestionCreateRequest;
+import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
+import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
@@ -24,6 +26,7 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class EventService {
 
+    private final MemberRepository memberRepository;
     private final EventRepository eventRepository;
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
@@ -31,11 +34,11 @@ public class EventService {
     @Transactional
     public Event createEvent(
             final Long organizationId,
-            final Long organizerId,
+            final Long memberId,
             final EventCreateRequest eventCreateRequest
     ) {
         Organization organization = getOrganization(organizationId);
-        OrganizationMember organizer = getOrganizationMember(organizerId);
+        OrganizationMember organizer = validateAccessToOrganization(organizationId, memberId);
 
         EventOperationPeriod eventOperationPeriod = createEventOperationPeriod(eventCreateRequest);
         Event event = Event.create(
@@ -45,9 +48,10 @@ public class EventService {
                 organizer,
                 organization,
                 eventOperationPeriod,
-                eventCreateRequest.maxCapacity()
+                eventCreateRequest.organizerNickname(),
+                eventCreateRequest.maxCapacity(),
+                createQuestions(eventCreateRequest.questions())
         );
-        addQuestionsToEvent(event, eventCreateRequest.questions());
 
         return eventRepository.save(event);
     }
@@ -74,20 +78,20 @@ public class EventService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않은 조직 정보입니다."));
     }
 
-    private OrganizationMember getOrganizationMember(final Long organizationMemberId) {
-        return organizationMemberRepository.findById(organizationMemberId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않은 조직원 정보입니다."));
+    private OrganizationMember validateAccessToOrganization(final Long organizationId, final Long memberId) {
+        memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
+
+        return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
+                .orElseThrow(() -> new AccessDeniedException("조직에 소속되지 않은 멤버입니다."));
     }
 
-    private void addQuestionsToEvent(
-            final Event event,
-            final List<QuestionCreateRequest> questionCreateRequests
-    ) {
-        IntStream.range(0, questionCreateRequests.size())
-                .forEach(i -> {
+    private List<Question> createQuestions(final List<QuestionCreateRequest> questionCreateRequests) {
+        return IntStream.range(0, questionCreateRequests.size())
+                .mapToObj(i -> {
                     QuestionCreateRequest request = questionCreateRequests.get(i);
-                    Question question = Question.create(event, request.questionText(), request.isRequired(), i);
-                    event.addQuestions(question);
-                });
+                    return Question.create(request.questionText(), request.isRequired(), i);
+                })
+                .toList();
     }
 }

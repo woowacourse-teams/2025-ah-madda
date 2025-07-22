@@ -44,8 +44,7 @@ public record EventDetailResponse(
                 event.getTitle(),
                 event.getDescription(),
                 event.getPlace(),
-                event.getOrganizer()
-                        .getNickname(),
+                event.getOrganizerNickname(),
                 event.getEventStart(),
                 event.getEventEnd(),
                 event.getRegistrationStart(),
