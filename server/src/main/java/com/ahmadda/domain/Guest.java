@@ -73,7 +73,7 @@ public class Guest extends BaseEntity {
         addAnswers(questionAnswers);
     }
 
-    private void validateRequiredQuestions(Set<Question> answeredQuestions) {
+    private void validateRequiredQuestions(final Set<Question> answeredQuestions) {
         Set<Question> requiredQuestions = event.getRequiredQuestions();
 
         for (Question required : requiredQuestions) {
@@ -83,7 +83,7 @@ public class Guest extends BaseEntity {
         }
     }
 
-    private void addAnswers(Map<Question, String> answers) {
+    private void addAnswers(final Map<Question, String> answers) {
         answers.forEach((question, answerText) -> {
             if (!event.hasQuestion(question)) {
                 throw new BusinessRuleViolatedException("이벤트에 포함되지 않은 질문입니다.");

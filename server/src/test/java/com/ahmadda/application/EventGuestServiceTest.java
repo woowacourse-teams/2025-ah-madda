@@ -165,6 +165,7 @@ class EventGuestServiceTest {
 
         var question1 = createAndSaveQuestion(event, "필수 질문", true, 0);
         var question2 = createAndSaveQuestion(event, "선택 질문", false, 1);
+        event.addQuestions(question1, question2);
 
         var request = new EventParticipateRequest(List.of(
                 new AnswerCreateRequest(question1.getId(), "답변1"),
@@ -197,6 +198,7 @@ class EventGuestServiceTest {
 
         var question1 = createAndSaveQuestion(event, "필수 질문", true, 0);
         var question2 = createAndSaveQuestion(event, "선택 질문", false, 1);
+        event.addQuestions(question1, question2);
 
         var request = new EventParticipateRequest(List.of(
                 new AnswerCreateRequest(question2.getId(), "선택 답변")

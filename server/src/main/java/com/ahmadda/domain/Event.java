@@ -113,26 +113,6 @@ public class Event extends BaseEntity {
         );
     }
 
-    public LocalDateTime getRegistrationStart() {
-        return eventOperationPeriod.getRegistrationPeriod()
-                .start();
-    }
-
-    public LocalDateTime getRegistrationEnd() {
-        return eventOperationPeriod.getRegistrationPeriod()
-                .end();
-    }
-
-    public LocalDateTime getEventStart() {
-        return eventOperationPeriod.getEventPeriod()
-                .start();
-    }
-
-    public LocalDateTime getEventEnd() {
-        return eventOperationPeriod.getEventPeriod()
-                .end();
-    }
-
     public boolean hasGuest(final OrganizationMember organizationMember) {
         return guests.stream()
                 .anyMatch(guest -> guest.isSameOrganizationMember(organizationMember));
@@ -159,7 +139,7 @@ public class Event extends BaseEntity {
         this.guests.add(guest);
     }
 
-    public boolean hasQuestion(Question question) {
+    public boolean hasQuestion(final Question question) {
         return questions.contains(question);
     }
 
@@ -168,6 +148,10 @@ public class Event extends BaseEntity {
                 .stream()
                 .filter(Question::isRequired)
                 .collect(Collectors.toSet());
+    }
+
+    public void addQuestions(final Question... question) {
+        questions.addAll(List.of(question));
     }
 
     private void validateParticipate(final Guest guest, final LocalDateTime participantDateTime) {
@@ -215,5 +199,25 @@ public class Event extends BaseEntity {
         if (maxCapacity < MIN_CAPACITY || maxCapacity > MAX_CAPACITY) {
             throw new BusinessRuleViolatedException("최대 수용 인원은 1명보다 적거나 21억명 보다 클 수 없습니다.");
         }
+    }
+
+    public LocalDateTime getRegistrationStart() {
+        return eventOperationPeriod.getRegistrationPeriod()
+                .start();
+    }
+
+    public LocalDateTime getRegistrationEnd() {
+        return eventOperationPeriod.getRegistrationPeriod()
+                .end();
+    }
+
+    public LocalDateTime getEventStart() {
+        return eventOperationPeriod.getEventPeriod()
+                .start();
+    }
+
+    public LocalDateTime getEventEnd() {
+        return eventOperationPeriod.getEventPeriod()
+                .end();
     }
 }

@@ -185,9 +185,11 @@ class EventTest {
         // given
         var sut = createEvent("이벤트", 10);
         var question = Question.create(sut, "필수 질문", true, 0);
+        sut.addQuestions(question);
 
         var otherEvent = createEvent("이벤트2", 10);
         var notIncludedQuestion = Question.create(otherEvent, "없는 질문", true, 1);
+        otherEvent.addQuestions(notIncludedQuestion);
 
         // when
         var actual1 = sut.hasQuestion(question);
@@ -208,6 +210,7 @@ class EventTest {
         var sut = createEvent("이벤트", 10);
         var requiredQuestion = Question.create(sut, "필수 질문", true, 0);
         var optionalQuestion = Question.create(sut, "선택 질문", false, 1);
+        sut.addQuestions(requiredQuestion, optionalQuestion);
 
         // when
         var result = sut.getRequiredQuestions();

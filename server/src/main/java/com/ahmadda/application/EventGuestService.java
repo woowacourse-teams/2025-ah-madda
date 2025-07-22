@@ -74,14 +74,14 @@ public class EventGuestService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 조직원입니다."));
     }
 
-    private Map<Question, String> getQuestionAnswers(List<AnswerCreateRequest> answerCreateRequests) {
+    private Map<Question, String> getQuestionAnswers(final List<AnswerCreateRequest> answerCreateRequests) {
         return answerCreateRequests
                 .stream()
                 .map(answerRequest -> Map.entry(getQuestion(answerRequest.questionId()), answerRequest.answerText()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    private Question getQuestion(Long questionId) {
+    private Question getQuestion(final Long questionId) {
         return questionRepository.findById(questionId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 질문입니다."));
     }

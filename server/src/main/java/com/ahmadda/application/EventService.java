@@ -84,7 +84,8 @@ public class EventService {
     ) {
         for (int i = 0; i < questionCreateRequests.size(); i++) {
             QuestionCreateRequest request = questionCreateRequests.get(i);
-            Question.create(event, request.questionText(), request.isRequired(), i);
+            Question question = Question.create(event, request.questionText(), request.isRequired(), i);
+            event.addQuestions(question);
         }
     }
 }

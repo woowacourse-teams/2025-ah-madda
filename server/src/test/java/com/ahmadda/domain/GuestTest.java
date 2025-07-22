@@ -167,6 +167,7 @@ class GuestTest {
 
         var question1 = Question.create(event, "필수 질문1", true, 0);
         var question2 = Question.create(event, "선택 질문2", false, 1);
+        event.addQuestions(question1, question2);
 
         var guest = Guest.create(event, otherParticipant, now);
 
@@ -193,6 +194,7 @@ class GuestTest {
 
         var question1 = Question.create(event, "필수 질문1", true, 0);
         var question2 = Question.create(event, "선택 질문2", false, 1);
+        event.addQuestions(question1, question2);
 
         var guest = Guest.create(event, otherParticipant, now);
 
