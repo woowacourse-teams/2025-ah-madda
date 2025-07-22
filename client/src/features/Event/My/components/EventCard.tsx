@@ -75,7 +75,6 @@ const EventCardWrapper = styled.section`
   padding: 14px;
   width: 100%;
   min-width: 300px;
-  max-width: 400px;
   background-color: #1e2939;
   border-radius: 8.75px;
   cursor: pointer;
