@@ -54,15 +54,13 @@ public class LoginService {
         Organization organization =
                 findOrganization.orElseGet(() -> organizationRepository.save(
                         Organization.create(OrganizationService.WOOWACOURSE_NAME,
-                                            "우아한테크코스입니당딩동",
+                                            "우아한테크코스입니다",
                                             "imageUrl"
                         )
                 ));
 
-        Optional<OrganizationMember> existOrganizationMember = organization.getOrganizationMembers()
-                .stream()
-                .filter((findOrganizationMember) -> findOrganizationMember.getMember().isSameMember(member.getId()))
-                .findAny();
+        Optional<OrganizationMember> existOrganizationMember =
+                organizationMemberRepository.findByOrganizationIdAndMemberId(organization.getId(), member.getId());
 
         if (existOrganizationMember.isEmpty()) {
             OrganizationMember organizationMember = OrganizationMember.create(member.getName(), member, organization);
