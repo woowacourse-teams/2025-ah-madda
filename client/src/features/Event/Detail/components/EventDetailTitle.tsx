@@ -1,8 +1,8 @@
 import { css } from '@emotion/react';
 
-import { Flex } from '../../../shared/components/Flex';
-import { Icon } from '../../../shared/components/Icon';
-import { Text } from '../../../shared/components/Text';
+import { Flex } from '../../../../shared/components/Flex';
+import { Icon } from '../../../../shared/components/Icon';
+import { Text } from '../../../../shared/components/Text';
 import type { EventDetail } from '../types/index';
 
 type EventHeaderProps = Pick<EventDetail, 'title' | 'author'>;

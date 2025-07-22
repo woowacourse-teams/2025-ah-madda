@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 
-import { Flex } from '../../../shared/components/Flex';
+import { Flex } from '../../../../shared/components/Flex';
 import { EventDetail } from '../types';
 
 import { DescriptionCard } from './DescriptionCard';

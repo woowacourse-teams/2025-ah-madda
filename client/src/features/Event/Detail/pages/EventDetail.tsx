@@ -1,8 +1,8 @@
-import { Flex } from '../../../shared/components/Flex';
-import { Header } from '../../../shared/components/Header';
-import { IconButton } from '../../../shared/components/IconButton';
-import { PageLayout } from '../../../shared/components/PageLayout';
-import { Text } from '../../../shared/components/Text';
+import { Flex } from '../../../../shared/components/Flex';
+import { Header } from '../../../../shared/components/Header';
+import { IconButton } from '../../../../shared/components/IconButton';
+import { PageLayout } from '../../../../shared/components/PageLayout';
+import { Text } from '../../../../shared/components/Text';
 import { EventDetailContent } from '../components/EventDetailContent';
 import { useEventDetail } from '../hooks/useEventDetail';
 

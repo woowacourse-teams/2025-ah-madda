@@ -1,9 +1,9 @@
 import { css } from '@emotion/react';
 
-import { Card } from '../../../shared/components/Card';
-import { Flex } from '../../../shared/components/Flex';
-import { Icon } from '../../../shared/components/Icon';
-import { Text } from '../../../shared/components/Text';
+import { Card } from '../../../../shared/components/Card';
+import { Flex } from '../../../../shared/components/Flex';
+import { Icon } from '../../../../shared/components/Icon';
+import { Text } from '../../../../shared/components/Text';
 import type { EventDetail } from '../types/index';
 
 type TimeInfoCardProps = Pick<EventDetail, 'deadlineTime' | 'startTime' | 'endTime'>;

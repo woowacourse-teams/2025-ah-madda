@@ -1,6 +1,6 @@
-import { Card } from '../../../shared/components/Card';
-import { Flex } from '../../../shared/components/Flex';
-import { Text } from '../../../shared/components/Text';
+import { Card } from '../../../../shared/components/Card';
+import { Flex } from '../../../../shared/components/Flex';
+import { Text } from '../../../../shared/components/Text';
 import type { EventDetail } from '../types/index';
 
 type DescriptionCardProps = Pick<EventDetail, 'description'>;
