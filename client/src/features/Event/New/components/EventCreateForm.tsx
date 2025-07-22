@@ -50,7 +50,7 @@ export const EventCreateForm = () => {
               `}
             >
               <Input
-                id="eventStartTime"
+                id="registrationStart"
                 label="신청 시작 날짜/시간"
                 placeholder="2025.07.25 13:00"
               />
@@ -61,7 +61,11 @@ export const EventCreateForm = () => {
                 flex: 1;
               `}
             >
-              <Input id="eventEndTime" label="신청 종료 날짜/시간" placeholder="2025.07.25 15:00" />
+              <Input
+                id="registrationEnd"
+                label="신청 종료 날짜/시간"
+                placeholder="2025.07.25 15:00"
+              />
             </Flex>
           </Flex>
 
