@@ -10,10 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class OrganizationService {
+
+    private static final Organization woowacourse = Organization.create("우아한테크코스", "우아한테크코스입니당딩동", "imageUrl");
 
     private final OrganizationRepository organizationRepository;
 
@@ -37,5 +40,14 @@ public class OrganizationService {
         Organization organization = getOrganization(organizationId);
 
         return organization.getActiveEvents();
+    }
+
+    //TODO 07.25 이후 리팩터링 및 제거하기
+    @Transactional
+    @Deprecated
+    public Organization alwaysGetWoowacourse() {
+        Optional<Organization> organization = organizationRepository.findByName(woowacourse.getName());
+
+        return organization.orElseGet(() -> organizationRepository.save(woowacourse));
     }
 }
