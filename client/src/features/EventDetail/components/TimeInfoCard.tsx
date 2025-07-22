@@ -14,7 +14,6 @@ export const TimeInfoCard = ({ deadlineTime, startTime, endTime }: TimeInfoCardP
       dir="column"
       css={css`
         flex: 1;
-        min-height: 235px;
       `}
     >
       <Card>
