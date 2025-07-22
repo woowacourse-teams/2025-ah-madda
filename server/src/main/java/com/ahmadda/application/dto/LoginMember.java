@@ -1,4 +1,4 @@
-package com.ahmadda.presentation.dto;
+package com.ahmadda.application.dto;
 
 public record LoginMember(
         Long memberId,

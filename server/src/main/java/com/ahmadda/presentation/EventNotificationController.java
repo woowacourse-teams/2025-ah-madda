@@ -1,8 +1,8 @@
 package com.ahmadda.presentation;
 
 import com.ahmadda.application.EventNotificationService;
+import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.NotificationRequest;
-import com.ahmadda.presentation.dto.LoginMember;
 import com.ahmadda.presentation.resolver.AuthMember;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

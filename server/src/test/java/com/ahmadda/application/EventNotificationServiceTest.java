@@ -1,5 +1,6 @@
 package com.ahmadda.application;
 
+import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.NotificationRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
@@ -15,7 +16,6 @@ import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Period;
-import com.ahmadda.presentation.dto.LoginMember;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

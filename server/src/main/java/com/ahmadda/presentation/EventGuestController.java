@@ -2,10 +2,10 @@ package com.ahmadda.presentation;
 
 import com.ahmadda.application.EventGuestService;
 import com.ahmadda.application.dto.EventParticipateRequest;
+import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.presentation.dto.GuestResponse;
-import com.ahmadda.presentation.dto.LoginMember;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import jakarta.validation.Valid;
