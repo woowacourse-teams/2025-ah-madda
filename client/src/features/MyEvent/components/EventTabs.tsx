@@ -1,3 +1,5 @@
+import { css } from '@emotion/react';
+
 import { Tabs } from '@/shared/components/Tabs';
 
 import { UI_LABELS, STATUS_MESSAGES, TAB_VALUES } from '../constants';
@@ -13,7 +15,12 @@ export const EventTabs = () => {
     <Tabs defaultValue={TAB_VALUES.HOST}>
       <EventTabsList />
 
-      <Tabs.Content value={TAB_VALUES.HOST} css={{ marginTop: '37.5px' }}>
+      <Tabs.Content
+        value={TAB_VALUES.HOST}
+        css={css`
+          margin-top: 37.5px;
+        `}
+      >
         <EventSection
           events={events.hostEvents}
           title={UI_LABELS.ONGOING_HOST_EVENTS}
@@ -21,7 +28,12 @@ export const EventTabs = () => {
         />
       </Tabs.Content>
 
-      <Tabs.Content value={TAB_VALUES.PARTICIPATE} css={{ marginTop: '37.5px' }}>
+      <Tabs.Content
+        value={TAB_VALUES.PARTICIPATE}
+        css={css`
+          margin-top: 37.5px;
+        `}
+      >
         <EventSection
           events={events.participateEvents}
           title={UI_LABELS.PARTICIPATING_EVENTS}
