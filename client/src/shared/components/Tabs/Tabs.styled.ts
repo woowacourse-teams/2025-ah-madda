@@ -7,8 +7,8 @@ export const StyledTabs = styled.div`
 
 export const StyledTabsList = styled.div`
   display: flex;
-  border-radius: 6px;
-  background-color: #f1f5f9;
+  border-radius: 12.75px;
+  background-color: #ececf0;
   padding: 4px;
 `;
 
