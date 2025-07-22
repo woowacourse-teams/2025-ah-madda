@@ -6,7 +6,7 @@ import { PageLayout } from '@/shared/components/PageLayout';
 import { EventList } from '../components/EventList';
 import { OrganizationInfo } from '../components/OrganizationInfo';
 
-export const EventPage = () => {
+export const OverviewPage = () => {
   return (
     <PageLayout
       header={
