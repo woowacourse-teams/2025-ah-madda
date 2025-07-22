@@ -1,6 +1,7 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.EventCreateRequest;
+import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventOperationPeriod;
@@ -10,11 +11,14 @@ import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Period;
+import com.ahmadda.domain.Question;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +47,7 @@ public class EventService {
                 eventOperationPeriod,
                 eventCreateRequest.maxCapacity()
         );
+        addQuestionsToEvent(event, eventCreateRequest.questions());
 
         return eventRepository.save(event);
     }
@@ -72,5 +77,17 @@ public class EventService {
     private OrganizationMember getOrganizationMember(final Long organizationMemberId) {
         return organizationMemberRepository.findById(organizationMemberId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않은 조직원 정보입니다."));
+    }
+
+    private void addQuestionsToEvent(
+            final Event event,
+            final List<QuestionCreateRequest> questionCreateRequests
+    ) {
+        IntStream.range(0, questionCreateRequests.size())
+                .forEach(i -> {
+                    QuestionCreateRequest request = questionCreateRequests.get(i);
+                    Question question = Question.create(event, request.questionText(), request.isRequired(), i);
+                    event.addQuestions(question);
+                });
     }
 }
