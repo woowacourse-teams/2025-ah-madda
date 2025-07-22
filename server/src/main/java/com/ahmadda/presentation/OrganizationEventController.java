@@ -4,10 +4,12 @@ package com.ahmadda.presentation;
 import com.ahmadda.application.EventService;
 import com.ahmadda.application.OrganizationService;
 import com.ahmadda.application.dto.EventCreateRequest;
+import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.Event;
 import com.ahmadda.presentation.dto.EventCreateResponse;
 import com.ahmadda.presentation.dto.EventDetailResponse;
 import com.ahmadda.presentation.dto.EventResponse;
+import com.ahmadda.presentation.resolver.AuthMember;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -43,11 +45,10 @@ public class OrganizationEventController {
     @PostMapping("/{organizationId}/events")
     public ResponseEntity<EventCreateResponse> createOrganizationEvent(
             @PathVariable final Long organizationId,
-            @RequestBody @Valid final EventCreateRequest eventCreateRequest
+            @RequestBody @Valid final EventCreateRequest eventCreateRequest,
+            @AuthMember final LoginMember loginMember
     ) {
-        Long fakeOrganizerId = 1L;
-
-        Event event = eventService.createEvent(organizationId, fakeOrganizerId, eventCreateRequest);
+        Event event = eventService.createEvent(organizationId, loginMember.memberId(), eventCreateRequest);
 
         return ResponseEntity.created(URI.create("/api/organizations/" + organizationId + "/events/" + event.getId()))
                 .body(new EventCreateResponse(event.getId()));

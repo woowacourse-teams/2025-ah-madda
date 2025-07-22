@@ -183,13 +183,11 @@ class EventTest {
     @Test
     void 이벤트에_질문이_포함되어있는지_확인할_수_있다() {
         // given
-        var sut = createEvent("이벤트", 10);
-        var question = Question.create(sut, "필수 질문", true, 0);
-        sut.addQuestions(question);
+        var question = Question.create("필수 질문", true, 0);
+        var sut = createEvent("이벤트", 10, question);
 
-        var otherEvent = createEvent("이벤트2", 10);
-        var notIncludedQuestion = Question.create(otherEvent, "없는 질문", true, 1);
-        otherEvent.addQuestions(notIncludedQuestion);
+        var notIncludedQuestion = Question.create("없는 질문", true, 1);
+        var otherEvent = createEvent("이벤트2", 10, notIncludedQuestion);
 
         // when
         var actual1 = sut.hasQuestion(question);
@@ -204,6 +202,7 @@ class EventTest {
         });
     }
 
+    @Test
     void 이벤트의_주최자인지_판단한다() {
         // given
         var now = LocalDateTime.now();
@@ -232,10 +231,9 @@ class EventTest {
     @Test
     void 필수_질문만_조회할_수_있다() {
         // given
-        var sut = createEvent("이벤트", 10);
-        var requiredQuestion = Question.create(sut, "필수 질문", true, 0);
-        var optionalQuestion = Question.create(sut, "선택 질문", false, 1);
-        sut.addQuestions(requiredQuestion, optionalQuestion);
+        var requiredQuestion = Question.create("필수 질문", true, 0);
+        var optionalQuestion = Question.create("선택 질문", false, 1);
+        var sut = createEvent("이벤트", 10, requiredQuestion, optionalQuestion);
 
         // when
         var result = sut.getRequiredQuestions();
@@ -249,7 +247,7 @@ class EventTest {
         });
     }
 
-    private Event createEvent(final String title, final int maxCapacity) {
+    private Event createEvent(final String title, final int maxCapacity, Question... questions) {
         var organization = createOrganization("우테코");
 
         return Event.create(
@@ -274,7 +272,8 @@ class EventTest {
                         LocalDateTime.now()
                 ),
                 "이벤트 근로",
-                maxCapacity
+                maxCapacity,
+                questions
         );
     }
 

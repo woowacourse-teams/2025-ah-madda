@@ -31,11 +31,11 @@ public class EventService {
     @Transactional
     public Event createEvent(
             final Long organizationId,
-            final Long organizerId,
+            final Long memberId,
             final EventCreateRequest eventCreateRequest
     ) {
         Organization organization = getOrganization(organizationId);
-        OrganizationMember organizer = getOrganizationMember(organizerId);
+        OrganizationMember organizer = getOrganizationMember(organizationId, memberId);
 
         EventOperationPeriod eventOperationPeriod = createEventOperationPeriod(eventCreateRequest);
         Event event = Event.create(
@@ -46,9 +46,9 @@ public class EventService {
                 organization,
                 eventOperationPeriod,
                 eventCreateRequest.organizerNickname(),
-                eventCreateRequest.maxCapacity()
+                eventCreateRequest.maxCapacity(),
+                createQuestions(eventCreateRequest.questions())
         );
-        addQuestionsToEvent(event, eventCreateRequest.questions());
 
         return eventRepository.save(event);
     }
@@ -75,20 +75,17 @@ public class EventService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않은 조직 정보입니다."));
     }
 
-    private OrganizationMember getOrganizationMember(final Long organizationMemberId) {
-        return organizationMemberRepository.findById(organizationMemberId)
+    private OrganizationMember getOrganizationMember(final Long organizationId, final Long memberId) {
+        return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않은 조직원 정보입니다."));
     }
 
-    private void addQuestionsToEvent(
-            final Event event,
-            final List<QuestionCreateRequest> questionCreateRequests
-    ) {
-        IntStream.range(0, questionCreateRequests.size())
-                .forEach(i -> {
+    private List<Question> createQuestions(final List<QuestionCreateRequest> questionCreateRequests) {
+        return IntStream.range(0, questionCreateRequests.size())
+                .mapToObj(i -> {
                     QuestionCreateRequest request = questionCreateRequests.get(i);
-                    Question question = Question.create(event, request.questionText(), request.isRequired(), i);
-                    event.addQuestions(question);
-                });
+                    return Question.create(request.questionText(), request.isRequired(), i);
+                })
+                .toList();
     }
 }
