@@ -10,7 +10,7 @@ export const MyEventHeader = () => {
     <Header
       left={
         <Flex alignItems="center" gap="12px">
-          <IconButton name="back" size={14} />
+          <IconButton name="back" size={14} aria-label="이전 페이지로 돌아가기" />
           <Text as="h1" type="Title" weight="bold">
             {UI_LABELS.PAGE_TITLE}
           </Text>
