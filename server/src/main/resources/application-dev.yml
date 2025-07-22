@@ -1,6 +1,14 @@
 spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${db.dev.host}:${db.dev.port}/${db.dev.name}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${db.dev.username}
+    password: ${db.dev.password}
+
   jpa:
     show-sql: true
+    hibernate:
+      ddl-auto: update
     properties:
       hibernate:
         detector:
@@ -14,5 +22,5 @@ api:
   url: http://dev.ahmadda.com:8080
 
 jwt:
-  secret-key: ${jwt.local.secret-key}
-  access-expiration: ${jwt.local.access-expiration}
+  secret-key: ${jwt.dev.secret-key}
+  access-expiration: ${jwt.dev.access-expiration}
