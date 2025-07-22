@@ -27,7 +27,6 @@ export const StyledInput = styled.input<Pick<InputProps, 'error'>>`
   border: none;
   font-size: 14px;
   width: 100%;
-  box-sizing: border-box;
 
   &:focus {
     outline: none;

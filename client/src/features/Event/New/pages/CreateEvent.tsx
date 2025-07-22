@@ -18,9 +18,6 @@ export const CreateEvent = () => {
               <Text type="caption">돌아가기</Text>
             </Flex>
           }
-          css={css`
-            background-color: white;
-          `}
         />
       }
     >
