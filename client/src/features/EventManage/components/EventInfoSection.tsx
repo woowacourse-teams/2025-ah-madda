@@ -44,7 +44,7 @@ export const EventInfoSection = ({
       <Card>
         <Flex dir="column" gap="16px">
           <Flex alignItems="center" gap="8px">
-            <Icon name="calendar" size={17.5} color="#4A5565" />
+            <Icon name="calendar" size={14} color="#4A5565" />
             <Text type="caption" weight="regular" color="#4A5565">
               이벤트 정보
             </Text>

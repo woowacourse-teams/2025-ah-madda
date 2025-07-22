@@ -27,8 +27,8 @@ export const AlarmSection = ({ pendingGuestsCount }: AlarmSectionProps) => {
   return (
     <Card>
       <Flex as="section" dir="column">
-        <Flex alignItems="flex-end">
-          <Icon name="alarm" size={24} color="#F54900" />
+        <Flex alignItems="center" gap="8px">
+          <Icon name="alarm" size={14} color="#F54900" />
           <Text type="caption" weight="medium" color="#F54900">
             미신청자 알람
           </Text>
