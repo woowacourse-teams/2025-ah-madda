@@ -2,6 +2,8 @@ package com.ahmadda.presentation;
 
 import com.ahmadda.application.EventNotificationService;
 import com.ahmadda.application.dto.NotificationRequest;
+import com.ahmadda.presentation.dto.LoginMember;
+import com.ahmadda.presentation.resolver.AuthMember;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +23,10 @@ public class EventNotificationController {
     @PostMapping("/{eventId}/notify-non-guests")
     public ResponseEntity<Void> notifyNonGuests(
             @PathVariable final Long eventId,
-            @RequestBody @Valid final NotificationRequest request
+            @RequestBody @Valid final NotificationRequest request,
+            @AuthMember final LoginMember loginMember
     ) {
-        eventNotificationService.notifyNonGuestOrganizationMembers(eventId, request.content());
+        eventNotificationService.notifyNonGuestOrganizationMembers(eventId, request, loginMember);
 
         return ResponseEntity.ok()
                 .build();

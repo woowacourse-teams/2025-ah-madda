@@ -180,6 +180,32 @@ class EventTest {
                 .hasMessage("이미 참여중인 게스트입니다.");
     }
 
+    @Test
+    void 이벤트의_주최자인지_판단한다() {
+        // given
+        var now = LocalDateTime.now();
+        var registrationPeriod = Period.create(
+                LocalDateTime.now()
+                        .plusDays(1),
+                LocalDateTime.now()
+                        .plusDays(2)
+        );
+        var sut = createEvent(now, registrationPeriod);
+        var nonOrganizer = createOrganizationMember("다른 조직원", createMember(), baseOrganization);
+
+        // when
+        var isOrganizer = sut.isOrganizer(baseOrganizer.getMember());
+        var isNotOrganizer = sut.isOrganizer(nonOrganizer.getMember());
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(isOrganizer)
+                    .isTrue();
+            softly.assertThat(isNotOrganizer)
+                    .isFalse();
+        });
+    }
+
     private Event createEvent(final String title, final int maxCapacity) {
         var organization = createOrganization("우테코");
 

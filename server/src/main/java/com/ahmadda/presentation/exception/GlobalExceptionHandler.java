@@ -1,5 +1,6 @@
 package com.ahmadda.presentation.exception;
 
+import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
@@ -59,6 +60,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 super.createProblemDetail(ex, HttpStatus.UNAUTHORIZED, ex.getMessage(), null, null, request);
 
         return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDenied(final Exception ex, final WebRequest request) {
+        ProblemDetail body = super.createProblemDetail(ex, HttpStatus.FORBIDDEN, ex.getMessage(), null, null, request);
+
+        return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.FORBIDDEN, request);
     }
 
     @Override
