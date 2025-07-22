@@ -2,6 +2,9 @@ package com.ahmadda.application;
 
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
+import com.ahmadda.domain.Organization;
+import com.ahmadda.domain.OrganizationMemberRepository;
+import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.infra.jwt.JwtTokenProvider;
 import com.ahmadda.infra.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.oauth.dto.OAuthUserInfoResponse;
@@ -24,6 +27,12 @@ class LoginServiceTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private OrganizationRepository organizationRepository;
+
+    @Autowired
+    private OrganizationMemberRepository organizationMemberRepository;
 
     @MockitoBean
     private GoogleOAuthProvider googleOAuthProvider;
@@ -74,5 +83,46 @@ class LoginServiceTest {
 
         // then
         assertThat(memberRepository.count()).isEqualTo(1);
+    }
+
+    @Test
+    void 조직에_회원을_성공적으로_등록한다() {
+        // given
+        var member = Member.create("테스트멤버", "test@test.com");
+        memberRepository.save(member);
+
+        var organization = Organization.create(OrganizationService.WOOWACOURSE_NAME, "우아한테크코스 설명", "http://image.url");
+        organizationRepository.save(organization);
+
+        // when
+        sut.addMemberToWoowacourse(member);
+
+        // then
+        var foundOrganization = organizationRepository.findByName(OrganizationService.WOOWACOURSE_NAME).orElseThrow();
+        var foundOrganizationMember =
+                organizationMemberRepository.findByMemberAndOrganization(member, foundOrganization).orElseThrow();
+
+        assertThat(foundOrganizationMember).isNotNull();
+        assertThat(foundOrganizationMember.getMember()).isEqualTo(member);
+        assertThat(foundOrganizationMember.getOrganization()).isEqualTo(foundOrganization);
+        assertThat(foundOrganization.getOrganizationMembers()).contains(foundOrganizationMember);
+    }
+
+    @Test
+    void 이미_등록된_회원이면_조직에_다시_등록하지_않는다() {
+        // given
+        var member = Member.create("테스트멤버", "test@test.com");
+        memberRepository.save(member);
+
+        // 최초 등록
+        sut.addMemberToWoowacourse(member);
+
+        // when
+        sut.addMemberToWoowacourse(member);
+
+        // then
+        var foundOrganization =
+                organizationRepository.findByName(OrganizationService.WOOWACOURSE_NAME).orElseThrow();
+        assertThat(foundOrganization.getOrganizationMembers()).hasSize(1);
     }
 }

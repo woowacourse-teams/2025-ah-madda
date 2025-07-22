@@ -131,19 +131,20 @@ class OrganizationServiceTest {
         var woowacourse = sut.alwaysGetWoowacourse();
 
         // then
-        assertThat(woowacourse.getName()).isEqualTo("우아한테크코스");
+        assertThat(woowacourse.getName()).isEqualTo(OrganizationService.WOOWACOURSE_NAME);
     }
 
     @Test
     void DEPRECATED_여러번_요청해도_항상_우아한코스_조직을_반환한다() {
         //given
-        Organization woowacourse = Organization.create("우아한테크코스", "우아한테크코스입니당딩동", "imageUrl");
+        Organization woowacourse =
+                Organization.create(OrganizationService.WOOWACOURSE_NAME, "우아한테크코스입니당딩동", "imageUrl");
         organizationRepository.save(woowacourse);
         // when
         var getWoowacourse = sut.alwaysGetWoowacourse();
 
         // then
-        assertThat(getWoowacourse.getName()).isEqualTo("우아한테크코스");
+        assertThat(getWoowacourse.getName()).isEqualTo(OrganizationService.WOOWACOURSE_NAME);
     }
 
     private Organization createOrganization(String name, String description, String imageUrl) {

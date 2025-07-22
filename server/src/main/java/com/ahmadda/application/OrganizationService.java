@@ -16,7 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OrganizationService {
 
-    private static final Organization woowacourse = Organization.create("우아한테크코스", "우아한테크코스입니당딩동", "imageUrl");
+    public static final String WOOWACOURSE_NAME = "우아한테크코스";
 
     private final OrganizationRepository organizationRepository;
 
@@ -46,8 +46,11 @@ public class OrganizationService {
     @Transactional
     @Deprecated
     public Organization alwaysGetWoowacourse() {
-        Optional<Organization> organization = organizationRepository.findByName(woowacourse.getName());
+        Optional<Organization> organization = organizationRepository.findByName(WOOWACOURSE_NAME);
 
-        return organization.orElseGet(() -> organizationRepository.save(woowacourse));
+        return organization.orElseGet(() -> organizationRepository.save(Organization.create(WOOWACOURSE_NAME,
+                                                                                            "우아한테크코스입니다",
+                                                                                            "imageUrl"
+        )));
     }
 }
