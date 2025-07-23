@@ -18,7 +18,7 @@ export const AuthCallback: React.FC = () => {
     };
 
     processCallback();
-  }, [handleCallback, isAuthenticated, navigate]);
+  }, []);
 
   if (isLoading) {
     return (
