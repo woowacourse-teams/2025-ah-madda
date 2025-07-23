@@ -68,13 +68,15 @@ export const EventCard = ({
             {organizerName}
           </Text>
         </Flex>
+        <Flex width="100%" justifyContent="space-between" alignItems="center">
+          <Text type="caption" color="#99A1AF">
+            참여 현황
+          </Text>
+          <Text type="caption" weight="regular" color="#99A1AF">
+            {`${currentGuestCount}/${maxCapacity}명`}
+          </Text>
+        </Flex>
         <ProgressBar value={currentGuestCount} max={maxCapacity} color="black" />
-      </Flex>
-
-      <Flex>
-        <Text type="caption" weight="regular" color="#99A1AF">
-          {`${currentGuestCount}/${maxCapacity}명 참여`}
-        </Text>
       </Flex>
     </EventCardWrapper>
   );
