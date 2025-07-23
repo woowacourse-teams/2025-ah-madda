@@ -3,21 +3,16 @@ import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
 
-import { Guest } from '../types';
+import { Guest, NonGuest } from '../types';
 
 import { GuestList } from './GuestList';
 
 type GuestViewSectionProps = {
-  completedGuests: Guest[];
-  pendingGuests: Guest[];
-  onGuestClick: (guest: Guest) => void;
+  guests: Guest[];
+  nonGuests: NonGuest[];
 };
 
-export const GuestViewSection = ({
-  completedGuests,
-  pendingGuests,
-  onGuestClick,
-}: GuestViewSectionProps) => {
+export const GuestViewSection = ({ guests, nonGuests }: GuestViewSectionProps) => {
   return (
     <Card>
       <Flex as="section" dir="column" gap="20px">
@@ -29,19 +24,17 @@ export const GuestViewSection = ({
         </Flex>
 
         <GuestList
-          title={`신청 완료 (${completedGuests.length}명)`}
+          title={`신청 완료 (${guests.length}명)`}
           titleColor="#00A63E"
-          guests={completedGuests}
+          guests={guests}
           variant="completed"
-          onGuestClick={onGuestClick}
         />
 
         <GuestList
-          title={`미신청 (${pendingGuests.length}명)`}
+          title={`미신청 (${nonGuests.length}명)`}
           titleColor="#4A5565"
-          guests={pendingGuests}
+          guests={nonGuests}
           variant="pending"
-          onGuestClick={onGuestClick}
         />
       </Flex>
     </Card>

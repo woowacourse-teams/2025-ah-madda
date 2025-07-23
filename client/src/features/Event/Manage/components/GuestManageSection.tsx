@@ -4,17 +4,10 @@ import { useQuery } from '@tanstack/react-query';
 import { guestManageQueryOptions } from '@/api/queries/guestManage';
 import { Flex } from '@/shared/components/Flex';
 
-import { Guest } from '../types';
-
 import { AlarmSection } from './AlarmSection';
 import { GuestViewSection } from './GuestViewSection';
 
-type GuestManageSectionProps = {
-  completedGuests: Guest[];
-  pendingGuests: Guest[];
-};
-
-export const GuestManageSection = ({ completedGuests, pendingGuests }: GuestManageSectionProps) => {
+export const GuestManageSection = () => {
   // const { eventId } = useParams();
   //E.TODO: eventId 가져오기
   const eventId = 1; //임시
@@ -25,8 +18,6 @@ export const GuestManageSection = ({ completedGuests, pendingGuests }: GuestMana
   const { data: nonGuests = [] } = useQuery({
     ...guestManageQueryOptions.nonGuests(eventId),
   });
-
-  console.log(guests, nonGuests);
 
   return (
     <Flex
@@ -49,13 +40,9 @@ export const GuestManageSection = ({ completedGuests, pendingGuests }: GuestMana
         }
       `}
     >
-      <AlarmSection pendingGuestsCount={pendingGuests.length} />
+      <AlarmSection pendingGuestsCount={nonGuests.length} />
 
-      <GuestViewSection
-        completedGuests={completedGuests}
-        pendingGuests={pendingGuests}
-        onGuestClick={() => {}}
-      />
+      <GuestViewSection guests={guests} nonGuests={nonGuests} />
     </Flex>
   );
 };
