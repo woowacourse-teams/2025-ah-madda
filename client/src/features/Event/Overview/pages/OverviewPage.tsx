@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 
 import { getGoogleAuthUrl } from '@/api/auth';
-import { useGoogleAuth } from '@/hooks/useGoogleAuth';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
+import { useGoogleAuth } from '@/shared/hooks/useGoogleAuth';
 
 import { EventList } from '../components/EventList';
 import { OrganizationInfo } from '../components/OrganizationInfo';

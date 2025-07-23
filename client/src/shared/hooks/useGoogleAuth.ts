@@ -1,13 +1,9 @@
 import { useEffect } from 'react';
 
-import {
-  getAuthCodeFromUrl,
-  saveAuthData,
-  isAuthenticated,
-  getStoredToken,
-  logout as logoutUser,
-} from '../api/auth';
-import { useGoogleLoginMutation } from '../api/authQueries';
+import { getAuthCodeFromUrl, isAuthenticated, logout as logoutUser } from '../../api/auth';
+import { useGoogleLoginMutation } from '../../api/authQueries';
+import { ACCESS_TOKEN_KEY } from '../constants';
+import { getLocalStorage, setLocalStorage } from '../utils/localStorage';
 
 type UseGoogleAuthReturn = {
   isLoading: boolean;
@@ -32,7 +28,7 @@ export const useGoogleAuth = (): UseGoogleAuthReturn => {
       }
 
       try {
-        const existingToken = getStoredToken();
+        const existingToken = getLocalStorage(ACCESS_TOKEN_KEY);
         if (existingToken) {
           return;
         }
@@ -44,7 +40,7 @@ export const useGoogleAuth = (): UseGoogleAuthReturn => {
           throw new Error('Access token not found in response');
         }
 
-        saveAuthData(token);
+        setLocalStorage(ACCESS_TOKEN_KEY, token);
 
         const url = new URL(window.location.href);
         url.searchParams.delete('code');
@@ -63,24 +59,24 @@ export const useGoogleAuth = (): UseGoogleAuthReturn => {
 
   const handleCallback = async (): Promise<void> => {
     try {
-      const existingToken = getStoredToken();
+      const existingToken = getLocalStorage(ACCESS_TOKEN_KEY);
       if (existingToken) {
         return;
       }
 
       const code = getAuthCodeFromUrl();
       if (!code) {
-        throw new Error('Authorization code not found in URL');
+        throw new Error('인가 코드를 url에서 찾을 수 없습니다.');
       }
 
       const response = await googleLoginMutation.mutateAsync(code);
 
       const token = response.accessToken;
       if (!token) {
-        throw new Error('Access token not found in response');
+        throw new Error('응답에서 액세스 토큰을 찾을 수 없습니다.');
       }
 
-      saveAuthData(token);
+      setLocalStorage(ACCESS_TOKEN_KEY, token);
 
       const url = new URL(window.location.href);
       url.searchParams.delete('code');
