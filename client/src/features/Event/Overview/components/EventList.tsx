@@ -5,15 +5,19 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 
+import { Event } from '../../types/Event';
 import { EventContainer } from '../containers/EventContainer';
-import { eventMock } from '../fixtures/mock';
 import { groupEventsByDate } from '../utils/groupEventsByDate';
 
 import { EventCard } from './EventCard';
 import { EventSection } from './EventSection';
 
-export const EventList = () => {
-  const groupedEvents = groupEventsByDate(eventMock);
+type EventListProps = {
+  events: Event[];
+};
+
+export const EventList = ({ events }: EventListProps) => {
+  const groupedEvents = groupEventsByDate(events);
   const navigate = useNavigate();
 
   return (

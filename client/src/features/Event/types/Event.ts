@@ -11,3 +11,11 @@ export type Event = {
   registrationEnd: string;
   organizerName: string;
 };
+
+// S.TODO: 추후 Organization 폴더가 생기면 이동
+export type Organization = {
+  organizationId: number;
+  name: string;
+  description: string;
+  imageUrl: string;
+};
