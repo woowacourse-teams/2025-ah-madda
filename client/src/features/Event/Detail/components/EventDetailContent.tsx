@@ -12,24 +12,20 @@ import { PreQuestionCard } from './PreQuestionCard';
 import { SubmitButtonCard } from './SubmitButtonCard';
 import { TimeInfoCard } from './TimeInfoCard';
 
-type EventDetailContentProps = {
-  event: EventDetail;
-};
+type EventDetailContentProps = EventDetail;
 
-export const EventDetailContent = ({ event }: EventDetailContentProps) => {
-  const {
-    title,
-    organizerName,
-    registrationEnd,
-    eventStart,
-    eventEnd,
-    place,
-    currentGuestCount,
-    maxCapacity,
-    description,
-    questions,
-  } = event;
-
+export const EventDetailContent = ({
+  title,
+  organizerName,
+  registrationEnd,
+  eventStart,
+  eventEnd,
+  place,
+  currentGuestCount,
+  maxCapacity,
+  description,
+  questions,
+}: EventDetailContentProps) => {
   return (
     <Flex
       dir="column"

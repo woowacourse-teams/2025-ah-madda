@@ -38,7 +38,7 @@ export const EventDetailPage = () => {
         />
       }
     >
-      <EventDetailContent event={event} />
+      <EventDetailContent {...event} />
     </PageLayout>
   );
 };
