@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
+import { useParams } from 'react-router-dom';
 
 import { guestManageQueryOptions } from '@/api/queries/guestManage';
 import { Flex } from '@/shared/components/Flex';
@@ -8,9 +9,8 @@ import { AlarmSection } from './AlarmSection';
 import { GuestViewSection } from './GuestViewSection';
 
 export const GuestManageSection = () => {
-  // const { eventId } = useParams();
-  //E.TODO: eventId 가져오기
-  const eventId = 1; //임시
+  const { eventId: eventIdParam } = useParams();
+  const eventId = Number(eventIdParam);
   const { data: guests = [] } = useQuery({
     ...guestManageQueryOptions.guests(eventId),
   });

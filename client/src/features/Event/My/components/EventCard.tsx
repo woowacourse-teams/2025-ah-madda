@@ -9,6 +9,7 @@ import { Text } from '@/shared/components/Text';
 import type { Event } from '../types';
 
 export const EventCard = ({
+  id,
   title,
   description,
   author,
@@ -22,7 +23,7 @@ export const EventCard = ({
   const navigate = useNavigate();
 
   return (
-    <EventCardWrapper onClick={() => navigate('/event/manage')}>
+    <EventCardWrapper onClick={() => navigate(`/event/manage/${id}`)}>
       <Flex dir="column" gap="3.5px">
         <Text type="Title" weight="semibold" color="white">
           {title}
