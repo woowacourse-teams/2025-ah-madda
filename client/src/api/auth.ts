@@ -1,12 +1,11 @@
 import { fetcher } from './fetcher';
 
-type accessToken = {
+export type accessToken = {
   accessToken: string;
 };
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || '';
-const GOOGLE_REDIRECT_URI =
-  process.env.REACT_APP_GOOGLE_REDIRECT_URI || 'http://localhost:5173/auth';
+const GOOGLE_REDIRECT_URI = 'https://ahmadda.com';
 
 export const getGoogleAuthUrl = (): string => {
   const params = new URLSearchParams({
