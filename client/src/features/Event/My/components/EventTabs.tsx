@@ -13,13 +13,11 @@ export const EventTabs = () => {
   // E.TODO: organizationMemberId를 실제로 가져오는 로직 필요
   const organizationMemberId = 1; // 임시 값
 
-  const { data: hostEvents = [] } = useQuery({
-    ...myEventQueryOptions.hostEvents(organizationMemberId),
-  });
+  const { data: hostEvents = [] } = useQuery(myEventQueryOptions.hostEvents(organizationMemberId));
 
-  const { data: participateEvents = [] } = useQuery({
-    ...myEventQueryOptions.participateEvents(organizationMemberId),
-  });
+  const { data: participateEvents = [] } = useQuery(
+    myEventQueryOptions.participateEvents(organizationMemberId)
+  );
 
   return (
     <Tabs defaultValue={TAB_VALUES.HOST}>
