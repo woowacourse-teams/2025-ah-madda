@@ -24,7 +24,7 @@ export const router = createBrowserRouter(
           Component: MyEventPage,
         },
         {
-          path: 'detail/:eventId',
+          path: ':eventId',
           Component: EventDetailPage,
         },
         {

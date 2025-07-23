@@ -24,7 +24,7 @@ export const EventCard = ({
 }: Event) => {
   const navigate = useNavigate();
   return (
-    <CardWrapper onClick={() => navigate(`/event/detail/${eventId}`)}>
+    <CardWrapper onClick={() => navigate(`/event/${eventId}`)}>
       <Flex dir="column" gap="8px">
         <Text type="Title" color="#ffffff" weight="semibold">
           {title}
