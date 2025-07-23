@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-
 import { getAuthCodeFromUrl, isAuthenticated, logout as logoutUser } from '../../api/auth';
 import { useGoogleLoginMutation } from '../../api/authQueries';
 import { ACCESS_TOKEN_KEY, OAUTH_PARAMS_TO_REMOVE } from '../constants';
@@ -15,45 +13,6 @@ type UseGoogleAuthReturn = {
 
 export const useGoogleAuth = (): UseGoogleAuthReturn => {
   const googleLoginMutation = useGoogleLoginMutation();
-
-  useEffect(() => {
-    const processAutoLogin = async () => {
-      if (isAuthenticated()) {
-        return;
-      }
-
-      const code = getAuthCodeFromUrl();
-      if (!code) {
-        return;
-      }
-
-      try {
-        const existingToken = getLocalStorage(ACCESS_TOKEN_KEY);
-        if (existingToken) {
-          return;
-        }
-
-        const response = await googleLoginMutation.mutateAsync(code);
-
-        const token = response.accessToken;
-        if (!token) {
-          throw new Error('Access token not found in response');
-        }
-
-        setLocalStorage(ACCESS_TOKEN_KEY, token);
-
-        const url = new URL(window.location.href);
-
-        OAUTH_PARAMS_TO_REMOVE.forEach((param) => url.searchParams.delete(param));
-
-        window.history.replaceState({}, document.title, url.toString());
-      } catch (err) {
-        console.error('Auto login failed:', err);
-      }
-    };
-
-    processAutoLogin();
-  }, []);
 
   const handleCallback = async (): Promise<void> => {
     try {
