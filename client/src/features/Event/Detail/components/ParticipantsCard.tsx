@@ -23,7 +23,7 @@ export const ParticipantsCard = ({
             <Text type="caption">현재 신청자</Text>
             <Text type="caption">{`${currentParticipants} / ${maxParticipants}명`}</Text>
           </Flex>
-          <ProgressBar value={42} max={50} color="black" />
+          <ProgressBar value={currentParticipants} max={maxParticipants} color="black" />
         </Flex>
       </Flex>
     </Card>
