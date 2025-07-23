@@ -3,21 +3,17 @@ import { Event } from '@/features/Event/types/Event';
 import { fetcher } from '../fetcher';
 
 export const myEventQueryKeys = {
-  hostEvents: (organizationMemberId: number) => ['myEvent', 'hostEvents', organizationMemberId],
-  participateEvents: (organizationMemberId: number) => [
-    'myEvent',
-    'participateEvents',
-    organizationMemberId,
-  ],
+  hostEvents: () => ['myEvent', 'hostEvents'],
+  participateEvents: () => ['myEvent', 'participateEvents'],
 };
 
 export const myEventQueryOptions = {
   hostEvents: (organizationMemberId: number) => ({
-    queryKey: myEventQueryKeys.hostEvents(organizationMemberId),
+    queryKey: [...myEventQueryKeys.hostEvents(), organizationMemberId],
     queryFn: () => getHostEvents(organizationMemberId),
   }),
   participateEvents: (organizationMemberId: number) => ({
-    queryKey: myEventQueryKeys.participateEvents(organizationMemberId),
+    queryKey: [...myEventQueryKeys.participateEvents(), organizationMemberId],
     queryFn: () => getParticipateEvents(organizationMemberId),
   }),
 };
