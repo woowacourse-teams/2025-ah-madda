@@ -18,8 +18,8 @@ logging:
   level:
     org.hibernate.orm.jdbc.bind: trace
 
-api:
-  url: http://dev.ahmadda.com:8080
+client:
+  url: https://ahmadda.com
 
 jwt:
   secret-key: ${jwt.dev.secret-key}
