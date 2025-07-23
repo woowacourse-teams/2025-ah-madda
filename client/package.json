@@ -57,6 +57,7 @@
     "chromatic": "^13.1.2",
     "css-loader": "^7.1.2",
     "dotenv-cli": "^8.0.0",
+    "dotenv-webpack": "^8.1.1",
     "eslint": "^9.31.0",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
