@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
@@ -9,25 +7,22 @@ import { Question } from '../../types/Event';
 
 import { QuestionItem } from './QuestionItem';
 
-export const QuestionForm = () => {
-  const [questions, setQuestions] = useState<Question[]>([
-    {
-      orderIndex: 0,
-      isRequired: false,
-      questionText: '',
-    },
-  ]);
+type Props = {
+  questions: Question[];
+  onChange: (updated: Question[]) => void;
+};
 
+export const QuestionForm = ({ questions, onChange }: Props) => {
   const addQuestion = () => {
-    const newOrderIndex = questions.length;
-    setQuestions([
+    const newQuestions = [
       ...questions,
       {
-        orderIndex: newOrderIndex,
+        orderIndex: questions.length,
         isRequired: false,
         questionText: '',
       },
-    ]);
+    ];
+    onChange(newQuestions);
   };
 
   const deleteQuestion = (orderIndexToDelete: number) => {
@@ -40,13 +35,14 @@ export const QuestionForm = () => {
         orderIndex: index,
       }));
 
-    setQuestions(updated);
+    onChange(updated);
   };
 
   const updateQuestion = (orderIndex: number, updatedData: Partial<Question>) => {
-    setQuestions((prev) =>
-      prev.map((q) => (q.orderIndex === orderIndex ? { ...q, ...updatedData } : q))
+    const updated = questions.map((q) =>
+      q.orderIndex === orderIndex ? { ...q, ...updatedData } : q
     );
+    onChange(updated);
   };
 
   return (

@@ -158,7 +158,15 @@ export const EventCreateForm = () => {
           </Flex>
         </Card>
 
-        <QuestionForm />
+        <QuestionForm
+          questions={formData.questions}
+          onChange={(newQuestions) => {
+            setFormData((prev) => ({
+              ...prev,
+              questions: newQuestions,
+            }));
+          }}
+        />
 
         <Flex justifyContent="flex-end">
           <Button
