@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import { useMutation } from '@tanstack/react-query';
+import { useParams } from 'react-router-dom';
 
 import { alarmMutationOptions } from '@/api/queries/alarm';
 import { Button } from '@/shared/components/Button';
@@ -17,8 +18,10 @@ type AlarmSectionProps = {
 
 export const AlarmSection = ({ pendingGuestsCount }: AlarmSectionProps) => {
   const [alarmMessage, setAlarmMessage] = useState('');
-  // E.TODO: 이벤트 아이디 받아오기
-  const { mutate: postAlarm, isPending } = useMutation(alarmMutationOptions.alarms(1));
+  const { eventId: eventIdParam } = useParams();
+  const { mutate: postAlarm, isPending } = useMutation(
+    alarmMutationOptions.alarms(Number(eventIdParam))
+  );
 
   const handleSendAlarm = () => {
     if (!alarmMessage.trim()) {
