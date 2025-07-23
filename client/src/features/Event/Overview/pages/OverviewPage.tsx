@@ -29,8 +29,9 @@ export const OverviewPage = () => {
                 width="80px"
                 size="sm"
                 variant="outlined"
-                fontColor="#2563EB"
                 onClick={logout}
+                color="#18A0FB"
+                fontColor="#18A0FB"
               >
                 로그아웃
               </Button>
