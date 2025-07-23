@@ -3,9 +3,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { DefinePlugin } = require('webpack');
 const Dotenv = require('dotenv-webpack');
 
-// .env 파일에서 환경변수 로드
-require('dotenv').config();
-
 module.exports = {
   mode: 'development',
   entry: './src/main.tsx',
@@ -21,16 +18,7 @@ module.exports = {
       inject: true,
     }),
     new DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
-      'process.env.REACT_APP_GOOGLE_CLIENT_ID': JSON.stringify(
-        process.env.REACT_APP_GOOGLE_CLIENT_ID || ''
-      ),
-      'process.env.REACT_APP_GOOGLE_REDIRECT_URI': JSON.stringify(
-        process.env.REACT_APP_GOOGLE_REDIRECT_URI || 'http://localhost:3000/auth/callback'
-      ),
-      'process.env.REACT_APP_SERVER_URL': JSON.stringify(
-        process.env.REACT_APP_SERVER_URL || 'http://localhost:8000'
-      ),
+      'process.env.NODE_ENV': JSON.stringify('development'),
       VERSION: JSON.stringify('1.0.0'),
       __DEV__: JSON.stringify(true),
     }),
