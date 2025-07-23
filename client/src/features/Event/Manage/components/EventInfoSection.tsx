@@ -7,18 +7,39 @@ import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 
-import type { EventInfo } from '../types';
+type EventInfo = {
+  eventId: number;
+  title: string;
+  description: string;
+  place: string;
+  organizerName: string;
+  eventStart: string;
+  eventEnd: string;
+  registrationStart: string;
+  registrationEnd: string;
+  currentGuestCount: number;
+  maxCapacity: number;
+  questions: {
+    questionId: number;
+    questionText: string;
+    isRequired: boolean;
+    orderIndex: number;
+  }[];
+};
 
 export const EventInfoSection = ({
+  eventId,
   title,
   description,
-  organizer,
-  location,
-  deadlineTime,
-  startTime,
-  endTime,
-  currentParticipants,
-  maxParticipants,
+  organizerName,
+  place,
+  eventStart,
+  eventEnd,
+  registrationStart,
+  registrationEnd,
+  currentGuestCount,
+  maxCapacity,
+  questions,
 }: EventInfo) => {
   return (
     <Flex
@@ -61,28 +82,28 @@ export const EventInfoSection = ({
           <Flex alignItems="center" gap="8px">
             <Icon name="users" size={14} color="#4A5565" />
             <Text type="caption" weight="regular" color="#4A5565">
-              {`주최자: ${organizer}`}
+              {`주최자: ${organizerName}`}
             </Text>
           </Flex>
 
           <Flex alignItems="center" gap="8px">
             <Icon name="location" size={14} color="#4A5565" />
             <Text type="caption" weight="regular" color="#4A5565">
-              {location}
+              {place}
             </Text>
           </Flex>
 
           <Flex alignItems="center" gap="8px">
             <Icon name="calendar" size={14} color="#4A5565" />
             <Text type="caption" weight="regular" color="#4A5565">
-              {`신청 마감: ${deadlineTime}`}
+              {`신청 마감: ${registrationEnd}`}
             </Text>
           </Flex>
 
           <Flex alignItems="center" gap="8px">
             <Icon name="clock" size={14} color="#4A5565" />
             <Text type="caption" weight="regular" color="#4A5565">
-              {`이벤트 일시: ${startTime} ~ ${endTime}`}
+              {`이벤트 일시: ${eventStart} ~ ${eventEnd}`}
             </Text>
           </Flex>
           <Spacing height="1px" color="#ECEEF2" />
@@ -96,10 +117,10 @@ export const EventInfoSection = ({
                 </Text>
               </Flex>
               <Text type="caption" weight="regular" color="#4A5565">
-                {`${currentParticipants}/${maxParticipants}명`}
+                {`${currentGuestCount}/${maxCapacity}명`}
               </Text>
             </Flex>
-            <ProgressBar value={currentParticipants} max={maxParticipants} color="#0A0A0A" />
+            <ProgressBar value={currentGuestCount} max={maxCapacity} color="#0A0A0A" />
           </Flex>
         </Flex>
       </Card>
