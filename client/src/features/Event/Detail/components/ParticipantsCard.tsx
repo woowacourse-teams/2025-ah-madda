@@ -3,14 +3,11 @@ import { Flex } from '../../../../shared/components/Flex';
 import { Icon } from '../../../../shared/components/Icon';
 import { ProgressBar } from '../../../../shared/components/ProgressBar';
 import { Text } from '../../../../shared/components/Text';
-import type { EventDetail } from '../types/index';
+import type { EventDetail } from '../../../Event/types/Event';
 
-type ParticipantsCardProps = Pick<EventDetail, 'currentParticipants' | 'maxParticipants'>;
+type ParticipantsCardProps = Pick<EventDetail, 'currentGuestCount' | 'maxCapacity'>;
 
-export const ParticipantsCard = ({
-  currentParticipants,
-  maxParticipants,
-}: ParticipantsCardProps) => {
+export const ParticipantsCard = ({ currentGuestCount, maxCapacity }: ParticipantsCardProps) => {
   return (
     <Card>
       <Flex dir="column" gap="16px">
@@ -21,9 +18,9 @@ export const ParticipantsCard = ({
         <Flex dir="column" gap="8px">
           <Flex justifyContent="space-between">
             <Text type="caption">현재 신청자</Text>
-            <Text type="caption">{`${currentParticipants} / ${maxParticipants}명`}</Text>
+            <Text type="caption">{`${currentGuestCount} / ${maxCapacity}명`}</Text>
           </Flex>
-          <ProgressBar value={currentParticipants} max={maxParticipants} color="black" />
+          <ProgressBar value={currentGuestCount} max={maxCapacity} color="black" />
         </Flex>
       </Flex>
     </Card>

@@ -41,7 +41,7 @@ export const EventDetailContent = ({ event }: EventDetailContentProps) => {
         max-width: 784px;
       `}
     >
-      <EventDetailTitle title={title} author={organizerName} />
+      <EventDetailTitle title={title} organizerName={organizerName} />
       <Flex
         dir="row"
         gap="24px"
@@ -55,14 +55,14 @@ export const EventDetailContent = ({ event }: EventDetailContentProps) => {
         `}
       >
         <TimeInfoCard
-          deadlineTime={formatKoreanDateTime(registrationEnd)}
-          startTime={formatKoreanDateTime(eventStart)}
-          endTime={formatKoreanDateTime(eventEnd)}
+          registrationEnd={formatKoreanDateTime(registrationEnd)}
+          eventStart={formatKoreanDateTime(eventStart)}
+          eventEnd={formatKoreanDateTime(eventEnd)}
         />
-        <LocationCard location={place} />
+        <LocationCard place={place} />
       </Flex>
 
-      <ParticipantsCard currentParticipants={currentGuestCount} maxParticipants={maxCapacity} />
+      <ParticipantsCard currentGuestCount={currentGuestCount} maxCapacity={maxCapacity} />
       <DescriptionCard description={description} />
       <PreQuestionCard questions={questions} />
       <SubmitButtonCard />
