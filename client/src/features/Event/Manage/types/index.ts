@@ -1,23 +1,7 @@
-export type EventInfo = {
-  id: string;
-  title: string;
-  description: string;
-  organizer: string;
-  location: string;
-  deadlineTime: string;
-  startTime: string;
-  endTime: string;
-  currentParticipants: number;
-  maxParticipants: number;
-};
-
 export type Guest = {
-  name: string;
-  status: string;
+  guestId: number;
+  organizationMemberId: number;
+  nickname: string;
 };
 
-export type EventManageData = {
-  eventInfo: EventInfo;
-  completedGuests: Guest[];
-  pendingGuests: Guest[];
-};
+export type NonGuest = Omit<Guest, 'guestId'>;
