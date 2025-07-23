@@ -1,11 +1,9 @@
 on:
-  pull_request:
+  push:
     branches:
       - be/dev
-    types:
-      - opened
-      - synchronize
-      - reopened
+    paths:
+      - 'server/**'
 
 jobs:
   deploy:
