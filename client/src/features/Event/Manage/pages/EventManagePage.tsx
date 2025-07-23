@@ -9,10 +9,8 @@ import { Text } from '@/shared/components/Text';
 import { EventInfoSection } from '../components/EventInfoSection';
 import { GuestManageSection } from '../components/GuestManageSection';
 import { EventManageContainer } from '../containers/EventManageContainer';
-import { useEventManage } from '../hooks/useEventManage';
 
 export const EventManagePage = () => {
-  const { data } = useEventManage();
   const navigate = useNavigate();
 
   return (
@@ -37,11 +35,28 @@ export const EventManagePage = () => {
     >
       <EventManageContainer>
         <Flex as="main" gap="40px" width="100%" dir="column">
-          <EventInfoSection {...data.eventInfo} />
-          <GuestManageSection
-            completedGuests={data.completedGuests}
-            pendingGuests={data.pendingGuests}
+          <EventInfoSection
+            eventId={1}
+            title="이벤트 제목"
+            description="이벤트 설명"
+            place="이벤트 장소"
+            organizerName="주최자"
+            eventStart="2025-01-01 10:00"
+            eventEnd="2025-01-01 12:00"
+            registrationStart="2025-01-01 09:00"
+            registrationEnd="2025-01-01 11:00"
+            currentGuestCount={10}
+            maxCapacity={100}
+            questions={[
+              {
+                questionId: 1,
+                questionText: '이벤트 질문',
+                isRequired: true,
+                orderIndex: 1,
+              },
+            ]}
           />
+          <GuestManageSection />
         </Flex>
       </EventManageContainer>
     </PageLayout>
