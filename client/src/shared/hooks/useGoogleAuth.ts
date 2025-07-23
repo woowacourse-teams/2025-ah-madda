@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 import { getAuthCodeFromUrl, isAuthenticated, logout as logoutUser } from '../../api/auth';
 import { useGoogleLoginMutation } from '../../api/authQueries';
-import { ACCESS_TOKEN_KEY } from '../constants';
+import { ACCESS_TOKEN_KEY, OAUTH_PARAMS_TO_REMOVE } from '../constants';
 import { getLocalStorage, setLocalStorage } from '../utils/localStorage';
 
 type UseGoogleAuthReturn = {
@@ -43,11 +43,9 @@ export const useGoogleAuth = (): UseGoogleAuthReturn => {
         setLocalStorage(ACCESS_TOKEN_KEY, token);
 
         const url = new URL(window.location.href);
-        url.searchParams.delete('code');
-        url.searchParams.delete('state');
-        url.searchParams.delete('scope');
-        url.searchParams.delete('authuser');
-        url.searchParams.delete('prompt');
+
+        OAUTH_PARAMS_TO_REMOVE.forEach((param) => url.searchParams.delete(param));
+
         window.history.replaceState({}, document.title, url.toString());
       } catch (err) {
         console.error('Auto login failed:', err);
@@ -79,11 +77,9 @@ export const useGoogleAuth = (): UseGoogleAuthReturn => {
       setLocalStorage(ACCESS_TOKEN_KEY, token);
 
       const url = new URL(window.location.href);
-      url.searchParams.delete('code');
-      url.searchParams.delete('state');
-      url.searchParams.delete('scope');
-      url.searchParams.delete('authuser');
-      url.searchParams.delete('prompt');
+
+      OAUTH_PARAMS_TO_REMOVE.forEach((param) => url.searchParams.delete(param));
+
       window.history.replaceState({}, document.title, url.toString());
     } catch (err) {
       console.error('Google OAuth error:', err);
