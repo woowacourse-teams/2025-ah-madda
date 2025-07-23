@@ -61,7 +61,7 @@ export const EventDetailContent = ({
       <ParticipantsCard currentGuestCount={currentGuestCount} maxCapacity={maxCapacity} />
       <DescriptionCard description={description} />
       <PreQuestionCard questions={questions} />
-      <SubmitButtonCard />
+      <SubmitButtonCard registrationEnd={registrationEnd} />
     </Flex>
   );
 };
