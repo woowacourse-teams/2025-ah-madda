@@ -12,11 +12,11 @@ import { groupEventsByDate } from '../utils/groupEventsByDate';
 import { EventCard } from './EventCard';
 import { EventSection } from './EventSection';
 
-type Props = {
+type EventListProps = {
   events: Event[];
 };
 
-export const EventList = ({ events }: Props) => {
+export const EventList = ({ events }: EventListProps) => {
   const groupedEvents = groupEventsByDate(events);
   const navigate = useNavigate();
 

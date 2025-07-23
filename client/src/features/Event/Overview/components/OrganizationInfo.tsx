@@ -7,12 +7,17 @@ import { Text } from '@/shared/components/Text';
 
 import { Organization } from '../../types/Event';
 
-type Props = {
+type OrganizationProps = {
   totalEvents: number;
 } & Omit<Organization, 'organizationId'>;
 
 // S.TODO : 추후 imageUrl 적용
-export const OrganizationInfo = ({ name, description, imageUrl, totalEvents = 0 }: Props) => {
+export const OrganizationInfo = ({
+  name,
+  description,
+  imageUrl,
+  totalEvents = 0,
+}: OrganizationProps) => {
   return (
     <Flex
       dir="column"
