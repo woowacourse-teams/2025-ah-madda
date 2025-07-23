@@ -19,9 +19,8 @@ export const EventCard = ({
   organizerName,
 }: Event) => {
   const navigate = useNavigate();
-  // S.TODO : 추후 href=`/event/${eventId}`로 변경
   return (
-    <CardWrapper onClick={() => navigate('/event/detail')}>
+    <CardWrapper onClick={() => navigate(`/event/detail/${eventId}`)}>
       <Flex dir="column" gap="8px">
         <Text type="Title" color="#ffffff" weight="semibold">
           {title}
