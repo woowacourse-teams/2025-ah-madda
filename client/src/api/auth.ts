@@ -8,7 +8,8 @@ export type accessToken = {
 };
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
-const GOOGLE_REDIRECT_URI = 'https://ahmadda.com';
+// const GOOGLE_REDIRECT_URI = 'https://ahmadda.com';
+const GOOGLE_REDIRECT_URI = 'http://localhost:5173/auth';
 
 export const getGoogleAuthUrl = (): string => {
   const params = new URLSearchParams({

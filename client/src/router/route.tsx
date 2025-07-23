@@ -6,8 +6,14 @@ import { MyEventPage } from '@/features/Event/My/pages/MyEventPage';
 import { NewEventPage } from '@/features/Event/New/pages/NewEventPage';
 import { OverviewPage } from '@/features/Event/Overview/pages/OverviewPage';
 
+import { AuthCallback } from './AuthCallback';
+
 export const router = createBrowserRouter(
   [
+    {
+      path: '/auth',
+      Component: AuthCallback,
+    },
     {
       path: '/event',
       children: [
