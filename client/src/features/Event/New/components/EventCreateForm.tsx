@@ -6,6 +6,8 @@ import { Flex } from '../../../../shared/components/Flex';
 import { Input } from '../../../../shared/components/Input';
 import { Text } from '../../../../shared/components/Text';
 
+import { QuestionForm } from './QuestionForm';
+
 export const EventCreateForm = () => {
   return (
     <Flex dir="column" gap="20px" padding="60px 0" width="100%">
@@ -100,7 +102,7 @@ export const EventCreateForm = () => {
           </Flex>
         </Flex>
       </Card>
-
+      <QuestionForm />
       <Flex justifyContent="flex-end">
         <Button
           type="submit"
