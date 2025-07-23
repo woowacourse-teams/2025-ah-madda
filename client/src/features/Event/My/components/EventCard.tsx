@@ -7,6 +7,7 @@ import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Text } from '@/shared/components/Text';
 
 import { Event } from '../../types/Event';
+import { formatDateTime } from '../utils/date';
 
 export const EventCard = ({
   title,
@@ -36,14 +37,14 @@ export const EventCard = ({
         <Flex alignItems="baseline" gap="3.5px">
           <Icon name="calendar" size={14} color="#A0A0A0" />
           <Text type="caption" weight="regular" color="#A0A0A0">
-            {`신청 마감 ${registrationEnd}`}
+            {`신청 마감 ${formatDateTime(registrationEnd)}`}
           </Text>
         </Flex>
 
         <Flex alignItems="baseline" gap="3.5px">
           <Icon name="clock" size={14} color="#A0A0A0" />
           <Text type="caption" weight="regular" color="#A0A0A0">
-            {`이벤트 시간 ${eventStart} - ${eventEnd}`}
+            {`이벤트 시간 ${formatDateTime(eventStart)} - ${formatDateTime(eventEnd)}`}
           </Text>
         </Flex>
 
