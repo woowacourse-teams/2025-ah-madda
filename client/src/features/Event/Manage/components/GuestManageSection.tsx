@@ -1,5 +1,7 @@
 import { css } from '@emotion/react';
+import { useQuery } from '@tanstack/react-query';
 
+import { guestManageQueryOptions } from '@/api/queries/guestManage';
 import { Flex } from '@/shared/components/Flex';
 
 import { Guest } from '../types';
@@ -13,6 +15,19 @@ type GuestManageSectionProps = {
 };
 
 export const GuestManageSection = ({ completedGuests, pendingGuests }: GuestManageSectionProps) => {
+  // const { eventId } = useParams();
+  //E.TODO: eventId 가져오기
+  const eventId = 1; //임시
+  const { data: guests = [] } = useQuery({
+    ...guestManageQueryOptions.guests(eventId),
+  });
+
+  const { data: nonGuests = [] } = useQuery({
+    ...guestManageQueryOptions.nonGuests(eventId),
+  });
+
+  console.log(guests, nonGuests);
+
   return (
     <Flex
       as="section"
