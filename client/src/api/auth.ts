@@ -1,4 +1,3 @@
-// Google OAuth 설정
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || '';
 const GOOGLE_REDIRECT_URI =
   process.env.REACT_APP_GOOGLE_REDIRECT_URI || 'http://localhost:3000/auth/callback';
@@ -14,12 +13,16 @@ export const getGoogleAuthUrl = (): string => {
     prompt: 'consent',
   });
 
-  return `https://accounts.google.com/o/oauth2/auth?${params.toString()}`;
+  const authUrl = `https://accounts.google.com/o/oauth2/auth?${params.toString()}`;
+
+  return authUrl;
 };
 
 export const getAuthCodeFromUrl = (): string | null => {
   const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get('code');
+  const code = urlParams.get('code');
+
+  return code;
 };
 
 export const exchangeCodeForToken = async (

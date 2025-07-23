@@ -4,15 +4,24 @@ import { useNavigate } from 'react-router-dom';
 
 import { useGoogleAuth } from '../hooks/useGoogleAuth';
 
-export const AuthCallback: React.FC = () => {
+export const AuthCallback = () => {
   const navigate = useNavigate();
-  const { handleCallback, isLoading, error, isAuthenticated } = useGoogleAuth();
+  const { handleCallback, isLoading, error } = useGoogleAuth();
 
   useEffect(() => {
     const processCallback = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+
+      if (!code) {
+        navigate('/', { replace: true });
+        return;
+      }
+
       await handleCallback();
 
-      if (isAuthenticated) {
+      const token = localStorage.getItem('access_token');
+      if (token) {
         navigate('/', { replace: true });
       }
     };
@@ -84,5 +93,5 @@ export const AuthCallback: React.FC = () => {
     );
   }
 
-  return null;
+  return <div>AuthCallback</div>;
 };

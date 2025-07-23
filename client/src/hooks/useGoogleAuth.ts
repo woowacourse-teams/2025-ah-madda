@@ -5,6 +5,7 @@ import {
   exchangeCodeForToken,
   saveAuthData,
   isAuthenticated,
+  getStoredToken,
   logout as logoutUser,
 } from '../api/auth';
 
@@ -25,6 +26,11 @@ export const useGoogleAuth = (): UseGoogleAuthReturn => {
     setError(null);
 
     try {
+      const existingToken = getStoredToken();
+      if (existingToken) {
+        return;
+      }
+
       const code = getAuthCodeFromUrl();
 
       if (!code) {
@@ -43,6 +49,9 @@ export const useGoogleAuth = (): UseGoogleAuthReturn => {
       const url = new URL(window.location.href);
       url.searchParams.delete('code');
       url.searchParams.delete('state');
+      url.searchParams.delete('scope');
+      url.searchParams.delete('authuser');
+      url.searchParams.delete('prompt');
       window.history.replaceState({}, document.title, url.toString());
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed';
