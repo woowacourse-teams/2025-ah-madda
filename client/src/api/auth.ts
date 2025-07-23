@@ -1,3 +1,6 @@
+import { ACCESS_TOKEN_KEY } from '@/shared/constants';
+import { getLocalStorage, removeLocalStorage } from '@/shared/utils/localStorage';
+
 import { fetcher } from './fetcher';
 
 export type accessToken = {
@@ -36,18 +39,10 @@ export const exchangeCodeForToken = async (code: string): Promise<accessToken> =
 };
 
 export const logout = (): void => {
-  localStorage.removeItem('access_token');
+  removeLocalStorage(ACCESS_TOKEN_KEY);
   window.location.href = '/';
 };
 
-export const saveAuthData = (token: string): void => {
-  localStorage.setItem('access_token', token);
-};
-
-export const getStoredToken = (): string | null => {
-  return localStorage.getItem('access_token');
-};
-
 export const isAuthenticated = (): boolean => {
-  return !!getStoredToken();
+  return !!getLocalStorage(ACCESS_TOKEN_KEY);
 };
