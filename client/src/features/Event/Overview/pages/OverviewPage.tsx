@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
+import { Icon } from '@/shared/components/Icon';
 
 import { EventList } from '../components/EventList';
 import { OrganizationInfo } from '../components/OrganizationInfo';
@@ -12,7 +13,7 @@ export const OverviewPage = () => {
   return (
     <>
       <Header
-        left="아맞다"
+        left={<Icon name="logo" width={55} />}
         right={
           <Flex gap="8px">
             <Button width="80px" size="sm" variant="outlined" fontColor="#2563EB">
