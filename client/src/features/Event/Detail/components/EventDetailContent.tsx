@@ -1,7 +1,8 @@
 import { css } from '@emotion/react';
 
 import { Flex } from '../../../../shared/components/Flex';
-import { EventDetail } from '../types';
+import { EventDetail } from '../../../Event/types/Event';
+import { formatKoreanDateTime } from '../utils/formatKoreanDateTime';
 
 import { DescriptionCard } from './DescriptionCard';
 import { EventDetailTitle } from './EventDetailTitle';
@@ -11,24 +12,20 @@ import { PreQuestionCard } from './PreQuestionCard';
 import { SubmitButtonCard } from './SubmitButtonCard';
 import { TimeInfoCard } from './TimeInfoCard';
 
-type EventDetailContentProps = {
-  event: EventDetail;
-};
+type EventDetailContentProps = EventDetail;
 
-export const EventDetailContent = ({ event }: EventDetailContentProps) => {
-  const {
-    title,
-    author,
-    deadlineTime,
-    startTime,
-    endTime,
-    location,
-    currentParticipants,
-    maxParticipants,
-    description,
-    preQuestions,
-  } = event;
-
+export const EventDetailContent = ({
+  title,
+  organizerName,
+  registrationEnd,
+  eventStart,
+  eventEnd,
+  place,
+  currentGuestCount,
+  maxCapacity,
+  description,
+  questions,
+}: EventDetailContentProps) => {
   return (
     <Flex
       dir="column"
@@ -40,7 +37,7 @@ export const EventDetailContent = ({ event }: EventDetailContentProps) => {
         max-width: 784px;
       `}
     >
-      <EventDetailTitle title={title} author={author} />
+      <EventDetailTitle title={title} organizerName={organizerName} />
       <Flex
         dir="row"
         gap="24px"
@@ -53,17 +50,18 @@ export const EventDetailContent = ({ event }: EventDetailContentProps) => {
           }
         `}
       >
-        <TimeInfoCard deadlineTime={deadlineTime} startTime={startTime} endTime={endTime} />
-        <LocationCard location={location} />
+        <TimeInfoCard
+          registrationEnd={formatKoreanDateTime(registrationEnd)}
+          eventStart={formatKoreanDateTime(eventStart)}
+          eventEnd={formatKoreanDateTime(eventEnd)}
+        />
+        <LocationCard place={place} />
       </Flex>
 
-      <ParticipantsCard
-        currentParticipants={currentParticipants}
-        maxParticipants={maxParticipants}
-      />
+      <ParticipantsCard currentGuestCount={currentGuestCount} maxCapacity={maxCapacity} />
       <DescriptionCard description={description} />
-      <PreQuestionCard preQuestions={preQuestions} />
-      <SubmitButtonCard />
+      <PreQuestionCard questions={questions} />
+      <SubmitButtonCard registrationEnd={registrationEnd} />
     </Flex>
   );
 };

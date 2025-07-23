@@ -5,9 +5,14 @@ import { EventManagePage } from '@/features/Event/Manage/pages/EventManagePage';
 import { MyEventPage } from '@/features/Event/My/pages/MyEventPage';
 import { NewEventPage } from '@/features/Event/New/pages/NewEventPage';
 import { OverviewPage } from '@/features/Event/Overview/pages/OverviewPage';
+import { HomePage } from '@/features/Home/page/HomePage';
 
 export const router = createBrowserRouter(
   [
+    {
+      path: '/',
+      Component: HomePage,
+    },
     {
       path: '/event',
       children: [
@@ -24,8 +29,7 @@ export const router = createBrowserRouter(
           Component: MyEventPage,
         },
         {
-          // S.TODO : 추후 수정 ':eventId',
-          path: 'detail',
+          path: ':eventId',
           Component: EventDetailPage,
         },
         {
