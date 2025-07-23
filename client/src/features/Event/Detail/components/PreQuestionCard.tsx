@@ -1,5 +1,6 @@
 import { Card } from '../../../../shared/components/Card';
 import { Flex } from '../../../../shared/components/Flex';
+import { Input } from '../../../../shared/components/Input';
 import { Text } from '../../../../shared/components/Text';
 import type { EventDetail } from '../../../Event/types/Event';
 
@@ -10,16 +11,21 @@ export const PreQuestionCard = ({ questions }: PreQuestionCardProps) => {
     <Card>
       <Flex dir="column" gap="16px">
         <Text type="caption">사전 질문</Text>
-        <Flex dir="column" gap="16px">
+
+        <Flex dir="column" gap="24px">
           {questions.map((question) => (
-            <Flex key={question.questionId} dir="column" gap="8px">
-              <Text type="caption" weight="bold">
-                {question.questionText}
-                {question.isRequired && <span style={{ color: 'red' }}> *</span>}
-              </Text>
-              <Text type="caption" color="gray">
-                참가 신청 시 작성할 수 있습니다.
-              </Text>
+            <Flex key={question.questionId} dir="column" gap="4px">
+              <label htmlFor={`question-${question.questionId}`}>
+                <Text type="caption" weight="bold">
+                  {question.questionText}
+                  {question.isRequired && <span style={{ color: 'red' }}> *</span>}
+                </Text>
+              </label>
+              <Input
+                id={`question-${question.questionId}`}
+                label=""
+                placeholder="답변을 입력하세요"
+              />
             </Flex>
           ))}
         </Flex>
