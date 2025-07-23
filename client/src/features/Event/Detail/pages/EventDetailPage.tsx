@@ -1,4 +1,7 @@
-import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { useNavigate, useParams } from 'react-router-dom';
+
+import { eventQueryOptions } from '@/api/queries/event';
 
 import { Flex } from '../../../../shared/components/Flex';
 import { Header } from '../../../../shared/components/Header';
@@ -6,37 +9,17 @@ import { IconButton } from '../../../../shared/components/IconButton';
 import { PageLayout } from '../../../../shared/components/PageLayout';
 import { Text } from '../../../../shared/components/Text';
 import { EventDetailContent } from '../components/EventDetailContent';
-import { useEventDetail } from '../hooks/useEventDetail';
 
 export const EventDetailPage = () => {
   const navigate = useNavigate();
-  const { event, loading, error } = useEventDetail('1');
+  const { eventId } = useParams();
+  const { data: event } = useQuery(eventQueryOptions.detail(Number(eventId)));
 
   if (!event) {
     return (
       <Flex dir="column" justifyContent="center" alignItems="center">
         <Text type="Body" weight="regular" color="#666">
           이벤트를 찾을 수 없습니다.
-        </Text>
-      </Flex>
-    );
-  }
-
-  if (loading) {
-    return (
-      <Flex dir="column" justifyContent="center" alignItems="center">
-        <Text type="Body" weight="regular" color="#666">
-          이벤트 정보를 불러오는 중...
-        </Text>
-      </Flex>
-    );
-  }
-
-  if (error) {
-    return (
-      <Flex dir="column" justifyContent="center" alignItems="center">
-        <Text type="Body" weight="regular" color="#ff4444">
-          {error}
         </Text>
       </Flex>
     );

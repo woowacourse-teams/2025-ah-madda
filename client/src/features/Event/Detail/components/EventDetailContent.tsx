@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 
 import { Flex } from '../../../../shared/components/Flex';
-import { EventDetail } from '../types';
+import { EventDetail } from '../../../Event/types/Event';
 
 import { DescriptionCard } from './DescriptionCard';
 import { EventDetailTitle } from './EventDetailTitle';
@@ -18,15 +18,15 @@ type EventDetailContentProps = {
 export const EventDetailContent = ({ event }: EventDetailContentProps) => {
   const {
     title,
-    author,
-    deadlineTime,
-    startTime,
-    endTime,
-    location,
-    currentParticipants,
-    maxParticipants,
+    organizerName,
+    registrationEnd,
+    eventStart,
+    eventEnd,
+    place,
+    currentGuestCount,
+    maxCapacity,
     description,
-    preQuestions,
+    questions,
   } = event;
 
   return (
@@ -40,7 +40,7 @@ export const EventDetailContent = ({ event }: EventDetailContentProps) => {
         max-width: 784px;
       `}
     >
-      <EventDetailTitle title={title} author={author} />
+      <EventDetailTitle title={title} author={organizerName} />
       <Flex
         dir="row"
         gap="24px"
@@ -53,16 +53,13 @@ export const EventDetailContent = ({ event }: EventDetailContentProps) => {
           }
         `}
       >
-        <TimeInfoCard deadlineTime={deadlineTime} startTime={startTime} endTime={endTime} />
-        <LocationCard location={location} />
+        <TimeInfoCard deadlineTime={registrationEnd} startTime={eventStart} endTime={eventEnd} />
+        <LocationCard location={place} />
       </Flex>
 
-      <ParticipantsCard
-        currentParticipants={currentParticipants}
-        maxParticipants={maxParticipants}
-      />
+      <ParticipantsCard currentParticipants={currentGuestCount} maxParticipants={maxCapacity} />
       <DescriptionCard description={description} />
-      <PreQuestionCard preQuestions={preQuestions} />
+      <PreQuestionCard questions={questions} />
       <SubmitButtonCard />
     </Flex>
   );
