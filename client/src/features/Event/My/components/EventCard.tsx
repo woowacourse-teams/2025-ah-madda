@@ -6,18 +6,18 @@ import { Icon } from '@/shared/components/Icon';
 import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Text } from '@/shared/components/Text';
 
-import type { Event } from '../types';
+import { Event } from '../../types/Event';
 
 export const EventCard = ({
   title,
   description,
-  author,
-  deadlineTime,
-  startTime,
-  endTime,
-  location,
-  currentParticipants,
-  maxParticipants,
+  organizerName,
+  registrationEnd,
+  eventStart,
+  eventEnd,
+  place,
+  currentGuestCount,
+  maxCapacity,
 }: Event) => {
   const navigate = useNavigate();
 
@@ -36,35 +36,35 @@ export const EventCard = ({
         <Flex alignItems="baseline" gap="3.5px">
           <Icon name="calendar" size={14} color="#A0A0A0" />
           <Text type="caption" weight="regular" color="#A0A0A0">
-            {`신청 마감 ${deadlineTime}`}
+            {`신청 마감 ${registrationEnd}`}
           </Text>
         </Flex>
 
         <Flex alignItems="baseline" gap="3.5px">
           <Icon name="clock" size={14} color="#A0A0A0" />
           <Text type="caption" weight="regular" color="#A0A0A0">
-            {`이벤트 시간 ${startTime} - ${endTime}`}
+            {`이벤트 시간 ${eventStart} - ${eventEnd}`}
           </Text>
         </Flex>
 
         <Flex gap="7px" alignItems="center">
           <Icon name="location" size={10.5} color="#A0A0A0" />
           <Text type="caption" weight="regular" color="#A0A0A0">
-            {`장소 ${location}`}
+            {`장소 ${place}`}
           </Text>
         </Flex>
       </Flex>
 
       <Flex dir="column" gap="14px" alignItems="flex-end">
         <Text type="caption" weight="regular" color="white">
-          {author}
+          {organizerName}
         </Text>
-        <ProgressBar value={currentParticipants} max={maxParticipants} color="black" />
+        <ProgressBar value={currentGuestCount} max={maxCapacity} color="black" />
       </Flex>
 
       <Flex>
         <Text type="caption" weight="regular" color="#A0A0A0">
-          {`${currentParticipants}/${maxParticipants}명 참여`}
+          {`${currentGuestCount}/${maxCapacity}명 참여`}
         </Text>
       </Flex>
     </EventCardWrapper>
