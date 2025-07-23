@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { DefinePlugin } = require('webpack');
+const Dotenv = require('dotenv-webpack');
 
 // .env 파일에서 환경변수 로드
 require('dotenv').config();
@@ -32,6 +33,10 @@ module.exports = {
       ),
       VERSION: JSON.stringify('1.0.0'),
       __DEV__: JSON.stringify(true),
+    }),
+    new Dotenv({
+      path: path.resolve(__dirname, '.env'),
+      safe: true,
     }),
   ],
   module: {

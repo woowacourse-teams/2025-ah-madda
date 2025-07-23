@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom';
+
 import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
 import { IconButton } from '@/shared/components/IconButton';
@@ -9,8 +11,9 @@ import { GuestManageSection } from '../components/GuestManageSection';
 import { EventManageContainer } from '../containers/EventManageContainer';
 import { useEventManage } from '../hooks/useEventManage';
 
-export const EventManage = () => {
+export const EventManagePage = () => {
   const { data } = useEventManage();
+  const navigate = useNavigate();
 
   return (
     <PageLayout
@@ -18,7 +21,12 @@ export const EventManage = () => {
         <Header
           left={
             <Flex alignItems="center" gap="12px">
-              <IconButton name="back" size={14} aria-label="이전 페이지로 돌아가기" />
+              <IconButton
+                name="back"
+                size={14}
+                aria-label="이전 페이지로 돌아가기"
+                onClick={() => navigate(-1)}
+              />
               <Text as="h1" type="Title" weight="semibold">
                 이벤트 관리
               </Text>

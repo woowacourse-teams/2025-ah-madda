@@ -1,14 +1,10 @@
-import { useState } from 'react';
-
 import { css } from '@emotion/react';
 
 import { Flex } from '@/shared/components/Flex';
-import { useModal } from '@/shared/hooks/useModal';
 
 import { Guest } from '../types';
 
 import { AlarmSection } from './AlarmSection';
-import { GuestModal } from './GuestModal';
 import { GuestViewSection } from './GuestViewSection';
 
 type GuestManageSectionProps = {
@@ -17,19 +13,6 @@ type GuestManageSectionProps = {
 };
 
 export const GuestManageSection = ({ completedGuests, pendingGuests }: GuestManageSectionProps) => {
-  const { isOpen, open, close } = useModal();
-  const [selectedGuest, setSelectedGuest] = useState<Guest | null>(null);
-
-  const handleGuestClick = (guest: Guest) => {
-    setSelectedGuest(guest);
-    open();
-  };
-
-  const handleCloseModal = () => {
-    close();
-    setSelectedGuest(null);
-  };
-
   return (
     <Flex
       as="section"
@@ -56,10 +39,8 @@ export const GuestManageSection = ({ completedGuests, pendingGuests }: GuestMana
       <GuestViewSection
         completedGuests={completedGuests}
         pendingGuests={pendingGuests}
-        onGuestClick={handleGuestClick}
+        onGuestClick={() => {}}
       />
-
-      <GuestModal isOpen={isOpen} onClose={handleCloseModal} guest={selectedGuest} />
     </Flex>
   );
 };

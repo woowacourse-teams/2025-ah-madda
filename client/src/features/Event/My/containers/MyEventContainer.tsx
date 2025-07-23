@@ -13,8 +13,8 @@ export const MyEventContainer = ({ children }: MyEventContainerProps) => {
     <Flex
       dir="column"
       margin="0 10px"
+      padding="60px 0 0 0"
       css={css`
-        padding-top: 60px;
         @media (max-width: 768px) {
           align-items: center;
         }

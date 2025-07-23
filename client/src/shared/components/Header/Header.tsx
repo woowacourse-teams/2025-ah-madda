@@ -1,6 +1,6 @@
 import { ComponentProps, ReactNode } from 'react';
 
-import { StyledHeader } from './Header.styled';
+import { StyledHeader, StyledHeaderContent } from './Header.styled';
 
 export type HeaderProps = {
   /**
@@ -21,9 +21,11 @@ export type HeaderProps = {
 
 export const Header = ({ left, right, ...props }: HeaderProps) => {
   return (
-    <StyledHeader hasRight={!!right} {...props}>
-      {left}
-      {right}
+    <StyledHeader {...props}>
+      <StyledHeaderContent right={right}>
+        {left}
+        {right}
+      </StyledHeaderContent>
     </StyledHeader>
   );
 };
