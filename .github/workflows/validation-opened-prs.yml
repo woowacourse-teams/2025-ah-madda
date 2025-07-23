@@ -61,8 +61,21 @@ jobs:
         run: ./gradlew test
         working-directory: server
 
+      - name: Upload validation HTML report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: validation-report
+          path: ${{ github.workspace }}/server/build/test-results/test/TEST-*.xml
+
+      - name: Publish validation results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: ${{ github.workspace }}/server/build/test-results/test/TEST-*.xml
+
       - name: Add comments to a pull request
         uses: mikepenz/action-junit-report@v4
-        if: github.event_name == 'pull_request' && always()
+        if: always()
         with:
-          report_paths: server/build/test-results/test/TEST-*.xml
+          report_paths: ${{ github.workspace }}/server/build/test-results/test/TEST-*.xml
