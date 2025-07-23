@@ -1,7 +1,12 @@
+import { fetcher } from './fetcher';
+
+type accessToken = {
+  accessToken: string;
+};
+
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || '';
 const GOOGLE_REDIRECT_URI =
-  process.env.REACT_APP_GOOGLE_REDIRECT_URI || 'http://localhost:3000/auth/callback';
-const SERVER_API_URL = process.env.REACT_APP_SERVER_URL || 'http://localhost:8000';
+  process.env.REACT_APP_GOOGLE_REDIRECT_URI || 'http://localhost:5173/auth';
 
 export const getGoogleAuthUrl = (): string => {
   const params = new URLSearchParams({
@@ -25,28 +30,10 @@ export const getAuthCodeFromUrl = (): string | null => {
   return code;
 };
 
-export const exchangeCodeForToken = async (
-  code: string
-): Promise<{
-  accessToken: string;
-}> => {
-  const url = `${SERVER_API_URL}/members/login`;
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ code }),
+export const exchangeCodeForToken = async (code: string): Promise<accessToken> => {
+  return fetcher.post<accessToken>('members/login', {
+    json: { code },
   });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-
-    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-  }
-
-  return response.json();
 };
 
 export const logout = (): void => {

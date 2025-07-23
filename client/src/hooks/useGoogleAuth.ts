@@ -1,13 +1,11 @@
-import { useState } from 'react';
-
 import {
   getAuthCodeFromUrl,
-  exchangeCodeForToken,
   saveAuthData,
   isAuthenticated,
   getStoredToken,
   logout as logoutUser,
 } from '../api/auth';
+import { useGoogleLoginMutation } from '../api/authQueries';
 
 type UseGoogleAuthReturn = {
   isLoading: boolean;
@@ -18,13 +16,9 @@ type UseGoogleAuthReturn = {
 };
 
 export const useGoogleAuth = (): UseGoogleAuthReturn => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const googleLoginMutation = useGoogleLoginMutation();
 
   const handleCallback = async (): Promise<void> => {
-    setIsLoading(true);
-    setError(null);
-
     try {
       const existingToken = getStoredToken();
       if (existingToken) {
@@ -32,12 +26,11 @@ export const useGoogleAuth = (): UseGoogleAuthReturn => {
       }
 
       const code = getAuthCodeFromUrl();
-
       if (!code) {
         throw new Error('Authorization code not found in URL');
       }
 
-      const response = await exchangeCodeForToken(code);
+      const response = await googleLoginMutation.mutateAsync(code);
 
       const token = response.accessToken;
       if (!token) {
@@ -54,23 +47,20 @@ export const useGoogleAuth = (): UseGoogleAuthReturn => {
       url.searchParams.delete('prompt');
       window.history.replaceState({}, document.title, url.toString());
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Login failed';
-      setError(errorMessage);
       console.error('Google OAuth error:', err);
-    } finally {
-      setIsLoading(false);
+      throw err;
     }
   };
 
   const logout = (): void => {
     logoutUser();
-    setError(null);
+    googleLoginMutation.reset();
   };
 
   return {
-    isLoading,
+    isLoading: googleLoginMutation.isPending,
     isAuthenticated: isAuthenticated(),
-    error,
+    error: googleLoginMutation.error?.message || null,
     handleCallback,
     logout,
   };

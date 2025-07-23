@@ -5,20 +5,16 @@ import { getGoogleAuthUrl } from '../../api/auth';
 import { StyledGoogleButton, GoogleIcon, ButtonText } from './GoogleLoginButton.styled';
 
 export type GoogleLoginButtonProps = {
-  onLoginStart?: () => void;
   disabled?: boolean;
   children?: React.ReactNode;
 };
 
-export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
-  onLoginStart,
+export const GoogleLoginButton = ({
   disabled = false,
   children = 'Google로 로그인',
-}) => {
+}: GoogleLoginButtonProps) => {
   const handleGoogleLogin = () => {
     if (disabled) return;
-
-    onLoginStart?.();
 
     const authUrl = getGoogleAuthUrl();
     window.location.href = authUrl;
