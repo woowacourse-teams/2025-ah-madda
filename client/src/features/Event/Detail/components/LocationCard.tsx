@@ -4,11 +4,11 @@ import { Card } from '../../../../shared/components/Card';
 import { Flex } from '../../../../shared/components/Flex';
 import { Icon } from '../../../../shared/components/Icon';
 import { Text } from '../../../../shared/components/Text';
-import type { EventDetail } from '../types/index';
+import type { EventDetail } from '../../../Event/types/Event';
 
-type LocationCardProps = Pick<EventDetail, 'location'>;
+type LocationCardProps = Pick<EventDetail, 'place'>;
 
-export const LocationCard = ({ location }: LocationCardProps) => {
+export const LocationCard = ({ place }: LocationCardProps) => {
   return (
     <Flex
       dir="column"
@@ -27,7 +27,7 @@ export const LocationCard = ({ location }: LocationCardProps) => {
             <Icon name="location" size={18} />
             <Text type="caption">장소</Text>
           </Flex>
-          <Text type="caption">{location}</Text>
+          <Text type="caption">{place}</Text>
         </Flex>
       </Card>
     </Flex>

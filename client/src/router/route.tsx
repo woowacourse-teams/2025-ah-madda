@@ -30,8 +30,7 @@ export const router = createBrowserRouter(
           Component: MyEventPage,
         },
         {
-          // S.TODO : 추후 수정 ':eventId',
-          path: 'detail',
+          path: ':eventId',
           Component: EventDetailPage,
         },
         {

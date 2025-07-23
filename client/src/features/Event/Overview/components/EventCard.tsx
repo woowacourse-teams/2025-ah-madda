@@ -7,6 +7,8 @@ import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Text } from '@/shared/components/Text';
 
 import { Event } from '../../types/Event';
+import { formatDateTime } from '../utils/formatDateTime';
+import { formatTime } from '../utils/formatTime';
 
 export const EventCard = ({
   eventId,
@@ -17,11 +19,12 @@ export const EventCard = ({
   eventEnd,
   place,
   organizerName,
+  currentGuestCount,
+  maxCapacity,
 }: Event) => {
   const navigate = useNavigate();
-  // S.TODO : 추후 href=`/event/${eventId}`로 변경
   return (
-    <CardWrapper onClick={() => navigate('/event/detail')}>
+    <CardWrapper onClick={() => navigate(`/event/${eventId}`)}>
       <Flex dir="column" gap="8px">
         <Text type="Title" color="#ffffff" weight="semibold">
           {title}
@@ -32,12 +35,15 @@ export const EventCard = ({
         <Flex alignItems="center" gap="4px" height="100%">
           <Icon name="calendar" color="#99A1AF" size={15} />
           <Text type="caption" color="#99A1AF">
-            {`신청 마감 ${registrationEnd}`}
+            {`신청 마감 ${formatTime(registrationEnd)} 까지`}
           </Text>
         </Flex>
         <Flex alignItems="center" gap="4px" height="100%">
           <Icon name="clock" color="#99A1AF" size={15} />
-          <Text type="caption" color="#99A1AF">{`이벤트 시간 ${eventStart} - ${eventEnd}`}</Text>
+          <Text
+            type="caption"
+            color="#99A1AF"
+          >{`이벤트 시간 ${formatDateTime(eventStart, eventEnd)}`}</Text>
         </Flex>
         <Flex alignItems="center" gap="4px" height="100%">
           <Icon name="location" color="#99A1AF" size={15} />
@@ -59,10 +65,10 @@ export const EventCard = ({
             참여 현황
           </Text>
           <Text type="caption" color="#99A1AF">
-            42/50명
+            {`${currentGuestCount}/${maxCapacity} 명`}
           </Text>
         </Flex>
-        <ProgressBar value={45} max={50} color="black" />
+        <ProgressBar value={currentGuestCount} max={maxCapacity} color="black" />
       </Flex>
     </CardWrapper>
   );
