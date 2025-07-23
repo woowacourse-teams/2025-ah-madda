@@ -42,11 +42,13 @@ export type CreateEventRequest = {
   registrationStart: string;
   registrationEnd: string;
   organizerNickname: string;
-  questions: {
-    questionText: string;
-    isRequired: boolean;
-    orderIndex: number;
-  }[];
+  questions: Question[];
+};
+
+export type Question = {
+  questionText: string;
+  isRequired: boolean;
+  orderIndex: number;
 };
 
 // S.TODO: 추후 Organization 폴더가 생기면 이동
