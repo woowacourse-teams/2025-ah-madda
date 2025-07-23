@@ -6,13 +6,24 @@ const defaultOption: Options = {
 };
 const API_BASE_URL = process.env.API_BASE_URL;
 
+const getAuthToken = (): string | null => {
+  return localStorage.getItem('access_token');
+};
+
 export const instance = ky.create({
   prefixUrl: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
   hooks: {
-    beforeRequest: [() => {}],
+    beforeRequest: [
+      (request) => {
+        const token = getAuthToken();
+        if (token) {
+          request.headers.set('Authorization', `Bearer ${token}`);
+        }
+      },
+    ],
     afterResponse: [() => {}],
   },
 
