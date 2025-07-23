@@ -24,10 +24,10 @@ export type EventDetail = {
   registrationEnd: string;
   currentGuestCount: number;
   maxCapacity: number;
-  questions: Questions[];
+  questions: Question[];
 };
 
-type Questions = {
+type Question = {
   questionId: number;
   questionText: string;
   isRequired: boolean;
