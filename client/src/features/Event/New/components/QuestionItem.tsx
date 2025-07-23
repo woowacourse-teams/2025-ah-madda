@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { IconButton } from '@/shared/components/IconButton';
@@ -8,24 +6,37 @@ import { Switch } from '@/shared/components/Switch';
 import { Text } from '@/shared/components/Text';
 
 type Props = {
-  questionNumber: number;
+  orderIndex: number;
+  questionText: string;
+  isRequired: boolean;
   onDelete: () => void;
+  onChange: (updated: Partial<{ questionText: string; isRequired: boolean }>) => void;
 };
 
-export const QuestionItem = ({ questionNumber, onDelete }: Props) => {
-  const [selected, setSelected] = useState(false);
+export const QuestionItem = ({
+  orderIndex,
+  questionText,
+  isRequired,
+  onDelete,
+  onChange,
+}: Props) => {
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange({ questionText: e.target.value });
+  };
 
-  const handleSwitchChange = () => {
-    setSelected(!selected);
+  const handleSwitchChange = (checked: boolean) => {
+    onChange({ isRequired: checked });
   };
 
   return (
     <Card>
       <Flex dir="column" gap="16px">
         <Input
-          id={`question-${questionNumber}`}
-          label={`질문${questionNumber}`}
+          id={`question-${orderIndex}`}
+          label={`질문${orderIndex + 1}`}
           placeholder="질문을 입력해주세요."
+          value={questionText}
+          onChange={handleTextChange}
         />
         <Input
           id="question"
@@ -35,7 +46,11 @@ export const QuestionItem = ({ questionNumber, onDelete }: Props) => {
         />
         <Flex justifyContent="space-between" alignItems="center">
           <Flex as="label" justifyContent="center" alignItems="center" gap="8px" height="100%">
-            <Switch id="switch" checked={selected} onCheckedChange={handleSwitchChange} />
+            <Switch
+              id={`required-${orderIndex}`}
+              checked={isRequired}
+              onCheckedChange={handleSwitchChange}
+            />
             <Text type="caption" color="gray">
               필수 질문
             </Text>

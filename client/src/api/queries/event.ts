@@ -16,7 +16,7 @@ export const eventQueryOptions = {
     }),
 };
 
-const createEventAPI = (organizationId: number, data: CreateEventRequest) => {
+export const createEventAPI = (organizationId: number, data: CreateEventRequest) => {
   return fetcher.post<{ eventId: number }>(`organizations/${organizationId}/events`, {
     json: data,
   });
