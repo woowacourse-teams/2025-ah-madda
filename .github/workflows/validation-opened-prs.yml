@@ -1,0 +1,68 @@
+on:
+  pull_request:
+    branches:
+      - be/dev
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions: write-all
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      validation-cache-key: ${{ steps.validation-cache.outputs.key }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          token: ${{ secrets.BE_SUBMODULE_TOKEN }}
+
+      - name: Generate validation cache key
+        id: validation-cache
+        run: |
+          echo "key=validation-${{ runner.os }}-gradle-${{ hashFiles('server/**/*.gradle*', 'server/**/gradle-wrapper.properties') }}" >> $GITHUB_OUTPUT
+
+  validation:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          token: ${{ secrets.BE_SUBMODULE_TOKEN }}
+
+      - name: Cache Gradle packages
+        id: cache-gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ needs.setup.outputs.validation-cache-key }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+        working-directory: server
+
+      - name: Run validation
+        run: ./gradlew test
+        working-directory: server
+
+      - name: Add comments to a pull request
+        uses: mikepenz/action-junit-report@v4
+        if: github.event_name == 'pull_request' && always()
+        with:
+          report_paths: server/build/test-results/test/TEST-*.xml
