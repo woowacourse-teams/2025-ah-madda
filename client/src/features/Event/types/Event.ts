@@ -24,7 +24,7 @@ export type EventDetail = {
   registrationEnd: string;
   currentGuestCount: number;
   maxCapacity: number;
-  questions: Questions;
+  questions: Questions[];
 };
 
 type Questions = {
