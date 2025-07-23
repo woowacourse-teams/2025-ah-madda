@@ -4,11 +4,11 @@ import { Card } from '../../../../shared/components/Card';
 import { Flex } from '../../../../shared/components/Flex';
 import { Icon } from '../../../../shared/components/Icon';
 import { Text } from '../../../../shared/components/Text';
-import type { EventDetail } from '../types/index';
+import type { EventDetail } from '../../../Event/types/Event';
 
-type TimeInfoCardProps = Pick<EventDetail, 'deadlineTime' | 'startTime' | 'endTime'>;
+type TimeInfoCardProps = Pick<EventDetail, 'registrationEnd' | 'eventStart' | 'eventEnd'>;
 
-export const TimeInfoCard = ({ deadlineTime, startTime, endTime }: TimeInfoCardProps) => {
+export const TimeInfoCard = ({ registrationEnd, eventStart, eventEnd }: TimeInfoCardProps) => {
   return (
     <Flex
       dir="column"
@@ -26,16 +26,16 @@ export const TimeInfoCard = ({ deadlineTime, startTime, endTime }: TimeInfoCardP
             신청 마감
           </Text>
           <Text type="caption" color="red">
-            {deadlineTime}
+            {registrationEnd}
           </Text>
           <Text type="caption" color="gray">
             이벤트 시작
           </Text>
-          <Text type="caption">{startTime}</Text>
+          <Text type="caption">{eventStart}</Text>
           <Text type="caption" color="gray">
             이벤트 종료
           </Text>
-          <Text type="caption">{endTime}</Text>
+          <Text type="caption">{eventEnd}</Text>
         </Flex>
       </Card>
     </Flex>
