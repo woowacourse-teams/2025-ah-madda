@@ -97,7 +97,6 @@ export const useGoogleAuth = (): UseGoogleAuthReturn => {
 
   const logout = (): void => {
     logoutUser();
-    googleLoginMutation.reset();
   };
 
   return {
