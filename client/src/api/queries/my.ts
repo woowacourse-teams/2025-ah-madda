@@ -20,15 +20,11 @@ export const myEventQueryOptions = {
 };
 
 const getHostEvents = async (organizationMemberId: number): Promise<Event[]> => {
-  const response = await fetcher.get<Event[]>(
-    `organization-members/${organizationMemberId}/events/owned`
-  );
-  return response;
+  return await fetcher.get<Event[]>(`organization-members/${organizationMemberId}/events/owned`);
 };
 
 const getParticipateEvents = async (organizationMemberId: number): Promise<Event[]> => {
-  const response = await fetcher.get<Event[]>(
+  return await fetcher.get<Event[]>(
     `organization-members/${organizationMemberId}/events/participated`
   );
-  return response;
 };
