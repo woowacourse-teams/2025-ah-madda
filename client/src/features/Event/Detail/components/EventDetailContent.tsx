@@ -2,6 +2,7 @@ import { css } from '@emotion/react';
 
 import { Flex } from '../../../../shared/components/Flex';
 import { EventDetail } from '../../../Event/types/Event';
+import { formatKoreanDateTime } from '../utils/formatKoreanDateTime';
 
 import { DescriptionCard } from './DescriptionCard';
 import { EventDetailTitle } from './EventDetailTitle';
@@ -53,7 +54,11 @@ export const EventDetailContent = ({ event }: EventDetailContentProps) => {
           }
         `}
       >
-        <TimeInfoCard deadlineTime={registrationEnd} startTime={eventStart} endTime={eventEnd} />
+        <TimeInfoCard
+          deadlineTime={formatKoreanDateTime(registrationEnd)}
+          startTime={formatKoreanDateTime(eventStart)}
+          endTime={formatKoreanDateTime(eventEnd)}
+        />
         <LocationCard location={place} />
       </Flex>
 
