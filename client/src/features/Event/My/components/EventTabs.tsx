@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 import { myEventQueryOptions } from '@/api/queries/my';
 import { Tabs } from '@/shared/components/Tabs';
 
-import { Event } from '../../types/Event';
 import { UI_LABELS, STATUS_MESSAGES, TAB_VALUES } from '../constants';
 
 import { EventSection } from './EventSection';
@@ -16,12 +15,10 @@ export const EventTabs = () => {
 
   const { data: hostEvents = [] } = useQuery({
     ...myEventQueryOptions.hostEvents(organizationMemberId),
-    select: (data: Event[]) => data.map((event) => event),
   });
 
   const { data: participateEvents = [] } = useQuery({
     ...myEventQueryOptions.participateEvents(organizationMemberId),
-    select: (data: Event[]) => data.map((event) => event),
   });
 
   return (
