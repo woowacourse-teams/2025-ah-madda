@@ -10,8 +10,8 @@ logging:
   level:
     org.hibernate.orm.jdbc.bind: trace
 
-api:
-  url: http://localhost:8080
+client:
+  url: http://localhost:5173
 
 jwt:
   secret-key: ${jwt.local.secret-key}
