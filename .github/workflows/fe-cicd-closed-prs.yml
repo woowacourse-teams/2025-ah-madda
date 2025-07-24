@@ -31,14 +31,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run build
-        run: pnpm run build
-
       - name: Run unit tests
         run: pnpm run test
 
       - name: Run type check
         run: pnpm run type-check
+
+      - name: Run build
+        run: pnpm run build
 
       - name: Upload to S3
         run: |
