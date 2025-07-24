@@ -1,8 +1,7 @@
 import { useParticipateEvent } from '../../../../api/mutations/useParticipateEvent';
+import { Answer } from '../../../../api/types/event';
 import { Button } from '../../../../shared/components/Button';
 import { Card } from '../../../../shared/components/Card';
-
-import { Answer } from './EventDetailContent';
 
 type SubmitBUttonCardProps = {
   eventId: number;

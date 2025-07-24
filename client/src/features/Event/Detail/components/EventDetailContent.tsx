@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 
+import { Answer } from '../../../../api/types/event';
 import { Flex } from '../../../../shared/components/Flex';
 import { EventDetail } from '../../../Event/types/Event';
 import { formatKoreanDateTime } from '../utils/formatKoreanDateTime';
@@ -15,11 +16,6 @@ import { SubmitButtonCard } from './SubmitButtonCard';
 import { TimeInfoCard } from './TimeInfoCard';
 
 type EventDetailContentProps = EventDetail;
-
-export type Answer = {
-  questionId: number;
-  answerText: string;
-};
 
 export const EventDetailContent = ({
   eventId,

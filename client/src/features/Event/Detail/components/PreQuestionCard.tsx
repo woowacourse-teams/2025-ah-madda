@@ -1,10 +1,9 @@
+import { Answer } from '../../../../api/types/event';
 import { Card } from '../../../../shared/components/Card';
 import { Flex } from '../../../../shared/components/Flex';
 import { Input } from '../../../../shared/components/Input';
 import { Text } from '../../../../shared/components/Text';
 import type { EventDetail } from '../../../Event/types/Event';
-
-import { Answer } from './EventDetailContent';
 
 type PreQuestionCardProps = Pick<EventDetail, 'questions'> & {
   answers: Answer[];
