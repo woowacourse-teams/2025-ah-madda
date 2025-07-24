@@ -2,6 +2,7 @@ package com.ahmadda.presentation;
 
 
 import com.ahmadda.application.EventService;
+import com.ahmadda.application.OrganizationMemberEventService;
 import com.ahmadda.application.OrganizationService;
 import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.LoginMember;
@@ -29,6 +30,7 @@ import java.util.List;
 public class OrganizationEventController {
 
     private final OrganizationService organizationService;
+    private final OrganizationMemberEventService organizationMemberEventService;
     private final EventService eventService;
 
     @GetMapping("/{organizationId}/events")
@@ -59,5 +61,34 @@ public class OrganizationEventController {
         Event event = eventService.getEvent(eventId);
 
         return ResponseEntity.ok(EventDetailResponse.from(event));
+    }
+
+    @GetMapping("/{organizationId}/events/owned")
+    public ResponseEntity<List<EventResponse>> getOwnerEvents(
+            @PathVariable final Long organizationId,
+            @AuthMember final LoginMember loginMember
+    ) {
+        List<Event> organizationEvents = organizationMemberEventService.getOwnerEvents(organizationId, loginMember);
+
+        List<EventResponse> eventResponses = organizationEvents.stream()
+                .map(EventResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(eventResponses);
+    }
+
+    @GetMapping("/{organizationId}/events/participated")
+    public ResponseEntity<List<EventResponse>> getParticipantEvents(
+            @PathVariable final Long organizationId,
+            @AuthMember final LoginMember loginMember
+    ) {
+        List<Event> organizationEvents =
+                organizationMemberEventService.getParticipantEvents(organizationId, loginMember);
+
+        List<EventResponse> eventResponses = organizationEvents.stream()
+                .map(EventResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(eventResponses);
     }
 }

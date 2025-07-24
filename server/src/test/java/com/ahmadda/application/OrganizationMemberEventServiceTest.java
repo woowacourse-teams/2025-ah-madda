@@ -1,5 +1,6 @@
 package com.ahmadda.application;
 
+import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventOperationPeriod;
@@ -93,8 +94,10 @@ class OrganizationMemberEventServiceTest {
                 20
         );
 
+        var loginMember = new LoginMember(member.getId(), member.getName(), member.getEmail());
+
         // when
-        var result = sut.getOwnerEvents(organizer.getId());
+        var result = sut.getOwnerEvents(organization.getId(), loginMember);
 
         // then
         assertSoftly(softly -> {
@@ -126,10 +129,11 @@ class OrganizationMemberEventServiceTest {
     void 조직원이_참여한_이벤트들을_조회한다() {
         // given
         var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
-        var member = createAndSaveMember("참여자", "participant@test.com");
-        var participant = createAndSaveOrganizationMember("참여자닉네임", member, organization);
+        var organizerMember = createAndSaveMember("주최자", "organizer@test.com");
+        var participantMember = createAndSaveMember("참여자", "participant@test.com");
 
-        var organizer = createAndSaveOrganizationMember("주최자닉네임", member, organization);
+        var organizer = createAndSaveOrganizationMember("주최자닉네임", organizerMember, organization);
+        var participant = createAndSaveOrganizationMember("참여자닉네임", participantMember, organization);
 
         var event1 = createAndSaveEvent(
                 "참여 이벤트 1",
@@ -176,7 +180,14 @@ class OrganizationMemberEventServiceTest {
         createAndSaveGuest(event2, participant);
 
         // when
-        var result = sut.getParticipantEvents(participant.getId());
+        var result = sut.getParticipantEvents(
+                organization.getId(),
+                new LoginMember(
+                        participantMember.getId(),
+                        participantMember.getName(),
+                        participantMember.getEmail()
+                )
+        );
 
         // then
         assertSoftly(softly -> {
@@ -192,19 +203,25 @@ class OrganizationMemberEventServiceTest {
     }
 
     @Test
-    void 존재하지_않는_조직원으로_주최_이벤트_조회하면_예외가_발생한다() {
+    void 존재하지_않는_멤버로_주최_이벤트_조회하면_예외가_발생한다() {
+        // given
+        var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
+        var loginMember = new LoginMember(999L, "test", "test@test.com");
+
         // when // then
-        assertThatThrownBy(() -> sut.getOwnerEvents(999L))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 조직원 정보입니다.");
+        assertThatThrownBy(() -> sut.getOwnerEvents(organization.getId(), loginMember))
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
     void 존재하지_않는_조직원으로_참여_이벤트_조회하면_예외가_발생한다() {
+        // given
+        var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
+        var loginMember = new LoginMember(999L, "test", "test@test.com");
+
         // when // then
-        assertThatThrownBy(() -> sut.getParticipantEvents(999L))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 조직원 정보입니다.");
+        assertThatThrownBy(() -> sut.getParticipantEvents(organization.getId(), loginMember))
+                .isInstanceOf(NotFoundException.class);
     }
 
     private Organization createAndSaveOrganization(String name, String description, String imageUrl) {
