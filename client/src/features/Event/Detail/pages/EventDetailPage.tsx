@@ -1,19 +1,24 @@
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQueries } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { eventQueryOptions } from '@/api/queries/event';
+import { Flex } from '@/shared/components/Flex';
+import { Header } from '@/shared/components/Header';
+import { IconButton } from '@/shared/components/IconButton';
+import { PageLayout } from '@/shared/components/PageLayout';
+import { Text } from '@/shared/components/Text';
 
-import { Flex } from '../../../../shared/components/Flex';
-import { Header } from '../../../../shared/components/Header';
-import { IconButton } from '../../../../shared/components/IconButton';
-import { PageLayout } from '../../../../shared/components/PageLayout';
-import { Text } from '../../../../shared/components/Text';
 import { EventDetailContent } from '../components/EventDetailContent';
 
 export const EventDetailPage = () => {
   const navigate = useNavigate();
   const { eventId } = useParams();
-  const { data: event } = useQuery(eventQueryOptions.detail(Number(eventId)));
+  const [{ data: event }, { data: guestStatus }] = useSuspenseQueries({
+    queries: [
+      eventQueryOptions.detail(Number(eventId)),
+      eventQueryOptions.guestStatus(Number(eventId)),
+    ],
+  });
 
   if (!event) {
     return (
@@ -38,7 +43,7 @@ export const EventDetailPage = () => {
         />
       }
     >
-      <EventDetailContent {...event} />
+      <EventDetailContent isGuest={guestStatus.isGuest} {...event} />
     </PageLayout>
   );
 };
