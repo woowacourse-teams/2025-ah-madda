@@ -4,7 +4,7 @@ import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
 
-import { Event } from '../types';
+import { Event } from '../../types/Event';
 
 import { EventCard } from './EventCard';
 
@@ -27,7 +27,7 @@ export const EventSection = ({ events, title, emptyMessage }: EventSectionProps)
       {events.length > 0 ? (
         <EventCardContainer>
           {events.map((event) => (
-            <EventCard key={event.id} {...event} />
+            <EventCard key={event.eventId} {...event} />
           ))}
         </EventCardContainer>
       ) : (

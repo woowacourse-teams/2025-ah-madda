@@ -4,7 +4,7 @@ export type Event = {
   description: string;
   eventStart: string;
   eventEnd: string;
-  currentGuestCount: string;
+  currentGuestCount: number;
   maxCapacity: number;
   place: string;
   registrationStart: string;
