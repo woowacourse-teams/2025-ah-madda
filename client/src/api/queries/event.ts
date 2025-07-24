@@ -1,8 +1,11 @@
 import { queryOptions } from '@tanstack/react-query';
 
 import { CreateEventRequest, EventDetail } from '../../features/Event/types/Event';
-
 import { fetcher } from '../fetcher';
+
+type CreateEventAPIResponse = {
+  eventId: number;
+};
 
 export const eventQueryKeys = {
   all: () => ['event'],
@@ -18,7 +21,7 @@ export const eventQueryOptions = {
 };
 
 export const createEventAPI = (organizationId: number, data: CreateEventRequest) => {
-  return fetcher.post<{ eventId: number }>(`organizations/${organizationId}/events`, {
+  return fetcher.post<CreateEventAPIResponse>(`organizations/${organizationId}/events`, {
     json: data,
   });
 };
