@@ -2,8 +2,6 @@ import { describe, expect, test } from 'vitest';
 
 import { formatKoreanDateTime } from '../utils/formatKoreanDateTime';
 
-process.env.TZ = 'Asia/Seoul';
-
 describe('formatKoreanDateTime', () => {
   test('오전 시간대를 올바르게 포맷한다', () => {
     const input = '2025-07-01T06:30:00+09:00';
