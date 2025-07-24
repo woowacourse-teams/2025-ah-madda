@@ -37,10 +37,6 @@ export const eventQueryOptions = {
     queryKey: [...eventQueryKeys.nonGuests(), eventId],
     queryFn: () => getNonGuests(eventId),
   }),
-  participate: (eventId: number) => ({
-    mutationKey: ['participate', eventId],
-    mutationFn: (answers: Answer[]) => postEventParticipation(eventId, answers),
-  }),
 };
 
 const getGuests = async (eventId: number) => {

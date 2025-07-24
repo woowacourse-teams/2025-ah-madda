@@ -1,6 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
-
-import { eventQueryOptions } from '../../../../api/queries/event';
+import { useParticipateEvent } from '../../../../api/mutations/useParticipateEvent';
 import { Button } from '../../../../shared/components/Button';
 import { Card } from '../../../../shared/components/Card';
 
@@ -16,9 +14,7 @@ export const SubmitButtonCard = ({ eventId, registrationEnd, answers }: SubmitBU
   const now = new Date();
   const isBeforeDeadline = now <= new Date(registrationEnd);
 
-  const { mutate, isPending } = useMutation<void, unknown, Answer[]>({
-    ...eventQueryOptions.participate(eventId),
-  });
+  const { mutate, isPending } = useParticipateEvent(eventId);
 
   const handleClick = () => {
     mutate(answers, {
