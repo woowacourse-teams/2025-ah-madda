@@ -1,5 +1,8 @@
 import { css } from '@emotion/react';
+import { useQuery } from '@tanstack/react-query';
+import { useParams } from 'react-router-dom';
 
+import { eventQueryOptions } from '@/api/queries/event';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
@@ -7,19 +10,13 @@ import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 
-import type { EventInfo } from '../types';
+import { formatDateTime } from '../../My/utils/date';
 
-export const EventInfoSection = ({
-  title,
-  description,
-  organizer,
-  location,
-  deadlineTime,
-  startTime,
-  endTime,
-  currentParticipants,
-  maxParticipants,
-}: EventInfo) => {
+export const EventInfoSection = () => {
+  const { eventId: eventIdParam } = useParams();
+  const eventId = Number(eventIdParam);
+  const { data: event } = useQuery(eventQueryOptions.detail(eventId));
+
   return (
     <Flex
       as="section"
@@ -51,38 +48,40 @@ export const EventInfoSection = ({
           </Flex>
 
           <Text type="Body" weight="semibold" color="#0A0A0A">
-            {title}
+            {event?.title}
           </Text>
 
           <Text type="caption" weight="regular" color="#4A5565">
-            {description}
+            {event?.description}
           </Text>
 
           <Flex alignItems="center" gap="8px">
             <Icon name="users" size={14} color="#4A5565" />
             <Text type="caption" weight="regular" color="#4A5565">
-              {`주최자: ${organizer}`}
+              {`주최자: ${event?.organizerName}`}
             </Text>
           </Flex>
 
           <Flex alignItems="center" gap="8px">
             <Icon name="location" size={14} color="#4A5565" />
             <Text type="caption" weight="regular" color="#4A5565">
-              {location}
+              {event?.place}
             </Text>
           </Flex>
 
           <Flex alignItems="center" gap="8px">
             <Icon name="calendar" size={14} color="#4A5565" />
             <Text type="caption" weight="regular" color="#4A5565">
-              {`신청 마감: ${deadlineTime}`}
+              {`신청 마감: ${formatDateTime(event?.registrationEnd ?? '')}`}
             </Text>
           </Flex>
 
           <Flex alignItems="center" gap="8px">
             <Icon name="clock" size={14} color="#4A5565" />
             <Text type="caption" weight="regular" color="#4A5565">
-              {`이벤트 일시: ${startTime} ~ ${endTime}`}
+              {`이벤트 일시: ${formatDateTime(event?.eventStart ?? '')} ~ ${formatDateTime(
+                event?.eventEnd ?? ''
+              )}`}
             </Text>
           </Flex>
           <Spacing height="1px" color="#ECEEF2" />
@@ -96,10 +95,14 @@ export const EventInfoSection = ({
                 </Text>
               </Flex>
               <Text type="caption" weight="regular" color="#4A5565">
-                {`${currentParticipants}/${maxParticipants}명`}
+                {`${event?.currentGuestCount}/${event?.maxCapacity}명`}
               </Text>
             </Flex>
-            <ProgressBar value={currentParticipants} max={maxParticipants} color="#0A0A0A" />
+            <ProgressBar
+              value={event?.currentGuestCount ?? 0}
+              max={event?.maxCapacity ?? 0}
+              color="#0A0A0A"
+            />
           </Flex>
         </Flex>
       </Card>

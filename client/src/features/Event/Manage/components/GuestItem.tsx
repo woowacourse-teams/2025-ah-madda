@@ -4,29 +4,28 @@ import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 
 import { GUEST_STYLES } from '../constants';
-import { Guest } from '../types';
-
-export type GuestVariant = 'completed' | 'pending';
+import { Guest, NonGuest } from '../types';
 
 type GuestItemProps = {
-  guest: Guest;
-  onClick: (guest: Guest) => void;
-  variant: GuestVariant;
+  guest: Guest | NonGuest;
 };
 
-export const GuestItem = ({ guest, onClick, variant }: GuestItemProps) => {
-  const badgeTextColor = GUEST_STYLES[variant].badgeTextColor;
+type GuestItemVariant = 'completed' | 'pending';
+
+export const GuestItem = ({ guest }: GuestItemProps) => {
+  const isGuest = 'guestId' in guest;
+  const variant = isGuest ? 'completed' : 'pending';
+  const { badgeTextColor, badgeText } = GUEST_STYLES[variant];
 
   return (
     <StyledGuestItemContainer
       justifyContent="space-between"
       alignItems="center"
-      onClick={() => onClick(guest)}
       padding="4px 8px"
       variant={variant}
     >
       <Text type="caption" weight="regular" color={GUEST_STYLES.common.nameTextColor}>
-        {guest.name}
+        {guest.nickname}
       </Text>
       <StyledGuestBadge
         alignItems="center"
@@ -36,7 +35,7 @@ export const GuestItem = ({ guest, onClick, variant }: GuestItemProps) => {
         variant={variant}
       >
         <Text type="caption" weight="regular" color={badgeTextColor}>
-          {guest.status}
+          {badgeText}
         </Text>
       </StyledGuestBadge>
     </StyledGuestItemContainer>
@@ -44,12 +43,12 @@ export const GuestItem = ({ guest, onClick, variant }: GuestItemProps) => {
 };
 
 type GuestItemContainerProps = {
-  variant: GuestVariant;
+  variant: GuestItemVariant;
 };
 
 type GuestBadgeProps = GuestItemContainerProps;
 
-const getContainerStyles = (variant: GuestVariant) => {
+const getContainerStyles = (variant: GuestItemVariant) => {
   if (variant === 'completed') {
     return `
       background-color: #F0FDF4;
@@ -67,7 +66,7 @@ const getContainerStyles = (variant: GuestVariant) => {
   `;
 };
 
-const getBadgeStyles = (variant: GuestVariant) => {
+const getBadgeStyles = (variant: GuestItemVariant) => {
   if (variant === 'completed') {
     return `
       background: #DCFCE7;

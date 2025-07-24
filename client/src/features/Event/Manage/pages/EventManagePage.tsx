@@ -9,10 +9,8 @@ import { Text } from '@/shared/components/Text';
 import { EventInfoSection } from '../components/EventInfoSection';
 import { GuestManageSection } from '../components/GuestManageSection';
 import { EventManageContainer } from '../containers/EventManageContainer';
-import { useEventManage } from '../hooks/useEventManage';
 
 export const EventManagePage = () => {
-  const { data } = useEventManage();
   const navigate = useNavigate();
 
   return (
@@ -37,11 +35,8 @@ export const EventManagePage = () => {
     >
       <EventManageContainer>
         <Flex as="main" gap="40px" width="100%" dir="column">
-          <EventInfoSection {...data.eventInfo} />
-          <GuestManageSection
-            completedGuests={data.completedGuests}
-            pendingGuests={data.pendingGuests}
-          />
+          <EventInfoSection />
+          <GuestManageSection />
         </Flex>
       </EventManageContainer>
     </PageLayout>

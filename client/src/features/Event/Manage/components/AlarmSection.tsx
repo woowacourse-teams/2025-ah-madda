@@ -1,7 +1,9 @@
 import { useState } from 'react';
 
 import { css } from '@emotion/react';
+import { useParams } from 'react-router-dom';
 
+import { useAddAlarm } from '@/api/mutations/useAddAlarm';
 import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
@@ -15,13 +17,19 @@ type AlarmSectionProps = {
 
 export const AlarmSection = ({ pendingGuestsCount }: AlarmSectionProps) => {
   const [alarmMessage, setAlarmMessage] = useState('');
+  const { eventId: eventIdParam } = useParams();
+  const { mutate: postAlarm, isPending } = useAddAlarm({ eventId: Number(eventIdParam) });
 
   const handleSendAlarm = () => {
-    if (alarmMessage.trim()) {
-      // TODO: 알람 전송 로직 구현
-      console.log('알람 전송:', alarmMessage);
-      setAlarmMessage('');
+    if (!alarmMessage.trim()) {
+      return;
     }
+
+    postAlarm(alarmMessage, {
+      onSuccess: () => {
+        setAlarmMessage('');
+      },
+    });
   };
 
   return (
@@ -59,15 +67,15 @@ export const AlarmSection = ({ pendingGuestsCount }: AlarmSectionProps) => {
             width="100%"
             size="sm"
             color="#F54900"
-            disabled={!alarmMessage.trim()}
+            disabled={!alarmMessage.trim() || isPending}
             onClick={handleSendAlarm}
             css={css`
               border-radius: 6.75px;
-              opacity: ${alarmMessage.trim() ? 1 : 0.5};
-              cursor: ${alarmMessage.trim() ? 'pointer' : 'not-allowed'};
+              opacity: ${alarmMessage.trim() && !isPending ? 1 : 0.5};
+              cursor: ${alarmMessage.trim() && !isPending ? 'pointer' : 'not-allowed'};
             `}
           >
-            보내기
+            {isPending ? '전송 중...' : '보내기'}
           </Button>
 
           <Text type="caption" weight="regular" color="#6A7282">

@@ -1,5 +1,8 @@
 import ky, { Options, ResponsePromise } from 'ky';
 
+import { ACCESS_TOKEN_KEY } from '@/shared/constants';
+import { getLocalStorage } from '@/shared/utils/localStorage';
+
 const defaultOption: Options = {
   retry: 0,
   timeout: 30_000,
@@ -14,7 +17,7 @@ export const instance = ky.create({
   hooks: {
     beforeRequest: [
       (request) => {
-        const token = localStorage.getItem('access_token');
+        const token = getLocalStorage(ACCESS_TOKEN_KEY);
         if (token) {
           request.headers.set('Authorization', `Bearer ${token}`);
         }

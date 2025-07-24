@@ -1,18 +1,20 @@
 import { css } from '@emotion/react';
+import { useQuery } from '@tanstack/react-query';
+import { useParams } from 'react-router-dom';
 
+import { eventQueryOptions } from '@/api/queries/event';
 import { Flex } from '@/shared/components/Flex';
-
-import { Guest } from '../types';
 
 import { AlarmSection } from './AlarmSection';
 import { GuestViewSection } from './GuestViewSection';
 
-type GuestManageSectionProps = {
-  completedGuests: Guest[];
-  pendingGuests: Guest[];
-};
+export const GuestManageSection = () => {
+  const { eventId: eventIdParam } = useParams();
+  const eventId = Number(eventIdParam);
+  const { data: guests = [] } = useQuery(eventQueryOptions.guests(eventId));
 
-export const GuestManageSection = ({ completedGuests, pendingGuests }: GuestManageSectionProps) => {
+  const { data: nonGuests = [] } = useQuery(eventQueryOptions.nonGuests(eventId));
+
   return (
     <Flex
       as="section"
@@ -34,13 +36,9 @@ export const GuestManageSection = ({ completedGuests, pendingGuests }: GuestMana
         }
       `}
     >
-      <AlarmSection pendingGuestsCount={pendingGuests.length} />
+      <AlarmSection pendingGuestsCount={nonGuests.length} />
 
-      <GuestViewSection
-        completedGuests={completedGuests}
-        pendingGuests={pendingGuests}
-        onGuestClick={() => {}}
-      />
+      <GuestViewSection guests={guests} nonGuests={nonGuests} />
     </Flex>
   );
 };
