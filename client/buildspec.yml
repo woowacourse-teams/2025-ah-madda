@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - pnpm install
+  build:
+    commands:
+      - pnpm run build
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: 'client/build'
+
+cache:
+  paths:
+    - node_modules/**/*
