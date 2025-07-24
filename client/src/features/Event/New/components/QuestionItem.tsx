@@ -8,7 +8,7 @@ import { QuestionRequest } from '../../types/Event';
 
 type QuestionItemProps = {
   onDelete: () => void;
-  onChange: (updated: Partial<QuestionRequest>) => void;
+  onChange: (updated: Partial<Pick<QuestionRequest, 'questionText' | 'isRequired'>>) => void;
 } & QuestionRequest;
 
 export const QuestionItem = ({
