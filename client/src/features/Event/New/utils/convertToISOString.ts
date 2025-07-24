@@ -5,10 +5,10 @@ export const convertToISOString = (datetimeString: string): string => {
   if (!datePart || !timePart) return '';
 
   const formattedDate = datePart.replace(/\./g, '-');
+  const [year, month, day] = formattedDate.split('-').map(Number);
+  const [hour, minute] = timePart.split(':').map(Number);
 
-  const isoCandidate = `${formattedDate}T${timePart}:00`;
+  const fakeUTC = new Date(Date.UTC(year, month - 1, day, hour, minute));
 
-  const date = new Date(isoCandidate);
-
-  return date.toISOString();
+  return fakeUTC.toISOString();
 };
