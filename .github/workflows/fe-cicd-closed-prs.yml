@@ -1,0 +1,52 @@
+name: Ah-Madda-FE
+
+on:
+  push:
+    branches:
+      - fe/dev
+
+defaults:
+  run:
+    working-directory: ./client
+
+jobs:
+  build:
+    name: react build & deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: .env setting
+        run: |
+          echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" >> .env
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/pnpm-setup-node
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run build
+        run: pnpm run build
+
+      - name: Run unit tests
+        run: pnpm run test
+
+      - name: Run type check
+        run: pnpm run type-check
+
+      - name: Upload to S3
+        run: |
+          aws s3 sync dist/ s3://${{ secrets.AWS_BUCKET_NAME}} --delete
+
+      - name: Invalidate CloudFront
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+        continue-on-error: true
