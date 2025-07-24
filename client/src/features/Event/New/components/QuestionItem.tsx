@@ -5,12 +5,14 @@ import { Input } from '@/shared/components/Input';
 import { Switch } from '@/shared/components/Switch';
 import { Text } from '@/shared/components/Text';
 
+import { QuestionRequest } from '../../types/Event';
+
 type Props = {
   orderIndex: number;
   questionText: string;
   isRequired: boolean;
   onDelete: () => void;
-  onChange: (updated: Partial<{ questionText: string; isRequired: boolean }>) => void;
+  onChange: (updated: Partial<QuestionRequest>) => void;
 };
 
 export const QuestionItem = ({

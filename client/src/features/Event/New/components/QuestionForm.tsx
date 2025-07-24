@@ -3,16 +3,16 @@ import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 
-import { Question } from '../../types/Event';
+import { QuestionRequest } from '../../types/Event';
 
 import { QuestionItem } from './QuestionItem';
 
-type Props = {
-  questions: Question[];
-  onChange: (updated: Question[]) => void;
+type QuestionFormProps = {
+  questions: QuestionRequest[];
+  onChange: (updated: QuestionRequest[]) => void;
 };
 
-export const QuestionForm = ({ questions, onChange }: Props) => {
+export const QuestionForm = ({ questions, onChange }: QuestionFormProps) => {
   const addQuestion = () => {
     const newQuestions = [
       ...questions,
@@ -38,7 +38,7 @@ export const QuestionForm = ({ questions, onChange }: Props) => {
     onChange(updated);
   };
 
-  const updateQuestion = (orderIndex: number, updatedData: Partial<Question>) => {
+  const updateQuestion = (orderIndex: number, updatedData: Partial<QuestionRequest>) => {
     const updated = questions.map((q) =>
       q.orderIndex === orderIndex ? { ...q, ...updatedData } : q
     );
