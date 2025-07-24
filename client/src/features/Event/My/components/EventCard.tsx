@@ -86,14 +86,14 @@ const EventCardWrapper = styled.section`
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 14px;
+  padding: 22px;
   width: 100%;
   min-width: 300px;
-  background-color: #1e2939;
-  border-radius: 8.75px;
+  background-color: #232838;
+  border-radius: 12px;
   cursor: pointer;
 
   &:hover {
-    background-color: #2e3b4d;
+    background-color: rgba(48, 65, 81, 0.95);
   }
 `;
