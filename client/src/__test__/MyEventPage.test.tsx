@@ -108,9 +108,13 @@ describe('MyEventPage 테스트', () => {
   });
 
   describe('EventCard 클릭 시 로직 테스트', () => {
-    test('EventCard 클릭 시 본인이 주최한 이벤트 관리 페이지의 api를 호출한다', async () => {
-      const user = userEvent.setup();
+    let user: ReturnType<typeof userEvent.setup>;
 
+    beforeEach(() => {
+      user = userEvent.setup();
+    });
+
+    test('EventCard 클릭 시 본인이 주최한 이벤트 관리 페이지의 api를 호출한다', async () => {
       mockFetcher.get.mockImplementation((url: string) => {
         if (url.includes('organization-members/1/events/owned')) {
           return Promise.resolve(mockHostEvents);
@@ -144,8 +148,6 @@ describe('MyEventPage 테스트', () => {
     });
 
     test('클릭한 이벤트의 참여자/미신청자 조회 API가 호출된다', async () => {
-      const user = userEvent.setup();
-
       mockFetcher.get.mockImplementation((url: string) => {
         if (url.includes('organization-members/1/events/owned')) {
           return Promise.resolve(mockHostEvents);
