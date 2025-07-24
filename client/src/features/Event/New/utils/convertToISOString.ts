@@ -9,9 +9,6 @@ export const convertToISOString = (datetimeString: string): string => {
   const isoCandidate = `${formattedDate}T${timePart}:00`;
 
   const date = new Date(isoCandidate);
-  if (isNaN(date.getTime())) {
-    throw new RangeError(`Invalid date format: ${datetimeString}`);
-  }
 
   return date.toISOString();
 };
