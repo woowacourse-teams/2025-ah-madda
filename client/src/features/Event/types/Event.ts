@@ -24,7 +24,7 @@ export type EventDetail = {
   registrationEnd: string;
   currentGuestCount: number;
   maxCapacity: number;
-  questions: Question[];
+  questions: QuestionRequest[];
 };
 
 export type CreateEventRequest = {
@@ -37,7 +37,7 @@ export type CreateEventRequest = {
   registrationStart: string;
   registrationEnd: string;
   organizerNickname: string;
-  questions: QuestionRequest[];
+  questions: Question[];
 };
 
 export type Question = {
