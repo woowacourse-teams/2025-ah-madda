@@ -7,6 +7,7 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { describe, expect, vi, beforeEach, Mocked } from 'vitest';
 
 import { fetcher } from '@/api/fetcher';
+import { mockEventDetail, mockGuests, mockHostEvents, mockNonGuests } from '@/shared/mocks';
 
 import { MyEventPage } from '../../My/pages/MyEventPage';
 import { EventManagePage } from '../pages/EventManagePage';
@@ -19,75 +20,6 @@ vi.mock('@/api/fetcher', () => ({
 }));
 
 const mockFetcher = fetcher as Mocked<typeof fetcher>;
-
-const mockHostEvents = [
-  {
-    eventId: 123,
-    title: '테스트 이벤트',
-    description: '테스트 이벤트 설명',
-    organizerName: '홍길동',
-    registrationEnd: '2024-12-31T23:59:59Z',
-    eventStart: '2024-01-15T10:00:00Z',
-    eventEnd: '2024-01-15T12:00:00Z',
-    place: '서울시 강남구',
-    currentGuestCount: 5,
-    maxCapacity: 20,
-  },
-  {
-    eventId: 456,
-    title: '두 번째 이벤트',
-    description: '두 번째 이벤트 설명',
-    organizerName: '김철수',
-    registrationEnd: '2024-12-25T23:59:59Z',
-    eventStart: '2024-01-20T14:00:00Z',
-    eventEnd: '2024-01-20T16:00:00Z',
-    place: '부산시 해운대구',
-    currentGuestCount: 10,
-    maxCapacity: 30,
-  },
-];
-
-const mockEventDetail = {
-  eventId: 123,
-  title: '테스트 이벤트',
-  description: '테스트 이벤트 설명',
-  organizerName: '홍길동',
-  registrationStart: '2024-01-01T00:00:00Z',
-  registrationEnd: '2024-12-31T23:59:59Z',
-  eventStart: '2024-01-15T10:00:00Z',
-  eventEnd: '2024-01-15T12:00:00Z',
-  place: '서울시 강남구',
-  currentGuestCount: 5,
-  maxCapacity: 20,
-  questions: [
-    {
-      questionId: 1,
-      questionText: '참석 동기를 알려주세요',
-      isRequired: true,
-      orderIndex: 0,
-    },
-  ],
-};
-
-const mockGuests = [
-  {
-    guestId: 1,
-    organizationMemberId: 1,
-    nickname: '참석자1',
-  },
-  {
-    guestId: 2,
-    organizationMemberId: 2,
-    nickname: '참석자2',
-  },
-];
-
-const mockNonGuests = [
-  {
-    organizationMemberId: 3,
-    nickname: '미참석자1',
-  },
-];
 
 const TestContainer = ({ initialRoute = '/event/my' }: { initialRoute?: string }) => {
   const queryClient = new QueryClient({
