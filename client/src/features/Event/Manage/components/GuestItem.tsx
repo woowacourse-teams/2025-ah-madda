@@ -15,7 +15,7 @@ type GuestItemVariant = 'completed' | 'pending';
 export const GuestItem = ({ guest }: GuestItemProps) => {
   const isGuest = 'guestId' in guest;
   const variant = isGuest ? 'completed' : 'pending';
-  const badgeTextColor = GUEST_STYLES[variant].badgeTextColor;
+  const { badgeTextColor, badgeText } = GUEST_STYLES[variant];
 
   return (
     <StyledGuestItemContainer
@@ -35,7 +35,7 @@ export const GuestItem = ({ guest }: GuestItemProps) => {
         variant={variant}
       >
         <Text type="caption" weight="regular" color={badgeTextColor}>
-          {variant === 'completed' ? '신청 완료' : '미신청'}
+          {badgeText}
         </Text>
       </StyledGuestBadge>
     </StyledGuestItemContainer>
