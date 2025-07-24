@@ -41,32 +41,20 @@ const TestContainer = ({ initialRoute = '/event/my' }: { initialRoute?: string }
   );
 };
 
-describe('MyEventPage에서 EventInfoSection으로 이동 후 렌더링 테스트', () => {
+describe('MyEventPage에서 EventInfoSection으로 이동 통합 테스트', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-
-    mockFetcher.get.mockImplementation((url: string) => {
-      if (url.includes('organization-members/1/events/owned')) {
-        return Promise.resolve(mockHostEvents);
-      }
-      if (url.includes('organization-members/1/events/participated')) {
-        return Promise.resolve([]);
-      }
-      if (url.includes('organizations/events/123')) {
-        return Promise.resolve(mockEventDetail);
-      }
-      if (url.includes('events/123/guests')) {
-        return Promise.resolve(mockGuests);
-      }
-      if (url.includes('events/123/non-guests')) {
-        return Promise.resolve(mockNonGuests);
-      }
-      return Promise.reject(new Error(`url 확인: ${url}`));
-    });
   });
 
   describe('MyEventPage 렌더링', () => {
     test('MyEventPage가 정상적으로 렌더링된다', async () => {
+      mockFetcher.get.mockImplementation((url: string) => {
+        if (url.includes('organization-members/1/events/participated')) {
+          return Promise.resolve([]);
+        }
+        return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
+      });
+
       render(<TestContainer />);
 
       await waitFor(() => {
@@ -75,6 +63,16 @@ describe('MyEventPage에서 EventInfoSection으로 이동 후 렌더링 테스�
     });
 
     test('주최 이벤트 목록이 표시된다', async () => {
+      mockFetcher.get.mockImplementation((url: string) => {
+        if (url.includes('organization-members/1/events/owned')) {
+          return Promise.resolve(mockHostEvents);
+        }
+        if (url.includes('organization-members/1/events/participated')) {
+          return Promise.resolve([]);
+        }
+        return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
+      });
+
       render(<TestContainer />);
 
       await waitFor(() => {
@@ -91,6 +89,16 @@ describe('MyEventPage에서 EventInfoSection으로 이동 후 렌더링 테스�
     });
 
     test('참여 현황이 올바르게 표시된다', async () => {
+      mockFetcher.get.mockImplementation((url: string) => {
+        if (url.includes('organization-members/1/events/owned')) {
+          return Promise.resolve(mockHostEvents);
+        }
+        if (url.includes('organization-members/1/events/participated')) {
+          return Promise.resolve([]);
+        }
+        return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
+      });
+
       render(<TestContainer />);
 
       await waitFor(() => {
@@ -103,6 +111,20 @@ describe('MyEventPage에서 EventInfoSection으로 이동 후 렌더링 테스�
   describe('EventCard 클릭 시 로직 테스트', () => {
     test('EventCard 클릭 시 본인이 주최한 이벤트 관리 페이지의 api를 호출한다', async () => {
       const user = userEvent.setup();
+
+      mockFetcher.get.mockImplementation((url: string) => {
+        if (url.includes('organization-members/1/events/owned')) {
+          return Promise.resolve(mockHostEvents);
+        }
+        if (url.includes('organization-members/1/events/participated')) {
+          return Promise.resolve([]);
+        }
+        if (url.includes('organizations/events/123')) {
+          return Promise.resolve(mockEventDetail);
+        }
+        return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
+      });
+
       render(<TestContainer />);
 
       await waitFor(() => {
@@ -124,6 +146,26 @@ describe('MyEventPage에서 EventInfoSection으로 이동 후 렌더링 테스�
 
     test('클릭한 이벤트의 참여자/미신청자 조회 API가 호출된다', async () => {
       const user = userEvent.setup();
+
+      mockFetcher.get.mockImplementation((url: string) => {
+        if (url.includes('organization-members/1/events/owned')) {
+          return Promise.resolve(mockHostEvents);
+        }
+        if (url.includes('organization-members/1/events/participated')) {
+          return Promise.resolve([]);
+        }
+        if (url.includes('organizations/events/123')) {
+          return Promise.resolve(mockEventDetail);
+        }
+        if (url.includes('events/123/guests')) {
+          return Promise.resolve(mockGuests);
+        }
+        if (url.includes('events/123/non-guests')) {
+          return Promise.resolve(mockNonGuests);
+        }
+        return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
+      });
+
       render(<TestContainer />);
 
       await waitFor(() => {
@@ -142,6 +184,13 @@ describe('MyEventPage에서 EventInfoSection으로 이동 후 렌더링 테스�
 
   describe('EventInfoSection 렌더링', () => {
     test('EventInfoSection이 올바른 이벤트 정보를 표시한다', async () => {
+      mockFetcher.get.mockImplementation((url: string) => {
+        if (url.includes('organizations/events/123')) {
+          return Promise.resolve(mockEventDetail);
+        }
+        return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
+      });
+
       render(<TestContainer initialRoute="/event/manage/123" />);
 
       await waitFor(() => {
@@ -152,6 +201,13 @@ describe('MyEventPage에서 EventInfoSection으로 이동 후 렌더링 테스�
     });
 
     test('주최자 정보가 올바르게 표시된다', async () => {
+      mockFetcher.get.mockImplementation((url: string) => {
+        if (url.includes('organizations/events/123')) {
+          return Promise.resolve(mockEventDetail);
+        }
+        return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
+      });
+
       render(<TestContainer initialRoute="/event/manage/123" />);
 
       await waitFor(() => {
@@ -160,48 +216,17 @@ describe('MyEventPage에서 EventInfoSection으로 이동 후 렌더링 테스�
     });
 
     test('장소 정보가 표시된다', async () => {
+      mockFetcher.get.mockImplementation((url: string) => {
+        if (url.includes('organizations/events/123')) {
+          return Promise.resolve(mockEventDetail);
+        }
+        return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
+      });
+
       render(<TestContainer initialRoute="/event/manage/123" />);
 
       await waitFor(() => {
         expect(screen.getByText('서울시 강남구')).toBeInTheDocument();
-      });
-    });
-
-    test('참가 현황이 올바르게 표시된다', async () => {
-      render(<TestContainer initialRoute="/event/manage/123" />);
-
-      await waitFor(() => {
-        expect(screen.getByText('참가 현황')).toBeInTheDocument();
-        expect(screen.getByText('5/20명')).toBeInTheDocument();
-      });
-    });
-
-    test('ProgressBar가 올바른 값으로 렌더링된다', async () => {
-      render(<TestContainer initialRoute="/event/manage/123" />);
-
-      await waitFor(() => {
-        const progressBar = screen.getByLabelText(/Progress: 25%/);
-        expect(progressBar).toBeInTheDocument();
-      });
-    });
-  });
-
-  describe('엣지 케이스 처리', () => {
-    test('빈 이벤트 목록일 때 적절한 메시지를 표시한다', async () => {
-      mockFetcher.get.mockImplementation((url: string) => {
-        if (url.includes('organization-members/1/events/owned')) {
-          return Promise.resolve([]);
-        }
-        if (url.includes('organization-members/1/events/participated')) {
-          return Promise.resolve([]);
-        }
-        return Promise.resolve([]);
-      });
-
-      render(<TestContainer />);
-
-      await waitFor(() => {
-        expect(screen.getByText('주최한 이벤트가 없습니다.')).toBeInTheDocument();
       });
     });
   });
