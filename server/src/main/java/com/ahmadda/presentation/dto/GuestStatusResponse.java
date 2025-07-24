@@ -1,6 +1,6 @@
 package com.ahmadda.presentation.dto;
 
-public record ParticipationResponse(
+public record GuestStatusResponse(
         boolean isGuest
 ) {
 
