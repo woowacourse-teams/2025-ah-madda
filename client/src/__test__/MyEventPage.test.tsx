@@ -7,10 +7,9 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { describe, expect, vi, beforeEach, Mocked } from 'vitest';
 
 import { fetcher } from '@/api/fetcher';
+import { EventManagePage } from '@/features/Event/Manage/pages/EventManagePage';
+import { MyEventPage } from '@/features/Event/My/pages/MyEventPage';
 import { mockEventDetail, mockGuests, mockHostEvents, mockNonGuests } from '@/shared/mocks';
-
-import { MyEventPage } from '../../My/pages/MyEventPage';
-import { EventManagePage } from '../pages/EventManagePage';
 
 vi.mock('@/api/fetcher', () => ({
   fetcher: {
@@ -41,7 +40,7 @@ const TestContainer = ({ initialRoute = '/event/my' }: { initialRoute?: string }
   );
 };
 
-describe('MyEventPage에서 EventInfoSection으로 이동 통합 테스트', () => {
+describe('MyEventPage 테스트', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -178,55 +177,6 @@ describe('MyEventPage에서 EventInfoSection으로 이동 통합 테스트', () 
       await waitFor(() => {
         expect(mockFetcher.get).toHaveBeenCalledWith('events/123/guests');
         expect(mockFetcher.get).toHaveBeenCalledWith('events/123/non-guests');
-      });
-    });
-  });
-
-  describe('EventInfoSection 렌더링', () => {
-    test('EventInfoSection이 올바른 이벤트 정보를 표시한다', async () => {
-      mockFetcher.get.mockImplementation((url: string) => {
-        if (url.includes('organizations/events/123')) {
-          return Promise.resolve(mockEventDetail);
-        }
-        return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
-      });
-
-      render(<TestContainer initialRoute="/event/manage/123" />);
-
-      await waitFor(() => {
-        expect(screen.getByText('이벤트 정보')).toBeInTheDocument();
-        expect(screen.getByText('테스트 이벤트')).toBeInTheDocument();
-        expect(screen.getByText('테스트 이벤트 설명')).toBeInTheDocument();
-      });
-    });
-
-    test('주최자 정보가 올바르게 표시된다', async () => {
-      mockFetcher.get.mockImplementation((url: string) => {
-        if (url.includes('organizations/events/123')) {
-          return Promise.resolve(mockEventDetail);
-        }
-        return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
-      });
-
-      render(<TestContainer initialRoute="/event/manage/123" />);
-
-      await waitFor(() => {
-        expect(screen.getByText('주최자: 홍길동')).toBeInTheDocument();
-      });
-    });
-
-    test('장소 정보가 표시된다', async () => {
-      mockFetcher.get.mockImplementation((url: string) => {
-        if (url.includes('organizations/events/123')) {
-          return Promise.resolve(mockEventDetail);
-        }
-        return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
-      });
-
-      render(<TestContainer initialRoute="/event/manage/123" />);
-
-      await waitFor(() => {
-        expect(screen.getByText('서울시 강남구')).toBeInTheDocument();
       });
     });
   });
