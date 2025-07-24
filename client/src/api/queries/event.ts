@@ -1,14 +1,15 @@
 import { queryOptions } from '@tanstack/react-query';
 
-import { Guest, NonGuest } from '@/features/Event/Manage/types';
-import { CreateEventAPIRequest, EventDetail } from '@/features/Event/types/Event';
-
+import { Guest, NonGuest } from '../../features/Event/Manage/types';
+import { CreateEventAPIRequest, EventDetail } from '../../features/Event/types/Event';
 import { fetcher } from '../fetcher';
 import { postAlarm } from '../mutations/useAddAlarm';
 
 type CreateEventAPIResponse = {
   eventId: number;
 };
+
+type Answer = { questionId: number; answerText: string };
 
 export const eventQueryKeys = {
   all: () => ['event'],
@@ -56,4 +57,10 @@ export const createEventAPI = (organizationId: number, data: CreateEventAPIReque
 
 const getEventDetailAPI = (eventId: number) => {
   return fetcher.get<EventDetail>(`organizations/events/${eventId}`);
+};
+
+export const postEventParticipation = (eventId: number, answers: Answer[]) => {
+  return fetcher.post<void>(`events/${eventId}/participation`, {
+    json: { answers },
+  });
 };
