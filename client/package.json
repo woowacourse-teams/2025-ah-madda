@@ -8,6 +8,7 @@
     "test": "vitest",
     "start": "NODE_ENV=development webpack serve --mode development",
     "build": "NODE_ENV=development webpack --mode development",
+    "type-check": "tsc --noEmit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "chromatic": "dotenv -- chromatic --project-token ${CHROMATIC_PROJECT_TOKEN}",
