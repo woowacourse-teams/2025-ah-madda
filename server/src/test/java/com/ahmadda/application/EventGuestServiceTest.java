@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -52,6 +53,8 @@ class EventGuestServiceTest {
 
     @Autowired
     private GuestRepository guestRepository;
+    @Autowired
+    private EventGuestService eventGuestService;
 
     @Test
     void 이벤트에_참여한_게스트들을_조회한다() {
@@ -283,6 +286,53 @@ class EventGuestServiceTest {
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("존재하지 않는 질문입니다.");
+    }
+
+    @Test
+    void 특정_조직원이_이벤트의_게스트인지_알_수_있다() {
+        //given
+        Organization organization = createAndSaveOrganization();
+        Member member1 = createAndSaveMember("test1", "ahmadda1@ahmadda.com");
+        Member member2 = createAndSaveMember("test2", "ahmadda2@ahmadda.com");
+        Member member3 = createAndSaveMember("test3", "ahmadda3@ahmadda.com");
+        OrganizationMember organizationMember1 =
+                createAndSaveOrganizationMember("organizationMember1", member1, organization);
+        OrganizationMember organizationMember2 =
+                createAndSaveOrganizationMember("organizationMember2", member2, organization);
+        OrganizationMember organizationMember3 =
+                createAndSaveOrganizationMember("organizationMember2", member3, organization);
+
+        Event event = createAndSaveEvent(organizationMember1, organization);
+        createAndSaveGuest(event, organizationMember2);
+
+        //when
+        boolean actual1 = eventGuestService.isGuest(event.getId(), member2.getId());
+        boolean actual2 = eventGuestService.isGuest(event.getId(), member3.getId());
+
+        //then
+        assertThat(actual1).isEqualTo(true);
+        assertThat(actual2).isEqualTo(false);
+    }
+
+    @Test
+    void 조직원이_아니라면_게스트_여부를_확인할때_예외가_발생한다() {
+        // given
+        Organization organization = createAndSaveOrganization();
+        Member member1 = createAndSaveMember("test1", "ahmadda1@ahmadda.com");
+        Member member2 = createAndSaveMember("test2", "ahmadda2@ahmadda.com");
+        Member member3 = createAndSaveMember("test3", "ahmadda3@ahmadda.com");
+        OrganizationMember organizationMember1 =
+                createAndSaveOrganizationMember("organizationMember1", member1, organization);
+        OrganizationMember organizationMember2 =
+                createAndSaveOrganizationMember("organizationMember2", member2, organization);
+
+        Event event = createAndSaveEvent(organizationMember1, organization);
+        createAndSaveGuest(event, organizationMember2);
+
+        // when // then
+        assertThatThrownBy(() -> eventGuestService.isGuest(event.getId(), member3.getId()))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 조직원입니다.");
     }
 
     private Member createAndSaveMember(String name, String email) {

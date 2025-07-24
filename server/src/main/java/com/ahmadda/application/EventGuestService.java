@@ -71,6 +71,14 @@ public class EventGuestService {
         guestRepository.save(guest);
     }
 
+    public boolean isGuest(final Long eventId, final Long memberId) {
+        Event event = getEvent(eventId);
+        Organization organization = event.getOrganization();
+        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), memberId);
+
+        return event.hasGuest(organizationMember);
+    }
+
     private Event getEvent(final Long eventId) {
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 이벤트입니다."));
