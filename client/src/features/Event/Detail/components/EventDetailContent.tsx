@@ -16,7 +16,7 @@ import { TimeInfoCard } from './TimeInfoCard';
 
 type EventDetailContentProps = EventDetail;
 
-type Answer = {
+export type Answer = {
   questionId: number;
   answerText: string;
 };

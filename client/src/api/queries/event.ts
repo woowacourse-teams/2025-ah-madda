@@ -63,10 +63,7 @@ const getEventDetailAPI = (eventId: number) => {
   return fetcher.get<EventDetail>(`organizations/events/${eventId}`);
 };
 
-export const postEventParticipation = (
-  eventId: number,
-  answers: { questionId: number; answerText: string }[]
-) => {
+export const postEventParticipation = (eventId: number, answers: Answer[]) => {
   return fetcher.post<void>(`events/${eventId}/participation`, {
     json: { answers },
   });

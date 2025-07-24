@@ -4,8 +4,10 @@ import { Input } from '../../../../shared/components/Input';
 import { Text } from '../../../../shared/components/Text';
 import type { EventDetail } from '../../../Event/types/Event';
 
+import { Answer } from './EventDetailContent';
+
 type PreQuestionCardProps = Pick<EventDetail, 'questions'> & {
-  answers: { questionId: number; answerText: string }[];
+  answers: Answer[];
   onChangeAnswer: (questionId: number, answerText: string) => void;
 };
 

@@ -4,21 +4,19 @@ import { eventQueryOptions } from '../../../../api/queries/event';
 import { Button } from '../../../../shared/components/Button';
 import { Card } from '../../../../shared/components/Card';
 
+import { Answer } from './EventDetailContent';
+
 type Props = {
   eventId: number;
   registrationEnd: string;
-  answers: { questionId: number; answerText: string }[];
+  answers: Answer[];
 };
 
 export const SubmitButtonCard = ({ eventId, registrationEnd, answers }: Props) => {
   const now = new Date();
   const isBeforeDeadline = now <= new Date(registrationEnd);
 
-  const { mutate, isPending } = useMutation<
-    void,
-    unknown,
-    { questionId: number; answerText: string }[]
-  >({
+  const { mutate, isPending } = useMutation<void, unknown, Answer[]>({
     ...eventQueryOptions.participate(eventId),
   });
 
