@@ -6,13 +6,13 @@ import { Card } from '../../../../shared/components/Card';
 
 import { Answer } from './EventDetailContent';
 
-type Props = {
+type SubmitBUttonCardProps = {
   eventId: number;
   registrationEnd: string;
   answers: Answer[];
 };
 
-export const SubmitButtonCard = ({ eventId, registrationEnd, answers }: Props) => {
+export const SubmitButtonCard = ({ eventId, registrationEnd, answers }: SubmitBUttonCardProps) => {
   const now = new Date();
   const isBeforeDeadline = now <= new Date(registrationEnd);
 
