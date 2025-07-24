@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
-import { guestManageQueryOptions } from '@/api/queries/guestManage';
+import { guestManageQueryOptions } from '@/api/queries/event';
 import { Flex } from '@/shared/components/Flex';
 
 import { AlarmSection } from './AlarmSection';
