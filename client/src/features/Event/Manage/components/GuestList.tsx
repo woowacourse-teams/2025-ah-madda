@@ -5,16 +5,13 @@ import { Guest, NonGuest } from '../types';
 
 import { GuestItem } from './GuestItem';
 
-export type GuestVariant = 'completed' | 'pending';
-
 type GuestListProps = {
   title: string;
   titleColor: string;
   guests: Guest[] | NonGuest[];
-  variant: GuestVariant;
 };
 
-export const GuestList = ({ title, titleColor, guests, variant }: GuestListProps) => {
+export const GuestList = ({ title, titleColor, guests }: GuestListProps) => {
   return (
     <Flex dir="column" gap="16px">
       <Text type="caption" weight="medium" color={titleColor}>
@@ -23,7 +20,7 @@ export const GuestList = ({ title, titleColor, guests, variant }: GuestListProps
 
       <Flex dir="column" gap="12px">
         {guests.map((guest, index) => (
-          <GuestItem key={index} guest={guest as Guest} variant={variant} />
+          <GuestItem key={index} guest={guest} />
         ))}
       </Flex>
     </Flex>

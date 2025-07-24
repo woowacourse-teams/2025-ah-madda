@@ -4,16 +4,17 @@ import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 
 import { GUEST_STYLES } from '../constants';
-import { Guest } from '../types';
-
-import { GuestVariant } from './GuestList';
+import { Guest, NonGuest } from '../types';
 
 type GuestItemProps = {
-  guest: Guest;
-  variant: GuestVariant;
+  guest: Guest | NonGuest;
 };
 
-export const GuestItem = ({ guest, variant }: GuestItemProps) => {
+type GuestItemVariant = 'completed' | 'pending';
+
+export const GuestItem = ({ guest }: GuestItemProps) => {
+  const isGuest = 'guestId' in guest;
+  const variant = isGuest ? 'completed' : 'pending';
   const badgeTextColor = GUEST_STYLES[variant].badgeTextColor;
 
   return (
@@ -42,12 +43,12 @@ export const GuestItem = ({ guest, variant }: GuestItemProps) => {
 };
 
 type GuestItemContainerProps = {
-  variant: GuestVariant;
+  variant: GuestItemVariant;
 };
 
 type GuestBadgeProps = GuestItemContainerProps;
 
-const getContainerStyles = (variant: GuestVariant) => {
+const getContainerStyles = (variant: GuestItemVariant) => {
   if (variant === 'completed') {
     return `
       background-color: #F0FDF4;
@@ -65,7 +66,7 @@ const getContainerStyles = (variant: GuestVariant) => {
   `;
 };
 
-const getBadgeStyles = (variant: GuestVariant) => {
+const getBadgeStyles = (variant: GuestItemVariant) => {
   if (variant === 'completed') {
     return `
       background: #DCFCE7;

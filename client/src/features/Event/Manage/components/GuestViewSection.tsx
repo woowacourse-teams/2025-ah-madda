@@ -23,18 +23,12 @@ export const GuestViewSection = ({ guests, nonGuests }: GuestViewSectionProps) =
           </Text>
         </Flex>
 
-        <GuestList
-          title={`신청 완료 (${guests.length}명)`}
-          titleColor="#00A63E"
-          guests={guests}
-          variant="completed"
-        />
+        <GuestList title={`신청 완료 (${guests.length}명)`} titleColor="#00A63E" guests={guests} />
 
         <GuestList
           title={`미신청 (${nonGuests.length}명)`}
           titleColor="#4A5565"
           guests={nonGuests}
-          variant="pending"
         />
       </Flex>
     </Card>
