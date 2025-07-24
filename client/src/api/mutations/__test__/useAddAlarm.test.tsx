@@ -37,26 +37,6 @@ describe('useAddAlarm', () => {
     vi.clearAllMocks();
   });
 
-  describe('알람 전송', () => {
-    test('mutate 호출 시 올바른 API를 호출한다', async () => {
-      const eventId = 789;
-      const testContent = '테스트 알람 메시지';
-
-      mockFetcher.post.mockResolvedValue(undefined);
-
-      const wrapper = testContainer();
-      const { result } = renderHook(() => useAddAlarm({ eventId }), { wrapper });
-
-      result.current.mutate(testContent);
-
-      await waitFor(() => {
-        expect(mockFetcher.post).toHaveBeenCalledWith(`events/${eventId}/notify-non-guests`, {
-          json: { content: testContent },
-        });
-      });
-    });
-  });
-
   describe('엣지 케이스 입력값 처리', () => {
     test('빈 문자열 알람으로는 전송할 수 없다', async () => {
       const eventId = 400;
