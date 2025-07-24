@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { css } from '@emotion/react';
 
 import { Flex } from '../../../../shared/components/Flex';
@@ -15,6 +17,7 @@ import { TimeInfoCard } from './TimeInfoCard';
 type EventDetailContentProps = EventDetail;
 
 export const EventDetailContent = ({
+  eventId,
   title,
   organizerName,
   registrationEnd,
@@ -26,6 +29,19 @@ export const EventDetailContent = ({
   description,
   questions,
 }: EventDetailContentProps) => {
+  const [answers, setAnswers] = useState<{ questionId: number; answerText: string }[]>(
+    questions.map(({ questionId }) => ({
+      questionId,
+      answerText: '',
+    }))
+  );
+
+  const handleChangeAnswer = (questionId: number, answerText: string) => {
+    setAnswers((prev) =>
+      prev.map((answer) => (answer.questionId === questionId ? { ...answer, answerText } : answer))
+    );
+  };
+
   return (
     <Flex
       dir="column"
@@ -60,8 +76,13 @@ export const EventDetailContent = ({
 
       <ParticipantsCard currentGuestCount={currentGuestCount} maxCapacity={maxCapacity} />
       <DescriptionCard description={description} />
-      <PreQuestionCard questions={questions} />
-      <SubmitButtonCard registrationEnd={registrationEnd} />
+      <PreQuestionCard
+        questions={questions}
+        answers={answers}
+        onChangeAnswer={handleChangeAnswer}
+      />
+
+      <SubmitButtonCard registrationEnd={registrationEnd} eventId={eventId} answers={answers} />
     </Flex>
   );
 };

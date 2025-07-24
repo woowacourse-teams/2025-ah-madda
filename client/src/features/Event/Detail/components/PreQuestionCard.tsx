@@ -4,9 +4,12 @@ import { Input } from '../../../../shared/components/Input';
 import { Text } from '../../../../shared/components/Text';
 import type { EventDetail } from '../../../Event/types/Event';
 
-type PreQuestionCardProps = Pick<EventDetail, 'questions'>;
+type PreQuestionCardProps = Pick<EventDetail, 'questions'> & {
+  answers: { questionId: number; answerText: string }[];
+  onChangeAnswer: (questionId: number, answerText: string) => void;
+};
 
-export const PreQuestionCard = ({ questions }: PreQuestionCardProps) => {
+export const PreQuestionCard = ({ questions, answers, onChangeAnswer }: PreQuestionCardProps) => {
   return (
     <Card>
       <Flex dir="column" gap="16px">
@@ -25,6 +28,8 @@ export const PreQuestionCard = ({ questions }: PreQuestionCardProps) => {
                 id={`question-${question.questionId}`}
                 label=""
                 placeholder="답변을 입력하세요"
+                value={answers.find((a) => a.questionId === question.questionId)?.answerText ?? ''}
+                onChange={(e) => onChangeAnswer(question.questionId, e.target.value)}
               />
             </Flex>
           ))}
