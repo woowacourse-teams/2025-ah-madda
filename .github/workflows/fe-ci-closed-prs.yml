@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - fe/dev
+  pull_request:
+    branches:
+      - fe/dev
 
 defaults:
   run:
