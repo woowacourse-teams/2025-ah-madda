@@ -1,4 +1,4 @@
-name: Ah-Madda-FE
+name: AhMadda FE CI/Cd
 
 on:
   push:
