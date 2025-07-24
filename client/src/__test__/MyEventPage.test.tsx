@@ -25,10 +25,10 @@ describe('MyEventPage 테스트', () => {
   describe('MyEventPage 렌더링', () => {
     test('MyEventPage가 정상적으로 렌더링된다', async () => {
       mockFetcher.get.mockImplementation((url: string) => {
-        if (url.includes('organization-members/1/events/owned')) {
+        if (url.includes('organizations/1/events/owned')) {
           return Promise.resolve(mockHostEvents);
         }
-        if (url.includes('organization-members/1/events/participated')) {
+        if (url.includes('organizations/1/events/participated')) {
           return Promise.resolve([]);
         }
         return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
@@ -48,10 +48,10 @@ describe('MyEventPage 테스트', () => {
 
     test('주최 이벤트 목록이 표시된다', async () => {
       mockFetcher.get.mockImplementation((url: string) => {
-        if (url.includes('organization-members/1/events/owned')) {
+        if (url.includes('organizations/1/events/owned')) {
           return Promise.resolve(mockHostEvents);
         }
-        if (url.includes('organization-members/1/events/participated')) {
+        if (url.includes('organizations/1/events/participated')) {
           return Promise.resolve([]);
         }
         return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
@@ -79,10 +79,10 @@ describe('MyEventPage 테스트', () => {
 
     test('참여 현황이 올바르게 표시된다', async () => {
       mockFetcher.get.mockImplementation((url: string) => {
-        if (url.includes('organization-members/1/events/owned')) {
+        if (url.includes('organizations/1/events/owned')) {
           return Promise.resolve(mockHostEvents);
         }
-        if (url.includes('organization-members/1/events/participated')) {
+        if (url.includes('organizations/1/events/participated')) {
           return Promise.resolve([]);
         }
         return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
