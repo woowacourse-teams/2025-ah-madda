@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
-import { getGoogleAuthUrl } from '@/api/auth';
+import { getGoogleAuthUrl, isAuthenticated } from '@/api/auth';
 import { organizationQueryOptions } from '@/api/queries/organization';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
@@ -17,7 +17,7 @@ export const OverviewPage = () => {
   const { data: organizationData } = useQuery(
     organizationQueryOptions.organizations('woowacourse')
   );
-  const { logout, isAuthenticated } = useGoogleAuth();
+  const { logout } = useGoogleAuth();
 
   // S.TODO: 로딩 상태 처리
   if (!eventData || !organizationData) {
@@ -35,7 +35,7 @@ export const OverviewPage = () => {
         left="아맞다"
         right={
           <Flex gap="8px">
-            {isAuthenticated ? (
+            {isAuthenticated() ? (
               <Button
                 width="80px"
                 size="sm"

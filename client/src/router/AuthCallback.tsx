@@ -1,13 +1,24 @@
 import { useEffect } from 'react';
 
-import { useGoogleAuth } from '@/shared/hooks/useGoogleAuth';
+import { useNavigate } from 'react-router-dom';
+
+import { getAuthCodeFromUrl } from '@/api/auth';
+import { useGoogleLoginMutation } from '@/api/authQueries';
 
 export const AuthCallback = () => {
-  const { handleCallback } = useGoogleAuth();
+  const code = getAuthCodeFromUrl();
+  const navigate = useNavigate();
+  const { mutate: googleLogin } = useGoogleLoginMutation();
 
   useEffect(() => {
-    handleCallback();
-  }, []);
+    if (!code) return;
+    googleLogin(code, {
+      onSuccess: () => {
+        //E.TODO 로그인 성공하면 보낼 곳 수정
+        navigate('/');
+      },
+    });
+  }, [code, googleLogin, navigate]);
 
-  return <div>AuthCallback</div>;
+  return <></>;
 };
