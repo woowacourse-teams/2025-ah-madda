@@ -1,14 +1,13 @@
 import ky, { Options, ResponsePromise } from 'ky';
 
+import { ACCESS_TOKEN_KEY } from '@/shared/constants';
+import { getLocalStorage } from '@/shared/utils/localStorage';
+
 const defaultOption: Options = {
   retry: 0,
   timeout: 30_000,
 };
 const API_BASE_URL = process.env.API_BASE_URL;
-
-const getAuthToken = (): string | null => {
-  return localStorage.getItem('access_token');
-};
 
 export const instance = ky.create({
   prefixUrl: API_BASE_URL,
@@ -18,7 +17,7 @@ export const instance = ky.create({
   hooks: {
     beforeRequest: [
       (request) => {
-        const token = getAuthToken();
+        const token = getLocalStorage(ACCESS_TOKEN_KEY);
         if (token) {
           request.headers.set('Authorization', `Bearer ${token}`);
         }
