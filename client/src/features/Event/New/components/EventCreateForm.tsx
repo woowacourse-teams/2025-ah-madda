@@ -46,11 +46,7 @@ export const EventCreateForm = () => {
       return createEventAPI(ORGANIZATION_ID, payload);
     },
     onSuccess: ({ eventId }) => {
-      console.log('이벤트 생성 성공 !');
       navigate(`/event/${eventId}`);
-    },
-    onError: (err) => {
-      console.error('❌ 이벤트 생성 실패:', err);
     },
   });
 
