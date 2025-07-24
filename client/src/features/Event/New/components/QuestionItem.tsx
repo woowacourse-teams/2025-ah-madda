@@ -1,13 +1,12 @@
-import { Card } from '@/shared/components/Card';
-import { Flex } from '@/shared/components/Flex';
-import { IconButton } from '@/shared/components/IconButton';
-import { Input } from '@/shared/components/Input';
-import { Switch } from '@/shared/components/Switch';
-import { Text } from '@/shared/components/Text';
-
+import { Card } from '../../../../shared/components/Card';
+import { Flex } from '../../../../shared/components/Flex';
+import { IconButton } from '../../../../shared/components/IconButton';
+import { Input } from '../../../../shared/components/Input';
+import { Switch } from '../../../../shared/components/Switch';
+import { Text } from '../../../../shared/components/Text';
 import { QuestionRequest } from '../../types/Event';
 
-type Props = {
+type QuestionItemProps = {
   orderIndex: number;
   questionText: string;
   isRequired: boolean;
@@ -21,7 +20,7 @@ export const QuestionItem = ({
   isRequired,
   onDelete,
   onChange,
-}: Props) => {
+}: QuestionItemProps) => {
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange({ questionText: e.target.value });
   };

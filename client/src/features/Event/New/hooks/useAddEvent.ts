@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { createEventAPI, eventQueryKeys } from '@/api/queries/event';
-import type { CreateEventRequest } from '@/features/Event/types/Event';
+import { createEventAPI, eventQueryKeys } from '../../../../api/queries/event';
+import type { CreateEventRequest } from '../../../Event/types/Event';
 
 export const useAddEvent = (organizationId: number) => {
   const queryClient = useQueryClient();

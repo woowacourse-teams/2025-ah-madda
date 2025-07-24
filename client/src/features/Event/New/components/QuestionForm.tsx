@@ -1,8 +1,7 @@
-import { Button } from '@/shared/components/Button';
-import { Card } from '@/shared/components/Card';
-import { Flex } from '@/shared/components/Flex';
-import { Text } from '@/shared/components/Text';
-
+import { Button } from '../../../../shared/components/Button';
+import { Card } from '../../../../shared/components/Card';
+import { Flex } from '../../../../shared/components/Flex';
+import { Text } from '../../../../shared/components/Text';
 import { QuestionRequest } from '../../types/Event';
 
 import { QuestionItem } from './QuestionItem';
