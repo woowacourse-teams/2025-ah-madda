@@ -6,6 +6,7 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.presentation.dto.GuestResponse;
+import com.ahmadda.presentation.dto.GuestStatusResponse;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import jakarta.validation.Valid;
@@ -72,5 +73,15 @@ public class EventGuestController {
 
         return ResponseEntity.ok()
                 .build();
+    }
+
+    @GetMapping("/{eventId}/guest-status")
+    public ResponseEntity<GuestStatusResponse> isGuest(
+            @PathVariable final Long eventId,
+            @AuthMember final LoginMember loginMember
+    ) {
+        boolean isGuest = eventGuestService.isGuest(eventId, loginMember.memberId());
+
+        return ResponseEntity.ok(new GuestStatusResponse(isGuest));
     }
 }

@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -283,6 +284,53 @@ class EventGuestServiceTest {
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("존재하지 않는 질문입니다.");
+    }
+
+    @Test
+    void 특정_조직원이_이벤트의_게스트인지_알_수_있다() {
+        //given
+        var organization = createAndSaveOrganization();
+        var member1 = createAndSaveMember("test1", "ahmadda1@ahmadda.com");
+        var member2 = createAndSaveMember("test2", "ahmadda2@ahmadda.com");
+        var member3 = createAndSaveMember("test3", "ahmadda3@ahmadda.com");
+        var organizationMember1 =
+                createAndSaveOrganizationMember("organizationMember1", member1, organization);
+        var organizationMember2 =
+                createAndSaveOrganizationMember("organizationMember2", member2, organization);
+        var organizationMember3 =
+                createAndSaveOrganizationMember("organizationMember2", member3, organization);
+
+        var event = createAndSaveEvent(organizationMember1, organization);
+        createAndSaveGuest(event, organizationMember2);
+
+        //when
+        var actual1 = sut.isGuest(event.getId(), member2.getId());
+        var actual2 = sut.isGuest(event.getId(), member3.getId());
+
+        //then
+        assertThat(actual1).isEqualTo(true);
+        assertThat(actual2).isEqualTo(false);
+    }
+
+    @Test
+    void 조직원이_아니라면_게스트_여부를_확인할때_예외가_발생한다() {
+        // given
+        var organization = createAndSaveOrganization();
+        var member1 = createAndSaveMember("test1", "ahmadda1@ahmadda.com");
+        var member2 = createAndSaveMember("test2", "ahmadda2@ahmadda.com");
+        var member3 = createAndSaveMember("test3", "ahmadda3@ahmadda.com");
+        var organizationMember1 =
+                createAndSaveOrganizationMember("organizationMember1", member1, organization);
+        var organizationMember2 =
+                createAndSaveOrganizationMember("organizationMember2", member2, organization);
+
+        var event = createAndSaveEvent(organizationMember1, organization);
+        createAndSaveGuest(event, organizationMember2);
+
+        // when // then
+        assertThatThrownBy(() -> sut.isGuest(event.getId(), member3.getId()))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 조직원입니다.");
     }
 
     private Member createAndSaveMember(String name, String email) {
