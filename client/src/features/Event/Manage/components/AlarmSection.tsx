@@ -3,14 +3,13 @@ import { useState } from 'react';
 import { css } from '@emotion/react';
 import { useParams } from 'react-router-dom';
 
+import { useAddAlarm } from '@/api/mutations/useAddAlarm';
 import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
-
-import { usePostAlarm } from '../hooks/usePostAlarm';
 
 type AlarmSectionProps = {
   pendingGuestsCount: number;
@@ -19,7 +18,7 @@ type AlarmSectionProps = {
 export const AlarmSection = ({ pendingGuestsCount }: AlarmSectionProps) => {
   const [alarmMessage, setAlarmMessage] = useState('');
   const { eventId: eventIdParam } = useParams();
-  const { mutate: postAlarm, isPending } = usePostAlarm(Number(eventIdParam));
+  const { mutate: postAlarm, isPending } = useAddAlarm({ eventId: Number(eventIdParam) });
 
   const handleSendAlarm = () => {
     if (!alarmMessage.trim()) {

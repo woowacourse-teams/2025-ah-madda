@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
-import { guestManageQueryOptions } from '@/api/queries/event';
+import { eventQueryOptions } from '@/api/queries/event';
 import { Flex } from '@/shared/components/Flex';
 
 import { AlarmSection } from './AlarmSection';
@@ -11,9 +11,9 @@ import { GuestViewSection } from './GuestViewSection';
 export const GuestManageSection = () => {
   const { eventId: eventIdParam } = useParams();
   const eventId = Number(eventIdParam);
-  const { data: guests = [] } = useQuery(guestManageQueryOptions.guests(eventId));
+  const { data: guests = [] } = useQuery(eventQueryOptions.guests(eventId));
 
-  const { data: nonGuests = [] } = useQuery(guestManageQueryOptions.nonGuests(eventId));
+  const { data: nonGuests = [] } = useQuery(eventQueryOptions.nonGuests(eventId));
 
   return (
     <Flex
