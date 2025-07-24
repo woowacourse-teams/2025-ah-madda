@@ -11,12 +11,8 @@ import { formatDateTime } from '../../Overview/utils/formatDateTime';
 import { formatTime } from '../../Overview/utils/formatTime';
 import { Event } from '../../types/Event';
 
-type EventCardProps = {
-  id: number;
-} & Event;
-
 export const EventCard = ({
-  id,
+  eventId,
   title,
   description,
   organizerName,
@@ -26,11 +22,11 @@ export const EventCard = ({
   place,
   currentGuestCount,
   maxCapacity,
-}: EventCardProps) => {
+}: Event) => {
   const navigate = useNavigate();
 
   return (
-    <EventCardWrapper onClick={() => navigate(`/event/manage/${id}`)}>
+    <EventCardWrapper onClick={() => navigate(`/event/manage/${eventId}`)}>
       <Flex dir="column" gap="3.5px">
         <Text type="Title" weight="semibold" color="white">
           {title}
