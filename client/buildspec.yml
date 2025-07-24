@@ -3,6 +3,8 @@ version: 0.2
 phases:
   install:
     commands:
+      - cd client
+      - npm install -g pnpm
       - pnpm install
   build:
     commands:
@@ -11,7 +13,7 @@ phases:
 artifacts:
   files:
     - '**/*'
-  base-directory: 'client/build'
+  base-directory: 'client/dist'
 
 cache:
   paths:
