@@ -4,8 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 import { describe, expect, vi, beforeEach, Mocked } from 'vitest';
 
-import { fetcher } from '../../fetcher';
-import { useAddAlarm, postAlarm } from '../useAddAlarm';
+import { fetcher } from '../api/fetcher';
+import { useAddAlarm, postAlarm } from '../api/mutations/useAddAlarm';
 
 vi.mock('../../fetcher', () => ({
   fetcher: {
