@@ -7,11 +7,17 @@ import { NewEventPage } from '@/features/Event/New/pages/NewEventPage';
 import { OverviewPage } from '@/features/Event/Overview/pages/OverviewPage';
 import { HomePage } from '@/features/Home/page/HomePage';
 
+import { AuthCallback } from './AuthCallback';
+
 export const router = createBrowserRouter(
   [
     {
       path: '/',
       Component: HomePage,
+    },
+    {
+      path: '/auth',
+      Component: AuthCallback,
     },
     {
       path: '/event',
