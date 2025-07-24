@@ -7,7 +7,7 @@ import { describe, expect, vi, beforeEach, Mocked } from 'vitest';
 import { fetcher } from '../api/fetcher';
 import { useAddAlarm, postAlarm } from '../api/mutations/useAddAlarm';
 
-vi.mock('../../fetcher', () => ({
+vi.mock('@/api/fetcher', () => ({
   fetcher: {
     post: vi.fn(),
   },
