@@ -75,7 +75,7 @@ public class EventGuestController {
                 .build();
     }
 
-    @GetMapping("/{eventId}/participation")
+    @GetMapping("/{eventId}/guest-status")
     public ResponseEntity<ParticipationResponse> isGuest(
             @PathVariable final Long eventId,
             @AuthMember final LoginMember loginMember

@@ -19,7 +19,7 @@ logging:
     org.hibernate.orm.jdbc.bind: trace
 
 client:
-  url: http://localhost:5173/auth
+  url: https://ahmadda.com/auth
 
 jwt:
   secret-key: ${jwt.dev.secret-key}
