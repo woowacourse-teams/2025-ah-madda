@@ -25,6 +25,9 @@ export const SubmitButtonCard = ({ eventId, registrationEnd, answers }: SubmitBU
       onSuccess: () => {
         alert('✅ 참가 신청이 완료되었습니다.');
       },
+      onError: () => {
+        alert('❌ 신청에 실패했어요.');
+      },
     });
   };
 
