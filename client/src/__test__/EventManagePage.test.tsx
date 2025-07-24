@@ -1,13 +1,13 @@
 import React from 'react';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { describe, expect, vi, beforeEach, Mocked } from 'vitest';
 
 import { fetcher } from '@/api/fetcher';
 import { EventManagePage } from '@/features/Event/Manage/pages/EventManagePage';
 import { mockEventDetail } from '@/shared/mocks';
+
+import { TestContainer } from './testUtils';
 
 vi.mock('@/api/fetcher', () => ({
   fetcher: {
@@ -17,25 +17,6 @@ vi.mock('@/api/fetcher', () => ({
 }));
 
 const mockFetcher = fetcher as Mocked<typeof fetcher>;
-
-const TestContainer = ({ initialRoute = '/event/manage/123' }: { initialRoute?: string }) => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false, staleTime: 0 },
-      mutations: { retry: false },
-    },
-  });
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialRoute]}>
-        <Routes>
-          <Route path="/event/manage/:eventId" element={<EventManagePage />} />
-        </Routes>
-      </MemoryRouter>
-    </QueryClientProvider>
-  );
-};
 
 describe('EventManagePage 테스트', () => {
   beforeEach(() => {
@@ -50,7 +31,12 @@ describe('EventManagePage 테스트', () => {
 
   describe('EventInfoSection 렌더링', () => {
     test('EventInfoSection이 올바른 이벤트 정보를 표시한다', async () => {
-      render(<TestContainer />);
+      render(
+        <TestContainer
+          initialRoute="/event/manage/123"
+          routes={[{ path: '/event/manage/:eventId', element: <EventManagePage /> }]}
+        />
+      );
 
       await waitFor(() => {
         expect(screen.getByText('이벤트 정보')).toBeInTheDocument();
@@ -60,7 +46,12 @@ describe('EventManagePage 테스트', () => {
     });
 
     test('주최자 정보가 올바르게 표시된다', async () => {
-      render(<TestContainer />);
+      render(
+        <TestContainer
+          initialRoute="/event/manage/123"
+          routes={[{ path: '/event/manage/:eventId', element: <EventManagePage /> }]}
+        />
+      );
 
       await waitFor(() => {
         expect(screen.getByText('주최자: 홍길동')).toBeInTheDocument();
@@ -68,7 +59,12 @@ describe('EventManagePage 테스트', () => {
     });
 
     test('장소 정보가 표시된다', async () => {
-      render(<TestContainer />);
+      render(
+        <TestContainer
+          initialRoute="/event/manage/123"
+          routes={[{ path: '/event/manage/:eventId', element: <EventManagePage /> }]}
+        />
+      );
 
       await waitFor(() => {
         expect(screen.getByText('서울시 강남구')).toBeInTheDocument();

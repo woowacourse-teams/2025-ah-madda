@@ -1,11 +1,12 @@
 import React from 'react';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 import { describe, expect, vi, beforeEach, Mocked } from 'vitest';
 
-import { fetcher } from '../api/fetcher';
-import { useAddAlarm, postAlarm } from '../api/mutations/useAddAlarm';
+import { fetcher } from '@/api/fetcher';
+import { useAddAlarm, postAlarm } from '@/api/mutations/useAddAlarm';
+
+import { HookTestContainer } from './testUtils';
 
 vi.mock('@/api/fetcher', () => ({
   fetcher: {
@@ -14,23 +15,6 @@ vi.mock('@/api/fetcher', () => ({
 }));
 
 const mockFetcher = fetcher as Mocked<typeof fetcher>;
-
-const testContainer = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false },
-    },
-  });
-
-  const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
-
-  TestWrapper.displayName = 'TestWrapper';
-
-  return TestWrapper;
-};
 
 describe('useAddAlarm', () => {
   beforeEach(() => {
@@ -44,7 +28,9 @@ describe('useAddAlarm', () => {
 
       mockFetcher.post.mockResolvedValue(undefined);
 
-      const wrapper = testContainer();
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <HookTestContainer>{children}</HookTestContainer>
+      );
       const { result } = renderHook(() => useAddAlarm({ eventId }), { wrapper });
 
       result.current.mutate(emptyContent);
