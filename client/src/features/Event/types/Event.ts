@@ -4,7 +4,7 @@ export type Event = {
   description: string;
   eventStart: string;
   eventEnd: string;
-  currentGuestCount: string;
+  currentGuestCount: number;
   maxCapacity: number;
   place: string;
   registrationStart: string;
@@ -27,14 +27,32 @@ export type EventDetail = {
   questions: Question[];
 };
 
-type Question = {
+export type CreateEventAPIRequest = {
+  title: string;
+  description: string;
+  place: string;
+  maxCapacity: number;
+  eventStart: string;
+  eventEnd: string;
+  registrationStart: string;
+  registrationEnd: string;
+  organizerNickname: string;
+  questions: QuestionRequest[];
+};
+
+export type Question = {
   questionId: number;
   questionText: string;
   isRequired: boolean;
   orderIndex: number;
 };
 
-// S.TODO: 추후 Organization 폴더가 생기면 이동
+export type QuestionRequest = {
+  questionText: string;
+  isRequired: boolean;
+  orderIndex: number;
+};
+
 export type Organization = {
   organizationId: number;
   name: string;

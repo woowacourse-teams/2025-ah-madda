@@ -1,15 +1,23 @@
 import { css } from '@emotion/react';
+import { useQuery } from '@tanstack/react-query';
 
+import { myEventQueryOptions } from '@/api/queries/my';
 import { Tabs } from '@/shared/components/Tabs';
 
 import { UI_LABELS, STATUS_MESSAGES, TAB_VALUES } from '../constants';
-import { useEvents } from '../hooks/useEvents';
 
 import { EventSection } from './EventSection';
 import { EventTabsList } from './EventTabsList';
 
 export const EventTabs = () => {
-  const { events } = useEvents();
+  // E.TODO: organizationMemberId를 실제로 가져오는 로직 필요
+  const organizationMemberId = 1; // 임시 값
+
+  const { data: hostEvents = [] } = useQuery(myEventQueryOptions.hostEvents(organizationMemberId));
+
+  const { data: participateEvents = [] } = useQuery(
+    myEventQueryOptions.participateEvents(organizationMemberId)
+  );
 
   return (
     <Tabs defaultValue={TAB_VALUES.HOST}>
@@ -22,7 +30,7 @@ export const EventTabs = () => {
         `}
       >
         <EventSection
-          events={events.hostEvents}
+          events={hostEvents}
           title={UI_LABELS.ONGOING_HOST_EVENTS}
           emptyMessage={STATUS_MESSAGES.NO_HOST_EVENTS}
         />
@@ -35,7 +43,7 @@ export const EventTabs = () => {
         `}
       >
         <EventSection
-          events={events.participateEvents}
+          events={participateEvents}
           title={UI_LABELS.PARTICIPATING_EVENTS}
           emptyMessage={STATUS_MESSAGES.NO_PARTICIPATE_EVENTS}
         />
