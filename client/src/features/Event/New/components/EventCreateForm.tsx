@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 
-import type { CreateEventRequest } from '@/features/Event/types/Event';
+import type { CreateEventAPIRequest } from '@/features/Event/types/Event';
 
 import { Button } from '../../../../shared/components/Button';
 import { Card } from '../../../../shared/components/Card';
@@ -21,7 +21,7 @@ export const EventCreateForm = () => {
   const navigate = useNavigate();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
 
-  const [formData, setFormData] = useState<CreateEventRequest>({
+  const [formData, setFormData] = useState<CreateEventAPIRequest>({
     title: '',
     eventStart: '',
     eventEnd: '',
@@ -35,7 +35,7 @@ export const EventCreateForm = () => {
   });
 
   const handleChange =
-    (key: keyof CreateEventRequest) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    (key: keyof CreateEventAPIRequest) => (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = key === 'maxCapacity' ? Number(e.target.value) : e.target.value;
       setFormData((prev) => ({ ...prev, [key]: value }));
     };

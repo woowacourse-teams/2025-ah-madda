@@ -27,7 +27,7 @@ export type EventDetail = {
   questions: Question[];
 };
 
-export type CreateEventRequest = {
+export type CreateEventAPIRequest = {
   title: string;
   description: string;
   place: string;

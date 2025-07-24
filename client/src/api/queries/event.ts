@@ -1,6 +1,6 @@
 import { queryOptions } from '@tanstack/react-query';
 
-import { CreateEventRequest, EventDetail } from '../../features/Event/types/Event';
+import { CreateEventAPIRequest, EventDetail } from '../../features/Event/types/Event';
 import { fetcher } from '../fetcher';
 
 type CreateEventAPIResponse = {
@@ -20,7 +20,7 @@ export const eventQueryOptions = {
     }),
 };
 
-export const createEventAPI = (organizationId: number, data: CreateEventRequest) => {
+export const createEventAPI = (organizationId: number, data: CreateEventAPIRequest) => {
   return fetcher.post<CreateEventAPIResponse>(`organizations/${organizationId}/events`, {
     json: data,
   });
