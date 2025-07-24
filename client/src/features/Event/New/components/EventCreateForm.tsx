@@ -1,17 +1,16 @@
 import { useState } from 'react';
 
 import { css } from '@emotion/react';
-import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import type { CreateEventRequest } from '@/features/Event/types/Event';
 
-import { createEventAPI } from '../../../../api/queries/event';
 import { Button } from '../../../../shared/components/Button';
 import { Card } from '../../../../shared/components/Card';
 import { Flex } from '../../../../shared/components/Flex';
 import { Input } from '../../../../shared/components/Input';
 import { Text } from '../../../../shared/components/Text';
+import { useAddEvent } from '../hooks/useAddEvent';
 import { convertToISOString } from '../utils/convertToISOString';
 
 import { QuestionForm } from './QuestionForm';
@@ -20,6 +19,7 @@ const ORGANIZATION_ID = 1; // 임시
 
 export const EventCreateForm = () => {
   const navigate = useNavigate();
+  const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
 
   const [formData, setFormData] = useState<CreateEventRequest>({
     title: '',
@@ -34,34 +34,28 @@ export const EventCreateForm = () => {
     questions: [],
   });
 
-  const { mutate: createEvent } = useMutation({
-    mutationFn: () => {
-      const payload = {
-        ...formData,
-        eventStart: convertToISOString(formData.eventStart),
-        eventEnd: convertToISOString(formData.eventEnd),
-        registrationStart: convertToISOString(formData.registrationStart),
-        registrationEnd: convertToISOString(formData.registrationEnd),
-      };
-      return createEventAPI(ORGANIZATION_ID, payload);
-    },
-    onSuccess: ({ eventId }) => {
-      navigate(`/event/${eventId}`);
-    },
-  });
-
   const handleChange =
     (key: keyof CreateEventRequest) => (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = key === 'maxCapacity' ? Number(e.target.value) : e.target.value;
-      setFormData((prev) => ({
-        ...prev,
-        [key]: value,
-      }));
+      setFormData((prev) => ({ ...prev, [key]: value }));
     };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createEvent();
+
+    const payload = {
+      ...formData,
+      eventStart: convertToISOString(formData.eventStart),
+      eventEnd: convertToISOString(formData.eventEnd),
+      registrationStart: convertToISOString(formData.registrationStart),
+      registrationEnd: convertToISOString(formData.registrationEnd),
+    };
+
+    addEvent(payload, {
+      onSuccess: ({ eventId }) => {
+        navigate(`/event/${eventId}`);
+      },
+    });
   };
 
   return (
