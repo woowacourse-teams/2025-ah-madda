@@ -1,9 +1,5 @@
-import { useState } from 'react';
-
 import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
-
-import type { CreateEventAPIRequest } from '@/features/Event/types/Event';
 
 import { Button } from '../../../../shared/components/Button';
 import { Card } from '../../../../shared/components/Card';
@@ -11,6 +7,7 @@ import { Flex } from '../../../../shared/components/Flex';
 import { Input } from '../../../../shared/components/Input';
 import { Text } from '../../../../shared/components/Text';
 import { useAddEvent } from '../hooks/useAddEvent';
+import { useEventForm } from '../hooks/useEventForm';
 import { convertToISOString } from '../utils/convertToISOString';
 
 import { QuestionForm } from './QuestionForm';
@@ -21,24 +18,7 @@ export const EventCreateForm = () => {
   const navigate = useNavigate();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
 
-  const [formData, setFormData] = useState<CreateEventAPIRequest>({
-    title: '',
-    eventStart: '',
-    eventEnd: '',
-    registrationStart: '',
-    registrationEnd: '',
-    place: '',
-    description: '',
-    organizerNickname: '',
-    maxCapacity: 0,
-    questions: [],
-  });
-
-  const handleChange =
-    (key: keyof CreateEventAPIRequest) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = key === 'maxCapacity' ? Number(e.target.value) : e.target.value;
-      setFormData((prev) => ({ ...prev, [key]: value }));
-    };
+  const { formData, handleChange, setQuestions } = useEventForm();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,15 +128,7 @@ export const EventCreateForm = () => {
           </Flex>
         </Card>
 
-        <QuestionForm
-          questions={formData.questions}
-          onChange={(newQuestions) => {
-            setFormData((prev) => ({
-              ...prev,
-              questions: newQuestions,
-            }));
-          }}
-        />
+        <QuestionForm questions={formData.questions} onChange={setQuestions} />
 
         <Flex justifyContent="flex-end">
           <Button
