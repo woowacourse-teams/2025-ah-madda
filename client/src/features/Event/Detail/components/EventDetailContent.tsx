@@ -16,6 +16,11 @@ import { TimeInfoCard } from './TimeInfoCard';
 
 type EventDetailContentProps = EventDetail;
 
+type Answer = {
+  questionId: number;
+  answerText: string;
+};
+
 export const EventDetailContent = ({
   eventId,
   title,
@@ -29,7 +34,7 @@ export const EventDetailContent = ({
   description,
   questions,
 }: EventDetailContentProps) => {
-  const [answers, setAnswers] = useState<{ questionId: number; answerText: string }[]>(
+  const [answers, setAnswers] = useState<Answer[]>(
     questions.map(({ questionId }) => ({
       questionId,
       answerText: '',
