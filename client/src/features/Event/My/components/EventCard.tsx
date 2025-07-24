@@ -11,6 +11,10 @@ import { formatDateTime } from '../../Overview/utils/formatDateTime';
 import { formatTime } from '../../Overview/utils/formatTime';
 import { Event } from '../../types/Event';
 
+type EventCardProps = {
+  id: number;
+} & Event;
+
 export const EventCard = ({
   id,
   title,
@@ -22,7 +26,7 @@ export const EventCard = ({
   place,
   currentGuestCount,
   maxCapacity,
-}: Event) => {
+}: EventCardProps) => {
   const navigate = useNavigate();
 
   return (
