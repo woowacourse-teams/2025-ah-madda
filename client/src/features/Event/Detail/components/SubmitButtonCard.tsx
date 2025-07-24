@@ -1,19 +1,24 @@
-import { useParticipateEvent } from '../../../../api/mutations/useParticipateEvent';
-import { Answer } from '../../../../api/types/event';
-import { Button } from '../../../../shared/components/Button';
-import { Card } from '../../../../shared/components/Card';
+import { useParticipateEvent } from '@/api/mutations/useParticipateEvent';
+import { Answer, GuestStatusAPIResponse } from '@/api/types/event';
+import { Button } from '@/shared/components/Button';
+import { Flex } from '@/shared/components/Flex';
 
 type SubmitBUttonCardProps = {
   eventId: number;
   registrationEnd: string;
   answers: Answer[];
-};
+} & GuestStatusAPIResponse;
 
-export const SubmitButtonCard = ({ eventId, registrationEnd, answers }: SubmitBUttonCardProps) => {
+export const SubmitButtonCard = ({
+  eventId,
+  answers,
+  registrationEnd,
+  isGuest,
+}: SubmitBUttonCardProps) => {
   const now = new Date();
   const isBeforeDeadline = now <= new Date(registrationEnd);
 
-  const { mutate, isPending } = useParticipateEvent(eventId);
+  const { mutate } = useParticipateEvent(eventId);
 
   const handleClick = () => {
     mutate(answers, {
@@ -27,15 +32,15 @@ export const SubmitButtonCard = ({ eventId, registrationEnd, answers }: SubmitBU
   };
 
   return (
-    <Card>
+    <Flex margin="10px 0 40px">
       <Button
         width="100%"
-        color={isBeforeDeadline ? '#2563EB' : 'gray'}
-        disabled={!isBeforeDeadline || isPending}
+        color={!isGuest || isBeforeDeadline ? '#2563EB' : 'gray'}
+        disabled={!isBeforeDeadline || isGuest}
         onClick={handleClick}
       >
-        {isBeforeDeadline ? (isPending ? '신청 중...' : '참가 신청하기') : '신청 마감'}
+        {isBeforeDeadline ? (!isGuest ? '신청 하기' : '신청 완료') : '신청 마감'}
       </Button>
-    </Card>
+    </Flex>
   );
 };
