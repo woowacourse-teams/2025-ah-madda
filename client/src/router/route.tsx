@@ -5,11 +5,16 @@ import { EventManagePage } from '@/features/Event/Manage/pages/EventManagePage';
 import { MyEventPage } from '@/features/Event/My/pages/MyEventPage';
 import { NewEventPage } from '@/features/Event/New/pages/NewEventPage';
 import { OverviewPage } from '@/features/Event/Overview/pages/OverviewPage';
+import { HomePage } from '@/features/Home/page/HomePage';
 
 import { AuthCallback } from './AuthCallback';
 
 export const router = createBrowserRouter(
   [
+    {
+      path: '/',
+      Component: HomePage,
+    },
     {
       path: '/auth',
       Component: AuthCallback,

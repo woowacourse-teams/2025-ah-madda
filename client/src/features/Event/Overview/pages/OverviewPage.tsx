@@ -6,6 +6,7 @@ import { organizationQueryOptions } from '@/api/queries/organization';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
+import { Icon } from '@/shared/components/Icon';
 import { useGoogleAuth } from '@/shared/hooks/useGoogleAuth';
 
 import { EventList } from '../components/EventList';
@@ -32,7 +33,7 @@ export const OverviewPage = () => {
   return (
     <>
       <Header
-        left="아맞다"
+        left={<Icon name="logo" width={55} />}
         right={
           <Flex gap="8px">
             {isAuthenticated() ? (

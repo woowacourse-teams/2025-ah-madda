@@ -9,6 +9,10 @@ const fontTypes = {
   `,
   Title: css`
     font-size: 1.5rem;
+
+    @media (max-width: 768px) {
+      font-size: 1.25rem;
+    }
   `,
   Body: css`
     font-size: 1.25rem;
