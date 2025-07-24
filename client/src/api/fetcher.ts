@@ -12,7 +12,14 @@ export const instance = ky.create({
     'Content-Type': 'application/json',
   },
   hooks: {
-    beforeRequest: [() => {}],
+    beforeRequest: [
+      (request) => {
+        const token = localStorage.getItem('access_token');
+        if (token) {
+          request.headers.set('Authorization', `Bearer ${token}`);
+        }
+      },
+    ],
     afterResponse: [() => {}],
   },
 

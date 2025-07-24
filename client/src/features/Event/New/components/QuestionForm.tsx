@@ -1,38 +1,47 @@
-import { useState } from 'react';
-
-import { Button } from '@/shared/components/Button';
-import { Card } from '@/shared/components/Card';
-import { Flex } from '@/shared/components/Flex';
-import { Text } from '@/shared/components/Text';
+import { Button } from '../../../../shared/components/Button';
+import { Card } from '../../../../shared/components/Card';
+import { Flex } from '../../../../shared/components/Flex';
+import { Text } from '../../../../shared/components/Text';
+import { QuestionRequest } from '../../types/Event';
 
 import { QuestionItem } from './QuestionItem';
 
-export const QuestionForm = () => {
-  const [questions, setQuestions] = useState([
-    {
-      questionNumber: 1,
-      isRequired: false,
-      placeholder: '질문을 입력해주세요.',
-    },
-  ]);
+type QuestionFormProps = {
+  questions: QuestionRequest[];
+  onChange: (updated: QuestionRequest[]) => void;
+};
 
+export const QuestionForm = ({ questions, onChange }: QuestionFormProps) => {
   const addQuestion = () => {
-    const newQuestionNumber = Math.max(...questions.map((question) => question.questionNumber)) + 1;
-    setQuestions([
+    const newQuestions = [
       ...questions,
       {
-        questionNumber: newQuestionNumber,
+        orderIndex: questions.length,
         isRequired: false,
-        placeholder: '질문을 입력해주세요.',
+        questionText: '',
       },
-    ]);
+    ];
+    onChange(newQuestions);
   };
 
-  const deleteQuestion = (questionNumber: number) => {
-    if (questions.length <= 1) {
-      return;
-    }
-    setQuestions(questions.filter((question) => question.questionNumber !== questionNumber));
+  const deleteQuestion = (orderIndexToDelete: number) => {
+    if (questions.length <= 1) return;
+
+    const updated = questions
+      .filter((q) => q.orderIndex !== orderIndexToDelete)
+      .map((q, index) => ({
+        ...q,
+        orderIndex: index,
+      }));
+
+    onChange(updated);
+  };
+
+  const updateQuestion = (orderIndex: number, updatedData: Partial<QuestionRequest>) => {
+    const updated = questions.map((q) =>
+      q.orderIndex === orderIndex ? { ...q, ...updatedData } : q
+    );
+    onChange(updated);
   };
 
   return (
@@ -53,9 +62,12 @@ export const QuestionForm = () => {
         </Flex>
         {questions.map((question) => (
           <QuestionItem
-            key={question.questionNumber}
-            questionNumber={question.questionNumber}
-            onDelete={() => deleteQuestion(question.questionNumber)}
+            key={question.orderIndex}
+            orderIndex={question.orderIndex}
+            questionText={question.questionText}
+            isRequired={question.isRequired}
+            onDelete={() => deleteQuestion(question.orderIndex)}
+            onChange={(updated) => updateQuestion(question.orderIndex, updated)}
           />
         ))}
       </Flex>
