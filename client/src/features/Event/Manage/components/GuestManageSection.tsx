@@ -11,6 +11,7 @@ import { GuestViewSection } from './GuestViewSection';
 export const GuestManageSection = () => {
   const { eventId: eventIdParam } = useParams();
   const eventId = Number(eventIdParam);
+  console.log('eventId', eventId);
   const { data: guests = [] } = useQuery(eventQueryOptions.guests(eventId));
 
   const { data: nonGuests = [] } = useQuery(eventQueryOptions.nonGuests(eventId));
