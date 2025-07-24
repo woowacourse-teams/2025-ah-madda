@@ -2,12 +2,13 @@ import { describe, expect, test } from 'vitest';
 
 import { formatKoreanDateTime } from '../utils/formatKoreanDateTime';
 
+process.env.TZ = 'Asia/Seoul';
+
 describe('formatKoreanDateTime', () => {
   test('오전 시간대를 올바르게 포맷한다', () => {
-    const input = '2025-07-01T09:30:00Z';
+    const input = '2025-07-01T06:30:00+09:00';
     const output = formatKoreanDateTime(input);
-
-    expect(output).toBe('2025년 7월 1일 화요일 오후 06:30');
+    expect(output).toBe('2025년 7월 1일 화요일 오전 06:30');
   });
 
   test('오후 시간대를 올바르게 포맷한다', () => {
