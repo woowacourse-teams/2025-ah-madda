@@ -7,12 +7,9 @@ import { Text } from '../../../../shared/components/Text';
 import { QuestionRequest } from '../../types/Event';
 
 type QuestionItemProps = {
-  orderIndex: number;
-  questionText: string;
-  isRequired: boolean;
   onDelete: () => void;
   onChange: (updated: Partial<QuestionRequest>) => void;
-};
+} & QuestionRequest;
 
 export const QuestionItem = ({
   orderIndex,
