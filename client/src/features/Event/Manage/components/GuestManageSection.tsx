@@ -11,13 +11,9 @@ import { GuestViewSection } from './GuestViewSection';
 export const GuestManageSection = () => {
   const { eventId: eventIdParam } = useParams();
   const eventId = Number(eventIdParam);
-  const { data: guests = [] } = useQuery({
-    ...guestManageQueryOptions.guests(eventId),
-  });
+  const { data: guests = [] } = useQuery(guestManageQueryOptions.guests(eventId));
 
-  const { data: nonGuests = [] } = useQuery({
-    ...guestManageQueryOptions.nonGuests(eventId),
-  });
+  const { data: nonGuests = [] } = useQuery(guestManageQueryOptions.nonGuests(eventId));
 
   return (
     <Flex
