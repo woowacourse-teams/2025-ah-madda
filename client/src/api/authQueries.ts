@@ -1,7 +1,7 @@
 import { useMutation, UseMutationResult } from '@tanstack/react-query';
 
-import { ACCESS_TOKEN_KEY } from '@/shared/constants';
-import { setLocalStorage } from '@/shared/utils/localStorage';
+import { ACCESS_TOKEN_KEY } from '../shared/constants';
+import { setLocalStorage } from '../shared/utils/localStorage';
 
 import { accessToken, exchangeCodeForToken } from './auth';
 
