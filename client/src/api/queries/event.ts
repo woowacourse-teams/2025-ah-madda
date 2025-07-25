@@ -4,12 +4,11 @@ import { Guest, NonGuest } from '../../features/Event/Manage/types';
 import { CreateEventAPIRequest, EventDetail } from '../../features/Event/types/Event';
 import { fetcher } from '../fetcher';
 import { postAlarm } from '../mutations/useAddAlarm';
+import { GuestStatusAPIResponse } from '../types/event';
 
 type CreateEventAPIResponse = {
   eventId: number;
 };
-
-type Answer = { questionId: number; answerText: string };
 
 export const eventQueryKeys = {
   all: () => ['event'],
@@ -17,6 +16,8 @@ export const eventQueryKeys = {
   alarm: () => [...eventQueryKeys.all(), 'alarm'],
   guests: () => [...eventQueryKeys.all(), 'guests'],
   nonGuests: () => [...eventQueryKeys.all(), 'nonGuests'],
+  guestStatus: () => [...eventQueryKeys.all(), 'guestStatus'],
+  participation: () => [...eventQueryKeys.all(), 'participation'],
 };
 
 export const eventQueryOptions = {
@@ -29,24 +30,29 @@ export const eventQueryOptions = {
     mutationKey: [...eventQueryKeys.alarm(), eventId],
     mutationFn: (content: string) => postAlarm(eventId, content),
   }),
-  guests: (eventId: number) => ({
-    queryKey: [...eventQueryKeys.guests(), eventId],
-    queryFn: () => getGuests(eventId),
-  }),
-  nonGuests: (eventId: number) => ({
-    queryKey: [...eventQueryKeys.nonGuests(), eventId],
-    queryFn: () => getNonGuests(eventId),
-  }),
+  guests: (eventId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.guests(), eventId],
+      queryFn: () => getGuests(eventId),
+    }),
+  nonGuests: (eventId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.nonGuests(), eventId],
+      queryFn: () => getNonGuests(eventId),
+    }),
+  guestStatus: (eventId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.guestStatus(), eventId],
+      queryFn: () => getGuestStatus(eventId),
+    }),
 };
 
 const getGuests = async (eventId: number) => {
-  const response = await fetcher.get<Guest[]>(`events/${eventId}/guests`);
-  return response;
+  return await fetcher.get<Guest[]>(`events/${eventId}/guests`);
 };
 
 const getNonGuests = async (eventId: number) => {
-  const response = await fetcher.get<NonGuest[]>(`events/${eventId}/non-guests`);
-  return response;
+  return await fetcher.get<NonGuest[]>(`events/${eventId}/non-guests`);
 };
 
 export const createEventAPI = (organizationId: number, data: CreateEventAPIRequest) => {
@@ -59,8 +65,6 @@ const getEventDetailAPI = (eventId: number) => {
   return fetcher.get<EventDetail>(`organizations/events/${eventId}`);
 };
 
-export const postEventParticipation = (eventId: number, answers: Answer[]) => {
-  return fetcher.post<void>(`events/${eventId}/participation`, {
-    json: { answers },
-  });
+const getGuestStatus = async (eventId: number) => {
+  return await fetcher.get<GuestStatusAPIResponse>(`events/${eventId}/guest-status`);
 };
