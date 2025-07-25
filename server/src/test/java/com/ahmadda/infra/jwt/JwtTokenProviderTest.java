@@ -1,5 +1,6 @@
 package com.ahmadda.infra.jwt;
 
+import com.ahmadda.domain.Member;
 import com.ahmadda.infra.jwt.config.JwtTokenProperties;
 import com.ahmadda.infra.jwt.exception.InvalidTokenException;
 import io.jsonwebtoken.Claims;
@@ -128,5 +129,27 @@ class JwtTokenProviderTest {
                 .issuedAt(Date.from(iat))
                 .expiration(Date.from(exp))
                 .build();
+    }
+
+    @Test
+    void JWT_토큰을_정상적으로_생성_및_검증_할_수_있다() {
+        //given
+        var memberName = "memberName";
+        var memberEmail = "memberEmail@gmail.com";
+
+        var member = Member.create(memberName, memberEmail);
+
+        // when
+        var token = sut.createToken(member);
+
+        // then
+        var memberPayload = sut.parsePayload(token);
+
+        assertSoftly(softly -> {
+            softly.assertThat(memberPayload.getName())
+                    .isEqualTo(memberName);
+            softly.assertThat(memberPayload.getEmail())
+                    .isEqualTo(memberEmail);
+        });
     }
 }
