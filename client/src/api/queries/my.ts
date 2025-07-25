@@ -1,4 +1,4 @@
-import { Event, EventType } from '@/features/Event/types/Event';
+import { Event } from '@/features/Event/types/Event';
 
 import { fetcher } from '../fetcher';
 
@@ -20,11 +20,9 @@ export const myEventQueryOptions = {
 };
 
 const getHostEvents = async (organizationId: number): Promise<Event[]> => {
-  return await fetcher.get<Event[] & EventType>(`organizations/${organizationId}/events/owned`);
+  return await fetcher.get<Event[]>(`organizations/${organizationId}/events/owned`);
 };
 
 const getParticipateEvents = async (organizationId: number): Promise<Event[]> => {
-  return await fetcher.get<Event[] & EventType>(
-    `organizations/${organizationId}/events/participated`
-  );
+  return await fetcher.get<Event[]>(`organizations/${organizationId}/events/participated`);
 };
