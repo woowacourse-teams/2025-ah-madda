@@ -4,6 +4,7 @@ import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Member;
@@ -171,6 +172,29 @@ class EventServiceTest {
                 .hasMessage("조직에 소속되지 않은 멤버입니다.");
     }
 
+    @Test
+    void 이벤트를_조회할_수_있다() {
+        //given
+        var organization = appendOrganization();
+        var member = appendMember();
+        var organizationMember = appendOrganizationMember(organization, member);
+        var event = appendEvent(organizationMember, organization);
+
+        //when
+        var findEvent = sut.getEvent(event.getId());
+
+        //then
+        assertThat(findEvent).isEqualTo(event);
+    }
+
+    @Test
+    void 이벤트_ID를_이용해_이벤트를_조회할때_해당_이벤트가_없다면_예외가_발생한다() {
+        //when //then
+        assertThatThrownBy(() -> sut.getEvent(999L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않은 이벤트 정보입니다.");
+    }
+
     private Organization appendOrganization() {
         var organization = Organization.create("우테코", "우테코입니다.", "image");
 
@@ -185,5 +209,26 @@ class EventServiceTest {
         var organizationMember = OrganizationMember.create("surf", member, organization);
 
         return organizationMemberRepository.save(organizationMember);
+    }
+
+    private Event appendEvent(final OrganizationMember organizationMember, final Organization organization) {
+        var now = LocalDateTime.now();
+
+        var event = Event.create(
+                "title",
+                "description",
+                "place",
+                organizationMember,
+                organization,
+                EventOperationPeriod.create(
+                        Period.create(now.plusDays(1), now.plusDays(2)),
+                        Period.create(now.plusDays(3), now.plusDays(4)),
+                        now
+                ),
+                "이벤트 근로",
+                10
+        );
+
+        return eventRepository.save(event);
     }
 }
