@@ -10,7 +10,6 @@ import com.ahmadda.domain.Event;
 import com.ahmadda.presentation.dto.EventCreateResponse;
 import com.ahmadda.presentation.dto.EventDetailResponse;
 import com.ahmadda.presentation.dto.EventResponse;
-import com.ahmadda.presentation.dto.MyEventResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -65,29 +64,29 @@ public class OrganizationEventController {
     }
 
     @GetMapping("/{organizationId}/events/owned")
-    public ResponseEntity<List<MyEventResponse>> getOwnerEvents(
+    public ResponseEntity<List<EventResponse>> getOwnerEvents(
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember
     ) {
         List<Event> organizationEvents = organizationMemberEventService.getOwnerEvents(organizationId, loginMember);
 
-        List<MyEventResponse> eventResponses = organizationEvents.stream()
-                .map(event -> MyEventResponse.from(event, true, false))
+        List<EventResponse> eventResponses = organizationEvents.stream()
+                .map(EventResponse::from)
                 .toList();
 
         return ResponseEntity.ok(eventResponses);
     }
 
     @GetMapping("/{organizationId}/events/participated")
-    public ResponseEntity<List<MyEventResponse>> getParticipantEvents(
+    public ResponseEntity<List<EventResponse>> getParticipantEvents(
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember
     ) {
         List<Event> organizationEvents =
                 organizationMemberEventService.getParticipantEvents(organizationId, loginMember);
 
-        List<MyEventResponse> eventResponses = organizationEvents.stream()
-                .map(event -> MyEventResponse.from(event, false, true))
+        List<EventResponse> eventResponses = organizationEvents.stream()
+                .map(EventResponse::from)
                 .toList();
 
         return ResponseEntity.ok(eventResponses);

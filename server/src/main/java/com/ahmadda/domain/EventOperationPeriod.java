@@ -86,10 +86,10 @@ public class EventOperationPeriod {
 
     private void validate(final Period registrationPeriod, final Period eventPeriod) {
         if (registrationPeriod.isOverlappedWith(eventPeriod)) {
-            throw new BusinessRuleViolatedException("등록 기간과 이벤트 기간이 겹칠 수 없습니다.");
+            throw new BusinessRuleViolatedException("신청 기간과 이벤트 기간이 겹칠 수 없습니다.");
         }
         if (registrationPeriod.isAfter(eventPeriod)) {
-            throw new BusinessRuleViolatedException("등록 기간은 이벤트 기간보다 앞서야 합니다.");
+            throw new BusinessRuleViolatedException("신청 기간은 이벤트 기간보다 앞서야 합니다.");
         }
     }
 }
