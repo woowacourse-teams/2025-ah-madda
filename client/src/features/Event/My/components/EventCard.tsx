@@ -10,6 +10,11 @@ import { Text } from '@/shared/components/Text';
 import { formatDateTime } from '../../Overview/utils/formatDateTime';
 import { formatTime } from '../../Overview/utils/formatTime';
 import { Event } from '../../types/Event';
+import { TAB_VALUES } from '../constants';
+
+type EventCardProps = Event & {
+  cardType: (typeof TAB_VALUES)[keyof typeof TAB_VALUES];
+};
 
 export const EventCard = ({
   eventId,
@@ -22,11 +27,20 @@ export const EventCard = ({
   place,
   currentGuestCount,
   maxCapacity,
-}: Event) => {
+  cardType,
+}: EventCardProps) => {
   const navigate = useNavigate();
 
+  const handleClick = () => {
+    if (cardType === 'host') {
+      navigate(`/event/manage/${eventId}`);
+    } else {
+      navigate(`/event/${eventId}`);
+    }
+  };
+
   return (
-    <EventCardWrapper onClick={() => navigate(`/event/manage/${eventId}`)}>
+    <EventCardWrapper onClick={handleClick}>
       <Flex dir="column" gap="3.5px">
         <Text type="Title" weight="semibold" color="white">
           {title}
