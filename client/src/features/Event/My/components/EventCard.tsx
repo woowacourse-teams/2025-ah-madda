@@ -10,9 +10,10 @@ import { Text } from '@/shared/components/Text';
 import { formatDateTime } from '../../Overview/utils/formatDateTime';
 import { formatTime } from '../../Overview/utils/formatTime';
 import { Event } from '../../types/Event';
+import { TAB_VALUES } from '../constants';
 
 type EventCardProps = Event & {
-  cardType: 'host' | 'participate';
+  cardType: (typeof TAB_VALUES)[keyof typeof TAB_VALUES];
 };
 
 export const EventCard = ({

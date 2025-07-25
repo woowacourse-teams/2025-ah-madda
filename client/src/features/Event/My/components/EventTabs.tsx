@@ -33,7 +33,7 @@ export const EventTabs = () => {
           events={hostEvents}
           title={UI_LABELS.ONGOING_HOST_EVENTS}
           emptyMessage={STATUS_MESSAGES.NO_HOST_EVENTS}
-          cardType="host"
+          cardType={TAB_VALUES.HOST}
         />
       </Tabs.Content>
 
@@ -47,7 +47,7 @@ export const EventTabs = () => {
           events={participateEvents}
           title={UI_LABELS.PARTICIPATING_EVENTS}
           emptyMessage={STATUS_MESSAGES.NO_PARTICIPATE_EVENTS}
-          cardType="participate"
+          cardType={TAB_VALUES.PARTICIPATE}
         />
       </Tabs.Content>
     </Tabs>
