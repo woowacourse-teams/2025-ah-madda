@@ -1,15 +1,15 @@
 name: Dev Deploy Closed Prs
 
 on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
+  push:
+    branches:
+      - be/dev
+    paths:
+      - 'server/**'
 
 jobs:
   setup:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-22.04-arm
 
     outputs:
       image-tag: ${{ steps.set-tag.outputs.image-tag }}
