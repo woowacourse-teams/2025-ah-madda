@@ -1,7 +1,9 @@
+name: Validation Opened PRs
+
 on:
   pull_request:
-    branches:
-      - be/dev
+    paths:
+      - 'server/**'
     types:
       - opened
       - synchronize
