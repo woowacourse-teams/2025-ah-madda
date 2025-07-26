@@ -4,6 +4,7 @@ import com.ahmadda.application.EventNotificationService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.NotificationRequest;
 import com.ahmadda.presentation.resolver.AuthMember;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Event Notification", description = "이벤트 알림 관련 API")
 @RestController
 @RequestMapping("/api/events")
 @RequiredArgsConstructor

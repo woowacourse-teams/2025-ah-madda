@@ -11,6 +11,7 @@ import com.ahmadda.presentation.dto.EventCreateResponse;
 import com.ahmadda.presentation.dto.EventDetailResponse;
 import com.ahmadda.presentation.dto.EventResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.net.URI;
 import java.util.List;
 
+@Tag(name = "Organization Event", description = "조직 이벤트 관련 API")
 @RestController
 @RequestMapping("/api/organizations")
 @RequiredArgsConstructor

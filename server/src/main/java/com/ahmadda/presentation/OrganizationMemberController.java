@@ -5,6 +5,7 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "OrganizationMember", description = "조직원 관련 API")
 @RestController
 @RequestMapping("/api/organizations")
 @RequiredArgsConstructor

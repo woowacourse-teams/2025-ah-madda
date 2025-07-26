@@ -5,6 +5,7 @@ import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.presentation.dto.OrganizationCreateResponse;
 import com.ahmadda.presentation.dto.OrganizationResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 
+@Tag(name = "Organization", description = "조직 관련 API")
 @RestController
 @RequestMapping("/api/organizations")
 @RequiredArgsConstructor
