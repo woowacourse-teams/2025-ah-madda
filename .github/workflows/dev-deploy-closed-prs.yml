@@ -1,11 +1,11 @@
 name: Dev Deploy Closed Prs
 
 on:
-  push:
-    branches:
-      - be/dev
-    paths:
-      - 'server/**'
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
   setup:
