@@ -1,3 +1,5 @@
+name: Dev Deploy Closed Prs
+
 on:
   push:
     branches:
@@ -53,13 +55,13 @@ jobs:
           push: true
           tags: ahmadda1234/ahmadda_server:${{ steps.set-tag.outputs.image-tag }}
 
-  cd:
-    needs: deploy
+  deploy:
+    needs: setup
     runs-on: self-hosted
 
     steps:
-      - name: Set tag name from deploy output
-        run: echo "TAG=${{ needs.deploy.outputs.image-tag }}" >> $GITHUB_ENV
+      - name: Set tag name from setup output
+        run: echo "TAG=${{ needs.setup.outputs.image-tag }}" >> $GITHUB_ENV
 
       - name: Log in to Docker Hub
         run: |
