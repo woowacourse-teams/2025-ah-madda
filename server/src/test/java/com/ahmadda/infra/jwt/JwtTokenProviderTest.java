@@ -117,13 +117,12 @@ class JwtTokenProviderTest {
     void JWT_토큰을_정상적으로_생성_및_검증_할_수_있다() {
         //given
         Long memberId = 1L;
-
-        // when
         var token = sut.createToken(memberId);
 
-        // then
+        // when
         var memberPayload = sut.parsePayload(token);
 
+        // then
         assertThat(memberPayload.getMemberId())
                 .isEqualTo(memberId);
     }
