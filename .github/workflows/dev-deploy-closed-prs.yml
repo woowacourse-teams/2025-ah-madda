@@ -1,3 +1,5 @@
+name: Dev Deploy Closed Prs
+
 on:
   push:
     branches:
@@ -6,8 +8,8 @@ on:
       - 'server/**'
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  setup:
+    runs-on: ubuntu-22.04-arm
 
     outputs:
       image-tag: ${{ steps.set-tag.outputs.image-tag }}
@@ -49,17 +51,16 @@ jobs:
         with:
           context: ./server
           file: ./server/Dockerfile
-          platforms: linux/arm64
           push: true
           tags: ahmadda1234/ahmadda_server:${{ steps.set-tag.outputs.image-tag }}
 
-  cd:
-    needs: deploy
+  deploy:
+    needs: setup
     runs-on: self-hosted
 
     steps:
-      - name: Set tag name from deploy output
-        run: echo "TAG=${{ needs.deploy.outputs.image-tag }}" >> $GITHUB_ENV
+      - name: Set tag name from setup output
+        run: echo "TAG=${{ needs.setup.outputs.image-tag }}" >> $GITHUB_ENV
 
       - name: Log in to Docker Hub
         run: |
@@ -80,4 +81,8 @@ jobs:
             --restart unless-stopped \
             -p 8080:8080 \
             -e PROFILE=dev \
+            --log-driver=awslogs \
+            --log-opt awslogs-group=ahmadda-dev-server \
+            --log-opt awslogs-region=ap-northeast-2 \
+            --log-opt awslogs-stream=$TAG \
             -d ahmadda1234/ahmadda_server:$TAG
