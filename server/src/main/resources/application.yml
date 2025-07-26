@@ -37,3 +37,9 @@ oauth:
     user-uri: ${oauth.google.user-uri}
     connect-timeout: 3000
     read-timeout: 5000
+
+springdoc:
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  swagger-ui:
+    path: /specification
