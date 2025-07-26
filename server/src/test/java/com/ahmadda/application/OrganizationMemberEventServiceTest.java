@@ -94,7 +94,7 @@ class OrganizationMemberEventServiceTest {
                 20
         );
 
-        var loginMember = new LoginMember(member.getId(), member.getName(), member.getEmail());
+        var loginMember = new LoginMember(member.getId());
 
         // when
         var result = sut.getOwnerEvents(organization.getId(), loginMember);
@@ -182,11 +182,7 @@ class OrganizationMemberEventServiceTest {
         // when
         var result = sut.getParticipantEvents(
                 organization.getId(),
-                new LoginMember(
-                        participantMember.getId(),
-                        participantMember.getName(),
-                        participantMember.getEmail()
-                )
+                new LoginMember(participantMember.getId())
         );
 
         // then
@@ -206,7 +202,7 @@ class OrganizationMemberEventServiceTest {
     void 존재하지_않는_멤버로_주최_이벤트_조회하면_예외가_발생한다() {
         // given
         var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
-        var loginMember = new LoginMember(999L, "test", "test@test.com");
+        var loginMember = new LoginMember(999L);
 
         // when // then
         assertThatThrownBy(() -> sut.getOwnerEvents(organization.getId(), loginMember))
@@ -217,7 +213,7 @@ class OrganizationMemberEventServiceTest {
     void 존재하지_않는_조직원으로_참여_이벤트_조회하면_예외가_발생한다() {
         // given
         var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
-        var loginMember = new LoginMember(999L, "test", "test@test.com");
+        var loginMember = new LoginMember(999L);
 
         // when // then
         assertThatThrownBy(() -> sut.getParticipantEvents(organization.getId(), loginMember))

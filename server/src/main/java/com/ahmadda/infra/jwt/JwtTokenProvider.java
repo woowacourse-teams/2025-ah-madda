@@ -1,6 +1,5 @@
 package com.ahmadda.infra.jwt;
 
-import com.ahmadda.domain.Member;
 import com.ahmadda.infra.jwt.config.JwtTokenProperties;
 import com.ahmadda.infra.jwt.exception.InvalidTokenException;
 import com.ahmadda.infra.oauth.dto.MemberPayload;
@@ -23,11 +22,11 @@ public class JwtTokenProvider {
 
     private final JwtTokenProperties jwtTokenProperties;
 
-    public String createToken(final Member member) {
+    public String createToken(final Long memberId) {
         Instant now = Instant.now();
         Instant expire = now.plus(jwtTokenProperties.getAccessExpiration());
 
-        Claims claims = createAccessTokenClaims(member);
+        Claims claims = createAccessTokenClaims(memberId);
 
         return Jwts.builder()
                 .subject(claims.getSubject())
@@ -38,9 +37,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    private Claims createAccessTokenClaims(final Member member) {
-        Long memberId = member.getId();
-
+    private Claims createAccessTokenClaims(final Long memberId) {
         return Jwts.claims()
                 .subject(memberId.toString())
                 .build();

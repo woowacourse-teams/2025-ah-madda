@@ -52,7 +52,7 @@ class LoginServiceTest {
         given(googleOAuthProvider.getUserInfo(code))
                 .willReturn(new OAuthUserInfoResponse(email, name));
 
-        given(jwtTokenProvider.createToken(any(Member.class)))
+        given(jwtTokenProvider.createToken(any(Long.class)))
                 .willReturn(accessToken);
 
         // when
@@ -73,7 +73,7 @@ class LoginServiceTest {
         given(googleOAuthProvider.getUserInfo(code))
                 .willReturn(new OAuthUserInfoResponse(email, name));
 
-        given(jwtTokenProvider.createToken(any(Member.class)))
+        given(jwtTokenProvider.createToken(any(Long.class)))
                 .willReturn(accessToken);
 
         Member member = Member.create(name, email);
@@ -99,16 +99,21 @@ class LoginServiceTest {
         sut.addMemberToWoowacourse(member);
 
         // then
-        var foundOrganization = organizationRepository.findByName(OrganizationService.WOOWACOURSE_NAME).orElseThrow();
+        var foundOrganization = organizationRepository.findByName(OrganizationService.WOOWACOURSE_NAME)
+                .orElseThrow();
         var foundOrganizationMember =
                 organizationMemberRepository.findByOrganizationIdAndMemberId(foundOrganization.getId(), member.getId())
                         .orElseThrow();
 
         assertSoftly(softly -> {
-            softly.assertThat(foundOrganizationMember).isNotNull();
-            softly.assertThat(foundOrganizationMember.getMember()).isEqualTo(member);
-            softly.assertThat(foundOrganizationMember.getOrganization()).isEqualTo(foundOrganization);
-            softly.assertThat(foundOrganization.getOrganizationMembers()).contains(foundOrganizationMember);
+            softly.assertThat(foundOrganizationMember)
+                    .isNotNull();
+            softly.assertThat(foundOrganizationMember.getMember())
+                    .isEqualTo(member);
+            softly.assertThat(foundOrganizationMember.getOrganization())
+                    .isEqualTo(foundOrganization);
+            softly.assertThat(foundOrganization.getOrganizationMembers())
+                    .contains(foundOrganizationMember);
         });
     }
 
@@ -126,7 +131,8 @@ class LoginServiceTest {
 
         // then
         var foundOrganization =
-                organizationRepository.findByName(OrganizationService.WOOWACOURSE_NAME).orElseThrow();
+                organizationRepository.findByName(OrganizationService.WOOWACOURSE_NAME)
+                        .orElseThrow();
         assertThat(foundOrganization.getOrganizationMembers()).hasSize(1);
     }
 }
