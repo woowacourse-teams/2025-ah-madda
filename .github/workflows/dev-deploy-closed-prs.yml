@@ -8,8 +8,8 @@ on:
       - 'server/**'
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  setup:
+    runs-on: ubuntu-24.04-arm
 
     outputs:
       image-tag: ${{ steps.set-tag.outputs.image-tag }}
@@ -51,7 +51,6 @@ jobs:
         with:
           context: ./server
           file: ./server/Dockerfile
-          platforms: linux/arm64
           push: true
           tags: ahmadda1234/ahmadda_server:${{ steps.set-tag.outputs.image-tag }}
 
