@@ -185,6 +185,6 @@ class EventNotificationServiceTest {
     private LoginMember createLoginMember(OrganizationMember organizationMember) {
         var member = organizationMember.getMember();
 
-        return new LoginMember(member.getId(), member.getName(), member.getEmail());
+        return new LoginMember(member.getId());
     }
 }

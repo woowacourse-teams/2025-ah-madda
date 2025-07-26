@@ -40,7 +40,7 @@ class OrganizationMemberServiceTest {
         var organizationMember = organizationMemberRepository.save(
                 OrganizationMember.create("닉네임", member, organization)
         );
-        var loginMember = new LoginMember(member.getId(), member.getName(), member.getEmail());
+        var loginMember = new LoginMember(member.getId());
 
         // when
         var result = sut.getOrganizationMember(organization.getId(), loginMember);
@@ -50,10 +50,10 @@ class OrganizationMemberServiceTest {
             softly.assertThat(result.getId())
                     .isEqualTo(organizationMember.getId());
             softly.assertThat(result.getMember()
-                            .getId())
+                                      .getId())
                     .isEqualTo(member.getId());
             softly.assertThat(result.getOrganization()
-                            .getId())
+                                      .getId())
                     .isEqualTo(organization.getId());
         });
     }
@@ -63,7 +63,7 @@ class OrganizationMemberServiceTest {
         // given
         var member = memberRepository.save(Member.create("홍길동", "hong@email.com"));
         var organization = organizationRepository.save(Organization.create("우테코", "설명", "img.png"));
-        var loginMember = new LoginMember(member.getId(), member.getName(), member.getEmail());
+        var loginMember = new LoginMember(member.getId());
 
         // when // then
         assertThatThrownBy(() -> sut.getOrganizationMember(organization.getId(), loginMember))

@@ -20,7 +20,7 @@ import java.util.Optional;
 public class LoginService {
 
     private static final String imageUrl = "techcourse-project-2025.s3.ap-northeast-2.amazonaws.com/ah-madda/woowa.png";
-    
+
     private final MemberRepository memberRepository;
     private final GoogleOAuthProvider googleOAuthProvider;
     private final JwtTokenProvider jwtTokenProvider;
@@ -34,7 +34,7 @@ public class LoginService {
 
         Member member = findOrCreateMember(userInfo.name(), userInfo.email());
         addMemberToWoowacourse(member);
-        return jwtTokenProvider.createToken(member);
+        return jwtTokenProvider.createToken(member.getId());
     }
 
     private Member findOrCreateMember(final String name, final String email) {
