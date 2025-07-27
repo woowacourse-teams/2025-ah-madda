@@ -12,7 +12,7 @@ public record MemberCreationAlarmPayload(
 
     private record Block(
             String type,
-            @JsonProperty("text") // JSON 필드명과 일치시키기 위한 어노테이션
+            @JsonProperty("text")
             TextObject textObject
     ) {
 
