@@ -33,8 +33,8 @@ public class GoogleOAuthProvider {
                 .build();
     }
 
-    public OAuthUserInfoResponse getUserInfo(final String code) {
-        String googleAccessToken = requestGoogleAccessToken(code);
+    public OAuthUserInfoResponse getUserInfo(final String code, final String redirectUri) {
+        String googleAccessToken = requestGoogleAccessToken(code, redirectUri);
 
         return requestGoogleUserInfo(googleAccessToken);
     }
@@ -47,8 +47,8 @@ public class GoogleOAuthProvider {
         return factory;
     }
 
-    private String requestGoogleAccessToken(final String code) {
-        MultiValueMap<String, String> tokenRequestParams = createTokenRequestParams(code);
+    private String requestGoogleAccessToken(final String code, final String redirectUri) {
+        MultiValueMap<String, String> tokenRequestParams = createTokenRequestParams(code, redirectUri);
 
         GoogleAccessTokenResponse googleAccessTokenResponse = restClient.post()
                 .uri(googleOAuthProperties.getTokenUri())
@@ -72,12 +72,12 @@ public class GoogleOAuthProvider {
                 .body(OAuthUserInfoResponse.class);
     }
 
-    private MultiValueMap<String, String> createTokenRequestParams(final String code) {
+    private MultiValueMap<String, String> createTokenRequestParams(final String code, final String redirectUri) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", code);
         params.add("client_id", googleOAuthProperties.getClientId());
         params.add("client_secret", googleOAuthProperties.getClientSecret());
-        params.add("redirect_uri", googleOAuthProperties.getRedirectUri());
+        params.add("redirect_uri", redirectUri);
         params.add("grant_type", GRANT_TYPE_AUTHORIZATION_CODE);
 
         return params;

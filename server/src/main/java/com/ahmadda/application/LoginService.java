@@ -29,8 +29,8 @@ public class LoginService {
     private final OrganizationMemberRepository organizationMemberRepository;
 
     @Transactional
-    public String login(final String code) {
-        OAuthUserInfoResponse userInfo = googleOAuthProvider.getUserInfo(code);
+    public String login(final String code, final String redirectUri) {
+        OAuthUserInfoResponse userInfo = googleOAuthProvider.getUserInfo(code, redirectUri);
 
         Member member = findOrCreateMember(userInfo.name(), userInfo.email());
         addMemberToWoowacourse(member);
