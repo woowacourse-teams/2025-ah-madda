@@ -5,7 +5,6 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.Member;
 import com.ahmadda.presentation.dto.MemberResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -55,7 +54,7 @@ public class MemberController {
                     )
             )
     })
-    public ResponseEntity<MemberResponse> getMemberProfile(@Parameter(hidden = true) @AuthMember final LoginMember loginMember) {
+    public ResponseEntity<MemberResponse> getMemberProfile(@AuthMember final LoginMember loginMember) {
         Member member = memberService.getMember(loginMember);
 
         MemberResponse response = MemberResponse.from(member);
