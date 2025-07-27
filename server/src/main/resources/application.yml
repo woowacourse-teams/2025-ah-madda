@@ -11,6 +11,7 @@ spring:
       - security/oauth.yml
       - security/jwt.yml
       - security/db.yml
+      - security/slack.yml
 
   application:
     name: ah-madda
@@ -37,3 +38,10 @@ oauth:
     user-uri: ${oauth.google.user-uri}
     connect-timeout: 3000
     read-timeout: 5000
+
+slack:
+  bot-token: ${slack.bot-token}
+  channel-id: ${slack.channel-id}
+  post-message-url: ${slack.post-message-url}
+  connect-timeout: 3000
+  read-timeout: 5000
