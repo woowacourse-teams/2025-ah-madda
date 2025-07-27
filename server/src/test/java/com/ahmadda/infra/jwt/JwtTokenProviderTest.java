@@ -12,8 +12,8 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class JwtTokenProviderTest {
 
@@ -44,14 +44,7 @@ class JwtTokenProviderTest {
         var payload = sut.parsePayload(token);
 
         // then
-        assertSoftly(softly -> {
-            softly.assertThat(payload.getMemberId())
-                    .isEqualTo(2L);
-            softly.assertThat(payload.getName())
-                    .isEqualTo("홍길동");
-            softly.assertThat(payload.getEmail())
-                    .isEqualTo("user@example.com");
-        });
+        assertThat(payload.getMemberId()).isEqualTo(2L);
     }
 
     @Test
@@ -118,6 +111,20 @@ class JwtTokenProviderTest {
         // when // then
         assertThatThrownBy(() -> sut.parsePayload("this.is.not.jwt"))
                 .isInstanceOf(InvalidTokenException.class);
+    }
+
+    @Test
+    void JWT_토큰을_정상적으로_생성_및_검증_할_수_있다() {
+        //given
+        Long memberId = 1L;
+        var token = sut.createToken(memberId);
+
+        // when
+        var memberPayload = sut.parsePayload(token);
+
+        // then
+        assertThat(memberPayload.getMemberId())
+                .isEqualTo(memberId);
     }
 
     private Claims createClaims(Long memberId, String name, String email, Instant iat, Instant exp) {

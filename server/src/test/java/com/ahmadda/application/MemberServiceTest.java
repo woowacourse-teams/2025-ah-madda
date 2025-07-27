@@ -26,7 +26,7 @@ class MemberServiceTest {
     void 자신의_회원_정보를_조회한다() {
         // given
         var member = memberRepository.save(Member.create("홍길동", "hong@gildong.com"));
-        var loginMember = new LoginMember(member.getId(), member.getName(), member.getEmail());
+        var loginMember = new LoginMember(member.getId());
 
         // when
         var result = sut.getMember(loginMember);
@@ -45,7 +45,7 @@ class MemberServiceTest {
     @Test
     void 존재하지_않는_회원이면_예외가_발생한다() {
         // given
-        var loginMember = new LoginMember(999L, "이름", "email@none.com");
+        var loginMember = new LoginMember(999L);
 
         // when // then
         assertThatThrownBy(() -> sut.getMember(loginMember))

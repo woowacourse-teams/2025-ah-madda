@@ -41,7 +41,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
         MemberPayload memberPayload = jwtTokenProvider.parsePayload(accessToken);
 
-        return new LoginMember(memberPayload.getMemberId(), memberPayload.getName(), memberPayload.getEmail());
+        return new LoginMember(memberPayload.getMemberId());
     }
 
     private String extractAccessToken(final String header) {
