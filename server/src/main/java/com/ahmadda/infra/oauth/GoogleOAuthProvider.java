@@ -33,18 +33,18 @@ public class GoogleOAuthProvider {
                 .build();
     }
 
+    public OAuthUserInfoResponse getUserInfo(final String code) {
+        String googleAccessToken = requestGoogleAccessToken(code);
+
+        return requestGoogleUserInfo(googleAccessToken);
+    }
+
     private SimpleClientHttpRequestFactory simpleClientHttpRequestFactory() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(googleOAuthProperties.getConnectTimeout());
         factory.setReadTimeout(googleOAuthProperties.getReadTimeout());
 
         return factory;
-    }
-
-    public OAuthUserInfoResponse getUserInfo(final String code) {
-        String googleAccessToken = requestGoogleAccessToken(code);
-
-        return requestGoogleUserInfo(googleAccessToken);
     }
 
     private String requestGoogleAccessToken(final String code) {

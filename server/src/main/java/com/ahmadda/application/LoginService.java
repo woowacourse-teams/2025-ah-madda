@@ -37,15 +37,6 @@ public class LoginService {
         return jwtTokenProvider.createToken(member.getId());
     }
 
-    private Member findOrCreateMember(final String name, final String email) {
-        return memberRepository.findByEmail(email)
-                .orElseGet(() -> {
-                    Member newMember = Member.create(name, email);
-
-                    return memberRepository.save(newMember);
-                });
-    }
-
     @Deprecated
     @Transactional
     //TODO 07.25 이후 리팩터링 및 제거하기
@@ -68,5 +59,14 @@ public class LoginService {
             OrganizationMember organizationMember = OrganizationMember.create(member.getName(), member, organization);
             OrganizationMember savedOrganizationMember = organizationMemberRepository.save(organizationMember);
         }
+    }
+
+    private Member findOrCreateMember(final String name, final String email) {
+        return memberRepository.findByEmail(email)
+                .orElseGet(() -> {
+                    Member newMember = Member.create(name, email);
+
+                    return memberRepository.save(newMember);
+                });
     }
 }
