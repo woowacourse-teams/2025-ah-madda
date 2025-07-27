@@ -5,10 +5,12 @@ import com.ahmadda.infra.mail.exception.MailSendFailedException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 
+@Slf4j
 @RequiredArgsConstructor
 public class SmtpNotificationMailer implements NotificationMailer {
 
@@ -32,6 +34,7 @@ public class SmtpNotificationMailer implements NotificationMailer {
             helper.setSubject(subject);
             helper.setText(content, true);
         } catch (MessagingException e) {
+            log.error("mailError : {} ", e.getMessage(), e);
             throw new MailSendFailedException("이메일 발송에 실패했습니다.", e);
         }
 
