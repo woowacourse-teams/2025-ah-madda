@@ -53,7 +53,8 @@ public class MemberController {
                                             """
                             )
                     )
-            )})
+            )
+    })
     public ResponseEntity<MemberResponse> getMemberProfile(@Parameter(hidden = true) @AuthMember final LoginMember loginMember) {
         Member member = memberService.getMember(loginMember);
 
