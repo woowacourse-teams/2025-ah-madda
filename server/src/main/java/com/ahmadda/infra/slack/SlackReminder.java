@@ -21,9 +21,7 @@ public class SlackReminder {
     private final SlackAlarmProperties slackAlarmProperties;
     private final RestClient restClient;
 
-    public SlackReminder(RestClient.Builder restClientBuilder, SlackAlarmProperties slackAlarmProperties) {
-        this.slackAlarmProperties = slackAlarmProperties;
-
+    public SlackReminder(final RestClient.Builder restClientBuilder, final SlackAlarmProperties slackAlarmProperties) {
         restClientBuilder.requestFactory(simpleClientHttpRequestFactory());
         restClientBuilder.baseUrl(slackAlarmProperties.getPostMessageUrl());
         restClientBuilder.defaultHeaders(headers -> {
@@ -31,7 +29,8 @@ public class SlackReminder {
             headers.setBearerAuth(slackAlarmProperties.getBotToken());
         });
 
-        restClient = restClientBuilder.build();
+        this.slackAlarmProperties = slackAlarmProperties;
+        this.restClient = restClientBuilder.build();
     }
 
     private SimpleClientHttpRequestFactory simpleClientHttpRequestFactory() {
