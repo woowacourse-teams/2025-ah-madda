@@ -10,9 +10,6 @@ logging:
   level:
     org.hibernate.orm.jdbc.bind: trace
 
-client:
-  url: http://localhost:5173/auth
-
 jwt:
   secret-key: ${jwt.local.secret-key}
   access-expiration: ${jwt.local.access-expiration}

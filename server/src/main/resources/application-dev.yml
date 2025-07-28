@@ -18,9 +18,6 @@ logging:
   level:
     org.hibernate.orm.jdbc.bind: trace
 
-client:
-  url: https://ahmadda.com/auth
-
 jwt:
   secret-key: ${jwt.dev.secret-key}
   access-expiration: ${jwt.dev.access-expiration}
