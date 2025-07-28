@@ -1,22 +1,7 @@
 package com.ahmadda.presentation;
 
-import com.ahmadda.application.OrganizationService;
-import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.dto.OrganizationCreateRequest;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.presentation.dto.OrganizationCreateResponse;
-import com.ahmadda.presentation.dto.OrganizationResponse;
-import com.ahmadda.presentation.dto.ParticipateRequestDto;
-import com.ahmadda.presentation.resolver.AuthMember;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import java.net.URI;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +10,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
+import com.ahmadda.application.OrganizationService;
+import com.ahmadda.application.dto.LoginMember;
+import com.ahmadda.application.dto.OrganizationCreateRequest;
+import com.ahmadda.domain.Organization;
+import com.ahmadda.presentation.dto.OrganizationCreateResponse;
+import com.ahmadda.presentation.dto.OrganizationResponse;
+import com.ahmadda.presentation.dto.ParticipateRequestDto;
+import com.ahmadda.presentation.resolver.AuthMember;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Organization", description = "조직 관련 API")
 @RestController
@@ -37,16 +38,9 @@ public class OrganizationController {
 
     @Operation(summary = "신규 조직 생성", description = "새로운 조직을 생성합니다.")
     @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "조직 생성 성공",
-                    content = @Content(
-                            schema = @Schema(implementation = OrganizationCreateResponse.class)
-                    )
-            ),
+            @ApiResponse(responseCode = "201"),
             @ApiResponse(
                     responseCode = "400",
-                    description = "잘못된 요청",
                     content = @Content(
                             examples = @ExampleObject(
                                     value = """
@@ -54,7 +48,23 @@ public class OrganizationController {
                                               "type": "about:blank",
                                               "title": "Bad Request",
                                               "status": 400,
-                                              "detail": "Invalid request content.",
+                                              "detail": "이름은 공백이면 안됩니다.",
+                                              "instance": "/api/organizations"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unprocessable Entity",
+                                              "status": 422,
+                                              "detail": "이름의 길이는 2자 이상 20자 이하이어야 합니다.",
                                               "instance": "/api/organizations"
                                             }
                                             """
@@ -74,16 +84,9 @@ public class OrganizationController {
 
     @Operation(summary = "조직 정보 조회", description = "조직 ID로 특정 조직의 정보를 조회합니다.")
     @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "OK",
-                    content = @Content(
-                            schema = @Schema(implementation = OrganizationResponse.class)
-                    )
-            ),
+            @ApiResponse(responseCode = "200"),
             @ApiResponse(
                     responseCode = "404",
-                    description = "존재하지 않는 조직",
                     content = @Content(
                             examples = @ExampleObject(
                                     value = """
@@ -111,12 +114,7 @@ public class OrganizationController {
     @Deprecated
     @Operation(summary = "우아코스 조직 정보 조회 (임시)", description = "항상 우아코스 조직 정보를 반환하는 임시 API입니다. 추후 제거될 예정입니다.")
     @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    content = @Content(
-                            schema = @Schema(implementation = OrganizationResponse.class)
-                    )
-            )
+            @ApiResponse(responseCode = "200")
     })
     @GetMapping("/woowacourse")
     public ResponseEntity<OrganizationResponse> getOrganization() {
@@ -128,13 +126,9 @@ public class OrganizationController {
 
     @Operation(summary = "조직 참여", description = "사용자가 특정 조직에 참여합니다.")
     @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "OK"
-            ),
+            @ApiResponse(responseCode = "200"),
             @ApiResponse(
                     responseCode = "401",
-                    description = "Unauthorized",
                     content = @Content(
                             examples = @ExampleObject(
                                     value = """
@@ -151,7 +145,6 @@ public class OrganizationController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Not Found",
                     content = @Content(
                             examples = @ExampleObject(
                                     value = """
