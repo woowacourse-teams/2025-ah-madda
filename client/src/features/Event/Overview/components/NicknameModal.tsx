@@ -10,15 +10,9 @@ type NicknameModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (nickname: string) => void;
-  isLoading?: boolean;
 };
 
-export const NicknameModal = ({
-  isOpen,
-  onClose,
-  onSubmit,
-  isLoading = false,
-}: NicknameModalProps) => {
+export const NicknameModal = ({ isOpen, onClose, onSubmit }: NicknameModalProps) => {
   const [nickname, setNickname] = useState('');
 
   const handleSubmit = () => {
@@ -63,12 +57,7 @@ export const NicknameModal = ({
           >
             취소
           </Button>
-          <Button
-            variant="filled"
-            size="md"
-            onClick={handleSubmit}
-            disabled={!nickname.trim() || isLoading}
-          >
+          <Button variant="filled" size="md" onClick={handleSubmit} disabled={!nickname.trim()}>
             참가하기
           </Button>
         </Flex>

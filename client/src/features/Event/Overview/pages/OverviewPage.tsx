@@ -111,12 +111,7 @@ export const OverviewPage = () => {
         <EventList events={eventData ?? []} />
       )}
 
-      <NicknameModal
-        isOpen={isOpen}
-        onClose={close}
-        onSubmit={handleNicknameSubmit}
-        isLoading={createProfileMutation.isPending}
-      />
+      <NicknameModal isOpen={isOpen} onClose={close} onSubmit={handleNicknameSubmit} />
     </>
   );
 };
