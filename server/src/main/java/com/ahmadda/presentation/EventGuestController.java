@@ -9,6 +9,7 @@ import com.ahmadda.presentation.dto.GuestResponse;
 import com.ahmadda.presentation.dto.GuestStatusResponse;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -181,6 +182,164 @@ public class EventGuestController {
         return ResponseEntity.ok(responses);
     }
 
+    @Operation(summary = "이벤트 참여", description = "이벤트 ID에 해당하는 이벤트에 참여합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "인증 실패",
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/events/{eventId}/participation"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "이벤트 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 이벤트입니다.",
+                                                      "instance": "/api/events/{eventId}/participation"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "조직원 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 조직원입니다.",
+                                                      "instance": "/api/events/{eventId}/participation"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "질문 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 질문입니다.",
+                                                      "instance": "/api/events/{eventId}/participation"
+                                                    }
+                                                    """
+                                    ),
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "로그인 멤버가 이벤트를 생성한 조직에 속해있지 않음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "같은 조직의 이벤트에만 게스트로 참여가능합니다.",
+                                                      "instance": "/api/events/{eventId}/participation"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "이벤트 신청 기간이 아님",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "이벤트 신청은 신청 시작 시간부터 신청 마감 시간까지 가능합니다.",
+                                                      "instance": "/api/events/{eventId}/participation"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "수용 인원이 가득참",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "수용 인원이 가득차 이벤트에 참여할 수 없습니다.",
+                                                      "instance": "/api/events/{eventId}/participation"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "이미 참여중인 이벤트",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "이미 해당 이벤트에 참여중인 게스트입니다.",
+                                                      "instance": "/api/events/{eventId}/participation"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "이벤트 주최자가 게스트로 참여할 경우",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "이벤트의 주최자는 게스트로 참여할 수 없습니다.",
+                                                      "instance": "/api/events/{eventId}/participation"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "필수 질문에 대한 답변 누락",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "필수 질문에 대한 답변이 누락되었습니다.",
+                                                      "instance": "/api/events/{eventId}/participation"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "이벤트에 포함되지 않은 질문에 대한 답변",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "이벤트에 포함되지 않은 질문입니다.",
+                                                      "instance": "/api/events/{eventId}/participation"
+                                                    }
+                                                    """
+                                    ),
+                            }
+                    )
+            )
+    })
     @PostMapping("/{eventId}/participation")
     public ResponseEntity<Void> participateEvent(
             @PathVariable final Long eventId,
@@ -198,6 +357,66 @@ public class EventGuestController {
                 .build();
     }
 
+    @Operation(summary = "이벤트 참여 여부", description = "이벤트 ID에 해당하는 이벤트에 참여 여부를 반환합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            schema = @Schema(
+                                    implementation = GuestStatusResponse.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "인증 실패",
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/events/{eventId}/guest-status"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "이벤트 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 이벤트입니다.",
+                                                      "instance": "/api/events/{eventId}/guest-status"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "조직원 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 조직원입니다.",
+                                                      "instance": "/api/events/{eventId}/guest-status"
+                                                    }
+                                                    """
+                                    ),
+                            }
+                    )
+            )
+    })
     @GetMapping("/{eventId}/guest-status")
     public ResponseEntity<GuestStatusResponse> isGuest(
             @PathVariable final Long eventId,
