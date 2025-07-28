@@ -1,10 +1,17 @@
 package com.ahmadda.presentation;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.ahmadda.application.OrganizationMemberService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -13,13 +20,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "OrganizationMember", description = "조직원 관련 API")
+@Tag(name = "Organization Member", description = "조직원 관련 API")
 @RestController
 @RequestMapping("/api/organizations")
 @RequiredArgsConstructor
@@ -32,9 +34,7 @@ public class OrganizationMemberController {
             @ApiResponse(
                     responseCode = "200",
                     content = @Content(
-                            schema = @Schema(
-                                    implementation = OrganizationMemberResponse.class
-                            )
+                            schema = @Schema(implementation = OrganizationMemberResponse.class)
                     )
             ),
             @ApiResponse(

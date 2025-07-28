@@ -206,7 +206,8 @@ class OrganizationMemberEventServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.getOwnerEvents(organization.getId(), loginMember))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않은 조직원 정보입니다.");
     }
 
     @Test
@@ -217,7 +218,8 @@ class OrganizationMemberEventServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.getParticipantEvents(organization.getId(), loginMember))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않은 조직원 정보입니다.");
     }
 
     private Organization createAndSaveOrganization(String name, String description, String imageUrl) {

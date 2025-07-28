@@ -13,6 +13,7 @@ import com.ahmadda.presentation.dto.EventResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -43,9 +44,69 @@ public class OrganizationEventController {
     private final OrganizationMemberEventService organizationMemberEventService;
     private final EventService eventService;
 
+    @Operation(summary = "조직의 모든 이벤트 조회", description = "특정 조직에 속한 모든 이벤트를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            array = @ArraySchema(schema = @Schema(implementation = EventResponse.class))
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/organizations/{organizationId}/events"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Forbidden",
+                                              "status": 403,
+                                              "detail": "조직에 참여하지 않아 권한이 없습니다.",
+                                              "instance": "/api/organizations/{organizationId}/events"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "존재하지 않는 조직입니다.",
+                                              "instance": "/api/organizations/{organizationId}/events"
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
     @GetMapping("/{organizationId}/events")
-    public ResponseEntity<List<EventResponse>> getOrganizationEvents(@PathVariable final Long organizationId) {
-        List<Event> organizationEvents = organizationService.getOrganizationEvents(organizationId);
+    public ResponseEntity<List<EventResponse>> getOrganizationEvents(
+            @PathVariable final Long organizationId,
+            @AuthMember final LoginMember loginMember
+    ) {
+        List<Event> organizationEvents = organizationService.getOrganizationEvents(organizationId, loginMember);
 
         List<EventResponse> eventResponses = organizationEvents.stream()
                 .map(EventResponse::from)
@@ -265,6 +326,47 @@ public class OrganizationEventController {
         return ResponseEntity.ok(EventDetailResponse.from(event));
     }
 
+    @Operation(summary = "내가 주최한 이벤트 목록 조회", description = "로그인한 사용자가 주최한 이벤트 목록을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            array = @ArraySchema(schema = @Schema(implementation = EventResponse.class))
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/organizations/{organizationId}/events/owned"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "존재하지 않은 조직원 정보입니다.",
+                                              "instance": "/api/organizations/{organizationId}/events/owned"
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
     @GetMapping("/{organizationId}/events/owned")
     public ResponseEntity<List<EventResponse>> getOwnerEvents(
             @PathVariable final Long organizationId,
@@ -279,6 +381,47 @@ public class OrganizationEventController {
         return ResponseEntity.ok(eventResponses);
     }
 
+    @Operation(summary = "내가 참가한 이벤트 목록 조회", description = "로그인한 사용자가 참가한 이벤트 목록을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            array = @ArraySchema(schema = @Schema(implementation = EventResponse.class))
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/organizations/{organizationId}/events/participated"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "존재하지 않은 조직원 정보입니다.",
+                                              "instance": "/api/organizations/{organizationId}/events/participated"
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
     @GetMapping("/{organizationId}/events/participated")
     public ResponseEntity<List<EventResponse>> getParticipantEvents(
             @PathVariable final Long organizationId,
