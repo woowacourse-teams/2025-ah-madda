@@ -4,6 +4,7 @@ import com.ahmadda.application.EventNotificationService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.NotificationRequest;
 import com.ahmadda.presentation.resolver.AuthMember;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,6 +27,7 @@ public class EventNotificationController {
 
     private final EventNotificationService eventNotificationService;
 
+    @Operation(summary = "이벤트 미참여 조직원에게 알림 발송", description = "주최자가 이벤트에 참여하지 않은 조직원들에게 이메일 알림을 발송합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200"

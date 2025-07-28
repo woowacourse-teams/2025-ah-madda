@@ -5,6 +5,7 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.Member;
 import com.ahmadda.presentation.dto.MemberResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,6 +26,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    @Operation(summary = "자신의 프로필 조회", description = "로그인한 사용자의 프로필 정보를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",

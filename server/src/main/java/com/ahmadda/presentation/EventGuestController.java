@@ -9,6 +9,7 @@ import com.ahmadda.presentation.dto.GuestResponse;
 import com.ahmadda.presentation.dto.GuestStatusResponse;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -36,6 +37,7 @@ public class EventGuestController {
 
     private final EventGuestService eventGuestService;
 
+    @Operation(summary = "이벤트 게스트 목록 조회", description = "해당 이벤트에 참여한 게스트 목록을 조회합니다. 주최자만 조회할 수 있습니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -108,6 +110,7 @@ public class EventGuestController {
         return ResponseEntity.ok(responses);
     }
 
+    @Operation(summary = "이벤트 미참여 조직원 목록 조회", description = "해당 이벤트에 아직 참여하지 않은 조직원 목록을 조회합니다. 주최자만 조회할 수 있습니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
