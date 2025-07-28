@@ -104,7 +104,8 @@ class OrganizationServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.getOrganizationEvents(999L, loginMember))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 조직입니다.");
     }
 
     @Test
@@ -141,7 +142,8 @@ class OrganizationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> sut.getOrganizationEvents(organization.getId(), loginMember))
-                .isInstanceOf(BusinessFlowViolatedException.class);
+                .isInstanceOf(BusinessFlowViolatedException.class)
+                .hasMessage("조직에 참여하지 않아 권한이 없습니다.");
     }
 
     @Test
@@ -156,7 +158,8 @@ class OrganizationServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
-                .isInstanceOf(BusinessFlowViolatedException.class);
+                .isInstanceOf(BusinessFlowViolatedException.class)
+                .hasMessage("이미 참여한 조직입니다.");
     }
 
     @Test
