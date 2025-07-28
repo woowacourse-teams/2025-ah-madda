@@ -15,6 +15,7 @@ import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,7 +31,12 @@ public class OrganizationMemberController {
 
     @Operation(summary = "자신의 조직원 프로필 조회", description = "로그인한 사용자가 속한 조직에서의 자신의 정보를 조회합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            schema = @Schema(implementation = OrganizationMemberResponse.class)
+                    )
+            ),
             @ApiResponse(
                     responseCode = "401",
                     content = @Content(

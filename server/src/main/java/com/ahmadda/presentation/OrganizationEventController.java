@@ -48,14 +48,12 @@ public class OrganizationEventController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "OK",
                     content = @Content(
                             array = @ArraySchema(schema = @Schema(implementation = EventResponse.class))
                     )
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "Unauthorized",
                     content = @Content(
                             examples = @ExampleObject(
                                     value = """
@@ -72,7 +70,6 @@ public class OrganizationEventController {
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Forbidden",
                     content = @Content(
                             examples = @ExampleObject(
                                     value = """
@@ -89,7 +86,6 @@ public class OrganizationEventController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Not Found",
                     content = @Content(
                             examples = @ExampleObject(
                                     value = """
@@ -332,7 +328,12 @@ public class OrganizationEventController {
 
     @Operation(summary = "내가 주최한 이벤트 목록 조회", description = "로그인한 사용자가 주최한 이벤트 목록을 조회합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            array = @ArraySchema(schema = @Schema(implementation = EventResponse.class))
+                    )
+            ),
             @ApiResponse(
                     responseCode = "401",
                     content = @Content(
@@ -382,7 +383,12 @@ public class OrganizationEventController {
 
     @Operation(summary = "내가 참가한 이벤트 목록 조회", description = "로그인한 사용자가 참가한 이벤트 목록을 조회합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            array = @ArraySchema(schema = @Schema(implementation = EventResponse.class))
+                    )
+            ),
             @ApiResponse(
                     responseCode = "401",
                     content = @Content(

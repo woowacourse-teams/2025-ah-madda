@@ -1,21 +1,7 @@
 package com.ahmadda.presentation;
 
-import com.ahmadda.application.OrganizationService;
-import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.dto.OrganizationCreateRequest;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.presentation.dto.OrganizationCreateResponse;
-import com.ahmadda.presentation.dto.OrganizationResponse;
-import com.ahmadda.presentation.dto.ParticipateRequestDto;
-import com.ahmadda.presentation.resolver.AuthMember;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import java.net.URI;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +10,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
+import com.ahmadda.application.OrganizationService;
+import com.ahmadda.application.dto.LoginMember;
+import com.ahmadda.application.dto.OrganizationCreateRequest;
+import com.ahmadda.domain.Organization;
+import com.ahmadda.presentation.dto.OrganizationCreateResponse;
+import com.ahmadda.presentation.dto.OrganizationResponse;
+import com.ahmadda.presentation.dto.ParticipateRequestDto;
+import com.ahmadda.presentation.resolver.AuthMember;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Organization", description = "조직 관련 API")
 @RestController
@@ -36,7 +39,12 @@ public class OrganizationController {
 
     @Operation(summary = "신규 조직 생성", description = "새로운 조직을 생성합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201"),
+            @ApiResponse(
+                    responseCode = "201",
+                    content = @Content(
+                            schema = @Schema(implementation = OrganizationCreateResponse.class)
+                    )
+            ),
             @ApiResponse(
                     responseCode = "400",
                     content = @Content(
@@ -82,7 +90,12 @@ public class OrganizationController {
 
     @Operation(summary = "조직 정보 조회", description = "조직 ID로 특정 조직의 정보를 조회합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            schema = @Schema(implementation = OrganizationResponse.class)
+                    )
+            ),
             @ApiResponse(
                     responseCode = "404",
                     content = @Content(
@@ -112,7 +125,12 @@ public class OrganizationController {
     @Deprecated
     @Operation(summary = "우아코스 조직 정보 조회 (임시)", description = "항상 우아코스 조직 정보를 반환하는 임시 API입니다. 추후 제거될 예정입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200")
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            schema = @Schema(implementation = OrganizationResponse.class)
+                    )
+            )
     })
     @GetMapping("/woowacourse")
     public ResponseEntity<OrganizationResponse> getOrganization() {
@@ -124,7 +142,12 @@ public class OrganizationController {
 
     @Operation(summary = "조직 참여", description = "사용자가 특정 조직에 참여합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            schema = @Schema(implementation = OrganizationResponse.class)
+                    )
+            ),
             @ApiResponse(
                     responseCode = "401",
                     content = @Content(
@@ -181,8 +204,9 @@ public class OrganizationController {
             @Valid @RequestBody final ParticipateRequestDto participateRequestDto
     ) {
         organizationService.participateOrganization(organizationId, loginMember, participateRequestDto);
+        Organization organization = organizationService.getOrganization(organizationId);
+        OrganizationResponse organizationResponse = OrganizationResponse.from(organization);
 
-        return ResponseEntity.ok()
-                .build();
+        return ResponseEntity.ok(organizationResponse);
     }
 }
