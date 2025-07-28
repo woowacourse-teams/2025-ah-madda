@@ -21,7 +21,7 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<AccessTokenResponse> login(@RequestBody final LoginRequest loginRequest) {
-        String authTokens = loginService.login(loginRequest.code());
+        String authTokens = loginService.login(loginRequest.code(), loginRequest.redirectUri());
 
         AccessTokenResponse accessTokenResponse = new AccessTokenResponse(authTokens);
 

@@ -48,15 +48,16 @@ class LoginServiceTest {
         var name = "홍길동";
         var email = "test@example.com";
         var accessToken = "access_token";
+        var redirectUri = "redirectUri";
 
-        given(googleOAuthProvider.getUserInfo(code))
+        given(googleOAuthProvider.getUserInfo(code, redirectUri))
                 .willReturn(new OAuthUserInfoResponse(email, name));
 
         given(jwtTokenProvider.createToken(any(Long.class)))
                 .willReturn(accessToken);
 
         // when
-        sut.login(code);
+        sut.login(code, redirectUri);
 
         // then
         assertThat(memberRepository.findByEmail(email)).isPresent();
@@ -69,8 +70,9 @@ class LoginServiceTest {
         var name = "홍길동";
         var email = "test@example.com";
         var accessToken = "access_token";
+        var redirectUri = "redirectUri";
 
-        given(googleOAuthProvider.getUserInfo(code))
+        given(googleOAuthProvider.getUserInfo(code, redirectUri))
                 .willReturn(new OAuthUserInfoResponse(email, name));
 
         given(jwtTokenProvider.createToken(any(Long.class)))
@@ -80,7 +82,7 @@ class LoginServiceTest {
         memberRepository.save(member);
 
         // when
-        sut.login(code);
+        sut.login(code, redirectUri);
 
         // then
         assertThat(memberRepository.count()).isEqualTo(1);
