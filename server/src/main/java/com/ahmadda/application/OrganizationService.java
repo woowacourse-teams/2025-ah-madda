@@ -1,5 +1,11 @@
 package com.ahmadda.application;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
@@ -13,12 +19,8 @@ import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.presentation.dto.ParticipateRequestDto;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +52,7 @@ public class OrganizationService {
     public List<Event> getOrganizationEvents(final Long organizationId, final LoginMember loginMember) {
         Organization organization = getOrganization(organizationId);
 
-        if (!organizationMemberRepository.existsByOrganizationAndMember(organizationId, loginMember.memberId())) {
+        if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId())) {
             throw new AccessDeniedException("조직에 참여하지 않아 권한이 없습니다.");
         }
 
@@ -78,7 +80,7 @@ public class OrganizationService {
             final ParticipateRequestDto participateRequestDto
     ) {
         Long memberId = loginMember.memberId();
-        if (organizationMemberRepository.existsByOrganizationAndMember(organizationId, memberId)) {
+        if (organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, memberId)) {
             throw new BusinessFlowViolatedException("이미 참여한 조직입니다.");
         }
 
