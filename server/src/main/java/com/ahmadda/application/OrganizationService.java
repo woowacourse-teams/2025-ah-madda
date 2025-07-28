@@ -1,10 +1,17 @@
 package com.ahmadda.application;
 
+import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
+import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.Member;
+import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
+import com.ahmadda.domain.OrganizationMember;
+import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.presentation.dto.ParticipateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +27,8 @@ public class OrganizationService {
     private static final String imageUrl = "techcourse-project-2025.s3.ap-northeast-2.amazonaws.com/ah-madda/woowa.png";
 
     private final OrganizationRepository organizationRepository;
+    private final OrganizationMemberRepository organizationMemberRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public Organization createOrganization(final OrganizationCreateRequest organizationCreateRequest) {
@@ -53,5 +62,27 @@ public class OrganizationService {
                                                                                             "우아한테크코스입니다",
                                                                                             imageUrl
         )));
+    }
+
+    @Transactional
+    public void participateOrganization(
+            final Long organizationId,
+            final LoginMember loginMember,
+            final ParticipateRequestDto participateRequestDto
+    ) {
+        Long memberId = loginMember.memberId();
+        organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
+                .ifPresent((organizationMember) -> {
+                    throw new BusinessFlowViolatedException("이미 참여한 조직입니다.");
+                });
+
+        Organization organization = getOrganization(organizationId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다"));
+
+        OrganizationMember organizationMember =
+                OrganizationMember.create(participateRequestDto.nickname(), member, organization);
+
+        organizationMemberRepository.save(organizationMember);
     }
 }

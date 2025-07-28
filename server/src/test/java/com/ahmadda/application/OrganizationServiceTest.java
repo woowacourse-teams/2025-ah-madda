@@ -1,6 +1,8 @@
 package com.ahmadda.application;
 
+import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
+import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventOperationPeriod;
@@ -12,6 +14,7 @@ import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Period;
+import com.ahmadda.presentation.dto.ParticipateRequestDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -123,6 +126,46 @@ class OrganizationServiceTest {
         assertThat(events).hasSize(2)
                 .extracting(Event::getTitle)
                 .containsExactlyInAnyOrder("EventA1", "EventA2");
+    }
+
+    @Test
+    void 이미_참여한_조직에_중복_참여하면_예외가_발생한다() {
+        // given
+        var member = memberRepository.save(Member.create("user", "user@test.com"));
+        var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
+        organizationMemberRepository.save(OrganizationMember.create("nickname", member, organization));
+
+        var loginMember = new LoginMember(member.getId());
+        var request = new ParticipateRequestDto("new_nickname");
+
+        // when // then
+        assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
+                .isInstanceOf(BusinessFlowViolatedException.class);
+    }
+
+    @Test
+    void 조직에_참여할_수_있다() {
+        // given
+        var member = memberRepository.save(Member.create("user", "user@test.com"));
+        var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
+        var loginMember = new LoginMember(member.getId());
+        var request = new ParticipateRequestDto("new_nickname");
+
+        // when
+        sut.participateOrganization(organization.getId(), loginMember, request);
+
+        // then
+        var organizationMembers = organizationMemberRepository.findAll();
+        assertThat(organizationMembers).hasSize(1);
+
+        assertSoftly(softly -> {
+            softly.assertThat(organizationMembers).hasSize(1);
+            
+            var saved = organizationMembers.get(0);
+            softly.assertThat(saved.getNickname()).isEqualTo("new_nickname");
+            softly.assertThat(saved.getMember()).isEqualTo(member);
+            softly.assertThat(saved.getOrganization()).isEqualTo(organization);
+        });
     }
 
     @Test

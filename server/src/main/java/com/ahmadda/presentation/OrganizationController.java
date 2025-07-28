@@ -1,10 +1,13 @@
 package com.ahmadda.presentation;
 
 import com.ahmadda.application.OrganizationService;
+import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.presentation.dto.OrganizationCreateResponse;
 import com.ahmadda.presentation.dto.OrganizationResponse;
+import com.ahmadda.presentation.dto.ParticipateRequestDto;
+import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -53,4 +56,17 @@ public class OrganizationController {
 
         return ResponseEntity.ok(organizationResponse);
     }
+
+    @PostMapping("/{organizationId}/participate")
+    public ResponseEntity<OrganizationResponse> participateOrganization(
+            @PathVariable final Long organizationId,
+            @AuthMember final LoginMember loginMember,
+            @RequestBody final ParticipateRequestDto participateRequestDto
+    ) {
+        organizationService.participateOrganization(organizationId, loginMember, participateRequestDto);
+
+        return ResponseEntity.ok()
+                .build();
+    }
+
 }
