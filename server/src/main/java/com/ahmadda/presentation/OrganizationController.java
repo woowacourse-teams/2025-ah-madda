@@ -8,6 +8,12 @@ import com.ahmadda.presentation.dto.OrganizationCreateResponse;
 import com.ahmadda.presentation.dto.OrganizationResponse;
 import com.ahmadda.presentation.dto.ParticipateRequestDto;
 import com.ahmadda.presentation.resolver.AuthMember;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +35,33 @@ public class OrganizationController {
 
     private final OrganizationService organizationService;
 
+    @Operation(summary = "신규 조직 생성", description = "새로운 조직을 생성합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "조직 생성 성공",
+                    content = @Content(
+                            schema = @Schema(implementation = OrganizationCreateResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "잘못된 요청",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Bad Request",
+                                              "status": 400,
+                                              "detail": "Invalid request content.",
+                                              "instance": "/api/organizations"
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
     @PostMapping
     public ResponseEntity<OrganizationCreateResponse> createOrganization(
             @RequestBody @Valid final OrganizationCreateRequest organizationCreateRequest
@@ -39,6 +72,33 @@ public class OrganizationController {
                 .body(new OrganizationCreateResponse(organization.getId()));
     }
 
+    @Operation(summary = "조직 정보 조회", description = "조직 ID로 특정 조직의 정보를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "OK",
+                    content = @Content(
+                            schema = @Schema(implementation = OrganizationResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "존재하지 않는 조직",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "존재하지 않는 조직입니다.",
+                                              "instance": "/api/organizations/{organizationId}"
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
     @GetMapping("/{organizationId}")
     public ResponseEntity<OrganizationResponse> readOrganization(@PathVariable final Long organizationId) {
         Organization organization = organizationService.getOrganization(organizationId);
@@ -49,6 +109,15 @@ public class OrganizationController {
 
     //TODO 07.25 이후 리팩터링 및 제거하기
     @Deprecated
+    @Operation(summary = "우아코스 조직 정보 조회 (임시)", description = "항상 우아코스 조직 정보를 반환하는 임시 API입니다. 추후 제거될 예정입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            schema = @Schema(implementation = OrganizationResponse.class)
+                    )
+            )
+    })
     @GetMapping("/woowacourse")
     public ResponseEntity<OrganizationResponse> getOrganization() {
         Organization organization = organizationService.alwaysGetWoowacourse();
@@ -57,6 +126,47 @@ public class OrganizationController {
         return ResponseEntity.ok(organizationResponse);
     }
 
+    @Operation(summary = "조직 참여", description = "사용자가 특정 조직에 참여합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "OK"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/organizations/{organizationId}/participation"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Not Found",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "존재하지 않는 조직입니다.",
+                                              "instance": "/api/organizations/{organizationId}/participation"
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
     @PostMapping("/{organizationId}/participation")
     public ResponseEntity<OrganizationResponse> participateOrganization(
             @PathVariable final Long organizationId,

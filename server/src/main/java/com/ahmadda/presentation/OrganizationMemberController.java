@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "OrganizationMember", description = "조직원 관련 API")
+@Tag(name = "Organization Member", description = "조직원 관련 API")
 @RestController
 @RequestMapping("/api/organizations")
 @RequiredArgsConstructor
@@ -31,6 +31,7 @@ public class OrganizationMemberController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
+                    description = "OK",
                     content = @Content(
                             schema = @Schema(
                                     implementation = OrganizationMemberResponse.class
@@ -39,6 +40,7 @@ public class OrganizationMemberController {
             ),
             @ApiResponse(
                     responseCode = "401",
+                    description = "Unauthorized",
                     content = @Content(
                             examples = @ExampleObject(
                                     value = """
@@ -55,6 +57,7 @@ public class OrganizationMemberController {
             ),
             @ApiResponse(
                     responseCode = "404",
+                    description = "Not Found",
                     content = @Content(
                             examples = @ExampleObject(
                                     value = """
