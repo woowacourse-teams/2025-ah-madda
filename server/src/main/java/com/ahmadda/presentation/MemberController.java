@@ -25,11 +25,9 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @GetMapping("/profile")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "OK",
                     content = @Content(
                             schema = @Schema(
                                     implementation = MemberResponse.class
@@ -37,8 +35,23 @@ public class MemberController {
                     )
             ),
             @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/members/profile"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
                     responseCode = "404",
-                    description = "Not Found",
                     content = @Content(
                             examples = @ExampleObject(
                                     value = """
@@ -54,6 +67,7 @@ public class MemberController {
                     )
             )
     })
+    @GetMapping("/profile")
     public ResponseEntity<MemberResponse> getMemberProfile(@AuthMember final LoginMember loginMember) {
         Member member = memberService.getMember(loginMember);
 
