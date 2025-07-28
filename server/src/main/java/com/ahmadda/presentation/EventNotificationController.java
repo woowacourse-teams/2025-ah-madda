@@ -4,6 +4,10 @@ import com.ahmadda.application.EventNotificationService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.NotificationRequest;
 import com.ahmadda.presentation.resolver.AuthMember;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +26,59 @@ public class EventNotificationController {
 
     private final EventNotificationService eventNotificationService;
 
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/events/{eventId}/notify-non-guests"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Forbidden",
+                                              "status": 403,
+                                              "detail": "이벤트 주최자가 아닙니다.",
+                                              "instance": "/api/events/{eventId}/notify-non-guests"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "존재하지 않는 이벤트입니다.",
+                                              "instance": "/api/events/{eventId}/notify-non-guests"
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
     @PostMapping("/{eventId}/notify-non-guests")
     public ResponseEntity<Void> notifyNonGuests(
             @PathVariable final Long eventId,
