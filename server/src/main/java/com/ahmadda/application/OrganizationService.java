@@ -2,6 +2,7 @@ package com.ahmadda.application;
 
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
+import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
@@ -50,7 +51,7 @@ public class OrganizationService {
         Organization organization = getOrganization(organizationId);
 
         if (!organizationMemberRepository.existsByOrganizationAndMember(organizationId, loginMember.memberId())) {
-            throw new BusinessFlowViolatedException("조직에 참여하지 않아 권한이 없습니다.");
+            throw new AccessDeniedException("조직에 참여하지 않아 권한이 없습니다.");
         }
 
         return organization.getActiveEvents();
