@@ -5,8 +5,8 @@ import { describe, expect, vi, beforeEach, Mocked } from 'vitest';
 
 import { fetcher } from '../api/fetcher';
 import { MyEventPage } from '../features/Event/My/pages/MyEventPage';
-import { mockHostEvents } from '../shared/mocks';
 
+import { mockHostEvents } from './mocks/event';
 import { TestContainer } from './testUtils';
 
 vi.mock('../api/fetcher', () => ({
