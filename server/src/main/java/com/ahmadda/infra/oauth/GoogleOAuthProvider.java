@@ -58,7 +58,7 @@ public class GoogleOAuthProvider {
                 .body(GoogleAccessTokenResponse.class);
 
         if (googleAccessTokenResponse == null) {
-            throw new InvalidTokenException("유효하지 않은 인증 정보 입니다.");
+            throw new InvalidTokenException("유효하지 않은 인증 정보 입니다. 인가 코드가 만료되었거나, 잘못되었습니다.");
         }
 
         return googleAccessTokenResponse.accessToken();

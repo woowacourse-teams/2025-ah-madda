@@ -5,6 +5,7 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,6 +27,7 @@ public class OrganizationMemberController {
 
     private final OrganizationMemberService organizationMemberService;
 
+    @Operation(summary = "자신의 조직원 프로필 조회", description = "로그인한 사용자가 속한 조직에서의 자신의 정보를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
