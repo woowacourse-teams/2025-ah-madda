@@ -3,14 +3,13 @@ import { useState } from 'react';
 import type { CreateEventAPIRequest, QuestionRequest } from '@/features/Event/types/Event';
 
 export const useEventForm = () => {
-  const [formData, setFormData] = useState<CreateEventAPIRequest>({
+  const [formData, setFormData] = useState<Omit<CreateEventAPIRequest, 'organizerNickname'>>({
     title: '',
+    description: '',
+    place: '',
     eventStart: '',
     eventEnd: '',
     registrationEnd: '',
-    place: '',
-    description: '',
-    organizerNickname: '',
     maxCapacity: 0,
     questions: [],
   });

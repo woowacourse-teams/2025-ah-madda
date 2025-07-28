@@ -14,6 +14,7 @@ import { convertToISOString } from '../utils/convertToISOString';
 import { QuestionForm } from './QuestionForm';
 
 const ORGANIZATION_ID = 1; // 임시
+const ORGANIZER_NICKNAME = '임시닉네임'; // 추후 유저 설정 닉네임으로 대체
 
 export const EventCreateForm = () => {
   const navigate = useNavigate();
@@ -29,6 +30,7 @@ export const EventCreateForm = () => {
       eventStart: convertToISOString(formData.eventStart),
       eventEnd: convertToISOString(formData.eventEnd),
       registrationEnd: convertToISOString(formData.registrationEnd),
+      organizerNickname: ORGANIZER_NICKNAME,
     };
 
     addEvent(payload, {
@@ -99,23 +101,14 @@ export const EventCreateForm = () => {
               onChange={handleChange('description')}
             />
 
-            <Flex gap="16px">
-              <Input
-                id="author"
-                label="주최자 이름"
-                placeholder="주최자 이름을 입력해 주세요"
-                value={formData.organizerNickname}
-                onChange={handleChange('organizerNickname')}
-              />
-              <Input
-                id="maxCapacity"
-                label="수용 인원"
-                placeholder="최대 참가 인원을 입력해 주세요"
-                type="number"
-                value={formData.maxCapacity.toString()}
-                onChange={handleChange('maxCapacity')}
-              />
-            </Flex>
+            <Input
+              id="maxCapacity"
+              label="수용 인원"
+              placeholder="최대 참가 인원을 입력해 주세요"
+              type="number"
+              value={formData.maxCapacity.toString()}
+              onChange={handleChange('maxCapacity')}
+            />
           </Flex>
         </Card>
 
