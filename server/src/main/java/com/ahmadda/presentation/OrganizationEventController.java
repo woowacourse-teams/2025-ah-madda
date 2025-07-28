@@ -72,7 +72,6 @@ public class OrganizationEventController {
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(
-                                    name = "인증 실패",
                                     value = """
                                             {
                                               "type": "about:blank",
@@ -90,7 +89,6 @@ public class OrganizationEventController {
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(
-                                    name = "조직 미소속",
                                     value = """
                                             {
                                               "type": "about:blank",

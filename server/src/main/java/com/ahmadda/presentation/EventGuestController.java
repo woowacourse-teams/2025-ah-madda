@@ -194,7 +194,6 @@ public class EventGuestController {
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(
-                                    name = "인증 실패",
                                     value = """
                                             {
                                               "type": "about:blank",
@@ -374,7 +373,6 @@ public class EventGuestController {
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(
-                                    name = "인증 실패",
                                     value = """
                                             {
                                               "type": "about:blank",
