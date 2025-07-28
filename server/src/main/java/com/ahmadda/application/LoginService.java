@@ -29,21 +29,12 @@ public class LoginService {
     private final OrganizationMemberRepository organizationMemberRepository;
 
     @Transactional
-    public String login(final String code) {
-        OAuthUserInfoResponse userInfo = googleOAuthProvider.getUserInfo(code);
+    public String login(final String code, final String redirectUri) {
+        OAuthUserInfoResponse userInfo = googleOAuthProvider.getUserInfo(code, redirectUri);
 
         Member member = findOrCreateMember(userInfo.name(), userInfo.email());
         addMemberToWoowacourse(member);
         return jwtTokenProvider.createToken(member.getId());
-    }
-
-    private Member findOrCreateMember(final String name, final String email) {
-        return memberRepository.findByEmail(email)
-                .orElseGet(() -> {
-                    Member newMember = Member.create(name, email);
-
-                    return memberRepository.save(newMember);
-                });
     }
 
     @Deprecated
@@ -68,5 +59,14 @@ public class LoginService {
             OrganizationMember organizationMember = OrganizationMember.create(member.getName(), member, organization);
             OrganizationMember savedOrganizationMember = organizationMemberRepository.save(organizationMember);
         }
+    }
+
+    private Member findOrCreateMember(final String name, final String email) {
+        return memberRepository.findByEmail(email)
+                .orElseGet(() -> {
+                    Member newMember = Member.create(name, email);
+
+                    return memberRepository.save(newMember);
+                });
     }
 }

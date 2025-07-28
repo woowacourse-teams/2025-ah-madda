@@ -37,16 +37,16 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    private Claims createAccessTokenClaims(final Long memberId) {
-        return Jwts.claims()
-                .subject(memberId.toString())
-                .build();
-    }
-
     public MemberPayload parsePayload(final String token) {
         Claims claims = parseClaims(token);
 
         return MemberPayload.create(claims);
+    }
+
+    private Claims createAccessTokenClaims(final Long memberId) {
+        return Jwts.claims()
+                .subject(memberId.toString())
+                .build();
     }
 
     private Claims parseClaims(final String token) {
