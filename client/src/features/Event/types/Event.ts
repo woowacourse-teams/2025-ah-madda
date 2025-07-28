@@ -34,7 +34,6 @@ export type CreateEventAPIRequest = {
   maxCapacity: number;
   eventStart: string;
   eventEnd: string;
-  registrationStart: string;
   registrationEnd: string;
   organizerNickname: string;
   questions: QuestionRequest[];

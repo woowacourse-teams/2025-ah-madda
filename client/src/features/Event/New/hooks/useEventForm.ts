@@ -7,7 +7,6 @@ export const useEventForm = () => {
     title: '',
     eventStart: '',
     eventEnd: '',
-    registrationStart: '',
     registrationEnd: '',
     place: '',
     description: '',

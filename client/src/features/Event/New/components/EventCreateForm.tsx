@@ -28,7 +28,6 @@ export const EventCreateForm = () => {
       ...formData,
       eventStart: convertToISOString(formData.eventStart),
       eventEnd: convertToISOString(formData.eventEnd),
-      registrationStart: convertToISOString(formData.registrationStart),
       registrationEnd: convertToISOString(formData.registrationEnd),
     };
 
@@ -76,22 +75,13 @@ export const EventCreateForm = () => {
               />
             </Flex>
 
-            <Flex gap="16px">
-              <Input
-                id="registrationStart"
-                label="신청 시작 날짜/시간"
-                placeholder="2025.07.25 13:00"
-                value={formData.registrationStart}
-                onChange={handleChange('registrationStart')}
-              />
-              <Input
-                id="registrationEnd"
-                label="신청 종료 날짜/시간"
-                placeholder="2025.07.25 15:00"
-                value={formData.registrationEnd}
-                onChange={handleChange('registrationEnd')}
-              />
-            </Flex>
+            <Input
+              id="registrationEnd"
+              label="신청 종료 날짜/시간"
+              placeholder="2025.07.25 15:00"
+              value={formData.registrationEnd}
+              onChange={handleChange('registrationEnd')}
+            />
 
             <Input
               id="place"
