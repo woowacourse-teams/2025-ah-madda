@@ -5,6 +5,11 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +26,48 @@ public class OrganizationMemberController {
 
     private final OrganizationMemberService organizationMemberService;
 
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            schema = @Schema(
+                                    implementation = OrganizationMemberResponse.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/organizations/{organizationId}/profile"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "존재하지 않는 조직원입니다.",
+                                              "instance": "/api/organizations/{organizationId}/profile"
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
     @GetMapping("/{organizationId}/profile")
     public ResponseEntity<OrganizationMemberResponse> getOrganizationMemberProfile(
             @PathVariable final Long organizationId,
