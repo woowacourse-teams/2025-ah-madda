@@ -77,6 +77,22 @@ public class OrganizationEventController {
                                             """
                             )
                     )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unprocessable Entity",
+                                              "status": 422,
+                                              "detail": "조직에 참여하지 않아 권한이 없습니다.",
+                                              "instance": "/api/organizations/{organizationId}/events"
+                                            }
+                                            """
+                            )
+                    )
             )
     })
     @GetMapping("/{organizationId}/events")
@@ -120,6 +136,22 @@ public class OrganizationEventController {
                                               "title": "Unauthorized",
                                               "status": 401,
                                               "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/organizations/{organizationId}/events"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Forbidden",
+                                              "status": 403,
+                                              "detail": "조직에 소속되지 않은 멤버입니다.",
                                               "instance": "/api/organizations/{organizationId}/events"
                                             }
                                             """
@@ -188,7 +220,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Not Found",
                                               "status": 404,
-                                              "detail": "존재하지 않는 이벤트입니다.",
+                                              "detail": "존재하지 않은 이벤트 정보입니다.",
                                               "instance": "/api/organizations/events/{eventId}"
                                             }
                                             """
@@ -231,7 +263,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Not Found",
                                               "status": 404,
-                                              "detail": "존재하지 않는 조직입니다.",
+                                              "detail": "존재하지 않은 조직원 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events/owned"
                                             }
                                             """
@@ -281,7 +313,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Not Found",
                                               "status": 404,
-                                              "detail": "존재하지 않는 조직입니다.",
+                                              "detail": "존재하지 않은 조직원 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events/participated"
                                             }
                                             """

@@ -158,6 +158,22 @@ public class OrganizationController {
                                             """
                             )
                     )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unprocessable Entity",
+                                              "status": 422,
+                                              "detail": "이미 참여한 조직입니다.",
+                                              "instance": "/api/organizations/{organizationId}/participation"
+                                            }
+                                            """
+                            )
+                    )
             )
     })
     @PostMapping("/{organizationId}/participation")
