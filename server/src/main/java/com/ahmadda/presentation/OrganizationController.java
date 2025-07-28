@@ -175,7 +175,7 @@ public class OrganizationController {
             )
     })
     @PostMapping("/{organizationId}/participation")
-    public ResponseEntity<OrganizationResponse> participateOrganization(
+    public ResponseEntity<Void> participateOrganization(
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember,
             @Valid @RequestBody final ParticipateRequestDto participateRequestDto
