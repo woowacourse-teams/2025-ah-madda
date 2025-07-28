@@ -14,5 +14,9 @@ export const ProtectRoute = () => {
     }
   }, [navigate]);
 
+  if (!isAuthenticated()) {
+    return null;
+  }
+
   return <Outlet />;
 };
