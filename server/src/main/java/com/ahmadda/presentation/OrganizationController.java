@@ -57,7 +57,7 @@ public class OrganizationController {
         return ResponseEntity.ok(organizationResponse);
     }
 
-    @PostMapping("/{organizationId}/participate")
+    @PostMapping("/{organizationId}/participation")
     public ResponseEntity<OrganizationResponse> participateOrganization(
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember,
@@ -68,5 +68,4 @@ public class OrganizationController {
         return ResponseEntity.ok()
                 .build();
     }
-
 }

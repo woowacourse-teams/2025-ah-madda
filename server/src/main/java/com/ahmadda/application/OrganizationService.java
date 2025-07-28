@@ -46,8 +46,12 @@ public class OrganizationService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 조직입니다."));
     }
 
-    public List<Event> getOrganizationEvents(final Long organizationId) {
+    public List<Event> getOrganizationEvents(final Long organizationId, final LoginMember loginMember) {
         Organization organization = getOrganization(organizationId);
+
+        if (!organizationMemberRepository.existsByOrganizationAndMember(organizationId, loginMember.memberId())) {
+            throw new BusinessFlowViolatedException("조직에 참여하지 않아 권한이 없습니다.");
+        }
 
         return organization.getActiveEvents();
     }
@@ -58,10 +62,12 @@ public class OrganizationService {
     public Organization alwaysGetWoowacourse() {
         Optional<Organization> organization = organizationRepository.findByName(WOOWACOURSE_NAME);
 
-        return organization.orElseGet(() -> organizationRepository.save(Organization.create(WOOWACOURSE_NAME,
-                                                                                            "우아한테크코스입니다",
-                                                                                            imageUrl
-        )));
+        return organization.orElseGet(() -> organizationRepository.save(
+                Organization.create(
+                        WOOWACOURSE_NAME,
+                        "우아한테크코스입니다",
+                        imageUrl
+                )));
     }
 
     @Transactional
@@ -71,10 +77,9 @@ public class OrganizationService {
             final ParticipateRequestDto participateRequestDto
     ) {
         Long memberId = loginMember.memberId();
-        organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
-                .ifPresent((organizationMember) -> {
-                    throw new BusinessFlowViolatedException("이미 참여한 조직입니다.");
-                });
+        if (organizationMemberRepository.existsByOrganizationAndMember(organizationId, memberId)) {
+            throw new BusinessFlowViolatedException("이미 참여한 조직입니다.");
+        }
 
         Organization organization = getOrganization(organizationId);
         Member member = memberRepository.findById(memberId)

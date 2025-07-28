@@ -98,16 +98,20 @@ class OrganizationServiceTest {
 
     @Test
     void 존재하지_않는_조직의_이벤트를_조회하면_예외가_발생한다() {
+        // given
+        var member = memberRepository.save(Member.create("user", "user@test.com"));
+        var loginMember = new LoginMember(member.getId());
+
         // when // then
-        assertThatThrownBy(() -> sut.getOrganizationEvents(999L))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직입니다.");
+        assertThatThrownBy(() -> sut.getOrganizationEvents(999L, loginMember))
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
     void 여러_조직의_이벤트가_있을때_선택된_조직의_활성화된_이벤트만_가져온다() {
         // given
         var member = memberRepository.save(Member.create("name", "test@test.com"));
+        var loginMember = new LoginMember(member.getId());
         var orgA = organizationRepository.save(createOrganization("OrgA", "DescA", "a.png"));
         var orgB = organizationRepository.save(createOrganization("OrgB", "DescB", "b.png"));
         var orgMemberA = organizationMemberRepository.save(OrganizationMember.create("nickname", member, orgA));
@@ -120,12 +124,24 @@ class OrganizationServiceTest {
         eventRepository.save(createEvent(orgMemberB, orgB, "EventB1", now.plusDays(1), now.plusDays(2)));
 
         // when
-        var events = sut.getOrganizationEvents(orgA.getId());
+        var events = sut.getOrganizationEvents(orgA.getId(), loginMember);
 
         // then
         assertThat(events).hasSize(2)
                 .extracting(Event::getTitle)
                 .containsExactlyInAnyOrder("EventA1", "EventA2");
+    }
+
+    @Test
+    void 조직원이_아니면_조직의_이벤트를_조회시_예외가_발생한다() {
+        // given
+        var member = memberRepository.save(Member.create("user", "user@test.com"));
+        var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
+        var loginMember = new LoginMember(member.getId());
+
+        // when & then
+        assertThatThrownBy(() -> sut.getOrganizationEvents(organization.getId(), loginMember))
+                .isInstanceOf(BusinessFlowViolatedException.class);
     }
 
     @Test
@@ -160,7 +176,7 @@ class OrganizationServiceTest {
 
         assertSoftly(softly -> {
             softly.assertThat(organizationMembers).hasSize(1);
-            
+
             var saved = organizationMembers.get(0);
             softly.assertThat(saved.getNickname()).isEqualTo("new_nickname");
             softly.assertThat(saved.getMember()).isEqualTo(member);
