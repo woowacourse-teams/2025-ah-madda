@@ -1,11 +1,12 @@
 import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 
-import { Button } from '../../../../shared/components/Button';
-import { Card } from '../../../../shared/components/Card';
-import { Flex } from '../../../../shared/components/Flex';
-import { Input } from '../../../../shared/components/Input';
-import { Text } from '../../../../shared/components/Text';
+import { Button } from '@/shared/components/Button';
+import { Card } from '@/shared/components/Card';
+import { Flex } from '@/shared/components/Flex';
+import { Input } from '@/shared/components/Input';
+import { Text } from '@/shared/components/Text';
+
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useEventForm } from '../hooks/useEventForm';
 import { convertToISOString } from '../utils/convertToISOString';
