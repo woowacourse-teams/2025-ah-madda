@@ -172,7 +172,6 @@ class OrganizationServiceTest {
 
         // then
         var organizationMembers = organizationMemberRepository.findAll();
-        assertThat(organizationMembers).hasSize(1);
 
         assertSoftly(softly -> {
             softly.assertThat(organizationMembers).hasSize(1);
