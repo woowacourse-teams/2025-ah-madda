@@ -15,8 +15,6 @@ public record EventCreateRequest(
         @NotBlank
         String place,
         @NotNull
-        LocalDateTime registrationStart,
-        @NotNull
         LocalDateTime registrationEnd,
         @NotNull
         LocalDateTime eventStart,

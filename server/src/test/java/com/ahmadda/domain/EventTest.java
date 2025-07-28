@@ -177,7 +177,7 @@ class EventTest {
         //when //then
         assertThatThrownBy(() -> sut.participate(guest, registrationPeriod.start()))
                 .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("이미 참여중인 게스트입니다.");
+                .hasMessage("이미 해당 이벤트에 참여중인 게스트입니다.");
     }
 
     @Test
