@@ -193,13 +193,13 @@ public class Event extends BaseEntity {
 
     private void validateParticipate(final Guest guest, final LocalDateTime participantDateTime) {
         if (eventOperationPeriod.canNotRegistration(participantDateTime)) {
-            throw new BusinessRuleViolatedException("이벤트 신청 기간이 아닙니다.");
+            throw new BusinessRuleViolatedException("이벤트 신청은 신청 시작 시간부터 신청 마감 시간까지 가능합니다.");
         }
         if (guests.size() >= maxCapacity) {
             throw new BusinessRuleViolatedException("수용 인원이 가득차 이벤트에 참여할 수 없습니다.");
         }
         if (hasGuest(guest.getOrganizationMember())) {
-            throw new BusinessRuleViolatedException("이미 참여중인 게스트입니다.");
+            throw new BusinessRuleViolatedException("이미 해당 이벤트에 참여중인 게스트입니다.");
         }
         if (guest.isSameOrganizationMember(organizer)) {
             throw new BusinessRuleViolatedException("이벤트의 주최자는 게스트로 참여할 수 없습니다.");

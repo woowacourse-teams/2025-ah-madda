@@ -160,7 +160,7 @@ class GuestTest {
                         .minusDays(1)
         ))
                 .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("이벤트 신청 기간이 아닙니다.");
+                .hasMessage("이벤트 신청은 신청 시작 시간부터 신청 마감 시간까지 가능합니다.");
     }
 
     @Test

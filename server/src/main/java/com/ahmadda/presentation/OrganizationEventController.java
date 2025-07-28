@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Tag(name = "Organization Event", description = "조직 이벤트 관련 API")
@@ -53,7 +54,12 @@ public class OrganizationEventController {
             @RequestBody @Valid final EventCreateRequest eventCreateRequest,
             @AuthMember final LoginMember loginMember
     ) {
-        Event event = eventService.createEvent(organizationId, loginMember.memberId(), eventCreateRequest);
+        Event event = eventService.createEvent(
+                organizationId,
+                loginMember.memberId(),
+                eventCreateRequest,
+                LocalDateTime.now()
+        );
 
         return ResponseEntity.created(URI.create("/api/organizations/" + organizationId + "/events/" + event.getId()))
                 .body(new EventCreateResponse(event.getId()));

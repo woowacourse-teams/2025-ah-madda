@@ -5,6 +5,7 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.Member;
 import com.ahmadda.presentation.dto.MemberResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,11 +26,10 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @GetMapping("/profile")
+    @Operation(summary = "자신의 프로필 조회", description = "로그인한 사용자의 프로필 정보를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "OK",
                     content = @Content(
                             schema = @Schema(
                                     implementation = MemberResponse.class
@@ -37,8 +37,23 @@ public class MemberController {
                     )
             ),
             @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/members/profile"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
                     responseCode = "404",
-                    description = "Not Found",
                     content = @Content(
                             examples = @ExampleObject(
                                     value = """
@@ -54,6 +69,7 @@ public class MemberController {
                     )
             )
     })
+    @GetMapping("/profile")
     public ResponseEntity<MemberResponse> getMemberProfile(@AuthMember final LoginMember loginMember) {
         Member member = memberService.getMember(loginMember);
 
