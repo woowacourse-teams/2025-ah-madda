@@ -1,15 +1,5 @@
 package com.ahmadda.presentation;
 
-import java.net.URI;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.ahmadda.application.OrganizationService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
@@ -18,7 +8,6 @@ import com.ahmadda.presentation.dto.OrganizationCreateResponse;
 import com.ahmadda.presentation.dto.OrganizationResponse;
 import com.ahmadda.presentation.dto.ParticipateRequestDto;
 import com.ahmadda.presentation.resolver.AuthMember;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -27,6 +16,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.net.URI;
 
 @Tag(name = "Organization", description = "조직 관련 API")
 @RestController
@@ -180,7 +178,7 @@ public class OrganizationController {
     public ResponseEntity<OrganizationResponse> participateOrganization(
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember,
-            @RequestBody final ParticipateRequestDto participateRequestDto
+            @Valid @RequestBody final ParticipateRequestDto participateRequestDto
     ) {
         organizationService.participateOrganization(organizationId, loginMember, participateRequestDto);
 

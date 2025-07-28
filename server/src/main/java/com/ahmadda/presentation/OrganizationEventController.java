@@ -11,6 +11,13 @@ import com.ahmadda.presentation.dto.EventCreateResponse;
 import com.ahmadda.presentation.dto.EventDetailResponse;
 import com.ahmadda.presentation.dto.EventResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,8 +44,11 @@ public class OrganizationEventController {
     private final EventService eventService;
 
     @GetMapping("/{organizationId}/events")
-    public ResponseEntity<List<EventResponse>> getOrganizationEvents(@PathVariable final Long organizationId) {
-        List<Event> organizationEvents = organizationService.getOrganizationEvents(organizationId);
+    public ResponseEntity<List<EventResponse>> getOrganizationEvents(
+            @PathVariable final Long organizationId,
+            @AuthMember final LoginMember loginMember
+    ) {
+        List<Event> organizationEvents = organizationService.getOrganizationEvents(organizationId, loginMember);
 
         List<EventResponse> eventResponses = organizationEvents.stream()
                 .map(EventResponse::from)

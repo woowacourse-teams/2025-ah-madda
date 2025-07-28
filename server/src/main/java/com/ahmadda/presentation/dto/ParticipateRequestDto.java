@@ -1,5 +1,9 @@
 package com.ahmadda.presentation.dto;
 
-public record ParticipateRequestDto(String nickname) {
+import jakarta.validation.constraints.NotBlank;
+
+public record ParticipateRequestDto(
+        @NotBlank String nickname
+) {
 
 }
