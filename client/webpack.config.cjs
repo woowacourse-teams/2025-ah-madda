@@ -17,14 +17,19 @@ module.exports = {
       template: './index.html',
       filename: 'index.html',
       inject: true,
+      templateParameters: {
+        GOOGLE_ANALYTICS_ID: process.env.GOOGLE_ANALYTICS_ID || '',
+      },
     }),
     new DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('development'),
       VERSION: JSON.stringify('1.0.0'),
       __DEV__: JSON.stringify(true),
     }),
     new Dotenv({
-      path: path.resolve(__dirname, '.env'),
+      path: path.resolve(
+        __dirname,
+        process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development'
+      ),
       safe: true,
     }),
   ],
