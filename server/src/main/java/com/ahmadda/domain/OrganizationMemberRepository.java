@@ -15,10 +15,5 @@ public interface OrganizationMemberRepository extends JpaRepository<Organization
             """)
     Optional<OrganizationMember> findByOrganizationIdAndMemberId(final Long organizationId, final Long memberId);
 
-    @Query("""
-                select case when count(om) > 0 then true else false end
-                from OrganizationMember om
-                where om.organization.id = :organizationId and om.member.id = :memberId
-            """)
-    boolean existsByOrganizationAndMember(final Long organizationId, final Long memberId);
+    boolean existsByOrganizationIdAndMemberId(final Long organizationId, final Long memberId);
 }
