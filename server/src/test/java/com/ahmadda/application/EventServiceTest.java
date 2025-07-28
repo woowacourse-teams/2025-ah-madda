@@ -60,7 +60,7 @@ class EventServiceTest {
                 "UI/UX 이벤트",
                 "UI/UX 이벤트 입니다",
                 "선릉",
-                now.plusDays(3), now.plusDays(4),
+                now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
                 "이벤트 근로",
                 100,
@@ -68,7 +68,7 @@ class EventServiceTest {
         );
 
         //when
-        var event = sut.createEvent(organization.getId(), organizationMember.getId(), eventCreateRequest);
+        var event = sut.createEvent(organization.getId(), organizationMember.getId(), eventCreateRequest, now);
 
         //then
         assertThat(eventRepository.findById(event.getId()))
@@ -87,7 +87,7 @@ class EventServiceTest {
                                 .isEqualTo(organizationMember);
                         softly.assertThat(savedEvent.getEventOperationPeriod())
                                 .isEqualTo(EventOperationPeriod.create(
-                                        Period.create(now.plusDays(3), now.plusDays(4)),
+                                        Period.create(now, now.plusDays(4)),
                                         Period.create(now.plusDays(5), now.plusDays(6)),
                                         now
                                 ));
@@ -110,7 +110,7 @@ class EventServiceTest {
                 "UI/UX 이벤트",
                 "UI/UX 이벤트 입니다",
                 "선릉",
-                now.plusDays(3), now.plusDays(4),
+                now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
                 "이벤트 근로",
                 100,
@@ -118,7 +118,7 @@ class EventServiceTest {
         );
 
         //when //then
-        assertThatThrownBy(() -> sut.createEvent(999L, organizationMember.getId(), eventCreateRequest))
+        assertThatThrownBy(() -> sut.createEvent(999L, organizationMember.getId(), eventCreateRequest, now))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않은 조직 정보입니다.");
     }
@@ -133,7 +133,7 @@ class EventServiceTest {
                 "UI/UX 이벤트",
                 "UI/UX 이벤트 입니다",
                 "선릉",
-                now.plusDays(3), now.plusDays(4),
+                now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
                 "이밴트 근로",
                 100,
@@ -141,7 +141,7 @@ class EventServiceTest {
         );
 
         //when //then
-        assertThatThrownBy(() -> sut.createEvent(organization.getId(), 999L, eventCreateRequest))
+        assertThatThrownBy(() -> sut.createEvent(organization.getId(), 999L, eventCreateRequest, now))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 회원입니다.");
     }
@@ -159,7 +159,7 @@ class EventServiceTest {
                 "UI/UX 이벤트",
                 "UI/UX 이벤트 입니다",
                 "선릉",
-                now.plusDays(3), now.plusDays(4),
+                now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
                 "이밴트 근로",
                 100,
@@ -167,7 +167,7 @@ class EventServiceTest {
         );
 
         //when //then
-        assertThatThrownBy(() -> sut.createEvent(organization1.getId(), member.getId(), eventCreateRequest))
+        assertThatThrownBy(() -> sut.createEvent(organization1.getId(), member.getId(), eventCreateRequest, now))
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessage("조직에 소속되지 않은 멤버입니다.");
     }
