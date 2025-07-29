@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-22.04-arm
 
     outputs:
-      image-tag: v0.0.0
+      image-tag: ${{ steps.set-tag.outputs.image-tag }}
 
     steps:
       - name: Checkout repository
@@ -26,6 +26,10 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+
+      - name: Set image tag based on date and run number
+        id: set-tag
+        run: echo "image-tag=v0.0.0" >> $GITHUB_OUTPUT
 
       - name: Run tests
         working-directory: ./server
