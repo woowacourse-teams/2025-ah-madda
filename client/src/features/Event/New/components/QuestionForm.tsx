@@ -25,7 +25,7 @@ export const QuestionForm = ({ questions, onChange }: QuestionFormProps) => {
   };
 
   const deleteQuestion = (orderIndexToDelete: number) => {
-    if (questions.length <= 1) return;
+    if (questions.length <= 0) return;
 
     const updated = questions
       .filter((q) => q.orderIndex !== orderIndexToDelete)
@@ -71,6 +71,7 @@ export const QuestionForm = ({ questions, onChange }: QuestionFormProps) => {
           />
         ))}
       </Flex>
+      {/* <Text type="caption">사전 질문을 입력해주세요.</Text> */}
     </Card>
   );
 };
