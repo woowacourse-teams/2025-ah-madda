@@ -21,14 +21,12 @@ export const organizationQueryOptions = {
     queryOptions({
       queryKey: [...organizationQueryKeys.event(), organizationId],
       queryFn: () => getAllEventAPI({ organizationId }),
-      retry: false,
     }),
 
   profile: (organizationId: number) =>
     queryOptions({
       queryKey: [...organizationQueryKeys.profile(), organizationId],
       queryFn: () => getOrganizationProfile({ organizationId }),
-      retry: false,
     }),
 };
 
