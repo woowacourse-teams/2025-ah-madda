@@ -1,0 +1,20 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - cd client
+      - npm install -g pnpm
+      - pnpm install
+  build:
+    commands:
+      - pnpm run build
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: 'client/dist'
+
+cache:
+  paths:
+    - node_modules/**/*
