@@ -7,7 +7,7 @@ import { mockEventDetail } from '@/__test__/mocks/event';
 import { fetcher } from '@/api/fetcher';
 import { EventManagePage } from '@/features/Event/Manage/pages/EventManagePage';
 
-import { TestContainer } from './testUtils';
+import { TestContainer } from './customRender';
 
 vi.mock('@/api/fetcher', () => ({
   fetcher: {
