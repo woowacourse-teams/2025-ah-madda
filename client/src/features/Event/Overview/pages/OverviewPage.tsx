@@ -7,38 +7,29 @@ import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
 import { Icon } from '@/shared/components/Icon';
-import { Text } from '@/shared/components/Text';
 import { useGoogleAuth } from '@/shared/hooks/useGoogleAuth';
-import { useModal } from '@/shared/hooks/useModal';
 
 import { EventList } from '../components/EventList';
-import { NicknameModal } from '../components/NicknameModal';
 import { OrganizationInfo } from '../components/OrganizationInfo';
 
 export const OverviewPage = () => {
   const navigate = useNavigate();
-  const { isOpen, open, close } = useModal();
 
-  const { data: organizationData, isLoading: isOrganizationLoading } = useQuery(
+  const { data: organizationData } = useQuery(
     organizationQueryOptions.organizations('woowacourse')
   );
 
-  const { data: eventData, isLoading: isEventLoading } = useQuery(
-    organizationQueryOptions.event(1)
-  );
-
-  const { error: profileError } = useQuery(organizationQueryOptions.profile(1));
+  const { data: eventData } = useQuery(organizationQueryOptions.event(1));
 
   const { logout } = useGoogleAuth();
-
-  const isProfileNotFound = profileError?.message.includes('404');
 
   const handleGoogleLogin = () => {
     const authUrl = getGoogleAuthUrl();
     window.location.href = authUrl;
   };
 
-  if (isEventLoading || isOrganizationLoading) {
+  // S.TODO 로딩 처리
+  if (!organizationData || !eventData) {
     return <div>Loading...</div>;
   }
 
@@ -76,28 +67,14 @@ export const OverviewPage = () => {
           </Flex>
         }
       />
-
       <OrganizationInfo
-        name={organizationData?.name || ''}
-        description={organizationData?.description || ''}
-        imageUrl={organizationData?.imageUrl || ''}
-        totalEvents={eventData?.length || 0}
+        name={organizationData?.name}
+        description={organizationData?.description}
+        imageUrl={organizationData?.imageUrl}
+        totalEvents={eventData?.length}
       />
 
-      {isProfileNotFound ? (
-        <Flex dir="column" justifyContent="center" alignItems="center" gap="16px" margin="40px 0">
-          <Text type="Body" weight="regular" color="#666">
-            조직에 참가하여 이벤트 목록을 확인하세요!
-          </Text>
-          <Button width="200px" size="md" variant="filled" onClick={open}>
-            참가하기
-          </Button>
-        </Flex>
-      ) : (
-        <EventList events={eventData ?? []} />
-      )}
-
-      <NicknameModal isOpen={isOpen} onClose={close} />
+      <EventList events={eventData} />
     </>
   );
 };

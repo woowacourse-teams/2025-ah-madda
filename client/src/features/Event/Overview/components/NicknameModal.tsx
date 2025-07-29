@@ -1,8 +1,12 @@
 import { useState } from 'react';
 
+import { css } from '@emotion/react';
+import { useNavigate } from 'react-router-dom';
+
 import { useCreateProfile } from '@/api/mutations/useCreateProfile';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
+import { Icon } from '@/shared/components/Icon';
 import { Input } from '@/shared/components/Input';
 import { Modal } from '@/shared/components/Modal/Modal';
 import { Text } from '@/shared/components/Text';
@@ -13,19 +17,25 @@ type NicknameModalProps = {
 };
 
 export const NicknameModal = ({ isOpen, onClose }: NicknameModalProps) => {
+  //E.TODO 추후 organizationId 받아오기
   const createProfileMutation = useCreateProfile(1);
+  const navigate = useNavigate();
   const [nickname, setNickname] = useState('');
 
   const handleNicknameSubmit = (nickname: string) => {
-    createProfileMutation.mutate(nickname, {
-      onSuccess: () => {
-        alert('조직 참가가 완료되었습니다!');
-        onClose();
-      },
-      onError: () => {
-        alert('참가 중 오류가 발생했습니다. 다시 시도해 주세요.');
-      },
-    });
+    createProfileMutation.mutate(
+      { nickname },
+      {
+        onSuccess: () => {
+          alert('조직 참가가 완료되었습니다!');
+          navigate('/event');
+          onClose();
+        },
+        onError: () => {
+          alert('참가 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        },
+      }
+    );
   };
 
   const handleSubmit = () => {
@@ -40,11 +50,20 @@ export const NicknameModal = ({ isOpen, onClose }: NicknameModalProps) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="md" css={{ maxWidth: '360px' }}>
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      size="md"
+      showCloseButton={false}
+      css={{ maxWidth: '360px' }}
+    >
       <Flex dir="column" gap="20px">
-        <Text type="Body" weight="bold" color="#333">
-          닉네임 설정
-        </Text>
+        <Flex justifyContent="space-between" alignItems="flex-start">
+          <Text type="Body" weight="bold" color="#333">
+            닉네임 설정
+          </Text>
+          <Icon name="close" onClick={handleClose} />
+        </Flex>
 
         <Flex dir="column">
           <Text type="Body" weight="regular" color="#666">
@@ -61,17 +80,28 @@ export const NicknameModal = ({ isOpen, onClose }: NicknameModalProps) => {
             autoFocus
           />
         </Flex>
-        <Flex gap="12px" justifyContent="flex-end">
+        <Flex gap="12px" alignItems="center">
           <Button
             variant="outlined"
             size="md"
             onClick={handleClose}
             color="#18A0FB"
             fontColor="#18A0FB"
+            css={css`
+              width: 100%;
+            `}
           >
             취소
           </Button>
-          <Button variant="filled" size="md" onClick={handleSubmit} disabled={!nickname.trim()}>
+          <Button
+            variant="filled"
+            size="md"
+            onClick={handleSubmit}
+            disabled={!nickname.trim()}
+            css={css`
+              width: 100%;
+            `}
+          >
             참가하기
           </Button>
         </Flex>
