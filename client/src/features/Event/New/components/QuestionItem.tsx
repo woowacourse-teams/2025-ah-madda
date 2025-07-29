@@ -6,9 +6,10 @@ import { Switch } from '../../../../shared/components/Switch';
 import { Text } from '../../../../shared/components/Text';
 import { QuestionRequest } from '../../types/Event';
 
-type QuestionItemProps = {
+export type QuestionItemProps = {
   onDelete: () => void;
   onChange: (updated: Partial<Pick<QuestionRequest, 'questionText' | 'isRequired'>>) => void;
+  errorMessage?: string;
 } & QuestionRequest;
 
 export const QuestionItem = ({
@@ -17,6 +18,7 @@ export const QuestionItem = ({
   isRequired,
   onDelete,
   onChange,
+  errorMessage,
 }: QuestionItemProps) => {
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange({ questionText: e.target.value });
@@ -35,6 +37,8 @@ export const QuestionItem = ({
           placeholder="질문을 입력해주세요."
           value={questionText}
           onChange={handleTextChange}
+          error={!!errorMessage}
+          errorMessage={errorMessage}
         />
         <Input
           id="question"
