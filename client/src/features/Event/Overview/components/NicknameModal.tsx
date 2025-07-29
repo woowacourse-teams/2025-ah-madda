@@ -53,7 +53,6 @@ export const NicknameModal = ({ isOpen, onClose }: NicknameModalProps) => {
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      size="md"
       showCloseButton={false}
       css={{ maxWidth: '360px' }}
     >
