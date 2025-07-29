@@ -2,23 +2,29 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { fetcher } from '../fetcher';
 
+type CreateOrganizationProfileRequest = {
+  organizationId: number;
+  nickname: string;
+};
+
 export const createOrganizationProfile = ({
   organizationId,
   nickname,
-}: {
-  organizationId: number;
-  nickname: string;
-}) => {
-  return fetcher.post<{ nickname: string }>(`organizations/${organizationId}/participation`, {
-    json: { nickname },
-  });
+}: CreateOrganizationProfileRequest) => {
+  return fetcher.post<Pick<CreateOrganizationProfileRequest, 'nickname'>>(
+    `organizations/${organizationId}/participation`,
+    {
+      json: { nickname },
+    }
+  );
 };
 
 export const useCreateProfile = (organizationId: number) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (nickname: string) => createOrganizationProfile({ organizationId, nickname }),
+    mutationFn: ({ nickname }: Pick<CreateOrganizationProfileRequest, 'nickname'>) =>
+      createOrganizationProfile({ organizationId, nickname }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['organization', 'profile', organizationId],
