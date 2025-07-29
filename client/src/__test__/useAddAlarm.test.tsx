@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { renderHook, waitFor } from '@testing-library/react';
 import { describe, expect, vi, beforeEach, Mocked } from 'vitest';
 
@@ -28,10 +26,9 @@ describe('useAddAlarm', () => {
 
       mockFetcher.post.mockResolvedValue(undefined);
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <HookTestContainer>{children}</HookTestContainer>
-      );
-      const { result } = renderHook(() => useAddAlarm({ eventId }), { wrapper });
+      const { result } = renderHook(() => useAddAlarm({ eventId }), {
+        wrapper: HookTestContainer,
+      });
 
       result.current.mutate(emptyContent);
 
