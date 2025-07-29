@@ -40,26 +40,27 @@ export const NicknameModal = ({ isOpen, onClose }: NicknameModalProps) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="md">
+    <Modal isOpen={isOpen} onClose={handleClose} size="md" css={{ minWidth: '360px' }}>
       <Flex dir="column" gap="20px">
         <Text type="Body" weight="bold" color="#333">
           닉네임 설정
         </Text>
 
-        <Text type="Body" weight="regular" color="#666">
-          조직에서 사용할 닉네임을 입력해주세요.
-        </Text>
+        <Flex dir="column">
+          <Text type="Body" weight="regular" color="#666">
+            조직에서 사용할 닉네임을 입력해주세요.
+          </Text>
 
-        <Input
-          id="nickname"
-          label="닉네임"
-          type="text"
-          placeholder="닉네임을 입력하세요"
-          value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
-          autoFocus
-        />
-
+          <Input
+            id="nickname"
+            label=""
+            type="text"
+            placeholder="닉네임을 입력하세요"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            autoFocus
+          />
+        </Flex>
         <Flex gap="12px" justifyContent="flex-end">
           <Button
             variant="outlined"
