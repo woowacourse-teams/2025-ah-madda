@@ -40,7 +40,7 @@ export const NicknameModal = ({ isOpen, onClose }: NicknameModalProps) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="md" css={{ minWidth: '360px' }}>
+    <Modal isOpen={isOpen} onClose={handleClose} size="md" css={{ maxWidth: '360px' }}>
       <Flex dir="column" gap="20px">
         <Text type="Body" weight="bold" color="#333">
           닉네임 설정

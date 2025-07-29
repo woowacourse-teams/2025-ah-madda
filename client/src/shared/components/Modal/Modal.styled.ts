@@ -10,10 +10,10 @@ const sizeStyles = {
     width: 304px;
   `,
   md: css`
-    width: 40%;
+    width: 100%;
   `,
   lg: css`
-    width: 70%;
+    width: 100%;
   `,
 } as const;
 
