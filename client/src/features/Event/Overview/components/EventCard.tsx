@@ -14,7 +14,6 @@ export const EventCard = ({
   eventId,
   title,
   description,
-  registrationStart,
   registrationEnd,
   eventStart,
   eventEnd,
@@ -24,6 +23,7 @@ export const EventCard = ({
   maxCapacity,
 }: Event) => {
   const navigate = useNavigate();
+  const isRegistrationOpen = new Date(registrationEnd) > new Date();
 
   return (
     <CardWrapper onClick={() => navigate(`/event/${eventId}`)}>
@@ -32,8 +32,8 @@ export const EventCard = ({
           <Text type="Title" color="#ffffff" weight="semibold">
             {title}
           </Text>
-          <Badge isRegistrationOpen={new Date(registrationStart) < new Date()}>
-            {new Date(registrationStart) > new Date() ? '모집전' : '모집중'}
+          <Badge isRegistrationOpen={isRegistrationOpen}>
+            {isRegistrationOpen ? '모집중' : '모집마감'}
           </Badge>
         </Flex>
         <Text type="caption" color="#99A1AF">
