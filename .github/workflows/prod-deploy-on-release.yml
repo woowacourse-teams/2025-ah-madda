@@ -82,7 +82,7 @@ jobs:
             -p 80:8080 \
             -e PROFILE=prod \
             --log-driver=awslogs \
-            --log-opt awslogs-group=ahmadda-prod-server \
+            --log-opt awslogs-group=/aws/ec2/ahmadda-prod-server \
             --log-opt awslogs-region=ap-northeast-2 \
             --log-opt awslogs-stream=logs \
             -d amadda/ahmadda_server:$TAG
