@@ -1,0 +1,56 @@
+package com.ahmadda.domain;
+
+
+import com.ahmadda.domain.util.Assert;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Question extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "question_id")
+    private Long id;
+
+    @Column(nullable = false)
+    private String questionText;
+
+    @Column(nullable = false)
+    private boolean isRequired;
+
+    @Column(nullable = false)
+    private int orderIndex;
+
+    private Question(
+            final String questionText,
+            final boolean isRequired,
+            final int orderIndex
+    ) {
+        validateQuestionText(questionText);
+
+        this.questionText = questionText;
+        this.isRequired = isRequired;
+        this.orderIndex = orderIndex;
+    }
+
+    public static Question create(
+            final String questionText,
+            final boolean isRequired,
+            final int orderIndex
+    ) {
+        return new Question(questionText, isRequired, orderIndex);
+    }
+
+    private void validateQuestionText(final String questionText) {
+        Assert.notBlank(questionText, "질문은 공백이면 안됩니다.");
+    }
+}
