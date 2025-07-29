@@ -19,8 +19,8 @@ export const NicknameModal = ({ isOpen, onClose }: NicknameModalProps) => {
   const handleNicknameSubmit = (nickname: string) => {
     createProfileMutation.mutate(nickname, {
       onSuccess: () => {
-        close();
         alert('조직 참가가 완료되었습니다!');
+        onClose();
       },
       onError: () => {
         alert('참가 중 오류가 발생했습니다. 다시 시도해 주세요.');
