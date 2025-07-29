@@ -14,9 +14,8 @@ const getRedirectUri = (): string => {
 
   if (isProduction) {
     return 'https://ahmadda.com/auth';
-  } else {
-    return 'http://localhost:5173/auth';
   }
+  return 'http://localhost:5173/auth';
 };
 
 export const getGoogleAuthUrl = (): string => {
