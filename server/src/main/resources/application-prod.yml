@@ -1,3 +1,18 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${db.prod.host}:${db.prod.port}/${db.prod.name}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${db.prod.username}
+    password: ${db.prod.password}
+
+  jpa:
+    hibernate:
+      ddl-auto: update  # TODO. 추후 v1.0.0에서 validate로 변경
+
+jwt:
+  secret-key: ${jwt.prod.secret-key}
+  access-expiration: ${jwt.prod.access-expiration}
+
 cors:
   allowed-origins:
     - http://localhost:5173
