@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import { getGoogleAuthUrl, isAuthenticated } from '@/api/auth';
-import { useCreateProfile } from '@/api/mutations/useCreateProfile';
 import { organizationQueryOptions } from '@/api/queries/organization';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
@@ -31,21 +30,8 @@ export const OverviewPage = () => {
   const { error: profileError } = useQuery(organizationQueryOptions.profile(1));
 
   const { logout } = useGoogleAuth();
-  const createProfileMutation = useCreateProfile(1);
 
   const isProfileNotFound = profileError?.message.includes('404');
-
-  const handleNicknameSubmit = (nickname: string) => {
-    createProfileMutation.mutate(nickname, {
-      onSuccess: () => {
-        close();
-        alert('조직 참가가 완료되었습니다!');
-      },
-      onError: () => {
-        alert('참가 중 오류가 발생했습니다. 다시 시도해 주세요.');
-      },
-    });
-  };
 
   const handleGoogleLogin = () => {
     const authUrl = getGoogleAuthUrl();
@@ -111,7 +97,7 @@ export const OverviewPage = () => {
         <EventList events={eventData ?? []} />
       )}
 
-      <NicknameModal isOpen={isOpen} onClose={close} onSubmit={handleNicknameSubmit} />
+      <NicknameModal isOpen={isOpen} onClose={close} />
     </>
   );
 };

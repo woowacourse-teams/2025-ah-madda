@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { useCreateProfile } from '@/api/mutations/useCreateProfile';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
@@ -9,15 +10,27 @@ import { Text } from '@/shared/components/Text';
 type NicknameModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (nickname: string) => void;
 };
 
-export const NicknameModal = ({ isOpen, onClose, onSubmit }: NicknameModalProps) => {
+export const NicknameModal = ({ isOpen, onClose }: NicknameModalProps) => {
+  const createProfileMutation = useCreateProfile(1);
   const [nickname, setNickname] = useState('');
+
+  const handleNicknameSubmit = (nickname: string) => {
+    createProfileMutation.mutate(nickname, {
+      onSuccess: () => {
+        close();
+        alert('조직 참가가 완료되었습니다!');
+      },
+      onError: () => {
+        alert('참가 중 오류가 발생했습니다. 다시 시도해 주세요.');
+      },
+    });
+  };
 
   const handleSubmit = () => {
     if (nickname.trim()) {
-      onSubmit(nickname.trim());
+      handleNicknameSubmit(nickname.trim());
     }
   };
 
