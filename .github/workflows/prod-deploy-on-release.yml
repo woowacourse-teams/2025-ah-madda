@@ -84,5 +84,5 @@ jobs:
             --log-driver=awslogs \
             --log-opt awslogs-group=ahmadda-prod-server \
             --log-opt awslogs-region=ap-northeast-2 \
-            --log-opt awslogs-stream=$TAG \
+            --log-opt awslogs-stream=logs \
             -d amadda/ahmadda_server:$TAG
