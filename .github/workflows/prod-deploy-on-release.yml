@@ -1,9 +1,7 @@
-name: Prod Deploy
+name: Prod Deploy On Release
 
 on:
   pull_request:
-    paths:
-      - 'server/**'
     types:
       - opened
       - synchronize
@@ -14,7 +12,7 @@ jobs:
     runs-on: ubuntu-22.04-arm
 
     outputs:
-      image-tag: 0.0.0
+      image-tag: v0.0.0
 
     steps:
       - name: Checkout repository
