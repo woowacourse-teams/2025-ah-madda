@@ -38,4 +38,46 @@ describe('formatDateTime', () => {
 
     expect(result).toBe('5.20 (월) 4시 ~ 4시');
   });
+
+  describe('에러 케이스', () => {
+    test('null 입력에 대해 적절한 메시지를 반환한다', () => {
+      const result = formatDateTime(null, '2024-12-25T12:00:00');
+      expect(result).toBe('날짜 정보가 없습니다');
+    });
+
+    test('undefined 입력에 대해 적절한 메시지를 반환한다', () => {
+      const result = formatDateTime('2024-12-25T10:00:00', undefined);
+      expect(result).toBe('날짜 정보가 없습니다');
+    });
+
+    test('빈 문자열 입력에 대해 적절한 메시지를 반환한다', () => {
+      const result = formatDateTime('', '2024-12-25T12:00:00');
+      expect(result).toBe('날짜 정보가 없습니다');
+    });
+
+    test('잘못된 날짜 형식에 대해 적절한 메시지를 반환한다', () => {
+      const result = formatDateTime('2024-13-45T12:00:00', '2024-12-25T12:00:00');
+      expect(result).toBe('잘못된 날짜 형식입니다');
+    });
+
+    test('잘못된 시간 형식에 대해 적절한 메시지를 반환한다', () => {
+      const result = formatDateTime('2024-12-25T10:00:00', '2024-12-28T25:70:99');
+      expect(result).toBe('잘못된 날짜 형식입니다');
+    });
+
+    test('문자열이지만 날짜가 아닌 값에 대해 적절한 메시지를 반환한다', () => {
+      const result = formatDateTime('hello world', '2024-12-25T12:00:00');
+      expect(result).toBe('잘못된 날짜 형식입니다');
+    });
+
+    test('두 입력 모두 잘못된 경우에도 적절한 메시지를 반환한다', () => {
+      const result = formatDateTime('2024.13-45T12:00:00', '2024.12-28T25:70:99');
+      expect(result).toBe('잘못된 날짜 형식입니다');
+    });
+
+    test('null과 undefined가 모두 입력된 경우 적절한 메시지를 반환한다', () => {
+      const result = formatDateTime(null, undefined);
+      expect(result).toBe('날짜 정보가 없습니다');
+    });
+  });
 });
