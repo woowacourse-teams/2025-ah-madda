@@ -1,11 +1,12 @@
 import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 
-import { Button } from '../../../../shared/components/Button';
-import { Card } from '../../../../shared/components/Card';
-import { Flex } from '../../../../shared/components/Flex';
-import { Input } from '../../../../shared/components/Input';
-import { Text } from '../../../../shared/components/Text';
+import { Button } from '@/shared/components/Button';
+import { Card } from '@/shared/components/Card';
+import { Flex } from '@/shared/components/Flex';
+import { Input } from '@/shared/components/Input';
+import { Text } from '@/shared/components/Text';
+
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useEventForm } from '../hooks/useEventForm';
 import { convertToISOString } from '../utils/convertToISOString';
@@ -13,6 +14,7 @@ import { convertToISOString } from '../utils/convertToISOString';
 import { QuestionForm } from './QuestionForm';
 
 const ORGANIZATION_ID = 1; // 임시
+const ORGANIZER_NICKNAME = '임시닉네임'; // 추후 유저 설정 닉네임으로 대체
 
 export const EventCreateForm = () => {
   const navigate = useNavigate();
@@ -27,8 +29,8 @@ export const EventCreateForm = () => {
       ...formData,
       eventStart: convertToISOString(formData.eventStart),
       eventEnd: convertToISOString(formData.eventEnd),
-      registrationStart: convertToISOString(formData.registrationStart),
       registrationEnd: convertToISOString(formData.registrationEnd),
+      organizerNickname: ORGANIZER_NICKNAME,
     };
 
     addEvent(payload, {
@@ -75,22 +77,13 @@ export const EventCreateForm = () => {
               />
             </Flex>
 
-            <Flex gap="16px">
-              <Input
-                id="registrationStart"
-                label="신청 시작 날짜/시간"
-                placeholder="2025.07.25 13:00"
-                value={formData.registrationStart}
-                onChange={handleChange('registrationStart')}
-              />
-              <Input
-                id="registrationEnd"
-                label="신청 종료 날짜/시간"
-                placeholder="2025.07.25 15:00"
-                value={formData.registrationEnd}
-                onChange={handleChange('registrationEnd')}
-              />
-            </Flex>
+            <Input
+              id="registrationEnd"
+              label="신청 종료 날짜/시간"
+              placeholder="2025.07.25 15:00"
+              value={formData.registrationEnd}
+              onChange={handleChange('registrationEnd')}
+            />
 
             <Input
               id="place"
@@ -108,23 +101,14 @@ export const EventCreateForm = () => {
               onChange={handleChange('description')}
             />
 
-            <Flex gap="16px">
-              <Input
-                id="author"
-                label="주최자 이름"
-                placeholder="주최자 이름을 입력해 주세요"
-                value={formData.organizerNickname}
-                onChange={handleChange('organizerNickname')}
-              />
-              <Input
-                id="maxCapacity"
-                label="수용 인원"
-                placeholder="최대 참가 인원을 입력해 주세요"
-                type="number"
-                value={formData.maxCapacity.toString()}
-                onChange={handleChange('maxCapacity')}
-              />
-            </Flex>
+            <Input
+              id="maxCapacity"
+              label="수용 인원"
+              placeholder="최대 참가 인원을 입력해 주세요"
+              type="number"
+              value={formData.maxCapacity.toString()}
+              onChange={handleChange('maxCapacity')}
+            />
           </Flex>
         </Card>
 

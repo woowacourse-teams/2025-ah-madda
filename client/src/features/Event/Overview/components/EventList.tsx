@@ -36,18 +36,15 @@ export const EventList = ({ events }: EventListProps) => {
             + 이벤트 생성
           </Button>
         </Flex>
-        {Object.entries(groupedEvents).map(
-          ([dateTitle, events]) =>
-            events.length > 0 && (
-              <EventSection key={dateTitle} title={dateTitle}>
-                <EventGrid>
-                  {events.map((event, index) => (
-                    <EventCard key={index} {...event} />
-                  ))}
-                </EventGrid>
-              </EventSection>
-            )
-        )}
+        {groupedEvents.map(({ label, events }) => (
+          <EventSection key={label} title={label}>
+            <EventGrid>
+              {events.map((event, index) => (
+                <EventCard key={index} {...event} />
+              ))}
+            </EventGrid>
+          </EventSection>
+        ))}
       </Flex>
     </EventContainer>
   );

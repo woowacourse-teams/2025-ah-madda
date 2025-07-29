@@ -23,12 +23,19 @@ export const EventCard = ({
   maxCapacity,
 }: Event) => {
   const navigate = useNavigate();
+  const isRegistrationOpen = new Date(registrationEnd) > new Date();
+
   return (
     <CardWrapper onClick={() => navigate(`/event/${eventId}`)}>
       <Flex dir="column" gap="8px">
-        <Text type="Title" color="#ffffff" weight="semibold">
-          {title}
-        </Text>
+        <Flex justifyContent="space-between" alignItems="center" gap="8px">
+          <Text type="Title" color="#ffffff" weight="semibold">
+            {title}
+          </Text>
+          <Badge isRegistrationOpen={isRegistrationOpen}>
+            {isRegistrationOpen ? '모집중' : '모집마감'}
+          </Badge>
+        </Flex>
         <Text type="caption" color="#99A1AF">
           {description}
         </Text>
@@ -93,4 +100,12 @@ const Spacing = styled.hr`
   background-color: rgb(218, 218, 218);
   border: none;
   margin: 0;
+`;
+
+const Badge = styled.span<{ isRegistrationOpen: boolean }>`
+  background-color: ${({ isRegistrationOpen }) => (isRegistrationOpen ? '#2563EB' : 'gray')};
+  color: #ffffff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
 `;

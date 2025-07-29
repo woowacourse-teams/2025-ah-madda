@@ -1,7 +1,12 @@
+import { useState } from 'react';
+
 import { css } from '@emotion/react';
 
-import { Flex } from '../../../../shared/components/Flex';
-import { EventDetail } from '../../../Event/types/Event';
+import { GuestStatusAPIResponse } from '@/api/types/event';
+import { Answer } from '@/api/types/event';
+import { Flex } from '@/shared/components/Flex';
+
+import { EventDetail } from '../../types/Event';
 import { formatKoreanDateTime } from '../utils/formatKoreanDateTime';
 
 import { DescriptionCard } from './DescriptionCard';
@@ -12,9 +17,10 @@ import { PreQuestionCard } from './PreQuestionCard';
 import { SubmitButtonCard } from './SubmitButtonCard';
 import { TimeInfoCard } from './TimeInfoCard';
 
-type EventDetailContentProps = EventDetail;
+type EventDetailContentProps = EventDetail & GuestStatusAPIResponse;
 
 export const EventDetailContent = ({
+  eventId,
   title,
   organizerName,
   registrationEnd,
@@ -25,7 +31,21 @@ export const EventDetailContent = ({
   maxCapacity,
   description,
   questions,
+  isGuest,
 }: EventDetailContentProps) => {
+  const [answers, setAnswers] = useState<Answer[]>(
+    questions.map(({ questionId }) => ({
+      questionId,
+      answerText: '',
+    }))
+  );
+
+  const handleChangeAnswer = (questionId: number, answerText: string) => {
+    setAnswers((prev) =>
+      prev.map((answer) => (answer.questionId === questionId ? { ...answer, answerText } : answer))
+    );
+  };
+
   return (
     <Flex
       dir="column"
@@ -43,8 +63,6 @@ export const EventDetailContent = ({
         gap="24px"
         width="100%"
         css={css`
-          display: flex;
-
           @media (max-width: 768px) {
             flex-direction: column;
           }
@@ -60,8 +78,18 @@ export const EventDetailContent = ({
 
       <ParticipantsCard currentGuestCount={currentGuestCount} maxCapacity={maxCapacity} />
       <DescriptionCard description={description} />
-      <PreQuestionCard questions={questions} />
-      <SubmitButtonCard registrationEnd={registrationEnd} />
+      <PreQuestionCard
+        questions={questions}
+        answers={answers}
+        onChangeAnswer={handleChangeAnswer}
+      />
+
+      <SubmitButtonCard
+        isGuest={isGuest}
+        registrationEnd={registrationEnd}
+        eventId={eventId}
+        answers={answers}
+      />
     </Flex>
   );
 };
