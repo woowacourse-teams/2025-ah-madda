@@ -7,7 +7,7 @@ import { mockEventDetail } from '@/__test__/mocks/event';
 import { fetcher } from '@/api/fetcher';
 import { EventManagePage } from '@/features/Event/Manage/pages/EventManagePage';
 
-import { TestContainer } from './customRender';
+import { RouterWithQueryClient } from './customRender';
 
 vi.mock('@/api/fetcher', () => ({
   fetcher: {
@@ -32,7 +32,7 @@ describe('EventManagePage 테스트', () => {
   describe('EventInfoSection 렌더링', () => {
     test('EventInfoSection이 올바른 이벤트 정보를 표시한다', async () => {
       render(
-        <TestContainer
+        <RouterWithQueryClient
           initialRoute="/event/manage/123"
           routes={[{ path: '/event/manage/:eventId', element: <EventManagePage /> }]}
         />
@@ -47,7 +47,7 @@ describe('EventManagePage 테스트', () => {
 
     test('주최자 정보가 올바르게 표시된다', async () => {
       render(
-        <TestContainer
+        <RouterWithQueryClient
           initialRoute="/event/manage/123"
           routes={[{ path: '/event/manage/:eventId', element: <EventManagePage /> }]}
         />
@@ -60,7 +60,7 @@ describe('EventManagePage 테스트', () => {
 
     test('장소 정보가 표시된다', async () => {
       render(
-        <TestContainer
+        <RouterWithQueryClient
           initialRoute="/event/manage/123"
           routes={[{ path: '/event/manage/:eventId', element: <EventManagePage /> }]}
         />

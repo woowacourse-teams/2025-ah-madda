@@ -4,7 +4,8 @@ import { describe, expect, vi, beforeEach, Mocked } from 'vitest';
 import { fetcher } from '@/api/fetcher';
 import { useAddAlarm, postAlarm } from '@/api/mutations/useAddAlarm';
 
-import { HookTestContainer } from './customRender';
+import { createTestQueryClient } from './createTestQueryClient';
+import { QueryClientProviderWrapper } from './customRender';
 
 vi.mock('@/api/fetcher', () => ({
   fetcher: {
@@ -27,7 +28,11 @@ describe('useAddAlarm', () => {
       mockFetcher.post.mockResolvedValue(undefined);
 
       const { result } = renderHook(() => useAddAlarm({ eventId }), {
-        wrapper: HookTestContainer,
+        wrapper: ({ children }) => (
+          <QueryClientProviderWrapper queryClient={createTestQueryClient()}>
+            {children}
+          </QueryClientProviderWrapper>
+        ),
       });
 
       result.current.mutate(emptyContent);

@@ -6,7 +6,7 @@ import { describe, expect, vi, beforeEach, Mocked } from 'vitest';
 import { fetcher } from '../api/fetcher';
 import { MyEventPage } from '../features/Event/My/pages/MyEventPage';
 
-import { TestContainer } from './customRender';
+import { RouterWithQueryClient } from './customRender';
 import { mockHostEvents } from './mocks/event';
 
 vi.mock('../api/fetcher', () => ({
@@ -35,7 +35,7 @@ describe('MyEventPage 테스트', () => {
       });
 
       render(
-        <TestContainer
+        <RouterWithQueryClient
           initialRoute="/event/my"
           routes={[{ path: '/event/my', element: <MyEventPage /> }]}
         />
@@ -58,7 +58,7 @@ describe('MyEventPage 테스트', () => {
       });
 
       render(
-        <TestContainer
+        <RouterWithQueryClient
           initialRoute="/event/my"
           routes={[{ path: '/event/my', element: <MyEventPage /> }]}
         />
@@ -89,7 +89,7 @@ describe('MyEventPage 테스트', () => {
       });
 
       render(
-        <TestContainer
+        <RouterWithQueryClient
           initialRoute="/event/my"
           routes={[{ path: '/event/my', element: <MyEventPage /> }]}
         />

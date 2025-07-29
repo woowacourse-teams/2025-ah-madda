@@ -3,16 +3,9 @@ import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
-const createTestQueryClient = () => {
-  return new QueryClient({
-    defaultOptions: {
-      queries: { retry: false, staleTime: 0 },
-      mutations: { retry: false },
-    },
-  });
-};
+import { createTestQueryClient } from './createTestQueryClient';
 
-const TestWrapper = ({
+export const QueryClientProviderWrapper = ({
   children,
   queryClient,
 }: {
@@ -22,9 +15,7 @@ const TestWrapper = ({
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 };
 
-TestWrapper.displayName = 'TestWrapper';
-
-export const TestContainer = ({
+export const RouterWithQueryClient = ({
   initialRoute,
   routes,
 }: {
@@ -34,7 +25,7 @@ export const TestContainer = ({
   const queryClient = createTestQueryClient();
 
   return (
-    <TestWrapper queryClient={queryClient}>
+    <QueryClientProviderWrapper queryClient={queryClient}>
       <MemoryRouter initialEntries={[initialRoute]}>
         <Routes>
           {routes.map((route, index) => (
@@ -42,12 +33,6 @@ export const TestContainer = ({
           ))}
         </Routes>
       </MemoryRouter>
-    </TestWrapper>
+    </QueryClientProviderWrapper>
   );
-};
-
-export const HookTestContainer = ({ children }: { children: React.ReactNode }) => {
-  const queryClient = createTestQueryClient();
-
-  return <TestWrapper queryClient={queryClient}>{children}</TestWrapper>;
 };
