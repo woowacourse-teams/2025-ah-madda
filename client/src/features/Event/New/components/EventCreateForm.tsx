@@ -9,34 +9,34 @@ import { Text } from '@/shared/components/Text';
 
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useEventForm } from '../hooks/useEventForm';
-import { convertToISOString } from '../utils/convertToISOString';
+import { useEventValidation } from '../hooks/useEventValidation';
+import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
 
 import { QuestionForm } from './QuestionForm';
 
 const ORGANIZATION_ID = 1; // 임시
-const ORGANIZER_NICKNAME = '임시닉네임'; // 추후 유저 설정 닉네임으로 대체
+const ORGANIZER_NICKNAME = '임시닉네임'; // a.TODO: 추후 유저 설정 닉네임으로 대체
 
 export const EventCreateForm = () => {
   const navigate = useNavigate();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
-
   const { formData, handleChange, setQuestions } = useEventForm();
+  const { errors, validate, validateField, isFormValid } = useEventValidation(formData);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validate()) return;
 
     const payload = {
       ...formData,
-      eventStart: convertToISOString(formData.eventStart),
-      eventEnd: convertToISOString(formData.eventEnd),
-      registrationEnd: convertToISOString(formData.registrationEnd),
+      eventStart: convertDatetimeLocalToKSTISOString(formData.eventStart),
+      eventEnd: convertDatetimeLocalToKSTISOString(formData.eventEnd),
+      registrationEnd: convertDatetimeLocalToKSTISOString(formData.registrationEnd),
       organizerNickname: ORGANIZER_NICKNAME,
     };
 
     addEvent(payload, {
-      onSuccess: ({ eventId }) => {
-        navigate(`/event/${eventId}`);
-      },
+      onSuccess: ({ eventId }) => navigate(`/event/${eventId}`),
     });
   };
 
@@ -57,32 +57,55 @@ export const EventCreateForm = () => {
               id="title"
               label="이벤트 이름"
               value={formData.title}
-              onChange={handleChange('title')}
+              onChange={(e) => {
+                handleChange('title')(e);
+                validateField('title', e.target.value);
+              }}
+              error={!!errors.title}
+              errorMessage={errors.title}
             />
 
             <Flex gap="16px">
               <Input
                 id="eventStart"
                 label="이벤트 시작 날짜/시간"
+                type="datetime-local"
                 placeholder="2025.07.30 13:00"
                 value={formData.eventStart}
-                onChange={handleChange('eventStart')}
+                onChange={(e) => {
+                  handleChange('eventStart')(e);
+                  validateField('eventStart', e.target.value);
+                }}
+                error={!!errors.eventStart}
+                errorMessage={errors.eventStart}
               />
               <Input
                 id="eventEnd"
                 label="이벤트 종료 날짜/시간"
+                type="datetime-local"
                 placeholder="2025.07.30 15:00"
                 value={formData.eventEnd}
-                onChange={handleChange('eventEnd')}
+                onChange={(e) => {
+                  handleChange('eventEnd')(e);
+                  validateField('eventEnd', e.target.value);
+                }}
+                error={!!errors.eventEnd}
+                errorMessage={errors.eventEnd}
               />
             </Flex>
 
             <Input
               id="registrationEnd"
               label="신청 종료 날짜/시간"
+              type="datetime-local"
               placeholder="2025.07.25 15:00"
               value={formData.registrationEnd}
-              onChange={handleChange('registrationEnd')}
+              onChange={(e) => {
+                handleChange('registrationEnd')(e);
+                validateField('registrationEnd', e.target.value);
+              }}
+              error={!!errors.registrationEnd}
+              errorMessage={errors.registrationEnd}
             />
 
             <Input
@@ -90,7 +113,12 @@ export const EventCreateForm = () => {
               label="장소"
               placeholder="이벤트 장소를 입력해 주세요"
               value={formData.place}
-              onChange={handleChange('place')}
+              onChange={(e) => {
+                handleChange('place')(e);
+                validateField('place', e.target.value);
+              }}
+              error={!!errors.place}
+              errorMessage={errors.place}
             />
 
             <Input
@@ -98,7 +126,12 @@ export const EventCreateForm = () => {
               label="설명"
               placeholder="이벤트에 대한 설명을 입력해 주세요"
               value={formData.description}
-              onChange={handleChange('description')}
+              onChange={(e) => {
+                handleChange('description')(e);
+                validateField('description', e.target.value);
+              }}
+              error={!!errors.description}
+              errorMessage={errors.description}
             />
 
             <Input
@@ -107,7 +140,12 @@ export const EventCreateForm = () => {
               placeholder="최대 참가 인원을 입력해 주세요"
               type="number"
               value={formData.maxCapacity.toString()}
-              onChange={handleChange('maxCapacity')}
+              onChange={(e) => {
+                handleChange('maxCapacity')(e);
+                validateField('maxCapacity', e.target.value);
+              }}
+              error={!!errors.maxCapacity}
+              errorMessage={errors.maxCapacity}
             />
           </Flex>
         </Card>
@@ -119,6 +157,7 @@ export const EventCreateForm = () => {
             type="submit"
             color="black"
             size="sm"
+            disabled={!isFormValid}
             css={css`
               border-radius: 5px;
               font-size: 12px;
