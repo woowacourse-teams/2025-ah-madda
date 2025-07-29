@@ -1,18 +1,15 @@
 name: Prod Deploy On Release
 
 on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
+  release:
+    types: [published]
 
 jobs:
   setup:
     runs-on: ubuntu-22.04-arm
 
     outputs:
-      image-tag: ${{ steps.set-tag.outputs.image-tag }}
+      image-tag: ${{ steps.extract.outputs.version }}
 
     steps:
       - name: Checkout repository
@@ -21,15 +18,17 @@ jobs:
           submodules: recursive
           token: ${{ secrets.BE_SUBMODULE_TOKEN }}
 
+      - name: Extract version from release tag
+        id: extract
+        run: |
+          TAG_NAME="${GITHUB_REF#refs/tags/}" 
+          echo "version=$TAG_NAME" >> $GITHUB_OUTPUT
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
-
-      - name: Set image tag based on date and run number
-        id: set-tag
-        run: echo "image-tag=v0.0.0" >> $GITHUB_OUTPUT
 
       - name: Run tests
         working-directory: ./server
@@ -52,7 +51,7 @@ jobs:
           context: ./server
           file: ./server/Dockerfile
           push: true
-          tags: amadda/ahmadda_server:${{ steps.set-tag.outputs.image-tag }}
+          tags: amadda/ahmadda_server:${{ steps.extract.outputs.version }}
 
   deploy:
     needs: setup
