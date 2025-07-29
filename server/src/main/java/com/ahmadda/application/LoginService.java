@@ -10,7 +10,6 @@ import com.ahmadda.infra.jwt.JwtTokenProvider;
 import com.ahmadda.infra.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.oauth.dto.OAuthUserInfoResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +27,6 @@ public class LoginService {
     //TODO 07.25이후 사용하지않으면 삭제
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
-    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public String login(final String code) {
@@ -43,8 +41,6 @@ public class LoginService {
         return memberRepository.findByEmail(email)
                 .orElseGet(() -> {
                     Member newMember = Member.create(name, email);
-
-                    eventPublisher.publishEvent(newMember);
 
                     return memberRepository.save(newMember);
                 });

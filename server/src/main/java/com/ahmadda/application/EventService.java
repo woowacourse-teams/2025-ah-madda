@@ -35,12 +35,13 @@ public class EventService {
     public Event createEvent(
             final Long organizationId,
             final Long memberId,
-            final EventCreateRequest eventCreateRequest
+            final EventCreateRequest eventCreateRequest,
+            final LocalDateTime currentDateTime
     ) {
         Organization organization = getOrganization(organizationId);
         OrganizationMember organizer = validateAccessToOrganization(organizationId, memberId);
 
-        EventOperationPeriod eventOperationPeriod = createEventOperationPeriod(eventCreateRequest);
+        EventOperationPeriod eventOperationPeriod = createEventOperationPeriod(eventCreateRequest, currentDateTime);
         Event event = Event.create(
                 eventCreateRequest.title(),
                 eventCreateRequest.description(),
@@ -61,15 +62,17 @@ public class EventService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않은 이벤트 정보입니다."));
     }
 
-    private EventOperationPeriod createEventOperationPeriod(final EventCreateRequest eventCreateRequest) {
-        Period registrationPeriod =
-                Period.create(eventCreateRequest.registrationStart(), eventCreateRequest.registrationEnd());
+    private EventOperationPeriod createEventOperationPeriod(
+            final EventCreateRequest eventCreateRequest,
+            final LocalDateTime currentDateTime
+    ) {
+        Period registrationPeriod = Period.create(currentDateTime, eventCreateRequest.registrationEnd());
         Period eventPeriod = Period.create(eventCreateRequest.eventStart(), eventCreateRequest.eventEnd());
 
         return EventOperationPeriod.create(
                 registrationPeriod,
                 eventPeriod,
-                LocalDateTime.now()
+                currentDateTime
         );
     }
 

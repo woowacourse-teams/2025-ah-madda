@@ -14,4 +14,6 @@ public interface OrganizationMemberRepository extends JpaRepository<Organization
                   and om.member.id = :memberId
             """)
     Optional<OrganizationMember> findByOrganizationIdAndMemberId(final Long organizationId, final Long memberId);
+
+    boolean existsByOrganizationIdAndMemberId(final Long organizationId, final Long memberId);
 }

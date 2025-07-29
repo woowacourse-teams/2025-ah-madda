@@ -11,7 +11,6 @@ spring:
       - security/oauth.yml
       - security/jwt.yml
       - security/db.yml
-      - security/slack.yml
 
   application:
     name: ah-madda
@@ -38,6 +37,27 @@ oauth:
     user-uri: ${oauth.google.user-uri}
     connect-timeout: 3000
     read-timeout: 5000
+
+springdoc:
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  swagger-ui:
+    path: /specification
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+    jmx:
+      exposure:
+        exclude: '*'
+  health:
+    db:
+      enabled: false
+    mail:
+      enabled: false
 
 slack:
   bot-token: ${slack.bot-token}
