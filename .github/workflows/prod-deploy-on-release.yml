@@ -27,10 +27,6 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Set image tag based on date and run number
-        id: set-tag
-        run: echo "image-tag=$(date +'%Y-%m-%d')-${{ github.run_number }}" >> $GITHUB_OUTPUT
-
       - name: Run tests
         working-directory: ./server
         run: |
