@@ -39,12 +39,11 @@ export type CreateEventAPIRequest = {
   questions: QuestionRequest[];
 };
 
+export type EventFormData = Omit<CreateEventAPIRequest, 'organizerNickname'>;
+
 export type Question = {
   questionId: number;
-  questionText: string;
-  isRequired: boolean;
-  orderIndex: number;
-};
+} & QuestionRequest;
 
 export type QuestionRequest = {
   questionText: string;
