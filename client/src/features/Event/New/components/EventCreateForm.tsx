@@ -21,7 +21,8 @@ export const EventCreateForm = () => {
   const navigate = useNavigate();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
   const { formData, handleChange, setQuestions } = useEventForm();
-  const { errors, validate, validateField, isFormValid } = useEventValidation(formData);
+  const { errors, setQuestionErrors, validate, validateField, isFormValid } =
+    useEventValidation(formData);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,7 +151,11 @@ export const EventCreateForm = () => {
           </Flex>
         </Card>
 
-        <QuestionForm questions={formData.questions} onChange={setQuestions} />
+        <QuestionForm
+          questions={formData.questions}
+          onChange={setQuestions}
+          onErrorChange={setQuestionErrors}
+        />
 
         <Flex justifyContent="flex-end">
           <Button
