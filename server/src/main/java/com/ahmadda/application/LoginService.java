@@ -25,6 +25,7 @@ public class LoginService {
         OAuthUserInfoResponse userInfo = googleOAuthProvider.getUserInfo(code, redirectUri);
 
         Member member = findOrCreateMember(userInfo.name(), userInfo.email());
+        
         return jwtTokenProvider.createToken(member.getId());
     }
 

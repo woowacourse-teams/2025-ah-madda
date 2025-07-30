@@ -28,9 +28,9 @@ public class AsyncSlackReminder implements SlackReminder {
                     .body(MemberCreationAlarmPayload.create(memberCreateAlarmDto, slackAlarmProperties.getChannelId()))
                     .retrieve();
         } catch (RestClientException e) {
-            log.error("Slack 회원 가입 알림 전송에 실패했습니다. member={}, error={}",
+            log.error("Slack 회원 가입 알림 전송에 실패했습니다. member={}",
                       memberCreateAlarmDto,
-                      e.getMessage()
+                      e
             );
         }
     }

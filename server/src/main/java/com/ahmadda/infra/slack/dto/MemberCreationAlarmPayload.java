@@ -26,7 +26,7 @@ public record MemberCreationAlarmPayload(
     }
 
     public static MemberCreationAlarmPayload create(final MemberCreateAlarmDto member, final String channelId) {
-        var messageText = String.format(
+        String messageText = String.format(
                 """
                         *🎉 새로운 회원 가입 알림*
                         - *이름*: %s
@@ -36,8 +36,8 @@ public record MemberCreationAlarmPayload(
                 member.email()
         );
 
-        var textObject = new TextObject("mrkdwn", messageText);
-        var mainBlock = new Block("section", textObject);
+        TextObject textObject = new TextObject("mrkdwn", messageText);
+        Block mainBlock = new Block("section", textObject);
 
         return new MemberCreationAlarmPayload(List.of(mainBlock), channelId);
     }

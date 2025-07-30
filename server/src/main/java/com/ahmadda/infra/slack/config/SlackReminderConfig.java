@@ -29,17 +29,17 @@ public class SlackReminderConfig {
         return new AsyncSlackReminder(restClient, slackAlarmProperties);
     }
 
+    @Bean
+    @Profile("!prod")
+    public SlackReminder mockSlackReminder() {
+        return new MockProductionSlackReminder();
+    }
+
     private SimpleClientHttpRequestFactory simpleClientHttpRequestFactory(final SlackAlarmProperties slackAlarmProperties) {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(slackAlarmProperties.getConnectTimeout());
         factory.setReadTimeout(slackAlarmProperties.getReadTimeout());
 
         return factory;
-    }
-
-    @Bean
-    @Profile("!prod")
-    public SlackReminder mockSlackReminder() {
-        return new MockProductionSlackReminder();
     }
 }
