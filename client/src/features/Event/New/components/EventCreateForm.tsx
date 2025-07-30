@@ -1,9 +1,11 @@
 import { useState } from 'react';
 
 import { css } from '@emotion/react';
+import { useQuery } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
 import { useNavigate } from 'react-router-dom';
 
+import { myQueryOptions } from '@/api/queries/my';
 import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
@@ -21,7 +23,7 @@ import { MaxCapacityModal } from './MaxCapacityModal';
 import { QuestionForm } from './QuestionForm';
 
 const ORGANIZATION_ID = 1; // 임시
-const ORGANIZER_NICKNAME = '임시닉네임'; // a.TODO: 추후 유저 설정 닉네임으로 대체
+const ORGANIZER_NICKNAME = '임시닉네임';
 
 export const EventCreateForm = () => {
   const navigate = useNavigate();
@@ -30,6 +32,7 @@ export const EventCreateForm = () => {
   const { errors, setQuestionErrors, validate, validateField, isFormValid } =
     useEventValidation(formData);
   const [isCapacityModalOpen, setIsCapacityModalOpen] = useState(false);
+  const { data: userProfile } = useQuery(myQueryOptions.profile());
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,11 +43,8 @@ export const EventCreateForm = () => {
       eventStart: convertDatetimeLocalToKSTISOString(formData.eventStart),
       eventEnd: convertDatetimeLocalToKSTISOString(formData.eventEnd),
       registrationEnd: convertDatetimeLocalToKSTISOString(formData.registrationEnd),
-      organizerNickname: ORGANIZER_NICKNAME,
+      organizerNickname: userProfile?.name ?? ORGANIZER_NICKNAME,
     };
-
-    console.log('📦 payload', payload);
-    console.log('🧪 typeof payload.eventStart', typeof payload.eventStart);
 
     addEvent(payload, {
       onSuccess: ({ eventId }) => {
