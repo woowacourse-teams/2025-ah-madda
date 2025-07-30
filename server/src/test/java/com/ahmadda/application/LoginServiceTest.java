@@ -98,7 +98,7 @@ class LoginServiceTest {
         var name = "홍길동";
         var email = "test@example.com";
         var accessToken = "access_token";
-        var redirectUri = "redirectUri";
+        var redirectUri = "redirectUri";x
 
         var memberCreateAlarmDto = new MemberCreateAlarmDto(name, email);
         var expectedLog = String.format(
