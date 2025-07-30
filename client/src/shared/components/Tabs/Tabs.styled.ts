@@ -7,33 +7,46 @@ export const StyledTabs = styled.div`
 
 export const StyledTabsList = styled.div`
   display: flex;
-  border-radius: 12.75px;
-  background-color: #ececf0;
-  padding: 4px;
+  background-color: transparent;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background-color: ${({ theme }) => theme.colors.primary600};
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(calc(var(--active-tab-index, 0) * 100%));
+    width: calc(100% / var(--tab-count, 1));
+  }
 `;
 
 export const StyledTabsTrigger = styled.button`
+  border-radius: 0;
+  padding: 16px 20px;
+  font-size: 16px;
+  font-weight: 600;
   width: 100%;
-  border-radius: 10px;
-  padding: 6px 12px;
-  font-size: 14px;
-  font-weight: 500;
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
-  color: #64748b;
+  transition:
+    color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: ${({ theme }) => theme.colors.gray500};
 
   &:hover {
-    color: #334155;
+    color: ${({ theme }) => theme.colors.gray700};
+    background-color: ${({ theme }) => theme.colors.primary50};
   }
 
   &[data-active='true'] {
-    background-color: white;
-    color: #0f172a;
-    box-shadow:
-      0 1px 3px 0 rgba(0, 0, 0, 0.1),
-      0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    background-color: transparent;
+    color: ${({ theme }) => theme.colors.primary600};
+    box-shadow: none;
+    transform: none;
   }
 `;
 

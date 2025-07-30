@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ComponentProps, ReactNode } from 'react';
+import { createContext, useContext, useState, ComponentProps, ReactNode, useRef } from 'react';
 
 import { StyledTabs, StyledTabsContent, StyledTabsList, StyledTabsTrigger } from './Tabs.styled';
 
@@ -18,6 +18,8 @@ type DefaultValueProps = {
 type TabsContextValue = {
   activeTab: string;
   setActiveTab: (value: string) => void;
+  activeTabIndex: number;
+  setActiveTabIndex: (index: number) => void;
 };
 
 type TabsProps = DivComponentProps &
@@ -51,32 +53,55 @@ const useTabsContext = () => {
 
 export const Tabs = ({ defaultValue, children, ...props }: TabsProps) => {
   const [activeTab, setActiveTab] = useState(defaultValue);
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   return (
-    <TabsContext.Provider value={{ activeTab, setActiveTab }}>
+    <TabsContext.Provider value={{ activeTab, setActiveTab, activeTabIndex, setActiveTabIndex }}>
       <StyledTabs {...props}>{children}</StyledTabs>
     </TabsContext.Provider>
   );
 };
 
 export const TabsList = ({ children, ...props }: TabsListProps) => {
+  const { activeTabIndex } = useTabsContext();
+  const tabCount = Array.isArray(children) ? children.length : 1;
+
   return (
-    <StyledTabsList role="tablist" {...props}>
+    <StyledTabsList
+      role="tablist"
+      style={
+        {
+          '--active-tab-index': activeTabIndex,
+          '--tab-count': tabCount,
+        } as React.CSSProperties
+      }
+      {...props}
+    >
       {children}
     </StyledTabsList>
   );
 };
 
 export const TabsTrigger = ({ value, children, ...props }: TabsTriggerProps) => {
-  const { activeTab, setActiveTab } = useTabsContext();
+  const { activeTab, setActiveTab, setActiveTabIndex } = useTabsContext();
   const isActive = activeTab === value;
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   const handleClick = () => {
     setActiveTab(value);
+    if (triggerRef.current) {
+      const parent = triggerRef.current.parentElement;
+      if (parent) {
+        const children = Array.from(parent.children);
+        const index = children.indexOf(triggerRef.current);
+        setActiveTabIndex(index);
+      }
+    }
   };
 
   return (
     <StyledTabsTrigger
+      ref={triggerRef}
       type="button"
       role="tab"
       aria-selected={isActive}
