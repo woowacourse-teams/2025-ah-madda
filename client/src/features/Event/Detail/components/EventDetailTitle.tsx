@@ -13,7 +13,7 @@ export const EventDetailTitle = ({ title, organizerName }: EventHeaderProps) => 
       </Text>
       <Flex alignItems="center" gap="4px">
         <Icon name="users" size={18} />
-        <Text type="caption">{`주최: ${organizerName}`}</Text>
+        <Text type="Label">{`주최: ${organizerName}`}</Text>
       </Flex>
     </Flex>
   );

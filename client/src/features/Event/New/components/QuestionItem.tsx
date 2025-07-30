@@ -49,7 +49,7 @@ export const QuestionItem = ({
               checked={isRequired}
               onCheckedChange={handleSwitchChange}
             />
-            <Text type="caption" color="gray">
+            <Text type="Label" color="gray">
               필수 질문
             </Text>
           </Flex>

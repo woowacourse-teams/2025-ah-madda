@@ -46,12 +46,12 @@ export const EventCreateForm = () => {
         <Text type="Title" weight="bold">
           새 이벤트 만들기
         </Text>
-        <Text type="caption" color="gray">
+        <Text type="Body" color="gray">
           이벤트 정보를 입력해 주세요
         </Text>
 
         <Card>
-          <Text type="caption">기본 질문</Text>
+          <Text type="Body">기본 질문</Text>
           <Flex dir="column" gap="8px">
             <Input
               id="title"

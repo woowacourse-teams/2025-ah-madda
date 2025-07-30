@@ -17,7 +17,7 @@ export const NewEventPage = () => {
           left={
             <Flex alignItems="center" gap="12px">
               <IconButton name="back" size={14} onClick={() => navigate(-1)} />
-              <Text type="caption">돌아가기</Text>
+              <Text type="Label">돌아가기</Text>
             </Flex>
           }
         />
