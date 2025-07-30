@@ -230,7 +230,7 @@ class EventNotificationServiceTest {
     }
 
     @Test
-    void 존재하지_않는_이벤트로_선택_조직원_전송시_예외가_발생한다() {
+    void 존재하지_않는_이벤트로_알람_전송시_예외가_발생한다() {
         // given
         var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
         var organizer = createAndSaveOrganizationMember("주최자", "host@email.com", organization);
