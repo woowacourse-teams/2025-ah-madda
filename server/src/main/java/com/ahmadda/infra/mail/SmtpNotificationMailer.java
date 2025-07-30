@@ -18,7 +18,7 @@ public class SmtpNotificationMailer implements NotificationMailer {
 
     @Async
     @Override
-    public void sendNotification(final String recipientEmail, final String subject, final String content) {
+    public void sendEmail(final String recipientEmail, final String subject, final String content) {
         MimeMessage mimeMessage = createMimeMessage(recipientEmail, subject, content);
 
         javaMailSender.send(mimeMessage);

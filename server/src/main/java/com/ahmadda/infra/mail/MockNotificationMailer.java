@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MockNotificationMailer implements NotificationMailer {
 
     @Override
-    public void sendNotification(
+    public void sendEmail(
             final String recipientEmail,
             final String subject,
             final String content
