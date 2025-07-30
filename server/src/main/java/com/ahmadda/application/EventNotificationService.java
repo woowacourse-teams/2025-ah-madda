@@ -53,7 +53,7 @@ public class EventNotificationService {
         Event event = getEvent(eventId);
         validateOrganizer(event, loginMember.memberId());
 
-        List<OrganizationMember> recipients = resolveRecipients(event, request.organizationMemberIds());
+        List<OrganizationMember> recipients = getEventRecipientsFromIds(event, request.organizationMemberIds());
         String subject = generateSubject(event);
 
         sendNotificationToRecipients(recipients, subject, request.content());
@@ -73,7 +73,7 @@ public class EventNotificationService {
         }
     }
 
-    private List<OrganizationMember> resolveRecipients(
+    private List<OrganizationMember> getEventRecipientsFromIds(
             final Event event,
             final List<Long> organizationMemberIds
     ) {
