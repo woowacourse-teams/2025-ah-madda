@@ -2,6 +2,8 @@ import { useState } from 'react';
 
 import type { CreateEventAPIRequest, QuestionRequest } from '@/features/Event/types/Event';
 
+import { UNLIMITED_CAPACITY } from '../constants/validation';
+
 export const useEventForm = () => {
   const [formData, setFormData] = useState<Omit<CreateEventAPIRequest, 'organizerNickname'>>({
     title: '',
@@ -10,7 +12,7 @@ export const useEventForm = () => {
     eventStart: '',
     eventEnd: '',
     registrationEnd: '',
-    maxCapacity: 0,
+    maxCapacity: UNLIMITED_CAPACITY,
     questions: [],
   });
 

@@ -30,7 +30,7 @@ export const QuestionItem = ({
 
   return (
     <Card>
-      <Flex dir="column" gap="16px">
+      <Flex dir="column">
         <Input
           id={`question-${orderIndex}`}
           label={`질문${orderIndex + 1}`}
@@ -39,6 +39,7 @@ export const QuestionItem = ({
           onChange={handleTextChange}
           error={!!errorMessage}
           errorMessage={errorMessage}
+          isRequired={true}
         />
         <Input
           id="question"
