@@ -20,7 +20,7 @@ const config: StorybookConfig = {
 
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': path.resolve(__dirname, '../stories'),
+      '@': path.resolve(__dirname, '../src'),
     };
 
     const imageRule = config.module?.rules?.find((rule) => {
