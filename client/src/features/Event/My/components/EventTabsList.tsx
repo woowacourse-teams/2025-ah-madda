@@ -7,7 +7,7 @@ import { UI_LABELS, TAB_VALUES } from '../constants';
 
 export const EventTabsList = () => {
   return (
-    <Flex width="392px" margin="20px 0 0 0">
+    <Flex>
       <Tabs.List
         css={css`
           width: 100%;
