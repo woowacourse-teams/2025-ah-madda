@@ -102,7 +102,7 @@ class LoginServiceTest {
 
         var memberCreateAlarmDto = new MemberCreateAlarmDto(name, email);
         var expectedLog = String.format(
-                "Member created but Slack alarm not sent (non-prod environment): %s",
+                "회원가입 유저 정보 : %s 프로덕션이 아니어서 슬랙으로 알람 보내지 않음",
                 memberCreateAlarmDto
         );
 
