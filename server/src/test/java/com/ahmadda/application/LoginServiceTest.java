@@ -102,8 +102,8 @@ class LoginServiceTest {
 
         var memberCreateAlarmDto = new MemberCreateAlarmDto(name, email);
         var expectedLog = String.format(
-                "%s 생성되었으나 프로덕션이 아니어서 슬랙 알람 보내지 않음",
-                memberCreateAlarmDto.toString()
+                "Member created but Slack alarm not sent (non-prod environment): %s",
+                memberCreateAlarmDto
         );
 
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
