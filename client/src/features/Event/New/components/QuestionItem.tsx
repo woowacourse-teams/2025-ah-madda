@@ -30,36 +30,29 @@ export const QuestionItem = ({
 
   return (
     <Card>
-      <Flex dir="column">
-        <Input
-          id={`question-${orderIndex}`}
-          label={`질문${orderIndex + 1}`}
-          placeholder="질문을 입력해주세요."
-          value={questionText}
-          onChange={handleTextChange}
-          error={!!errorMessage}
-          errorMessage={errorMessage}
-          isRequired={true}
-        />
-        <Input
-          id="question"
-          label="단답형 응답 필드"
-          placeholder="참가자가 여기에 답변을 입력합니다."
-          disabled
-        />
-        <Flex justifyContent="space-between" alignItems="center">
-          <Flex as="label" justifyContent="center" alignItems="center" gap="8px" height="100%">
-            <Switch
-              id={`required-${orderIndex}`}
-              checked={isRequired}
-              onCheckedChange={handleSwitchChange}
-            />
-            <Text type="caption" color="gray">
-              필수 질문
-            </Text>
-          </Flex>
-          <IconButton name="delete" color="red" onClick={onDelete} />
+      <Input
+        id={`question-${orderIndex}`}
+        label={`질문${orderIndex + 1}`}
+        placeholder="질문을 입력해주세요."
+        value={questionText}
+        onChange={handleTextChange}
+        error={!!errorMessage}
+        errorMessage={errorMessage}
+        isRequired={true}
+      />
+
+      <Flex justifyContent="space-between" alignItems="center">
+        <Flex as="label" justifyContent="center" alignItems="center" gap="8px" height="100%">
+          <Switch
+            id={`required-${orderIndex}`}
+            checked={isRequired}
+            onCheckedChange={handleSwitchChange}
+          />
+          <Text type="caption" color="gray">
+            필수 질문
+          </Text>
         </Flex>
+        <IconButton name="delete" color="red" onClick={onDelete} />
       </Flex>
     </Card>
   );
