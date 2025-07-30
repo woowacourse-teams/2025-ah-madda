@@ -9,8 +9,6 @@ import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.GuestRepository;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
@@ -33,20 +31,20 @@ public class EventGuestService {
     private final EventRepository eventRepository;
     private final QuestionRepository questionRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
-    private final MemberRepository memberRepository;
 
     public List<Guest> getGuests(final Long eventId, final LoginMember loginMember) {
         Event event = getEvent(eventId);
-        validateOrganizer(event, loginMember.memberId());
+        Organization organization = event.getOrganization();
+        validateOrganizationAccess(loginMember, organization);
 
         return event.getGuests();
     }
 
     public List<OrganizationMember> getNonGuestOrganizationMembers(final Long eventId, final LoginMember loginMember) {
         Event event = getEvent(eventId);
-        validateOrganizer(event, loginMember.memberId());
-
         Organization organization = event.getOrganization();
+        validateOrganizationAccess(loginMember, organization);
+
         List<OrganizationMember> allMembers = organization.getOrganizationMembers();
 
         return event.getNonGuestOrganizationMembers(allMembers);
@@ -79,18 +77,18 @@ public class EventGuestService {
         return event.hasGuest(organizationMember);
     }
 
+    private void validateOrganizationAccess(final LoginMember loginMember, final Organization organization) {
+        if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(
+                organization.getId(),
+                loginMember.memberId()
+        )) {
+            throw new AccessDeniedException("조직의 조직원만 접근할 수 있습니다.");
+        }
+    }
+
     private Event getEvent(final Long eventId) {
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 이벤트입니다."));
-    }
-
-    private void validateOrganizer(final Event event, final Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
-
-        if (!event.isOrganizer(member)) {
-            throw new AccessDeniedException("이벤트 주최자가 아닙니다.");
-        }
     }
 
     private OrganizationMember getOrganizationMember(final Long organizationId, final Long memberId) {
