@@ -63,7 +63,7 @@ export const NicknameModal = ({ isOpen, onClose }: NicknameModalProps) => {
           <Text type="caption" weight="bold" color="#333">
             닉네임 설정
           </Text>
-          <IconButton name="close" onClick={handleClose} />
+          <IconButton name="close" color="#2B2B2B" onClick={handleClose} />
         </Flex>
 
         <Flex dir="column">

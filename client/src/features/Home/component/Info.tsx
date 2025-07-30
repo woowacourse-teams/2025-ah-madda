@@ -7,7 +7,7 @@ import { isAuthenticated } from '@/api/auth';
 import { organizationQueryOptions } from '@/api/queries/organization';
 import Ahmadda from '@/assets/icon/ahmadda.webp';
 import Point from '@/assets/icon/point.webp';
-import { NicknameModal } from '@/features/Event/Overview/components/NicknameModal';
+import { NicknameModal } from '@/features/Home/component/NicknameModal';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
