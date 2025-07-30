@@ -31,7 +31,7 @@ export type CreateEventAPIRequest = {
   title: string;
   description: string;
   place: string;
-  maxCapacity: number;
+  maxCapacity: number | '';
   eventStart: string;
   eventEnd: string;
   registrationEnd: string;

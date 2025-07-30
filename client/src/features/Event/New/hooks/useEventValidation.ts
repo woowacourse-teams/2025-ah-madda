@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { EventFormData } from '../../types/Event';
 import { VALIDATION_MESSAGES } from '../constants/validation';
@@ -11,6 +11,7 @@ import {
 export const useEventValidation = (formData: EventFormData) => {
   const [errors, setErrors] = useState<Partial<Record<keyof EventFormData, string>>>({});
   const [questionErrors, setQuestionErrors] = useState<Record<number, string>>({});
+  const [isFormValid, setIsFormValid] = useState(false);
 
   const validate = () => {
     const newErrors = validateAllFields(formData);
@@ -24,20 +25,30 @@ export const useEventValidation = (formData: EventFormData) => {
     });
     setQuestionErrors(newQuestionErrors);
 
-    const isValidQuestions = Object.values(newQuestionErrors).every((msg) => msg === '');
+    const isValidQuestions =
+      formData.questions.length === 0 ||
+      Object.values(newQuestionErrors).every((msg) => msg === '');
 
-    return Object.keys(newErrors).length === 0 && isValidQuestions;
+    const isValidForm = Object.keys(newErrors).length === 0 && isValidQuestions;
+
+    setIsFormValid(isValidForm);
+    return isValidForm;
   };
 
   const validateField = (field: keyof EventFormData, value: string) => {
     const message = getValidationMessage(field, value, formData);
+
     setErrors((prev) => ({ ...prev, [field]: message }));
   };
 
-  const isFormValid =
-    Object.values(errors).every((msg) => !msg) &&
-    Object.values(questionErrors).every((msg) => !msg) &&
-    !isFormDataEmpty(formData);
+  useEffect(() => {
+    const hasFieldErrors = Object.values(errors).some((msg) => !!msg);
+    const hasEmptyFields = isFormDataEmpty(formData);
+    const hasInvalidQuestions =
+      formData.questions.length > 0 && Object.values(questionErrors).some((msg) => !!msg);
+
+    setIsFormValid(!hasFieldErrors && !hasEmptyFields && !hasInvalidQuestions);
+  }, [errors, questionErrors, formData]);
 
   return {
     errors,
