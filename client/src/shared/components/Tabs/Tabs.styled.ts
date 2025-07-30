@@ -16,7 +16,7 @@ export const StyledTabsList = styled.div`
     bottom: 0;
     left: 0;
     height: 3px;
-    background-color: ${({ theme }) => theme.colors.primary600};
+    background-color: ${({ theme }) => theme.colors.gray900};
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     transform: translateX(calc(var(--active-tab-index, 0) * 100%));
     width: calc(100% / var(--tab-count, 1));
@@ -44,7 +44,7 @@ export const StyledTabsTrigger = styled.button`
 
   &[data-active='true'] {
     background-color: transparent;
-    color: ${({ theme }) => theme.colors.primary600};
+    color: ${({ theme }) => theme.colors.gray900};
     box-shadow: none;
     transform: none;
   }
