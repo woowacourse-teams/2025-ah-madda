@@ -39,7 +39,7 @@ public class EventService {
             final LocalDateTime currentDateTime
     ) {
         Organization organization = getOrganization(organizationId);
-        OrganizationMember organizer = validateAccessToOrganization(organizationId, memberId);
+        OrganizationMember organizer = validateOrganizationAccess(organizationId, memberId);
 
         EventOperationPeriod eventOperationPeriod = createEventOperationPeriod(eventCreateRequest, currentDateTime);
         Event event = Event.create(
@@ -81,7 +81,7 @@ public class EventService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않은 조직 정보입니다."));
     }
 
-    private OrganizationMember validateAccessToOrganization(final Long organizationId, final Long memberId) {
+    private OrganizationMember validateOrganizationAccess(final Long organizationId, final Long memberId) {
         memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
 
