@@ -164,9 +164,9 @@ public class EventNotificationController {
     })
     @PostMapping("/{eventId}/notify-organization-members")
     public ResponseEntity<Void> notifyOrganizationMembers(
-            @PathVariable Long eventId,
-            @RequestBody @Valid SelectedOrganizationMembersNotificationRequest request,
-            @AuthMember LoginMember loginMember
+            @PathVariable final Long eventId,
+            @RequestBody @Valid final SelectedOrganizationMembersNotificationRequest request,
+            @AuthMember final LoginMember loginMember
     ) {
         eventNotificationService.notifySelectedOrganizationMembers(eventId, request, loginMember);
 

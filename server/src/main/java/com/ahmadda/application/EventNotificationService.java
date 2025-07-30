@@ -54,7 +54,7 @@ public class EventNotificationService {
 
         List<OrganizationMember> recipients = resolveRecipients(event, request.organizationMemberIds());
         String subject = generateSubject(event);
-        
+
         sendNotificationToRecipients(recipients, subject, request.content());
     }
 
@@ -96,7 +96,7 @@ public class EventNotificationService {
             final Map<Long, OrganizationMember> organizationMembersById,
             final List<Long> requestedIds
     ) {
-        final boolean allExist = requestedIds.stream()
+        boolean allExist = requestedIds.stream()
                 .allMatch(organizationMembersById::containsKey);
 
         if (!allExist) {
