@@ -8,6 +8,7 @@ import { OverviewPage } from '@/features/Event/Overview/pages/OverviewPage';
 import { HomePage } from '@/features/Home/page/HomePage';
 
 import { AuthCallback } from './AuthCallback';
+import { ProtectRoute } from './ProtectRoute';
 
 export const router = createBrowserRouter(
   [
@@ -21,6 +22,7 @@ export const router = createBrowserRouter(
     },
     {
       path: '/event',
+      Component: ProtectRoute,
       children: [
         {
           index: true,
