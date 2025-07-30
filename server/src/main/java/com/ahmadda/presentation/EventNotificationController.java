@@ -91,11 +91,82 @@ public class EventNotificationController {
         return ResponseEntity.ok()
                 .build();
     }
-    @PostMapping("/{eventId}/notify-members")
-    public ResponseEntity<Void> notifySelectedMembers(
-            @PathVariable final Long eventId,
-            @RequestBody @Valid final SelectedOrganizationMembersNotificationRequest request,
-            @AuthMember final LoginMember loginMember
+
+    @Operation(
+            summary = "선택된 조직원에게 알림 발송",
+            description = "주최자가 선택한 조직원들에게 이메일 알림을 발송합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/events/{eventId}/notify-organization-members"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Forbidden",
+                                              "status": 403,
+                                              "detail": "이벤트 주최자가 아닙니다.",
+                                              "instance": "/api/events/{eventId}/notify-organization-members"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "이벤트 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 이벤트입니다.",
+                                                      "instance": "/api/events/{eventId}/notify-organization-members"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "조직원 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 조직원입니다.",
+                                                      "instance": "/api/events/{eventId}/notify-organization-members"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            ),
+    })
+    @PostMapping("/{eventId}/notify-organization-members")
+    public ResponseEntity<Void> notifyOrganizationMembers(
+            @PathVariable Long eventId,
+            @RequestBody @Valid SelectedOrganizationMembersNotificationRequest request,
+            @AuthMember LoginMember loginMember
     ) {
         eventNotificationService.notifySelectedOrganizationMembers(eventId, request, loginMember);
 
