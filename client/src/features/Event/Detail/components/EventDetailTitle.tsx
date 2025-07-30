@@ -1,6 +1,7 @@
-import { Flex } from '../../../../shared/components/Flex';
-import { Icon } from '../../../../shared/components/Icon';
-import { Text } from '../../../../shared/components/Text';
+import { Flex } from '@/shared/components/Flex';
+import { Icon } from '@/shared/components/Icon';
+import { Text } from '@/shared/components/Text';
+
 import type { EventDetail } from '../../../Event/types/Event';
 
 type EventHeaderProps = Pick<EventDetail, 'title' | 'organizerName'>;
