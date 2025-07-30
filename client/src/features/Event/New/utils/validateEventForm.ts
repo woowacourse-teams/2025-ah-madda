@@ -4,7 +4,7 @@ import { MAX_LENGTH, VALIDATION_MESSAGES } from '../constants/validation';
 const isEmpty = (value: string) => value.trim() === '';
 const isTooLong = (value: string) => value.length > MAX_LENGTH;
 const isFutureDate = (value: string) => new Date(value) > new Date();
-const isAfterorEqual = (a: string, b: string) => new Date(a) > new Date(b);
+const isAfterorEqual = (a: string, b: string) => new Date(a) >= new Date(b);
 const isBefore = (a: string, b: string) => new Date(a) < new Date(b);
 const isPositiveInteger = (value: string) => /^\d+$/.test(value) && parseInt(value) > 0;
 
