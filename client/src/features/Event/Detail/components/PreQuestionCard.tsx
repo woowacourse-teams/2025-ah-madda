@@ -14,13 +14,13 @@ export const PreQuestionCard = ({ questions, answers, onChangeAnswer }: PreQuest
   return (
     <Card>
       <Flex dir="column" gap="16px">
-        <Text type="caption">사전 질문</Text>
-
+        <Text type="Body">사전 질문</Text>
+        Label
         <Flex dir="column" gap="24px">
           {questions.map((question) => (
             <Flex key={question.questionId} dir="column" gap="4px">
               <label htmlFor={`question-${question.questionId}`}>
-                <Text type="caption" weight="bold">
+                <Text type="Label" weight="bold">
                   {question.questionText}
                   {question.isRequired && <span style={{ color: 'red' }}> *</span>}
                 </Text>

@@ -13,12 +13,12 @@ export const ParticipantsCard = ({ currentGuestCount, maxCapacity }: Participant
       <Flex dir="column" gap="16px">
         <Flex gap="8px" alignItems="center">
           <Icon name="users" size={18} />
-          <Text type="caption">참여 현황</Text>
+          <Text type="Body">참여 현황</Text>
         </Flex>
         <Flex dir="column" gap="8px">
           <Flex justifyContent="space-between">
-            <Text type="caption">현재 신청자</Text>
-            <Text type="caption">{`${currentGuestCount} / ${maxCapacity}명`}</Text>
+            <Text type="Body">현재 신청자</Text>
+            <Text type="Label">{`${currentGuestCount} / ${maxCapacity}명`}</Text>
           </Flex>
           <ProgressBar value={currentGuestCount} max={maxCapacity} color="black" />
         </Flex>

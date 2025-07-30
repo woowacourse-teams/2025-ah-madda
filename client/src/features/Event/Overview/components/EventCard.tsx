@@ -29,49 +29,49 @@ export const EventCard = ({
     <CardWrapper onClick={() => navigate(`/event/${eventId}`)}>
       <Flex dir="column" gap="8px">
         <Flex justifyContent="space-between" alignItems="center" gap="8px">
-          <Text type="Title" color="#ffffff" weight="semibold">
+          <Text as="h2" type="Heading" color="#ffffff" weight="semibold">
             {title}
           </Text>
           <Badge isRegistrationOpen={isRegistrationOpen}>
             {isRegistrationOpen ? '모집중' : '모집마감'}
           </Badge>
         </Flex>
-        <Text type="caption" color="#99A1AF">
+        <Text type="Body" color="#99A1AF">
           {description}
         </Text>
         <Flex alignItems="center" gap="4px" height="100%">
           <Icon name="calendar" color="#99A1AF" size={15} />
-          <Text type="caption" color="#99A1AF">
+          <Text type="Label" color="#99A1AF">
             {`신청 마감 ${formatTime(registrationEnd)} 까지`}
           </Text>
         </Flex>
         <Flex alignItems="center" gap="4px" height="100%">
           <Icon name="clock" color="#99A1AF" size={15} />
           <Text
-            type="caption"
+            type="Label"
             color="#99A1AF"
           >{`이벤트 시간 ${formatDateTime(eventStart, eventEnd)}`}</Text>
         </Flex>
         <Flex alignItems="center" gap="4px" height="100%">
           <Icon name="location" color="#99A1AF" size={15} />
-          <Text type="caption" color="#99A1AF">
+          <Text type="Label" color="#99A1AF">
             {`장소 ${place}`}
           </Text>
         </Flex>
         <Spacing />
         <Flex width="100%" justifyContent="space-between" alignItems="center">
-          <Text type="caption" color="#99A1AF">
+          <Text type="Label" color="#99A1AF">
             주최자
           </Text>
-          <Text type="caption" color="#99A1AF">
+          <Text type="Label" color="#99A1AF">
             {organizerName}
           </Text>
         </Flex>
         <Flex width="100%" justifyContent="space-between" alignItems="center">
-          <Text type="caption" color="#99A1AF">
+          <Text type="Label" color="#99A1AF">
             참여 현황
           </Text>
-          <Text type="caption" color="#99A1AF">
+          <Text type="Label" color="#99A1AF">
             {`${currentGuestCount}/${maxCapacity} 명`}
           </Text>
         </Flex>
