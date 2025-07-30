@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCreateProfile } from '@/api/mutations/useCreateProfile';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
-import { Icon } from '@/shared/components/Icon';
+import { IconButton } from '@/shared/components/IconButton';
 import { Input } from '@/shared/components/Input';
 import { Modal } from '@/shared/components/Modal/Modal';
 import { Text } from '@/shared/components/Text';
@@ -54,18 +54,20 @@ export const NicknameModal = ({ isOpen, onClose }: NicknameModalProps) => {
       isOpen={isOpen}
       onClose={handleClose}
       showCloseButton={false}
-      css={{ maxWidth: '360px' }}
+      css={css`
+        width: 400px;
+      `}
     >
       <Flex dir="column" gap="20px">
-        <Flex justifyContent="space-between" alignItems="flex-start">
-          <Text type="Body" weight="bold" color="#333">
+        <Flex justifyContent="space-between" alignItems="baseline">
+          <Text type="caption" weight="bold" color="#333">
             닉네임 설정
           </Text>
-          <Icon name="close" onClick={handleClose} />
+          <IconButton name="close" onClick={handleClose} />
         </Flex>
 
         <Flex dir="column">
-          <Text type="Body" weight="regular" color="#666">
+          <Text type="caption" weight="regular" color="#666">
             조직에서 사용할 닉네임을 입력해주세요.
           </Text>
 
@@ -86,9 +88,7 @@ export const NicknameModal = ({ isOpen, onClose }: NicknameModalProps) => {
             onClick={handleClose}
             color="#18A0FB"
             fontColor="#18A0FB"
-            css={css`
-              width: 100%;
-            `}
+            width="100%"
           >
             취소
           </Button>
@@ -97,9 +97,7 @@ export const NicknameModal = ({ isOpen, onClose }: NicknameModalProps) => {
             size="md"
             onClick={handleSubmit}
             disabled={!nickname.trim()}
-            css={css`
-              width: 100%;
-            `}
+            width="100%"
           >
             참가하기
           </Button>
