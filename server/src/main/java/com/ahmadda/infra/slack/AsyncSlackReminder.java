@@ -6,11 +6,9 @@ import com.ahmadda.infra.slack.dto.MemberCreationAlarmPayload;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
-@Component
 @Slf4j
 @EnableConfigurationProperties(SlackAlarmProperties.class)
 public class AsyncSlackReminder implements SlackReminder {

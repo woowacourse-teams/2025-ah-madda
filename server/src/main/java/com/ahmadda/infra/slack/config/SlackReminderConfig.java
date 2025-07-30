@@ -11,7 +11,6 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
 @Configuration
-@Profile("prod")
 public class SlackReminderConfig {
 
     @Bean

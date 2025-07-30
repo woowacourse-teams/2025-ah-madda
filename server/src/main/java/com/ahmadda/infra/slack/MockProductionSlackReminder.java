@@ -8,6 +8,6 @@ public class MockProductionSlackReminder implements SlackReminder {
 
     @Override
     public void alarmMemberCreation(final MemberCreateAlarmDto memberCreateAlarmDto) {
-        log.info("{} 생성되었으나 프로덕션이 아니어서 알람 보내지 않음", memberCreateAlarmDto.toString());
+        log.info("{} 생성되었으나 프로덕션이 아니어서 슬랙 알람 보내지 않음", memberCreateAlarmDto.toString());
     }
 }
