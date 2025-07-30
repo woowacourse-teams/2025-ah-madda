@@ -35,7 +35,7 @@ public class EventGuestService {
     public List<Guest> getGuests(final Long eventId, final LoginMember loginMember) {
         Event event = getEvent(eventId);
         Organization organization = event.getOrganization();
-        validateAccessToOrganization(loginMember, organization);
+        validateOrganizationAccess(loginMember, organization);
 
         return event.getGuests();
     }
@@ -43,7 +43,7 @@ public class EventGuestService {
     public List<OrganizationMember> getNonGuestOrganizationMembers(final Long eventId, final LoginMember loginMember) {
         Event event = getEvent(eventId);
         Organization organization = event.getOrganization();
-        validateAccessToOrganization(loginMember, organization);
+        validateOrganizationAccess(loginMember, organization);
 
         List<OrganizationMember> allMembers = organization.getOrganizationMembers();
 
@@ -77,7 +77,7 @@ public class EventGuestService {
         return event.hasGuest(organizationMember);
     }
 
-    private void validateAccessToOrganization(final LoginMember loginMember, final Organization organization) {
+    private void validateOrganizationAccess(final LoginMember loginMember, final Organization organization) {
         if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(
                 organization.getId(),
                 loginMember.memberId()
