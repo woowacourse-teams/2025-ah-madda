@@ -1,6 +1,6 @@
 package com.ahmadda.infra.slack.dto;
 
-import com.ahmadda.domain.Member;
+import com.ahmadda.application.dto.MemberCreateAlarmDto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -25,15 +25,15 @@ public record MemberCreationAlarmPayload(
 
     }
 
-    public static MemberCreationAlarmPayload create(final Member member, final String channelId) {
+    public static MemberCreationAlarmPayload create(final MemberCreateAlarmDto member, final String channelId) {
         var messageText = String.format(
                 """
                         *🎉 새로운 회원 가입 알림*
                         - *이름*: %s
                         - *이메일*: %s
                         """,
-                member.getName(),
-                member.getEmail()
+                member.name(),
+                member.email()
         );
 
         var textObject = new TextObject("mrkdwn", messageText);

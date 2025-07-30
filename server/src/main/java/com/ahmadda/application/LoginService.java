@@ -1,5 +1,6 @@
 package com.ahmadda.application;
 
+import com.ahmadda.application.dto.MemberCreateAlarmDto;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
@@ -9,6 +10,7 @@ import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.infra.jwt.JwtTokenProvider;
 import com.ahmadda.infra.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.oauth.dto.OAuthUserInfoResponse;
+import com.ahmadda.infra.slack.SlackReminder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +29,11 @@ public class LoginService {
     //TODO 07.25이후 사용하지않으면 삭제
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
+    private final SlackReminder slackReminder;
 
     @Transactional
-    public String login(final String code) {
-        OAuthUserInfoResponse userInfo = googleOAuthProvider.getUserInfo(code);
+    public String login(final String code, final String redirectUri) {
+        OAuthUserInfoResponse userInfo = googleOAuthProvider.getUserInfo(code, redirectUri);
 
         Member member = findOrCreateMember(userInfo.name(), userInfo.email());
         addMemberToWoowacourse(member);
@@ -41,6 +44,8 @@ public class LoginService {
         return memberRepository.findByEmail(email)
                 .orElseGet(() -> {
                     Member newMember = Member.create(name, email);
+
+                    slackReminder.alarmMemberCreation(MemberCreateAlarmDto.from(newMember));
 
                     return memberRepository.save(newMember);
                 });

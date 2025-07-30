@@ -1,30 +1,28 @@
-package com.ahmadda.infra.slack;
+package com.ahmadda.manual.infra.slack;
 
+import com.ahmadda.application.dto.MemberCreateAlarmDto;
 import com.ahmadda.domain.Member;
+import com.ahmadda.infra.slack.AsyncSlackReminder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.EnabledIf;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+//TODO Disable
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@EnabledIf(
-        expression = "#{environment.acceptsProfiles('prod')}",
-        loadContext = true
-)
 class SlackReminderTest {
 
     @Autowired
-    private SlackReminder slackReminder;
+    private AsyncSlackReminder asyncSlackReminder;
 
     @Test
     void 로그인_생성_이벤트_발생시_슬랙에_알람을_보낸다() {
 
         // given
-        var member = Member.create("test-user", "test-user@naver.com");
+        var member = MemberCreateAlarmDto.from(Member.create("test-user", "test-user@naver.com"));
 
         // when //then
-        assertDoesNotThrow(() -> slackReminder.alarmMemberCreation(member));
+        assertDoesNotThrow(() -> asyncSlackReminder.alarmMemberCreation(member));
     }
 }
