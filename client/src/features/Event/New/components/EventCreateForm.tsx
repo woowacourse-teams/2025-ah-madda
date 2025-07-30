@@ -144,6 +144,7 @@ export const EventCreateForm = () => {
                 type="datetime-local"
                 placeholder="2025.07.30 15:00"
                 value={formData.eventEnd}
+                min={formData.eventStart}
                 onChange={(e) => {
                   handleChange('eventEnd')(e);
                   validateField('eventEnd', e.target.value);
@@ -160,6 +161,7 @@ export const EventCreateForm = () => {
               type="datetime-local"
               placeholder="2025.07.25 15:00"
               value={formData.registrationEnd}
+              max={formData.eventStart}
               onChange={(e) => {
                 handleChange('registrationEnd')(e);
                 validateField('registrationEnd', e.target.value);
