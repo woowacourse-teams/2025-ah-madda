@@ -1,4 +1,4 @@
-export const MAX_LENGTH = 50;
+export const MAX_LENGTH = 255;
 export const UNLIMITED_CAPACITY = 2_000_000_000;
 
 export const VALIDATION_MESSAGES = {
