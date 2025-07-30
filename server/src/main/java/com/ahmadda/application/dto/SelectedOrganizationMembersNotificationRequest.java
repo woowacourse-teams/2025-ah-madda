@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 
 public record SelectedOrganizationMembersNotificationRequest(
+        // TODO. 추후 요청 Body 크기 자체를 제한하도록 변경
         @NotEmpty
         List<Long> organizationMemberIds,
 
