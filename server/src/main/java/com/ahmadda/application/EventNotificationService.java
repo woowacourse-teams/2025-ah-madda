@@ -1,7 +1,8 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.dto.NotificationRequest;
+import com.ahmadda.application.dto.NonGuestsNotificationRequest;
+import com.ahmadda.application.dto.SelectedOrganizationMembersNotificationRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
@@ -14,6 +15,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +30,7 @@ public class EventNotificationService {
 
     public void notifyNonGuestOrganizationMembers(
             final Long eventId,
-            final NotificationRequest request,
+            final NonGuestsNotificationRequest request,
             final LoginMember loginMember
     ) {
         Event event = getEvent(eventId);
@@ -36,6 +41,20 @@ public class EventNotificationService {
         List<OrganizationMember> recipients = event.getNonGuestOrganizationMembers(organizationMembers);
         String subject = generateSubject(event);
 
+        sendNotificationToRecipients(recipients, subject, request.content());
+    }
+
+    public void notifySelectedOrganizationMembers(
+            final Long eventId,
+            final SelectedOrganizationMembersNotificationRequest request,
+            final LoginMember loginMember
+    ) {
+        Event event = getEvent(eventId);
+        validateOrganizer(event, loginMember.memberId());
+
+        List<OrganizationMember> recipients = resolveRecipients(event, request.organizationMemberIds());
+        String subject = generateSubject(event);
+        
         sendNotificationToRecipients(recipients, subject, request.content());
     }
 
@@ -50,6 +69,38 @@ public class EventNotificationService {
 
         if (!event.isOrganizer(member)) {
             throw new AccessDeniedException("이벤트 주최자가 아닙니다.");
+        }
+    }
+
+    private List<OrganizationMember> resolveRecipients(
+            final Event event,
+            final List<Long> organizationMemberIds
+    ) {
+        Map<Long, OrganizationMember> organizationMembersById = getOrganizationMembersById(event);
+        validateOrganizationMemberIdsExist(organizationMembersById, organizationMemberIds);
+
+        return organizationMemberIds.stream()
+                .map(organizationMembersById::get)
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    private Map<Long, OrganizationMember> getOrganizationMembersById(final Event event) {
+        return event.getOrganization()
+                .getOrganizationMembers()
+                .stream()
+                .collect(Collectors.toMap(OrganizationMember::getId, Function.identity()));
+    }
+
+    private void validateOrganizationMemberIdsExist(
+            final Map<Long, OrganizationMember> organizationMembersById,
+            final List<Long> requestedIds
+    ) {
+        final boolean allExist = requestedIds.stream()
+                .allMatch(organizationMembersById::containsKey);
+
+        if (!allExist) {
+            throw new NotFoundException("존재하지 않는 조직원입니다.");
         }
     }
 
