@@ -56,8 +56,7 @@ class EventNotificationServiceTest {
 
     @MockitoBean
     private EventNotification eventNotification;
-
-
+    
     @Test
     void 비게스트_조직원에게_이메일을_전송한다() {
         // given

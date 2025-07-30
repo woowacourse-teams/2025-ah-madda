@@ -5,6 +5,7 @@ import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Member;
@@ -19,15 +20,21 @@ import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @Transactional
@@ -48,12 +55,15 @@ class EventServiceTest {
     @Autowired
     private EventService sut;
 
+    @MockitoBean
+    private EventNotification eventNotification;
+
     @Test
     void 이벤트를_생성할_수_있다() {
         //given
-        var member = appendMember();
-        var organization = appendOrganization();
-        var organizationMember = appendOrganizationMember(organization, member);
+        var member = createMember();
+        var organization = createOrganization();
+        var organizationMember = createOrganizationMember(organization, member);
 
         var now = LocalDateTime.now();
         var eventCreateRequest = new EventCreateRequest(
@@ -103,7 +113,7 @@ class EventServiceTest {
     @Test
     void 이벤트_생성시_조직_id에_해당하는_조직이_없다면_예외가_발생한다() {
         //given
-        var organizationMember = appendOrganizationMember(appendOrganization(), appendMember());
+        var organizationMember = createOrganizationMember(createOrganization(), createMember());
 
         var now = LocalDateTime.now();
         var eventCreateRequest = new EventCreateRequest(
@@ -126,7 +136,7 @@ class EventServiceTest {
     @Test
     void 이벤트_생성시_조직원_id에_해당하는_조직원이_없다면_예외가_발생한다() {
         //given
-        var organization = appendOrganization();
+        var organization = createOrganization();
 
         var now = LocalDateTime.now();
         var eventCreateRequest = new EventCreateRequest(
@@ -149,10 +159,10 @@ class EventServiceTest {
     @Test
     void 이벤트_생성시_요청한_조직에_소속되지_않았다면_예외가_발생한다() {
         //given
-        var organization1 = appendOrganization();
-        var organization2 = appendOrganization();
-        Member member = appendMember();
-        appendOrganizationMember(organization2, member);
+        var organization1 = createOrganization();
+        var organization2 = createOrganization();
+        Member member = createMember();
+        createOrganizationMember(organization2, member);
 
         var now = LocalDateTime.now();
         var eventCreateRequest = new EventCreateRequest(
@@ -175,10 +185,10 @@ class EventServiceTest {
     @Test
     void 이벤트를_조회할_수_있다() {
         //given
-        var organization = appendOrganization();
-        var member = appendMember();
-        var organizationMember = appendOrganizationMember(organization, member);
-        var event = appendEvent(organizationMember, organization);
+        var organization = createOrganization();
+        var member = createMember();
+        var organizationMember = createOrganizationMember(organization, member);
+        var event = createEvent(organizationMember, organization);
 
         //when
         var findEvent = sut.getEvent(event.getId());
@@ -195,23 +205,79 @@ class EventServiceTest {
                 .hasMessage("존재하지 않은 이벤트 정보입니다.");
     }
 
-    private Organization appendOrganization() {
+    private Organization createOrganization() {
         var organization = Organization.create("우테코", "우테코입니다.", "image");
 
         return organizationRepository.save(organization);
     }
 
-    private Member appendMember() {
+    @Test
+    void 이벤트_생성_시_조직원에게_알림을_보낸다() {
+        // given
+        var organization = createOrganization();
+
+        var organizerMember = createMember("organizer", "organizer@mail.com");
+        var om1Member = createMember("m1", "m1@mail.com");
+        var om2Member = createMember("m2", "m2@mail.com");
+
+        var organizer = createOrganizationMember(organization, organizerMember);
+        createOrganizationMember(organization, om1Member);
+        createOrganizationMember(organization, om2Member);
+
+        var now = LocalDateTime.now();
+        var request = new EventCreateRequest(
+                "UI/UX 이벤트",
+                "UI/UX 이벤트 입니다",
+                "선릉",
+                now.plusDays(4),
+                now.plusDays(5),
+                now.plusDays(6),
+                "이벤트 근로",
+                100,
+                List.of(
+                        new QuestionCreateRequest("1번 질문", true),
+                        new QuestionCreateRequest("2번 질문", false)
+                )
+        );
+
+        // when
+        var savedEvent = sut.createEvent(organization.getId(), organizer.getId(), request, now);
+
+        // then
+        verify(eventNotification).sendEmails(
+                eq(savedEvent),
+                argThat(recipients -> {
+                    var emails = recipients.stream()
+                            .map(om -> om.getMember()
+                                    .getEmail())
+                            .collect(toSet());
+
+                    var expected = Set.of(
+                            om1Member.getEmail(),
+                            om2Member.getEmail()
+                    );
+
+                    return emails.equals(expected);
+                }),
+                eq("새로운 이벤트가 등록되었습니다.")
+        );
+    }
+
+    private Member createMember() {
         return memberRepository.save(Member.create("name", "ahmadda@ahmadda.com"));
     }
 
-    private OrganizationMember appendOrganizationMember(Organization organization, Member member) {
+    private Member createMember(String name, String email) {
+        return memberRepository.save(Member.create(name, email));
+    }
+
+    private OrganizationMember createOrganizationMember(Organization organization, Member member) {
         var organizationMember = OrganizationMember.create("surf", member, organization);
 
         return organizationMemberRepository.save(organizationMember);
     }
 
-    private Event appendEvent(final OrganizationMember organizationMember, final Organization organization) {
+    private Event createEvent(final OrganizationMember organizationMember, final Organization organization) {
         var now = LocalDateTime.now();
 
         var event = Event.create(

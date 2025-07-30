@@ -21,7 +21,6 @@ public class EventNotification {
                         recipient.getMember()
                                 .getEmail(),
                         subject,
-                        // TODO. 템플릿을 이용하여 content 생성하는 로직으로 변경 필요
                         text
                 )
         );
@@ -37,6 +36,7 @@ public class EventNotification {
         );
     }
 
+    // TODO. 템플릿을 이용하여 content 생성하는 로직으로 변경 필요
     private String generateText(final Event event, final String content) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm");
 
