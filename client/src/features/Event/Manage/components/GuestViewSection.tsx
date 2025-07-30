@@ -18,7 +18,7 @@ export const GuestViewSection = ({ guests, nonGuests }: GuestViewSectionProps) =
       <Flex as="section" dir="column" gap="20px">
         <Flex alignItems="center" gap="8px">
           <Icon name="users" size={14} color="#4A5565" />
-          <Text type="caption" weight="regular" color="#4A5565">
+          <Text type="Body" weight="regular" color="#4A5565">
             게스트 조회
           </Text>
         </Flex>

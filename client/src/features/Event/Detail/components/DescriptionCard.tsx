@@ -9,7 +9,7 @@ export const DescriptionCard = ({ description }: DescriptionCardProps) => {
   return (
     <Card>
       <Flex dir="column" gap="8px">
-        <Text type="Label">이벤트 소개</Text>
+        <Text type="Body">이벤트 소개</Text>
         <Text type="Label">{description}</Text>
       </Flex>
     </Card>

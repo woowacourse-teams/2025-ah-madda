@@ -49,7 +49,7 @@ export const QuestionForm = ({ questions, onChange }: QuestionFormProps) => {
     <Card>
       <Flex dir="column" gap="16px">
         <Flex justifyContent="space-between" alignItems="center">
-          <Text type="Label">사전 질문</Text>
+          <Text type="Body">사전 질문</Text>
           <Button
             width="100px"
             size="sm"
