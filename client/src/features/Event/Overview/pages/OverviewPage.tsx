@@ -14,21 +14,24 @@ import { OrganizationInfo } from '../components/OrganizationInfo';
 
 export const OverviewPage = () => {
   const navigate = useNavigate();
-  const { data: eventData } = useQuery(organizationQueryOptions.event(1));
+
   const { data: organizationData } = useQuery(
     organizationQueryOptions.organizations('woowacourse')
   );
-  const { logout } = useGoogleAuth();
 
-  // S.TODO: 로딩 상태 처리
-  if (!eventData || !organizationData) {
-    return <div>Loading...</div>;
-  }
+  const { data: eventData } = useQuery(organizationQueryOptions.event(1));
+
+  const { logout } = useGoogleAuth();
 
   const handleGoogleLogin = () => {
     const authUrl = getGoogleAuthUrl();
     window.location.href = authUrl;
   };
+
+  // S.TODO 로딩 처리
+  if (!organizationData || !eventData) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
@@ -64,14 +67,14 @@ export const OverviewPage = () => {
           </Flex>
         }
       />
-
       <OrganizationInfo
         name={organizationData?.name}
         description={organizationData?.description}
         imageUrl={organizationData?.imageUrl}
         totalEvents={eventData?.length}
       />
-      <EventList events={eventData ?? []} />
+
+      <EventList events={eventData} />
     </>
   );
 };

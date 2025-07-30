@@ -8,12 +8,20 @@ export type accessToken = {
 };
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
-const GOOGLE_REDIRECT_URI = 'https://ahmadda.com/auth';
+
+const getRedirectUri = (): string => {
+  const isProduction = window.location.hostname === 'ahmadda.com';
+
+  if (isProduction) {
+    return 'https://ahmadda.com/auth';
+  }
+  return 'http://localhost:5173/auth';
+};
 
 export const getGoogleAuthUrl = (): string => {
   const params = new URLSearchParams({
     client_id: GOOGLE_CLIENT_ID,
-    redirect_uri: GOOGLE_REDIRECT_URI,
+    redirect_uri: getRedirectUri(),
     response_type: 'code',
     scope: 'openid email profile',
     access_type: 'offline',
@@ -34,7 +42,10 @@ export const getAuthCodeFromUrl = (): string | null => {
 
 export const exchangeCodeForToken = async (code: string): Promise<accessToken> => {
   return fetcher.post<accessToken>('members/login', {
-    json: { code },
+    json: {
+      code,
+      redirectUri: getRedirectUri(),
+    },
   });
 };
 
