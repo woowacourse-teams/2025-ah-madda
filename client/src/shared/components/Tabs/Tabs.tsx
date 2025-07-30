@@ -1,4 +1,12 @@
-import { createContext, useContext, useState, ComponentProps, ReactNode, useRef } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  ComponentProps,
+  ReactNode,
+  useRef,
+  Children,
+} from 'react';
 
 import { StyledTabs, StyledTabsContent, StyledTabsList, StyledTabsTrigger } from './Tabs.styled';
 
@@ -64,7 +72,7 @@ export const Tabs = ({ defaultValue, children, ...props }: TabsProps) => {
 
 export const TabsList = ({ children, ...props }: TabsListProps) => {
   const { activeTabIndex } = useTabsContext();
-  const tabCount = Array.isArray(children) ? children.length : 1;
+  const tabCount = Children.count(children);
 
   return (
     <StyledTabsList
