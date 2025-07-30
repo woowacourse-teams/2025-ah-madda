@@ -31,9 +31,11 @@ export const getValidationMessage = (
         return VALIDATION_MESSAGES.REGISTRATION_DEADLINE_BEFORE_EVENT_START;
       break;
     case 'place':
+      if (isEmpty(value)) return VALIDATION_MESSAGES.REQUIRED('장소');
       if (isTooLong(value)) return VALIDATION_MESSAGES.MAX_LENGTH('장소', MAX_LENGTH);
       break;
     case 'description':
+      if (isEmpty(value)) return VALIDATION_MESSAGES.REQUIRED('설명');
       if (isTooLong(value)) return VALIDATION_MESSAGES.MAX_LENGTH('설명', MAX_LENGTH);
       break;
     case 'maxCapacity':
@@ -63,6 +65,8 @@ export const isFormDataEmpty = (formData: EventFormData): boolean => {
     'eventStart',
     'eventEnd',
     'registrationEnd',
+    'place',
+    'description',
   ];
 
   return requiredFields.some((key) => {
