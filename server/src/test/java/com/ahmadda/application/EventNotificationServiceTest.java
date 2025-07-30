@@ -1,7 +1,8 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.dto.NotificationRequest;
+import com.ahmadda.application.dto.NonGuestsNotificationRequest;
+import com.ahmadda.application.dto.SelectedOrganizationMembersNotificationRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
@@ -168,8 +169,159 @@ class EventNotificationServiceTest {
                 .hasMessage("이벤트 주최자가 아닙니다.");
     }
 
-    private NotificationRequest createNotificationRequest() {
-        return new NotificationRequest("이메일 내용입니다.");
+    @Test
+    void 선택된_조직원에게_이메일을_전송한다(CapturedOutput output) {
+        // given
+        var organizationName = "조직명";
+        var organizerNickname = "주최자";
+        var eventTitle = "이벤트제목";
+
+        var organization = organizationRepository.save(Organization.create(organizationName, "설명", "img.png"));
+        var organizer = createAndSaveOrganizationMember(organizerNickname, "host@email.com", organization);
+
+        var now = LocalDateTime.now();
+        var event = eventRepository.save(Event.create(
+                eventTitle,
+                "설명",
+                "장소",
+                organizer,
+                organization,
+                EventOperationPeriod.create(
+                        Period.create(now.minusDays(2), now.minusDays(1)),
+                        Period.create(now.plusDays(1), now.plusDays(2)),
+                        now.minusDays(3)
+                ),
+                organizerNickname,
+                100
+        ));
+
+        var om1 = createAndSaveOrganizationMember("선택1", "sel1@email.com", organization);
+        var om2 = createAndSaveOrganizationMember("선택2", "sel2@email.com", organization);
+        var om3 = createAndSaveOrganizationMember("비선택", "nsel@email.com", organization);
+
+        var request = createSelectedMembersRequest(
+                java.util.List.of(om1.getId(), om3.getId())
+        );
+
+        // when
+        sut.notifySelectedOrganizationMembers(event.getId(), request, createLoginMember(organizer));
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(output)
+                    .contains("To: " + om1.getMember()
+                            .getEmail());
+            softly.assertThat(output)
+                    .contains("To: " + om3.getMember()
+                            .getEmail());
+            softly.assertThat(output)
+                    .doesNotContain("To: " + om2.getMember()
+                            .getEmail());
+            softly.assertThat(output)
+                    .contains("Subject: " + String.format(
+                            "[%s] %s님의 이벤트 안내: %s",
+                            organizationName,
+                            organizerNickname,
+                            eventTitle
+                    ));
+            softly.assertThat(output)
+                    .contains("Content: " + request.content());
+        });
+    }
+
+    @Test
+    void 존재하지_않는_이벤트로_알람_전송시_예외가_발생한다() {
+        // given
+        var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
+        var organizer = createAndSaveOrganizationMember("주최자", "host@email.com", organization);
+        var om = createAndSaveOrganizationMember("대상자", "target@email.com", organization);
+        var request = createSelectedMembersRequest(java.util.List.of(om.getId()));
+
+        // when // then
+        assertThatThrownBy(() ->
+                sut.notifySelectedOrganizationMembers(999L, request, createLoginMember(organizer))
+        )
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 이벤트입니다.");
+    }
+
+    @Test
+    void 주최자가_아닌_회원이_전송하면_예외가_발생한다() {
+        // given
+        var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
+        var organizer = createAndSaveOrganizationMember("주최자", "host@email.com", organization);
+        var other = createAndSaveOrganizationMember("다른사람", "other@email.com", organization);
+
+        var now = LocalDateTime.now();
+        var event = eventRepository.save(Event.create(
+                "이벤트",
+                "설명",
+                "장소",
+                organizer,
+                organization,
+                EventOperationPeriod.create(
+                        Period.create(now.minusDays(1), now.plusDays(1)),
+                        Period.create(now.plusDays(2), now.plusDays(3)),
+                        now.minusDays(2)
+                ),
+                organizer.getNickname(),
+                100
+        ));
+
+        var om = createAndSaveOrganizationMember("대상자", "target@email.com", organization);
+        var request = createSelectedMembersRequest(java.util.List.of(om.getId()));
+
+        // when // then
+        assertThatThrownBy(() ->
+                sut.notifySelectedOrganizationMembers(event.getId(), request, createLoginMember(other))
+        )
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessage("이벤트 주최자가 아닙니다.");
+    }
+
+    @Test
+    void 요청에_존재하지_않는_조직원_ID가_포함되면_예외가_발생한다() {
+        // given
+        var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
+        var organizer = createAndSaveOrganizationMember("주최자", "host@email.com", organization);
+
+        var now = LocalDateTime.now();
+        var event = eventRepository.save(Event.create(
+                "이벤트",
+                "설명",
+                "장소",
+                organizer,
+                organization,
+                EventOperationPeriod.create(
+                        Period.create(now.minusDays(1), now.plusDays(1)),
+                        Period.create(now.plusDays(2), now.plusDays(3)),
+                        now.minusDays(2)
+                ),
+                organizer.getNickname(),
+                100
+        ));
+
+        var validOm = createAndSaveOrganizationMember("유효", "valid@email.com", organization);
+
+        var otherOrg = organizationRepository.save(Organization.create("다른조직", "설명", "img2.png"));
+        var otherOm = createAndSaveOrganizationMember("다른조직원", "otherorg@email.com", otherOrg);
+
+        var request = createSelectedMembersRequest(java.util.List.of(validOm.getId(), otherOm.getId()));
+
+        // when // then
+        assertThatThrownBy(() ->
+                sut.notifySelectedOrganizationMembers(event.getId(), request, createLoginMember(organizer))
+        )
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 조직원입니다.");
+    }
+
+    private NonGuestsNotificationRequest createNotificationRequest() {
+        return new NonGuestsNotificationRequest("이메일 내용입니다.");
+    }
+
+    private SelectedOrganizationMembersNotificationRequest createSelectedMembersRequest(java.util.List<Long> organizationMemberIds) {
+        return new SelectedOrganizationMembersNotificationRequest(organizationMemberIds, "이메일 내용입니다.");
     }
 
     private OrganizationMember createAndSaveOrganizationMember(

@@ -1,16 +1,5 @@
 package com.ahmadda.presentation;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.ahmadda.application.EventGuestService;
 import com.ahmadda.application.EventService;
 import com.ahmadda.application.dto.EventParticipateRequest;
@@ -23,7 +12,6 @@ import com.ahmadda.presentation.dto.GuestResponse;
 import com.ahmadda.presentation.dto.GuestStatusResponse;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -33,6 +21,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Tag(name = "Event Guest", description = "이벤트 게스트 관련 API")
 @RestController
@@ -43,7 +41,7 @@ public class EventGuestController {
     private final EventGuestService eventGuestService;
     private final EventService eventService;
 
-    @Operation(summary = "이벤트 게스트 목록 조회", description = "해당 이벤트에 참여한 게스트 목록을 조회합니다. 주최자만 조회할 수 있습니다.")
+    @Operation(summary = "이벤트 게스트 목록 조회", description = "해당 이벤트에 참여한 게스트 목록을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -94,7 +92,7 @@ public class EventGuestController {
                                               "type": "about:blank",
                                               "title": "Forbidden",
                                               "status": 403,
-                                              "detail": "이벤트 주최자가 아닙니다.",
+                                              "detail": "조직의 조직원만 접근할 수 있습니다.",
                                               "instance": "/api/events/{eventId}/guests"
                                             }
                                             """
@@ -116,7 +114,7 @@ public class EventGuestController {
         return ResponseEntity.ok(responses);
     }
 
-    @Operation(summary = "이벤트 미참여 조직원 목록 조회", description = "해당 이벤트에 아직 참여하지 않은 조직원 목록을 조회합니다. 주최자만 조회할 수 있습니다.")
+    @Operation(summary = "이벤트 미참여 조직원 목록 조회", description = "해당 이벤트에 아직 참여하지 않은 조직원 목록을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -167,7 +165,7 @@ public class EventGuestController {
                                               "type": "about:blank",
                                               "title": "Forbidden",
                                               "status": 403,
-                                              "detail": "이벤트 주최자가 아닙니다.",
+                                              "detail": "조직의 조직원만 접근할 수 있습니다.",
                                               "instance": "/api/events/{eventId}/non-guests"
                                             }
                                             """
@@ -201,7 +199,6 @@ public class EventGuestController {
             @ApiResponse(
                     responseCode = "401",
                     content = @Content(
-                            mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = """
                                             {
@@ -362,7 +359,7 @@ public class EventGuestController {
                 LocalDateTime.now(),
                 eventParticipateRequest
         );
-        
+
         Event event = eventService.getEvent(eventId);
         return ResponseEntity.ok(EventDetailResponse.from(event));
     }
@@ -380,7 +377,6 @@ public class EventGuestController {
             @ApiResponse(
                     responseCode = "401",
                     content = @Content(
-                            mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = """
                                             {

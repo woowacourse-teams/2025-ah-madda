@@ -131,7 +131,6 @@ public class OrganizationEventController {
             @ApiResponse(
                     responseCode = "401",
                     content = @Content(
-                            mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = """
                                             {
@@ -148,7 +147,6 @@ public class OrganizationEventController {
             @ApiResponse(
                     responseCode = "403",
                     content = @Content(
-                            mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = """
                                             {
@@ -165,7 +163,6 @@ public class OrganizationEventController {
             @ApiResponse(
                     responseCode = "404",
                     content = @Content(
-                            mediaType = "application/json",
                             examples = {
                                     @ExampleObject(
                                             name = "조직 없음",
@@ -197,7 +194,6 @@ public class OrganizationEventController {
             @ApiResponse(
                     responseCode = "422",
                     content = @Content(
-                            mediaType = "application/json",
                             examples = {
                                     @ExampleObject(
                                             name = "이벤트 종료 시간이 시작 시간보다 과거",
