@@ -42,7 +42,7 @@ export const EventCard = ({
   return (
     <EventCardWrapper onClick={handleClick}>
       <Flex dir="column" gap="3.5px">
-        <Text type="Heading" weight="semibold" color="white">
+        <Text as="h2" type="Heading" weight="semibold" color="white">
           {title}
         </Text>
         <Text type="Body" weight="regular" color="#99A1AF">

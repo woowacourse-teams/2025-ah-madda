@@ -29,7 +29,7 @@ export const EventCard = ({
     <CardWrapper onClick={() => navigate(`/event/${eventId}`)}>
       <Flex dir="column" gap="8px">
         <Flex justifyContent="space-between" alignItems="center" gap="8px">
-          <Text type="Heading" color="#ffffff" weight="semibold">
+          <Text as="h2" type="Heading" color="#ffffff" weight="semibold">
             {title}
           </Text>
           <Badge isRegistrationOpen={isRegistrationOpen}>

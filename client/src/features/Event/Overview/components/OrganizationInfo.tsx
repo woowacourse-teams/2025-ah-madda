@@ -34,7 +34,9 @@ export const OrganizationInfo = ({
           <Text type="Display" weight="bold">
             {name}
           </Text>
-          <Text type="Heading">{description}</Text>
+          <Text as="h2" type="Heading">
+            {description}
+          </Text>
           <Text type="Body">{`${totalEvents}개의 이벤트가 열려있어요!`}</Text>
         </Flex>
         <Img src={Woowa} />
