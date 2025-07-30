@@ -10,6 +10,7 @@ import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.NotificationMailer;
+import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -76,7 +77,7 @@ public class EventNotificationService {
             final Event event,
             final List<Long> organizationMemberIds
     ) {
-        Map<Long, OrganizationMember> organizationMembersById = getOrganizationMembersById(event);
+        Map<Long, OrganizationMember> organizationMembersById = getOrganizationMembersById(event.getOrganization());
         validateOrganizationMemberIdsExist(organizationMembersById, organizationMemberIds);
 
         return organizationMemberIds.stream()
@@ -85,8 +86,8 @@ public class EventNotificationService {
                 .toList();
     }
 
-    private Map<Long, OrganizationMember> getOrganizationMembersById(final Event event) {
-        return event.getOrganization()
+    private Map<Long, OrganizationMember> getOrganizationMembersById(final Organization organization) {
+        return organization
                 .getOrganizationMembers()
                 .stream()
                 .collect(Collectors.toMap(OrganizationMember::getId, Function.identity()));
