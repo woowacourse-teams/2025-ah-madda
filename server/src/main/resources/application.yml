@@ -57,3 +57,10 @@ management:
       enabled: false
     mail:
       enabled: false
+
+slack:
+  bot-token: ${slack.bot-token}
+  channel-id: ${slack.channel-id}
+  post-message-url: ${slack.post-message-url}
+  connect-timeout: 3000
+  read-timeout: 5000
