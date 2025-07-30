@@ -14,7 +14,7 @@ export const EventSection = ({ title, children }: EventSectionProps) => {
     <Flex as="section" dir="column" gap="16px" width="100%">
       <Flex alignItems="center" gap="4px">
         <Icon name="calendar" />
-        <Text type="Body" weight="semibold">
+        <Text type="Heading" weight="medium">
           {title}
         </Text>
       </Flex>
