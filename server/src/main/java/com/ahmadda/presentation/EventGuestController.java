@@ -199,7 +199,6 @@ public class EventGuestController {
             @ApiResponse(
                     responseCode = "401",
                     content = @Content(
-                            mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = """
                                             {
@@ -378,7 +377,6 @@ public class EventGuestController {
             @ApiResponse(
                     responseCode = "401",
                     content = @Content(
-                            mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = """
                                             {
