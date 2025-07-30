@@ -1,5 +1,5 @@
 export const MAX_LENGTH = 50;
-export const UNLIMITED_CAPACITY = Number.MAX_SAFE_INTEGER;
+export const UNLIMITED_CAPACITY = 2_000_000_000;
 
 export const VALIDATION_MESSAGES = {
   REQUIRED: (label: string) => `${label}을(를) 입력해 주세요.`,
