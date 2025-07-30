@@ -28,8 +28,8 @@ export const NicknameModal = ({ isOpen, onClose }: NicknameModalProps) => {
       {
         onSuccess: () => {
           alert('조직 참가가 완료되었습니다!');
-          navigate('/event');
           onClose();
+          navigate('/event');
         },
         onError: () => {
           alert('참가 중 오류가 발생했습니다. 다시 시도해 주세요.');
