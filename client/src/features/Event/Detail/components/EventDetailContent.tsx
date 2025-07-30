@@ -51,7 +51,7 @@ export const EventDetailContent = ({
       dir="column"
       width="100%"
       margin="0 auto"
-      padding="80px 24px 0"
+      padding="24px 0"
       gap="24px"
       css={css`
         max-width: 784px;
