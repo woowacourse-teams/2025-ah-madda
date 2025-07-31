@@ -43,7 +43,7 @@ export const EventCard = ({
     <EventCardWrapper onClick={handleClick}>
       <Flex dir="column" gap="3.5px">
         <Text as="h2" type="Heading" weight="semibold" color="white">
-          {title}
+          {title.length > 15 ? `${title.slice(0, 12)}...` : title}
         </Text>
         <Text type="Body" weight="regular" color="#99A1AF">
           {description}
