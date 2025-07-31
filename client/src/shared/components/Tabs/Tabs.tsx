@@ -1,12 +1,6 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  ComponentProps,
-  ReactNode,
-  useRef,
-  Children,
-} from 'react';
+import { createContext, useContext, useState, ComponentProps, ReactNode, Children } from 'react';
+
+import { css } from '@emotion/react';
 
 import { StyledTabs, StyledTabsContent, StyledTabsList, StyledTabsTrigger } from './Tabs.styled';
 
@@ -26,8 +20,6 @@ type DefaultValueProps = {
 type TabsContextValue = {
   activeTab: string;
   setActiveTab: (value: string) => void;
-  activeTabIndex: number;
-  setActiveTabIndex: (index: number) => void;
 };
 
 type TabsProps = DivComponentProps &
@@ -61,55 +53,48 @@ const useTabsContext = () => {
 
 export const Tabs = ({ defaultValue, children, ...props }: TabsProps) => {
   const [activeTab, setActiveTab] = useState(defaultValue);
-  const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   return (
-    <TabsContext.Provider value={{ activeTab, setActiveTab, activeTabIndex, setActiveTabIndex }}>
+    <TabsContext.Provider value={{ activeTab, setActiveTab }}>
       <StyledTabs {...props}>{children}</StyledTabs>
     </TabsContext.Provider>
   );
 };
 
 export const TabsList = ({ children, ...props }: TabsListProps) => {
-  const { activeTabIndex } = useTabsContext();
   const tabCount = Children.count(children);
 
-  return (
-    <StyledTabsList
-      role="tablist"
-      style={
-        {
-          '--active-tab-index': activeTabIndex,
-          '--tab-count': tabCount,
-        } as React.CSSProperties
+  const countTabsPosition = css`
+    --tab-count: ${tabCount};
+
+    ${Array.from(
+      { length: tabCount },
+      (_, index) => `
+      &:has([data-active]:nth-child(${index + 1})[data-active='true'])::after {
+        left: calc(${index * 100}% / ${tabCount});
+        width: calc(100% / ${tabCount});
       }
-      {...props}
-    >
+    `
+    ).join('')}
+  `;
+
+  return (
+    <StyledTabsList role="tablist" css={countTabsPosition} {...props}>
       {children}
     </StyledTabsList>
   );
 };
 
 export const TabsTrigger = ({ value, children, ...props }: TabsTriggerProps) => {
-  const { activeTab, setActiveTab, setActiveTabIndex } = useTabsContext();
+  const { activeTab, setActiveTab } = useTabsContext();
   const isActive = activeTab === value;
-  const triggerRef = useRef<HTMLButtonElement>(null);
 
   const handleClick = () => {
     setActiveTab(value);
-    if (triggerRef.current) {
-      const parent = triggerRef.current.parentElement;
-      if (parent) {
-        const children = Array.from(parent.children);
-        const index = children.indexOf(triggerRef.current);
-        setActiveTabIndex(index);
-      }
-    }
   };
 
   return (
     <StyledTabsTrigger
-      ref={triggerRef}
       type="button"
       role="tab"
       aria-selected={isActive}
