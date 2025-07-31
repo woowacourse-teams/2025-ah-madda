@@ -2,7 +2,7 @@ import { ComponentProps } from 'react';
 
 import { StyledText } from './Text.styled';
 
-export type TextElementType = 'h1' | 'h2' | 'h3' | 'p' | 'label';
+export type TextElementType = 'h1' | 'h2' | 'h3' | 'p' | 'label' | 'span';
 type TypographyType = 'Display' | 'Title' | 'Heading' | 'Body' | 'Label';
 type WeightType = 'regular' | 'medium' | 'semibold' | 'bold';
 export type TextProps<T extends TextElementType> = {
