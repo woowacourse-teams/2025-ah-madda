@@ -10,7 +10,6 @@ import { EventDetail } from '../../types/Event';
 import { formatKoreanDateTime } from '../utils/formatKoreanDateTime';
 
 import { DescriptionCard } from './DescriptionCard';
-import { EventDetailTitle } from './EventDetailTitle';
 import { LocationCard } from './LocationCard';
 import { ParticipantsCard } from './ParticipantsCard';
 import { PreQuestionCard } from './PreQuestionCard';
@@ -21,8 +20,6 @@ type EventDetailContentProps = EventDetail & GuestStatusAPIResponse;
 
 export const EventDetailContent = ({
   eventId,
-  title,
-  organizerName,
   registrationEnd,
   eventStart,
   eventEnd,
@@ -47,17 +44,7 @@ export const EventDetailContent = ({
   };
 
   return (
-    <Flex
-      dir="column"
-      width="100%"
-      margin="0 auto"
-      padding="24px 0"
-      gap="24px"
-      css={css`
-        max-width: 784px;
-      `}
-    >
-      <EventDetailTitle title={title} organizerName={organizerName} />
+    <Flex dir="column" width="100%" padding="20px 0" gap="20px">
       <Flex
         dir="row"
         gap="24px"
@@ -77,7 +64,9 @@ export const EventDetailContent = ({
       </Flex>
 
       <ParticipantsCard currentGuestCount={currentGuestCount} maxCapacity={maxCapacity} />
+
       <DescriptionCard description={description} />
+
       <PreQuestionCard
         questions={questions}
         answers={answers}

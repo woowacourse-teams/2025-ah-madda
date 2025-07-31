@@ -12,7 +12,6 @@ export const LocationCard = ({ place }: LocationCardProps) => {
   return (
     <Flex
       dir="column"
-      height="235px"
       css={css`
         flex: 1;
       `}
