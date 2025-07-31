@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
+import { Text } from '@/shared/components/Text';
 
 import { Event } from '../../types/Event';
 import { EventContainer } from '../containers/EventContainer';
@@ -36,15 +37,23 @@ export const EventList = ({ events }: EventListProps) => {
             + 이벤트 생성
           </Button>
         </Flex>
-        {groupedEvents.map(({ label, events }) => (
-          <EventSection key={label} title={label}>
-            <EventGrid>
-              {events.map((event, index) => (
-                <EventCard key={index} {...event} />
-              ))}
-            </EventGrid>
-          </EventSection>
-        ))}
+        {groupedEvents.length === 0 ? (
+          <Flex justifyContent="center" alignItems="center" height="200px">
+            <Text type="Heading" weight="semibold">
+              등록된 이벤트가 없습니다.
+            </Text>
+          </Flex>
+        ) : (
+          groupedEvents.map(({ label, events }) => (
+            <EventSection key={label} title={label}>
+              <EventGrid>
+                {events.map((event, index) => (
+                  <EventCard key={index} {...event} />
+                ))}
+              </EventGrid>
+            </EventSection>
+          ))
+        )}
       </Flex>
     </EventContainer>
   );

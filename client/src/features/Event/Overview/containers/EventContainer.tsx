@@ -17,6 +17,7 @@ export const EventContainer = ({ children }: Props) => {
       gap="15px"
       padding="20px"
       css={css`
+        min-height: 60vh;
         background-color: rgba(231, 231, 231, 0.47);
       `}
     >
