@@ -1,3 +1,4 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 export const StyledTabs = styled.div`
@@ -5,7 +6,11 @@ export const StyledTabs = styled.div`
   flex-direction: column;
 `;
 
-export const StyledTabsList = styled.div`
+type StyledTabsListProps = {
+  tabCount: number;
+};
+
+export const StyledTabsList = styled.div<StyledTabsListProps>`
   display: flex;
   background-color: transparent;
   position: relative;
@@ -18,7 +23,22 @@ export const StyledTabsList = styled.div`
     height: 3px;
     background-color: ${({ theme }) => theme.colors.gray900};
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0;
   }
+
+  ${({ tabCount }) => createTabsAnimation(tabCount)}
+`;
+
+export const createTabsAnimation = (tabCount: number) => css`
+  ${Array.from(
+    { length: tabCount },
+    (_, index) => `
+    &:has([data-active]:nth-child(${index + 1})[data-active='true'])::after {
+      left: calc(${index * 100}% / ${tabCount});
+      width: calc(100% / ${tabCount});
+    }
+  `
+  ).join('')}
 `;
 
 export const StyledTabsTrigger = styled.button`
@@ -37,12 +57,14 @@ export const StyledTabsTrigger = styled.button`
 
   &:hover {
     color: ${({ theme }) => theme.colors.gray700};
-    background-color: ${({ theme }) => theme.colors.gray100};
+    background-color: ${({ theme }) => theme.colors.primary50};
   }
 
   &[data-active='true'] {
     background-color: transparent;
     color: ${({ theme }) => theme.colors.gray900};
+    box-shadow: none;
+    transform: none;
   }
 `;
 

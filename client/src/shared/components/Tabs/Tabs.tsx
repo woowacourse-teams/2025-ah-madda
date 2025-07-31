@@ -1,7 +1,5 @@
 import { createContext, useContext, useState, ComponentProps, ReactNode, Children } from 'react';
 
-import { css } from '@emotion/react';
-
 import { StyledTabs, StyledTabsContent, StyledTabsList, StyledTabsTrigger } from './Tabs.styled';
 
 type DivComponentProps = ComponentProps<'div'>;
@@ -64,22 +62,8 @@ export const Tabs = ({ defaultValue, children, ...props }: TabsProps) => {
 export const TabsList = ({ children, ...props }: TabsListProps) => {
   const tabCount = Children.count(children);
 
-  const countTabsPosition = css`
-    --tab-count: ${tabCount};
-
-    ${Array.from(
-      { length: tabCount },
-      (_, index) => `
-      &:has([data-active]:nth-child(${index + 1})[data-active='true'])::after {
-        left: calc(${index * 100}% / ${tabCount});
-        width: calc(100% / ${tabCount});
-      }
-    `
-    ).join('')}
-  `;
-
   return (
-    <StyledTabsList role="tablist" css={countTabsPosition} {...props}>
+    <StyledTabsList role="tablist" tabCount={tabCount} {...props}>
       {children}
     </StyledTabsList>
   );
