@@ -304,7 +304,7 @@ public class OrganizationEventController {
                                               "title": "Unauthorized",
                                               "status": 401,
                                               "detail": "유효하지 않은 인증 정보 입니다.",
-                                              "instance": "/api/organizations/events/{eventId}/close/registration"
+                                              "instance": "/api/organizations/events/{eventId}/registration/close"
                                             }
                                             """
                             )
@@ -321,7 +321,7 @@ public class OrganizationEventController {
                                               "title": "Forbidden",
                                               "status": 403,
                                               "detail": "조직에 소속되지 않은 멤버입니다.",
-                                              "instance": "/api/organizations/events/{eventId}/close/registration"
+                                              "instance": "/api/organizations/events/{eventId}/registration/close"
                                             }
                                             """
                             )
@@ -340,7 +340,7 @@ public class OrganizationEventController {
                                                       "title": "Not Found",
                                                       "status": 404,
                                                       "detail": "존재하지 않는 회원입니다.",
-                                                      "instance": "/api/organizations/events/{eventId}/close/registration"
+                                                      "instance": "/api/organizations/events/{eventId}/registration/close"
                                                     }
                                                     """
                                     )
@@ -360,7 +360,7 @@ public class OrganizationEventController {
                                                       "title": "Unprocessable Entity",
                                                       "status": 422,
                                                       "detail": "신청 기간과 이벤트 기간이 겹칠 수 없습니다.",
-                                                      "instance": "/api/organizations/events/{eventId}/close/registration"
+                                                      "instance": "/api/organizations/events/{eventId}/registration/close"
                                                     }
                                                     """
                                     ),
@@ -372,7 +372,7 @@ public class OrganizationEventController {
                                                       "title": "Unprocessable Entity",
                                                       "status": 422,
                                                       "detail": "신청 기간은 이벤트 기간보다 앞서야 합니다.",
-                                                      "instance": "/api/organizations/events/{eventId}/close/registration"
+                                                      "instance": "/api/organizations/events/{eventId}/registration/close"
                                                     }
                                                     """
                                     )
