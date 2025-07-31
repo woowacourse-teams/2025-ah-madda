@@ -50,19 +50,17 @@ type GuestBadgeProps = GuestItemContainerProps;
 
 const getContainerStyles = (variant: GuestItemVariant) => {
   if (variant === 'completed') {
+    //E.TODO: 추후 클릭 시 모달 로직이 추가되면, 호버 효과(색상) 추가
     return `
       background-color: #F0FDF4;
-      &:hover {
-        background-color: #E6F2E6;
-      }
+
     `;
   }
 
   return `
     background-color: #F9FAFB;
-    &:hover {
-      background-color: #1414140d;
-    }
+
+
   `;
 };
 
@@ -80,7 +78,7 @@ const getBadgeStyles = (variant: GuestItemVariant) => {
 
 export const StyledGuestItemContainer = styled(Flex)<GuestItemContainerProps>`
   border-radius: 8px;
-  cursor: pointer;
+  //E.TODO: 추후 클릭 시 모달 로직이 추가되면, cursor: pointer; 추가
   ${({ variant }) => getContainerStyles(variant)}
 `;
 
