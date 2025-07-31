@@ -51,22 +51,22 @@ export const EventCard = ({
       </Flex>
 
       <Flex dir="column" gap="10px">
-        <Flex alignItems="baseline" gap="3.5px">
-          <Icon name="calendar" size={14} color="#99A1AF" />
+        <Flex alignItems="center" gap="3.5px">
+          <Icon name="calendar" size={16} color="white" />
           <Text type="Label" weight="regular" color="#99A1AF">
             {`신청 마감 ${formatTime(registrationEnd)} 까지`}
           </Text>
         </Flex>
 
-        <Flex alignItems="baseline" gap="3.5px">
-          <Icon name="clock" size={14} color="#99A1AF" />
+        <Flex alignItems="center" gap="3.5px">
+          <Icon name="clock" size={16} color="white" />
           <Text type="Label" weight="regular" color="#99A1AF">
             {`이벤트 시간 ${formatDateTime(eventStart, eventEnd)}`}
           </Text>
         </Flex>
 
         <Flex gap="7px" alignItems="center">
-          <Icon name="location" size={10.5} color="#99A1AF" />
+          <Icon name="location" size={16} color="white" />
           <Text type="Label" weight="regular" color="#99A1AF">
             {`장소 ${place}`}
           </Text>

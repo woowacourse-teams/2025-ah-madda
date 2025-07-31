@@ -16,7 +16,7 @@ export const ParticipantsCard = ({ currentGuestCount, maxCapacity }: Participant
     <Card>
       <Flex dir="column" gap="16px">
         <Flex gap="8px" alignItems="center">
-          <Icon name="users" size={18} />
+          <Icon name="user" size={18} />
           <Text type="Body">참여 현황</Text>
         </Flex>
         <Flex dir="column" gap="8px">

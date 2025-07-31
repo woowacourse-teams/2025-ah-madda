@@ -41,7 +41,7 @@ export const EventInfoSection = () => {
       <Card>
         <Flex dir="column" gap="16px">
           <Flex alignItems="center" gap="8px">
-            <Icon name="calendar" size={14} color="#4A5565" />
+            <Icon name="calendar" size={14} />
             <Text type="Body" weight="regular" color="#4A5565">
               이벤트 정보
             </Text>
@@ -56,28 +56,28 @@ export const EventInfoSection = () => {
           </Text>
 
           <Flex alignItems="center" gap="8px">
-            <Icon name="users" size={14} color="#4A5565" />
+            <Icon name="user" size={14} />
             <Text type="Label" weight="regular" color="#4A5565">
               {`주최자: ${event?.organizerName}`}
             </Text>
           </Flex>
 
           <Flex alignItems="center" gap="8px">
-            <Icon name="location" size={14} color="#4A5565" />
+            <Icon name="location" size={14} />
             <Text type="Label" weight="regular" color="#4A5565">
               {event?.place}
             </Text>
           </Flex>
 
           <Flex alignItems="center" gap="8px">
-            <Icon name="calendar" size={14} color="#4A5565" />
+            <Icon name="calendar" size={14} />
             <Text type="Label" weight="regular" color="#4A5565">
               {`신청 마감: ${formatDateTime(event?.registrationEnd ?? '')}`}
             </Text>
           </Flex>
 
           <Flex alignItems="center" gap="8px">
-            <Icon name="clock" size={14} color="#4A5565" />
+            <Icon name="clock" size={14} />
             <Text type="Label" weight="regular" color="#4A5565">
               {`이벤트 일시: ${formatDateTime(event?.eventStart ?? '')} ~ ${formatDateTime(
                 event?.eventEnd ?? ''
@@ -89,7 +89,7 @@ export const EventInfoSection = () => {
           <Flex dir="column" gap="12px">
             <Flex justifyContent="space-between" alignItems="center">
               <Flex alignItems="center" gap="8px">
-                <Icon name="users" size={14} color="#4A5565" />
+                <Icon name="user" size={14} />
                 <Text type="Label" weight="regular" color="#4A5565">
                   참가 현황
                 </Text>
