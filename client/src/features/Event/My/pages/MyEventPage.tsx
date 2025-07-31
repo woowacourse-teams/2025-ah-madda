@@ -6,6 +6,7 @@ import { IconButton } from '@/shared/components/IconButton';
 import { PageLayout } from '@/shared/components/PageLayout';
 
 import { EventTabs } from '../components/EventTabs';
+import { Info } from '../components/Info';
 import { MyEventContainer } from '../containers/MyEventContainer';
 
 export const MyEventPage = () => {
@@ -25,6 +26,8 @@ export const MyEventPage = () => {
       }
     >
       <MyEventContainer>
+        <Info />
+
         <EventTabs />
       </MyEventContainer>
     </PageLayout>

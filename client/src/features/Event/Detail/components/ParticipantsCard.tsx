@@ -1,8 +1,9 @@
-import { Card } from '../../../../shared/components/Card';
-import { Flex } from '../../../../shared/components/Flex';
-import { Icon } from '../../../../shared/components/Icon';
-import { ProgressBar } from '../../../../shared/components/ProgressBar';
-import { Text } from '../../../../shared/components/Text';
+import { Card } from '@/shared/components/Card';
+import { Flex } from '@/shared/components/Flex';
+import { Icon } from '@/shared/components/Icon';
+import { ProgressBar } from '@/shared/components/ProgressBar';
+import { Text } from '@/shared/components/Text';
+
 import type { EventDetail } from '../../../Event/types/Event';
 import { UNLIMITED_CAPACITY } from '../../New/constants/validation';
 

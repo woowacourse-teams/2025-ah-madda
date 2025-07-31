@@ -3,18 +3,14 @@ import { useNavigate } from 'react-router-dom';
 
 import { organizationQueryOptions } from '@/api/queries/organization';
 import { Button } from '@/shared/components/Button';
-import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
 import { IconButton } from '@/shared/components/IconButton';
-import { useGoogleAuth } from '@/shared/hooks/useGoogleAuth';
-import { theme } from '@/shared/styles/theme';
 
 import { EventList } from '../components/EventList';
 import { OrganizationInfo } from '../components/OrganizationInfo';
 
 export const OverviewPage = () => {
   const navigate = useNavigate();
-  const { logout } = useGoogleAuth();
 
   const { data: organizationData } = useQuery(
     organizationQueryOptions.organizations('woowacourse')
