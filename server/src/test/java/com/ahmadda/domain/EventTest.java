@@ -274,7 +274,7 @@ class EventTest {
     }
 
     @Test
-    void 이벤트를_참여를_취소할_수_있다() {
+    void 이벤트_참여를_취소할_수_있다() {
         // given
         Organization organization = Organization.create("tuda", "tuda", "tuda");
         Member member = Member.create("tuda", "praisebak@naver.com");
