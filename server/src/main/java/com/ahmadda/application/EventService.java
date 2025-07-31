@@ -56,9 +56,10 @@ public class EventService {
                 createQuestions(eventCreateRequest.questions())
         );
 
-        notifyEventCreated(event, organization);
-
-        return eventRepository.save(event);
+        Event savedEvent = eventRepository.save(event);
+        notifyEventCreated(savedEvent, organization);
+        
+        return savedEvent;
     }
 
     public Event getEvent(final Long eventId) {
