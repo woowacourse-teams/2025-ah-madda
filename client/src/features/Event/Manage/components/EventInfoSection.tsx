@@ -42,7 +42,7 @@ export const EventInfoSection = () => {
         <Flex dir="column" gap="16px">
           <Flex alignItems="center" gap="8px">
             <Icon name="calendar" size={14} color="#4A5565" />
-            <Text type="caption" weight="regular" color="#4A5565">
+            <Text type="Body" weight="regular" color="#4A5565">
               이벤트 정보
             </Text>
           </Flex>
@@ -51,34 +51,34 @@ export const EventInfoSection = () => {
             {event?.title}
           </Text>
 
-          <Text type="caption" weight="regular" color="#4A5565">
+          <Text type="Label" weight="regular" color="#4A5565">
             {event?.description}
           </Text>
 
           <Flex alignItems="center" gap="8px">
             <Icon name="users" size={14} color="#4A5565" />
-            <Text type="caption" weight="regular" color="#4A5565">
+            <Text type="Label" weight="regular" color="#4A5565">
               {`주최자: ${event?.organizerName}`}
             </Text>
           </Flex>
 
           <Flex alignItems="center" gap="8px">
             <Icon name="location" size={14} color="#4A5565" />
-            <Text type="caption" weight="regular" color="#4A5565">
+            <Text type="Label" weight="regular" color="#4A5565">
               {event?.place}
             </Text>
           </Flex>
 
           <Flex alignItems="center" gap="8px">
             <Icon name="calendar" size={14} color="#4A5565" />
-            <Text type="caption" weight="regular" color="#4A5565">
+            <Text type="Label" weight="regular" color="#4A5565">
               {`신청 마감: ${formatDateTime(event?.registrationEnd ?? '')}`}
             </Text>
           </Flex>
 
           <Flex alignItems="center" gap="8px">
             <Icon name="clock" size={14} color="#4A5565" />
-            <Text type="caption" weight="regular" color="#4A5565">
+            <Text type="Label" weight="regular" color="#4A5565">
               {`이벤트 일시: ${formatDateTime(event?.eventStart ?? '')} ~ ${formatDateTime(
                 event?.eventEnd ?? ''
               )}`}
@@ -90,11 +90,11 @@ export const EventInfoSection = () => {
             <Flex justifyContent="space-between" alignItems="center">
               <Flex alignItems="center" gap="8px">
                 <Icon name="users" size={14} color="#4A5565" />
-                <Text type="caption" weight="regular" color="#4A5565">
+                <Text type="Label" weight="regular" color="#4A5565">
                   참가 현황
                 </Text>
               </Flex>
-              <Text type="caption" weight="regular" color="#4A5565">
+              <Text type="Label" weight="regular" color="#4A5565">
                 {`${event?.currentGuestCount}/${event?.maxCapacity}명`}
               </Text>
             </Flex>

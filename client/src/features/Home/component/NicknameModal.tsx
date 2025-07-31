@@ -60,14 +60,14 @@ export const NicknameModal = ({ isOpen, onClose }: NicknameModalProps) => {
     >
       <Flex dir="column" gap="20px">
         <Flex justifyContent="space-between" alignItems="baseline">
-          <Text type="caption" weight="bold" color="#333">
+          <Text type="Label" weight="bold" color="#333">
             닉네임 설정
           </Text>
           <IconButton name="close" color="#2B2B2B" onClick={handleClose} />
         </Flex>
 
         <Flex dir="column">
-          <Text type="caption" weight="regular" color="#666">
+          <Text type="Label" weight="regular" color="#666">
             조직에서 사용할 닉네임을 입력해주세요.
           </Text>
 
