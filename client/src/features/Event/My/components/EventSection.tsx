@@ -20,7 +20,7 @@ export const EventSection = ({ events, title, emptyMessage, cardType }: EventSec
     <Flex dir="column" gap="16px">
       <Flex alignItems="center" gap="8px">
         <Icon name="calendar" size={21} color="#0A0A0A" />
-        <Text type="Body" weight="bold" color="black">
+        <Text as="h2" type="Heading" weight="bold" color="black">
           {title}
         </Text>
       </Flex>

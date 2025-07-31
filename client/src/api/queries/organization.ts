@@ -7,6 +7,7 @@ import { fetcher } from '../fetcher';
 export const organizationQueryKeys = {
   all: () => ['organization'],
   event: () => [...organizationQueryKeys.all(), 'event'],
+  profile: () => [...organizationQueryKeys.all(), 'profile'],
 };
 export const organizationQueryOptions = {
   // S.TODO : 추후 수정 ':organizationId' : number
@@ -21,6 +22,12 @@ export const organizationQueryOptions = {
       queryKey: [...organizationQueryKeys.event(), organizationId],
       queryFn: () => getAllEventAPI({ organizationId }),
     }),
+
+  profile: (organizationId: number) =>
+    queryOptions({
+      queryKey: [...organizationQueryKeys.profile(), organizationId],
+      queryFn: () => getOrganizationProfile({ organizationId }),
+    }),
 };
 
 const getAllEventAPI = ({ organizationId }: { organizationId: number }) => {
@@ -29,4 +36,8 @@ const getAllEventAPI = ({ organizationId }: { organizationId: number }) => {
 
 const getOrganization = ({ organizationId }: { organizationId: string }) => {
   return fetcher.get<Organization>(`organizations/${organizationId}`);
+};
+
+const getOrganizationProfile = ({ organizationId }: { organizationId: number }) => {
+  return fetcher.get<{ nickname: string }>(`organizations/${organizationId}/profile`);
 };

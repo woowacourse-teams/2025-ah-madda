@@ -42,7 +42,7 @@ public class Period {
     }
 
     public boolean isOverlappedWith(final Period other) {
-        return !this.isAfter(other) && !this.isBefore(other);
+        return this.start.isBefore(other.end) && other.start.isBefore(this.end);
     }
 
     public boolean isNotStarted(final LocalDateTime currentDateTime) {

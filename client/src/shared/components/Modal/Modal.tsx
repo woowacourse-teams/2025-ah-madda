@@ -22,11 +22,7 @@ export type ModalProps = {
    * Called when the modal is requested to close (ESC, outside click).
    */
   onClose: () => void;
-  /**
-   * Modal size.
-   * @default 'sm'
-   */
-  size?: 'sm' | 'md' | 'lg';
+
   /**
    * Whether clicking the backdrop should close the modal.
    * @default true
@@ -43,7 +39,6 @@ export const Modal = ({
   isOpen,
   onClose,
   children,
-  size = 'sm',
   shouldCloseOnBackdropClick = true,
   showCloseButton = true,
   ...props
@@ -52,7 +47,7 @@ export const Modal = ({
 
   useFocusTrap(modalRef);
   useEscapeKey(onClose);
-  useLockScroll();
+  useLockScroll(isOpen);
 
   if (!isOpen) return null;
 
@@ -64,7 +59,7 @@ export const Modal = ({
 
   const modalContent = (
     <StyledModalLayout onClick={handleBackdropClick}>
-      <StyledModalContainer size={size} {...props}>
+      <StyledModalContainer {...props}>
         <StyledModalWrapper ref={modalRef}>
           {showCloseButton && (
             <StyledCloseButtonWrapper>
