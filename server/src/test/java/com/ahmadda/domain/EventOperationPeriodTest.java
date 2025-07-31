@@ -9,8 +9,41 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class EventOperationPeriodTest {
+
+    @Test
+    void 이벤트_운영_기간을_수정할_수_있다() {
+        // given
+        var currentTime = LocalDateTime.of(2025, 7, 16, 8, 0);
+        var registrationPeriod = Period.create(
+                currentTime.plusDays(1),
+                currentTime.plusDays(5)
+        );
+        var eventPeriod = Period.create(
+                currentTime.plusDays(6),
+                currentTime.plusDays(7)
+        );
+        var sut = EventOperationPeriod.create(registrationPeriod, eventPeriod, currentTime);
+
+        // when
+        var updated = sut.update(
+                Period.create(currentTime.plusDays(2), currentTime.plusDays(4)),
+                Period.create(currentTime.plusDays(8), currentTime.plusDays(9)),
+                currentTime
+        );
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(updated.getRegistrationPeriod())
+                    .isEqualTo(Period.create(currentTime.plusDays(2), currentTime.plusDays(4)));
+            softly.assertThat(updated.getEventPeriod())
+                    .isEqualTo(Period.create(currentTime.plusDays(8), currentTime.plusDays(9)));
+            softly.assertThat(updated)
+                    .isNotEqualTo(sut);
+        });
+    }
 
     @Test
     void 정상적인_이벤트_운영_기간을_생성한다() {

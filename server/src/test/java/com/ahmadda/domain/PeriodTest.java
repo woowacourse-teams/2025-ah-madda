@@ -1,6 +1,7 @@
 package com.ahmadda.domain;
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -11,8 +12,34 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class PeriodTest {
+
+    @Test
+    void 기간을_수정할_수_있다() {
+        // given
+        var sut = Period.create(
+                LocalDateTime.of(2025, 7, 1, 10, 0),
+                LocalDateTime.of(2025, 7, 1, 12, 0)
+        );
+
+        // when
+        var updated = sut.update(
+                LocalDateTime.of(2025, 7, 2, 8, 0),
+                LocalDateTime.of(2025, 7, 2, 20, 0)
+        );
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(updated.start())
+                    .isEqualTo(LocalDateTime.of(2025, 7, 2, 8, 0));
+            softly.assertThat(updated.end())
+                    .isEqualTo(LocalDateTime.of(2025, 7, 2, 20, 0));
+            softly.assertThat(updated)
+                    .isNotEqualTo(sut);
+        });
+    }
 
     @ParameterizedTest
     @CsvSource({"2025-07-18T04:21, 2025-07-18T04:21", "2025-07-18T04:21, 2025-07-18T04:20"})
