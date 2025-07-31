@@ -371,6 +371,18 @@ public class OrganizationEventController {
                                                       "instance": "/api/organizations/events/{eventId}/registration/close"
                                                     }
                                                     """
+                                    ),
+                                    @ExampleObject(
+                                            name = "이벤트 주최자가 아님",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "주최자만 마감할 수 있습니다.",
+                                                      "instance": "/api/organizations/events/{eventId}/registration/close"
+                                                    }
+                                                    """
                                     )
                             }
                     )
