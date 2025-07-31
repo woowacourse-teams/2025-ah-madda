@@ -79,7 +79,7 @@ class PeriodTest {
                                 LocalDateTime.of(2025, 7, 19, 0, 0),
                                 LocalDateTime.of(2025, 7, 20, 0, 0)
                         ),
-                        true
+                        false
                 ),
                 Arguments.of(
                         Period.create(
