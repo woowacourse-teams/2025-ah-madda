@@ -64,6 +64,7 @@ public class EventOperationPeriod {
     }
 
     public void closeRegistration(final LocalDateTime closeTime) {
+        //todo : 이미 마감된 경우 마감 안되게.
         Period closePeriod = Period.create(this.registrationPeriod.start(), closeTime);
 
         validate(closePeriod, this.eventPeriod);

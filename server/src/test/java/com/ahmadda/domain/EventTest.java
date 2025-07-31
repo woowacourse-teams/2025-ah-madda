@@ -1,6 +1,5 @@
 package com.ahmadda.domain;
 
-import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -327,7 +326,7 @@ class EventTest {
 
         // when // then
         assertThatThrownBy(() -> sut.closeRegistrationAt(notBaseOrganizer, registrationCloseTime))
-                .isInstanceOf(AccessDeniedException.class)
+                .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage("주최자만 마감할 수 있습니다.");
 
     }

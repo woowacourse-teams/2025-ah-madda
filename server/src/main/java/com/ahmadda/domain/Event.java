@@ -1,7 +1,6 @@
 package com.ahmadda.domain;
 
 
-import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.CascadeType;
@@ -219,7 +218,7 @@ public class Event extends BaseEntity {
 
     private void validateCloseRegistration(Member organizer) {
         if (!isOrganizer(organizer)) {
-            throw new AccessDeniedException("주최자만 마감할 수 있습니다.");
+            throw new BusinessRuleViolatedException("주최자만 마감할 수 있습니다.");
         }
     }
 
