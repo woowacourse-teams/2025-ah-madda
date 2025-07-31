@@ -1,7 +1,7 @@
 package com.ahmadda.infra.slack.config;
 
 import com.ahmadda.infra.slack.AsyncSlackReminder;
-import com.ahmadda.infra.slack.MockProductionSlackReminder;
+import com.ahmadda.infra.slack.MockSlackReminder;
 import com.ahmadda.infra.slack.SlackReminder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -18,7 +18,7 @@ public class SlackReminderConfig {
     @Bean
     @ConditionalOnProperty(name = "slack.mock", havingValue = "true")
     public SlackReminder mockSlackReminder() {
-        return new MockProductionSlackReminder();
+        return new MockSlackReminder();
     }
 
     @Bean
