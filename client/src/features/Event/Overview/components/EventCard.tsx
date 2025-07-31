@@ -6,7 +6,6 @@ import { Icon } from '@/shared/components/Icon';
 import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Text } from '@/shared/components/Text';
 
-import { UNLIMITED_CAPACITY } from '../../New/constants/validation';
 import { Event } from '../../types/Event';
 import { formatDateTime } from '../utils/formatDateTime';
 import { formatTime } from '../utils/formatTime';
@@ -31,7 +30,7 @@ export const EventCard = ({
       <Flex dir="column" gap="8px">
         <Flex justifyContent="space-between" alignItems="center" gap="8px">
           <Text as="h2" type="Heading" color="#ffffff" weight="semibold">
-            {title}
+            {title.length > 15 ? `${title.slice(0, 12)}...` : title}
           </Text>
           <Badge isRegistrationOpen={isRegistrationOpen}>
             {isRegistrationOpen ? '모집중' : '모집마감'}
@@ -68,19 +67,16 @@ export const EventCard = ({
             {organizerName}
           </Text>
         </Flex>
-        {maxCapacity !== UNLIMITED_CAPACITY && (
-          <>
-            <Flex width="100%" justifyContent="space-between" alignItems="center">
-              <Text type="Label" color="#99A1AF">
-                참여 현황
-              </Text>
-              <Text type="Label" color="#99A1AF">
-                {`${currentGuestCount}/${maxCapacity} 명`}
-              </Text>
-            </Flex>
-            <ProgressBar value={Number(currentGuestCount)} max={maxCapacity} color="black" />
-          </>
-        )}
+
+        <Flex width="100%" justifyContent="space-between" alignItems="center">
+          <Text type="Label" color="#99A1AF">
+            참여 현황
+          </Text>
+          <Text type="Label" color="#99A1AF">
+            {`${currentGuestCount}/${maxCapacity} 명`}
+          </Text>
+        </Flex>
+        <ProgressBar value={Number(currentGuestCount)} max={maxCapacity} color="black" />
       </Flex>
     </CardWrapper>
   );

@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
@@ -9,17 +7,14 @@ import { myQueryOptions } from '@/api/queries/my';
 import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
-import { Icon } from '@/shared/components/Icon';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
 
-import { UNLIMITED_CAPACITY } from '../constants/validation';
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useEventForm } from '../hooks/useEventForm';
 import { useEventValidation } from '../hooks/useEventValidation';
 import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
 
-import { MaxCapacityModal } from './MaxCapacityModal';
 import { QuestionForm } from './QuestionForm';
 
 const ORGANIZATION_ID = 1; // 임시
@@ -31,10 +26,7 @@ export const EventCreateForm = () => {
   const { formData, handleChange, setQuestions } = useEventForm();
   const { errors, setQuestionErrors, validate, validateField, isFormValid } =
     useEventValidation(formData);
-  const [isCapacityModalOpen, setIsCapacityModalOpen] = useState(false);
   const { data: userProfile } = useQuery(myQueryOptions.profile());
-
-  const today = new Date();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -186,6 +178,7 @@ export const EventCreateForm = () => {
               error={!!errors.place}
               errorMessage={errors.place}
               isRequired={true}
+              max={12}
             />
 
             <Input
@@ -200,57 +193,18 @@ export const EventCreateForm = () => {
               error={!!errors.description}
               errorMessage={errors.description}
               isRequired={true}
+              max={80}
             />
 
-            <div
-              onClick={() => setIsCapacityModalOpen(true)}
-              // eslint-disable-next-line react/no-unknown-property
-              css={css`
-                width: 100%;
-                padding: 16px;
-                border-radius: 10px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                cursor: pointer;
-
-                &:hover {
-                  background-color: #f0f0f0;
-                }
-              `}
-            >
-              <Flex alignItems="center" gap="8px">
-                <Icon name="users" size={18} />
-                <Text type="Label" color="gray">
-                  수용 인원
-                </Text>
-              </Flex>
-
-              <Flex alignItems="center" gap="4px">
-                <Text type="Label">
-                  {formData.maxCapacity === UNLIMITED_CAPACITY
-                    ? '무제한'
-                    : `${formData.maxCapacity}명`}
-                </Text>
-                <Text type="Label" color="gray">
-                  ✏️
-                </Text>
-              </Flex>
-            </div>
-
-            <MaxCapacityModal
-              isOpen={isCapacityModalOpen}
-              initialValue={formData.maxCapacity === UNLIMITED_CAPACITY ? 10 : formData.maxCapacity}
-              onClose={() => setIsCapacityModalOpen(false)}
-              onSubmit={(value) => {
-                const syntheticEvent = {
-                  target: {
-                    value: value.toString(),
-                  },
-                };
-                handleChange('maxCapacity')(syntheticEvent as React.ChangeEvent<HTMLInputElement>);
-                validateField('maxCapacity', syntheticEvent.target.value);
-              }}
+            <Input
+              id="maxCapacity"
+              label="수용 인원"
+              placeholder="최대 참가 인원을 입력해 주세요"
+              type="number"
+              value={formData.maxCapacity}
+              min={1}
+              onChange={handleChange('maxCapacity')}
+              isRequired={true}
             />
           </Flex>
         </Card>
