@@ -296,7 +296,6 @@ public class OrganizationEventController {
             @ApiResponse(
                     responseCode = "401",
                     content = @Content(
-                            mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = """
                                             {
@@ -313,7 +312,6 @@ public class OrganizationEventController {
             @ApiResponse(
                     responseCode = "403",
                     content = @Content(
-                            mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = """
                                             {
@@ -330,7 +328,6 @@ public class OrganizationEventController {
             @ApiResponse(
                     responseCode = "404",
                     content = @Content(
-                            mediaType = "application/json",
                             examples = {
                                     @ExampleObject(
                                             name = "회원 없음",
@@ -350,7 +347,6 @@ public class OrganizationEventController {
             @ApiResponse(
                     responseCode = "422",
                     content = @Content(
-                            mediaType = "application/json",
                             examples = {
                                     @ExampleObject(
                                             name = "신청 기간과 이벤트 기간 겹침",
