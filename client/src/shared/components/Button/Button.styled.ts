@@ -75,7 +75,7 @@ const colorStyles = {
 } as const;
 
 const variantStyles = {
-  outlined: css`
+  outline: css`
     color: ${theme.colors.gray500};
     border: 1px solid ${theme.colors.gray300};
     background-color: transparent;
@@ -83,7 +83,7 @@ const variantStyles = {
     &:hover {
       background-color: white;
       color: ${theme.colors.gray600};
-      border: 1px solid ${theme.colors.gray400};
+      border: 1.5px solid ${theme.colors.gray400};
       opacity: 0.8;
     }
 
@@ -108,7 +108,7 @@ export const StyledButton = styled.button<ButtonProps>`
 
   ${({ size }) => sizeStyles[size ?? 'md']}
   ${({ color, variant = 'solid' }) =>
-    variant === 'outline' ? variantStyles.outlined : colorStyles[color ?? 'primary']}
+    variant === 'outline' ? variantStyles.outline : colorStyles[color ?? 'primary']}
 
   &:disabled {
     opacity: 0.5;
