@@ -156,6 +156,10 @@ public class Event extends BaseEntity {
             final String organizerNickname,
             final int maxCapacity
     ) {
+        validateTitle(title);
+        validateOrganizerNickname(organizerNickname);
+        validateMaxCapacity(maxCapacity);
+
         this.title = title;
         this.description = description;
         this.place = place;
