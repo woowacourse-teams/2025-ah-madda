@@ -362,7 +362,7 @@ class EventTest {
         );
     }
 
-    private Event createEvent(LocalDateTime now, Period registrationPeriod) {
+    private Event createEvent(final LocalDateTime now, final Period registrationPeriod) {
         return Event.create(
                 "title",
                 "description",
@@ -379,7 +379,7 @@ class EventTest {
         );
     }
 
-    private Member createMember(String name, String email) {
+    private Member createMember(final String name, final String email) {
         return Member.create(name, email);
     }
 
@@ -388,14 +388,14 @@ class EventTest {
     }
 
     private OrganizationMember createOrganizationMember(
-            String nickname,
-            Member member,
-            Organization organization
+            final String nickname,
+            final Member member,
+            final Organization organization
     ) {
         return OrganizationMember.create(nickname, member, organization);
     }
 
-    private Event createEvent(final String title, EventOperationPeriod eventOperationPeriod) {
+    private Event createEvent(final String title, final EventOperationPeriod eventOperationPeriod) {
         var organization = createOrganization("우테코");
 
         return Event.create(
