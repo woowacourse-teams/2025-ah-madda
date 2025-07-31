@@ -85,8 +85,10 @@ class EventServiceTest {
                 List.of(new QuestionCreateRequest("1번 질문", true), new QuestionCreateRequest("2번 질문", false))
         );
 
+        var loginMember = new LoginMember(member.getId());
+
         //when
-        var event = sut.createEvent(organization.getId(), member.getId(), eventCreateRequest, now);
+        var event = sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now);
 
         //then
         assertThat(eventRepository.findById(event.getId()))
@@ -135,8 +137,10 @@ class EventServiceTest {
                 List.of(new QuestionCreateRequest("1번 질문", true), new QuestionCreateRequest("2번 질문", false))
         );
 
+        var loginMember = new LoginMember(1L);
+
         //when //then
-        assertThatThrownBy(() -> sut.createEvent(999L, organizationMember.getId(), eventCreateRequest, now))
+        assertThatThrownBy(() -> sut.createEvent(999L, loginMember, eventCreateRequest, now))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않은 조직 정보입니다.");
     }
@@ -158,8 +162,10 @@ class EventServiceTest {
                 new ArrayList<>()
         );
 
+        var loginMember = new LoginMember(999L);
+
         //when //then
-        assertThatThrownBy(() -> sut.createEvent(organization.getId(), 999L, eventCreateRequest, now))
+        assertThatThrownBy(() -> sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 회원입니다.");
     }
@@ -184,8 +190,10 @@ class EventServiceTest {
                 new ArrayList<>()
         );
 
+        var loginMember = new LoginMember(member.getId());
+
         //when //then
-        assertThatThrownBy(() -> sut.createEvent(organization1.getId(), member.getId(), eventCreateRequest, now))
+        assertThatThrownBy(() -> sut.createEvent(organization1.getId(), loginMember, eventCreateRequest, now))
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessage("조직에 소속되지 않은 멤버입니다.");
     }
@@ -248,8 +256,10 @@ class EventServiceTest {
                 )
         );
 
+        var loginMember = new LoginMember(organizerMember.getId());
+
         // when
-        var savedEvent = sut.createEvent(organization.getId(), organizer.getId(), request, now);
+        var savedEvent = sut.createEvent(organization.getId(), loginMember, request, now);
 
         // then
         var email = Email.of(savedEvent, "새로운 이벤트가 등록되었습니다.");

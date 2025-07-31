@@ -41,12 +41,12 @@ public class EventService {
     @Transactional
     public Event createEvent(
             final Long organizationId,
-            final Long memberId,
+            final LoginMember loginMember,
             final EventCreateRequest eventCreateRequest,
             final LocalDateTime currentDateTime
     ) {
         Organization organization = getOrganization(organizationId);
-        OrganizationMember organizer = validateOrganizationAccess(organizationId, memberId);
+        OrganizationMember organizer = validateOrganizationAccess(organizationId, loginMember.memberId());
 
         EventOperationPeriod eventOperationPeriod = createEventOperationPeriod(eventCreateRequest, currentDateTime);
         Event event = Event.create(

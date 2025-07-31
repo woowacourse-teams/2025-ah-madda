@@ -279,7 +279,7 @@ public class OrganizationEventController {
     ) {
         Event event = eventService.createEvent(
                 organizationId,
-                loginMember.memberId(),
+                loginMember,
                 eventCreateRequest,
                 LocalDateTime.now()
         );
