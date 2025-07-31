@@ -332,7 +332,7 @@ class EventTest {
 
     }
 
-    private Event createEvent(final String title, final int maxCapacity, Question... questions) {
+    private Event createEvent(String title, int maxCapacity, Question... questions) {
         var organization = createOrganization("우테코");
 
         return Event.create(
@@ -362,7 +362,7 @@ class EventTest {
         );
     }
 
-    private Event createEvent(final LocalDateTime now, final Period registrationPeriod) {
+    private Event createEvent(LocalDateTime now, Period registrationPeriod) {
         return Event.create(
                 "title",
                 "description",
@@ -379,7 +379,7 @@ class EventTest {
         );
     }
 
-    private Member createMember(final String name, final String email) {
+    private Member createMember(String name, String email) {
         return Member.create(name, email);
     }
 
@@ -388,14 +388,14 @@ class EventTest {
     }
 
     private OrganizationMember createOrganizationMember(
-            final String nickname,
-            final Member member,
-            final Organization organization
+            String nickname,
+            Member member,
+            Organization organization
     ) {
         return OrganizationMember.create(nickname, member, organization);
     }
 
-    private Event createEvent(final String title, final EventOperationPeriod eventOperationPeriod) {
+    private Event createEvent(String title, EventOperationPeriod eventOperationPeriod) {
         var organization = createOrganization("우테코");
 
         return Event.create(
@@ -410,7 +410,7 @@ class EventTest {
         );
     }
 
-    private OrganizationMember createOrganizationMember(final Member member, final Organization organization) {
+    private OrganizationMember createOrganizationMember(Member member, Organization organization) {
         return OrganizationMember.create("nickname", member, organization);
     }
 
@@ -418,11 +418,11 @@ class EventTest {
         return Member.create("이재훈", "dlwogns3413@ahamadda.com");
     }
 
-    private Organization createOrganization(final String name) {
+    private Organization createOrganization(String name) {
         return Organization.create(name, "우테코입니다.", "imageUrl");
     }
 
-    private Event createEvent(final OrganizationMember organizationMember, final Organization organization) {
+    private Event createEvent(OrganizationMember organizationMember, Organization organization) {
         var now = LocalDateTime.now();
 
         return Event.create(
