@@ -7,7 +7,7 @@ export const Info = () => {
       dir="column"
       justifyContent="flex-start"
       margin="60px 0 30px 0"
-      padding="30px 0"
+      padding="20px 0"
       gap="10px"
     >
       <Text as="h1" type="Display" weight="bold" color="gray900">

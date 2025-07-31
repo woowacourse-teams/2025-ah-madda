@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 export const StyledTabs = styled.div`
@@ -8,6 +7,7 @@ export const StyledTabs = styled.div`
 
 type StyledTabsListProps = {
   tabCount: number;
+  activeTabIndex: number;
 };
 
 export const StyledTabsList = styled.div<StyledTabsListProps>`
@@ -23,22 +23,10 @@ export const StyledTabsList = styled.div<StyledTabsListProps>`
     height: 3px;
     background-color: ${({ theme }) => theme.colors.gray900};
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 0;
+
+    transform: translateX(calc(${({ activeTabIndex }) => activeTabIndex} * 100%));
+    width: calc(100% / ${({ tabCount }) => tabCount});
   }
-
-  ${({ tabCount }) => createTabsAnimation(tabCount)}
-`;
-
-export const createTabsAnimation = (tabCount: number) => css`
-  ${Array.from(
-    { length: tabCount },
-    (_, index) => `
-    &:has([data-active]:nth-child(${index + 1})[data-active='true'])::after {
-      left: calc(${index * 100}% / ${tabCount});
-      width: calc(100% / ${tabCount});
-    }
-  `
-  ).join('')}
 `;
 
 export const StyledTabsTrigger = styled.button`
