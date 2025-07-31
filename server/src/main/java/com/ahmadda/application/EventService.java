@@ -11,6 +11,7 @@ import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
+import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
@@ -111,7 +112,7 @@ public class EventService {
                 eventUpdateRequest.maxCapacity()
         );
 
-        // notifyEventUpdated(event);
+        notifyEventUpdated(event);
 
         return event;
     }
@@ -156,6 +157,17 @@ public class EventService {
         List<OrganizationMember> recipients =
                 event.getNonGuestOrganizationMembers(organization.getOrganizationMembers());
         String content = "새로운 이벤트가 등록되었습니다.";
+        Email email = Email.of(event, content);
+
+        eventNotification.sendEmails(recipients, email);
+    }
+
+    private void notifyEventUpdated(final Event event) {
+        List<OrganizationMember> recipients = event.getGuests()
+                .stream()
+                .map(Guest::getOrganizationMember)
+                .toList();
+        String content = "이벤트 정보가 수정되었습니다.";
         Email email = Email.of(event, content);
 
         eventNotification.sendEmails(recipients, email);

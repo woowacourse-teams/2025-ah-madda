@@ -11,6 +11,8 @@ import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
+import com.ahmadda.domain.Guest;
+import com.ahmadda.domain.GuestRepository;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
@@ -60,6 +62,9 @@ class EventServiceTest {
 
     @MockitoBean
     private EventNotification eventNotification;
+
+    @Autowired
+    private GuestRepository guestRepository;
 
     @Test
     void 이벤트를_생성할_수_있다() {
@@ -443,6 +448,76 @@ class EventServiceTest {
         assertThatThrownBy(() -> sut.updateEvent(event.getId(), loginMember, updateRequest, now))
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessage("이벤트의 주최자만 수정할 수 있습니다.");
+    }
+
+    @Test
+    void 이벤트_수정_시_게스트들에게_알림을_보낸다() {
+        // given
+        var organization = createOrganization();
+        var organizerMember = createMember("organizer", "organizer@email.com");
+        var guestMember1 = createMember("guest1", "guest1@email.com");
+        var guestMember2 = createMember("guest2", "guest2@email.com");
+
+        var organizerOrgMember = createOrganizationMember(organization, organizerMember);
+        var guestOrgMember1 = createOrganizationMember(organization, guestMember1);
+        var guestOrgMember2 = createOrganizationMember(organization, guestMember2);
+
+        var now = LocalDateTime.now();
+
+        var event = Event.create(
+                "원래 제목",
+                "원래 설명",
+                "원래 장소",
+                organizerOrgMember,
+                organization,
+                EventOperationPeriod.create(
+                        Period.create(now.plusDays(1), now.plusDays(2)),
+                        Period.create(now.plusDays(3), now.plusDays(4)),
+                        now
+                ),
+                "원래 닉네임",
+                50
+        );
+        eventRepository.save(event);
+
+        var guest1 = Guest.create(event, guestOrgMember1, now.plusDays(1));
+        var guest2 = Guest.create(event, guestOrgMember2, now.plusDays(1));
+        guestRepository.save(guest1);
+        guestRepository.save(guest2);
+
+        var updateRequest = new EventUpdateRequest(
+                "수정된 제목",
+                "수정된 설명",
+                "수정된 장소",
+                now.plusDays(5),
+                now.plusDays(6),
+                now.plusDays(7),
+                "수정된 닉네임",
+                200
+        );
+
+        var loginMember = new LoginMember(organizerMember.getId());
+
+        // when
+        var updatedEvent = sut.updateEvent(event.getId(), loginMember, updateRequest, now);
+
+        // then
+        var email = Email.of(updatedEvent, "이벤트 정보가 수정되었습니다.");
+        verify(eventNotification).sendEmails(
+                argThat(recipients -> {
+                    var emails = recipients.stream()
+                            .map(om -> om.getMember()
+                                    .getEmail())
+                            .collect(toSet());
+                    var expected = Set.of(
+                            guestMember1.getEmail(),
+                            guestMember2.getEmail()
+                    );
+
+                    return emails.equals(expected);
+                }),
+                eq(email)
+        );
     }
 
     private Member createMember() {
