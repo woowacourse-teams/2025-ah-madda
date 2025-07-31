@@ -63,6 +63,14 @@ public class EventOperationPeriod {
         return !registrationPeriod.includes(currentDateTime);
     }
 
+    public void closeRegistration(final LocalDateTime closeTime) {
+        Period closePeriod = Period.create(this.registrationPeriod.start(), closeTime);
+
+        validate(closePeriod, this.eventPeriod);
+
+        this.registrationPeriod = closePeriod;
+    }
+
     private void validateRegistrationPeriod(
             final Period registrationPeriod,
             final LocalDateTime currentDateTime

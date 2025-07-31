@@ -62,6 +62,19 @@ public class EventService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않은 이벤트 정보입니다."));
     }
 
+    @Transactional
+    public void closeEventRegistration(
+            final Long organizationId,
+            final Long eventId,
+            final Long memberId,
+            final LocalDateTime currentDateTime) {
+        validateOrganizationExists(organizationId);
+        OrganizationMember organizationMember = validateOrganizationAccess(organizationId, memberId);
+        Event event = getEvent(eventId);
+
+        event.closeRegistrationAt(organizationMember, currentDateTime);
+    }
+
     private EventOperationPeriod createEventOperationPeriod(
             final EventCreateRequest eventCreateRequest,
             final LocalDateTime currentDateTime
@@ -79,6 +92,12 @@ public class EventService {
     private Organization getOrganization(final Long organizationId) {
         return organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않은 조직 정보입니다."));
+    }
+
+    private void validateOrganizationExists(final Long organizationId) {
+        if (!organizationRepository.existsById(organizationId)) {
+            throw new NotFoundException("존재하지 않은 조직 정보입니다.");
+        }
     }
 
     private OrganizationMember validateOrganizationAccess(final Long organizationId, final Long memberId) {

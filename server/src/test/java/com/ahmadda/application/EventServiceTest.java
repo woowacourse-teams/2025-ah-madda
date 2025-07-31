@@ -195,6 +195,57 @@ class EventServiceTest {
                 .hasMessage("존재하지 않은 이벤트 정보입니다.");
     }
 
+    @Test
+    void 이벤트_마감_시_조직_id에_해당하는_조직이_없다면_예외가_발생한다() {
+        // given
+        var organization = appendOrganization();
+        var member = appendMember();
+        var organizationMember = appendOrganizationMember(organization, member);
+        var event = appendEvent(organizationMember, organization);
+        var now = LocalDateTime.now();
+
+        // when // then
+        assertThatThrownBy(() -> sut.closeEventRegistration(999L, event.getId(), organizationMember.getId(), now))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않은 조직 정보입니다.");
+    }
+
+    @Test
+    void 이벤트_마감_시_조직원_id에_해당하는_조직원이_없다면_예외가_발생한다() {
+        // given
+        var organization = appendOrganization();
+        var member = appendMember();
+        var organizationMember = appendOrganizationMember(organization, member);
+        var event = appendEvent(organizationMember, organization);
+        var now = LocalDateTime.now();
+
+        // when // then
+        assertThatThrownBy(() -> sut.closeEventRegistration(organization.getId(), event.getId(), 999L, now))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 회원입니다.");
+    }
+
+    @Test
+    void 이벤트_마감_시_요청한_조직에_소속되지_않았다면_예외가_발생한다() {
+        // given
+        var organization1 = appendOrganization();
+        var organization2 = appendOrganization();
+        var member = appendMember();
+        var notBelongingOrgMember = appendOrganizationMember(organization2, member);
+        var event = appendEvent(notBelongingOrgMember, organization2);
+        var now = LocalDateTime.now();
+
+        // when // then
+        assertThatThrownBy(() -> sut.closeEventRegistration(organization1.getId(),
+                                                            event.getId(),
+                                                            notBelongingOrgMember.getId(),
+                                                            now
+        ))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessage("조직에 소속되지 않은 멤버입니다.");
+    }
+
+
     private Organization appendOrganization() {
         var organization = Organization.create("우테코", "우테코입니다.", "image");
 

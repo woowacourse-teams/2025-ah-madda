@@ -1,6 +1,8 @@
 package com.ahmadda.domain;
 
+import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -245,6 +247,86 @@ class EventTest {
             softly.assertThat(result)
                     .containsExactly(requiredQuestion);
         });
+    }
+
+    @Test
+    void 모집_마감을_할_수_있다() {
+        // given
+        var yesterday = LocalDateTime.now()
+                .minusDays(1);
+        var now = LocalDateTime.now();
+
+        var registrationEnd = now.plusDays(1);
+        var registrationCloseTime = now.plusHours(6);
+
+        var registrationPeriod = Period.create(
+                now,
+                registrationEnd
+        );
+        var sut = createEvent(yesterday, registrationPeriod);
+
+        // when
+        sut.closeRegistrationAt(baseOrganizer, registrationCloseTime);
+
+        // then
+        Assertions.assertThat(sut.getRegistrationEnd())
+                .isEqualTo(registrationCloseTime);
+    }
+
+    @Test
+    void 모집을_마감하면_게스트가_참여할_수_없다() {
+        var yesterday = LocalDateTime.now()
+                .minusDays(1);
+        var now = LocalDateTime.now();
+
+        var registrationEnd = now.plusDays(1);
+        var registrationCloseTime = now.plusHours(6);
+
+        var registrationPeriod = Period.create(
+                now,
+                registrationEnd
+        );
+
+        var sut = createEvent(yesterday, registrationPeriod);
+
+        var organizationMember =
+                createOrganizationMember("게스트", createMember("게스트", "guest@email.com"), baseOrganization);
+
+        // when
+        sut.closeRegistrationAt(baseOrganizer, registrationCloseTime);
+
+        // then
+        assertThatThrownBy(() -> Guest.create(sut, organizationMember, registrationEnd))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("이벤트 신청은 신청 시작 시간부터 신청 마감 시간까지 가능합니다.");
+    }
+
+    @Test
+    void 주최자만_이벤트를_마감할_수_있다() {
+        // given
+        var yesterday = LocalDateTime.now()
+                .minusDays(1);
+        var now = LocalDateTime.now();
+
+        var registrationEnd = now.plusDays(1);
+        var registrationCloseTime = now.plusHours(6);
+
+        var registrationPeriod = Period.create(
+                now,
+                registrationEnd
+        );
+
+        Member member = createMember("주최자 아님", "test1@example.com");
+        var notBaseOrganizer = createOrganizationMember("주최자 아님", member, baseOrganization);
+
+
+        var sut = createEvent(yesterday, registrationPeriod);
+
+        // when // then
+        assertThatThrownBy(() -> sut.closeRegistrationAt(notBaseOrganizer, registrationCloseTime))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessage("주최자만 마감할 수 있습니다.");
+
     }
 
     private Event createEvent(final String title, final int maxCapacity, Question... questions) {

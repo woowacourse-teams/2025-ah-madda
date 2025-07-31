@@ -1,6 +1,7 @@
 package com.ahmadda.domain;
 
 
+import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.CascadeType;
@@ -186,6 +187,13 @@ public class Event extends BaseEntity {
                 .collect(Collectors.toSet());
     }
 
+    public void closeRegistrationAt(final OrganizationMember organizationMember,
+                                    final LocalDateTime registrationEndTime) {
+        validateCloseRegistration(organizer.getMember());
+
+        this.eventOperationPeriod.closeRegistration(registrationEndTime);
+    }
+
     public boolean isOrganizer(final Member member) {
         return organizer.getMember()
                 .equals(member);
@@ -203,6 +211,12 @@ public class Event extends BaseEntity {
         }
         if (guest.isSameOrganizationMember(organizer)) {
             throw new BusinessRuleViolatedException("이벤트의 주최자는 게스트로 참여할 수 없습니다.");
+        }
+    }
+
+    private void validateCloseRegistration(Member organizer) {
+        if (!isOrganizer(organizer)) {
+            throw new AccessDeniedException("주최자만 마감할 수 있습니다.");
         }
     }
 
