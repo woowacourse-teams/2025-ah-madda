@@ -1,16 +1,14 @@
 import { useEffect } from 'react';
 
-export const useLockScroll = () => {
+export const useLockScroll = (shouldLock: boolean) => {
   useEffect(() => {
-    const isInIframe = window.self !== window.top;
-    const originalOverflow = document.body.style.overflow;
+    if (!shouldLock) return;
 
-    if (!isInIframe) {
-      document.body.style.overflow = 'hidden';
-    }
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
 
     return () => {
       document.body.style.overflow = originalOverflow;
     };
-  }, []);
+  }, [shouldLock]);
 };

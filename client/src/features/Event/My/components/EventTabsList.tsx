@@ -10,7 +10,10 @@ export const EventTabsList = () => {
     <Flex>
       <Tabs.List
         css={css`
-          width: 100%;
+          width: 40%;
+          @media (max-width: 768px) {
+            width: 100%;
+          }
         `}
       >
         <Tabs.Trigger value={TAB_VALUES.HOST}>{UI_LABELS.HOST_TAB}</Tabs.Trigger>

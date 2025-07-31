@@ -20,7 +20,7 @@ export const StyledRequiredMark = styled.span`
   font-size: 14px;
 `;
 
-export const StyledInput = styled.input<Pick<InputProps, 'error'>>`
+export const StyledInput = styled.input<{ error?: boolean }>`
   background-color: #f7f7f8;
   border-radius: 8px;
   padding: 12px;
@@ -37,5 +37,6 @@ export const StyledInput = styled.input<Pick<InputProps, 'error'>>`
 export const StyledHelperText = styled.p<Pick<InputProps, 'error'>>`
   margin-top: 4px;
   font-size: 12px;
+  min-height: 18px;
   color: ${({ error }) => (error ? '#FF5A5A' : '#888')};
 `;

@@ -1,6 +1,13 @@
-import { createContext, useContext, useState, ComponentProps, ReactNode, Children } from 'react';
-
-import { css } from '@emotion/react';
+import {
+  createContext,
+  useContext,
+  useState,
+  ComponentProps,
+  ReactNode,
+  Children,
+  ReactElement,
+  isValidElement,
+} from 'react';
 
 import { StyledTabs, StyledTabsContent, StyledTabsList, StyledTabsTrigger } from './Tabs.styled';
 
@@ -62,24 +69,16 @@ export const Tabs = ({ defaultValue, children, ...props }: TabsProps) => {
 };
 
 export const TabsList = ({ children, ...props }: TabsListProps) => {
-  const tabCount = Children.count(children);
+  const { activeTab } = useTabsContext();
+  const tabValues = Children.toArray(children)
+    .filter((child): child is ReactElement<{ value: string }> => isValidElement(child))
+    .map((child) => child.props?.value);
 
-  const countTabsPosition = css`
-    --tab-count: ${tabCount};
-
-    ${Array.from(
-      { length: tabCount },
-      (_, index) => `
-      &:has([data-active]:nth-child(${index + 1})[data-active='true'])::after {
-        left: calc(${index * 100}% / ${tabCount});
-        width: calc(100% / ${tabCount});
-      }
-    `
-    ).join('')}
-  `;
+  const activeTabIndex = tabValues.indexOf(activeTab);
+  const tabCount = tabValues.length;
 
   return (
-    <StyledTabsList role="tablist" css={countTabsPosition} {...props}>
+    <StyledTabsList role="tablist" tabCount={tabCount} activeTabIndex={activeTabIndex} {...props}>
       {children}
     </StyledTabsList>
   );

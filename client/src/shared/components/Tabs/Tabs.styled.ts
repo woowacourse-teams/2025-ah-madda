@@ -5,7 +5,12 @@ export const StyledTabs = styled.div`
   flex-direction: column;
 `;
 
-export const StyledTabsList = styled.div`
+type StyledTabsListProps = {
+  tabCount: number;
+  activeTabIndex: number;
+};
+
+export const StyledTabsList = styled.div<StyledTabsListProps>`
   display: flex;
   background-color: transparent;
   position: relative;
@@ -18,6 +23,9 @@ export const StyledTabsList = styled.div`
     height: 3px;
     background-color: ${({ theme }) => theme.colors.gray900};
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    transform: translateX(calc(${({ activeTabIndex }) => activeTabIndex} * 100%));
+    width: calc(100% / ${({ tabCount }) => tabCount});
   }
 `;
 

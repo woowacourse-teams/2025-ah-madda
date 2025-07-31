@@ -24,7 +24,7 @@ export const GuestItem = ({ guest }: GuestItemProps) => {
       padding="4px 8px"
       variant={variant}
     >
-      <Text type="caption" weight="regular" color={GUEST_STYLES.common.nameTextColor}>
+      <Text type="Label" weight="regular" color={GUEST_STYLES.common.nameTextColor}>
         {guest.nickname}
       </Text>
       <StyledGuestBadge
@@ -34,7 +34,7 @@ export const GuestItem = ({ guest }: GuestItemProps) => {
         justifyContent="center"
         variant={variant}
       >
-        <Text type="caption" weight="regular" color={badgeTextColor}>
+        <Text type="Label" weight="regular" color={badgeTextColor}>
           {badgeText}
         </Text>
       </StyledGuestBadge>
