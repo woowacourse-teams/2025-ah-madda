@@ -92,7 +92,7 @@ const variantStyles = {
       color: ${theme.colors.gray50};
     }
   `,
-};
+} as const;
 
 export const StyledButton = styled.button<ButtonProps>`
   height: 40px;
