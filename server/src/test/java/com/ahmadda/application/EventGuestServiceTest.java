@@ -98,19 +98,20 @@ class EventGuestServiceTest {
     }
 
     @Test
-    void 주최자가_아닌_회원이_게스트_조회시_예외가_발생한다() {
+    void 이벤트가_생성된_조직의_조직원이_아닐때_게스트_조회시_예외가_발생한다() {
         // given
-        var organization = createAndSaveOrganization();
+        var organization1 = createAndSaveOrganization();
+        var organization2 = createAndSaveOrganization();
         var organizer =
-                createAndSaveOrganizationMember("주최자", createAndSaveMember("홍길동", "host@email.com"), organization);
+                createAndSaveOrganizationMember("주최자", createAndSaveMember("홍길동", "host@email.com"), organization1);
         var otherMember =
-                createAndSaveOrganizationMember("다른사람", createAndSaveMember("user", "user@email.com"), organization);
-        var event = createAndSaveEvent(organizer, organization);
+                createAndSaveOrganizationMember("다른사람", createAndSaveMember("user", "user@email.com"), organization2);
+        var event = createAndSaveEvent(organizer, organization1);
 
         // when // then
         assertThatThrownBy(() -> sut.getGuests(event.getId(), createLoginMember(otherMember)))
                 .isInstanceOf(AccessDeniedException.class)
-                .hasMessage("이벤트 주최자가 아닙니다.");
+                .hasMessage("조직의 조직원만 접근할 수 있습니다.");
     }
 
     @Test
@@ -152,19 +153,20 @@ class EventGuestServiceTest {
     }
 
     @Test
-    void 주최자가_아닌_회원이_비게스트_조회시_예외가_발생한다() {
+    void 이벤트가_생성된_조직의_조직원이_아닐때_비게스트_조회시_예외가_발생한다() {
         // given
-        var organization = createAndSaveOrganization();
+        var organization1 = createAndSaveOrganization();
+        var organization2 = createAndSaveOrganization();
         var organizer =
-                createAndSaveOrganizationMember("주최자", createAndSaveMember("홍길동", "host@email.com"), organization);
+                createAndSaveOrganizationMember("주최자", createAndSaveMember("홍길동", "host@email.com"), organization1);
         var otherMember =
-                createAndSaveOrganizationMember("다른사람", createAndSaveMember("user", "user@email.com"), organization);
-        var event = createAndSaveEvent(organizer, organization);
+                createAndSaveOrganizationMember("다른사람", createAndSaveMember("user", "user@email.com"), organization2);
+        var event = createAndSaveEvent(organizer, organization1);
 
         // when // then
         assertThatThrownBy(() -> sut.getNonGuestOrganizationMembers(event.getId(), createLoginMember(otherMember)))
                 .isInstanceOf(AccessDeniedException.class)
-                .hasMessage("이벤트 주최자가 아닙니다.");
+                .hasMessage("조직의 조직원만 접근할 수 있습니다.");
     }
 
     @Test
@@ -256,11 +258,12 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.participantEvent(event.getId(),
-                                                        member2.getId(),
-                                                        event.getRegistrationStart(),
-                                                        request
-                                   )
+                sut.participantEvent(
+                        event.getId(),
+                        member2.getId(),
+                        event.getRegistrationStart(),
+                        request
+                )
         )
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessageContaining("필수 질문에 대한 답변이 누락되었습니다");
@@ -284,11 +287,12 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.participantEvent(event.getId(),
-                                                        member2.getId(),
-                                                        event.getRegistrationStart(),
-                                                        request
-                                   )
+                sut.participantEvent(
+                        event.getId(),
+                        member2.getId(),
+                        event.getRegistrationStart(),
+                        request
+                )
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("존재하지 않는 질문입니다.");
@@ -314,10 +318,12 @@ class EventGuestServiceTest {
         //when
         var actual1 = sut.isGuest(event.getId(), member2.getId());
         var actual2 = sut.isGuest(event.getId(), member3.getId());
+        var actual3 = sut.isGuest(event.getId(), member1.getId());
 
         //then
         assertThat(actual1).isEqualTo(true);
         assertThat(actual2).isEqualTo(false);
+        assertThat(actual3).isEqualTo(true);
     }
 
     @Test

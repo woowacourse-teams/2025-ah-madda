@@ -40,15 +40,18 @@ class EventTest {
         Guest.create(sut, guest, registrationPeriod.start());
 
         // when
-        var actual = sut.hasGuest(guest);
-        var unexpected = sut.hasGuest(notGuest);
+        var actual1 = sut.hasGuest(guest);
+        var actual2 = sut.hasGuest(notGuest);
+        var actual3 = sut.hasGuest(baseOrganizer);
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(actual)
+            softly.assertThat(actual1)
                     .isTrue();
-            softly.assertThat(unexpected)
+            softly.assertThat(actual2)
                     .isFalse();
+            softly.assertThat(actual3)
+                    .isTrue();
         });
     }
 
