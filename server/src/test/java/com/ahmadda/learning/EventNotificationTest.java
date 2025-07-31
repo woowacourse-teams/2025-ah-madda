@@ -1,5 +1,6 @@
 package com.ahmadda.learning;
 
+import com.ahmadda.domain.Email;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
@@ -52,8 +53,9 @@ class EventNotificationTest {
         var om2 = createOrganizationMember("수신자2", "amadda.mailbot@gmail.com", organization);
         var recipients = List.of(om1, om2);
 
+        var email = Email.of(event, "테스트 메일 본문입니다.");
         // when // then
-        eventNotification.sendEmails(event, recipients, "테스트 메일 본문입니다.");
+        eventNotification.sendEmails(recipients, email);
     }
 
     private OrganizationMember createOrganizationMember(String nickname, String email, Organization organization) {

@@ -1,5 +1,6 @@
 package com.ahmadda.infra.mail;
 
+import com.ahmadda.domain.Email;
 import com.ahmadda.domain.NotificationMailer;
 import com.ahmadda.infra.mail.exception.MailSendFailedException;
 import jakarta.mail.MessagingException;
@@ -12,6 +13,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -23,18 +25,44 @@ public class SmtpNotificationMailer implements NotificationMailer {
 
     @Async
     @Override
-    public void sendEmail(final String recipientEmail, final String subject, final Map<String, Object> model) {
-        String text = createText(model);
+    public void sendEmail(final String recipientEmail, final Email email) {
+        String subject = createSubject(email.subject());
+        String text = createText(email.body());
         MimeMessage mimeMessage = createMimeMessage(recipientEmail, subject, text);
 
         javaMailSender.send(mimeMessage);
     }
 
-    private String createText(Map<String, Object> model) {
+    private String createSubject(final Email.Subject subject) {
+        return "[%s] %s님의 이벤트 안내: %s".formatted(
+                subject.organizationName(),
+                subject.organizerNickname(),
+                subject.eventTitle()
+        );
+    }
+
+    private String createText(final Email.Body body) {
         Context context = new Context();
+        Map<String, Object> model = createModel(body);
         context.setVariables(model);
 
         return templateEngine.process("mail/event-notification", context);
+    }
+
+    private Map<String, Object> createModel(final Email.Body body) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("organizationName", body.organizationName());
+        model.put("content", body.content());
+        model.put("title", body.title());
+        model.put("organizerNickname", body.organizerNickname());
+        model.put("place", body.place());
+        model.put("registrationStart", body.registrationStart());
+        model.put("registrationEnd", body.registrationEnd());
+        model.put("eventStart", body.eventStart());
+        model.put("eventEnd", body.eventEnd());
+        model.put("eventId", body.eventId());
+
+        return model;
     }
 
     private MimeMessage createMimeMessage(final String recipientEmail, final String subject, final String text) {

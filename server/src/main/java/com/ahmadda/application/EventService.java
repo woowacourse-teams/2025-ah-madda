@@ -4,6 +4,7 @@ import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.domain.Email;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
@@ -58,7 +59,7 @@ public class EventService {
 
         Event savedEvent = eventRepository.save(event);
         notifyEventCreated(savedEvent, organization);
-        
+
         return savedEvent;
     }
 
@@ -107,7 +108,8 @@ public class EventService {
         List<OrganizationMember> recipients =
                 event.getNonGuestOrganizationMembers(organization.getOrganizationMembers());
         String content = "새로운 이벤트가 등록되었습니다.";
+        Email email = Email.of(event, content);
 
-        eventNotification.sendEmails(event, recipients, content);
+        eventNotification.sendEmails(recipients, email);
     }
 }

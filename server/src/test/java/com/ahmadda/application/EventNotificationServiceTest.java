@@ -5,6 +5,7 @@ import com.ahmadda.application.dto.NonGuestsNotificationRequest;
 import com.ahmadda.application.dto.SelectedOrganizationMembersNotificationRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.domain.Email;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
@@ -56,7 +57,7 @@ class EventNotificationServiceTest {
 
     @MockitoBean
     private EventNotification eventNotification;
-    
+
     @Test
     void 비게스트_조직원에게_이메일을_전송한다() {
         // given
@@ -94,13 +95,13 @@ class EventNotificationServiceTest {
         var nonGuest2Email = "ng2@email.com";
         createAndSaveOrganizationMember("비게스트1", nonGuest1Email, organization);
         createAndSaveOrganizationMember("비게스트2", nonGuest2Email, organization);
+        var email = Email.of(event, notificationRequest.content());
 
         // when
         sut.notifyNonGuestOrganizationMembers(event.getId(), notificationRequest, createLoginMember(organizer));
 
         // then
         verify(eventNotification).sendEmails(
-                eq(event),
                 argThat(recipients -> {
                     var emails = recipients.stream()
                             .map(om -> om.getMember()
@@ -109,7 +110,7 @@ class EventNotificationServiceTest {
 
                     return emails.equals(List.of(nonGuest1Email, nonGuest2Email));
                 }),
-                eq(notificationRequest.content())
+                eq(email)
         );
     }
 
@@ -196,13 +197,13 @@ class EventNotificationServiceTest {
         var request = createSelectedMembersRequest(
                 List.of(om1.getId(), om2.getId())
         );
+        var email = Email.of(event, request.content());
 
         // when
         sut.notifySelectedOrganizationMembers(event.getId(), request, createLoginMember(organizer));
 
         // then
         verify(eventNotification).sendEmails(
-                eq(event),
                 argThat(recipients -> {
                     var ids = recipients.stream()
                             .map(OrganizationMember::getId)
@@ -211,7 +212,7 @@ class EventNotificationServiceTest {
                     return ids.containsAll(request.organizationMemberIds())
                             && !ids.contains(om3.getId());
                 }),
-                eq(request.content())
+                eq(email)
         );
     }
 

@@ -46,9 +46,10 @@ class EventNotificationTest {
         var om1 = createOrganizationMember("수신자1", "r1@email.com", organization);
         var om2 = createOrganizationMember("수신자2", "r2@email.com", organization);
         var recipients = List.of(om1, om2);
+        var email = Email.of(event, content);
 
         // when
-        sut.sendEmails(event, recipients, content);
+        sut.sendEmails(recipients, email);
 
         // then
         assertSoftly(softly -> {
@@ -59,14 +60,11 @@ class EventNotificationTest {
                     .contains(om2.getMember()
                             .getEmail());
             softly.assertThat(output)
-                    .contains(String.format(
-                            "[%s] %s님의 이벤트 안내: %s",
-                            organizationName,
-                            organizerNickname,
-                            eventTitle
-                    ));
+                    .contains(email.subject()
+                            .toString());
             softly.assertThat(output)
-                    .contains(content);
+                    .contains(email.body()
+                            .toString());
         });
     }
 
