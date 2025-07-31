@@ -189,7 +189,7 @@ public class Event extends BaseEntity {
 
     public void closeRegistrationAt(final OrganizationMember organizationMember,
                                     final LocalDateTime registrationEndTime) {
-        validateCloseRegistration(organizer.getMember());
+        validateCloseRegistration(organizationMember.getMember());
 
         this.eventOperationPeriod.closeRegistration(registrationEndTime);
     }
