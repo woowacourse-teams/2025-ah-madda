@@ -10,7 +10,7 @@ export const MyEventPage = () => {
   return (
     <PageLayout header={<MyEventHeader />}>
       <MyEventContainer>
-        <Flex justifyContent="center" margin="30px 0 30px 0">
+        <Flex justifyContent="flex-start" margin="30px 0 30px 0">
           <Text as="h2" type="Body" weight="medium" color="gray900">
             내가 주최한 이벤트와 참여한 이벤트를 볼 수 있습니다.
           </Text>
