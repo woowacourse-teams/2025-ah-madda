@@ -43,8 +43,6 @@ export const StyledTabsTrigger = styled.button`
   &[data-active='true'] {
     background-color: transparent;
     color: ${({ theme }) => theme.colors.gray900};
-    box-shadow: none;
-    transform: none;
   }
 `;
 
