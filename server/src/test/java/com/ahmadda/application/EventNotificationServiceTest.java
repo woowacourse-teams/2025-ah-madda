@@ -6,6 +6,7 @@ import com.ahmadda.application.dto.SelectedOrganizationMembersNotificationReques
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
@@ -18,25 +19,20 @@ import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Period;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.system.CapturedOutput;
-import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
-@ExtendWith(OutputCaptureExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@TestPropertySource(
-        properties = {
-                "mail.mock=true"
-        })
 @Transactional
 class EventNotificationServiceTest {
 
@@ -58,8 +54,11 @@ class EventNotificationServiceTest {
     @Autowired
     private GuestRepository guestRepository;
 
+    @MockitoBean
+    private EventNotification eventNotification;
+    
     @Test
-    void 비게스트_조직원에게_이메일을_전송한다(CapturedOutput output) {
+    void 비게스트_조직원에게_이메일을_전송한다() {
         // given
         var organizationName = "조직명";
         var organizerNickname = "주최자";
@@ -100,23 +99,18 @@ class EventNotificationServiceTest {
         sut.notifyNonGuestOrganizationMembers(event.getId(), notificationRequest, createLoginMember(organizer));
 
         // then
-        assertSoftly(softly -> {
-            softly.assertThat(output)
-                    .contains("To: " + nonGuest1Email);
-            softly.assertThat(output)
-                    .contains("To: " + nonGuest2Email);
-            softly.assertThat(output)
-                    .doesNotContain("To: " + guestEmail);
-            softly.assertThat(output)
-                    .contains("Subject: " + String.format(
-                            "[%s] %s님의 이벤트 안내: %s",
-                            organizationName,
-                            organizerNickname,
-                            eventTitle
-                    ));
-            softly.assertThat(output)
-                    .contains("Content: " + notificationRequest.content());
-        });
+        verify(eventNotification).sendEmails(
+                eq(event),
+                argThat(recipients -> {
+                    var emails = recipients.stream()
+                            .map(om -> om.getMember()
+                                    .getEmail())
+                            .toList();
+
+                    return emails.equals(List.of(nonGuest1Email, nonGuest2Email));
+                }),
+                eq(notificationRequest.content())
+        );
     }
 
     @Test
@@ -170,7 +164,7 @@ class EventNotificationServiceTest {
     }
 
     @Test
-    void 선택된_조직원에게_이메일을_전송한다(CapturedOutput output) {
+    void 선택된_조직원에게_이메일을_전송한다() {
         // given
         var organizationName = "조직명";
         var organizerNickname = "주최자";
@@ -200,33 +194,25 @@ class EventNotificationServiceTest {
         var om3 = createAndSaveOrganizationMember("비선택", "nsel@email.com", organization);
 
         var request = createSelectedMembersRequest(
-                java.util.List.of(om1.getId(), om3.getId())
+                List.of(om1.getId(), om2.getId())
         );
 
         // when
         sut.notifySelectedOrganizationMembers(event.getId(), request, createLoginMember(organizer));
 
         // then
-        assertSoftly(softly -> {
-            softly.assertThat(output)
-                    .contains("To: " + om1.getMember()
-                            .getEmail());
-            softly.assertThat(output)
-                    .contains("To: " + om3.getMember()
-                            .getEmail());
-            softly.assertThat(output)
-                    .doesNotContain("To: " + om2.getMember()
-                            .getEmail());
-            softly.assertThat(output)
-                    .contains("Subject: " + String.format(
-                            "[%s] %s님의 이벤트 안내: %s",
-                            organizationName,
-                            organizerNickname,
-                            eventTitle
-                    ));
-            softly.assertThat(output)
-                    .contains("Content: " + request.content());
-        });
+        verify(eventNotification).sendEmails(
+                eq(event),
+                argThat(recipients -> {
+                    var ids = recipients.stream()
+                            .map(OrganizationMember::getId)
+                            .toList();
+
+                    return ids.containsAll(request.organizationMemberIds())
+                            && !ids.contains(om3.getId());
+                }),
+                eq(request.content())
+        );
     }
 
     @Test
@@ -320,7 +306,7 @@ class EventNotificationServiceTest {
         return new NonGuestsNotificationRequest("이메일 내용입니다.");
     }
 
-    private SelectedOrganizationMembersNotificationRequest createSelectedMembersRequest(java.util.List<Long> organizationMemberIds) {
+    private SelectedOrganizationMembersNotificationRequest createSelectedMembersRequest(List<Long> organizationMemberIds) {
         return new SelectedOrganizationMembersNotificationRequest(organizationMemberIds, "이메일 내용입니다.");
     }
 

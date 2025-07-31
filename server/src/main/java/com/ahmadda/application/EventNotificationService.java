@@ -6,10 +6,10 @@ import com.ahmadda.application.dto.SelectedOrganizationMembersNotificationReques
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.NotificationMailer;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EventNotificationService {
 
+    private final EventNotification eventNotification;
     private final EventRepository eventRepository;
-    private final NotificationMailer notificationMailer;
     private final MemberRepository memberRepository;
 
     public void notifyNonGuestOrganizationMembers(
@@ -40,9 +40,8 @@ public class EventNotificationService {
                 .getOrganizationMembers();
 
         List<OrganizationMember> recipients = event.getNonGuestOrganizationMembers(organizationMembers);
-        String subject = generateSubject(event);
 
-        sendNotificationToRecipients(recipients, subject, request.content());
+        eventNotification.sendEmails(event, recipients, request.content());
     }
 
     public void notifySelectedOrganizationMembers(
@@ -54,9 +53,8 @@ public class EventNotificationService {
         validateOrganizer(event, loginMember.memberId());
 
         List<OrganizationMember> recipients = getEventRecipientsFromIds(event, request.organizationMemberIds());
-        String subject = generateSubject(event);
 
-        sendNotificationToRecipients(recipients, subject, request.content());
+        eventNotification.sendEmails(event, recipients, request.content());
     }
 
     private Event getEvent(final Long eventId) {
@@ -103,31 +101,5 @@ public class EventNotificationService {
         if (!allExist) {
             throw new NotFoundException("존재하지 않는 조직원입니다.");
         }
-    }
-
-    private String generateSubject(final Event event) {
-        String organizationName = event.getOrganization()
-                .getName();
-        String organizerName = event.getOrganizer()
-                .getNickname();
-        String eventTitle = event.getTitle();
-
-        return String.format("[%s] %s님의 이벤트 안내: %s", organizationName, organizerName, eventTitle);
-    }
-
-    private void sendNotificationToRecipients(
-            final List<OrganizationMember> recipients,
-            final String subject,
-            final String content
-    ) {
-        recipients.forEach(recipient ->
-                notificationMailer.sendNotification(
-                        recipient.getMember()
-                                .getEmail(),
-                        subject,
-                        // TODO. 템플릿을 이용하여 content 생성하는 로직으로 변경 필요
-                        content
-                )
-        );
     }
 }

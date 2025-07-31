@@ -18,13 +18,13 @@ public class SmtpNotificationMailer implements NotificationMailer {
 
     @Async
     @Override
-    public void sendNotification(final String recipientEmail, final String subject, final String content) {
-        MimeMessage mimeMessage = createMimeMessage(recipientEmail, subject, content);
+    public void sendEmail(final String recipientEmail, final String subject, final String text) {
+        MimeMessage mimeMessage = createMimeMessage(recipientEmail, subject, text);
 
         javaMailSender.send(mimeMessage);
     }
 
-    private MimeMessage createMimeMessage(final String recipientEmail, final String subject, final String content) {
+    private MimeMessage createMimeMessage(final String recipientEmail, final String subject, final String text) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper;
         try {
@@ -32,7 +32,7 @@ public class SmtpNotificationMailer implements NotificationMailer {
 
             helper.setTo(recipientEmail);
             helper.setSubject(subject);
-            helper.setText(content, true);
+            helper.setText(text, true);
         } catch (MessagingException e) {
             log.error("mailError : {} ", e.getMessage(), e);
             throw new MailSendFailedException("이메일 발송에 실패했습니다.", e);
