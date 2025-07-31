@@ -7,7 +7,7 @@ import { Delete } from './delete';
 import { Location } from './location';
 import { Logo } from './logo';
 import { Plus } from './plus';
-import { Users } from './users';
+import { User } from './user';
 
 export const Icons = {
   back: Back,
@@ -18,7 +18,7 @@ export const Icons = {
   location: Location,
   logo: Logo,
   plus: Plus,
-  users: Users,
+  user: User,
   alarm: Alarm,
 };
 

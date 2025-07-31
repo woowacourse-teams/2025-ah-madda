@@ -40,20 +40,20 @@ export const EventCard = ({
           {description}
         </Text>
         <Flex alignItems="center" gap="4px" height="100%">
-          <Icon name="calendar" color="#99A1AF" size={15} />
+          <Icon name="calendar" size={16} color="white" />
           <Text type="Label" color="#99A1AF">
             {`신청 마감 ${formatTime(registrationEnd)} 까지`}
           </Text>
         </Flex>
         <Flex alignItems="center" gap="4px" height="100%">
-          <Icon name="clock" color="#99A1AF" size={15} />
+          <Icon name="clock" size={16} color="white" />
           <Text
             type="Label"
             color="#99A1AF"
           >{`이벤트 시간 ${formatDateTime(eventStart, eventEnd)}`}</Text>
         </Flex>
         <Flex alignItems="center" gap="4px" height="100%">
-          <Icon name="location" color="#99A1AF" size={15} />
+          <Icon name="location" size={16} color="white" />
           <Text type="Label" color="#99A1AF">
             {`장소 ${place}`}
           </Text>
