@@ -64,12 +64,18 @@ public class EventOperationPeriod {
     }
 
     public void closeRegistration(final LocalDateTime closeTime) {
-        //todo : 이미 마감된 경우 마감 안되게.
         Period closePeriod = Period.create(this.registrationPeriod.start(), closeTime);
 
+        validateClosePeriod(closeTime);
         validate(closePeriod, this.eventPeriod);
 
         this.registrationPeriod = closePeriod;
+    }
+
+    private void validateClosePeriod(final LocalDateTime closeDateTime) {
+        if (closeDateTime.isAfter(this.registrationPeriod.end())) {
+            throw new BusinessRuleViolatedException("마감 시간은 현재 등록 종료 시간보다 이전이어야 합니다.");
+        }
     }
 
     private void validateRegistrationPeriod(

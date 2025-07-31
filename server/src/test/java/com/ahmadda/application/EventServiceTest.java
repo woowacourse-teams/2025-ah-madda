@@ -277,7 +277,7 @@ class EventServiceTest {
                 organization.getId(),
                 event.getId(),
                 orgMember.getId(),
-                now.plusDays(2)
+                now.plusDays(1)
                         .plusHours(6)
         ));
     }

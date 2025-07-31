@@ -328,6 +328,29 @@ class EventTest {
         assertThatThrownBy(() -> sut.closeRegistrationAt(notBaseOrganizer, registrationCloseTime))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage("주최자만 마감할 수 있습니다.");
+    }
+
+    @Test
+    void 마감시간은_등록_종료_시간보다_이전이어야_한다() {
+        // given
+        var yesterday = LocalDateTime.now()
+                .minusDays(1);
+        var now = LocalDateTime.now();
+
+        var registrationEnd = now.plusDays(1);
+        var registrationCloseOverTime = registrationEnd.plusHours(6);
+
+        var registrationPeriod = Period.create(
+                now,
+                registrationEnd
+        );
+        var sut = createEvent(yesterday, registrationPeriod);
+
+        // when // then
+
+        assertThatThrownBy(() -> sut.closeRegistrationAt(baseOrganizer, registrationCloseOverTime))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("마감 시간은 현재 등록 종료 시간보다 이전이어야 합니다.");
 
     }
 
