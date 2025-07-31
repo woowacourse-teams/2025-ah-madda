@@ -1,13 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/shared/components/Button';
-import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
 import { IconButton } from '@/shared/components/IconButton';
 import { PageLayout } from '@/shared/components/PageLayout';
-import { Text } from '@/shared/components/Text';
 
 import { EventTabs } from '../components/EventTabs';
+import { Info } from '../components/Info';
 import { MyEventContainer } from '../containers/MyEventContainer';
 
 export const MyEventPage = () => {
@@ -27,11 +26,8 @@ export const MyEventPage = () => {
       }
     >
       <MyEventContainer>
-        <Flex justifyContent="flex-start" margin="30px 0 30px 0">
-          <Text as="h2" type="Body" weight="medium" color="gray900">
-            내가 주최한 이벤트와 참여한 이벤트를 볼 수 있습니다.
-          </Text>
-        </Flex>
+        <Info />
+
         <EventTabs />
       </MyEventContainer>
     </PageLayout>
