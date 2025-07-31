@@ -34,8 +34,8 @@ export const SubmitButtonCard = ({
   return (
     <Flex margin="10px 0 40px">
       <Button
-        width="100%"
-        color={!isGuest || isBeforeDeadline ? '#2563EB' : 'gray'}
+        size="full"
+        color={!isGuest || isBeforeDeadline ? 'primary' : 'tertiary'}
         disabled={!isBeforeDeadline || isGuest}
         onClick={handleClick}
       >
