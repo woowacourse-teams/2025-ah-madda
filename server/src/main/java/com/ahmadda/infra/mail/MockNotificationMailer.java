@@ -1,5 +1,6 @@
 package com.ahmadda.infra.mail;
 
+import com.ahmadda.domain.Email;
 import com.ahmadda.domain.NotificationMailer;
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,9 +10,8 @@ public class MockNotificationMailer implements NotificationMailer {
     @Override
     public void sendEmail(
             final String recipientEmail,
-            final String subject,
-            final String content
+            final Email email
     ) {
-        log.info("[Mock Email] To: {} | Subject: {} | Content: {}", recipientEmail, subject, content);
+        log.info("[Mock Email] To: {} | Subject: {} | Body: {}", recipientEmail, email.subject(), email.body());
     }
 }

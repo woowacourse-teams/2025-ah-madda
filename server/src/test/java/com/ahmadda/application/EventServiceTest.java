@@ -4,6 +4,7 @@ import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.domain.Email;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
@@ -244,8 +245,8 @@ class EventServiceTest {
         var savedEvent = sut.createEvent(organization.getId(), organizer.getId(), request, now);
 
         // then
+        var email = Email.of(savedEvent, "새로운 이벤트가 등록되었습니다.");
         verify(eventNotification).sendEmails(
-                eq(savedEvent),
                 argThat(recipients -> {
                     var emails = recipients.stream()
                             .map(om -> om.getMember()
@@ -259,7 +260,7 @@ class EventServiceTest {
 
                     return emails.equals(expected);
                 }),
-                eq("새로운 이벤트가 등록되었습니다.")
+                eq(email)
         );
     }
 
