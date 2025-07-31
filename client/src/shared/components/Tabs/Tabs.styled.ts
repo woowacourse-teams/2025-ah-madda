@@ -18,8 +18,6 @@ export const StyledTabsList = styled.div`
     height: 3px;
     background-color: ${({ theme }) => theme.colors.gray900};
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    transform: translateX(calc(var(--active-tab-index, 0) * 100%));
-    width: calc(100% / var(--tab-count, 1));
   }
 `;
 
