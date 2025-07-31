@@ -13,10 +13,11 @@ export const typography = {
     bold: '700',
   },
   size: {
-    Head: 32,
-    Title: 24,
-    Body: 20,
-    caption: 16,
+    Display: 36,
+    Heading: 28,
+    Title: 20,
+    Body: 16,
+    Label: 14,
   },
 };
 
@@ -30,10 +31,11 @@ export const SampleText = '아맞다! 팀 이벤트 또 놓쳤다고? 미리 알
 
 <Typeset
   fontSizes={[
-    Number(typography.size.Head),
+    Number(typography.size.Display),
+    Number(typography.size.Heading),
     Number(typography.size.Title),
     Number(typography.size.Body),
-    Number(typography.size.caption),
+    Number(typography.size.Label),
   ]}
   fontWeight={typography.weight.semibold}
   sampleText={SampleText}

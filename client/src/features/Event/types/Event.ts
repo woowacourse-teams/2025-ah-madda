@@ -31,7 +31,7 @@ export type CreateEventAPIRequest = {
   title: string;
   description: string;
   place: string;
-  maxCapacity: number;
+  maxCapacity: number | '';
   eventStart: string;
   eventEnd: string;
   registrationEnd: string;
@@ -39,12 +39,11 @@ export type CreateEventAPIRequest = {
   questions: QuestionRequest[];
 };
 
+export type EventFormData = Omit<CreateEventAPIRequest, 'organizerNickname'>;
+
 export type Question = {
   questionId: number;
-  questionText: string;
-  isRequired: boolean;
-  orderIndex: number;
-};
+} & QuestionRequest;
 
 export type QuestionRequest = {
   questionText: string;
