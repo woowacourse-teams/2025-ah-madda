@@ -6,6 +6,7 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Answer;
+import com.ahmadda.domain.AnswerRepository;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
@@ -53,6 +54,9 @@ class EventGuestServiceTest {
 
     @Autowired
     private GuestRepository guestRepository;
+
+    @Autowired
+    private AnswerRepository answerRepository;
 
     @Test
     void 이벤트에_참여한_게스트들을_조회한다() {
@@ -258,12 +262,12 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.participantEvent(
-                        event.getId(),
-                        member2.getId(),
-                        event.getRegistrationStart(),
-                        request
-                )
+                                   sut.participantEvent(
+                                           event.getId(),
+                                           member2.getId(),
+                                           event.getRegistrationStart(),
+                                           request
+                                   )
         )
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessageContaining("필수 질문에 대한 답변이 누락되었습니다");
@@ -287,12 +291,12 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.participantEvent(
-                        event.getId(),
-                        member2.getId(),
-                        event.getRegistrationStart(),
-                        request
-                )
+                                   sut.participantEvent(
+                                           event.getId(),
+                                           member2.getId(),
+                                           event.getRegistrationStart(),
+                                           request
+                                   )
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("존재하지 않는 질문입니다.");
@@ -345,6 +349,89 @@ class EventGuestServiceTest {
         assertThatThrownBy(() -> sut.isGuest(event.getId(), member3.getId()))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 조직원입니다.");
+    }
+
+    @Test
+    void 참가자는_이벤트_참가를_취소할_수_있다() {
+        // given
+        var organization = createAndSaveOrganization();
+        var member1 = createAndSaveMember("test1", "ahmadda1@ahmadda.com");
+        var participant = createAndSaveMember("test3", "ahmadda3@ahmadda.com");
+
+        var organizationMember1 =
+                createAndSaveOrganizationMember("organizationMember1", member1, organization);
+
+        var participantOrganizationMember =
+                createAndSaveOrganizationMember("organizationMember2", participant, organization);
+
+        var eventQuestion = Question.create("테스트", true, 1);
+        var event = createAndSaveEvent(organizationMember1, organization, eventQuestion);
+
+        sut.participantEvent(
+                event.getId(),
+                participant.getId(),
+                event.getRegistrationStart(),
+                new EventParticipateRequest(
+                        List.of(
+                                new AnswerCreateRequest(
+                                        event.getQuestions().getFirst().getId(),
+                                        "답변임"
+                                )
+                        )
+                )
+        );
+
+        var guestId = guestRepository.findAll().getFirst().getId();
+        var eventId = event.getId();
+        var participantId = participant.getId();
+
+        // when
+        sut.cancelParticipate(eventId, participantId);
+
+        // then
+        assertSoftly(
+                softly -> {
+                    softly.assertThat(guestRepository.findById(guestId)).isEmpty();
+                    softly.assertThat(answerRepository.count()).isEqualTo(0L);
+                }
+        );
+    }
+
+
+    @Test
+    void 참가자가_아니면_이벤트_참가_취소시_예외가_발생한다() {
+        // given
+        var organization = createAndSaveOrganization();
+        var member1 = createAndSaveMember("test1", "ahmadda1@ahmadda.com");
+        var participant = createAndSaveMember("test3", "ahmadda3@ahmadda.com");
+
+        var organizationMember1 =
+                createAndSaveOrganizationMember("organizationMember1", member1, organization);
+
+        var participantOrganizationMember =
+                createAndSaveOrganizationMember("organizationMember2", participant, organization);
+
+        var eventQuestion = Question.create("테스트", true, 1);
+        var event = createAndSaveEvent(organizationMember1, organization, eventQuestion);
+
+        sut.participantEvent(
+                event.getId(),
+                participant.getId(),
+                event.getRegistrationStart(),
+                new EventParticipateRequest(
+                        List.of(
+                                new AnswerCreateRequest(
+                                        event.getQuestions().getFirst().getId(),
+                                        "답변임"
+                                )
+                        )
+                )
+        );
+
+        // when // then
+        assertThatThrownBy(() -> sut.cancelParticipate(event.getId(), member1.getId()))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("이벤트의 참가자 목록에서 일치하는 조직원을 찾을 수 없습니다");
     }
 
     private Member createAndSaveMember(String name, String email) {

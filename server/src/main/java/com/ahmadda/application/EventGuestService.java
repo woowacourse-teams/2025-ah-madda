@@ -69,6 +69,20 @@ public class EventGuestService {
         guestRepository.save(guest);
     }
 
+    @Transactional
+    public void cancelParticipate(
+            final Long eventId,
+            final Long memberId
+    ) {
+        Event event = getEvent(eventId);
+        Long organizationId = event.getOrganization()
+                .getId();
+        OrganizationMember organizationMember = getOrganizationMember(organizationId, memberId);
+
+        event.cancelParticipate(organizationMember);
+        guestRepository.deleteByEventAndOrganizationMember(event, organizationMember);
+    }
+
     public boolean isGuest(final Long eventId, final Long memberId) {
         Event event = getEvent(eventId);
         Organization organization = event.getOrganization();
