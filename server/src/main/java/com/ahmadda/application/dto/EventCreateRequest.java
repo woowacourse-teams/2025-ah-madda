@@ -10,9 +10,7 @@ import java.util.List;
 public record EventCreateRequest(
         @NotBlank
         String title,
-        @NotBlank
         String description,
-        @NotBlank
         String place,
         @NotNull
         LocalDateTime registrationEnd,

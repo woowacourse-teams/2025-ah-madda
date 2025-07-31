@@ -4,7 +4,9 @@ import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.domain.Email;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.MemberRepository;
@@ -30,6 +32,7 @@ public class EventService {
     private final EventRepository eventRepository;
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
+    private final EventNotification eventNotification;
 
     @Transactional
     public Event createEvent(
@@ -54,7 +57,10 @@ public class EventService {
                 createQuestions(eventCreateRequest.questions())
         );
 
-        return eventRepository.save(event);
+        Event savedEvent = eventRepository.save(event);
+        notifyEventCreated(savedEvent, organization);
+
+        return savedEvent;
     }
 
     public Event getEvent(final Long eventId) {
@@ -115,5 +121,14 @@ public class EventService {
                     return Question.create(request.questionText(), request.isRequired(), i);
                 })
                 .toList();
+    }
+
+    private void notifyEventCreated(final Event event, final Organization organization) {
+        List<OrganizationMember> recipients =
+                event.getNonGuestOrganizationMembers(organization.getOrganizationMembers());
+        String content = "새로운 이벤트가 등록되었습니다.";
+        Email email = Email.of(event, content);
+
+        eventNotification.sendEmails(recipients, email);
     }
 }

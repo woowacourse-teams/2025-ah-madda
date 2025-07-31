@@ -13,6 +13,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
@@ -41,9 +42,9 @@ public class Event extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
+    @Lob
     private String description;
 
-    @Column(nullable = false)
     private String place;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -81,8 +82,6 @@ public class Event extends BaseEntity {
             final List<Question> questions
     ) {
         validateTitle(title);
-        validateDescription(description);
-        validatePlace(place);
         validateOrganizer(organizer);
         validateOrganization(organization);
         validateBelongToOrganization(organizer, organization);
@@ -151,6 +150,10 @@ public class Event extends BaseEntity {
     }
 
     public boolean hasGuest(final OrganizationMember organizationMember) {
+        if (organizationMember.equals(organizer)) {
+            return true;
+        }
+
         return guests.stream()
                 .anyMatch(guest -> guest.isSameOrganizationMember(organizationMember));
     }
@@ -206,11 +209,11 @@ public class Event extends BaseEntity {
         if (guests.size() >= maxCapacity) {
             throw new BusinessRuleViolatedException("수용 인원이 가득차 이벤트에 참여할 수 없습니다.");
         }
-        if (hasGuest(guest.getOrganizationMember())) {
-            throw new BusinessRuleViolatedException("이미 해당 이벤트에 참여중인 게스트입니다.");
-        }
         if (guest.isSameOrganizationMember(organizer)) {
             throw new BusinessRuleViolatedException("이벤트의 주최자는 게스트로 참여할 수 없습니다.");
+        }
+        if (hasGuest(guest.getOrganizationMember())) {
+            throw new BusinessRuleViolatedException("이미 해당 이벤트에 참여중인 게스트입니다.");
         }
     }
 
@@ -222,14 +225,6 @@ public class Event extends BaseEntity {
 
     private void validateTitle(final String title) {
         Assert.notBlank(title, "제목은 공백이면 안됩니다.");
-    }
-
-    private void validateDescription(final String description) {
-        Assert.notBlank(description, "설명은 공백이면 안됩니다.");
-    }
-
-    private void validatePlace(final String place) {
-        Assert.notBlank(place, "장소는 공백이면 안됩니다.");
     }
 
     private void validateOrganizer(final OrganizationMember organizer) {

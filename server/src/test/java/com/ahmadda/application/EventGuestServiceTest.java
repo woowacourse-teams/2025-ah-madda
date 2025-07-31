@@ -318,10 +318,12 @@ class EventGuestServiceTest {
         //when
         var actual1 = sut.isGuest(event.getId(), member2.getId());
         var actual2 = sut.isGuest(event.getId(), member3.getId());
+        var actual3 = sut.isGuest(event.getId(), member1.getId());
 
         //then
         assertThat(actual1).isEqualTo(true);
         assertThat(actual2).isEqualTo(false);
+        assertThat(actual3).isEqualTo(true);
     }
 
     @Test

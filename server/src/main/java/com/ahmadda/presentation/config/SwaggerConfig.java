@@ -26,8 +26,7 @@ public class SwaggerConfig {
     private Info apiInfo() {
         return new Info()
                 .title("Ahmadda API")
-                .description("Ahmadda API 명세서")
-                .version("v0.0.0");
+                .description("Ahmadda API 명세서");
     }
 
     private SecurityRequirement securityRequirement() {
