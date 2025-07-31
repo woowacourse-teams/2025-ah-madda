@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 
 import { IconButtonProps } from './IconButton';
 
-export const StyledIconButton = styled.button<Omit<IconButtonProps, 'name'>>`
+export const StyledIconButton = styled.button<Pick<IconButtonProps, 'color'>>`
   display: flex;
   align-items: center;
   justify-content: center;
