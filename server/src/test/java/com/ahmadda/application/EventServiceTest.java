@@ -33,6 +33,7 @@ import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -231,7 +232,12 @@ class EventServiceTest {
         var now = LocalDateTime.now();
 
         // when // then
-        assertThatThrownBy(() -> sut.closeEventRegistration(organization.getId(), event.getId(), 999L, now))
+        assertThatThrownBy(() -> sut.closeEventRegistration(
+                organization.getId(),
+                event.getId(),
+                999L,
+                now
+        ))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 회원입니다.");
     }
@@ -247,13 +253,33 @@ class EventServiceTest {
         var now = LocalDateTime.now();
 
         // when // then
-        assertThatThrownBy(() -> sut.closeEventRegistration(organization1.getId(),
-                                                            event.getId(),
-                                                            notBelongingOrgMember.getId(),
-                                                            now
+        assertThatThrownBy(() -> sut.closeEventRegistration(
+                organization1.getId(),
+                event.getId(),
+                notBelongingOrgMember.getId(),
+                now
         ))
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessage("조직에 소속되지 않은 멤버입니다.");
+    }
+
+    @Test
+    void 주최자는_이벤트를_수동으로_마감할_수_있다() {
+        // given
+        var organization = createOrganization();
+        var member = createMember();
+        var orgMember = createOrganizationMember(organization, member);
+        var event = createEvent(orgMember, organization);
+        var now = LocalDateTime.now();
+
+        // when // then
+        assertDoesNotThrow(() -> sut.closeEventRegistration(
+                organization.getId(),
+                event.getId(),
+                orgMember.getId(),
+                now.plusDays(2)
+                        .plusHours(6)
+        ));
     }
 
     @Test
