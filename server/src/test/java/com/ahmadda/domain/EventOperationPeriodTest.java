@@ -89,7 +89,7 @@ class EventOperationPeriodTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"2025-07-16T08:30", "2025-07-16T08:31"})
+    @CsvSource({"2025-07-16T08:31", "2025-07-16T08:32"})
     void 이벤트_신청_마감_시간이_이벤트_시작_시간보다_미래라면_예외가_발생한다(LocalDateTime registrationEnd) {
         //given
         var eventRegistrationPeriod = Period.create(
