@@ -47,7 +47,7 @@ export const Modal = ({
 
   useFocusTrap(modalRef);
   useEscapeKey(onClose);
-  useLockScroll();
+  useLockScroll(isOpen);
 
   if (!isOpen) return null;
 

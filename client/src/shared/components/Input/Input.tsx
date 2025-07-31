@@ -62,11 +62,9 @@ export const Input = ({
         {isRequired && <StyledRequiredMark>*</StyledRequiredMark>}
       </StyledLabel>
       <StyledInput id={id} error={error} {...props} />
-      {error && errorMessage ? (
-        <StyledHelperText error={error}>{errorMessage}</StyledHelperText>
-      ) : (
-        helperText && <StyledHelperText>{helperText}</StyledHelperText>
-      )}
+      <StyledHelperText error={error}>
+        {error ? (errorMessage ?? ' ') : (helperText ?? ' ')}
+      </StyledHelperText>
     </StyledWrapper>
   );
 };

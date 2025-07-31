@@ -6,6 +6,7 @@ import { Icon } from '@/shared/components/Icon';
 import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Text } from '@/shared/components/Text';
 
+import { UNLIMITED_CAPACITY } from '../../New/constants/validation';
 import { Event } from '../../types/Event';
 import { formatDateTime } from '../utils/formatDateTime';
 import { formatTime } from '../utils/formatTime';
@@ -67,15 +68,19 @@ export const EventCard = ({
             {organizerName}
           </Text>
         </Flex>
-        <Flex width="100%" justifyContent="space-between" alignItems="center">
-          <Text type="Label" color="#99A1AF">
-            참여 현황
-          </Text>
-          <Text type="Label" color="#99A1AF">
-            {`${currentGuestCount}/${maxCapacity} 명`}
-          </Text>
-        </Flex>
-        <ProgressBar value={Number(currentGuestCount)} max={maxCapacity} color="black" />
+        {maxCapacity !== UNLIMITED_CAPACITY && (
+          <>
+            <Flex width="100%" justifyContent="space-between" alignItems="center">
+              <Text type="Label" color="#99A1AF">
+                참여 현황
+              </Text>
+              <Text type="Label" color="#99A1AF">
+                {`${currentGuestCount}/${maxCapacity} 명`}
+              </Text>
+            </Flex>
+            <ProgressBar value={Number(currentGuestCount)} max={maxCapacity} color="black" />
+          </>
+        )}
       </Flex>
     </CardWrapper>
   );
