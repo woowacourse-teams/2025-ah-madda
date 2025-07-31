@@ -51,7 +51,7 @@ class EventTest {
             softly.assertThat(actual2)
                     .isFalse();
             softly.assertThat(actual3)
-                    .isFalse();
+                    .isTrue();
         });
     }
 

@@ -151,9 +151,9 @@ public class Event extends BaseEntity {
 
     public boolean hasGuest(final OrganizationMember organizationMember) {
         if (organizationMember.equals(organizer)) {
-            return false;
+            return true;
         }
-        
+
         return guests.stream()
                 .anyMatch(guest -> guest.isSameOrganizationMember(organizationMember));
     }
@@ -202,11 +202,11 @@ public class Event extends BaseEntity {
         if (guests.size() >= maxCapacity) {
             throw new BusinessRuleViolatedException("수용 인원이 가득차 이벤트에 참여할 수 없습니다.");
         }
-        if (hasGuest(guest.getOrganizationMember())) {
-            throw new BusinessRuleViolatedException("이미 해당 이벤트에 참여중인 게스트입니다.");
-        }
         if (guest.isSameOrganizationMember(organizer)) {
             throw new BusinessRuleViolatedException("이벤트의 주최자는 게스트로 참여할 수 없습니다.");
+        }
+        if (hasGuest(guest.getOrganizationMember())) {
+            throw new BusinessRuleViolatedException("이미 해당 이벤트에 참여중인 게스트입니다.");
         }
     }
 
