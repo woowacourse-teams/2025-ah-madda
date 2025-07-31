@@ -37,7 +37,7 @@ export const StyledTabsTrigger = styled.button`
 
   &:hover {
     color: ${({ theme }) => theme.colors.gray700};
-    background-color: ${({ theme }) => theme.colors.primary50};
+    background-color: ${({ theme }) => theme.colors.gray100};
   }
 
   &[data-active='true'] {
