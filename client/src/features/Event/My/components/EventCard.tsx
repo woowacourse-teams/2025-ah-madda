@@ -7,7 +7,6 @@ import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 
-import { UNLIMITED_CAPACITY } from '../../New/constants/validation';
 import { formatDateTime } from '../../Overview/utils/formatDateTime';
 import { formatTime } from '../../Overview/utils/formatTime';
 import { Event } from '../../types/Event';
@@ -84,27 +83,16 @@ export const EventCard = ({
             {organizerName}
           </Text>
         </Flex>
+
         <Flex width="100%" justifyContent="space-between" alignItems="center">
           <Text type="Label" color="#99A1AF">
             참여 현황
           </Text>
-          <Text type="Label" weight="regular" color="#99A1AF">
-            {`${currentGuestCount}/${maxCapacity}명`}
+          <Text type="Label" color="#99A1AF">
+            {`${currentGuestCount}/${maxCapacity} 명`}
           </Text>
         </Flex>
-        {maxCapacity !== UNLIMITED_CAPACITY && (
-          <>
-            <Flex width="100%" justifyContent="space-between" alignItems="center">
-              <Text type="Label" color="#99A1AF">
-                참여 현황
-              </Text>
-              <Text type="Label" color="#99A1AF">
-                {`${currentGuestCount}/${maxCapacity} 명`}
-              </Text>
-            </Flex>
-            <ProgressBar value={Number(currentGuestCount)} max={maxCapacity} color="black" />
-          </>
-        )}
+        <ProgressBar value={Number(currentGuestCount)} max={maxCapacity} color="black" />
       </Flex>
     </EventCardWrapper>
   );
