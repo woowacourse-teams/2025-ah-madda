@@ -34,6 +34,8 @@ export const EventCreateForm = () => {
   const [isCapacityModalOpen, setIsCapacityModalOpen] = useState(false);
   const { data: userProfile } = useQuery(myQueryOptions.profile());
 
+  const today = new Date();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
@@ -120,6 +122,7 @@ export const EventCreateForm = () => {
                 id="eventStart"
                 label="이벤트 시작일"
                 type="datetime-local"
+                min="2025-07-31T14:00"
                 placeholder="2025.07.30 13:00"
                 value={formData.eventStart}
                 onChange={(e) => {
