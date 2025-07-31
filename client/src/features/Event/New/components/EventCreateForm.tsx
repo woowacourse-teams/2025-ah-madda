@@ -118,7 +118,7 @@ export const EventCreateForm = () => {
             >
               <Input
                 id="eventStart"
-                label="이벤트 시작 날짜/시간"
+                label="이벤트 시작일"
                 type="datetime-local"
                 placeholder="2025.07.30 13:00"
                 value={formData.eventStart}
@@ -140,7 +140,7 @@ export const EventCreateForm = () => {
               />
               <Input
                 id="eventEnd"
-                label="이벤트 종료 날짜/시간"
+                label="이벤트 종료일"
                 type="datetime-local"
                 placeholder="2025.07.30 15:00"
                 value={formData.eventEnd}
@@ -157,7 +157,7 @@ export const EventCreateForm = () => {
 
             <Input
               id="registrationEnd"
-              label="신청 종료 날짜/시간"
+              label="신청 종료일"
               type="datetime-local"
               placeholder="2025.07.25 15:00"
               value={formData.registrationEnd}
