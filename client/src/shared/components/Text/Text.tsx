@@ -1,4 +1,4 @@
-import { ComponentProps } from 'react';
+import { ComponentProps, ReactNode } from 'react';
 
 import { StyledText } from './Text.styled';
 
@@ -30,7 +30,7 @@ export type TextProps<T extends TextElementType> = {
   /**
    * The content to be displayed inside the text component.
    */
-  children: React.ReactNode;
+  children: ReactNode;
 } & Omit<ComponentProps<T>, 'as' | 'children' | 'color'>;
 
 export const Text = <T extends TextElementType = 'p'>({
