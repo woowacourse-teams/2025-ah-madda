@@ -23,7 +23,7 @@ export const MessageCard = ({ message, image }: MessageCardProps) => {
       <Text type="Heading" weight="semibold">
         {message}
       </Text>
-      <LandingImage src={image} />
+      <LandingImage src={image} alt={image} />
     </Flex>
   );
 };
