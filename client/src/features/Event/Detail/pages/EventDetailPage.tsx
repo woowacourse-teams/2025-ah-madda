@@ -2,6 +2,7 @@ import { useSuspenseQueries } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { eventQueryOptions } from '@/api/queries/event';
+import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
 import { IconButton } from '@/shared/components/IconButton';
@@ -34,11 +35,11 @@ export const EventDetailPage = () => {
     <PageLayout
       header={
         <Header
-          left={
-            <Flex alignItems="center" gap="12px">
-              <IconButton name="back" size={14} onClick={() => navigate(-1)} />
-              <Text type="caption">돌아가기</Text>
-            </Flex>
+          left={<IconButton name="logo" size={55} onClick={() => navigate('/event')} />}
+          right={
+            <Button width="80px" size="sm" onClick={() => navigate('/event/my')}>
+              내 이벤트
+            </Button>
           }
         />
       }

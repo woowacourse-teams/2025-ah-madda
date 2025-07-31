@@ -1,9 +1,10 @@
 import { useState } from 'react';
 
-import { Button } from '../../../../shared/components/Button';
-import { Card } from '../../../../shared/components/Card';
-import { Flex } from '../../../../shared/components/Flex';
-import { Text } from '../../../../shared/components/Text';
+import { Button } from '@/shared/components/Button';
+import { Card } from '@/shared/components/Card';
+import { Flex } from '@/shared/components/Flex';
+import { Text } from '@/shared/components/Text';
+
 import { QuestionRequest } from '../../types/Event';
 import { VALIDATION_MESSAGES } from '../constants/validation';
 
@@ -69,7 +70,7 @@ export const QuestionForm = ({ questions, onChange, onErrorChange }: QuestionFor
     <Card>
       <Flex dir="column" gap="16px">
         <Flex justifyContent="space-between" alignItems="center">
-          <Text type="caption">사전 질문</Text>
+          <Text type="Body">사전 질문</Text>
           <Button
             width="100px"
             size="sm"

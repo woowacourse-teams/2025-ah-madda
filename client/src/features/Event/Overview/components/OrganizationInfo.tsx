@@ -31,11 +31,13 @@ export const OrganizationInfo = ({
     >
       <Flex padding="20px 10px" justifyContent="space-between" alignItems="center" width="100%">
         <Flex dir="column" gap="8px">
-          <Text type="Head" weight="bold">
+          <Text type="Display" weight="bold">
             {name}
           </Text>
-          <Text type="Body">{description}</Text>
-          <Text type="caption">{`${totalEvents}개의 이벤트가 열려있어요!`}</Text>
+          <Text as="h2" type="Heading">
+            {description}
+          </Text>
+          <Text type="Body">{`${totalEvents}개의 이벤트가 열려있어요!`}</Text>
         </Flex>
         <Img src={Woowa} />
       </Flex>

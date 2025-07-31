@@ -76,12 +76,12 @@ export const EventCreateForm = () => {
         <Text type="Title" weight="bold">
           새 이벤트 만들기
         </Text>
-        <Text type="caption" color="gray">
+        <Text type="Body" color="gray">
           이벤트 정보를 입력해 주세요
         </Text>
 
         <Card>
-          <Text type="caption">기본 질문</Text>
+          <Text type="Body">기본 질문</Text>
           <Flex dir="column">
             <Input
               id="title"
@@ -218,18 +218,18 @@ export const EventCreateForm = () => {
             >
               <Flex alignItems="center" gap="8px">
                 <Icon name="users" size={18} />
-                <Text type="caption" color="gray">
+                <Text type="Label" color="gray">
                   수용 인원
                 </Text>
               </Flex>
 
               <Flex alignItems="center" gap="4px">
-                <Text type="caption">
+                <Text type="Label">
                   {formData.maxCapacity === UNLIMITED_CAPACITY
                     ? '무제한'
                     : `${formData.maxCapacity}명`}
                 </Text>
-                <Text type="caption" color="gray">
+                <Text type="Label" color="gray">
                   ✏️
                 </Text>
               </Flex>

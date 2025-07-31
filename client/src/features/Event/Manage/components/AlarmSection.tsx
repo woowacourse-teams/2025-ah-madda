@@ -37,7 +37,7 @@ export const AlarmSection = ({ pendingGuestsCount }: AlarmSectionProps) => {
       <Flex as="section" dir="column">
         <Flex alignItems="center" gap="8px">
           <Icon name="alarm" size={14} color="#F54900" />
-          <Text type="caption" weight="medium" color="#F54900">
+          <Text type="Body" weight="medium" color="#F54900">
             미신청자 알람
           </Text>
         </Flex>
@@ -78,7 +78,7 @@ export const AlarmSection = ({ pendingGuestsCount }: AlarmSectionProps) => {
             {isPending ? '전송 중...' : '보내기'}
           </Button>
 
-          <Text type="caption" weight="regular" color="#6A7282">
+          <Text type="Label" weight="regular" color="#6A7282">
             {`${pendingGuestsCount}명의 미신청자에게 알람이 전송됩니다.`}
           </Text>
         </Flex>

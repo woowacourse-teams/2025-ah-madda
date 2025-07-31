@@ -57,12 +57,18 @@ export const Info = () => {
             }
           `}
         >
-          <Flex dir="column" alignItems="flex-start">
-            <Text type="caption">
-              슬랙이나 메신저에서 참여하고 싶었던 이벤트를 놓친 경험 있으신가요?
+          <Flex
+            dir="column"
+            justifyContent="center"
+            css={css`
+              @media (max-width: 768px) {
+                text-align: center;
+              }
+            `}
+          >
+            <Text as="h2" type="Heading" weight="medium">
+              {`슬랙이나 메신저에서 참여하고 싶었던 이벤트를 놓친 경험 있으신가요?\n혹은 이벤트를열었는데 반응이 없어 답답하거나,\n리마인더 메세지를 여러번 보내야 했던 적 있으신가요?`}
             </Text>
-            <Text type="caption">혹은 이벤트를 열었는데 반응이 없어 답답하거나,</Text>
-            <Text type="caption">리마인더 메세지를 여러번 보내야 했던 적 있으신가요?</Text>
           </Flex>
           <Flex
             justifyContent="center"
