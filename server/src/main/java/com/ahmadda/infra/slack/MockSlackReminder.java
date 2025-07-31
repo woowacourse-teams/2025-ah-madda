@@ -4,7 +4,7 @@ import com.ahmadda.application.dto.MemberCreateAlarmDto;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class MockProductionSlackReminder implements SlackReminder {
+public class MockSlackReminder implements SlackReminder {
 
     @Override
     public void alarmMemberCreation(final MemberCreateAlarmDto memberCreateAlarmDto) {
