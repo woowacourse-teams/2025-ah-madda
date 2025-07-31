@@ -8,59 +8,54 @@
 <body style="margin:0; padding:0; background:#f6f7fb;">
 <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:#f6f7fb;">
     <tr>
-        <td align="center" style="padding:24px 12px;">
+        <td align="center" style="padding:20px 8px;">
             <table role="presentation" cellpadding="0" cellspacing="0" width="100%"
                    style="max-width:600px; background:#ffffff; border-radius:12px; overflow:hidden;">
-                <!-- Header -->
                 <tr>
-                    <td style="padding:20px 24px; background:#3D84FF; color:#ffffff; font-family:Arial, Helvetica, sans-serif; font-size:18px; font-weight:600;">
+                    <td style="padding:16px 20px; background:#3D84FF; color:#ffffff; font-family:Arial, Helvetica, sans-serif; font-size:18px; font-weight:600;">
                         [[${organizationName}]]
                     </td>
                 </tr>
-
-                <!-- Title -->
                 <tr>
-                    <td style="padding:24px 24px 8px 24px; font-family:Arial, Helvetica, sans-serif;">
+                    <td style="padding:20px 20px 8px 20px; font-family:Arial, Helvetica, sans-serif;">
                         <div style="font-size:20px; line-height:1.4; color:#111827; font-weight:700;">
                             [[${content}]]
                         </div>
                     </td>
                 </tr>
-
-                <!-- Event Info -->
                 <tr>
-                    <td style="padding:4px 24px 20px 24px; font-family:Arial, Helvetica, sans-serif;">
+                    <td style="padding:4px 20px 12px 20px; font-family:Arial, Helvetica, sans-serif;">
                         <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                             <tr>
                                 <td colspan="2"
-                                    style="padding:12px 0 8px 0; font-size:16px; color:#111827; font-weight:700;">
+                                    style="padding:10px 0 6px 0; font-size:16px; color:#111827; font-weight:700;">
                                     이벤트 정보
                                 </td>
                             </tr>
                             <tr>
-                                <td style="width:110px; padding:8px 0; font-size:14px; color:#6b7280;">제목</td>
-                                <td style="padding:8px 0; font-size:14px; color:#111827; font-weight:600;">
+                                <td style="width:100px; padding:6px 0; font-size:14px; color:#6b7280;">제목</td>
+                                <td style="padding:6px 0; font-size:14px; color:#111827; font-weight:600;">
                                     [[${title}]]
                                 </td>
                             </tr>
                             <tr>
-                                <td style="width:110px; padding:8px 0; font-size:14px; color:#6b7280;">주최자</td>
-                                <td style="padding:8px 0; font-size:14px; color:#111827;">[[${organizerNickname}]]</td>
+                                <td style="width:100px; padding:6px 0; font-size:14px; color:#6b7280;">주최자</td>
+                                <td style="padding:6px 0; font-size:14px; color:#111827;">[[${organizerNickname}]]</td>
                             </tr>
                             <tr>
-                                <td style="width:110px; padding:8px 0; font-size:14px; color:#6b7280;">장소</td>
-                                <td style="padding:8px 0; font-size:14px; color:#111827;">[[${place}]]</td>
+                                <td style="width:100px; padding:6px 0; font-size:14px; color:#6b7280;">장소</td>
+                                <td style="padding:6px 0; font-size:14px; color:#111827;">[[${place}]]</td>
                             </tr>
                             <tr>
-                                <td style="width:110px; padding:8px 0; font-size:14px; color:#6b7280;">모집기간</td>
-                                <td style="padding:8px 0; font-size:14px; color:#111827;">
+                                <td style="width:100px; padding:6px 0; font-size:14px; color:#6b7280;">모집기간</td>
+                                <td style="padding:6px 0; font-size:14px; color:#111827;">
                                     [[${#temporals.format(registrationStart, 'yyyy년 MM월 dd일 HH:mm')}]] ~
                                     [[${#temporals.format(registrationEnd, 'yyyy년 MM월 dd일 HH:mm')}]]
                                 </td>
                             </tr>
                             <tr>
-                                <td style="width:110px; padding:8px 0; font-size:14px; color:#6b7280;">진행기간</td>
-                                <td style="padding:8px 0; font-size:14px; color:#111827;">
+                                <td style="width:100px; padding:6px 0; font-size:14px; color:#6b7280;">진행기간</td>
+                                <td style="padding:6px 0; font-size:14px; color:#111827;">
                                     [[${#temporals.format(eventStart, 'yyyy년 MM월 dd일 HH:mm')}]] ~
                                     [[${#temporals.format(eventEnd, 'yyyy년 MM월 dd일 HH:mm')}]]
                                 </td>
@@ -68,24 +63,20 @@
                         </table>
                     </td>
                 </tr>
-
-                <!-- CTA Button -->
                 <tr>
-                    <td align="center" style="padding:0 24px 24px 24px;">
+                    <td align="center" style="padding:0 20px 16px 20px;">
                         <a th:href="@{'https://ahmadda.com/event/' + ${eventId}}"
-                           style="display:inline-block; text-decoration:none; background:#3D84FF; color:#ffffff;
+                           style="display:block; text-align:center; text-decoration:none; background:#3D84FF; color:#ffffff;
                         font-family:Arial, Helvetica, sans-serif; font-size:15px; font-weight:600;
-                        padding:12px 24px; border-radius:8px;">
+                        padding:12px 0; border-radius:8px; width:100%;">
                             이벤트 바로가기
                         </a>
                     </td>
                 </tr>
-
-                <!-- Footer -->
                 <tr>
-                    <td style="padding:16px 24px 24px 24px; font-family:Arial, Helvetica, sans-serif;">
+                    <td style="padding:12px 20px 16px 20px; font-family:Arial, Helvetica, sans-serif;">
                         <div style="height:1px; background:#e5e7eb;"></div>
-                        <div style="margin-top:12px; font-size:13px; color:#6b7280;">
+                        <div style="margin-top:8px; font-size:13px; color:#6b7280;">
                             본 메일은 발신 전용입니다. 문의가 필요하시면 주최자에게 직접 연락해 주세요.
                         </div>
                     </td>
