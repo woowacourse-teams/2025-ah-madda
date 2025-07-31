@@ -1,5 +1,6 @@
 package com.ahmadda.domain;
 
+import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -247,6 +248,52 @@ class EventTest {
                     .hasSize(1);
             softly.assertThat(result)
                     .containsExactly(requiredQuestion);
+        });
+    }
+
+    @Test
+    void 이벤트에_참여하지_않았는데_참여_취소시_예외가_발생한다() {
+        // given
+        Organization organization = Organization.create("tuda", "tuda", "tuda");
+        Member member = Member.create("tuda", "praisebak@naver.com");
+        OrganizationMember organizationMember =
+                OrganizationMember.create("tuda", member, organization);
+
+
+        Member member2 = Member.create("tuda2", "praisebak2@naver.com");
+        OrganizationMember organizationMember2 =
+                OrganizationMember.create("tuda2", member2, organization);
+
+        var sut = createEvent(organizationMember, organization);
+        Guest participate = Guest.create(sut, organizationMember2, sut.getRegistrationStart());
+
+        //when // then
+        assertThatThrownBy(() -> sut.cancelParticipate(organizationMember))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("이벤트의 참가자 목록에서 일치하는 조직원을 찾을 수 없습니다");
+    }
+
+    @Test
+    void 이벤트를_참여를_취소할_수_있다() {
+        // given
+        Organization organization = Organization.create("tuda", "tuda", "tuda");
+        Member member = Member.create("tuda", "praisebak@naver.com");
+        OrganizationMember organizationMember =
+                OrganizationMember.create("tuda", member, organization);
+
+
+        Member member2 = Member.create("tuda2", "praisebak2@naver.com");
+        OrganizationMember organizationMember2 =
+                OrganizationMember.create("tuda2", member2, organization);
+
+        var sut = createEvent(organizationMember, organization);
+        Guest participate = Guest.create(sut, organizationMember2, sut.getRegistrationStart());
+
+        //when // then
+        assertSoftly(softly -> {
+            softly.assertThat(sut.getGuests().size()).isEqualTo(1L);
+            sut.cancelParticipate(organizationMember2);
+            softly.assertThat(sut.getGuests().size()).isEqualTo(0L);
         });
     }
 
