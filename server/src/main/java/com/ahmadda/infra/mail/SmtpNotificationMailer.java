@@ -9,19 +9,32 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
 public class SmtpNotificationMailer implements NotificationMailer {
 
     private final JavaMailSender javaMailSender;
+    private final TemplateEngine templateEngine;
 
     @Async
     @Override
-    public void sendEmail(final String recipientEmail, final String subject, final String text) {
+    public void sendEmail(final String recipientEmail, final String subject, final Map<String, Object> model) {
+        String text = createText(model);
         MimeMessage mimeMessage = createMimeMessage(recipientEmail, subject, text);
 
         javaMailSender.send(mimeMessage);
+    }
+
+    private String createText(Map<String, Object> model) {
+        Context context = new Context();
+        context.setVariables(model);
+
+        return templateEngine.process("mail/event-notification", context);
     }
 
     private MimeMessage createMimeMessage(final String recipientEmail, final String subject, final String text) {

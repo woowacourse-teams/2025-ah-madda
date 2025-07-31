@@ -3,8 +3,9 @@ package com.ahmadda.domain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -13,20 +14,20 @@ public class EventNotification {
     private final NotificationMailer notificationMailer;
 
     public void sendEmails(final Event event, final List<OrganizationMember> recipients, final String content) {
-        String subject = generateSubject(event);
-        String text = generateText(event, content);
+        String subject = createSubject(event);
+        Map<String, Object> model = createModel(event, content);
 
         recipients.forEach(recipient ->
                 notificationMailer.sendEmail(
                         recipient.getMember()
                                 .getEmail(),
                         subject,
-                        text
+                        model
                 )
         );
     }
 
-    private String generateSubject(final Event event) {
+    private String createSubject(final Event event) {
         return "[%s] %s님의 이벤트 안내: %s".formatted(
                 event.getOrganization()
                         .getName(),
@@ -36,40 +37,23 @@ public class EventNotification {
         );
     }
 
-    // TODO. 템플릿을 이용하여 content 생성하는 로직으로 변경 필요
-    private String generateText(final Event event, final String content) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm");
-
-        return """
-                안녕하세요. %s 입니다.
-                
-                %s
-                
-                ────────────────────────────────
-                [이벤트 정보]
-                • 제목: %s
-                • 주최자: %s
-                • 장소: %s
-                • 모집기간: %s ~ %s
-                • 진행기간: %s ~ %s
-                ────────────────────────────────
-                
-                감사합니다.
-                """.formatted(
+    private Map<String, Object> createModel(final Event event, final String content) {
+        Map<String, Object> model = new HashMap<>();
+        model.put(
+                "organizationName",
                 event.getOrganization()
-                        .getName(),
-                content,
-                event.getTitle(),
-                event.getOrganizerNickname(),
-                event.getPlace(),
-                event.getRegistrationStart()
-                        .format(formatter),
-                event.getRegistrationEnd()
-                        .format(formatter),
-                event.getEventStart()
-                        .format(formatter),
-                event.getEventEnd()
-                        .format(formatter)
+                        .getName()
         );
+        model.put("content", content);
+        model.put("title", event.getTitle());
+        model.put("organizerNickname", event.getOrganizerNickname());
+        model.put("place", event.getPlace());
+        model.put("registrationStart", event.getRegistrationStart());
+        model.put("registrationEnd", event.getRegistrationEnd());
+        model.put("eventStart", event.getEventStart());
+        model.put("eventEnd", event.getEventEnd());
+        model.put("eventId", event.getId());
+
+        return model;
     }
 }
