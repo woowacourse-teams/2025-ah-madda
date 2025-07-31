@@ -55,6 +55,15 @@ public class EventOperationPeriod {
         return new EventOperationPeriod(registrationPeriod, eventPeriod, currentDateTime);
     }
 
+    public EventOperationPeriod update(
+            final Period registrationPeriod,
+            final Period eventPeriod,
+            final LocalDateTime currentDateTime
+    ) {
+        return new EventOperationPeriod(registrationPeriod, eventPeriod, currentDateTime);
+    }
+
+
     public boolean isNotStarted(final LocalDateTime currentDateTime) {
         return eventPeriod.isNotStarted(currentDateTime);
     }

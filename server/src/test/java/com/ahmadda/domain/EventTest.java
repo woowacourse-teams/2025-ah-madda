@@ -25,6 +25,54 @@ class EventTest {
     }
 
     @Test
+    void 이벤트_정보를_수정할_수_있다() {
+        // given
+        var now = LocalDateTime.now();
+        var registrationPeriod = Period.create(now.plusDays(1), now.plusDays(2));
+        var eventPeriod = Period.create(now.plusDays(3), now.plusDays(4));
+        var sut = Event.create(
+                "이전 제목",
+                "이전 설명",
+                "이전 장소",
+                baseOrganizer,
+                baseOrganization,
+                EventOperationPeriod.create(registrationPeriod, eventPeriod, now),
+                "이전 닉네임",
+                10
+        );
+
+        var updatedRegistrationPeriod = Period.create(now.plusDays(2), now.plusDays(3));
+        var updatedEventPeriod = Period.create(now.plusDays(4), now.plusDays(5));
+        var updatedOperationPeriod = EventOperationPeriod.create(updatedRegistrationPeriod, updatedEventPeriod, now);
+
+        // when
+        sut.update(
+                "수정된 제목",
+                "수정된 설명",
+                "수정된 장소",
+                updatedOperationPeriod,
+                "수정된 닉네임",
+                20
+        );
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(sut.getTitle())
+                    .isEqualTo("수정된 제목");
+            softly.assertThat(sut.getDescription())
+                    .isEqualTo("수정된 설명");
+            softly.assertThat(sut.getPlace())
+                    .isEqualTo("수정된 장소");
+            softly.assertThat(sut.getEventOperationPeriod())
+                    .isEqualTo(updatedOperationPeriod);
+            softly.assertThat(sut.getOrganizerNickname())
+                    .isEqualTo("수정된 닉네임");
+            softly.assertThat(sut.getMaxCapacity())
+                    .isEqualTo(20);
+        });
+    }
+
+    @Test
     void 게스트가_이벤트에_참여했는지_알_수_있다() {
         // given
         var now = LocalDateTime.now();
