@@ -383,6 +383,18 @@ public class OrganizationEventController {
                                                       "instance": "/api/organizations/events/{eventId}/registration/close"
                                                     }
                                                     """
+                                    ),
+                                    @ExampleObject(
+                                            name = "마감 시간은 현재 등록 종료 시간보다 이전이어야 함",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "마감 시간은 현재 등록 종료 시간보다 이전이어야 합니다",
+                                                      "instance": "/api/organizations/events/{eventId}/registration/close"
+                                                    }
+                                                    """
                                     )
                             }
                     )
