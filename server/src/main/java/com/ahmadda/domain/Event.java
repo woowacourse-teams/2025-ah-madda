@@ -148,6 +148,22 @@ public class Event extends BaseEntity {
         );
     }
 
+    public void update(
+            final String title,
+            final String description,
+            final String place,
+            final EventOperationPeriod eventOperationPeriod,
+            final String organizerNickname,
+            final int maxCapacity
+    ) {
+        this.title = title;
+        this.description = description;
+        this.place = place;
+        this.eventOperationPeriod = eventOperationPeriod;
+        this.organizerNickname = organizerNickname;
+        this.maxCapacity = maxCapacity;
+    }
+
     public boolean hasGuest(final OrganizationMember organizationMember) {
         if (organizationMember.equals(organizer)) {
             return true;

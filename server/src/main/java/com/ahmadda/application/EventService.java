@@ -1,6 +1,8 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.EventCreateRequest;
+import com.ahmadda.application.dto.EventUpdateRequest;
+import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
@@ -9,6 +11,7 @@ import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
+import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
@@ -66,6 +69,51 @@ public class EventService {
     public Event getEvent(final Long eventId) {
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않은 이벤트 정보입니다."));
+    }
+
+    @Transactional
+    public Event updateEvent(
+            final Long eventId,
+            final LoginMember loginMember,
+            final EventUpdateRequest eventUpdateRequest,
+            final LocalDateTime currentDateTime
+    ) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않은 이벤트 정보입니다."));
+
+        Member member = memberRepository.findById(loginMember.memberId())
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
+        if (!event.isOrganizer(member)) {
+            throw new AccessDeniedException("이벤트의 주최자만 수정할 수 있습니다.");
+        }
+
+        Period updatedRegistrationPeriod = event.getEventOperationPeriod()
+                .getRegistrationPeriod()
+                .update(
+                        event.getEventOperationPeriod()
+                                .getRegistrationPeriod()
+                                .start(),
+                        eventUpdateRequest.registrationEnd()
+                );
+        Period updatedEventPeriod = event.getEventOperationPeriod()
+                .getEventPeriod()
+                .update(eventUpdateRequest.eventStart(), eventUpdateRequest.eventEnd());
+
+        EventOperationPeriod updatedOperationPeriod = event.getEventOperationPeriod()
+                .update(updatedRegistrationPeriod, updatedEventPeriod, currentDateTime);
+
+        event.update(
+                eventUpdateRequest.title(),
+                eventUpdateRequest.description(),
+                eventUpdateRequest.place(),
+                updatedOperationPeriod,
+                eventUpdateRequest.organizerNickname(),
+                eventUpdateRequest.maxCapacity()
+        );
+
+        // notifyEventUpdated(event);
+
+        return event;
     }
 
     private EventOperationPeriod createEventOperationPeriod(
