@@ -65,7 +65,13 @@ export const Button = ({
         <Icon
           name={iconName}
           size={20}
-          color={variant === 'outline' ? `${theme.colors.gray700}` : 'white'}
+          color={
+            variant === 'outline'
+              ? `${theme.colors.gray700}`
+              : color === 'secondary'
+                ? `${theme.colors.primary600}`
+                : 'white'
+          }
         />
       )}
       {children}
