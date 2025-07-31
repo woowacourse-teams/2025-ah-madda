@@ -123,8 +123,6 @@ class EventServiceTest {
     @Test
     void 이벤트_생성시_조직_id에_해당하는_조직이_없다면_예외가_발생한다() {
         //given
-        var organizationMember = createOrganizationMember(createOrganization(), createMember());
-
         var now = LocalDateTime.now();
         var eventCreateRequest = new EventCreateRequest(
                 "UI/UX 이벤트",
@@ -319,34 +317,38 @@ class EventServiceTest {
         var loginMember = new LoginMember(member.getId());
 
         // when
-        var updated = sut.updateEvent(event.getId(), loginMember, updateRequest, now);
+        sut.updateEvent(event.getId(), loginMember, updateRequest, now);
 
         // then
-        assertSoftly(softly -> {
-            softly.assertThat(updated.getTitle())
-                    .isEqualTo("수정된 제목");
-            softly.assertThat(updated.getDescription())
-                    .isEqualTo("수정된 설명");
-            softly.assertThat(updated.getPlace())
-                    .isEqualTo("수정된 장소");
-            softly.assertThat(updated.getOrganizerNickname())
-                    .isEqualTo("수정된 닉네임");
-            softly.assertThat(updated.getMaxCapacity())
-                    .isEqualTo(200);
+        assertThat(eventRepository.findById(event.getId()))
+                .isPresent()
+                .hasValueSatisfying(savedEvent -> {
+                    assertSoftly(softly -> {
+                        softly.assertThat(savedEvent.getTitle())
+                                .isEqualTo("수정된 제목");
+                        softly.assertThat(savedEvent.getDescription())
+                                .isEqualTo("수정된 설명");
+                        softly.assertThat(savedEvent.getPlace())
+                                .isEqualTo("수정된 장소");
+                        softly.assertThat(savedEvent.getOrganizerNickname())
+                                .isEqualTo("수정된 닉네임");
+                        softly.assertThat(savedEvent.getMaxCapacity())
+                                .isEqualTo(200);
 
-            softly.assertThat(updated.getEventOperationPeriod()
-                            .getRegistrationPeriod()
-                            .end())
-                    .isEqualTo(now.plusDays(5));
-            softly.assertThat(updated.getEventOperationPeriod()
-                            .getEventPeriod()
-                            .start())
-                    .isEqualTo(now.plusDays(6));
-            softly.assertThat(updated.getEventOperationPeriod()
-                            .getEventPeriod()
-                            .end())
-                    .isEqualTo(now.plusDays(7));
-        });
+                        softly.assertThat(savedEvent.getEventOperationPeriod()
+                                        .getRegistrationPeriod()
+                                        .end())
+                                .isEqualTo(now.plusDays(5));
+                        softly.assertThat(savedEvent.getEventOperationPeriod()
+                                        .getEventPeriod()
+                                        .start())
+                                .isEqualTo(now.plusDays(6));
+                        softly.assertThat(savedEvent.getEventOperationPeriod()
+                                        .getEventPeriod()
+                                        .end())
+                                .isEqualTo(now.plusDays(7));
+                    });
+                });
     }
 
     @Test
