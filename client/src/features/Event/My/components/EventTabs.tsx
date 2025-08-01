@@ -20,7 +20,12 @@ export const EventTabs = () => {
   );
 
   return (
-    <Tabs defaultValue={TAB_VALUES.HOST}>
+    <Tabs
+      defaultValue={TAB_VALUES.HOST}
+      css={css`
+        width: 100%;
+      `}
+    >
       <EventTabsList />
 
       <Tabs.Content
