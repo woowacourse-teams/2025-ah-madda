@@ -26,10 +26,9 @@ public class JwtProvider {
         Instant now = Instant.now();
         Instant expire = now.plus(jwtProperties.getAccessExpiration());
 
-        Claims claims = createAccessTokenClaims(memberId);
+        Claims claims = MemberPayload.toClaims(memberId);
 
         return Jwts.builder()
-                .subject(claims.getSubject())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expire))
                 .claims(claims)
@@ -40,13 +39,7 @@ public class JwtProvider {
     public MemberPayload parsePayload(final String token) {
         Claims claims = parseClaims(token);
 
-        return MemberPayload.create(claims);
-    }
-
-    private Claims createAccessTokenClaims(final Long memberId) {
-        return Jwts.claims()
-                .subject(memberId.toString())
-                .build();
+        return MemberPayload.from(claims);
     }
 
     private Claims parseClaims(final String token) {
