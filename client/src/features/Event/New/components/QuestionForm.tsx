@@ -72,14 +72,13 @@ export const QuestionForm = ({ questions, onChange, onErrorChange }: QuestionFor
         <Flex justifyContent="space-between" alignItems="center">
           <Text type="Body">사전 질문</Text>
           <Button
-            width="100px"
-            size="sm"
-            color="black"
-            fontColor="black"
-            variant="outlined"
+            size="md"
+            color="tertiary"
+            variant="outline"
+            iconName="plus"
             onClick={addQuestion}
           >
-            + 질문 추가
+            질문 추가
           </Button>
         </Flex>
         {questions.map((question) => (

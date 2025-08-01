@@ -94,7 +94,7 @@ export const Info = () => {
             <PointIcon src={Point} alt="Point" className="point3" />
           </Flex>
         </Flex>
-        <Button width="100%" size="lg" onClick={handleButtonClick}>
+        <Button size="full" onClick={handleButtonClick}>
           이벤트 보러가기
         </Button>
       </Flex>

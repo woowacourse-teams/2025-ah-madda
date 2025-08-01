@@ -33,8 +33,8 @@ export const EventList = ({ events }: EventListProps) => {
         `}
       >
         <Flex justifyContent="flex-end" alignItems="center">
-          <Button width="130px" size="md" onClick={() => navigate('/event/new')}>
-            + 이벤트 생성
+          <Button size="md" iconName="plus" onClick={() => navigate('/event/new')}>
+            이벤트 생성
           </Button>
         </Flex>
         {groupedEvents.length === 0 ? (

@@ -64,9 +64,8 @@ export const AlarmSection = ({ pendingGuestsCount }: AlarmSectionProps) => {
           />
 
           <Button
-            width="100%"
-            size="sm"
-            color="#F54900"
+            size="full"
+            color="primary"
             disabled={!alarmMessage.trim() || isPending}
             onClick={handleSendAlarm}
             css={css`

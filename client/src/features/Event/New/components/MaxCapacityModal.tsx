@@ -60,10 +60,10 @@ export const MaxCapacityModal = ({ isOpen, initialValue, onClose, onSubmit }: Pr
         />
 
         <Flex gap="10px" justifyContent="flex-end">
-          <Button onClick={onClose} size="sm" color="gray">
+          <Button onClick={onClose} size="sm" variant="outline">
             취소
           </Button>
-          <Button onClick={handleConfirm} size="sm" color="black">
+          <Button color="tertiary" onClick={handleConfirm} size="sm">
             제한 설정
           </Button>
         </Flex>

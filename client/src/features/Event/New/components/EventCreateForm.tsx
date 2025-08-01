@@ -216,17 +216,7 @@ export const EventCreateForm = () => {
         />
 
         <Flex justifyContent="flex-end">
-          <Button
-            type="submit"
-            color="black"
-            size="sm"
-            disabled={!isFormValid}
-            css={css`
-              border-radius: 5px;
-              font-size: 12px;
-              padding: 7px;
-            `}
-          >
+          <Button type="submit" color="tertiary" size="md" disabled={!isFormValid}>
             이벤트 만들기
           </Button>
         </Flex>

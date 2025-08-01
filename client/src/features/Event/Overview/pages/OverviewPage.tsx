@@ -19,28 +19,25 @@ export const OverviewPage = () => {
   const { data: eventData } = useQuery(organizationQueryOptions.event(1));
 
   // S.TODO 로딩 처리
-  if (!organizationData || !eventData) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <>
       <Header
         left={<IconButton name="logo" size={55} onClick={() => navigate('/event')} />}
         right={
-          <Button width="80px" size="sm" onClick={() => navigate('/event/my')}>
+          <Button size="sm" onClick={() => navigate('/event/my')}>
             내 이벤트
           </Button>
         }
       />
       <OrganizationInfo
-        name={organizationData?.name}
-        description={organizationData?.description}
-        imageUrl={organizationData?.imageUrl}
-        totalEvents={eventData?.length}
+        name={organizationData?.name ?? ''}
+        description={organizationData?.description ?? ''}
+        imageUrl={organizationData?.imageUrl ?? ''}
+        totalEvents={eventData?.length ?? 0}
       />
 
-      <EventList events={eventData} />
+      <EventList events={eventData ?? []} />
     </>
   );
 };

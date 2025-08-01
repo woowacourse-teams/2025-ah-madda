@@ -82,23 +82,10 @@ export const NicknameModal = ({ isOpen, onClose }: NicknameModalProps) => {
           />
         </Flex>
         <Flex gap="12px" alignItems="center">
-          <Button
-            variant="outlined"
-            size="md"
-            onClick={handleClose}
-            color="#18A0FB"
-            fontColor="#18A0FB"
-            width="100%"
-          >
+          <Button variant="outline" size="full" onClick={handleClose}>
             취소
           </Button>
-          <Button
-            variant="filled"
-            size="md"
-            onClick={handleSubmit}
-            disabled={!nickname.trim()}
-            width="100%"
-          >
+          <Button size="full" onClick={handleSubmit} disabled={!nickname.trim()}>
             참가하기
           </Button>
         </Flex>
