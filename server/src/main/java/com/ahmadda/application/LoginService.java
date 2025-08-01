@@ -3,7 +3,7 @@ package com.ahmadda.application;
 import com.ahmadda.application.dto.MemberCreateAlarmDto;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.infra.jwt.JwtTokenProvider;
+import com.ahmadda.infra.jwt.JwtProvider;
 import com.ahmadda.infra.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.oauth.dto.OAuthUserInfoResponse;
 import com.ahmadda.infra.slack.SlackReminder;
@@ -17,7 +17,7 @@ public class LoginService {
 
     private final MemberRepository memberRepository;
     private final GoogleOAuthProvider googleOAuthProvider;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtProvider jwtProvider;
     private final SlackReminder slackReminder;
 
     @Transactional
@@ -25,8 +25,8 @@ public class LoginService {
         OAuthUserInfoResponse userInfo = googleOAuthProvider.getUserInfo(code, redirectUri);
 
         Member member = findOrCreateMember(userInfo.name(), userInfo.email());
-        
-        return jwtTokenProvider.createToken(member.getId());
+
+        return jwtProvider.createToken(member.getId());
     }
 
     private Member findOrCreateMember(final String name, final String email) {

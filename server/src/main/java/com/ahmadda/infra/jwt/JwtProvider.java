@@ -1,6 +1,6 @@
 package com.ahmadda.infra.jwt;
 
-import com.ahmadda.infra.jwt.config.JwtTokenProperties;
+import com.ahmadda.infra.jwt.config.JwtProperties;
 import com.ahmadda.infra.jwt.exception.InvalidTokenException;
 import com.ahmadda.infra.oauth.dto.MemberPayload;
 import io.jsonwebtoken.Claims;
@@ -15,16 +15,16 @@ import java.time.Instant;
 import java.util.Date;
 
 @Slf4j
-@EnableConfigurationProperties(JwtTokenProperties.class)
+@EnableConfigurationProperties(JwtProperties.class)
 @Component
 @RequiredArgsConstructor
-public class JwtTokenProvider {
+public class JwtProvider {
 
-    private final JwtTokenProperties jwtTokenProperties;
+    private final JwtProperties jwtProperties;
 
     public String createToken(final Long memberId) {
         Instant now = Instant.now();
-        Instant expire = now.plus(jwtTokenProperties.getAccessExpiration());
+        Instant expire = now.plus(jwtProperties.getAccessExpiration());
 
         Claims claims = createAccessTokenClaims(memberId);
 
@@ -33,7 +33,7 @@ public class JwtTokenProvider {
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expire))
                 .claims(claims)
-                .signWith(jwtTokenProperties.getSecretKey())
+                .signWith(jwtProperties.getSecretKey())
                 .compact();
     }
 
@@ -52,7 +52,7 @@ public class JwtTokenProvider {
     private Claims parseClaims(final String token) {
         try {
             return Jwts.parser()
-                    .verifyWith(jwtTokenProperties.getSecretKey())
+                    .verifyWith(jwtProperties.getSecretKey())
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();

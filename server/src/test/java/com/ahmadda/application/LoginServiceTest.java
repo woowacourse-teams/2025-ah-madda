@@ -5,7 +5,7 @@ import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.infra.jwt.JwtTokenProvider;
+import com.ahmadda.infra.jwt.JwtProvider;
 import com.ahmadda.infra.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.oauth.dto.OAuthUserInfoResponse;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ class LoginServiceTest {
     private GoogleOAuthProvider googleOAuthProvider;
 
     @MockitoBean
-    private JwtTokenProvider jwtTokenProvider;
+    private JwtProvider jwtProvider;
 
     @Test
     void 신규회원이면_저장한다() {
@@ -56,7 +56,7 @@ class LoginServiceTest {
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
                 .willReturn(new OAuthUserInfoResponse(email, name));
 
-        given(jwtTokenProvider.createToken(any(Long.class)))
+        given(jwtProvider.createToken(any(Long.class)))
                 .willReturn(accessToken);
 
         // when
@@ -78,7 +78,7 @@ class LoginServiceTest {
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
                 .willReturn(new OAuthUserInfoResponse(email, name));
 
-        given(jwtTokenProvider.createToken(any(Long.class)))
+        given(jwtProvider.createToken(any(Long.class)))
                 .willReturn(accessToken);
 
         Member member = Member.create(name, email);
@@ -109,7 +109,7 @@ class LoginServiceTest {
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
                 .willReturn(new OAuthUserInfoResponse(email, name));
 
-        given(jwtTokenProvider.createToken(any(Long.class)))
+        given(jwtProvider.createToken(any(Long.class)))
                 .willReturn(accessToken);
 
         // when

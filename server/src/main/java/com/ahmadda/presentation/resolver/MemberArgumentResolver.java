@@ -1,7 +1,7 @@
 package com.ahmadda.presentation.resolver;
 
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.infra.jwt.JwtTokenProvider;
+import com.ahmadda.infra.jwt.JwtProvider;
 import com.ahmadda.infra.oauth.dto.MemberPayload;
 import com.ahmadda.presentation.exception.InvalidAuthorizationException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +20,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private static final String BEARER_TYPE = "Bearer ";
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtProvider jwtProvider;
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
@@ -39,7 +39,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
         String accessToken = extractAccessToken(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
 
-        MemberPayload memberPayload = jwtTokenProvider.parsePayload(accessToken);
+        MemberPayload memberPayload = jwtProvider.parsePayload(accessToken);
 
         return new LoginMember(memberPayload.getMemberId());
     }
