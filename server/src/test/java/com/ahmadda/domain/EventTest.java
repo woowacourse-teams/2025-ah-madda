@@ -267,7 +267,7 @@ class EventTest {
         var participate = Guest.create(sut, organizationMember2, sut.getRegistrationStart());
 
         //when // then
-        assertThatThrownBy(() -> sut.cancelParticipate(organizationMember))
+        assertThatThrownBy(() -> sut.cancelParticipation(organizationMember, LocalDateTime.now()))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage("이벤트의 참가자 목록에서 일치하는 조직원을 찾을 수 없습니다");
     }
@@ -291,11 +291,11 @@ class EventTest {
         //when // then
         assertSoftly(softly -> {
             softly.assertThat(sut.getGuests().size()).isEqualTo(1L);
-            sut.cancelParticipate(organizationMember2);
+            sut.cancelParticipation(organizationMember2, LocalDateTime.now());
             softly.assertThat(sut.getGuests().size()).isEqualTo(0L);
         });
     }
-
+    
     private Event createEvent(final String title, final int maxCapacity, Question... questions) {
         var organization = createOrganization("우테코");
 

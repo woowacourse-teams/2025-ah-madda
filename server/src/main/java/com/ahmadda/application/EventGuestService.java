@@ -79,7 +79,7 @@ public class EventGuestService {
                 .getId();
         OrganizationMember organizationMember = getOrganizationMember(organizationId, loginMember.memberId());
 
-        event.cancelParticipate(organizationMember);
+        event.cancelParticipation(organizationMember, LocalDateTime.now());
         guestRepository.deleteByEventAndOrganizationMember(event, organizationMember);
     }
 
