@@ -74,7 +74,7 @@ public class EventOperationPeriod {
 
     private void validateClosePeriod(final LocalDateTime closeDateTime) {
         if (closeDateTime.isAfter(this.registrationPeriod.end())) {
-            throw new BusinessRuleViolatedException("마감 시간은 현재 등록 종료 시간보다 이전이어야 합니다.");
+            throw new BusinessRuleViolatedException("이미 신청이 마감된 이벤트입니다.");
         }
     }
 

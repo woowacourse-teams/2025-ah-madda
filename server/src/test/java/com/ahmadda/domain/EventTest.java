@@ -349,8 +349,7 @@ class EventTest {
         // when // then
         assertThatThrownBy(() -> sut.closeRegistrationAt(baseOrganizer, registrationCloseOverTime))
                 .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("마감 시간은 현재 등록 종료 시간보다 이전이어야 합니다.");
-
+                .hasMessage("이미 신청이 마감된 이벤트입니다.");
     }
 
     private Event createEvent(String title, int maxCapacity, Question... questions) {
