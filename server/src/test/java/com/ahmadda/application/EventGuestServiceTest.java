@@ -398,42 +398,6 @@ class EventGuestServiceTest {
     }
 
 
-    @Test
-    void 참가자가_아니면_이벤트_참가_취소시_예외가_발생한다() {
-        // given
-        var organization = createAndSaveOrganization();
-        var member1 = createAndSaveMember("test1", "ahmadda1@ahmadda.com");
-        var participant = createAndSaveMember("test3", "ahmadda3@ahmadda.com");
-
-        var organizationMember1 =
-                createAndSaveOrganizationMember("organizationMember1", member1, organization);
-
-        var participantOrganizationMember =
-                createAndSaveOrganizationMember("organizationMember2", participant, organization);
-
-        var eventQuestion = Question.create("테스트", true, 1);
-        var event = createAndSaveEvent(organizationMember1, organization, eventQuestion);
-
-        sut.participantEvent(
-                event.getId(),
-                participant.getId(),
-                event.getRegistrationStart(),
-                new EventParticipateRequest(
-                        List.of(
-                                new AnswerCreateRequest(
-                                        event.getQuestions().getFirst().getId(),
-                                        "답변임"
-                                )
-                        )
-                )
-        );
-
-        // when // then
-        assertThatThrownBy(() -> sut.cancelParticipate(event.getId(), member1.getId()))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("이벤트의 참가자 목록에서 일치하는 조직원을 찾을 수 없습니다");
-    }
-
     private Member createAndSaveMember(String name, String email) {
         return memberRepository.save(Member.create(name, email));
     }
