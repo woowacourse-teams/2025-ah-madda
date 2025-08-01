@@ -1,8 +1,8 @@
 package com.ahmadda.infra.jwt;
 
 import com.ahmadda.infra.jwt.config.JwtProperties;
+import com.ahmadda.infra.jwt.dto.JwtMemberPayload;
 import com.ahmadda.infra.jwt.exception.InvalidTokenException;
-import com.ahmadda.infra.oauth.dto.MemberPayload;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -26,7 +26,7 @@ public class JwtProvider {
         Instant now = Instant.now();
         Instant expire = now.plus(jwtProperties.getAccessExpiration());
 
-        Claims claims = MemberPayload.toClaims(memberId);
+        Claims claims = JwtMemberPayload.toClaims(memberId);
 
         return Jwts.builder()
                 .issuedAt(Date.from(now))
@@ -36,10 +36,10 @@ public class JwtProvider {
                 .compact();
     }
 
-    public MemberPayload parsePayload(final String token) {
+    public JwtMemberPayload parsePayload(final String token) {
         Claims claims = parseClaims(token);
 
-        return MemberPayload.from(claims);
+        return JwtMemberPayload.from(claims);
     }
 
     private Claims parseClaims(final String token) {

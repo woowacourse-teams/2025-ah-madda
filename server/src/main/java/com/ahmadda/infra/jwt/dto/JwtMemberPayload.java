@@ -1,24 +1,24 @@
-package com.ahmadda.infra.oauth.dto;
+package com.ahmadda.infra.jwt.dto;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.Getter;
 
 @Getter
-public class MemberPayload {
+public class JwtMemberPayload {
 
     private static final String MEMBER_ID_KEY = "memberId";
 
     private final Long memberId;
 
-    private MemberPayload(final Long memberId) {
+    private JwtMemberPayload(final Long memberId) {
         this.memberId = memberId;
     }
 
-    public static MemberPayload from(final Claims claims) {
+    public static JwtMemberPayload from(final Claims claims) {
         Long memberId = claims.get(MEMBER_ID_KEY, Long.class);
 
-        return new MemberPayload(memberId);
+        return new JwtMemberPayload(memberId);
     }
 
     public static Claims toClaims(final Long memberId) {
