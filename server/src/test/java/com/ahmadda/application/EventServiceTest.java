@@ -229,21 +229,6 @@ class EventServiceTest {
     }
 
     @Test
-    void 이벤트_마감_시_조직_id에_해당하는_조직이_없다면_예외가_발생한다() {
-        // given
-        var organization = createOrganization();
-        var member = createMember();
-        var organizationMember = createOrganizationMember(organization, member);
-        var event = createEvent(organizationMember, organization);
-        var now = LocalDateTime.now();
-
-        // when // then
-        assertThatThrownBy(() -> sut.closeEventRegistration(999L, event.getId(), organizationMember.getId(), now))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 조직 정보입니다.");
-    }
-
-    @Test
     void 이벤트_마감_시_조직원_id에_해당하는_조직원이_없다면_예외가_발생한다() {
         // given
         var organization = createOrganization();
@@ -254,7 +239,6 @@ class EventServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.closeEventRegistration(
-                organization.getId(),
                 event.getId(),
                 999L,
                 now
@@ -268,14 +252,18 @@ class EventServiceTest {
         // given
         var organization1 = createOrganization();
         var organization2 = createOrganization();
-        var member = createMember();
-        var notBelongingOrgMember = createOrganizationMember(organization2, member);
-        var event = createEvent(notBelongingOrgMember, organization2);
+
+        var om1Member = createMember("m1", "m1@mail.com");
+        var notBelongingOrgMember = createOrganizationMember(organization1, om1Member);
+
+        var om2Member = createMember("m2", "m2@mail.com");
+        var hostOrgMember = createOrganizationMember(organization2, om2Member);
+
+        var event = createEvent(hostOrgMember, organization2);
         var now = LocalDateTime.now();
 
         // when // then
         assertThatThrownBy(() -> sut.closeEventRegistration(
-                organization1.getId(),
                 event.getId(),
                 notBelongingOrgMember.getId(),
                 now
@@ -295,7 +283,6 @@ class EventServiceTest {
 
         // when // then
         assertDoesNotThrow(() -> sut.closeEventRegistration(
-                organization.getId(),
                 event.getId(),
                 orgMember.getId(),
                 now.plusDays(1)

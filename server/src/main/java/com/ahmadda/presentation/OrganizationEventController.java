@@ -400,13 +400,11 @@ public class OrganizationEventController {
                     )
             )
     })
-    @PostMapping("/{organizationId}/events/{eventId}/registration/close")
+    @PostMapping("/events/{eventId}/registration/close")
     public ResponseEntity<Void> closeOrganizationEvent(
-            @PathVariable final Long organizationId,
             @PathVariable final Long eventId,
             @AuthMember final LoginMember loginMember) {
         eventService.closeEventRegistration(
-                organizationId,
                 eventId,
                 loginMember.memberId(),
                 LocalDateTime.now()

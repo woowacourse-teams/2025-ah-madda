@@ -66,13 +66,13 @@ public class EventService {
 
     @Transactional
     public void closeEventRegistration(
-            final Long organizationId,
             final Long eventId,
             final Long memberId,
             final LocalDateTime currentDateTime) {
-        validateOrganizationExists(organizationId);
-        OrganizationMember organizationMember = validateOrganizationAccess(organizationId, memberId);
         Event event = getEvent(eventId);
+        Organization organization = event.getOrganization();
+
+        OrganizationMember organizationMember = validateOrganizationAccess(organization.getId(), memberId);
 
         event.closeRegistrationAt(organizationMember, currentDateTime);
     }
@@ -108,12 +108,6 @@ public class EventService {
     private Organization getOrganization(final Long organizationId) {
         return organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않은 조직 정보입니다."));
-    }
-
-    private void validateOrganizationExists(final Long organizationId) {
-        if (!organizationRepository.existsById(organizationId)) {
-            throw new NotFoundException("존재하지 않은 조직 정보입니다.");
-        }
     }
 
     private OrganizationMember validateOrganizationAccess(final Long organizationId, final Long memberId) {
