@@ -26,8 +26,8 @@ class JwtProviderTest {
     @Test
     void JWT_토큰을_정상적으로_생성_및_검증_할_수_있다() {
         // given
-        Long memberId = 1L;
-        String token = sut.createToken(memberId);
+        var memberId = 1L;
+        var token = sut.createToken(memberId);
 
         // when
         var memberPayload = sut.parsePayload(token);
@@ -39,8 +39,8 @@ class JwtProviderTest {
     @Test
     void 페이로드_변환시_토큰을_정상적으로_파싱한다() {
         // given
-        Long memberId = 2L;
-        String token = sut.createToken(memberId);
+        var memberId = 2L;
+        var token = sut.createToken(memberId);
 
         // when
         var payload = sut.parsePayload(token);
@@ -52,7 +52,7 @@ class JwtProviderTest {
     @Test
     void 페이로드_변환시_만료된_토큰일_경우_예외가_발생한다() {
         // given
-        Instant now = Instant.now();
+        var now = Instant.now();
         var token = Jwts.builder()
                 .claims(Jwts.claims()
                         .add("memberId", 3L)
