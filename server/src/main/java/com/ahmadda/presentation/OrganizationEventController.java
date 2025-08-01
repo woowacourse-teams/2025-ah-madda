@@ -333,7 +333,7 @@ public class OrganizationEventController {
                                             value = """
                                                     {
                                                       "type": "about:blank",
-                                                      "title": "Unprocessable Entity",
+                                                      "title": "Forbidden",
                                                       "status": 403,
                                                       "detail": "이벤트의 주최자만 마감할 수 있습니다.",
                                                       "instance": "/api/organizations/events/{eventId}/registration/close"
