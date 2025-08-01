@@ -72,6 +72,21 @@ public class EventOperationPeriod {
         return !registrationPeriod.includes(currentDateTime);
     }
 
+    public void closeRegistration(final LocalDateTime closeTime) {
+        Period closePeriod = Period.create(this.registrationPeriod.start(), closeTime);
+
+        validateClosePeriod(closeTime);
+        validate(closePeriod, this.eventPeriod);
+
+        this.registrationPeriod = closePeriod;
+    }
+
+    private void validateClosePeriod(final LocalDateTime closeDateTime) {
+        if (closeDateTime.isAfter(this.registrationPeriod.end())) {
+            throw new BusinessRuleViolatedException("이미 신청이 마감된 이벤트입니다.");
+        }
+    }
+
     private void validateRegistrationPeriod(
             final Period registrationPeriod,
             final LocalDateTime currentDateTime
