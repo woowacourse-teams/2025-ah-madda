@@ -8,11 +8,12 @@ import { Guest, NonGuest } from '../types';
 
 type GuestItemProps = {
   guest: Guest | NonGuest;
+  onClick?: (guest: Guest | NonGuest) => void;
 };
 
 type GuestItemVariant = 'completed' | 'pending';
 
-export const GuestItem = ({ guest }: GuestItemProps) => {
+export const GuestItem = ({ guest, onClick }: GuestItemProps) => {
   const isGuest = 'guestId' in guest;
   const variant = isGuest ? 'completed' : 'pending';
   const { badgeTextColor, badgeText } = GUEST_STYLES[variant];
@@ -23,6 +24,8 @@ export const GuestItem = ({ guest }: GuestItemProps) => {
       alignItems="center"
       padding="4px 8px"
       variant={variant}
+      isClickable={!!onClick}
+      onClick={() => onClick?.(guest)}
     >
       <Text type="Label" weight="regular" color={GUEST_STYLES.common.nameTextColor}>
         {guest.nickname}
@@ -44,23 +47,32 @@ export const GuestItem = ({ guest }: GuestItemProps) => {
 
 type GuestItemContainerProps = {
   variant: GuestItemVariant;
+  isClickable?: boolean;
 };
 
 type GuestBadgeProps = GuestItemContainerProps;
 
-const getContainerStyles = (variant: GuestItemVariant) => {
+const getContainerStyles = (variant: GuestItemVariant, isClickable: boolean) => {
   if (variant === 'completed') {
-    //E.TODO: 추후 클릭 시 모달 로직이 추가되면, 호버 효과(색상) 추가
     return `
       background-color: #F0FDF4;
+      ${
+        isClickable
+          ? `
+        cursor: pointer;
+        transition: background-color 0.2s ease;
 
+        &:hover {
+          background-color: #DCFCE7;
+        }
+      `
+          : ''
+      }
     `;
   }
 
   return `
     background-color: #F9FAFB;
-
-
   `;
 };
 
@@ -78,8 +90,7 @@ const getBadgeStyles = (variant: GuestItemVariant) => {
 
 export const StyledGuestItemContainer = styled(Flex)<GuestItemContainerProps>`
   border-radius: 8px;
-  //E.TODO: 추후 클릭 시 모달 로직이 추가되면, cursor: pointer; 추가
-  ${({ variant }) => getContainerStyles(variant)}
+  ${({ variant, isClickable = false }) => getContainerStyles(variant, isClickable)}
 `;
 
 export const StyledGuestBadge = styled(Flex)<GuestBadgeProps>`

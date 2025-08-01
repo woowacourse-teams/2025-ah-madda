@@ -9,9 +9,10 @@ type GuestListProps = {
   title: string;
   titleColor: string;
   guests: Guest[] | NonGuest[];
+  onGuestClick?: (guest: Guest | NonGuest) => void;
 };
 
-export const GuestList = ({ title, titleColor, guests }: GuestListProps) => {
+export const GuestList = ({ title, titleColor, guests, onGuestClick }: GuestListProps) => {
   return (
     <Flex dir="column" gap="16px">
       <Text type="Label" weight="medium" color={titleColor}>
@@ -20,7 +21,7 @@ export const GuestList = ({ title, titleColor, guests }: GuestListProps) => {
 
       <Flex dir="column" gap="12px">
         {guests.map((guest, index) => (
-          <GuestItem key={index} guest={guest} />
+          <GuestItem key={index} guest={guest} onClick={onGuestClick} />
         ))}
       </Flex>
     </Flex>

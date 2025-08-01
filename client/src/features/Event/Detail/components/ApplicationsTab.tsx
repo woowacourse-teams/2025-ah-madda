@@ -1,8 +1,9 @@
 import { useSuspenseQueries } from '@tanstack/react-query';
 
 import { eventQueryOptions } from '@/api/queries/event';
-import { GuestViewSection } from '@/features/Event/Manage/components/GuestViewSection';
 import { Flex } from '@/shared/components/Flex';
+
+import { GuestViewSection } from '../../shared/GuestViewSection';
 
 export const ApplicationsTab = ({ eventId }: { eventId: number }) => {
   const [{ data: guests = [] }, { data: nonGuests = [] }] = useSuspenseQueries({
