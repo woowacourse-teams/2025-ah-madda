@@ -1,5 +1,7 @@
 package com.ahmadda.domain;
 
+import com.ahmadda.domain.util.Assert;
+
 public record Email(
         Subject subject,
         Body body
@@ -37,6 +39,11 @@ public record Email(
             String eventTitle
     ) {
 
+        public Subject {
+            Assert.notBlank(organizationName, "조직 이름은 공백일 수 없습니다.");
+            Assert.notBlank(organizerNickname, "주최자 닉네임은 공백일 수 없습니다.");
+            Assert.notBlank(eventTitle, "이벤트 제목은 공백일 수 없습니다.");
+        }
     }
 
     public record Body(
@@ -52,5 +59,17 @@ public record Email(
             Long eventId
     ) {
 
+        public Body {
+            Assert.notBlank(content, "이메일 본문은 공백일 수 없습니다.");
+            Assert.notBlank(organizationName, "조직 이름은 공백일 수 없습니다.");
+            Assert.notBlank(title, "이벤트 제목은 공백일 수 없습니다.");
+            Assert.notBlank(organizerNickname, "주최자 닉네임은 공백일 수 없습니다.");
+            Assert.notNull(place, "장소는 null일 수 없습니다.");
+            Assert.notNull(registrationStart, "신청 시작 시간은 null일 수 없습니다.");
+            Assert.notNull(registrationEnd, "신청 종료 시간은 null일 수 없습니다.");
+            Assert.notNull(eventStart, "이벤트 시작 시간은 null일 수 없습니다.");
+            Assert.notNull(eventEnd, "이벤트 종료 시간은 null일 수 없습니다.");
+            Assert.notNull(eventId, "이벤트 ID는 null일 수 없습니다.");
+        }
     }
 }
