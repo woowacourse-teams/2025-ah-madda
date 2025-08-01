@@ -1,6 +1,9 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.EventCreateRequest;
+import com.ahmadda.application.dto.LoginMember;
+import com.ahmadda.application.dto.EventUpdateRequest;
+import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
@@ -9,6 +12,8 @@ import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
+import com.ahmadda.domain.Guest;
+import com.ahmadda.domain.GuestRepository;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
@@ -17,6 +22,7 @@ import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Period;
 import com.ahmadda.domain.Question;
+import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +39,7 @@ import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -59,6 +66,9 @@ class EventServiceTest {
     @MockitoBean
     private EventNotification eventNotification;
 
+    @Autowired
+    private GuestRepository guestRepository;
+
     @Test
     void 이벤트를_생성할_수_있다() {
         //given
@@ -78,8 +88,10 @@ class EventServiceTest {
                 List.of(new QuestionCreateRequest("1번 질문", true), new QuestionCreateRequest("2번 질문", false))
         );
 
+        var loginMember = new LoginMember(member.getId());
+
         //when
-        var event = sut.createEvent(organization.getId(), organizationMember.getId(), eventCreateRequest, now);
+        var event = sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now);
 
         //then
         assertThat(eventRepository.findById(event.getId()))
@@ -114,8 +126,6 @@ class EventServiceTest {
     @Test
     void 이벤트_생성시_조직_id에_해당하는_조직이_없다면_예외가_발생한다() {
         //given
-        var organizationMember = createOrganizationMember(createOrganization(), createMember());
-
         var now = LocalDateTime.now();
         var eventCreateRequest = new EventCreateRequest(
                 "UI/UX 이벤트",
@@ -128,8 +138,10 @@ class EventServiceTest {
                 List.of(new QuestionCreateRequest("1번 질문", true), new QuestionCreateRequest("2번 질문", false))
         );
 
+        var loginMember = new LoginMember(1L);
+
         //when //then
-        assertThatThrownBy(() -> sut.createEvent(999L, organizationMember.getId(), eventCreateRequest, now))
+        assertThatThrownBy(() -> sut.createEvent(999L, loginMember, eventCreateRequest, now))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않은 조직 정보입니다.");
     }
@@ -151,8 +163,10 @@ class EventServiceTest {
                 new ArrayList<>()
         );
 
+        var loginMember = new LoginMember(999L);
+
         //when //then
-        assertThatThrownBy(() -> sut.createEvent(organization.getId(), 999L, eventCreateRequest, now))
+        assertThatThrownBy(() -> sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 회원입니다.");
     }
@@ -162,7 +176,7 @@ class EventServiceTest {
         //given
         var organization1 = createOrganization();
         var organization2 = createOrganization();
-        Member member = createMember();
+        var member = createMember();
         createOrganizationMember(organization2, member);
 
         var now = LocalDateTime.now();
@@ -177,8 +191,10 @@ class EventServiceTest {
                 new ArrayList<>()
         );
 
+        var loginMember = new LoginMember(member.getId());
+
         //when //then
-        assertThatThrownBy(() -> sut.createEvent(organization1.getId(), member.getId(), eventCreateRequest, now))
+        assertThatThrownBy(() -> sut.createEvent(organization1.getId(), loginMember, eventCreateRequest, now))
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessage("조직에 소속되지 않은 멤버입니다.");
     }
@@ -188,28 +204,103 @@ class EventServiceTest {
         //given
         var organization = createOrganization();
         var member = createMember();
+        var loginMember = createLoginMember(member);
         var organizationMember = createOrganizationMember(organization, member);
         var event = createEvent(organizationMember, organization);
 
         //when
-        var findEvent = sut.getEvent(event.getId());
+        var findEvent = sut.getOrganizationMemberEvent(loginMember, event.getId());
 
         //then
         assertThat(findEvent).isEqualTo(event);
     }
 
     @Test
-    void 이벤트_ID를_이용해_이벤트를_조회할때_해당_이벤트가_없다면_예외가_발생한다() {
+    void 조직에_속해_있지_않으면_이벤트를_조회할_수_없다() {
+        //given
+        var organization = createOrganization();
+        var otherOrganization = createOrganization();
+        var member = createMember();
+        var organizationMember = createOrganizationMember(otherOrganization, member);
+
         //when //then
-        assertThatThrownBy(() -> sut.getEvent(999L))
+        assertThatThrownBy(() -> createEvent(organizationMember, organization)).isInstanceOf(
+                        BusinessRuleViolatedException.class)
+                .hasMessage("자신이 속한 조직에서만 이벤트를 생성할 수 있습니다.");
+    }
+
+    @Test
+    void 이벤트_ID를_이용해_이벤트를_조회할때_해당_이벤트가_없다면_예외가_발생한다() {
+        // given
+        var member = createMember();
+        var loginMember = createLoginMember(member);
+
+        //when //then
+        assertThatThrownBy(() -> sut.getOrganizationMemberEvent(loginMember, 999L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않은 이벤트 정보입니다.");
     }
 
-    private Organization createOrganization() {
-        var organization = Organization.create("우테코", "우테코입니다.", "image");
+    @Test
+    void 이벤트_마감_시_조직원_id에_해당하는_조직원이_없다면_예외가_발생한다() {
+        // given
+        var organization = createOrganization();
+        var member = createMember();
+        var organizationMember = createOrganizationMember(organization, member);
+        var event = createEvent(organizationMember, organization);
+        var now = LocalDateTime.now();
 
-        return organizationRepository.save(organization);
+        // when // then
+        assertThatThrownBy(() -> sut.closeEventRegistration(
+                event.getId(),
+                999L,
+                now
+        ))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 회원입니다.");
+    }
+
+    @Test
+    void 이벤트_마감_시_요청한_조직에_소속되지_않았다면_예외가_발생한다() {
+        // given
+        var organization1 = createOrganization();
+        var organization2 = createOrganization();
+
+        var om1Member = createMember("m1", "m1@mail.com");
+        var notBelongingOrgMember = createOrganizationMember(organization1, om1Member);
+
+        var om2Member = createMember("m2", "m2@mail.com");
+        var hostOrgMember = createOrganizationMember(organization2, om2Member);
+
+        var event = createEvent(hostOrgMember, organization2);
+        var now = LocalDateTime.now();
+
+        // when // then
+        assertThatThrownBy(() -> sut.closeEventRegistration(
+                event.getId(),
+                notBelongingOrgMember.getId(),
+                now
+        ))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessage("조직에 소속되지 않은 멤버입니다.");
+    }
+
+    @Test
+    void 주최자는_이벤트를_수동으로_마감할_수_있다() {
+        // given
+        var organization = createOrganization();
+        var member = createMember();
+        var orgMember = createOrganizationMember(organization, member);
+        var event = createEvent(orgMember, organization);
+        var now = LocalDateTime.now();
+
+        // when // then
+        assertDoesNotThrow(() -> sut.closeEventRegistration(
+                event.getId(),
+                orgMember.getId(),
+                now.plusDays(1)
+                        .plusHours(6)
+        ));
     }
 
     @Test
@@ -241,8 +332,10 @@ class EventServiceTest {
                 )
         );
 
+        var loginMember = new LoginMember(organizerMember.getId());
+
         // when
-        var savedEvent = sut.createEvent(organization.getId(), organizer.getId(), request, now);
+        var savedEvent = sut.createEvent(organization.getId(), loginMember, request, now);
 
         // then
         var email = Email.of(savedEvent, "새로운 이벤트가 등록되었습니다.");
@@ -262,6 +355,269 @@ class EventServiceTest {
                 }),
                 eq(email)
         );
+    }
+
+    @Test
+    void 이벤트를_수정할_수_있다() {
+        // given
+        var organization = createOrganization();
+        var member = createMember("organizer", "organizer@email.com");
+        var organizationMember = createOrganizationMember(organization, member);
+
+        var now = LocalDateTime.now();
+        var event = Event.create(
+                "원래 제목",
+                "원래 설명",
+                "원래 장소",
+                organizationMember,
+                organization,
+                EventOperationPeriod.create(
+                        Period.create(now.plusDays(1), now.plusDays(2)),
+                        Period.create(now.plusDays(3), now.plusDays(4)),
+                        now
+                ),
+                "원래 닉네임",
+                50
+        );
+        eventRepository.save(event);
+
+        var updateRequest = new EventUpdateRequest(
+                "수정된 제목",
+                "수정된 설명",
+                "수정된 장소",
+                now.plusDays(5),
+                now.plusDays(6),
+                now.plusDays(7),
+                "수정된 닉네임",
+                200
+        );
+
+        var loginMember = new LoginMember(member.getId());
+
+        // when
+        sut.updateEvent(event.getId(), loginMember, updateRequest, now);
+
+        // then
+        assertThat(eventRepository.findById(event.getId()))
+                .isPresent()
+                .hasValueSatisfying(savedEvent -> {
+                    assertSoftly(softly -> {
+                        softly.assertThat(savedEvent.getTitle())
+                                .isEqualTo("수정된 제목");
+                        softly.assertThat(savedEvent.getDescription())
+                                .isEqualTo("수정된 설명");
+                        softly.assertThat(savedEvent.getPlace())
+                                .isEqualTo("수정된 장소");
+                        softly.assertThat(savedEvent.getOrganizerNickname())
+                                .isEqualTo("수정된 닉네임");
+                        softly.assertThat(savedEvent.getMaxCapacity())
+                                .isEqualTo(200);
+
+                        softly.assertThat(savedEvent.getEventOperationPeriod()
+                                        .getRegistrationPeriod()
+                                        .end())
+                                .isEqualTo(now.plusDays(5));
+                        softly.assertThat(savedEvent.getEventOperationPeriod()
+                                        .getEventPeriod()
+                                        .start())
+                                .isEqualTo(now.plusDays(6));
+                        softly.assertThat(savedEvent.getEventOperationPeriod()
+                                        .getEventPeriod()
+                                        .end())
+                                .isEqualTo(now.plusDays(7));
+                    });
+                });
+    }
+
+    @Test
+    void 존재하지_않는_이벤트를_수정하면_예외가_발생한다() {
+        // given
+        var member = createMember("organizer", "organizer@email.com");
+        var loginMember = new LoginMember(member.getId());
+
+        var now = LocalDateTime.now();
+        var updateRequest = new EventUpdateRequest(
+                "수정된 제목",
+                "수정된 설명",
+                "수정된 장소",
+                now.plusDays(5),
+                now.plusDays(6),
+                now.plusDays(7),
+                "수정된 닉네임",
+                200
+        );
+
+        // when // then
+        assertThatThrownBy(() -> sut.updateEvent(9999L, loginMember, updateRequest, now))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않은 이벤트 정보입니다.");
+    }
+
+    @Test
+    void 존재하지_않는_멤버로_수정하면_예외가_발생한다() {
+        // given
+        var organization = createOrganization();
+        var organizer = createMember("organizer", "organizer@email.com");
+        var organizationMember = createOrganizationMember(organization, organizer);
+
+        var now = LocalDateTime.now();
+        var event = Event.create(
+                "원래 제목",
+                "원래 설명",
+                "원래 장소",
+                organizationMember,
+                organization,
+                EventOperationPeriod.create(
+                        Period.create(now.plusDays(1), now.plusDays(2)),
+                        Period.create(now.plusDays(3), now.plusDays(4)),
+                        now
+                ),
+                "원래 닉네임",
+                50
+        );
+        eventRepository.save(event);
+
+        var updateRequest = new EventUpdateRequest(
+                "수정된 제목",
+                "수정된 설명",
+                "수정된 장소",
+                now.plusDays(5),
+                now.plusDays(6),
+                now.plusDays(7),
+                "수정된 닉네임",
+                200
+        );
+        var loginMember = new LoginMember(9999L);
+
+        // when // then
+        assertThatThrownBy(() -> sut.updateEvent(event.getId(), loginMember, updateRequest, now))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 회원입니다.");
+    }
+
+    @Test
+    void 주최자가_아닌_사람이_수정하면_예외가_발생한다() {
+        // given
+        var organization = createOrganization();
+        var organizer = createMember("organizer", "organizer@email.com");
+        var otherMember = createMember("other", "other@email.com");
+
+        var organizationMember = createOrganizationMember(organization, organizer);
+        createOrganizationMember(organization, otherMember);
+
+        var now = LocalDateTime.now();
+        var event = Event.create(
+                "원래 제목",
+                "원래 설명",
+                "원래 장소",
+                organizationMember,
+                organization,
+                EventOperationPeriod.create(
+                        Period.create(now.plusDays(1), now.plusDays(2)),
+                        Period.create(now.plusDays(3), now.plusDays(4)),
+                        now
+                ),
+                "원래 닉네임",
+                50
+        );
+        eventRepository.save(event);
+
+        var updateRequest = new EventUpdateRequest(
+                "수정된 제목",
+                "수정된 설명",
+                "수정된 장소",
+                now.plusDays(5),
+                now.plusDays(6),
+                now.plusDays(7),
+                "수정된 닉네임",
+                200
+        );
+        var loginMember = new LoginMember(otherMember.getId());
+
+        // when // then
+        assertThatThrownBy(() -> sut.updateEvent(event.getId(), loginMember, updateRequest, now))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessage("이벤트의 주최자만 수정할 수 있습니다.");
+    }
+
+    @Test
+    void 이벤트_수정_시_게스트들에게_알림을_보낸다() {
+        // given
+        var organization = createOrganization();
+        var organizerMember = createMember("organizer", "organizer@email.com");
+        var guestMember1 = createMember("guest1", "guest1@email.com");
+        var guestMember2 = createMember("guest2", "guest2@email.com");
+
+        var organizerOrgMember = createOrganizationMember(organization, organizerMember);
+        var guestOrgMember1 = createOrganizationMember(organization, guestMember1);
+        var guestOrgMember2 = createOrganizationMember(organization, guestMember2);
+
+        var now = LocalDateTime.now();
+
+        var event = Event.create(
+                "원래 제목",
+                "원래 설명",
+                "원래 장소",
+                organizerOrgMember,
+                organization,
+                EventOperationPeriod.create(
+                        Period.create(now.plusDays(1), now.plusDays(2)),
+                        Period.create(now.plusDays(3), now.plusDays(4)),
+                        now
+                ),
+                "원래 닉네임",
+                50
+        );
+        eventRepository.save(event);
+
+        var guest1 = Guest.create(event, guestOrgMember1, now.plusDays(1));
+        var guest2 = Guest.create(event, guestOrgMember2, now.plusDays(1));
+        guestRepository.save(guest1);
+        guestRepository.save(guest2);
+
+        var updateRequest = new EventUpdateRequest(
+                "수정된 제목",
+                "수정된 설명",
+                "수정된 장소",
+                now.plusDays(5),
+                now.plusDays(6),
+                now.plusDays(7),
+                "수정된 닉네임",
+                200
+        );
+
+        var loginMember = new LoginMember(organizerMember.getId());
+
+        // when
+        var updatedEvent = sut.updateEvent(event.getId(), loginMember, updateRequest, now);
+
+        // then
+        var email = Email.of(updatedEvent, "이벤트 정보가 수정되었습니다.");
+        verify(eventNotification).sendEmails(
+                argThat(recipients -> {
+                    var emails = recipients.stream()
+                            .map(om -> om.getMember()
+                                    .getEmail())
+                            .collect(toSet());
+                    var expected = Set.of(
+                            guestMember1.getEmail(),
+                            guestMember2.getEmail()
+                    );
+
+                    return emails.equals(expected);
+                }),
+                eq(email)
+        );
+    }
+
+    private Organization createOrganization() {
+        var organization = Organization.create("우테코", "우테코입니다.", "image");
+
+        return organizationRepository.save(organization);
+    }
+
+    private LoginMember createLoginMember(Member member) {
+        return new LoginMember(member.getId());
     }
 
     private Member createMember() {

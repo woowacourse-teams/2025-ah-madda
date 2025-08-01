@@ -1,6 +1,7 @@
 package com.ahmadda.domain;
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,6 +23,54 @@ class EventTest {
         Member baseMember = createMember("테스트 멤버", "test@example.com");
         baseOrganization = createOrganization();
         baseOrganizer = createOrganizationMember("주최자", baseMember, baseOrganization);
+    }
+
+    @Test
+    void 이벤트_정보를_수정할_수_있다() {
+        // given
+        var now = LocalDateTime.now();
+        var registrationPeriod = Period.create(now.plusDays(1), now.plusDays(2));
+        var eventPeriod = Period.create(now.plusDays(3), now.plusDays(4));
+        var sut = Event.create(
+                "이전 제목",
+                "이전 설명",
+                "이전 장소",
+                baseOrganizer,
+                baseOrganization,
+                EventOperationPeriod.create(registrationPeriod, eventPeriod, now),
+                "이전 닉네임",
+                10
+        );
+
+        var updatedRegistrationPeriod = Period.create(now.plusDays(2), now.plusDays(3));
+        var updatedEventPeriod = Period.create(now.plusDays(4), now.plusDays(5));
+        var updatedOperationPeriod = EventOperationPeriod.create(updatedRegistrationPeriod, updatedEventPeriod, now);
+
+        // when
+        sut.update(
+                "수정된 제목",
+                "수정된 설명",
+                "수정된 장소",
+                updatedOperationPeriod,
+                "수정된 닉네임",
+                20
+        );
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(sut.getTitle())
+                    .isEqualTo("수정된 제목");
+            softly.assertThat(sut.getDescription())
+                    .isEqualTo("수정된 설명");
+            softly.assertThat(sut.getPlace())
+                    .isEqualTo("수정된 장소");
+            softly.assertThat(sut.getEventOperationPeriod())
+                    .isEqualTo(updatedOperationPeriod);
+            softly.assertThat(sut.getOrganizerNickname())
+                    .isEqualTo("수정된 닉네임");
+            softly.assertThat(sut.getMaxCapacity())
+                    .isEqualTo(20);
+        });
     }
 
     @Test
@@ -295,8 +344,110 @@ class EventTest {
             softly.assertThat(sut.getGuests().size()).isEqualTo(0L);
         });
     }
-    
+
     private Event createEvent(final String title, final int maxCapacity, Question... questions) {
+    @Test
+    void 모집_마감을_할_수_있다() {
+        // given
+        var yesterday = LocalDateTime.now()
+                .minusDays(1);
+        var now = LocalDateTime.now();
+
+        var registrationEnd = now.plusDays(1);
+        var registrationCloseTime = now.plusHours(6);
+
+        var registrationPeriod = Period.create(
+                now,
+                registrationEnd
+        );
+        var sut = createEvent(yesterday, registrationPeriod);
+
+        // when
+        sut.closeRegistrationAt(baseOrganizer, registrationCloseTime);
+
+        // then
+        Assertions.assertThat(sut.getRegistrationEnd())
+                .isEqualTo(registrationCloseTime);
+    }
+
+    @Test
+    void 모집을_마감하면_게스트가_참여할_수_없다() {
+        var yesterday = LocalDateTime.now()
+                .minusDays(1);
+        var now = LocalDateTime.now();
+
+        var registrationEnd = now.plusDays(1);
+        var registrationCloseTime = now.plusHours(6);
+
+        var registrationPeriod = Period.create(
+                now,
+                registrationEnd
+        );
+
+        var sut = createEvent(yesterday, registrationPeriod);
+
+        var organizationMember =
+                createOrganizationMember("게스트", createMember("게스트", "guest@email.com"), baseOrganization);
+
+        // when
+        sut.closeRegistrationAt(baseOrganizer, registrationCloseTime);
+
+        // then
+        assertThatThrownBy(() -> Guest.create(sut, organizationMember, registrationEnd))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("이벤트 신청은 신청 시작 시간부터 신청 마감 시간까지 가능합니다.");
+    }
+
+    @Test
+    void 주최자만_이벤트를_마감할_수_있다() {
+        // given
+        var yesterday = LocalDateTime.now()
+                .minusDays(1);
+        var now = LocalDateTime.now();
+
+        var registrationEnd = now.plusDays(1);
+        var registrationCloseTime = now.plusHours(6);
+
+        var registrationPeriod = Period.create(
+                now,
+                registrationEnd
+        );
+
+        Member member = createMember("주최자 아님", "test1@example.com");
+        var notBaseOrganizer = createOrganizationMember("주최자 아님", member, baseOrganization);
+
+
+        var sut = createEvent(yesterday, registrationPeriod);
+
+        // when // then
+        assertThatThrownBy(() -> sut.closeRegistrationAt(notBaseOrganizer, registrationCloseTime))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("주최자만 마감할 수 있습니다.");
+    }
+
+    @Test
+    void 마감시간은_등록_종료_시간보다_이전이어야_한다() {
+        // given
+        var yesterday = LocalDateTime.now()
+                .minusDays(1);
+        var now = LocalDateTime.now();
+
+        var registrationEnd = now.plusDays(1);
+        var registrationCloseOverTime = registrationEnd.plusHours(6);
+
+        var registrationPeriod = Period.create(
+                now,
+                registrationEnd
+        );
+        var sut = createEvent(yesterday, registrationPeriod);
+
+        // when // then
+        assertThatThrownBy(() -> sut.closeRegistrationAt(baseOrganizer, registrationCloseOverTime))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("이미 신청이 마감된 이벤트입니다.");
+    }
+
+    private Event createEvent(String title, int maxCapacity, Question... questions) {
         var organization = createOrganization("우테코");
 
         return Event.create(
@@ -359,7 +510,7 @@ class EventTest {
         return OrganizationMember.create(nickname, member, organization);
     }
 
-    private Event createEvent(final String title, EventOperationPeriod eventOperationPeriod) {
+    private Event createEvent(String title, EventOperationPeriod eventOperationPeriod) {
         var organization = createOrganization("우테코");
 
         return Event.create(
@@ -374,7 +525,7 @@ class EventTest {
         );
     }
 
-    private OrganizationMember createOrganizationMember(final Member member, final Organization organization) {
+    private OrganizationMember createOrganizationMember(Member member, Organization organization) {
         return OrganizationMember.create("nickname", member, organization);
     }
 
@@ -382,11 +533,11 @@ class EventTest {
         return Member.create("이재훈", "dlwogns3413@ahamadda.com");
     }
 
-    private Organization createOrganization(final String name) {
+    private Organization createOrganization(String name) {
         return Organization.create(name, "우테코입니다.", "imageUrl");
     }
 
-    private Event createEvent(final OrganizationMember organizationMember, final Organization organization) {
+    private Event createEvent(OrganizationMember organizationMember, Organization organization) {
         var now = LocalDateTime.now();
 
         return Event.create(

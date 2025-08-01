@@ -361,7 +361,7 @@ public class EventGuestController {
                 eventParticipateRequest
         );
 
-        Event event = eventService.getEvent(eventId);
+        Event event = eventService.getOrganizationMemberEvent(loginMember, eventId);
         return ResponseEntity.ok(EventDetailResponse.from(event));
     }
 

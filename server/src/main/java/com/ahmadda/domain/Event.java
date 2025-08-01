@@ -149,6 +149,26 @@ public class Event extends BaseEntity {
         );
     }
 
+    public void update(
+            final String title,
+            final String description,
+            final String place,
+            final EventOperationPeriod eventOperationPeriod,
+            final String organizerNickname,
+            final int maxCapacity
+    ) {
+        validateTitle(title);
+        validateOrganizerNickname(organizerNickname);
+        validateMaxCapacity(maxCapacity);
+
+        this.title = title;
+        this.description = description;
+        this.place = place;
+        this.eventOperationPeriod = eventOperationPeriod;
+        this.organizerNickname = organizerNickname;
+        this.maxCapacity = maxCapacity;
+    }
+
     public boolean hasGuest(final OrganizationMember organizationMember) {
         if (organizationMember.equals(organizer)) {
             return true;
@@ -190,6 +210,13 @@ public class Event extends BaseEntity {
                 .collect(Collectors.toSet());
     }
 
+    public void closeRegistrationAt(final OrganizationMember organizationMember,
+                                    final LocalDateTime registrationEndTime) {
+        validateCloseRegistration(organizationMember.getMember());
+
+        this.eventOperationPeriod.closeRegistration(registrationEndTime);
+    }
+
     public boolean isOrganizer(final Member member) {
         return organizer.getMember()
                 .equals(member);
@@ -224,6 +251,12 @@ public class Event extends BaseEntity {
         }
         if (hasGuest(guest.getOrganizationMember())) {
             throw new BusinessRuleViolatedException("이미 해당 이벤트에 참여중인 게스트입니다.");
+        }
+    }
+
+    private void validateCloseRegistration(Member organizer) {
+        if (!isOrganizer(organizer)) {
+            throw new BusinessRuleViolatedException("주최자만 마감할 수 있습니다.");
         }
     }
 

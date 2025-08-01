@@ -55,12 +55,36 @@ public class EventOperationPeriod {
         return new EventOperationPeriod(registrationPeriod, eventPeriod, currentDateTime);
     }
 
+    public EventOperationPeriod update(
+            final Period registrationPeriod,
+            final Period eventPeriod,
+            final LocalDateTime currentDateTime
+    ) {
+        return new EventOperationPeriod(registrationPeriod, eventPeriod, currentDateTime);
+    }
+
+
     public boolean isNotStarted(final LocalDateTime currentDateTime) {
         return eventPeriod.isNotStarted(currentDateTime);
     }
 
     public boolean canNotRegistration(final LocalDateTime currentDateTime) {
         return !registrationPeriod.includes(currentDateTime);
+    }
+
+    public void closeRegistration(final LocalDateTime closeTime) {
+        Period closePeriod = Period.create(this.registrationPeriod.start(), closeTime);
+
+        validateClosePeriod(closeTime);
+        validate(closePeriod, this.eventPeriod);
+
+        this.registrationPeriod = closePeriod;
+    }
+
+    private void validateClosePeriod(final LocalDateTime closeDateTime) {
+        if (closeDateTime.isAfter(this.registrationPeriod.end())) {
+            throw new BusinessRuleViolatedException("이미 신청이 마감된 이벤트입니다.");
+        }
     }
 
     private void validateRegistrationPeriod(
