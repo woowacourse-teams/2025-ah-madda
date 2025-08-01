@@ -1,6 +1,7 @@
 package com.ahmadda.domain;
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,7 @@ class EventTest {
 
     @BeforeEach
     void setUp() {
-        Member baseMember = createMember("테스트 멤버", "test@example.com");
+        Member baseMember = createMember("테스트 회원", "test@example.com");
         baseOrganization = createOrganization();
         baseOrganizer = createOrganizationMember("주최자", baseMember, baseOrganization);
     }
@@ -48,6 +49,7 @@ class EventTest {
 
         // when
         sut.update(
+                baseOrganizer.getMember(),
                 "수정된 제목",
                 "수정된 설명",
                 "수정된 장소",
@@ -71,6 +73,43 @@ class EventTest {
             softly.assertThat(sut.getMaxCapacity())
                     .isEqualTo(20);
         });
+    }
+
+    @Test
+    void 주최자가_아니라면_이벤트_정보_수정_시_예외가_발생한다() {
+        // given
+        var now = LocalDateTime.now();
+        var registrationPeriod = Period.create(now.plusDays(1), now.plusDays(2));
+        var eventPeriod = Period.create(now.plusDays(3), now.plusDays(4));
+        var sut = Event.create(
+                "이전 제목",
+                "이전 설명",
+                "이전 장소",
+                baseOrganizer,
+                baseOrganization,
+                EventOperationPeriod.create(registrationPeriod, eventPeriod, now),
+                "이전 닉네임",
+                10
+        );
+
+        var notOrganizer = createOrganizationMember("조직원", createMember("일반유저", "user@email.com"), baseOrganization);
+
+        var updatedRegistrationPeriod = Period.create(now.plusDays(2), now.plusDays(3));
+        var updatedEventPeriod = Period.create(now.plusDays(4), now.plusDays(5));
+        var updatedOperationPeriod = EventOperationPeriod.create(updatedRegistrationPeriod, updatedEventPeriod, now);
+
+        // when & then
+        assertThatThrownBy(() -> sut.update(
+                notOrganizer.getMember(),
+                "수정된 제목",
+                "수정된 설명",
+                "수정된 장소",
+                updatedOperationPeriod,
+                "수정된 닉네임",
+                20
+        ))
+                .isInstanceOf(UnauthorizedOperationException.class)
+                .hasMessage("이벤트의 주최자만 수정할 수 있습니다.");
     }
 
     @Test
@@ -143,7 +182,7 @@ class EventTest {
 
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization2))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnauthorizedOperationException.class)
                 .hasMessage("자신이 속한 조직에서만 이벤트를 생성할 수 있습니다.");
     }
 
@@ -375,7 +414,7 @@ class EventTest {
         // when // then
         assertThatThrownBy(() -> sut.closeRegistrationAt(notBaseOrganizer, registrationCloseTime))
                 .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("주최자만 마감할 수 있습니다.");
+                .hasMessage("이벤트의 주최자만 마감할 수 있습니다.");
     }
 
     @Test

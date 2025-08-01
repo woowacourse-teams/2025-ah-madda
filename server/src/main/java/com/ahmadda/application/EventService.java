@@ -1,7 +1,6 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.EventCreateRequest;
-import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
@@ -72,7 +71,8 @@ public class EventService {
     public void closeEventRegistration(
             final Long eventId,
             final Long memberId,
-            final LocalDateTime currentDateTime) {
+            final LocalDateTime currentDateTime
+    ) {
         Event event = getEvent(eventId);
         Organization organization = event.getOrganization();
 
@@ -102,9 +102,6 @@ public class EventService {
 
         Member member = memberRepository.findById(loginMember.memberId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
-        if (!event.isOrganizer(member)) {
-            throw new AccessDeniedException("이벤트의 주최자만 수정할 수 있습니다.");
-        }
 
         Period updatedRegistrationPeriod = event.getEventOperationPeriod()
                 .getRegistrationPeriod()
@@ -122,6 +119,7 @@ public class EventService {
                 .update(updatedRegistrationPeriod, updatedEventPeriod, currentDateTime);
 
         event.update(
+                member,
                 eventUpdateRequest.title(),
                 eventUpdateRequest.description(),
                 eventUpdateRequest.place(),
@@ -164,7 +162,7 @@ public class EventService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
 
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
-                .orElseThrow(() -> new AccessDeniedException("조직에 소속되지 않은 멤버입니다."));
+                .orElseThrow(() -> new AccessDeniedException("조직에 소속되지 않은 회원입니다."));
     }
 
     private List<Question> createQuestions(final List<QuestionCreateRequest> questionCreateRequests) {

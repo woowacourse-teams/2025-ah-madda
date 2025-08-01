@@ -16,7 +16,7 @@ class OrganizationMemberTest {
 
     @BeforeEach
     void setUp() {
-        member = Member.create("테스트 멤버", "test@example.com");
+        member = Member.create("테스트 회원", "test@example.com");
         organization = Organization.create("테스트 조직", "조직 설명", "image.png");
         sut = OrganizationMember.create("주최자", member, organization);
     }

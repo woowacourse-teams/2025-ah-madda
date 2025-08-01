@@ -19,7 +19,7 @@ class GuestTest {
 
     @BeforeEach
     void setUp() {
-        var organizerMember = Member.create("주최자 멤버", "organizer@example.com");
+        var organizerMember = Member.create("주최자 회원", "organizer@example.com");
         var organization = Organization.create("테스트 조직", "조직 설명", "image.png");
         var organizer = OrganizationMember.create("주최자", organizerMember, organization);
         var now = LocalDateTime.now();
@@ -33,10 +33,10 @@ class GuestTest {
                 organizer.getNickname(),
                 50
         );
-        member = Member.create("참가자 멤버", "guest@example.com");
+        member = Member.create("참가자 회원", "guest@example.com");
         participant = OrganizationMember.create("참가자", member, organization);
         otherParticipant =
-                OrganizationMember.create("다른 참가자", Member.create("다른 멤버", "other@example.com"), organization);
+                OrganizationMember.create("다른 참가자", Member.create("다른 회원", "other@example.com"), organization);
     }
 
     @Test

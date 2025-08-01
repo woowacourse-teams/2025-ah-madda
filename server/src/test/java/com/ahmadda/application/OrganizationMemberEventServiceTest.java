@@ -199,7 +199,7 @@ class OrganizationMemberEventServiceTest {
     }
 
     @Test
-    void 존재하지_않는_멤버로_주최_이벤트_조회하면_예외가_발생한다() {
+    void 존재하지_않는_회원으로_주최_이벤트_조회하면_예외가_발생한다() {
         // given
         var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
         var loginMember = new LoginMember(999L);

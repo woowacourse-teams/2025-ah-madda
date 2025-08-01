@@ -1,7 +1,6 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.EventCreateRequest;
-import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
@@ -22,7 +21,7 @@ import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Period;
 import com.ahmadda.domain.Question;
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -196,7 +195,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.createEvent(organization1.getId(), loginMember, eventCreateRequest, now))
                 .isInstanceOf(AccessDeniedException.class)
-                .hasMessage("조직에 소속되지 않은 멤버입니다.");
+                .hasMessage("조직에 소속되지 않은 회원입니다.");
     }
 
     @Test
@@ -225,7 +224,7 @@ class EventServiceTest {
 
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization)).isInstanceOf(
-                        BusinessRuleViolatedException.class)
+                        UnauthorizedOperationException.class)
                 .hasMessage("자신이 속한 조직에서만 이벤트를 생성할 수 있습니다.");
     }
 
@@ -282,7 +281,7 @@ class EventServiceTest {
                 now
         ))
                 .isInstanceOf(AccessDeniedException.class)
-                .hasMessage("조직에 소속되지 않은 멤버입니다.");
+                .hasMessage("조직에 소속되지 않은 회원입니다.");
     }
 
     @Test
@@ -454,7 +453,7 @@ class EventServiceTest {
     }
 
     @Test
-    void 존재하지_않는_멤버로_수정하면_예외가_발생한다() {
+    void 존재하지_않는_회원으로_수정하면_예외가_발생한다() {
         // given
         var organization = createOrganization();
         var organizer = createMember("organizer", "organizer@email.com");
@@ -493,51 +492,6 @@ class EventServiceTest {
         assertThatThrownBy(() -> sut.updateEvent(event.getId(), loginMember, updateRequest, now))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 회원입니다.");
-    }
-
-    @Test
-    void 주최자가_아닌_사람이_수정하면_예외가_발생한다() {
-        // given
-        var organization = createOrganization();
-        var organizer = createMember("organizer", "organizer@email.com");
-        var otherMember = createMember("other", "other@email.com");
-
-        var organizationMember = createOrganizationMember(organization, organizer);
-        createOrganizationMember(organization, otherMember);
-
-        var now = LocalDateTime.now();
-        var event = Event.create(
-                "원래 제목",
-                "원래 설명",
-                "원래 장소",
-                organizationMember,
-                organization,
-                EventOperationPeriod.create(
-                        Period.create(now.plusDays(1), now.plusDays(2)),
-                        Period.create(now.plusDays(3), now.plusDays(4)),
-                        now
-                ),
-                "원래 닉네임",
-                50
-        );
-        eventRepository.save(event);
-
-        var updateRequest = new EventUpdateRequest(
-                "수정된 제목",
-                "수정된 설명",
-                "수정된 장소",
-                now.plusDays(5),
-                now.plusDays(6),
-                now.plusDays(7),
-                "수정된 닉네임",
-                200
-        );
-        var loginMember = new LoginMember(otherMember.getId());
-
-        // when // then
-        assertThatThrownBy(() -> sut.updateEvent(event.getId(), loginMember, updateRequest, now))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessage("이벤트의 주최자만 수정할 수 있습니다.");
     }
 
     @Test
