@@ -186,7 +186,7 @@ class EventGuestServiceTest {
         // when
         sut.participantEvent(
                 event.getId(),
-                member2.getId(),
+                new LoginMember(member2.getId()),
                 event.getRegistrationStart(),
                 new EventParticipateRequest(List.of())
         );
@@ -224,7 +224,7 @@ class EventGuestServiceTest {
         ));
 
         // when
-        sut.participantEvent(event.getId(), member2.getId(), event.getRegistrationStart(), request);
+        sut.participantEvent(event.getId(), new LoginMember(member2.getId()), event.getRegistrationStart(), request);
 
         // then
         var guest = guestRepository.findAll()
@@ -264,7 +264,7 @@ class EventGuestServiceTest {
         assertThatThrownBy(() ->
                                    sut.participantEvent(
                                            event.getId(),
-                                           member2.getId(),
+                                           new LoginMember(member2.getId()),
                                            event.getRegistrationStart(),
                                            request
                                    )
@@ -293,7 +293,7 @@ class EventGuestServiceTest {
         assertThatThrownBy(() ->
                                    sut.participantEvent(
                                            event.getId(),
-                                           member2.getId(),
+                                           new LoginMember(member2.getId()),
                                            event.getRegistrationStart(),
                                            request
                                    )
@@ -320,9 +320,9 @@ class EventGuestServiceTest {
         createAndSaveGuest(event, organizationMember2);
 
         //when
-        var actual1 = sut.isGuest(event.getId(), member2.getId());
-        var actual2 = sut.isGuest(event.getId(), member3.getId());
-        var actual3 = sut.isGuest(event.getId(), member1.getId());
+        var actual1 = sut.isGuest(event.getId(), new LoginMember(member2.getId()));
+        var actual2 = sut.isGuest(event.getId(), new LoginMember(member3.getId()));
+        var actual3 = sut.isGuest(event.getId(), new LoginMember(member1.getId()));
 
         //then
         assertThat(actual1).isEqualTo(true);
@@ -346,7 +346,7 @@ class EventGuestServiceTest {
         createAndSaveGuest(event, organizationMember2);
 
         // when // then
-        assertThatThrownBy(() -> sut.isGuest(event.getId(), member3.getId()))
+        assertThatThrownBy(() -> sut.isGuest(event.getId(), new LoginMember(member3.getId())))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 조직원입니다.");
     }
@@ -369,7 +369,7 @@ class EventGuestServiceTest {
 
         sut.participantEvent(
                 event.getId(),
-                participant.getId(),
+                new LoginMember(participant.getId()),
                 event.getRegistrationStart(),
                 new EventParticipateRequest(
                         List.of(
@@ -383,7 +383,7 @@ class EventGuestServiceTest {
 
         var guestId = guestRepository.findAll().getFirst().getId();
         var eventId = event.getId();
-        var participantId = participant.getId();
+        var participantId = new LoginMember(participant.getId());
 
         // when
         sut.cancelParticipate(eventId, participantId);
