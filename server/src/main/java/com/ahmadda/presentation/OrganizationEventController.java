@@ -291,6 +291,132 @@ public class OrganizationEventController {
                 .body(new EventCreateResponse(event.getId()));
     }
 
+    @Operation(summary = "이벤트 모집 마감", description = "이벤트 모집 마감합니다. 주최자만 모집 마감을 할 수 있습니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/organizations/events/{eventId}/registration/close"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Forbidden",
+                                              "status": 403,
+                                              "detail": "조직에 소속되지 않은 멤버입니다.",
+                                              "instance": "/api/organizations/events/{eventId}/registration/close"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "회원 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 회원입니다.",
+                                                      "instance": "/api/organizations/events/{eventId}/registration/close"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "신청 기간과 이벤트 기간 겹침",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "신청 기간과 이벤트 기간이 겹칠 수 없습니다.",
+                                                      "instance": "/api/organizations/events/{eventId}/registration/close"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "신청 기간이 이벤트 기간보다 늦음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "신청 기간은 이벤트 기간보다 앞서야 합니다.",
+                                                      "instance": "/api/organizations/events/{eventId}/registration/close"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "이벤트 주최자가 아님",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "주최자만 마감할 수 있습니다.",
+                                                      "instance": "/api/organizations/events/{eventId}/registration/close"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "마감 시간은 현재 등록 종료 시간보다 이전이어야 함",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "마감 시간은 현재 등록 종료 시간보다 이전이어야 합니다",
+                                                      "instance": "/api/organizations/events/{eventId}/registration/close"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            )
+    })
+    @PostMapping("/events/{eventId}/registration/close")
+    public ResponseEntity<Void> closeOrganizationEvent(
+            @PathVariable final Long eventId,
+            @AuthMember final LoginMember loginMember) {
+        eventService.closeEventRegistration(
+                eventId,
+                loginMember.memberId(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.noContent()
+                .build();
+    }
+
     @Operation(summary = "이벤트 수정", description = "이벤트 ID에 해당하는 이벤트 정보를 수정합니다. 주최자만 수정할 수 있습니다.")
     @ApiResponses(value = {
             @ApiResponse(
@@ -409,8 +535,9 @@ public class OrganizationEventController {
             )
     })
     @GetMapping("/events/{eventId}")
-    public ResponseEntity<EventDetailResponse> getOrganizationEvent(@PathVariable final Long eventId) {
-        Event event = eventService.getEvent(eventId);
+    public ResponseEntity<EventDetailResponse> getOrganizationEvent(@AuthMember final LoginMember loginMember,
+                                                                    @PathVariable final Long eventId) {
+        Event event = eventService.getOrganizationMemberEvent(loginMember, eventId);
 
         return ResponseEntity.ok(EventDetailResponse.from(event));
     }
