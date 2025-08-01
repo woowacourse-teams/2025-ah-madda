@@ -345,7 +345,6 @@ class EventTest {
         });
     }
 
-    private Event createEvent(final String title, final int maxCapacity, Question... questions) {
     @Test
     void 모집_마감을_할_수_있다() {
         // given
