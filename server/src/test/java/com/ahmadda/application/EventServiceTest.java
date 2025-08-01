@@ -1,6 +1,7 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.EventCreateRequest;
+import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
@@ -17,6 +18,7 @@ import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Period;
 import com.ahmadda.domain.Question;
+import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +82,7 @@ class EventServiceTest {
         );
 
         //when
-        var event = sut.createEvent(organization.getId(), organizationMember.getId(), eventCreateRequest, now);
+        var event = sut.createEvent(organization.getId(), member.getId(), eventCreateRequest, now);
 
         //then
         assertThat(eventRepository.findById(event.getId()))
@@ -163,7 +165,7 @@ class EventServiceTest {
         //given
         var organization1 = createOrganization();
         var organization2 = createOrganization();
-        Member member = createMember();
+        var member = createMember();
         createOrganizationMember(organization2, member);
 
         var now = LocalDateTime.now();
@@ -189,20 +191,39 @@ class EventServiceTest {
         //given
         var organization = createOrganization();
         var member = createMember();
+        var loginMember = createLoginMember(member);
         var organizationMember = createOrganizationMember(organization, member);
         var event = createEvent(organizationMember, organization);
 
         //when
-        var findEvent = sut.getEvent(event.getId());
+        var findEvent = sut.getOrganizationMemberEvent(loginMember, event.getId());
 
         //then
         assertThat(findEvent).isEqualTo(event);
     }
 
     @Test
-    void 이벤트_ID를_이용해_이벤트를_조회할때_해당_이벤트가_없다면_예외가_발생한다() {
+    void 조직에_속해_있지_않으면_이벤트를_조회할_수_없다() {
+        //given
+        var organization = createOrganization();
+        var otherOrganization = createOrganization();
+        var member = createMember();
+        var organizationMember = createOrganizationMember(otherOrganization, member);
+
         //when //then
-        assertThatThrownBy(() -> sut.getEvent(999L))
+        assertThatThrownBy(() -> createEvent(organizationMember, organization)).isInstanceOf(
+                        BusinessRuleViolatedException.class)
+                .hasMessage("자신이 속한 조직에서만 이벤트를 생성할 수 있습니다.");
+    }
+
+    @Test
+    void 이벤트_ID를_이용해_이벤트를_조회할때_해당_이벤트가_없다면_예외가_발생한다() {
+        // given
+        var member = createMember();
+        var loginMember = createLoginMember(member);
+
+        //when //then
+        assertThatThrownBy(() -> sut.getOrganizationMemberEvent(loginMember, 999L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않은 이벤트 정보입니다.");
     }
@@ -312,7 +333,7 @@ class EventServiceTest {
         );
 
         // when
-        var savedEvent = sut.createEvent(organization.getId(), organizer.getId(), request, now);
+        var savedEvent = sut.createEvent(organization.getId(), organizerMember.getId(), request, now);
 
         // then
         var email = Email.of(savedEvent, "새로운 이벤트가 등록되었습니다.");
@@ -338,6 +359,10 @@ class EventServiceTest {
         var organization = Organization.create("우테코", "우테코입니다.", "image");
 
         return organizationRepository.save(organization);
+    }
+
+    private LoginMember createLoginMember(Member member) {
+        return new LoginMember(member.getId());
     }
 
     private Member createMember() {

@@ -1,6 +1,7 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.EventCreateRequest;
+import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
@@ -63,11 +64,6 @@ public class EventService {
         return savedEvent;
     }
 
-    public Event getEvent(final Long eventId) {
-        return eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않은 이벤트 정보입니다."));
-    }
-
     @Transactional
     public void closeEventRegistration(
             final Long organizationId,
@@ -79,6 +75,15 @@ public class EventService {
         Event event = getEvent(eventId);
 
         event.closeRegistrationAt(organizationMember, currentDateTime);
+    }
+
+    public Event getOrganizationMemberEvent(final LoginMember loginMember, final Long eventId) {
+        Event event = getEvent(eventId);
+
+        Organization organization = event.getOrganization();
+        validateOrganizationAccess(organization.getId(), loginMember.memberId());
+
+        return event;
     }
 
     private EventOperationPeriod createEventOperationPeriod(
@@ -93,6 +98,11 @@ public class EventService {
                 eventPeriod,
                 currentDateTime
         );
+    }
+
+    private Event getEvent(final Long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않은 이벤트 정보입니다."));
     }
 
     private Organization getOrganization(final Long organizationId) {

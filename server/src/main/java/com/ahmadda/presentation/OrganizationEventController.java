@@ -444,8 +444,9 @@ public class OrganizationEventController {
             )
     })
     @GetMapping("/events/{eventId}")
-    public ResponseEntity<EventDetailResponse> getOrganizationEvent(@PathVariable final Long eventId) {
-        Event event = eventService.getEvent(eventId);
+    public ResponseEntity<EventDetailResponse> getOrganizationEvent(@AuthMember final LoginMember loginMember,
+                                                                    @PathVariable final Long eventId) {
+        Event event = eventService.getOrganizationMemberEvent(loginMember, eventId);
 
         return ResponseEntity.ok(EventDetailResponse.from(event));
     }
