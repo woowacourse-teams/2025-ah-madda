@@ -1,3 +1,5 @@
+import { queryOptions } from '@tanstack/react-query';
+
 import { Event } from '@/features/Event/types/Event';
 
 import { fetcher } from '../fetcher';
@@ -13,19 +15,24 @@ export const myQueryKeys = {
 };
 
 export const myQueryOptions = {
-  profile: () => ({
-    queryKey: myQueryKeys.profile(),
-    queryFn: getMyProfile,
-  }),
+  profile: () =>
+    queryOptions({
+      queryKey: myQueryKeys.profile(),
+      queryFn: getMyProfile,
+    }),
+
   event: {
-    hostEvents: (organizationId: number) => ({
-      queryKey: [...myQueryKeys.event.host(), organizationId],
-      queryFn: () => getHostEvents(organizationId),
-    }),
-    participateEvents: (organizationId: number) => ({
-      queryKey: [...myQueryKeys.event.participate(), organizationId],
-      queryFn: () => getParticipateEvents(organizationId),
-    }),
+    hostEvents: (organizationId: number) =>
+      queryOptions({
+        queryKey: [...myQueryKeys.event.host(), organizationId],
+        queryFn: () => getHostEvents(organizationId),
+      }),
+
+    participateEvents: (organizationId: number) =>
+      queryOptions({
+        queryKey: [...myQueryKeys.event.participate(), organizationId],
+        queryFn: () => getParticipateEvents(organizationId),
+      }),
   },
 };
 
