@@ -2,6 +2,8 @@ package com.ahmadda.application;
 
 import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.LoginMember;
+import com.ahmadda.application.dto.EventUpdateRequest;
+import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
@@ -10,6 +12,8 @@ import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
+import com.ahmadda.domain.Guest;
+import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
@@ -38,12 +42,12 @@ public class EventService {
     @Transactional
     public Event createEvent(
             final Long organizationId,
-            final Long memberId,
+            final LoginMember loginMember,
             final EventCreateRequest eventCreateRequest,
             final LocalDateTime currentDateTime
     ) {
         Organization organization = getOrganization(organizationId);
-        OrganizationMember organizer = validateOrganizationAccess(organizationId, memberId);
+        OrganizationMember organizer = validateOrganizationAccess(organizationId, loginMember.memberId());
 
         EventOperationPeriod eventOperationPeriod = createEventOperationPeriod(eventCreateRequest, currentDateTime);
         Event event = Event.create(
@@ -82,6 +86,51 @@ public class EventService {
 
         Organization organization = event.getOrganization();
         validateOrganizationAccess(organization.getId(), loginMember.memberId());
+
+        return event;
+    }
+
+    @Transactional
+    public Event updateEvent(
+            final Long eventId,
+            final LoginMember loginMember,
+            final EventUpdateRequest eventUpdateRequest,
+            final LocalDateTime currentDateTime
+    ) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않은 이벤트 정보입니다."));
+
+        Member member = memberRepository.findById(loginMember.memberId())
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
+        if (!event.isOrganizer(member)) {
+            throw new AccessDeniedException("이벤트의 주최자만 수정할 수 있습니다.");
+        }
+
+        Period updatedRegistrationPeriod = event.getEventOperationPeriod()
+                .getRegistrationPeriod()
+                .update(
+                        event.getEventOperationPeriod()
+                                .getRegistrationPeriod()
+                                .start(),
+                        eventUpdateRequest.registrationEnd()
+                );
+        Period updatedEventPeriod = event.getEventOperationPeriod()
+                .getEventPeriod()
+                .update(eventUpdateRequest.eventStart(), eventUpdateRequest.eventEnd());
+
+        EventOperationPeriod updatedOperationPeriod = event.getEventOperationPeriod()
+                .update(updatedRegistrationPeriod, updatedEventPeriod, currentDateTime);
+
+        event.update(
+                eventUpdateRequest.title(),
+                eventUpdateRequest.description(),
+                eventUpdateRequest.place(),
+                updatedOperationPeriod,
+                eventUpdateRequest.organizerNickname(),
+                eventUpdateRequest.maxCapacity()
+        );
+
+        notifyEventUpdated(event);
 
         return event;
     }
@@ -131,6 +180,17 @@ public class EventService {
         List<OrganizationMember> recipients =
                 event.getNonGuestOrganizationMembers(organization.getOrganizationMembers());
         String content = "새로운 이벤트가 등록되었습니다.";
+        Email email = Email.of(event, content);
+
+        eventNotification.sendEmails(recipients, email);
+    }
+
+    private void notifyEventUpdated(final Event event) {
+        List<OrganizationMember> recipients = event.getGuests()
+                .stream()
+                .map(Guest::getOrganizationMember)
+                .toList();
+        String content = "이벤트 정보가 수정되었습니다.";
         Email email = Email.of(event, content);
 
         eventNotification.sendEmails(recipients, email);

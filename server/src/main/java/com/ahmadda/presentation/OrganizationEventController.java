@@ -5,11 +5,13 @@ import com.ahmadda.application.EventService;
 import com.ahmadda.application.OrganizationMemberEventService;
 import com.ahmadda.application.OrganizationService;
 import com.ahmadda.application.dto.EventCreateRequest;
+import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.Event;
 import com.ahmadda.presentation.dto.EventCreateResponse;
 import com.ahmadda.presentation.dto.EventDetailResponse;
 import com.ahmadda.presentation.dto.EventResponse;
+import com.ahmadda.presentation.dto.EventUpdateResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -24,6 +26,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -279,7 +282,7 @@ public class OrganizationEventController {
     ) {
         Event event = eventService.createEvent(
                 organizationId,
-                loginMember.memberId(),
+                loginMember,
                 eventCreateRequest,
                 LocalDateTime.now()
         );
@@ -412,6 +415,96 @@ public class OrganizationEventController {
 
         return ResponseEntity.noContent()
                 .build();
+    }
+
+    @Operation(summary = "이벤트 수정", description = "이벤트 ID에 해당하는 이벤트 정보를 수정합니다. 주최자만 수정할 수 있습니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            schema = @Schema(
+                                    implementation = EventUpdateResponse.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/organizations/events/{eventId}"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Forbidden",
+                                              "status": 403,
+                                              "detail": "이벤트의 주최자만 수정할 수 있습니다.",
+                                              "instance": "/api/organizations/events/{eventId}"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "이벤트 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않은 이벤트 정보입니다.",
+                                                      "instance": "/api/organizations/events/{eventId}"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "회원 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 회원입니다.",
+                                                      "instance": "/api/organizations/events/{eventId}"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            )
+    })
+    @PatchMapping("/events/{eventId}")
+    public ResponseEntity<EventUpdateResponse> updateEvent(
+            @PathVariable final Long eventId,
+            @RequestBody @Valid final EventUpdateRequest eventUpdateRequest,
+            @AuthMember final LoginMember loginMember
+    ) {
+        Event updated = eventService.updateEvent(
+                eventId,
+                loginMember,
+                eventUpdateRequest,
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.ok(new EventUpdateResponse(updated.getId()));
     }
 
     @Operation(summary = "이벤트 상세 조회", description = "이벤트 ID에 해당하는 이벤트를 상세 조회합니다.")
