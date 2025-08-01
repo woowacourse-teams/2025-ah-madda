@@ -48,21 +48,17 @@ public class EventOperationPeriod {
     }
 
     public static EventOperationPeriod create(
-            final Period registrationPeriod,
-            final Period eventPeriod,
+            final LocalDateTime registrationStart,
+            final LocalDateTime registrationEnd,
+            final LocalDateTime eventStart,
+            final LocalDateTime eventEnd,
             final LocalDateTime currentDateTime
     ) {
+        Period registrationPeriod = Period.create(registrationStart, registrationEnd);
+        Period eventPeriod = Period.create(eventStart, eventEnd);
+
         return new EventOperationPeriod(registrationPeriod, eventPeriod, currentDateTime);
     }
-
-    public EventOperationPeriod update(
-            final Period registrationPeriod,
-            final Period eventPeriod,
-            final LocalDateTime currentDateTime
-    ) {
-        return new EventOperationPeriod(registrationPeriod, eventPeriod, currentDateTime);
-    }
-
 
     public boolean isNotStarted(final LocalDateTime currentDateTime) {
         return eventPeriod.isNotStarted(currentDateTime);

@@ -45,8 +45,8 @@ class OrganizationTest {
         return Event.create(
                 title, "설명", "장소", organizer, sut,
                 EventOperationPeriod.create(
-                        Period.create(start.minusDays(5), start.minusDays(1)),
-                        Period.create(start, end),
+                        start.minusDays(5), start.minusDays(1),
+                        start, end,
                         start.minusDays(6)
                 ),
                 organizer.getNickname(),

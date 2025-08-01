@@ -13,7 +13,6 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Period;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -258,16 +257,12 @@ class OrganizationMemberEventServiceTest {
                 organizer,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(
-                                LocalDateTime.now()
-                                        .minusDays(10),
-                                LocalDateTime.now()
-                                        .minusDays(1)
-                        ),
-                        Period.create(
-                                eventStart,
-                                eventEnd
-                        ),
+                        LocalDateTime.now()
+                                .minusDays(10),
+                        LocalDateTime.now()
+                                .minusDays(1),
+                        eventStart,
+                        eventEnd,
                         LocalDateTime.now()
                                 .minusDays(20)
                 ),

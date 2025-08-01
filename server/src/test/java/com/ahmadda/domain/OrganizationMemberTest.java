@@ -48,8 +48,8 @@ class OrganizationMemberTest {
         return Event.create(
                 title, "설명", "장소", sut, organization,
                 EventOperationPeriod.create(
-                        Period.create(now.plusDays(1), now.plusDays(5)),
-                        Period.create(now.plusDays(10), now.plusDays(11)),
+                        now.plusDays(1), now.plusDays(5),
+                        now.plusDays(10), now.plusDays(11),
                         now
                 ),
                 "이벤트 근로",

@@ -7,7 +7,6 @@ import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.Period;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +40,8 @@ class EventNotificationTest {
                 organizer,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(now.minusDays(2), now.minusDays(1)),
-                        Period.create(now.plusDays(1), now.plusDays(2)),
+                        now.minusDays(2), now.minusDays(1),
+                        now.plusDays(1), now.plusDays(2),
                         now.minusDays(3)
                 ),
                 "주최자",
@@ -54,6 +53,7 @@ class EventNotificationTest {
         var recipients = List.of(om1, om2);
 
         var email = Email.of(event, "테스트 메일 본문입니다.");
+
         // when // then
         eventNotification.sendEmails(recipients, email);
     }

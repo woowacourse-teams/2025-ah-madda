@@ -18,7 +18,6 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Period;
 import com.ahmadda.domain.Question;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -99,25 +98,16 @@ public class EventService {
     ) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않은 이벤트 정보입니다."));
-
         Member member = memberRepository.findById(loginMember.memberId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
 
-        Period updatedRegistrationPeriod = event.getEventOperationPeriod()
-                .getRegistrationPeriod()
-                .update(
-                        event.getEventOperationPeriod()
-                                .getRegistrationPeriod()
-                                .start(),
-                        eventUpdateRequest.registrationEnd()
-                );
-        Period updatedEventPeriod = event.getEventOperationPeriod()
-                .getEventPeriod()
-                .update(eventUpdateRequest.eventStart(), eventUpdateRequest.eventEnd());
-
-        EventOperationPeriod updatedOperationPeriod = event.getEventOperationPeriod()
-                .update(updatedRegistrationPeriod, updatedEventPeriod, currentDateTime);
-
+        EventOperationPeriod updatedOperationPeriod = EventOperationPeriod.create(
+                event.getRegistrationStart(),
+                eventUpdateRequest.registrationEnd(),
+                eventUpdateRequest.eventStart(),
+                eventUpdateRequest.eventEnd(),
+                currentDateTime
+        );
         event.update(
                 member,
                 eventUpdateRequest.title(),
@@ -137,12 +127,12 @@ public class EventService {
             final EventCreateRequest eventCreateRequest,
             final LocalDateTime currentDateTime
     ) {
-        Period registrationPeriod = Period.create(currentDateTime, eventCreateRequest.registrationEnd());
-        Period eventPeriod = Period.create(eventCreateRequest.eventStart(), eventCreateRequest.eventEnd());
 
         return EventOperationPeriod.create(
-                registrationPeriod,
-                eventPeriod,
+                currentDateTime,
+                eventCreateRequest.registrationEnd(),
+                eventCreateRequest.eventStart(),
+                eventCreateRequest.eventEnd(),
                 currentDateTime
         );
     }

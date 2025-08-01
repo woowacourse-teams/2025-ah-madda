@@ -19,7 +19,6 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Period;
 import com.ahmadda.domain.Question;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import org.assertj.core.groups.Tuple;
@@ -109,8 +108,8 @@ class EventServiceTest {
                                 .isEqualTo(organizationMember);
                         softly.assertThat(savedEvent.getEventOperationPeriod())
                                 .isEqualTo(EventOperationPeriod.create(
-                                        Period.create(now, now.plusDays(4)),
-                                        Period.create(now.plusDays(5), now.plusDays(6)),
+                                        now, now.plusDays(4),
+                                        now.plusDays(5), now.plusDays(6),
                                         now
                                 ));
                         List<Question> questions = savedEvent.getQuestions();
@@ -371,8 +370,8 @@ class EventServiceTest {
                 organizationMember,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(now.plusDays(1), now.plusDays(2)),
-                        Period.create(now.plusDays(3), now.plusDays(4)),
+                        now.plusDays(1), now.plusDays(2),
+                        now.plusDays(3), now.plusDays(4),
                         now
                 ),
                 "원래 닉네임",
@@ -467,8 +466,8 @@ class EventServiceTest {
                 organizationMember,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(now.plusDays(1), now.plusDays(2)),
-                        Period.create(now.plusDays(3), now.plusDays(4)),
+                        now.plusDays(1), now.plusDays(2),
+                        now.plusDays(3), now.plusDays(4),
                         now
                 ),
                 "원래 닉네임",
@@ -515,8 +514,8 @@ class EventServiceTest {
                 organizerOrgMember,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(now.plusDays(1), now.plusDays(2)),
-                        Period.create(now.plusDays(3), now.plusDays(4)),
+                        now.plusDays(1), now.plusDays(2),
+                        now.plusDays(3), now.plusDays(4),
                         now
                 ),
                 "원래 닉네임",
@@ -598,8 +597,8 @@ class EventServiceTest {
                 organizationMember,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(now.plusDays(1), now.plusDays(2)),
-                        Period.create(now.plusDays(3), now.plusDays(4)),
+                        now.plusDays(1), now.plusDays(2),
+                        now.plusDays(3), now.plusDays(4),
                         now
                 ),
                 "이벤트 근로",

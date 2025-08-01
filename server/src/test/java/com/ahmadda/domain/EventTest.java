@@ -38,14 +38,26 @@ class EventTest {
                 "이전 장소",
                 baseOrganizer,
                 baseOrganization,
-                EventOperationPeriod.create(registrationPeriod, eventPeriod, now),
+                EventOperationPeriod.create(
+                        registrationPeriod.start(),
+                        registrationPeriod.end(),
+                        eventPeriod.start(),
+                        eventPeriod.end(),
+                        now
+                ),
                 "이전 닉네임",
                 10
         );
 
         var updatedRegistrationPeriod = Period.create(now.plusDays(2), now.plusDays(3));
         var updatedEventPeriod = Period.create(now.plusDays(4), now.plusDays(5));
-        var updatedOperationPeriod = EventOperationPeriod.create(updatedRegistrationPeriod, updatedEventPeriod, now);
+        var updatedOperationPeriod = EventOperationPeriod.create(
+                updatedRegistrationPeriod.start(),
+                updatedRegistrationPeriod.end(),
+                updatedEventPeriod.start(),
+                updatedEventPeriod.end(),
+                now
+        );
 
         // when
         sut.update(
@@ -87,7 +99,13 @@ class EventTest {
                 "이전 장소",
                 baseOrganizer,
                 baseOrganization,
-                EventOperationPeriod.create(registrationPeriod, eventPeriod, now),
+                EventOperationPeriod.create(
+                        registrationPeriod.start(),
+                        registrationPeriod.end(),
+                        eventPeriod.start(),
+                        eventPeriod.end(),
+                        now
+                ),
                 "이전 닉네임",
                 10
         );
@@ -96,7 +114,13 @@ class EventTest {
 
         var updatedRegistrationPeriod = Period.create(now.plusDays(2), now.plusDays(3));
         var updatedEventPeriod = Period.create(now.plusDays(4), now.plusDays(5));
-        var updatedOperationPeriod = EventOperationPeriod.create(updatedRegistrationPeriod, updatedEventPeriod, now);
+        var updatedOperationPeriod = EventOperationPeriod.create(
+                updatedRegistrationPeriod.start(),
+                updatedRegistrationPeriod.end(),
+                updatedEventPeriod.start(),
+                updatedEventPeriod.end(),
+                now
+        );
 
         // when & then
         assertThatThrownBy(() -> sut.update(
@@ -201,8 +225,8 @@ class EventTest {
         //given
         var now = LocalDateTime.now();
         var eventOperationPeriod = EventOperationPeriod.create(
-                Period.create(now.plusDays(1), now.plusDays(2)),
-                Period.create(now.plusDays(3), now.plusDays(4)),
+                now.plusDays(1), now.plusDays(2),
+                now.plusDays(3), now.plusDays(4),
                 now
         );
         var event = createEvent("우테코", eventOperationPeriod);
@@ -449,18 +473,14 @@ class EventTest {
                 createOrganizationMember(createMember(), organization),
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(
-                                LocalDateTime.now()
-                                        .plusDays(1),
-                                LocalDateTime.now()
-                                        .plusDays(2)
-                        ),
-                        Period.create(
-                                LocalDateTime.now()
-                                        .plusDays(3),
-                                LocalDateTime.now()
-                                        .plusDays(4)
-                        ),
+                        LocalDateTime.now()
+                                .plusDays(1),
+                        LocalDateTime.now()
+                                .plusDays(2),
+                        LocalDateTime.now()
+                                .plusDays(3),
+                        LocalDateTime.now()
+                                .plusDays(4),
                         LocalDateTime.now()
                 ),
                 "이벤트 근로",
@@ -477,8 +497,8 @@ class EventTest {
                 baseOrganizer,
                 baseOrganization,
                 EventOperationPeriod.create(
-                        registrationPeriod,
-                        Period.create(now.plusDays(3), now.plusDays(4)),
+                        registrationPeriod.start(), registrationPeriod.end(),
+                        now.plusDays(3), now.plusDays(4),
                         now
                 ),
                 "이벤트 근로",
@@ -539,8 +559,8 @@ class EventTest {
                 organizationMember,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(now.plusDays(1), now.plusDays(2)),
-                        Period.create(now.plusDays(3), now.plusDays(4)),
+                        now.plusDays(1), now.plusDays(2),
+                        now.plusDays(3), now.plusDays(4),
                         now
                 ),
                 "이벤트 근로",
