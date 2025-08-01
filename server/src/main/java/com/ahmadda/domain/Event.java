@@ -32,6 +32,7 @@ public class Event extends BaseEntity {
 
     private static final int MIN_CAPACITY = 1;
     private static final int MAX_CAPACITY = 2_100_000_000;
+    private static final int BEFORE_EVENT_STARTED_CANCEL_AVAILABLE_MINUTE = 10;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -201,9 +202,13 @@ public class Event extends BaseEntity {
         guests.remove(guest);
     }
 
-    private void validateCancelParticipation(final LocalDateTime cancelParticipateTime) {
-        if (!eventOperationPeriod.isNotStarted(cancelParticipateTime)) {
-            throw new BusinessRuleViolatedException("이벤트 시작후에는 신청을 취소할 수 없습니다.");
+    private void validateCancelParticipation(final LocalDateTime cancelParticipatationTime) {
+        Period eventPeriod = eventOperationPeriod.getEventPeriod();
+        LocalDateTime cancelAvailableTime =
+                eventPeriod.start().minusMinutes(BEFORE_EVENT_STARTED_CANCEL_AVAILABLE_MINUTE);
+
+        if (cancelParticipatationTime.isAfter(cancelAvailableTime)) {
+            throw new BusinessRuleViolatedException("이벤트 시작전 10분 이후로는 신청을 취소할 수 없습니다");
         }
     }
 
