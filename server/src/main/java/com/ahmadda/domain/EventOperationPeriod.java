@@ -76,7 +76,7 @@ public class EventOperationPeriod {
         Period closePeriod = Period.create(this.registrationPeriod.start(), closeTime);
 
         validateClosePeriod(closeTime);
-        validate(closePeriod, this.eventPeriod);
+        validatePeriodRelationship(closePeriod, this.eventPeriod);
 
         this.registrationPeriod = closePeriod;
     }
