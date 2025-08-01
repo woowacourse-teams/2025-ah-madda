@@ -415,7 +415,38 @@ class EventGuestServiceTest {
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 조직원입니다.");
     }
-    
+
+    @Test
+    void 이벤트_시작_후에_참가_취소하면_예외가_발생한다() {
+        // given
+        var currentTime = LocalDateTime.of(2024, 1, 1, 12, 0);
+        var organization = createAndSaveOrganization();
+        var organizer =
+                createAndSaveOrganizationMember("주최자", createAndSaveMember("주최자", "host@email.com"), organization);
+        var participant = createAndSaveOrganizationMember("참가자",
+                                                          createAndSaveMember("참가자", "participant@email.com"),
+                                                          organization
+        );
+
+        var event = createAndSaveEventWithTime(
+                organizer,
+                organization,
+                currentTime.minusDays(5),
+                currentTime.minusDays(3),
+                currentTime.minusDays(1),
+                currentTime.plusDays(1)
+        );
+
+        createAndSaveGuest(event, participant);
+
+        // when // then
+        assertThatThrownBy(() -> sut.cancelParticipation(event.getId(),
+                                                         new LoginMember(participant.getMember().getId())
+        ))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("이벤트 시작후에는 신청을 취소할 수 없습니다.");
+    }
+
     private Member createAndSaveMember(String name, String email) {
         return memberRepository.save(Member.create(name, email));
     }
@@ -440,6 +471,35 @@ class EventGuestServiceTest {
                         Period.create(now.minusDays(3), now.minusDays(1)),
                         Period.create(now.plusDays(1), now.plusDays(2)),
                         now.minusDays(6)
+                ),
+                organizer.getNickname(),
+                100,
+                questions
+        );
+
+        return eventRepository.save(event);
+    }
+
+    private Event createAndSaveEventWithTime(
+            OrganizationMember organizer,
+            Organization organization,
+            LocalDateTime registrationStart,
+            LocalDateTime registrationEnd,
+            LocalDateTime eventStart,
+            LocalDateTime eventEnd,
+            Question... questions
+    ) {
+        var creationTime = registrationStart.minusDays(1);
+        var event = Event.create(
+                "이벤트",
+                "설명",
+                "장소",
+                organizer,
+                organization,
+                EventOperationPeriod.create(
+                        Period.create(registrationStart, registrationEnd),
+                        Period.create(eventStart, eventEnd),
+                        creationTime
                 ),
                 organizer.getNickname(),
                 100,
