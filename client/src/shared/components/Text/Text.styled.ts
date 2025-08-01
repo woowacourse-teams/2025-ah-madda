@@ -15,15 +15,11 @@ const fontTypes = {
     font-size: 1.75rem;
 
     @media (max-width: 768px) {
-      font-size: 1.5rem;
+      font-size: 1.3rem;
     }
   `,
   Heading: css`
     font-size: 1.25rem;
-
-    @media (max-width: 768px) {
-      font-size: 1.025rem;
-    }
   `,
   Body: css`
     font-size: 1rem;

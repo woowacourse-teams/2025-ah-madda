@@ -9,6 +9,7 @@ import Ahmadda from '@/assets/icon/ahmadda.webp';
 import Point from '@/assets/icon/point.webp';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
+import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
 import { useModal } from '@/shared/hooks/useModal';
 
@@ -50,25 +51,34 @@ export const Info = () => {
           alignItems="center"
           gap="30px"
           width="100%"
-          padding="60px 0"
+          padding="60px 10px"
           css={css`
             @media (max-width: 768px) {
               flex-direction: column-reverse;
               padding: 40px 0px;
+              gap: 0px;
             }
           `}
         >
           <Flex
             dir="column"
             justifyContent="center"
+            alignItems="flex-start"
             css={css`
               @media (max-width: 768px) {
-                text-align: center;
+                align-items: center;
               }
             `}
           >
+            <Icon
+              name="logo"
+              css={css`
+                width: 170px;
+                height: 100px;
+              `}
+            />
             <Text as="h2" type="Heading" weight="medium">
-              {`슬랙이나 메신저에서 참여하고 싶었던 이벤트를 놓친 경험 있으신가요?\n혹은 이벤트를열었는데 반응이 없어 답답하거나,\n리마인더 메세지를 여러번 보내야 했던 적 있으신가요?`}
+              조직 내 이벤트를 더 잘 참여하게!
             </Text>
           </Flex>
           <Flex
