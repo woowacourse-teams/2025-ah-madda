@@ -6,7 +6,7 @@ import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 
 import { QuestionRequest } from '../../types/Event';
-import { VALIDATION_MESSAGES } from '../constants/validation';
+import { ERROR_MESSAGES } from '../constants/errorMessages';
 
 import { QuestionItem } from './QuestionItem';
 
@@ -27,7 +27,7 @@ export const QuestionForm = ({ questions, onChange, onErrorChange }: QuestionFor
     onChange(newQuestions);
     const newError = {
       ...questionErrors,
-      [questions.length]: VALIDATION_MESSAGES.REQUIRED('질문'),
+      [questions.length]: ERROR_MESSAGES.REQUIRED('질문'),
     };
     setQuestionErrors(newError);
     onErrorChange(newError);
@@ -59,7 +59,7 @@ export const QuestionForm = ({ questions, onChange, onErrorChange }: QuestionFor
     onChange(updated);
 
     const text = updated.find((q) => q.orderIndex === orderIndex)?.questionText ?? '';
-    const errorMsg = text.trim() === '' ? VALIDATION_MESSAGES.REQUIRED('질문') : '';
+    const errorMsg = text.trim() === '' ? ERROR_MESSAGES.REQUIRED('질문') : '';
 
     const updatedErrors = { ...questionErrors, [orderIndex]: errorMsg };
     setQuestionErrors(updatedErrors);

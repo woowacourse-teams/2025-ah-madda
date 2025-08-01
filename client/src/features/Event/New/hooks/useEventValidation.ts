@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { EventFormData } from '../../types/Event';
-import { VALIDATION_MESSAGES } from '../constants/validation';
+import { ERROR_MESSAGES } from '../constants/errorMessages';
 import {
   getValidationMessage,
   validateAllFields,
@@ -20,7 +20,7 @@ export const useEventValidation = (formData: EventFormData) => {
     const newQuestionErrors: Record<number, string> = {};
     formData.questions.forEach((q, i) => {
       if (q.questionText.trim() === '') {
-        newQuestionErrors[i] = VALIDATION_MESSAGES.REQUIRED('질문');
+        newQuestionErrors[i] = ERROR_MESSAGES.REQUIRED('질문');
       }
     });
     setQuestionErrors(newQuestionErrors);

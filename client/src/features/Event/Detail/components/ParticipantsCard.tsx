@@ -5,7 +5,7 @@ import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Text } from '@/shared/components/Text';
 
 import type { EventDetail } from '../../../Event/types/Event';
-import { UNLIMITED_CAPACITY } from '../../New/constants/validation';
+import { UNLIMITED_CAPACITY } from '../../New/constants/errorMessages';
 
 type ParticipantsCardProps = Pick<EventDetail, 'currentGuestCount' | 'maxCapacity'>;
 

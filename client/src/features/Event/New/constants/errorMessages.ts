@@ -1,7 +1,7 @@
 export const MAX_LENGTH = 255;
 export const UNLIMITED_CAPACITY = 2_000_000_000;
 
-export const VALIDATION_MESSAGES = {
+export const ERROR_MESSAGES = {
   REQUIRED: (label: string) => `${label}을(를) 입력해 주세요.`,
   MAX_LENGTH: (label: string, max: number) => `${label}은(는) ${max}자 이하로 입력해 주세요.`,
   EVENT_START_MUST_BE_FUTURE: '이벤트 시작 시간은 현재 시간 이후여야 합니다.',
