@@ -2,12 +2,12 @@ package com.ahmadda.domain;
 
 import com.ahmadda.domain.util.Assert;
 
-public record Email(
+public record EventEmailPayload(
         Subject subject,
         Body body
 ) {
 
-    public static Email of(final Event event, final String content) {
+    public static EventEmailPayload of(final Event event, final String content) {
         Subject subject = new Subject(
                 event.getOrganization()
                         .getName(),
@@ -30,7 +30,7 @@ public record Email(
                 event.getId()
         );
 
-        return new Email(subject, body);
+        return new EventEmailPayload(subject, body);
     }
 
     public record Subject(

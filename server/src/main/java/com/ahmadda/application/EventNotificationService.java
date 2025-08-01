@@ -5,8 +5,8 @@ import com.ahmadda.application.dto.NonGuestsNotificationRequest;
 import com.ahmadda.application.dto.SelectedOrganizationMembersNotificationRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.Email;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Member;
@@ -41,9 +41,9 @@ public class EventNotificationService {
                 .getOrganizationMembers();
 
         List<OrganizationMember> recipients = event.getNonGuestOrganizationMembers(organizationMembers);
-        Email email = Email.of(event, request.content());
+        EventEmailPayload eventEmailPayload = EventEmailPayload.of(event, request.content());
 
-        eventNotification.sendEmails(recipients, email);
+        eventNotification.sendEmails(recipients, eventEmailPayload);
     }
 
     public void notifySelectedOrganizationMembers(
@@ -55,9 +55,9 @@ public class EventNotificationService {
         validateOrganizer(event, loginMember.memberId());
 
         List<OrganizationMember> recipients = getEventRecipientsFromIds(event, request.organizationMemberIds());
-        Email email = Email.of(event, request.content());
+        EventEmailPayload eventEmailPayload = EventEmailPayload.of(event, request.content());
 
-        eventNotification.sendEmails(recipients, email);
+        eventNotification.sendEmails(recipients, eventEmailPayload);
     }
 
     private Event getEvent(final Long eventId) {

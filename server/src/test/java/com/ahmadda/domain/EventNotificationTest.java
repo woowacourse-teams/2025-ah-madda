@@ -47,15 +47,15 @@ class EventNotificationTest {
         var om2 = createOrganizationMember("수신자2", "r2@email.com", organization);
 
         var recipients = List.of(om1, om2);
-        var email = new Email(
-                new Email.Subject(
+        var email = new EventEmailPayload(
+                new EventEmailPayload.Subject(
                         event.getOrganization()
                                 .getName(),
                         event.getOrganizer()
                                 .getNickname(),
                         event.getTitle()
                 ),
-                new Email.Body(
+                new EventEmailPayload.Body(
                         content,
                         event.getOrganization()
                                 .getName(),
