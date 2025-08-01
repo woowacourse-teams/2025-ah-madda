@@ -1,14 +1,13 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.EventCreateRequest;
-import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.Email;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
@@ -338,7 +337,7 @@ class EventServiceTest {
         var savedEvent = sut.createEvent(organization.getId(), loginMember, request, now);
 
         // then
-        var email = Email.of(savedEvent, "새로운 이벤트가 등록되었습니다.");
+        var email = EventEmailPayload.of(savedEvent, "새로운 이벤트가 등록되었습니다.");
         verify(eventNotification).sendEmails(
                 argThat(recipients -> {
                     var emails = recipients.stream()
@@ -592,7 +591,7 @@ class EventServiceTest {
         var updatedEvent = sut.updateEvent(event.getId(), loginMember, updateRequest, now);
 
         // then
-        var email = Email.of(updatedEvent, "이벤트 정보가 수정되었습니다.");
+        var email = EventEmailPayload.of(updatedEvent, "이벤트 정보가 수정되었습니다.");
         verify(eventNotification).sendEmails(
                 argThat(recipients -> {
                     var emails = recipients.stream()

@@ -3,6 +3,7 @@ package com.ahmadda.application.dto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,7 +11,9 @@ import java.util.List;
 public record EventCreateRequest(
         @NotBlank
         String title,
+        @Nullable
         String description,
+        @Nullable
         String place,
         @NotNull
         LocalDateTime registrationEnd,
