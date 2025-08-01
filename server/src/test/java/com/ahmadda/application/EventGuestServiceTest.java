@@ -367,26 +367,16 @@ class EventGuestServiceTest {
         var eventQuestion = Question.create("테스트", true, 1);
         var event = createAndSaveEvent(organizationMember1, organization, eventQuestion);
 
-        sut.participantEvent(
-                event.getId(),
-                new LoginMember(participant.getId()),
-                event.getRegistrationStart(),
-                new EventParticipateRequest(
-                        List.of(
-                                new AnswerCreateRequest(
-                                        event.getQuestions().getFirst().getId(),
-                                        "답변임"
-                                )
-                        )
-                )
-        );
+        Guest guest = Guest.create(event, participantOrganizationMember, event.getRegistrationStart());
+
+        guestRepository.save(guest);
 
         var guestId = guestRepository.findAll().getFirst().getId();
         var eventId = event.getId();
         var participantId = new LoginMember(participant.getId());
 
         // when
-        sut.cancelParticipate(eventId, participantId);
+        sut.cancelParticipation(eventId, participantId);
 
         // then
         assertSoftly(
