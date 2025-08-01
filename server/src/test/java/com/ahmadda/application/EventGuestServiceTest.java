@@ -417,6 +417,67 @@ class EventGuestServiceTest {
     }
 
     @Test
+    void 이벤트_시작_10분_전보다_이전에_참가_취소하면_성공한다() {
+        // given
+        var currentTime = LocalDateTime.now();
+        var organization = createAndSaveOrganization();
+        var organizer =
+                createAndSaveOrganizationMember("주최자", createAndSaveMember("주최자", "host@email.com"), organization);
+        var participant = createAndSaveOrganizationMember("참가자",
+                                                          createAndSaveMember("참가자", "participant@email.com"),
+                                                          organization
+        );
+
+        var event = createAndSaveEventWithTime(
+                organizer,
+                organization,
+                currentTime.minusDays(3),
+                currentTime.minusDays(1),
+                currentTime.plusHours(1),
+                currentTime.plusHours(2)
+        );
+
+        var guest = createAndSaveGuest(event, participant);
+
+        // when
+        sut.cancelParticipation(event.getId(), new LoginMember(participant.getMember().getId()));
+
+        // then
+        assertThat(guestRepository.findById(guest.getId())).isEmpty();
+    }
+
+    @Test
+    void 이벤트_시작_10분_전_이후에_참가_취소하면_예외가_발생한다() {
+        // given
+        var currentTime = LocalDateTime.of(2024, 1, 1, 12, 0);
+        var organization = createAndSaveOrganization();
+        var organizer =
+                createAndSaveOrganizationMember("주최자", createAndSaveMember("주최자", "host@email.com"), organization);
+        var participant = createAndSaveOrganizationMember("참가자",
+                                                          createAndSaveMember("참가자", "participant@email.com"),
+                                                          organization
+        );
+
+        var event = createAndSaveEventWithTime(
+                organizer,
+                organization,
+                currentTime.minusDays(3),
+                currentTime.minusDays(1),
+                currentTime.plusMinutes(5),
+                currentTime.plusMinutes(65)
+        );
+
+        createAndSaveGuest(event, participant);
+
+        // when // then
+        assertThatThrownBy(() -> sut.cancelParticipation(event.getId(),
+                                                         new LoginMember(participant.getMember().getId())
+        ))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("이벤트 시작전 10분 이후로는 신청을 취소할 수 없습니다");
+    }
+
+    @Test
     void 이벤트_시작_후에_참가_취소하면_예외가_발생한다() {
         // given
         var currentTime = LocalDateTime.of(2024, 1, 1, 12, 0);
@@ -433,8 +494,8 @@ class EventGuestServiceTest {
                 organization,
                 currentTime.minusDays(5),
                 currentTime.minusDays(3),
-                currentTime.minusDays(1),
-                currentTime.plusDays(1)
+                currentTime.minusHours(1),
+                currentTime.plusHours(1)
         );
 
         createAndSaveGuest(event, participant);
@@ -444,7 +505,7 @@ class EventGuestServiceTest {
                                                          new LoginMember(participant.getMember().getId())
         ))
                 .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("이벤트 시작후에는 신청을 취소할 수 없습니다.");
+                .hasMessage("이벤트 시작전 10분 이후로는 신청을 취소할 수 없습니다");
     }
 
     private Member createAndSaveMember(String name, String email) {

@@ -202,12 +202,12 @@ public class Event extends BaseEntity {
         guests.remove(guest);
     }
 
-    private void validateCancelParticipation(final LocalDateTime cancelParticipatationTime) {
+    private void validateCancelParticipation(final LocalDateTime cancelParticipationTime) {
         Period eventPeriod = eventOperationPeriod.getEventPeriod();
         LocalDateTime cancelAvailableTime =
                 eventPeriod.start().minusMinutes(BEFORE_EVENT_STARTED_CANCEL_AVAILABLE_MINUTE);
 
-        if (cancelParticipatationTime.isAfter(cancelAvailableTime)) {
+        if (cancelParticipationTime.isAfter(cancelAvailableTime)) {
             throw new BusinessRuleViolatedException("이벤트 시작전 10분 이후로는 신청을 취소할 수 없습니다");
         }
     }
