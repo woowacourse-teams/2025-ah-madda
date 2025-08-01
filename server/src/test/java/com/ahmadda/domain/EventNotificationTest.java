@@ -45,8 +45,30 @@ class EventNotificationTest {
 
         var om1 = createOrganizationMember("수신자1", "r1@email.com", organization);
         var om2 = createOrganizationMember("수신자2", "r2@email.com", organization);
+
         var recipients = List.of(om1, om2);
-        var email = Email.of(event, content);
+        var email = new EventEmailPayload(
+                new EventEmailPayload.Subject(
+                        event.getOrganization()
+                                .getName(),
+                        event.getOrganizer()
+                                .getNickname(),
+                        event.getTitle()
+                ),
+                new EventEmailPayload.Body(
+                        content,
+                        event.getOrganization()
+                                .getName(),
+                        event.getTitle(),
+                        event.getOrganizerNickname(),
+                        event.getPlace(),
+                        event.getRegistrationStart(),
+                        event.getRegistrationEnd(),
+                        event.getEventStart(),
+                        event.getEventEnd(),
+                        1L
+                )
+        );
 
         // when
         sut.sendEmails(recipients, email);

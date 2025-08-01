@@ -1,8 +1,8 @@
 package com.ahmadda.infra.slack;
 
-import com.ahmadda.application.dto.MemberCreateAlarmDto;
+import com.ahmadda.application.dto.MemberCreateAlarmPayload;
 
 public interface SlackReminder {
 
-    void alarmMemberCreation(final MemberCreateAlarmDto memberCreateAlarmDto);
+    void alarmMemberCreation(final MemberCreateAlarmPayload memberCreateAlarmPayload);
 }

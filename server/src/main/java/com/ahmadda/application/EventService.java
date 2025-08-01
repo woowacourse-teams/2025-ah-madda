@@ -6,8 +6,8 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.Email;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
@@ -168,9 +168,9 @@ public class EventService {
         List<OrganizationMember> recipients =
                 event.getNonGuestOrganizationMembers(organization.getOrganizationMembers());
         String content = "새로운 이벤트가 등록되었습니다.";
-        Email email = Email.of(event, content);
+        EventEmailPayload eventEmailPayload = EventEmailPayload.of(event, content);
 
-        eventNotification.sendEmails(recipients, email);
+        eventNotification.sendEmails(recipients, eventEmailPayload);
     }
 
     private void notifyEventUpdated(final Event event) {
@@ -179,8 +179,8 @@ public class EventService {
                 .map(Guest::getOrganizationMember)
                 .toList();
         String content = "이벤트 정보가 수정되었습니다.";
-        Email email = Email.of(event, content);
+        EventEmailPayload eventEmailPayload = EventEmailPayload.of(event, content);
 
-        eventNotification.sendEmails(recipients, email);
+        eventNotification.sendEmails(recipients, eventEmailPayload);
     }
 }

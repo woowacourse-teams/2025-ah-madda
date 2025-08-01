@@ -11,12 +11,12 @@ public class EventNotification {
 
     private final NotificationMailer notificationMailer;
 
-    public void sendEmails(final List<OrganizationMember> recipients, final Email email) {
+    public void sendEmails(final List<OrganizationMember> recipients, final EventEmailPayload eventEmailPayload) {
         recipients.forEach(recipient ->
                 notificationMailer.sendEmail(
                         recipient.getMember()
                                 .getEmail(),
-                        email
+                        eventEmailPayload
                 )
         );
     }

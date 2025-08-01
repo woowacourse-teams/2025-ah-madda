@@ -19,6 +19,7 @@ import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -43,8 +44,10 @@ public class Event extends BaseEntity {
     private String title;
 
     @Lob
+    @Nullable
     private String description;
 
+    @Nullable
     private String place;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -56,10 +59,10 @@ public class Event extends BaseEntity {
     private Organization organization;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
-    private List<Guest> guests = new ArrayList<>();
+    private final List<Guest> guests = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Question> questions = new ArrayList<>();
+    private final List<Question> questions = new ArrayList<>();
 
     @Embedded
     private EventOperationPeriod eventOperationPeriod;

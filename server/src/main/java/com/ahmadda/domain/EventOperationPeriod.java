@@ -41,7 +41,7 @@ public class EventOperationPeriod {
     ) {
         validateRegistrationPeriod(registrationPeriod, currentDateTime);
         validateEventPeriod(eventPeriod, currentDateTime);
-        validate(registrationPeriod, eventPeriod);
+        validatePeriodRelationship(registrationPeriod, eventPeriod);
 
         this.registrationPeriod = registrationPeriod;
         this.eventPeriod = eventPeriod;
@@ -72,7 +72,7 @@ public class EventOperationPeriod {
         Period closePeriod = Period.create(this.registrationPeriod.start(), closeTime);
 
         validateClosePeriod(closeTime);
-        validate(closePeriod, this.eventPeriod);
+        validatePeriodRelationship(closePeriod, this.eventPeriod);
 
         this.registrationPeriod = closePeriod;
     }
@@ -104,7 +104,7 @@ public class EventOperationPeriod {
         }
     }
 
-    private void validate(final Period registrationPeriod, final Period eventPeriod) {
+    private void validatePeriodRelationship(final Period registrationPeriod, final Period eventPeriod) {
         if (registrationPeriod.isOverlappedWith(eventPeriod)) {
             throw new BusinessRuleViolatedException("신청 기간과 이벤트 기간이 겹칠 수 없습니다.");
         }
