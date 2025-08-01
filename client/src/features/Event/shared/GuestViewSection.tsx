@@ -19,11 +19,11 @@ export const GuestViewSection = ({
   nonGuests,
   variant = 'detail',
 }: GuestViewSectionProps) => {
-  const { isOpen, open: modalOpen, close: modalClose } = useModal(false);
+  const { isOpen, open, close } = useModal(false);
 
   const handleGuestClick = (guest: Guest | NonGuest) => {
     if (variant === 'manage' && 'guestId' in guest) {
-      modalOpen();
+      open();
     }
   };
 
@@ -54,7 +54,7 @@ export const GuestViewSection = ({
         </Flex>
       </Card>
 
-      {variant === 'manage' && <PreQuestionModal isOpen={isOpen} onClose={modalClose} />}
+      {variant === 'manage' && <PreQuestionModal isOpen={isOpen} onClose={close} />}
     </>
   );
 };
