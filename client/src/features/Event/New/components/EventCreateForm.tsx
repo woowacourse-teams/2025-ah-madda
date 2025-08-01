@@ -18,7 +18,6 @@ import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLoca
 import { QuestionForm } from './QuestionForm';
 
 const ORGANIZATION_ID = 1; // 임시
-const ORGANIZER_NICKNAME = '임시닉네임';
 
 export const EventCreateForm = () => {
   const navigate = useNavigate();
@@ -37,7 +36,7 @@ export const EventCreateForm = () => {
       eventStart: convertDatetimeLocalToKSTISOString(formData.eventStart),
       eventEnd: convertDatetimeLocalToKSTISOString(formData.eventEnd),
       registrationEnd: convertDatetimeLocalToKSTISOString(formData.registrationEnd),
-      organizerNickname: userProfile?.name ?? ORGANIZER_NICKNAME,
+      organizerNickname: userProfile!.name,
     };
 
     addEvent(payload, {
