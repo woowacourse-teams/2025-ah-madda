@@ -1,6 +1,5 @@
 package com.ahmadda.infra.oauth.config;
 
-import com.ahmadda.infra.oauth.exception.GoogleOAuthPropertiesException;
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -42,22 +41,22 @@ public class GoogleOAuthProperties {
             final int readTimeout
     ) {
         if (clientId == null || clientId.isBlank()) {
-            throw new GoogleOAuthPropertiesException("Google OAuth clientId가 비어있습니다.");
+            throw new IllegalArgumentException("Google OAuth clientId가 비어있습니다.");
         }
         if (clientSecret == null || clientSecret.isBlank()) {
-            throw new GoogleOAuthPropertiesException("Google OAuth clientSecret이 비어있습니다.");
+            throw new IllegalArgumentException("Google OAuth clientSecret이 비어있습니다.");
         }
         if (tokenUri == null || tokenUri.isBlank()) {
-            throw new GoogleOAuthPropertiesException("Google OAuth tokenUri가 비어있습니다.");
+            throw new IllegalArgumentException("Google OAuth tokenUri가 비어있습니다.");
         }
         if (userUri == null || userUri.isBlank()) {
-            throw new GoogleOAuthPropertiesException("Google OAuth userUri가 비어있습니다.");
+            throw new IllegalArgumentException("Google OAuth userUri가 비어있습니다.");
         }
         if (connectTimeout <= 0) {
-            throw new GoogleOAuthPropertiesException("Google OAuth connectTimeout은 0보다 커야 합니다.");
+            throw new IllegalArgumentException("Google OAuth connectTimeout은 0보다 커야 합니다.");
         }
         if (readTimeout <= 0) {
-            throw new GoogleOAuthPropertiesException("Google OAuth readTimeout은 0보다 커야 합니다.");
+            throw new IllegalArgumentException("Google OAuth readTimeout은 0보다 커야 합니다.");
         }
     }
 }

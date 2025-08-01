@@ -1,6 +1,5 @@
 package com.ahmadda.infra.slack.config;
 
-import com.ahmadda.infra.slack.exception.SlackAlarmPropertiesException;
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -38,19 +37,19 @@ public class SlackAlarmProperties {
             final int readTimeout
     ) {
         if (postMessageUrl == null || postMessageUrl.isBlank()) {
-            throw new SlackAlarmPropertiesException("Slack postMessageUrl이 비어있습니다.");
+            throw new IllegalArgumentException("Slack postMessageUrl이 비어있습니다.");
         }
         if (channelId == null || channelId.isBlank()) {
-            throw new SlackAlarmPropertiesException("Slack channelId가 비어있습니다.");
+            throw new IllegalArgumentException("Slack channelId가 비어있습니다.");
         }
         if (botToken == null || botToken.isBlank()) {
-            throw new SlackAlarmPropertiesException("Slack botToken이 비어있습니다.");
+            throw new IllegalArgumentException("Slack botToken이 비어있습니다.");
         }
         if (connectTimeout <= 0) {
-            throw new SlackAlarmPropertiesException("Slack connectTimeout은 0보다 커야 합니다.");
+            throw new IllegalArgumentException("Slack connectTimeout은 0보다 커야 합니다.");
         }
         if (readTimeout <= 0) {
-            throw new SlackAlarmPropertiesException("Slack readTimeout은 0보다 커야 합니다.");
+            throw new IllegalArgumentException("Slack readTimeout은 0보다 커야 합니다.");
         }
     }
 }
