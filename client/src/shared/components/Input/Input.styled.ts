@@ -20,7 +20,7 @@ export const StyledRequiredMark = styled.span`
   font-size: 14px;
 `;
 
-export const StyledInput = styled.input<{ error?: boolean }>`
+export const StyledInput = styled.input<Pick<InputProps, 'error'>>`
   background-color: #f7f7f8;
   border-radius: 8px;
   padding: 12px;
