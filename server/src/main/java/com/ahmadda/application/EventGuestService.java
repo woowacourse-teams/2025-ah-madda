@@ -53,13 +53,13 @@ public class EventGuestService {
     @Transactional
     public void participantEvent(
             final Long eventId,
-            final Long memberId,
+            final LoginMember loginMember,
             final LocalDateTime currentDateTime,
             final EventParticipateRequest eventParticipateRequest
     ) {
         Event event = getEvent(eventId);
         Organization organization = event.getOrganization();
-        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), memberId);
+        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), loginMember.memberId());
 
         Guest guest = Guest.create(event, organizationMember, currentDateTime);
 
@@ -70,23 +70,23 @@ public class EventGuestService {
     }
 
     @Transactional
-    public void cancelParticipate(
+    public void cancelParticipation(
             final Long eventId,
-            final Long memberId
+            final LoginMember loginMember
     ) {
         Event event = getEvent(eventId);
         Long organizationId = event.getOrganization()
                 .getId();
-        OrganizationMember organizationMember = getOrganizationMember(organizationId, memberId);
+        OrganizationMember organizationMember = getOrganizationMember(organizationId, loginMember.memberId());
 
         event.cancelParticipate(organizationMember);
         guestRepository.deleteByEventAndOrganizationMember(event, organizationMember);
     }
 
-    public boolean isGuest(final Long eventId, final Long memberId) {
+    public boolean isGuest(final Long eventId, final LoginMember loginMember) {
         Event event = getEvent(eventId);
         Organization organization = event.getOrganization();
-        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), memberId);
+        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), loginMember.memberId());
 
         return event.hasGuest(organizationMember);
     }

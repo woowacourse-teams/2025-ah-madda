@@ -1,7 +1,6 @@
 package com.ahmadda.domain;
 
 
-import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.CascadeType;
@@ -195,6 +194,11 @@ public class Event extends BaseEntity {
                 .equals(member);
     }
 
+    public void cancelParticipate(final OrganizationMember organizationMember) {
+        Guest guest = getGuestByOrganizationMember(organizationMember);
+        guests.remove(guest);
+    }
+
     private void validateParticipate(final Guest guest, final LocalDateTime participantDateTime) {
         if (eventOperationPeriod.canNotRegistration(participantDateTime)) {
             throw new BusinessRuleViolatedException("이벤트 신청은 신청 시작 시간부터 신청 마감 시간까지 가능합니다.");
@@ -238,6 +242,13 @@ public class Event extends BaseEntity {
         }
     }
 
+    private Guest getGuestByOrganizationMember(final OrganizationMember organizationMember) {
+        return guests.stream()
+                .filter((guest) -> guest.isSameOrganizationMember(organizationMember))
+                .findAny()
+                .orElseThrow(() -> new BusinessRuleViolatedException("이벤트의 참가자 목록에서 일치하는 조직원을 찾을 수 없습니다"));
+    }
+
     public LocalDateTime getRegistrationStart() {
         return eventOperationPeriod.getRegistrationPeriod()
                 .start();
@@ -256,17 +267,5 @@ public class Event extends BaseEntity {
     public LocalDateTime getEventEnd() {
         return eventOperationPeriod.getEventPeriod()
                 .end();
-    }
-
-    private Guest getGuestByOrganizationMember(final OrganizationMember organizationMember) {
-        return guests.stream()
-                .filter((guest) -> guest.isSameOrganizationMember(organizationMember))
-                .findAny()
-                .orElseThrow(() -> new NotFoundException("이벤트의 참가자 목록에서 일치하는 조직원을 찾을 수 없습니다"));
-    }
-
-    public void cancelParticipate(final OrganizationMember organizationMember) {
-        Guest guest = getGuestByOrganizationMember(organizationMember);
-        guests.remove(guest);
     }
 }
