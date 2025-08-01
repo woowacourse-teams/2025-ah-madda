@@ -194,9 +194,17 @@ public class Event extends BaseEntity {
                 .equals(member);
     }
 
-    public void cancelParticipate(final OrganizationMember organizationMember) {
+    public void cancelParticipation(final OrganizationMember organizationMember,
+                                    final LocalDateTime cancelParticipateTime) {
+        validateCancelParticipation(cancelParticipateTime);
         Guest guest = getGuestByOrganizationMember(organizationMember);
         guests.remove(guest);
+    }
+
+    private void validateCancelParticipation(final LocalDateTime cancelParticipateTime) {
+        if (!eventOperationPeriod.isNotStarted(cancelParticipateTime)) {
+            throw new BusinessRuleViolatedException("이벤트 시작후에는 신청을 취소할 수 없습니다.");
+        }
     }
 
     private void validateParticipate(final Guest guest, final LocalDateTime participantDateTime) {
