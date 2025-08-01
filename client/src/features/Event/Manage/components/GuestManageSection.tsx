@@ -5,8 +5,9 @@ import { useParams } from 'react-router-dom';
 import { eventQueryOptions } from '@/api/queries/event';
 import { Flex } from '@/shared/components/Flex';
 
+import { GuestViewSection } from '../../shared/GuestViewSection';
+
 import { AlarmSection } from './AlarmSection';
-import { GuestViewSection } from './GuestViewSection';
 
 export const GuestManageSection = () => {
   const { eventId: eventIdParam } = useParams();
@@ -38,7 +39,7 @@ export const GuestManageSection = () => {
     >
       <AlarmSection pendingGuestsCount={nonGuests.length} />
 
-      <GuestViewSection guests={guests} nonGuests={nonGuests} />
+      <GuestViewSection guests={guests} nonGuests={nonGuests} variant="manage" />
     </Flex>
   );
 };
