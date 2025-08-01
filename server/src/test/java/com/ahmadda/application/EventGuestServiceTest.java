@@ -387,7 +387,35 @@ class EventGuestServiceTest {
         );
     }
 
+    @Test
+    void 존재하지_않는_이벤트의_참여를_취소하면_예외가_발생한다() {
+        // given
+        var nonExistentEventId = -1L;
+        var loginMember = new LoginMember(1L);
 
+        // when // then
+        assertThatThrownBy(() -> sut.cancelParticipation(nonExistentEventId, loginMember))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 이벤트입니다.");
+    }
+
+    @Test
+    void 조직에_속하지_않은_회원이_이벤트_참여를_취소하면_예외가_발생한다() {
+        // given
+        var organization = createAndSaveOrganization();
+        var organizer =
+                createAndSaveOrganizationMember("주최자", createAndSaveMember("주최자", "host@email.com"), organization);
+        var event = createAndSaveEvent(organizer, organization);
+
+        var outsider = createAndSaveMember("외부인", "outsider@email.com");
+        var loginMember = new LoginMember(outsider.getId());
+
+        // when // then
+        assertThatThrownBy(() -> sut.cancelParticipation(event.getId(), loginMember))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 조직원입니다.");
+    }
+    
     private Member createAndSaveMember(String name, String email) {
         return memberRepository.save(Member.create(name, email));
     }
