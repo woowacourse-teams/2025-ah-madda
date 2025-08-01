@@ -1,11 +1,11 @@
 package com.ahmadda.infra.slack.dto;
 
-import com.ahmadda.application.dto.MemberCreateAlarmDto;
+import com.ahmadda.application.dto.MemberCreateAlarmPayload;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-public record MemberCreationAlarmPayload(
+public record MemberCreatAlarmRequestBody(
         List<Block> blocks,
         String channel
 ) {
@@ -25,7 +25,7 @@ public record MemberCreationAlarmPayload(
 
     }
 
-    public static MemberCreationAlarmPayload create(final MemberCreateAlarmDto member, final String channelId) {
+    public static MemberCreatAlarmRequestBody create(final MemberCreateAlarmPayload member, final String channelId) {
         String messageText = String.format(
                 """
                         *🎉 새로운 회원 가입 알림*
@@ -39,6 +39,6 @@ public record MemberCreationAlarmPayload(
         TextObject textObject = new TextObject("mrkdwn", messageText);
         Block mainBlock = new Block("section", textObject);
 
-        return new MemberCreationAlarmPayload(List.of(mainBlock), channelId);
+        return new MemberCreatAlarmRequestBody(List.of(mainBlock), channelId);
     }
 }

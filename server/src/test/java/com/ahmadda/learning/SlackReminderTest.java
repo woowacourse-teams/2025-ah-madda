@@ -1,7 +1,7 @@
 package com.ahmadda.learning;
 
 
-import com.ahmadda.application.dto.MemberCreateAlarmDto;
+import com.ahmadda.application.dto.MemberCreateAlarmPayload;
 import com.ahmadda.domain.Member;
 import com.ahmadda.infra.slack.SlackReminder;
 import org.junit.jupiter.api.Disabled;
@@ -22,6 +22,6 @@ class SlackReminderTest {
 
     @Test
     void 실제_슬랙_리마인드_테스트() {
-        slackReminder.alarmMemberCreation(MemberCreateAlarmDto.from(Member.create("asdf", "asdf@naver.com")));
+        slackReminder.alarmMemberCreation(MemberCreateAlarmPayload.from(Member.create("asdf", "asdf@naver.com")));
     }
 }

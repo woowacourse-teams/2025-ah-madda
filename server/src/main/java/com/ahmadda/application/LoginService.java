@@ -1,6 +1,6 @@
 package com.ahmadda.application;
 
-import com.ahmadda.application.dto.MemberCreateAlarmDto;
+import com.ahmadda.application.dto.MemberCreateAlarmPayload;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.infra.jwt.JwtProvider;
@@ -34,7 +34,7 @@ public class LoginService {
                 .orElseGet(() -> {
                     Member newMember = Member.create(name, email);
 
-                    slackReminder.alarmMemberCreation(MemberCreateAlarmDto.from(newMember));
+                    slackReminder.alarmMemberCreation(MemberCreateAlarmPayload.from(newMember));
 
                     return memberRepository.save(newMember);
                 });

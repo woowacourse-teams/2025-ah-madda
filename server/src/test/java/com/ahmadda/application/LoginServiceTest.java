@@ -1,6 +1,6 @@
 package com.ahmadda.application;
 
-import com.ahmadda.application.dto.MemberCreateAlarmDto;
+import com.ahmadda.application.dto.MemberCreateAlarmPayload;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.OrganizationMemberRepository;
@@ -100,7 +100,7 @@ class LoginServiceTest {
         var accessToken = "access_token";
         var redirectUri = "redirectUri";
 
-        var memberCreateAlarmDto = new MemberCreateAlarmDto(name, email);
+        var memberCreateAlarmDto = new MemberCreateAlarmPayload(name, email);
         var expectedLog = String.format(
                 "회원가입 유저 정보 : %s 프로덕션이 아니어서 슬랙으로 알람 보내지 않음",
                 memberCreateAlarmDto
