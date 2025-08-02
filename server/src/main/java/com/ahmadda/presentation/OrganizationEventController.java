@@ -12,6 +12,7 @@ import com.ahmadda.presentation.dto.EventCreateResponse;
 import com.ahmadda.presentation.dto.EventDetailResponse;
 import com.ahmadda.presentation.dto.EventResponse;
 import com.ahmadda.presentation.dto.EventUpdateResponse;
+import com.ahmadda.presentation.dto.OrganizerStatusResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -645,5 +646,15 @@ public class OrganizationEventController {
                 .toList();
 
         return ResponseEntity.ok(eventResponses);
+    }
+
+    @GetMapping("/events/{eventId}/organizer-status")
+    public ResponseEntity<OrganizerStatusResponse> isOrganizer(
+            @PathVariable final Long eventId,
+            @AuthMember final LoginMember loginMember
+    ) {
+        boolean isOrganizer = eventService.isOrganizer(eventId, loginMember);
+
+        return ResponseEntity.ok(new OrganizerStatusResponse(isOrganizer));
     }
 }
