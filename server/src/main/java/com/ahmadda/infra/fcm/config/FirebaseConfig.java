@@ -20,7 +20,10 @@ public class FirebaseConfig {
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build();
 
-            FirebaseApp.initializeApp(options);
+            if (FirebaseApp.getApps()
+                    .isEmpty()) {
+                FirebaseApp.initializeApp(options);
+            }
         } catch (IOException e) {
             throw new IllegalStateException("Firebase를 초기화할 수 없습니다.", e);
         }
