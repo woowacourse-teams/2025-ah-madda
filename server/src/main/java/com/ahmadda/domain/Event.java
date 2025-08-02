@@ -19,6 +19,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class Event extends BaseEntity {
 
     private static final int MIN_CAPACITY = 1;
     private static final int MAX_CAPACITY = 2_100_000_000;
-    private static final int BEFORE_EVENT_STARTED_CANCEL_AVAILABLE_MINUTE = 10;
+    private static final Duration BEFORE_EVENT_STARTED_CANCEL_AVAILABLE_MINUTE = Duration.ofMinutes(10);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -230,11 +231,10 @@ public class Event extends BaseEntity {
     }
 
     private void validateCancelParticipation(final LocalDateTime cancelParticipationTime) {
-        Period eventPeriod = eventOperationPeriod.getEventPeriod();
-        LocalDateTime cancelAvailableTime =
-                eventPeriod.start().minusMinutes(BEFORE_EVENT_STARTED_CANCEL_AVAILABLE_MINUTE);
-
-        if (cancelParticipationTime.isAfter(cancelAvailableTime)) {
+        if (eventOperationPeriod.willStartWithin(
+                cancelParticipationTime,
+                BEFORE_EVENT_STARTED_CANCEL_AVAILABLE_MINUTE
+        )) {
             throw new BusinessRuleViolatedException("이벤트 시작전 10분 이후로는 신청을 취소할 수 없습니다");
         }
     }

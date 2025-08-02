@@ -12,6 +12,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Embeddable
@@ -115,5 +116,12 @@ public class EventOperationPeriod {
         if (registrationPeriod.isAfter(eventPeriod)) {
             throw new BusinessRuleViolatedException("신청 기간은 이벤트 기간보다 앞서야 합니다.");
         }
+    }
+
+    public boolean willStartWithin(final LocalDateTime cancelParticipationTime,
+                                   final Duration duration) {
+        LocalDateTime cancelAvailableTime = eventPeriod.start().minus(duration);
+
+        return cancelParticipationTime.isAfter(cancelAvailableTime);
     }
 }
