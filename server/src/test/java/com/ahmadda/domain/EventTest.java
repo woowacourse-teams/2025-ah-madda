@@ -204,7 +204,7 @@ class EventTest {
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization2))
                 .isInstanceOf(UnauthorizedOperationException.class)
-                .hasMessage("자신이 속한 조직에서만 이벤트를 생성할 수 있습니다.");
+                .hasMessage("자신이 속한 조직이 아닙니다.");
     }
 
     @ParameterizedTest
