@@ -26,6 +26,10 @@ export const requestFCMPermission = async () => {
     if (permission === 'denied') {
       return alert('알림 권한이 거부되었습니다.');
     }
+
+    if (permission === 'default') {
+      return alert('권한 선택을 하지 않았습니다.');
+    }
   } catch (error) {
     // TODO : FCM 토큰 획득 실패 시 처리 로직 추가
     console.error('FCM 토큰 획득 실패:', error);
