@@ -1,0 +1,22 @@
+{
+  "name": "아맞다!",
+  "short_name": "아맞다!",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#6D6E6F",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ]
+}
