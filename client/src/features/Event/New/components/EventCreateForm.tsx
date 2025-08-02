@@ -22,7 +22,7 @@ const ORGANIZATION_ID = 1; // 임시
 export const EventCreateForm = () => {
   const navigate = useNavigate();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
-  const { formData, handleChange, setQuestions } = useEventForm();
+  const { formData, setValue, setQuestions } = useEventForm();
   const { errors, setQuestionErrors, validate, validateField, isFormValid } =
     useEventValidation(formData);
   const { data: userProfile } = useQuery(myQueryOptions.profile());
@@ -79,7 +79,7 @@ export const EventCreateForm = () => {
               label="이벤트 이름"
               value={formData.title}
               onChange={(e) => {
-                handleChange('title')(e);
+                setValue('title', e.target.value);
                 validateField('title', e.target.value);
               }}
               errorMessage={errors.title}
@@ -105,12 +105,10 @@ export const EventCreateForm = () => {
                 onChange={(e) => {
                   const newValue = e.target.value;
 
-                  handleChange('eventStart')(e);
+                  setValue('eventStart', newValue);
                   validateField('eventStart', newValue);
 
-                  handleChange('registrationEnd')({
-                    target: { value: newValue },
-                  } as React.ChangeEvent<HTMLInputElement>);
+                  setValue('registrationEnd', newValue);
                   validateField('registrationEnd', newValue);
                 }}
                 errorMessage={errors.eventStart}
@@ -125,7 +123,7 @@ export const EventCreateForm = () => {
                 value={formData.eventEnd}
                 min={formData.eventStart}
                 onChange={(e) => {
-                  handleChange('eventEnd')(e);
+                  setValue('eventEnd', e.target.value);
                   validateField('eventEnd', e.target.value);
                 }}
                 errorMessage={errors.eventEnd}
@@ -141,7 +139,7 @@ export const EventCreateForm = () => {
               value={formData.registrationEnd}
               max={formData.eventStart}
               onChange={(e) => {
-                handleChange('registrationEnd')(e);
+                setValue('registrationEnd', e.target.value);
                 validateField('registrationEnd', e.target.value);
               }}
               errorMessage={errors.registrationEnd}
@@ -154,7 +152,7 @@ export const EventCreateForm = () => {
               placeholder="이벤트 장소를 입력해 주세요"
               value={formData.place}
               onChange={(e) => {
-                handleChange('place')(e);
+                setValue('place', e.target.value);
                 validateField('place', e.target.value);
               }}
               errorMessage={errors.place}
@@ -168,7 +166,7 @@ export const EventCreateForm = () => {
               placeholder="이벤트에 대한 설명을 입력해 주세요"
               value={formData.description}
               onChange={(e) => {
-                handleChange('description')(e);
+                setValue('description', e.target.value);
                 validateField('description', e.target.value);
               }}
               errorMessage={errors.description}
@@ -183,7 +181,7 @@ export const EventCreateForm = () => {
               type="number"
               value={formData.maxCapacity}
               min={1}
-              onChange={handleChange('maxCapacity')}
+              onChange={(e) => setValue('maxCapacity', Number(e.target.value))}
               isRequired={true}
             />
           </Flex>
