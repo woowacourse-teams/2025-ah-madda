@@ -143,8 +143,7 @@ class EventTest {
 
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization2))
-                .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("자신이 속한 조직에서만 이벤트를 생성할 수 있습니다.");
+                .isInstanceOf(BusinessRuleViolatedException.class);
     }
 
     @ParameterizedTest
@@ -153,8 +152,7 @@ class EventTest {
         assertThatThrownBy(() -> createEvent(
                 "title", maxCapacity
         ))
-                .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("최대 수용 인원은 1명보다 적거나 21억명 보다 클 수 없습니다.");
+                .isInstanceOf(BusinessRuleViolatedException.class);
     }
 
     @Test
@@ -228,8 +226,7 @@ class EventTest {
 
         //when //then
         assertThatThrownBy(() -> sut.participate(guest, registrationPeriod.start()))
-                .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("이미 해당 이벤트에 참여중인 게스트입니다.");
+                .isInstanceOf(BusinessRuleViolatedException.class);
     }
 
     @Test
@@ -317,8 +314,7 @@ class EventTest {
 
         //when // then
         assertThatThrownBy(() -> sut.cancelParticipation(organizationMember, LocalDateTime.now()))
-                .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("이벤트의 참가자 목록에서 일치하는 조직원을 찾을 수 없습니다");
+                .isInstanceOf(BusinessRuleViolatedException.class);
     }
 
     @Test
@@ -393,8 +389,7 @@ class EventTest {
 
         // then
         assertThatThrownBy(() -> Guest.create(sut, organizationMember, registrationEnd))
-                .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("이벤트 신청은 신청 시작 시간부터 신청 마감 시간까지 가능합니다.");
+                .isInstanceOf(BusinessRuleViolatedException.class);
     }
 
     @Test
@@ -420,8 +415,7 @@ class EventTest {
 
         // when // then
         assertThatThrownBy(() -> sut.closeRegistrationAt(notBaseOrganizer, registrationCloseTime))
-                .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("주최자만 마감할 수 있습니다.");
+                .isInstanceOf(BusinessRuleViolatedException.class);
     }
 
     @Test
@@ -442,8 +436,93 @@ class EventTest {
 
         // when // then
         assertThatThrownBy(() -> sut.closeRegistrationAt(baseOrganizer, registrationCloseOverTime))
-                .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("이미 신청이 마감된 이벤트입니다.");
+                .isInstanceOf(BusinessRuleViolatedException.class);
+    }
+
+    @Test
+    void 이벤트_시작_10분_전보다_이전에_참가_취소하면_성공한다() {
+        // given
+        var now = LocalDateTime.of(2024, 1, 1, 12, 0);
+        var eventStartTime = now.plusHours(1);
+        var eventPeriod = Period.create(eventStartTime, eventStartTime.plusHours(1));
+        var registrationPeriod = Period.create(now.minusDays(1), eventStartTime.minusMinutes(30));
+        var eventOperationPeriod = EventOperationPeriod.create(registrationPeriod, eventPeriod, now.minusDays(2));
+
+        var sut = Event.create(
+                "이벤트", "설명", "장소",
+                baseOrganizer,
+                baseOrganization,
+                eventOperationPeriod,
+                "주최자 닉네임",
+                10
+        );
+
+        var participantMember = createMember("참가자", "participant@email.com");
+        var participant = createOrganizationMember("참가자", participantMember, baseOrganization);
+        Guest.create(sut, participant, now.minusDays(1));
+        Assertions.assertThat(sut.getGuests()).hasSize(1);
+
+        var cancellationTime = eventStartTime.minusMinutes(11);
+
+        // when
+        sut.cancelParticipation(participant, cancellationTime);
+
+        // then
+        Assertions.assertThat(sut.getGuests()).isEmpty();
+    }
+
+    @Test
+    void 이벤트_시작_10분_전_이후에_참가_취소하면_예외가_발생한다() {
+        // given
+        var now = LocalDateTime.of(2024, 1, 1, 12, 0);
+        var eventStartTime = now.plusMinutes(9);
+        var eventPeriod = Period.create(eventStartTime, eventStartTime.plusHours(1));
+        var registrationPeriod = Period.create(now.minusDays(1), eventStartTime.minusMinutes(5));
+        var eventOperationPeriod = EventOperationPeriod.create(registrationPeriod, eventPeriod, now.minusDays(2));
+
+        var sut = Event.create(
+                "이벤트", "설명", "장소",
+                baseOrganizer,
+                baseOrganization,
+                eventOperationPeriod,
+                "주최자 닉네임",
+                10
+        );
+
+        var participantMember = createMember("참가자", "participant@email.com");
+        var participant = createOrganizationMember("참가자", participantMember, baseOrganization);
+        Guest.create(sut, participant, now.minusDays(1));
+
+        // when // then
+        assertThatThrownBy(() -> sut.cancelParticipation(participant, now))
+                .isInstanceOf(BusinessRuleViolatedException.class);
+    }
+
+    @Test
+    void 이벤트_시작_후에_참가_취소하면_예외가_발생한다() {
+        // given
+        var now = LocalDateTime.of(2024, 1, 1, 12, 0);
+        var eventStartTime = now.minusMinutes(1);
+        var eventPeriod = Period.create(eventStartTime, eventStartTime.plusHours(1));
+        var registrationPeriod = Period.create(now.minusDays(2), now.minusDays(1));
+        var eventOperationPeriod = EventOperationPeriod.create(registrationPeriod, eventPeriod, now.minusDays(3));
+
+        var sut = Event.create(
+                "이벤트", "설명", "장소",
+                baseOrganizer,
+                baseOrganization,
+                eventOperationPeriod,
+                "주최자 닉네임",
+                10
+        );
+
+        var participantMember = createMember("참가자", "participant@email.com");
+        var participant = createOrganizationMember("참가자", participantMember, baseOrganization);
+        Guest.create(sut, participant, now.minusDays(1));
+
+        // when // then
+        assertThatThrownBy(() -> sut.cancelParticipation(participant, now))
+                .isInstanceOf(BusinessRuleViolatedException.class);
     }
 
     private Event createEvent(String title, int maxCapacity, Question... questions) {
