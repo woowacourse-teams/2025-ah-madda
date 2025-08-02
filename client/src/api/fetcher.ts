@@ -40,10 +40,7 @@ const request = async <T>(path: string, method: HttpMethod, body?: object): Prom
     try {
       const errorData: HttpErrorResponse = await response.json();
       throw new HttpError(response.status, errorData);
-    } catch (parseError) {
-      if (parseError instanceof HttpError) {
-        throw parseError;
-      }
+    } catch {
       throw new HttpError(response.status);
     }
   }
