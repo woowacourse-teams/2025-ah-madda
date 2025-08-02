@@ -4,7 +4,6 @@ import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
-import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventEmailPayload;
@@ -166,7 +165,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 회원입니다.");
+                .hasMessage("존재하지 않은 조직원 정보입니다.");
     }
 
     @Test
@@ -193,8 +192,8 @@ class EventServiceTest {
 
         //when //then
         assertThatThrownBy(() -> sut.createEvent(organization1.getId(), loginMember, eventCreateRequest, now))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessage("조직에 소속되지 않은 회원입니다.");
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않은 조직원 정보입니다.");
     }
 
     @Test
@@ -224,7 +223,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization)).isInstanceOf(
                         UnauthorizedOperationException.class)
-                .hasMessage("자신이 속한 조직에서만 이벤트를 생성할 수 있습니다.");
+                .hasMessage("자신이 속한 조직이 아닙니다.");
     }
 
     @Test
@@ -255,7 +254,7 @@ class EventServiceTest {
                 now
         ))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 회원입니다.");
+                .hasMessage("존재하지 않은 조직원 정보입니다.");
     }
 
     @Test
@@ -279,8 +278,8 @@ class EventServiceTest {
                 notBelongingOrgMember.getId(),
                 now
         ))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessage("조직에 소속되지 않은 회원입니다.");
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않은 조직원 정보입니다.");
     }
 
     @Test
@@ -561,6 +560,58 @@ class EventServiceTest {
                 }),
                 eq(email)
         );
+    }
+
+    @Test
+    void 로그인한_회원이_이벤트의_주최자인지_확인할_수_있다() {
+        //given
+        var organization = createOrganization();
+        var organizerMember = createMember("surf", "surf@ahmadda.com");
+        var nonOrganizerMember = createMember("tuda", "tuda@ahmadda.com");
+        var organizer = createOrganizationMember(organization, organizerMember);
+        var nonOrganizer = createOrganizationMember(organization, nonOrganizerMember);
+        var event = createEvent(organizer, organization);
+        var organizerLoginMember = createLoginMember(organizerMember);
+        var nonOrganizerLoginMember = createLoginMember(nonOrganizerMember);
+
+        //when
+        boolean actual1 = sut.isOrganizer(event.getId(), organizerLoginMember);
+        boolean actual2 = sut.isOrganizer(event.getId(), nonOrganizerLoginMember);
+
+        //then
+        assertSoftly(softly -> {
+            softly.assertThat(actual1)
+                    .isTrue();
+            softly.assertThat(actual2)
+                    .isFalse();
+        });
+    }
+
+    @Test
+    void 이벤트의_주최자인지_확인할때_존재하지_않는_이벤트라면_예외가_발생한다() {
+        //given
+        var organization = createOrganization();
+        var member = createMember("surf", "surf@ahmadda.com");
+        var loginMember = createLoginMember(member);
+
+        //when //then
+        assertThatThrownBy(() -> sut.isOrganizer(999L, loginMember))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않은 이벤트 정보입니다.");
+    }
+
+    @Test
+    void 이벤트의_주최자인지_확인할때_존재하지_않는_회원이라면_예외가_발생한다() {
+        //given
+        var organization = createOrganization();
+        var organizerMember = createMember("surf", "surf@ahmadda.com");
+        var organizer = createOrganizationMember(organization, organizerMember);
+        var event = createEvent(organizer, organization);
+
+        //when //then
+        assertThatThrownBy(() -> sut.isOrganizer(event.getId(), new LoginMember(999L)))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 회원입니다.");
     }
 
     private Organization createOrganization() {

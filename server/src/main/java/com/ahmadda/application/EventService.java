@@ -45,7 +45,7 @@ public class EventService {
             final LocalDateTime currentDateTime
     ) {
         Organization organization = getOrganization(organizationId);
-        OrganizationMember organizer = validateOrganizationAccess(organizationId, loginMember.memberId());
+        OrganizationMember organizer = getOrganizationMember(organizationId, loginMember.memberId());
 
         EventOperationPeriod eventOperationPeriod = createEventOperationPeriod(eventCreateRequest, currentDateTime);
         Event event = Event.create(
@@ -74,8 +74,7 @@ public class EventService {
     ) {
         Event event = getEvent(eventId);
         Organization organization = event.getOrganization();
-
-        OrganizationMember organizationMember = validateOrganizationAccess(organization.getId(), memberId);
+        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), memberId);
 
         event.closeRegistrationAt(organizationMember, currentDateTime);
     }
@@ -96,10 +95,8 @@ public class EventService {
             final EventUpdateRequest eventUpdateRequest,
             final LocalDateTime currentDateTime
     ) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않은 이벤트 정보입니다."));
-        Member member = memberRepository.findById(loginMember.memberId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
+        Event event = getEvent(eventId);
+        Member member = getMember(loginMember.memberId());
 
         EventOperationPeriod updatedOperationPeriod = EventOperationPeriod.create(
                 event.getRegistrationStart(),
@@ -121,6 +118,18 @@ public class EventService {
         notifyEventUpdated(event);
 
         return event;
+    }
+
+    public boolean isOrganizer(final Long eventId, final LoginMember loginMember) {
+        Event event = getEvent(eventId);
+        Member member = getMember(loginMember.memberId());
+
+        return event.isOrganizer(member);
+    }
+
+    private Member getMember(final Long loginMember) {
+        return memberRepository.findById(loginMember)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
     }
 
     private EventOperationPeriod createEventOperationPeriod(
@@ -147,12 +156,15 @@ public class EventService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않은 조직 정보입니다."));
     }
 
-    private OrganizationMember validateOrganizationAccess(final Long organizationId, final Long memberId) {
-        memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
+    private void validateOrganizationAccess(final Long organizationId, final Long memberId) {
+        if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, memberId)) {
+            throw new AccessDeniedException("조직에 소속되지 않은 회원입니다.");
+        }
+    }
 
+    private OrganizationMember getOrganizationMember(final Long organizationId, final Long memberId) {
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
-                .orElseThrow(() -> new AccessDeniedException("조직에 소속되지 않은 회원입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않은 조직원 정보입니다."));
     }
 
     private List<Question> createQuestions(final List<QuestionCreateRequest> questionCreateRequests) {

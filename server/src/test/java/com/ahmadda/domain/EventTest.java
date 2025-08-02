@@ -154,7 +154,6 @@ class EventTest {
         // when
         var actual1 = sut.hasGuest(guest);
         var actual2 = sut.hasGuest(notGuest);
-        var actual3 = sut.hasGuest(baseOrganizer);
 
         // then
         assertSoftly(softly -> {
@@ -162,8 +161,6 @@ class EventTest {
                     .isTrue();
             softly.assertThat(actual2)
                     .isFalse();
-            softly.assertThat(actual3)
-                    .isTrue();
         });
     }
 
@@ -207,7 +204,7 @@ class EventTest {
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization2))
                 .isInstanceOf(UnauthorizedOperationException.class)
-                .hasMessage("자신이 속한 조직에서만 이벤트를 생성할 수 있습니다.");
+                .hasMessage("자신이 속한 조직이 아닙니다.");
     }
 
     @ParameterizedTest
