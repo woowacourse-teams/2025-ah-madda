@@ -175,10 +175,6 @@ public class Event extends BaseEntity {
     }
 
     public boolean hasGuest(final OrganizationMember organizationMember) {
-        if (organizationMember.equals(organizer)) {
-            return true;
-        }
-
         return guests.stream()
                 .anyMatch(guest -> guest.isSameOrganizationMember(organizationMember));
     }

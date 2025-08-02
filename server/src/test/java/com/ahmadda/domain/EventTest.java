@@ -154,7 +154,6 @@ class EventTest {
         // when
         var actual1 = sut.hasGuest(guest);
         var actual2 = sut.hasGuest(notGuest);
-        var actual3 = sut.hasGuest(baseOrganizer);
 
         // then
         assertSoftly(softly -> {
@@ -162,8 +161,6 @@ class EventTest {
                     .isTrue();
             softly.assertThat(actual2)
                     .isFalse();
-            softly.assertThat(actual3)
-                    .isTrue();
         });
     }
 
