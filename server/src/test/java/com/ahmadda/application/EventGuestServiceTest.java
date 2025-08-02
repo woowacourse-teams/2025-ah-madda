@@ -350,7 +350,6 @@ class EventGuestServiceTest {
                 .hasMessage("존재하지 않는 조직원입니다.");
     }
 
-    
 
     private Member createAndSaveMember(String name, String email) {
         return memberRepository.save(Member.create(name, email));
@@ -402,8 +401,10 @@ class EventGuestServiceTest {
                 organizer,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(registrationStart, registrationEnd),
-                        Period.create(eventStart, eventEnd),
+                        registrationStart,
+                        registrationEnd,
+                        eventStart,
+                        eventEnd,
                         creationTime
                 ),
                 organizer.getNickname(),
