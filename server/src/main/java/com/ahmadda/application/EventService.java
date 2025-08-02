@@ -6,6 +6,7 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventOperationPeriod;
@@ -13,11 +14,13 @@ import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.NotificationMailer;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.domain.PushNotificationPayload;
+import com.ahmadda.domain.PushNotificationRecipient;
+import com.ahmadda.domain.PushNotifier;
 import com.ahmadda.domain.Question;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,7 +38,8 @@ public class EventService {
     private final EventRepository eventRepository;
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
-    private final NotificationMailer notificationMailer;
+    private final EmailNotifier emailNotifier;
+    private final PushNotifier pushNotifier;
 
     @Transactional
     public Event createEvent(
@@ -165,34 +169,53 @@ public class EventService {
     }
 
     private void notifyEventCreated(final Event event, final Organization organization) {
-        List<OrganizationMember> recipients =
-                event.getNonGuestOrganizationMembers(organization.getOrganizationMembers());
         String content = "새로운 이벤트가 등록되었습니다.";
+        
+        List<String> recipientEmails = event.getNonGuestOrganizationMembers(organization.getOrganizationMembers())
+                .stream()
+                .map(OrganizationMember::getMember)
+                .map(Member::getEmail)
+                .toList();
         EventEmailPayload eventEmailPayload = EventEmailPayload.of(event, content);
 
-        recipients.forEach(recipient ->
-                notificationMailer.sendEmail(
-                        recipient.getMember()
-                                .getEmail(),
-                        eventEmailPayload
-                )
-        );
+        emailNotifier.sendEmails(recipientEmails, eventEmailPayload);
+
+        List<String> recipientPushTokens = event.getNonGuestOrganizationMembers(organization.getOrganizationMembers())
+                .stream()
+                .flatMap(organizationMember -> organizationMember.getMember()
+                        .getPushNotificationRecipients()
+                        .stream())
+                .map(PushNotificationRecipient::getPushToken)
+                .toList();
+        PushNotificationPayload pushNotificationPayload = PushNotificationPayload.of(event, content);
+
+        pushNotifier.sendPushs(recipientPushTokens, pushNotificationPayload);
+
     }
 
     private void notifyEventUpdated(final Event event) {
-        List<OrganizationMember> recipients = event.getGuests()
+        String content = "이벤트 정보가 수정되었습니다.";
+
+        List<String> recipientEmails = event.getGuests()
                 .stream()
                 .map(Guest::getOrganizationMember)
+                .map(OrganizationMember::getMember)
+                .map(Member::getEmail)
                 .toList();
-        String content = "이벤트 정보가 수정되었습니다.";
         EventEmailPayload eventEmailPayload = EventEmailPayload.of(event, content);
 
-        recipients.forEach(recipient ->
-                notificationMailer.sendEmail(
-                        recipient.getMember()
-                                .getEmail(),
-                        eventEmailPayload
-                )
-        );
+        emailNotifier.sendEmails(recipientEmails, eventEmailPayload);
+
+        List<String> recipientPushTokens = event.getGuests()
+                .stream()
+                .flatMap(guest -> guest.getOrganizationMember()
+                        .getMember()
+                        .getPushNotificationRecipients()
+                        .stream())
+                .map(PushNotificationRecipient::getPushToken)
+                .toList();
+        PushNotificationPayload pushNotificationPayload = PushNotificationPayload.of(event, content);
+
+        pushNotifier.sendPushs(recipientPushTokens, pushNotificationPayload);
     }
 }

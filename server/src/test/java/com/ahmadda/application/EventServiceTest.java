@@ -6,6 +6,7 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventOperationPeriod;
@@ -14,11 +15,14 @@ import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.GuestRepository;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.NotificationMailer;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.domain.PushNotificationPayload;
+import com.ahmadda.domain.PushNotificationRecipient;
+import com.ahmadda.domain.PushNotificationRecipientRepository;
+import com.ahmadda.domain.PushNotifier;
 import com.ahmadda.domain.Question;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import org.assertj.core.groups.Tuple;
@@ -36,12 +40,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @Transactional
 class EventServiceTest {
+
+    @Autowired
+    private EventService sut;
 
     @Autowired
     private OrganizationRepository organizationRepository;
@@ -56,13 +62,16 @@ class EventServiceTest {
     private EventRepository eventRepository;
 
     @Autowired
-    private EventService sut;
-
-    @MockitoBean
-    private NotificationMailer notificationMailer;
+    private GuestRepository guestRepository;
 
     @Autowired
-    private GuestRepository guestRepository;
+    private PushNotificationRecipientRepository pushNotificationRecipientRepository;
+
+    @MockitoBean
+    private EmailNotifier emailNotifier;
+
+    @MockitoBean
+    private PushNotifier pushNotifier;
 
     @Test
     void 이벤트를_생성할_수_있다() {
@@ -308,8 +317,11 @@ class EventServiceTest {
         var om2Member = createMember("m2", "m2@mail.com");
 
         var organizer = createOrganizationMember(organization, organizerMember);
-        createOrganizationMember(organization, om1Member);
-        createOrganizationMember(organization, om2Member);
+        var om1 = createOrganizationMember(organization, om1Member);
+        var om2 = createOrganizationMember(organization, om2Member);
+
+        savePushToken(om1, "token-ng1");
+        savePushToken(om2, "token-ng2");
 
         var now = LocalDateTime.now();
         var request = new EventCreateRequest(
@@ -334,9 +346,10 @@ class EventServiceTest {
 
         // then
         var email = EventEmailPayload.of(savedEvent, "새로운 이벤트가 등록되었습니다.");
+        var pushPayload = PushNotificationPayload.of(savedEvent, "새로운 이벤트가 등록되었습니다.");
 
-        verify(notificationMailer).sendEmail(eq("m1@mail.com"), eq(email));
-        verify(notificationMailer).sendEmail(eq("m2@mail.com"), eq(email));
+        verify(emailNotifier).sendEmails(List.of("m1@mail.com", "m2@mail.com"), email);
+        verify(pushNotifier).sendPushs(List.of("token-ng1", "token-ng2"), pushPayload);
     }
 
     @Test
@@ -489,8 +502,10 @@ class EventServiceTest {
         var guestOrgMember1 = createOrganizationMember(organization, guestMember1);
         var guestOrgMember2 = createOrganizationMember(organization, guestMember2);
 
-        var now = LocalDateTime.now();
+        savePushToken(guestOrgMember1, "token-ng1");
+        savePushToken(guestOrgMember2, "token-ng2");
 
+        var now = LocalDateTime.now();
         var event = Event.create(
                 "원래 제목",
                 "원래 설명",
@@ -530,9 +545,10 @@ class EventServiceTest {
 
         // then
         var email = EventEmailPayload.of(updatedEvent, "이벤트 정보가 수정되었습니다.");
+        var pushPayload = PushNotificationPayload.of(updatedEvent, "이벤트 정보가 수정되었습니다.");
 
-        verify(notificationMailer).sendEmail(eq("guest1@email.com"), eq(email));
-        verify(notificationMailer).sendEmail(eq("guest2@email.com"), eq(email));
+        verify(emailNotifier).sendEmails(List.of("guest1@email.com", "guest2@email.com"), email);
+        verify(pushNotifier).sendPushs(List.of("token-ng1", "token-ng2"), pushPayload);
     }
 
     private Organization createOrganization() {
@@ -578,5 +594,11 @@ class EventServiceTest {
         );
 
         return eventRepository.save(event);
+    }
+
+    private void savePushToken(OrganizationMember organizationMember, String token) {
+        var recipient = PushNotificationRecipient.create(organizationMember.getMember(), token);
+
+        pushNotificationRecipientRepository.save(recipient);
     }
 }

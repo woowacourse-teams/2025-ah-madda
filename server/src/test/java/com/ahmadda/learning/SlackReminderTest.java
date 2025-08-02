@@ -18,10 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 class SlackReminderTest {
 
     @Autowired
-    SlackReminder slackReminder;
+    private SlackReminder slackReminder;
 
     @Test
     void 실제_슬랙_리마인드_테스트() {
+        // when // then
         slackReminder.alarmMemberCreation(MemberCreateAlarmPayload.from(Member.create("asdf", "asdf@naver.com")));
     }
 }
