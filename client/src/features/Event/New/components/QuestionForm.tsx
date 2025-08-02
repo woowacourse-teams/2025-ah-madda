@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
@@ -7,6 +7,7 @@ import { Text } from '@/shared/components/Text';
 
 import { QuestionRequest } from '../../types/Event';
 import { ERROR_MESSAGES } from '../constants/errorMessages';
+import { useQuestionManager } from '../hooks/useQuestionManager';
 
 import { QuestionItem } from './QuestionItem';
 
@@ -19,52 +20,20 @@ type QuestionFormProps = {
 export const QuestionForm = ({ questions, onChange, onErrorChange }: QuestionFormProps) => {
   const [questionErrors, setQuestionErrors] = useState<Record<number, string>>({});
 
-  const addQuestion = () => {
-    const newQuestions = [
-      ...questions,
-      { orderIndex: questions.length, isRequired: false, questionText: '' },
-    ];
-    onChange(newQuestions);
-    const newError = {
-      ...questionErrors,
-      [questions.length]: ERROR_MESSAGES.REQUIRED('질문'),
-    };
-    setQuestionErrors(newError);
-    onErrorChange(newError);
-  };
+  const { addQuestion, deleteQuestion, updateQuestion } = useQuestionManager(questions, onChange);
 
-  const deleteQuestion = (orderIndexToDelete: number) => {
-    const updated = questions
-      .filter((q) => q.orderIndex !== orderIndexToDelete)
-      .map((q, index) => ({ ...q, orderIndex: index }));
+  useEffect(() => {
+    const newErrors: Record<number, string> = {};
 
-    const updatedErrors: Record<number, string> = {};
-    Object.entries(questionErrors).forEach(([key, value]) => {
-      const i = Number(key);
-      if (i !== orderIndexToDelete) {
-        const newIndex = i > orderIndexToDelete ? i - 1 : i;
-        updatedErrors[newIndex] = value;
+    questions.forEach((q, index) => {
+      if (!q.questionText || q.questionText.trim() === '') {
+        newErrors[index] = ERROR_MESSAGES.REQUIRED('질문');
       }
     });
 
-    onChange(updated);
-    setQuestionErrors(updatedErrors);
-    onErrorChange(updatedErrors);
-  };
-
-  const updateQuestion = (orderIndex: number, updatedData: Partial<QuestionRequest>) => {
-    const updated = questions.map((q) =>
-      q.orderIndex === orderIndex ? { ...q, ...updatedData } : q
-    );
-    onChange(updated);
-
-    const text = updated.find((q) => q.orderIndex === orderIndex)?.questionText ?? '';
-    const errorMsg = text.trim() === '' ? ERROR_MESSAGES.REQUIRED('질문') : '';
-
-    const updatedErrors = { ...questionErrors, [orderIndex]: errorMsg };
-    setQuestionErrors(updatedErrors);
-    onErrorChange(updatedErrors);
-  };
+    setQuestionErrors(newErrors);
+    onErrorChange(newErrors);
+  }, [questions, onErrorChange]);
 
   return (
     <Card>
