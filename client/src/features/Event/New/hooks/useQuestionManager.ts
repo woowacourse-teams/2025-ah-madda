@@ -12,12 +12,14 @@ export const useQuestionManager = (
   const deleteQuestion = (index: number) => {
     const updated = questions
       .filter((_, idx) => idx !== index)
-      .map((q, idx) => ({ ...q, orderIndex: idx }));
+      .map((question, idx) => ({ ...question, orderIndex: idx }));
     setQuestions(updated);
   };
 
   const updateQuestion = (index: number, data: Partial<QuestionRequest>) => {
-    const updated = questions.map((q, idx) => (idx === index ? { ...q, ...data } : q));
+    const updated = questions.map((question, idx) =>
+      idx === index ? { ...question, ...data } : question
+    );
     setQuestions(updated);
   };
 
