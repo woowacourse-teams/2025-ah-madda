@@ -87,22 +87,11 @@ export const EventCreateForm = () => {
             />
 
             <Flex
+              dir="row"
+              gap="16px"
               css={css`
-                flex-wrap: wrap;
-
-                @media (min-width: 600px) {
-                  flex-wrap: nowrap;
-                  gap: 16px;
-                }
-
-                > div {
-                  flex: 1 1 100%;
-                }
-
-                @media (min-width: 600px) {
-                  > div {
-                    flex: 1;
-                  }
+                @media (max-width: 768px) {
+                  flex-direction: column;
                 }
               `}
             >
