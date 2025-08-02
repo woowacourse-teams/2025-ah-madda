@@ -82,7 +82,6 @@ export const EventCreateForm = () => {
                 handleChange('title')(e);
                 validateField('title', e.target.value);
               }}
-              error={!!errors.title}
               errorMessage={errors.title}
               isRequired={true}
             />
@@ -125,7 +124,6 @@ export const EventCreateForm = () => {
                   } as React.ChangeEvent<HTMLInputElement>);
                   validateField('registrationEnd', newValue);
                 }}
-                error={!!errors.eventStart}
                 errorMessage={errors.eventStart}
                 isRequired={true}
                 step={600}
@@ -141,7 +139,6 @@ export const EventCreateForm = () => {
                   handleChange('eventEnd')(e);
                   validateField('eventEnd', e.target.value);
                 }}
-                error={!!errors.eventEnd}
                 errorMessage={errors.eventEnd}
                 isRequired={true}
               />
@@ -158,7 +155,6 @@ export const EventCreateForm = () => {
                 handleChange('registrationEnd')(e);
                 validateField('registrationEnd', e.target.value);
               }}
-              error={!!errors.registrationEnd}
               errorMessage={errors.registrationEnd}
               isRequired={true}
             />
@@ -172,7 +168,6 @@ export const EventCreateForm = () => {
                 handleChange('place')(e);
                 validateField('place', e.target.value);
               }}
-              error={!!errors.place}
               errorMessage={errors.place}
               isRequired={true}
               max={12}
@@ -187,7 +182,6 @@ export const EventCreateForm = () => {
                 handleChange('description')(e);
                 validateField('description', e.target.value);
               }}
-              error={!!errors.description}
               errorMessage={errors.description}
               isRequired={true}
               max={80}
