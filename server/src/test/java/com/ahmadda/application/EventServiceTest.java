@@ -579,8 +579,12 @@ class EventServiceTest {
         boolean actual2 = sut.isOrganizer(event.getId(), nonOrganizerLoginMember);
 
         //then
-        assertThat(actual1).isTrue();
-        assertThat(actual2).isFalse();
+        assertSoftly(softly -> {
+            softly.assertThat(actual1)
+                    .isTrue();
+            softly.assertThat(actual2)
+                    .isFalse();
+        });
     }
 
     @Test
