@@ -10,6 +10,7 @@ import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
 
+import { QuestionRequest } from '../../types/Event';
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useEventForm } from '../hooks/useEventForm';
 import { useEventValidation } from '../hooks/useEventValidation';
@@ -22,7 +23,7 @@ const ORGANIZATION_ID = 1; // 임시
 export const EventCreateForm = () => {
   const navigate = useNavigate();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
-  const { formData, setValue, setQuestions } = useEventForm();
+  const { formData, setValue } = useEventForm();
   const { errors, setQuestionErrors, validate, validateField, isFormValid } =
     useEventValidation(formData);
   const { data: userProfile } = useQuery(myQueryOptions.profile());
@@ -59,6 +60,10 @@ export const EventCreateForm = () => {
         }
       },
     });
+  };
+
+  const onQuestionsChange = (newQuestions: QuestionRequest[]) => {
+    setValue('questions', newQuestions);
   };
 
   return (
@@ -113,7 +118,6 @@ export const EventCreateForm = () => {
                 }}
                 errorMessage={errors.eventStart}
                 isRequired={true}
-                step={600}
               />
               <Input
                 id="eventEnd"
@@ -189,7 +193,7 @@ export const EventCreateForm = () => {
 
         <QuestionForm
           questions={formData.questions}
-          onChange={setQuestions}
+          onChange={onQuestionsChange}
           onErrorChange={setQuestionErrors}
         />
 

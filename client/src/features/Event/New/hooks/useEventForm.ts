@@ -16,21 +16,16 @@ const initialFormData: Omit<CreateEventAPIRequest, 'organizerNickname'> = {
 export const useEventForm = () => {
   const [formData, setFormData] = useState(initialFormData);
 
-  const setValue = <K extends keyof typeof initialFormData>(key: K, value: string | number) => {
+  const setValue = <K extends keyof typeof initialFormData>(
+    key: K,
+    value: string | number | QuestionRequest[]
+  ) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const setQuestions = (questions: QuestionRequest[]) => {
-    setFormData((prev) => ({
-      ...prev,
-      questions,
-    }));
   };
 
   return {
     formData,
     setFormData,
     setValue,
-    setQuestions,
   };
 };
