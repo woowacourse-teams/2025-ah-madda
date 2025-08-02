@@ -20,7 +20,7 @@ class EventTest {
 
     @BeforeEach
     void setUp() {
-        Member baseMember = createMember("테스트 멤버", "test@example.com");
+        Member baseMember = createMember("테스트 회원", "test@example.com");
         baseOrganization = createOrganization();
         baseOrganizer = createOrganizationMember("주최자", baseMember, baseOrganization);
     }
@@ -37,14 +37,26 @@ class EventTest {
                 "이전 장소",
                 baseOrganizer,
                 baseOrganization,
-                EventOperationPeriod.create(registrationPeriod, eventPeriod, now),
+                EventOperationPeriod.create(
+                        registrationPeriod.start(),
+                        registrationPeriod.end(),
+                        eventPeriod.start(),
+                        eventPeriod.end(),
+                        now
+                ),
                 "이전 닉네임",
                 10
         );
 
         var updatedRegistrationPeriod = Period.create(now.plusDays(2), now.plusDays(3));
         var updatedEventPeriod = Period.create(now.plusDays(4), now.plusDays(5));
-        var updatedOperationPeriod = EventOperationPeriod.create(updatedRegistrationPeriod, updatedEventPeriod, now);
+        var updatedOperationPeriod = EventOperationPeriod.create(
+                updatedRegistrationPeriod.start(),
+                updatedRegistrationPeriod.end(),
+                updatedEventPeriod.start(),
+                updatedEventPeriod.end(),
+                now
+        );
 
         // when
         sut.update(
@@ -71,6 +83,55 @@ class EventTest {
             softly.assertThat(sut.getMaxCapacity())
                     .isEqualTo(20);
         });
+    }
+
+    @Test
+    void 주최자가_아니라면_이벤트_정보_수정_시_예외가_발생한다() {
+        // given
+        var now = LocalDateTime.now();
+        var registrationPeriod = Period.create(now.plusDays(1), now.plusDays(2));
+        var eventPeriod = Period.create(now.plusDays(3), now.plusDays(4));
+        var sut = Event.create(
+                "이전 제목",
+                "이전 설명",
+                "이전 장소",
+                baseOrganizer,
+                baseOrganization,
+                EventOperationPeriod.create(
+                        registrationPeriod.start(),
+                        registrationPeriod.end(),
+                        eventPeriod.start(),
+                        eventPeriod.end(),
+                        now
+                ),
+                "이전 닉네임",
+                10
+        );
+
+        var notOrganizer = createOrganizationMember("조직원", createMember("일반유저", "user@email.com"), baseOrganization);
+
+        var updatedRegistrationPeriod = Period.create(now.plusDays(2), now.plusDays(3));
+        var updatedEventPeriod = Period.create(now.plusDays(4), now.plusDays(5));
+        var updatedOperationPeriod = EventOperationPeriod.create(
+                updatedRegistrationPeriod.start(),
+                updatedRegistrationPeriod.end(),
+                updatedEventPeriod.start(),
+                updatedEventPeriod.end(),
+                now
+        );
+
+        // when & then
+        assertThatThrownBy(() -> sut.update(
+                notOrganizer.getMember(),
+                "수정된 제목",
+                "수정된 설명",
+                "수정된 장소",
+                updatedOperationPeriod,
+                "수정된 닉네임",
+                20
+        ))
+                .isInstanceOf(UnauthorizedOperationException.class)
+                .hasMessage("이벤트의 주최자만 수정할 수 있습니다.");
     }
 
     @Test
@@ -143,7 +204,8 @@ class EventTest {
 
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization2))
-                .isInstanceOf(BusinessRuleViolatedException.class);
+                .isInstanceOf(UnauthorizedOperationException.class)
+                .hasMessage("자신이 속한 조직에서만 이벤트를 생성할 수 있습니다.");
     }
 
     @ParameterizedTest
@@ -152,7 +214,8 @@ class EventTest {
         assertThatThrownBy(() -> createEvent(
                 "title", maxCapacity
         ))
-                .isInstanceOf(BusinessRuleViolatedException.class);
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("최대 수용 인원은 1명보다 적거나 21억명 보다 클 수 없습니다.");
     }
 
     @Test
@@ -160,8 +223,8 @@ class EventTest {
         //given
         var now = LocalDateTime.now();
         var eventOperationPeriod = EventOperationPeriod.create(
-                Period.create(now.plusDays(1), now.plusDays(2)),
-                Period.create(now.plusDays(3), now.plusDays(4)),
+                now.plusDays(1), now.plusDays(2),
+                now.plusDays(3), now.plusDays(4),
                 now
         );
         var event = createEvent("우테코", eventOperationPeriod);
@@ -226,7 +289,8 @@ class EventTest {
 
         //when //then
         assertThatThrownBy(() -> sut.participate(guest, registrationPeriod.start()))
-                .isInstanceOf(BusinessRuleViolatedException.class);
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("이미 해당 이벤트에 참여중인 게스트입니다.");
     }
 
     @Test
@@ -389,7 +453,8 @@ class EventTest {
 
         // then
         assertThatThrownBy(() -> Guest.create(sut, organizationMember, registrationEnd))
-                .isInstanceOf(BusinessRuleViolatedException.class);
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("이벤트 신청은 신청 시작 시간부터 신청 마감 시간까지 가능합니다.");
     }
 
     @Test
@@ -415,7 +480,8 @@ class EventTest {
 
         // when // then
         assertThatThrownBy(() -> sut.closeRegistrationAt(notBaseOrganizer, registrationCloseTime))
-                .isInstanceOf(BusinessRuleViolatedException.class);
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("이벤트의 주최자만 마감할 수 있습니다.");
     }
 
     @Test
@@ -436,93 +502,8 @@ class EventTest {
 
         // when // then
         assertThatThrownBy(() -> sut.closeRegistrationAt(baseOrganizer, registrationCloseOverTime))
-                .isInstanceOf(BusinessRuleViolatedException.class);
-    }
-
-    @Test
-    void 이벤트_시작_10분_전보다_이전에_참가_취소하면_성공한다() {
-        // given
-        var now = LocalDateTime.of(2024, 1, 1, 12, 0);
-        var eventStartTime = now.plusHours(1);
-        var eventPeriod = Period.create(eventStartTime, eventStartTime.plusHours(1));
-        var registrationPeriod = Period.create(now.minusDays(1), eventStartTime.minusMinutes(30));
-        var eventOperationPeriod = EventOperationPeriod.create(registrationPeriod, eventPeriod, now.minusDays(2));
-
-        var sut = Event.create(
-                "이벤트", "설명", "장소",
-                baseOrganizer,
-                baseOrganization,
-                eventOperationPeriod,
-                "주최자 닉네임",
-                10
-        );
-
-        var participantMember = createMember("참가자", "participant@email.com");
-        var participant = createOrganizationMember("참가자", participantMember, baseOrganization);
-        Guest.create(sut, participant, now.minusDays(1));
-        Assertions.assertThat(sut.getGuests()).hasSize(1);
-
-        var cancellationTime = eventStartTime.minusMinutes(11);
-
-        // when
-        sut.cancelParticipation(participant, cancellationTime);
-
-        // then
-        Assertions.assertThat(sut.getGuests()).isEmpty();
-    }
-
-    @Test
-    void 이벤트_시작_10분_전_이후에_참가_취소하면_예외가_발생한다() {
-        // given
-        var now = LocalDateTime.of(2024, 1, 1, 12, 0);
-        var eventStartTime = now.plusMinutes(9);
-        var eventPeriod = Period.create(eventStartTime, eventStartTime.plusHours(1));
-        var registrationPeriod = Period.create(now.minusDays(1), eventStartTime.minusMinutes(5));
-        var eventOperationPeriod = EventOperationPeriod.create(registrationPeriod, eventPeriod, now.minusDays(2));
-
-        var sut = Event.create(
-                "이벤트", "설명", "장소",
-                baseOrganizer,
-                baseOrganization,
-                eventOperationPeriod,
-                "주최자 닉네임",
-                10
-        );
-
-        var participantMember = createMember("참가자", "participant@email.com");
-        var participant = createOrganizationMember("참가자", participantMember, baseOrganization);
-        Guest.create(sut, participant, now.minusDays(1));
-
-        // when // then
-        assertThatThrownBy(() -> sut.cancelParticipation(participant, now))
-                .isInstanceOf(BusinessRuleViolatedException.class);
-    }
-
-    @Test
-    void 이벤트_시작_후에_참가_취소하면_예외가_발생한다() {
-        // given
-        var now = LocalDateTime.of(2024, 1, 1, 12, 0);
-        var eventStartTime = now.minusMinutes(1);
-        var eventPeriod = Period.create(eventStartTime, eventStartTime.plusHours(1));
-        var registrationPeriod = Period.create(now.minusDays(2), now.minusDays(1));
-        var eventOperationPeriod = EventOperationPeriod.create(registrationPeriod, eventPeriod, now.minusDays(3));
-
-        var sut = Event.create(
-                "이벤트", "설명", "장소",
-                baseOrganizer,
-                baseOrganization,
-                eventOperationPeriod,
-                "주최자 닉네임",
-                10
-        );
-
-        var participantMember = createMember("참가자", "participant@email.com");
-        var participant = createOrganizationMember("참가자", participantMember, baseOrganization);
-        Guest.create(sut, participant, now.minusDays(1));
-
-        // when // then
-        assertThatThrownBy(() -> sut.cancelParticipation(participant, now))
-                .isInstanceOf(BusinessRuleViolatedException.class);
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("이미 신청이 마감된 이벤트입니다.");
     }
 
     private Event createEvent(String title, int maxCapacity, Question... questions) {
@@ -535,18 +516,14 @@ class EventTest {
                 createOrganizationMember(createMember(), organization),
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(
-                                LocalDateTime.now()
-                                        .plusDays(1),
-                                LocalDateTime.now()
-                                        .plusDays(2)
-                        ),
-                        Period.create(
-                                LocalDateTime.now()
-                                        .plusDays(3),
-                                LocalDateTime.now()
-                                        .plusDays(4)
-                        ),
+                        LocalDateTime.now()
+                                .plusDays(1),
+                        LocalDateTime.now()
+                                .plusDays(2),
+                        LocalDateTime.now()
+                                .plusDays(3),
+                        LocalDateTime.now()
+                                .plusDays(4),
                         LocalDateTime.now()
                 ),
                 "이벤트 근로",
@@ -563,8 +540,8 @@ class EventTest {
                 baseOrganizer,
                 baseOrganization,
                 EventOperationPeriod.create(
-                        registrationPeriod,
-                        Period.create(now.plusDays(3), now.plusDays(4)),
+                        registrationPeriod.start(), registrationPeriod.end(),
+                        now.plusDays(3), now.plusDays(4),
                         now
                 ),
                 "이벤트 근로",
@@ -625,8 +602,8 @@ class EventTest {
                 organizationMember,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(now.plusDays(1), now.plusDays(2)),
-                        Period.create(now.plusDays(3), now.plusDays(4)),
+                        now.plusDays(1), now.plusDays(2),
+                        now.plusDays(3), now.plusDays(4),
                         now
                 ),
                 "이벤트 근로",

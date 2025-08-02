@@ -5,8 +5,8 @@ import com.ahmadda.application.dto.NonGuestsNotificationRequest;
 import com.ahmadda.application.dto.SelectedOrganizationMembersNotificationRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.Email;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
@@ -18,7 +18,6 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Period;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -76,8 +75,8 @@ class EventNotificationServiceTest {
                 organizer,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(now.minusDays(2), now.minusDays(1)),
-                        Period.create(now.plusDays(1), now.plusDays(2)),
+                        now.minusDays(2), now.minusDays(1),
+                        now.plusDays(1), now.plusDays(2),
                         now.minusDays(3)
                 ),
                 organizerNickname,
@@ -95,7 +94,7 @@ class EventNotificationServiceTest {
         var nonGuest2Email = "ng2@email.com";
         createAndSaveOrganizationMember("비게스트1", nonGuest1Email, organization);
         createAndSaveOrganizationMember("비게스트2", nonGuest2Email, organization);
-        var email = Email.of(event, notificationRequest.content());
+        var email = EventEmailPayload.of(event, notificationRequest.content());
 
         // when
         sut.notifyNonGuestOrganizationMembers(event.getId(), notificationRequest, createLoginMember(organizer));
@@ -146,8 +145,8 @@ class EventNotificationServiceTest {
                 organizer,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(now.minusDays(1), now.plusDays(1)),
-                        Period.create(now.plusDays(2), now.plusDays(3)),
+                        now.minusDays(1), now.plusDays(1),
+                        now.plusDays(2), now.plusDays(3),
                         now.minusDays(2)
                 ),
                 organizer.getNickname(),
@@ -182,8 +181,8 @@ class EventNotificationServiceTest {
                 organizer,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(now.minusDays(2), now.minusDays(1)),
-                        Period.create(now.plusDays(1), now.plusDays(2)),
+                        now.minusDays(2), now.minusDays(1),
+                        now.plusDays(1), now.plusDays(2),
                         now.minusDays(3)
                 ),
                 organizerNickname,
@@ -197,7 +196,7 @@ class EventNotificationServiceTest {
         var request = createSelectedMembersRequest(
                 List.of(om1.getId(), om2.getId())
         );
-        var email = Email.of(event, request.content());
+        var email = EventEmailPayload.of(event, request.content());
 
         // when
         sut.notifySelectedOrganizationMembers(event.getId(), request, createLoginMember(organizer));
@@ -247,8 +246,8 @@ class EventNotificationServiceTest {
                 organizer,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(now.minusDays(1), now.plusDays(1)),
-                        Period.create(now.plusDays(2), now.plusDays(3)),
+                        now.minusDays(1), now.plusDays(1),
+                        now.plusDays(2), now.plusDays(3),
                         now.minusDays(2)
                 ),
                 organizer.getNickname(),
@@ -280,8 +279,8 @@ class EventNotificationServiceTest {
                 organizer,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(now.minusDays(1), now.plusDays(1)),
-                        Period.create(now.plusDays(2), now.plusDays(3)),
+                        now.minusDays(1), now.plusDays(1),
+                        now.plusDays(2), now.plusDays(3),
                         now.minusDays(2)
                 ),
                 organizer.getNickname(),

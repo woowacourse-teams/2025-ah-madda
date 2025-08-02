@@ -18,7 +18,6 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Period;
 import com.ahmadda.domain.Question;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import org.junit.jupiter.api.Test;
@@ -374,8 +373,8 @@ class EventGuestServiceTest {
                 organizer,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(now.minusDays(3), now.minusDays(1)),
-                        Period.create(now.plusDays(1), now.plusDays(2)),
+                        now.minusDays(3), now.minusDays(1),
+                        now.plusDays(1), now.plusDays(2),
                         now.minusDays(6)
                 ),
                 organizer.getNickname(),

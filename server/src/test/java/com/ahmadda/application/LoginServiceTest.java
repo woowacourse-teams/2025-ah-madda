@@ -1,11 +1,11 @@
 package com.ahmadda.application;
 
-import com.ahmadda.application.dto.MemberCreateAlarmDto;
+import com.ahmadda.application.dto.MemberCreateAlarmPayload;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.infra.jwt.JwtTokenProvider;
+import com.ahmadda.infra.jwt.JwtProvider;
 import com.ahmadda.infra.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.oauth.dto.OAuthUserInfoResponse;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ class LoginServiceTest {
     private GoogleOAuthProvider googleOAuthProvider;
 
     @MockitoBean
-    private JwtTokenProvider jwtTokenProvider;
+    private JwtProvider jwtProvider;
 
     @Test
     void 신규회원이면_저장한다() {
@@ -56,7 +56,7 @@ class LoginServiceTest {
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
                 .willReturn(new OAuthUserInfoResponse(email, name));
 
-        given(jwtTokenProvider.createToken(any(Long.class)))
+        given(jwtProvider.createToken(any(Long.class)))
                 .willReturn(accessToken);
 
         // when
@@ -78,7 +78,7 @@ class LoginServiceTest {
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
                 .willReturn(new OAuthUserInfoResponse(email, name));
 
-        given(jwtTokenProvider.createToken(any(Long.class)))
+        given(jwtProvider.createToken(any(Long.class)))
                 .willReturn(accessToken);
 
         Member member = Member.create(name, email);
@@ -100,7 +100,7 @@ class LoginServiceTest {
         var accessToken = "access_token";
         var redirectUri = "redirectUri";
 
-        var memberCreateAlarmDto = new MemberCreateAlarmDto(name, email);
+        var memberCreateAlarmDto = new MemberCreateAlarmPayload(name, email);
         var expectedLog = String.format(
                 "회원가입 유저 정보 : %s 프로덕션이 아니어서 슬랙으로 알람 보내지 않음",
                 memberCreateAlarmDto
@@ -109,7 +109,7 @@ class LoginServiceTest {
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
                 .willReturn(new OAuthUserInfoResponse(email, name));
 
-        given(jwtTokenProvider.createToken(any(Long.class)))
+        given(jwtProvider.createToken(any(Long.class)))
                 .willReturn(accessToken);
 
         // when

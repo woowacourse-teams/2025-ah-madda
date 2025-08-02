@@ -1,13 +1,12 @@
 package com.ahmadda.learning;
 
-import com.ahmadda.domain.Email;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.Period;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +40,8 @@ class EventNotificationTest {
                 organizer,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(now.minusDays(2), now.minusDays(1)),
-                        Period.create(now.plusDays(1), now.plusDays(2)),
+                        now.minusDays(2), now.minusDays(1),
+                        now.plusDays(1), now.plusDays(2),
                         now.minusDays(3)
                 ),
                 "주최자",
@@ -51,9 +50,31 @@ class EventNotificationTest {
 
         var om1 = createOrganizationMember("수신자1", "amadda.team@gmail.com", organization);
         var om2 = createOrganizationMember("수신자2", "amadda.mailbot@gmail.com", organization);
-        var recipients = List.of(om1, om2);
 
-        var email = Email.of(event, "테스트 메일 본문입니다.");
+        var recipients = List.of(om1, om2);
+        var email = new EventEmailPayload(
+                new EventEmailPayload.Subject(
+                        event.getOrganization()
+                                .getName(),
+                        event.getOrganizer()
+                                .getNickname(),
+                        event.getTitle()
+                ),
+                new EventEmailPayload.Body(
+                        "테스트 메일 본문입니다.",
+                        event.getOrganization()
+                                .getName(),
+                        event.getTitle(),
+                        event.getOrganizerNickname(),
+                        event.getPlace(),
+                        event.getRegistrationStart(),
+                        event.getRegistrationEnd(),
+                        event.getEventStart(),
+                        event.getEventEnd(),
+                        1L
+                )
+        );
+
         // when // then
         eventNotification.sendEmails(recipients, email);
     }

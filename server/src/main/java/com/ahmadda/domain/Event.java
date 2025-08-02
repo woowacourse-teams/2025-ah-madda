@@ -2,6 +2,7 @@ package com.ahmadda.domain;
 
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -18,6 +19,7 @@ import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -44,8 +46,10 @@ public class Event extends BaseEntity {
     private String title;
 
     @Lob
+    @Nullable
     private String description;
 
+    @Nullable
     private String place;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -57,10 +61,10 @@ public class Event extends BaseEntity {
     private Organization organization;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
-    private List<Guest> guests = new ArrayList<>();
+    private final List<Guest> guests = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Question> questions = new ArrayList<>();
+    private final List<Question> questions = new ArrayList<>();
 
     @Embedded
     private EventOperationPeriod eventOperationPeriod;
@@ -151,6 +155,7 @@ public class Event extends BaseEntity {
     }
 
     public void update(
+            final Member organizer,
             final String title,
             final String description,
             final String place,
@@ -158,6 +163,7 @@ public class Event extends BaseEntity {
             final String organizerNickname,
             final int maxCapacity
     ) {
+        validateUpdatableBy(organizer);
         validateTitle(title);
         validateOrganizerNickname(organizerNickname);
         validateMaxCapacity(maxCapacity);
@@ -211,9 +217,11 @@ public class Event extends BaseEntity {
                 .collect(Collectors.toSet());
     }
 
-    public void closeRegistrationAt(final OrganizationMember organizationMember,
-                                    final LocalDateTime registrationEndTime) {
-        validateCloseRegistration(organizationMember.getMember());
+    public void closeRegistrationAt(
+            final OrganizationMember organizationMember,
+            final LocalDateTime registrationEndTime
+    ) {
+        validateClosableBy(organizationMember.getMember());
 
         this.eventOperationPeriod.closeRegistration(registrationEndTime);
     }
@@ -254,9 +262,15 @@ public class Event extends BaseEntity {
         }
     }
 
-    private void validateCloseRegistration(Member organizer) {
+    private void validateUpdatableBy(final Member organizer) {
         if (!isOrganizer(organizer)) {
-            throw new BusinessRuleViolatedException("주최자만 마감할 수 있습니다.");
+            throw new UnauthorizedOperationException("이벤트의 주최자만 수정할 수 있습니다.");
+        }
+    }
+
+    private void validateClosableBy(final Member organizer) {
+        if (!isOrganizer(organizer)) {
+            throw new UnauthorizedOperationException("이벤트의 주최자만 마감할 수 있습니다.");
         }
     }
 
@@ -274,7 +288,7 @@ public class Event extends BaseEntity {
 
     private void validateBelongToOrganization(final OrganizationMember organizer, final Organization organization) {
         if (!organizer.isBelongTo(organization)) {
-            throw new BusinessRuleViolatedException("자신이 속한 조직에서만 이벤트를 생성할 수 있습니다.");
+            throw new UnauthorizedOperationException("자신이 속한 조직에서만 이벤트를 생성할 수 있습니다.");
         }
     }
 
