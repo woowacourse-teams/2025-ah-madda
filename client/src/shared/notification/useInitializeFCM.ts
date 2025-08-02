@@ -14,7 +14,6 @@ export const useInitializeFCM = () => {
         if (token) {
           // TODO : 서버에 토큰 전송 로직 추가
           setupForegroundMessage();
-          console.log('FCM 토큰:', token);
         }
       } catch (error) {
         // TODO : FCM 초기화 실패 시 처리 로직 추가
