@@ -261,12 +261,12 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.participantEvent(
-                                           event.getId(),
-                                           new LoginMember(member2.getId()),
-                                           event.getRegistrationStart(),
-                                           request
-                                   )
+                sut.participantEvent(
+                        event.getId(),
+                        new LoginMember(member2.getId()),
+                        event.getRegistrationStart(),
+                        request
+                )
         )
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessageContaining("필수 질문에 대한 답변이 누락되었습니다");
@@ -290,12 +290,12 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.participantEvent(
-                                           event.getId(),
-                                           new LoginMember(member2.getId()),
-                                           event.getRegistrationStart(),
-                                           request
-                                   )
+                sut.participantEvent(
+                        event.getId(),
+                        new LoginMember(member2.getId()),
+                        event.getRegistrationStart(),
+                        request
+                )
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("존재하지 않는 질문입니다.");
@@ -319,8 +319,8 @@ class EventGuestServiceTest {
         createAndSaveGuest(event, organizationMember2);
 
         //when
-        var actual1 = sut.isGuest(event.getId(), member2.getId());
-        var actual2 = sut.isGuest(event.getId(), member3.getId());
+        var actual1 = sut.isGuest(event.getId(), createLoginMember(organizationMember2));
+        var actual2 = sut.isGuest(event.getId(), createLoginMember(organizationMember3));
 
         //then
         assertThat(actual1).isEqualTo(true);
