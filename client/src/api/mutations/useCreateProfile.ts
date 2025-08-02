@@ -13,9 +13,7 @@ export const createOrganizationProfile = ({
 }: CreateOrganizationProfileRequest) => {
   return fetcher.post<Pick<CreateOrganizationProfileRequest, 'nickname'>>(
     `organizations/${organizationId}/participation`,
-    {
-      json: { nickname },
-    }
+    { nickname }
   );
 };
 

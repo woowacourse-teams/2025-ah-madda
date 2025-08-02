@@ -42,10 +42,8 @@ export const getAuthCodeFromUrl = (): string | null => {
 
 export const exchangeCodeForToken = async (code: string): Promise<accessToken> => {
   return fetcher.post<accessToken>('members/login', {
-    json: {
-      code,
-      redirectUri: getRedirectUri(),
-    },
+    code,
+    redirectUri: getRedirectUri(),
   });
 };
 
