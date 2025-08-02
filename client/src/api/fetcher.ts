@@ -16,7 +16,7 @@ export class HttpError extends Error {
     public status: number,
     public data?: HttpErrorResponse
   ) {
-    super(data?.detail || `HTTP ${status} Error`);
+    super(data?.detail || '요청 처리 중 오류가 발생했습니다.');
     this.name = 'HttpError';
   }
 }
