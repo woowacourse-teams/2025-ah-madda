@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 
+import { App } from '@/App';
 import { EventDetailPage } from '@/features/Event/Detail/pages/EventDetailPage';
 import { EventManagePage } from '@/features/Event/Manage/pages/EventManagePage';
 import { MyEventPage } from '@/features/Event/My/pages/MyEventPage';
@@ -14,35 +15,41 @@ export const router = createBrowserRouter(
   [
     {
       path: '/',
-      Component: HomePage,
-    },
-    {
-      path: '/auth',
-      Component: AuthCallback,
-    },
-    {
-      path: '/event',
-      Component: ProtectRoute,
+      Component: App,
       children: [
         {
           index: true,
-          Component: OverviewPage,
+          Component: HomePage,
         },
         {
-          path: 'new',
-          Component: NewEventPage,
+          path: '/auth',
+          Component: AuthCallback,
         },
         {
-          path: 'my',
-          Component: MyEventPage,
-        },
-        {
-          path: ':eventId',
-          Component: EventDetailPage,
-        },
-        {
-          path: 'manage/:eventId',
-          Component: EventManagePage,
+          path: '/event',
+          Component: ProtectRoute,
+          children: [
+            {
+              index: true,
+              Component: OverviewPage,
+            },
+            {
+              path: 'new',
+              Component: NewEventPage,
+            },
+            {
+              path: 'my',
+              Component: MyEventPage,
+            },
+            {
+              path: ':eventId',
+              Component: EventDetailPage,
+            },
+            {
+              path: 'manage/:eventId',
+              Component: EventManagePage,
+            },
+          ],
         },
       ],
     },
