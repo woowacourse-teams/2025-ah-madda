@@ -53,13 +53,13 @@ public class EventGuestService {
     @Transactional
     public void participantEvent(
             final Long eventId,
-            final Long memberId,
+            final LoginMember loginMember,
             final LocalDateTime currentDateTime,
             final EventParticipateRequest eventParticipateRequest
     ) {
         Event event = getEvent(eventId);
         Organization organization = event.getOrganization();
-        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), memberId);
+        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), loginMember.memberId());
 
         Guest guest = Guest.create(event, organizationMember, currentDateTime);
 
@@ -69,10 +69,24 @@ public class EventGuestService {
         guestRepository.save(guest);
     }
 
-    public boolean isGuest(final Long eventId, final Long memberId) {
+    @Transactional
+    public void cancelParticipation(
+            final Long eventId,
+            final LoginMember loginMember
+    ) {
+        Event event = getEvent(eventId);
+        Long organizationId = event.getOrganization()
+                .getId();
+        OrganizationMember organizationMember = getOrganizationMember(organizationId, loginMember.memberId());
+
+        event.cancelParticipation(organizationMember, LocalDateTime.now());
+        guestRepository.deleteByEventAndOrganizationMember(event, organizationMember);
+    }
+
+    public boolean isGuest(final Long eventId, final LoginMember loginMember) {
         Event event = getEvent(eventId);
         Organization organization = event.getOrganization();
-        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), memberId);
+        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), loginMember.memberId());
 
         return event.hasGuest(organizationMember);
     }

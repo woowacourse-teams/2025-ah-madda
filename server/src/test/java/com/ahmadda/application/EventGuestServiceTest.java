@@ -6,6 +6,7 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Answer;
+import com.ahmadda.domain.AnswerRepository;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
@@ -52,6 +53,9 @@ class EventGuestServiceTest {
 
     @Autowired
     private GuestRepository guestRepository;
+
+    @Autowired
+    private AnswerRepository answerRepository;
 
     @Test
     void 이벤트에_참여한_게스트들을_조회한다() {
@@ -181,7 +185,7 @@ class EventGuestServiceTest {
         // when
         sut.participantEvent(
                 event.getId(),
-                member2.getId(),
+                new LoginMember(member2.getId()),
                 event.getRegistrationStart(),
                 new EventParticipateRequest(List.of())
         );
@@ -219,7 +223,7 @@ class EventGuestServiceTest {
         ));
 
         // when
-        sut.participantEvent(event.getId(), member2.getId(), event.getRegistrationStart(), request);
+        sut.participantEvent(event.getId(), new LoginMember(member2.getId()), event.getRegistrationStart(), request);
 
         // then
         var guest = guestRepository.findAll()
@@ -257,12 +261,12 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.participantEvent(
-                        event.getId(),
-                        member2.getId(),
-                        event.getRegistrationStart(),
-                        request
-                )
+                                   sut.participantEvent(
+                                           event.getId(),
+                                           new LoginMember(member2.getId()),
+                                           event.getRegistrationStart(),
+                                           request
+                                   )
         )
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessageContaining("필수 질문에 대한 답변이 누락되었습니다");
@@ -286,12 +290,12 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.participantEvent(
-                        event.getId(),
-                        member2.getId(),
-                        event.getRegistrationStart(),
-                        request
-                )
+                                   sut.participantEvent(
+                                           event.getId(),
+                                           new LoginMember(member2.getId()),
+                                           event.getRegistrationStart(),
+                                           request
+                                   )
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("존재하지 않는 질문입니다.");
@@ -339,10 +343,11 @@ class EventGuestServiceTest {
         createAndSaveGuest(event, organizationMember2);
 
         // when // then
-        assertThatThrownBy(() -> sut.isGuest(event.getId(), member3.getId()))
+        assertThatThrownBy(() -> sut.isGuest(event.getId(), new LoginMember(member3.getId())))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 조직원입니다.");
     }
+
 
     private Member createAndSaveMember(String name, String email) {
         return memberRepository.save(Member.create(name, email));
@@ -368,6 +373,37 @@ class EventGuestServiceTest {
                         now.minusDays(3), now.minusDays(1),
                         now.plusDays(1), now.plusDays(2),
                         now.minusDays(6)
+                ),
+                organizer.getNickname(),
+                100,
+                questions
+        );
+
+        return eventRepository.save(event);
+    }
+
+    private Event createAndSaveEventWithTime(
+            OrganizationMember organizer,
+            Organization organization,
+            LocalDateTime registrationStart,
+            LocalDateTime registrationEnd,
+            LocalDateTime eventStart,
+            LocalDateTime eventEnd,
+            Question... questions
+    ) {
+        var creationTime = registrationStart.minusDays(1);
+        var event = Event.create(
+                "이벤트",
+                "설명",
+                "장소",
+                organizer,
+                organization,
+                EventOperationPeriod.create(
+                        registrationStart,
+                        registrationEnd,
+                        eventStart,
+                        eventEnd,
+                        creationTime
                 ),
                 organizer.getNickname(),
                 100,

@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.jspecify.annotations.Nullable;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ public class Event extends BaseEntity {
 
     private static final int MIN_CAPACITY = 1;
     private static final int MAX_CAPACITY = 2_100_000_000;
+    private static final Duration BEFORE_EVENT_STARTED_CANCEL_AVAILABLE_MINUTE = Duration.ofMinutes(10);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -225,6 +227,22 @@ public class Event extends BaseEntity {
                 .equals(member);
     }
 
+    public void cancelParticipation(final OrganizationMember organizationMember,
+                                    final LocalDateTime cancelParticipateTime) {
+        validateCancelParticipation(cancelParticipateTime);
+        Guest guest = getGuestByOrganizationMember(organizationMember);
+        guests.remove(guest);
+    }
+
+    private void validateCancelParticipation(final LocalDateTime cancelParticipationTime) {
+        if (eventOperationPeriod.willStartWithin(
+                cancelParticipationTime,
+                BEFORE_EVENT_STARTED_CANCEL_AVAILABLE_MINUTE
+        )) {
+            throw new BusinessRuleViolatedException("이벤트 시작전 10분 이후로는 신청을 취소할 수 없습니다");
+        }
+    }
+
     private void validateParticipate(final Guest guest, final LocalDateTime participantDateTime) {
         if (eventOperationPeriod.canNotRegistration(participantDateTime)) {
             throw new BusinessRuleViolatedException("이벤트 신청은 신청 시작 시간부터 신청 마감 시간까지 가능합니다.");
@@ -281,6 +299,13 @@ public class Event extends BaseEntity {
         if (maxCapacity < MIN_CAPACITY || maxCapacity > MAX_CAPACITY) {
             throw new BusinessRuleViolatedException("최대 수용 인원은 1명보다 적거나 21억명 보다 클 수 없습니다.");
         }
+    }
+
+    private Guest getGuestByOrganizationMember(final OrganizationMember organizationMember) {
+        return guests.stream()
+                .filter((guest) -> guest.isSameOrganizationMember(organizationMember))
+                .findAny()
+                .orElseThrow(() -> new BusinessRuleViolatedException("이벤트의 참가자 목록에서 일치하는 조직원을 찾을 수 없습니다"));
     }
 
     public LocalDateTime getRegistrationStart() {

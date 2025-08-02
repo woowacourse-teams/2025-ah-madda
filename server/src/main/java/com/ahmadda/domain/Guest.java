@@ -51,7 +51,7 @@ public class Guest extends BaseEntity {
 
         this.event = event;
         this.organizationMember = organizationMember;
-
+        
         event.participate(this, currentDateTime);
     }
 
