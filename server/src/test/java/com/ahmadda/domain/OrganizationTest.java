@@ -16,7 +16,7 @@ class OrganizationTest {
     @BeforeEach
     void setUp() {
         sut = Organization.create("테스트 조직", "조직 설명", "image.png");
-        var member = Member.create("주최자 멤버", "organizer@example.com");
+        var member = Member.create("주최자 회원", "organizer@example.com");
         organizer = OrganizationMember.create("주최자", member, sut);
     }
 
@@ -45,8 +45,8 @@ class OrganizationTest {
         return Event.create(
                 title, "설명", "장소", organizer, sut,
                 EventOperationPeriod.create(
-                        Period.create(start.minusDays(5), start.minusDays(1)),
-                        Period.create(start, end),
+                        start.minusDays(5), start.minusDays(1),
+                        start, end,
                         start.minusDays(6)
                 ),
                 organizer.getNickname(),

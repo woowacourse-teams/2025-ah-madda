@@ -19,24 +19,24 @@ class GuestTest {
 
     @BeforeEach
     void setUp() {
-        var organizerMember = Member.create("주최자 멤버", "organizer@example.com");
+        var organizerMember = Member.create("주최자 회원", "organizer@example.com");
         var organization = Organization.create("테스트 조직", "조직 설명", "image.png");
         var organizer = OrganizationMember.create("주최자", organizerMember, organization);
         var now = LocalDateTime.now();
         event = Event.create(
                 "테스트 이벤트", "설명", "장소", organizer, organization,
                 EventOperationPeriod.create(
-                        Period.create(now.plusDays(1), now.plusDays(5)),
-                        Period.create(now.plusDays(10), now.plusDays(11)),
+                        now.plusDays(1), now.plusDays(5),
+                        now.plusDays(10), now.plusDays(11),
                         now
                 ),
                 organizer.getNickname(),
                 50
         );
-        member = Member.create("참가자 멤버", "guest@example.com");
+        member = Member.create("참가자 회원", "guest@example.com");
         participant = OrganizationMember.create("참가자", member, organization);
         otherParticipant =
-                OrganizationMember.create("다른 참가자", Member.create("다른 멤버", "other@example.com"), organization);
+                OrganizationMember.create("다른 참가자", Member.create("다른 회원", "other@example.com"), organization);
     }
 
     @Test
@@ -86,8 +86,8 @@ class GuestTest {
         var event = Event.create(
                 "테스트 이벤트", "설명", "장소", organizationMember1, organization1,
                 EventOperationPeriod.create(
-                        Period.create(now.plusDays(1), now.plusDays(5)),
-                        Period.create(now.plusDays(10), now.plusDays(11)),
+                        now.plusDays(1), now.plusDays(5),
+                        now.plusDays(10), now.plusDays(11),
                         now
                 ),
                 organizationMember1.getNickname(),
@@ -110,8 +110,8 @@ class GuestTest {
         var event = Event.create(
                 "테스트 이벤트", "설명", "장소", organizationMember, organization,
                 EventOperationPeriod.create(
-                        Period.create(now.plusDays(1), now.plusDays(5)),
-                        Period.create(now.plusDays(10), now.plusDays(11)),
+                        now.plusDays(1), now.plusDays(5),
+                        now.plusDays(10), now.plusDays(11),
                         now
                 ),
                 organizationMember.getNickname(),
@@ -136,8 +136,8 @@ class GuestTest {
         var event = Event.create(
                 "테스트 이벤트", "설명", "장소", organizationMember1, organization,
                 EventOperationPeriod.create(
-                        Period.create(now.plusDays(1), now.plusDays(5)),
-                        Period.create(now.plusDays(10), now.plusDays(11)),
+                        now.plusDays(1), now.plusDays(5),
+                        now.plusDays(10), now.plusDays(11),
                         now
                 ),
                 organizationMember1.getNickname(),
@@ -241,8 +241,8 @@ class GuestTest {
                 title, "설명", "장소", organizer,
                 organizer.getOrganization(),
                 EventOperationPeriod.create(
-                        Period.create(now, now.plusDays(1)),
-                        Period.create(now.plusDays(2), now.plusDays(3)),
+                        now, now.plusDays(1),
+                        now.plusDays(2), now.plusDays(3),
                         now
                 ),
                 organizer.getNickname(),

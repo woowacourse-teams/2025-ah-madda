@@ -18,7 +18,6 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Period;
 import com.ahmadda.domain.Question;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -99,29 +98,18 @@ public class EventService {
     ) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않은 이벤트 정보입니다."));
-
         Member member = memberRepository.findById(loginMember.memberId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
-        if (!event.isOrganizer(member)) {
-            throw new AccessDeniedException("이벤트의 주최자만 수정할 수 있습니다.");
-        }
 
-        Period updatedRegistrationPeriod = event.getEventOperationPeriod()
-                .getRegistrationPeriod()
-                .update(
-                        event.getEventOperationPeriod()
-                                .getRegistrationPeriod()
-                                .start(),
-                        eventUpdateRequest.registrationEnd()
-                );
-        Period updatedEventPeriod = event.getEventOperationPeriod()
-                .getEventPeriod()
-                .update(eventUpdateRequest.eventStart(), eventUpdateRequest.eventEnd());
-
-        EventOperationPeriod updatedOperationPeriod = event.getEventOperationPeriod()
-                .update(updatedRegistrationPeriod, updatedEventPeriod, currentDateTime);
-
+        EventOperationPeriod updatedOperationPeriod = EventOperationPeriod.create(
+                event.getRegistrationStart(),
+                eventUpdateRequest.registrationEnd(),
+                eventUpdateRequest.eventStart(),
+                eventUpdateRequest.eventEnd(),
+                currentDateTime
+        );
         event.update(
+                member,
                 eventUpdateRequest.title(),
                 eventUpdateRequest.description(),
                 eventUpdateRequest.place(),
@@ -139,12 +127,12 @@ public class EventService {
             final EventCreateRequest eventCreateRequest,
             final LocalDateTime currentDateTime
     ) {
-        Period registrationPeriod = Period.create(currentDateTime, eventCreateRequest.registrationEnd());
-        Period eventPeriod = Period.create(eventCreateRequest.eventStart(), eventCreateRequest.eventEnd());
 
         return EventOperationPeriod.create(
-                registrationPeriod,
-                eventPeriod,
+                currentDateTime,
+                eventCreateRequest.registrationEnd(),
+                eventCreateRequest.eventStart(),
+                eventCreateRequest.eventEnd(),
                 currentDateTime
         );
     }
@@ -164,7 +152,7 @@ public class EventService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
 
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
-                .orElseThrow(() -> new AccessDeniedException("조직에 소속되지 않은 멤버입니다."));
+                .orElseThrow(() -> new AccessDeniedException("조직에 소속되지 않은 회원입니다."));
     }
 
     private List<Question> createQuestions(final List<QuestionCreateRequest> questionCreateRequests) {

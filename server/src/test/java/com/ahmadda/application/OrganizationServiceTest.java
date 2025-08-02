@@ -13,7 +13,6 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Period;
 import com.ahmadda.presentation.dto.ParticipateRequestDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,7 +139,7 @@ class OrganizationServiceTest {
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
         var loginMember = new LoginMember(member.getId());
 
-        // when & then
+        // when // then
         assertThatThrownBy(() -> sut.getOrganizationEvents(organization.getId(), loginMember))
                 .isInstanceOf(BusinessFlowViolatedException.class)
                 .hasMessage("조직에 참여하지 않아 권한이 없습니다.");
@@ -177,12 +176,16 @@ class OrganizationServiceTest {
         var organizationMembers = organizationMemberRepository.findAll();
 
         assertSoftly(softly -> {
-            softly.assertThat(organizationMembers).hasSize(1);
+            softly.assertThat(organizationMembers)
+                    .hasSize(1);
 
             var saved = organizationMembers.get(0);
-            softly.assertThat(saved.getNickname()).isEqualTo("new_nickname");
-            softly.assertThat(saved.getMember()).isEqualTo(member);
-            softly.assertThat(saved.getOrganization()).isEqualTo(organization);
+            softly.assertThat(saved.getNickname())
+                    .isEqualTo("new_nickname");
+            softly.assertThat(saved.getMember())
+                    .isEqualTo(member);
+            softly.assertThat(saved.getOrganization())
+                    .isEqualTo(organization);
         });
     }
 
@@ -227,8 +230,8 @@ class OrganizationServiceTest {
                 organizer,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(start, end),
-                        Period.create(end.plusHours(1), end.plusHours(2)),
+                        start, end,
+                        end.plusHours(1), end.plusHours(2),
                         start.minusDays(1)
                 ),
                 organizer.getNickname(),
