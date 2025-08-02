@@ -45,7 +45,7 @@ class PushNotificationRecipientServiceTest {
                     assertSoftly(softly -> {
                         softly.assertThat(recipient.getMember())
                                 .isEqualTo(member);
-                        softly.assertThat(recipient.getNotificationToken())
+                        softly.assertThat(recipient.getPushToken())
                                 .isEqualTo("토큰값");
                     });
                 });

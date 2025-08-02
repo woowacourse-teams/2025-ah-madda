@@ -1,8 +1,8 @@
 package com.ahmadda.infra.mail.config;
 
-import com.ahmadda.domain.NotificationMailer;
-import com.ahmadda.infra.mail.MockNotificationMailer;
-import com.ahmadda.infra.mail.SmtpNotificationMailer;
+import com.ahmadda.domain.EmailNotifier;
+import com.ahmadda.infra.mail.MockEmailNotifier;
+import com.ahmadda.infra.mail.SmtpEmailNotifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,16 +14,16 @@ public class MailConfig {
 
     @Bean
     @ConditionalOnProperty(name = "mail.mock", havingValue = "true")
-    public NotificationMailer mockMailService() {
-        return new MockNotificationMailer();
+    public EmailNotifier mockMailService() {
+        return new MockEmailNotifier();
     }
 
     @Bean
     @ConditionalOnProperty(name = "mail.mock", havingValue = "false", matchIfMissing = true)
-    public NotificationMailer mailServiceImpl(
+    public EmailNotifier mailServiceImpl(
             final JavaMailSender javaMailSender,
             final TemplateEngine templateEngine
     ) {
-        return new SmtpNotificationMailer(javaMailSender, templateEngine);
+        return new SmtpEmailNotifier(javaMailSender, templateEngine);
     }
 }

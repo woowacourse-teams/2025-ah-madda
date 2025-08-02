@@ -14,13 +14,16 @@ jwt:
   secret-key: ${jwt.local.secret-key}
   access-expiration: ${jwt.local.access-expiration}
 
-mail:
-  mock: true
-
 cors:
   allowed-origins:
     - http://localhost:5173
     - http://127.0.0.1:5173
+
+mail:
+  mock: true
+
+push:
+  mock: true
 
 slack:
   mock: true

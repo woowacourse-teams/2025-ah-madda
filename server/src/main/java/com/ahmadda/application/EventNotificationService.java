@@ -5,14 +5,17 @@ import com.ahmadda.application.dto.NonGuestsNotificationRequest;
 import com.ahmadda.application.dto.SelectedOrganizationMembersNotificationRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.NotificationMailer;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
+import com.ahmadda.domain.PushNotificationPayload;
+import com.ahmadda.domain.PushNotificationRecipient;
+import com.ahmadda.domain.PushNotifier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +29,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EventNotificationService {
 
-    private final NotificationMailer notificationMailer;
+    private final EmailNotifier emailNotifier;
+    private final PushNotifier pushNotifier;
     private final EventRepository eventRepository;
     private final MemberRepository memberRepository;
 
@@ -41,15 +45,7 @@ public class EventNotificationService {
                 .getOrganizationMembers();
 
         List<OrganizationMember> recipients = event.getNonGuestOrganizationMembers(organizationMembers);
-        EventEmailPayload eventEmailPayload = EventEmailPayload.of(event, request.content());
-
-        recipients.forEach(recipient ->
-                notificationMailer.sendEmail(
-                        recipient.getMember()
-                                .getEmail(),
-                        eventEmailPayload
-                )
-        );
+        sendNotificationToRecipients(recipients, event, request.content());
     }
 
     public void notifySelectedOrganizationMembers(
@@ -61,15 +57,7 @@ public class EventNotificationService {
         validateOrganizer(event, loginMember.memberId());
 
         List<OrganizationMember> recipients = getEventRecipientsFromIds(event, request.organizationMemberIds());
-        EventEmailPayload eventEmailPayload = EventEmailPayload.of(event, request.content());
-
-        recipients.forEach(recipient ->
-                notificationMailer.sendEmail(
-                        recipient.getMember()
-                                .getEmail(),
-                        eventEmailPayload
-                )
-        );
+        sendNotificationToRecipients(recipients, event, request.content());
     }
 
     private Event getEvent(final Long eventId) {
@@ -116,5 +104,29 @@ public class EventNotificationService {
         if (!allExist) {
             throw new NotFoundException("존재하지 않는 조직원입니다.");
         }
+    }
+
+    private void sendNotificationToRecipients(
+            final List<OrganizationMember> recipients,
+            final Event event,
+            final String content
+    ) {
+        List<String> recipientEmails = recipients.stream()
+                .map(organizationMember -> organizationMember.getMember()
+                        .getEmail())
+                .toList();
+        EventEmailPayload eventEmailPayload = EventEmailPayload.of(event, content);
+
+        emailNotifier.sendEmails(recipientEmails, eventEmailPayload);
+
+        List<String> recipientPushTokens = recipients.stream()
+                .flatMap(organizationMember -> organizationMember.getMember()
+                        .getPushNotificationRecipients()
+                        .stream()
+                        .map(PushNotificationRecipient::getPushToken))
+                .toList();
+        PushNotificationPayload pushNotificationPayload = PushNotificationPayload.of(event, content);
+
+        pushNotifier.sendPushs(recipientPushTokens, pushNotificationPayload);
     }
 }

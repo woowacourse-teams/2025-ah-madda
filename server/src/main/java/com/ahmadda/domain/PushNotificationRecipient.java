@@ -29,17 +29,19 @@ public class PushNotificationRecipient extends BaseEntity {
 
     // TODO. 추후 기기당 토큰의 중복을 허용할지 여부를 결정해야 함
     @Column(nullable = false)
-    private String notificationToken;
+    private String pushToken;
 
     private PushNotificationRecipient(
             final Member member,
-            final String notificationToken
+            final String pushToken
     ) {
         validateMember(member);
-        validateNotificationToken(notificationToken);
+        validateNotificationToken(pushToken);
 
         this.member = member;
-        this.notificationToken = notificationToken;
+        this.pushToken = pushToken;
+        member.getPushNotificationRecipients()
+                .add(this);
     }
 
     public static PushNotificationRecipient create(

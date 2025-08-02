@@ -1,20 +1,22 @@
 package com.ahmadda.infra.mail;
 
+import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.EventEmailPayload;
-import com.ahmadda.domain.NotificationMailer;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+
 @Slf4j
-public class MockNotificationMailer implements NotificationMailer {
+public class MockEmailNotifier implements EmailNotifier {
 
     @Override
-    public void sendEmail(
-            final String recipientEmail,
+    public void sendEmails(
+            final List<String> recipientEmails,
             final EventEmailPayload eventEmailPayload
     ) {
         log.info(
                 "[Mock Email] To: {} | Subject: {} | Body: {}",
-                recipientEmail,
+                recipientEmails,
                 eventEmailPayload.subject(),
                 eventEmailPayload.body()
         );

@@ -1,7 +1,7 @@
 package com.ahmadda.infra.mail;
 
+import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.EventEmailPayload;
-import com.ahmadda.domain.NotificationMailer;
 import com.ahmadda.infra.mail.exception.MailSendFailedException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -14,23 +14,27 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
-public class SmtpNotificationMailer implements NotificationMailer {
+public class SmtpEmailNotifier implements EmailNotifier {
 
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
 
     @Async
     @Override
-    public void sendEmail(final String recipientEmail, final EventEmailPayload eventEmailPayload) {
+    public void sendEmails(final List<String> recipientEmails, final EventEmailPayload eventEmailPayload) {
         String subject = createSubject(eventEmailPayload.subject());
         String text = createText(eventEmailPayload.body());
-        MimeMessage mimeMessage = createMimeMessage(recipientEmail, subject, text);
+        // TODO. 추후 BCC 방식으로 묶어서 전송 고려
+        recipientEmails.forEach(recipientEmail -> {
+            MimeMessage mimeMessage = createMimeMessage(recipientEmail, subject, text);
 
-        javaMailSender.send(mimeMessage);
+            javaMailSender.send(mimeMessage);
+        });
     }
 
     private String createSubject(final EventEmailPayload.Subject subject) {
