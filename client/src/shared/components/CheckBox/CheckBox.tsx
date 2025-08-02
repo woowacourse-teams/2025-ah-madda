@@ -13,7 +13,7 @@ export type CheckBoxProps = {
   size?: 'sm' | 'md' | 'lg';
 } & ComponentProps<'svg'>;
 
-export const CheckBox = ({ checked = true, size = 'md', ...props }: CheckBoxProps) => {
+export const CheckBox = ({ checked = false, size = 'md', ...props }: CheckBoxProps) => {
   const sizes = {
     sm: '20',
     md: '24',
