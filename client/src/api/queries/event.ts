@@ -18,6 +18,7 @@ export const eventQueryKeys = {
   nonGuests: () => [...eventQueryKeys.all(), 'nonGuests'],
   guestStatus: () => [...eventQueryKeys.all(), 'guestStatus'],
   participation: () => [...eventQueryKeys.all(), 'participation'],
+  cancel: () => [...eventQueryKeys.all(), 'cancel'],
 };
 
 export const eventQueryOptions = {
@@ -44,6 +45,11 @@ export const eventQueryOptions = {
     queryOptions({
       queryKey: [...eventQueryKeys.guestStatus(), eventId],
       queryFn: () => getGuestStatus(eventId),
+    }),
+  cancel: (eventId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.cancel(), eventId],
+      queryFn: () => fetcher.delete<void>(`events/${eventId}`),
     }),
 };
 
