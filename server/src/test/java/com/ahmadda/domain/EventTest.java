@@ -61,7 +61,7 @@ class EventTest {
 
         // when
         sut.update(
-                baseOrganizer.getMember(),
+                sut.getOrganizer().getMember(),
                 "수정된 제목",
                 "수정된 설명",
                 "수정된 장소",
@@ -359,6 +359,51 @@ class EventTest {
                     .hasSize(1);
             softly.assertThat(result)
                     .containsExactly(requiredQuestion);
+        });
+    }
+
+    @Test
+    void 이벤트에_참여하지_않았는데_참여_취소시_예외가_발생한다() {
+        // given
+        var organization = Organization.create("우아한 테크코스", "woowahan-tech-course", "우아한 테크코스 6기");
+        var member = Member.create("박미참여", "not.participant.park@woowahan.com");
+        var organizationMember =
+                OrganizationMember.create("참여안한_조직원", member, organization);
+
+
+        var member2 = Member.create("김참가", "participant.kim@woowahan.com");
+        var organizationMember2 =
+                OrganizationMember.create("실제_참가자", member2, organization);
+
+        var sut = createEvent(organizationMember, organization);
+        var participate = Guest.create(sut, organizationMember2, sut.getRegistrationStart());
+
+        //when // then
+        assertThatThrownBy(() -> sut.cancelParticipation(organizationMember, LocalDateTime.now()))
+                .isInstanceOf(BusinessRuleViolatedException.class);
+    }
+
+    @Test
+    void 이벤트_참여를_취소할_수_있다() {
+        // given
+        var organization = Organization.create("우아한 테크코스", "woowahan-tech-course", "우아한 테크코스 6기");
+        var member = Member.create("박찬양", "creator.chanyang@woowahan.com");
+        var organizationMember =
+                OrganizationMember.create("이벤트_개설자_닉네임", member, organization);
+
+
+        var member2 = Member.create("김참가", "participant.kim@woowahan.com");
+        var organizationMember2 =
+                OrganizationMember.create("참가자A_닉네임", member2, organization);
+
+        var sut = createEvent(organizationMember, organization);
+        var participate = Guest.create(sut, organizationMember2, sut.getRegistrationStart());
+
+        //when // then
+        assertSoftly(softly -> {
+            softly.assertThat(sut.getGuests().size()).isEqualTo(1L);
+            sut.cancelParticipation(organizationMember2, LocalDateTime.now());
+            softly.assertThat(sut.getGuests().size()).isEqualTo(0L);
         });
     }
 
