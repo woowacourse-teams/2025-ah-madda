@@ -648,12 +648,14 @@ public class OrganizationEventController {
         return ResponseEntity.ok(eventResponses);
     }
 
-    @Operation(summary = "내가 주최한 이벤트 여부 조회", description = "내가 주최한 이벤트인지 조회합니다.")
+    @Operation(summary = "내가 특정 이벤트의 주최자인지 확인", description = "내가 주최한 이벤트인지 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
                     content = @Content(
-                            array = @ArraySchema(schema = @Schema(implementation = OrganizerStatusResponse.class))
+                            schema = @Schema(
+                                    implementation = OrganizerStatusResponse.class
+                            )
                     )
             ),
             @ApiResponse(
