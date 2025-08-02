@@ -648,6 +648,60 @@ public class OrganizationEventController {
         return ResponseEntity.ok(eventResponses);
     }
 
+    @Operation(summary = "내가 주최한 이벤트 여부 조회", description = "내가 주최한 이벤트인지 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            array = @ArraySchema(schema = @Schema(implementation = OrganizerStatusResponse.class))
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/organizations/events/{eventId}/organizer-status"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않은 이벤트 정보입니다.",
+                                                      "instance": "/api/organizations/events/{eventId}/organizer-status"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 회원입니다.",
+                                                      "instance": "/api/organizations/events/{eventId}/organizer-status"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            )
+    })
     @GetMapping("/events/{eventId}/organizer-status")
     public ResponseEntity<OrganizerStatusResponse> isOrganizer(
             @PathVariable final Long eventId,
