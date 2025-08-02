@@ -8,13 +8,13 @@ import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventEmailPayload;
-import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.GuestRepository;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
+import com.ahmadda.domain.NotificationMailer;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
@@ -31,14 +31,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
@@ -62,7 +59,7 @@ class EventServiceTest {
     private EventService sut;
 
     @MockitoBean
-    private EventNotification eventNotification;
+    private NotificationMailer notificationMailer;
 
     @Autowired
     private GuestRepository guestRepository;
@@ -337,22 +334,9 @@ class EventServiceTest {
 
         // then
         var email = EventEmailPayload.of(savedEvent, "새로운 이벤트가 등록되었습니다.");
-        verify(eventNotification).sendEmails(
-                argThat(recipients -> {
-                    var emails = recipients.stream()
-                            .map(om -> om.getMember()
-                                    .getEmail())
-                            .collect(toSet());
 
-                    var expected = Set.of(
-                            om1Member.getEmail(),
-                            om2Member.getEmail()
-                    );
-
-                    return emails.equals(expected);
-                }),
-                eq(email)
-        );
+        verify(notificationMailer).sendEmail(eq("m1@mail.com"), eq(email));
+        verify(notificationMailer).sendEmail(eq("m2@mail.com"), eq(email));
     }
 
     @Test
@@ -546,21 +530,9 @@ class EventServiceTest {
 
         // then
         var email = EventEmailPayload.of(updatedEvent, "이벤트 정보가 수정되었습니다.");
-        verify(eventNotification).sendEmails(
-                argThat(recipients -> {
-                    var emails = recipients.stream()
-                            .map(om -> om.getMember()
-                                    .getEmail())
-                            .collect(toSet());
-                    var expected = Set.of(
-                            guestMember1.getEmail(),
-                            guestMember2.getEmail()
-                    );
 
-                    return emails.equals(expected);
-                }),
-                eq(email)
-        );
+        verify(notificationMailer).sendEmail(eq("guest1@email.com"), eq(email));
+        verify(notificationMailer).sendEmail(eq("guest2@email.com"), eq(email));
     }
 
     private Organization createOrganization() {

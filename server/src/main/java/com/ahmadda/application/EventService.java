@@ -8,12 +8,12 @@ import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventEmailPayload;
-import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
+import com.ahmadda.domain.NotificationMailer;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
@@ -35,7 +35,7 @@ public class EventService {
     private final EventRepository eventRepository;
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
-    private final EventNotification eventNotification;
+    private final NotificationMailer notificationMailer;
 
     @Transactional
     public Event createEvent(
@@ -170,7 +170,13 @@ public class EventService {
         String content = "새로운 이벤트가 등록되었습니다.";
         EventEmailPayload eventEmailPayload = EventEmailPayload.of(event, content);
 
-        eventNotification.sendEmails(recipients, eventEmailPayload);
+        recipients.forEach(recipient ->
+                notificationMailer.sendEmail(
+                        recipient.getMember()
+                                .getEmail(),
+                        eventEmailPayload
+                )
+        );
     }
 
     private void notifyEventUpdated(final Event event) {
@@ -181,6 +187,12 @@ public class EventService {
         String content = "이벤트 정보가 수정되었습니다.";
         EventEmailPayload eventEmailPayload = EventEmailPayload.of(event, content);
 
-        eventNotification.sendEmails(recipients, eventEmailPayload);
+        recipients.forEach(recipient ->
+                notificationMailer.sendEmail(
+                        recipient.getMember()
+                                .getEmail(),
+                        eventEmailPayload
+                )
+        );
     }
 }

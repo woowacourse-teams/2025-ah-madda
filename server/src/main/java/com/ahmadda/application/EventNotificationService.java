@@ -7,10 +7,10 @@ import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventEmailPayload;
-import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
+import com.ahmadda.domain.NotificationMailer;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EventNotificationService {
 
-    private final EventNotification eventNotification;
+    private final NotificationMailer notificationMailer;
     private final EventRepository eventRepository;
     private final MemberRepository memberRepository;
 
@@ -43,7 +43,13 @@ public class EventNotificationService {
         List<OrganizationMember> recipients = event.getNonGuestOrganizationMembers(organizationMembers);
         EventEmailPayload eventEmailPayload = EventEmailPayload.of(event, request.content());
 
-        eventNotification.sendEmails(recipients, eventEmailPayload);
+        recipients.forEach(recipient ->
+                notificationMailer.sendEmail(
+                        recipient.getMember()
+                                .getEmail(),
+                        eventEmailPayload
+                )
+        );
     }
 
     public void notifySelectedOrganizationMembers(
@@ -57,7 +63,13 @@ public class EventNotificationService {
         List<OrganizationMember> recipients = getEventRecipientsFromIds(event, request.organizationMemberIds());
         EventEmailPayload eventEmailPayload = EventEmailPayload.of(event, request.content());
 
-        eventNotification.sendEmails(recipients, eventEmailPayload);
+        recipients.forEach(recipient ->
+                notificationMailer.sendEmail(
+                        recipient.getMember()
+                                .getEmail(),
+                        eventEmailPayload
+                )
+        );
     }
 
     private Event getEvent(final Long eventId) {

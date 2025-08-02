@@ -7,13 +7,13 @@ import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventEmailPayload;
-import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.GuestRepository;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
+import com.ahmadda.domain.NotificationMailer;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
@@ -28,8 +28,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -55,21 +53,17 @@ class EventNotificationServiceTest {
     private GuestRepository guestRepository;
 
     @MockitoBean
-    private EventNotification eventNotification;
+    private NotificationMailer notificationMailer;
 
     @Test
     void 비게스트_조직원에게_이메일을_전송한다() {
         // given
-        var organizationName = "조직명";
-        var organizerNickname = "주최자";
-        var eventTitle = "이벤트제목";
-        var notificationRequest = createNotificationRequest();
+        var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
+        var organizer = createAndSaveOrganizationMember("주최자", "host@email.com", organization);
+        var now = LocalDateTime.now();
 
-        var organization = organizationRepository.save(Organization.create(organizationName, "설명", "img.png"));
-        var organizer = createAndSaveOrganizationMember(organizerNickname, "host@email.com", organization);
-        LocalDateTime now = LocalDateTime.now();
         var event = eventRepository.save(Event.create(
-                eventTitle,
+                "이벤트제목",
                 "설명",
                 "장소",
                 organizer,
@@ -79,37 +73,30 @@ class EventNotificationServiceTest {
                         now.plusDays(1), now.plusDays(2),
                         now.minusDays(3)
                 ),
-                organizerNickname,
+                organizer.getNickname(),
                 100
         ));
 
-        var guestEmail = "guest@email.com";
-        guestRepository.save(Guest.create(
-                event,
-                createAndSaveOrganizationMember("게스트", guestEmail, organization),
-                event.getRegistrationStart()
-        ));
+        var request = createNotificationRequest();
+        var email = EventEmailPayload.of(event, request.content());
 
-        var nonGuest1Email = "ng1@email.com";
-        var nonGuest2Email = "ng2@email.com";
-        createAndSaveOrganizationMember("비게스트1", nonGuest1Email, organization);
-        createAndSaveOrganizationMember("비게스트2", nonGuest2Email, organization);
-        var email = EventEmailPayload.of(event, notificationRequest.content());
+        var guest = createAndSaveOrganizationMember("게스트", "guest@email.com", organization);
+        guestRepository.save(Guest.create(event, guest, event.getRegistrationStart()));
+
+        var ng1 = createAndSaveOrganizationMember("비게스트1", "ng1@email.com", organization);
+        var ng2 = createAndSaveOrganizationMember("비게스트2", "ng2@email.com", organization);
 
         // when
-        sut.notifyNonGuestOrganizationMembers(event.getId(), notificationRequest, createLoginMember(organizer));
+        sut.notifyNonGuestOrganizationMembers(event.getId(), request, createLoginMember(organizer));
 
         // then
-        verify(eventNotification).sendEmails(
-                argThat(recipients -> {
-                    var emails = recipients.stream()
-                            .map(om -> om.getMember()
-                                    .getEmail())
-                            .toList();
-
-                    return emails.equals(List.of(nonGuest1Email, nonGuest2Email));
-                }),
-                eq(email)
+        verify(notificationMailer).sendEmail(
+                ng1.getMember()
+                        .getEmail(), email
+        );
+        verify(notificationMailer).sendEmail(
+                ng2.getMember()
+                        .getEmail(), email
         );
     }
 
@@ -163,19 +150,15 @@ class EventNotificationServiceTest {
                 .hasMessage("이벤트 주최자가 아닙니다.");
     }
 
+
     @Test
     void 선택된_조직원에게_이메일을_전송한다() {
-        // given
-        var organizationName = "조직명";
-        var organizerNickname = "주최자";
-        var eventTitle = "이벤트제목";
-
-        var organization = organizationRepository.save(Organization.create(organizationName, "설명", "img.png"));
-        var organizer = createAndSaveOrganizationMember(organizerNickname, "host@email.com", organization);
-
+        var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
+        var organizer = createAndSaveOrganizationMember("주최자", "host@email.com", organization);
         var now = LocalDateTime.now();
+
         var event = eventRepository.save(Event.create(
-                eventTitle,
+                "이벤트제목",
                 "설명",
                 "장소",
                 organizer,
@@ -185,7 +168,7 @@ class EventNotificationServiceTest {
                         now.plusDays(1), now.plusDays(2),
                         now.minusDays(3)
                 ),
-                organizerNickname,
+                organizer.getNickname(),
                 100
         ));
 
@@ -193,25 +176,18 @@ class EventNotificationServiceTest {
         var om2 = createAndSaveOrganizationMember("선택2", "sel2@email.com", organization);
         var om3 = createAndSaveOrganizationMember("비선택", "nsel@email.com", organization);
 
-        var request = createSelectedMembersRequest(
-                List.of(om1.getId(), om2.getId())
-        );
+        var request = createSelectedMembersRequest(List.of(om1.getId(), om2.getId()));
         var email = EventEmailPayload.of(event, request.content());
 
-        // when
         sut.notifySelectedOrganizationMembers(event.getId(), request, createLoginMember(organizer));
 
-        // then
-        verify(eventNotification).sendEmails(
-                argThat(recipients -> {
-                    var ids = recipients.stream()
-                            .map(OrganizationMember::getId)
-                            .toList();
-
-                    return ids.containsAll(request.organizationMemberIds())
-                            && !ids.contains(om3.getId());
-                }),
-                eq(email)
+        verify(notificationMailer).sendEmail(
+                om1.getMember()
+                        .getEmail(), email
+        );
+        verify(notificationMailer).sendEmail(
+                om2.getMember()
+                        .getEmail(), email
         );
     }
 
