@@ -653,7 +653,9 @@ public class OrganizationEventController {
             @ApiResponse(
                     responseCode = "200",
                     content = @Content(
-                            array = @ArraySchema(schema = @Schema(implementation = OrganizerStatusResponse.class))
+                            schema = @Schema(
+                                    implementation = OrganizerStatusResponse.class
+                            )
                     )
             ),
             @ApiResponse(
