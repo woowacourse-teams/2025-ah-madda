@@ -56,9 +56,7 @@ const getNonGuests = async (eventId: number) => {
 };
 
 export const createEventAPI = (organizationId: number, data: CreateEventAPIRequest) => {
-  return fetcher.post<CreateEventAPIResponse>(`organizations/${organizationId}/events`, {
-    json: data,
-  });
+  return fetcher.post<CreateEventAPIResponse>(`organizations/${organizationId}/events`, data);
 };
 
 const getEventDetailAPI = (eventId: number) => {
