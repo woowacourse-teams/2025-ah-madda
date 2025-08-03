@@ -1,72 +1,25 @@
 import { EventFormData } from '../../types/Event';
-import { MAX_LENGTH, ERROR_MESSAGES } from '../constants/errorMessages';
 
-const isEmpty = (value: string) => value.trim() === '';
-const isTooLong = (value: string) => value.length > MAX_LENGTH;
-const isFutureDate = (value: string) => new Date(value) > new Date();
-const isAfterorEqual = (a: string, b: string) => new Date(a) >= new Date(b);
-const isBefore = (a: string, b: string) => new Date(a) < new Date(b);
-const isPositiveInteger = (value: string) => /^\d+$/.test(value) && parseInt(value) > 0;
-
-export const getValidationMessage = (
-  field: keyof EventFormData,
-  value: string,
-  formData: EventFormData
-): string => {
-  switch (field) {
-    case 'title':
-      if (isEmpty(value)) return ERROR_MESSAGES.REQUIRED('이벤트 이름');
-      if (isTooLong(value)) return ERROR_MESSAGES.MAX_LENGTH('이벤트 이름', MAX_LENGTH);
-      break;
-    case 'eventStart':
-      if (!isFutureDate(value)) return ERROR_MESSAGES.EVENT_START_MUST_BE_FUTURE;
-      break;
-    case 'eventEnd':
-      if (isBefore(value, formData.eventStart)) return ERROR_MESSAGES.EVENT_END_MUST_BE_AFTER_START;
-      break;
-    case 'registrationEnd':
-      if (!isFutureDate(value)) return ERROR_MESSAGES.EVENT_START_MUST_BE_FUTURE;
-      if (isAfterorEqual(value, formData.eventStart))
-        return ERROR_MESSAGES.REGISTRATION_DEADLINE_BEFORE_EVENT_START;
-      break;
-    case 'place':
-      if (isEmpty(value)) return ERROR_MESSAGES.REQUIRED('장소');
-      if (isTooLong(value)) return ERROR_MESSAGES.MAX_LENGTH('장소', MAX_LENGTH);
-      break;
-    case 'description':
-      if (isEmpty(value)) return ERROR_MESSAGES.REQUIRED('설명');
-      if (isTooLong(value)) return ERROR_MESSAGES.MAX_LENGTH('설명', MAX_LENGTH);
-      break;
-    case 'maxCapacity':
-      if (!isPositiveInteger(value)) return ERROR_MESSAGES.NOT_POSITIVE_INTEGER;
-      break;
-  }
-
-  return '';
-};
+import { getValidationMessage } from './getErrorMessage';
+import { VALIDATION_RULES } from './validationRules';
 
 export const validateAllFields = (
   formData: EventFormData
 ): Partial<Record<keyof EventFormData, string>> => {
   const newErrors: Partial<Record<keyof EventFormData, string>> = {};
 
-  (Object.entries(formData) as [keyof EventFormData, string | number][]).forEach(([key, value]) => {
-    const msg = getValidationMessage(key, value.toString(), formData);
-    if (msg) newErrors[key] = msg;
+  Object.entries(formData).forEach(([key, value]) => {
+    const msg = getValidationMessage(key as keyof EventFormData, value.toString(), formData);
+    if (msg) newErrors[key as keyof EventFormData] = msg;
   });
 
   return newErrors;
 };
 
 export const isFormDataEmpty = (formData: EventFormData): boolean => {
-  const requiredFields: (keyof EventFormData)[] = [
-    'title',
-    'eventStart',
-    'eventEnd',
-    'registrationEnd',
-    'place',
-    'description',
-  ];
+  const requiredFields: (keyof EventFormData)[] = Object.entries(VALIDATION_RULES)
+    .filter(([, rule]) => rule.required)
+    .map(([field]) => field) as (keyof EventFormData)[];
 
   return requiredFields.some((key) => {
     const value = formData[key];

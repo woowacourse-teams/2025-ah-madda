@@ -2,11 +2,8 @@ import { useMemo, useState } from 'react';
 
 import { EventFormData } from '../../types/Event';
 import { ERROR_MESSAGES } from '../constants/errorMessages';
-import {
-  getValidationMessage,
-  validateAllFields,
-  isFormDataEmpty,
-} from '../utils/validateEventForm';
+import { getValidationMessage } from '../utils/getErrorMessage';
+import { validateAllFields, isFormDataEmpty } from '../utils/validateEventForm';
 
 export const useEventValidation = (formData: EventFormData) => {
   const [errors, setErrors] = useState<Partial<Record<keyof EventFormData, string>>>({});
