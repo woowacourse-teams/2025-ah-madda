@@ -1,6 +1,6 @@
-package com.ahmadda.infra.push;
+package com.ahmadda.infra.notification.push;
 
-import com.ahmadda.infra.push.exception.InvalidFcmPushTokenException;
+import com.ahmadda.infra.notification.push.exception.InvalidFcmPushTokenException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

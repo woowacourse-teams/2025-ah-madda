@@ -1,4 +1,4 @@
-package com.ahmadda.infra.push.exception;
+package com.ahmadda.infra.notification.push.exception;
 
 public class InvalidFcmPushTokenException extends RuntimeException {
 

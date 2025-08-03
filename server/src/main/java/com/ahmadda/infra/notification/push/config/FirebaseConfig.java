@@ -1,4 +1,4 @@
-package com.ahmadda.infra.push.config;
+package com.ahmadda.infra.notification.push.config;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;

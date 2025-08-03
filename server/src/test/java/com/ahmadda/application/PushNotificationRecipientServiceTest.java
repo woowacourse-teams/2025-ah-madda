@@ -5,7 +5,7 @@ import com.ahmadda.application.dto.PushNotificationRecipientRequest;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.infra.push.FcmPushTokenRepository;
+import com.ahmadda.infra.notification.push.FcmPushTokenRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

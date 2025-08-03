@@ -1,4 +1,4 @@
-package com.ahmadda.infra.mail;
+package com.ahmadda.infra.notification.mail;
 
 import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.EventEmailPayload;

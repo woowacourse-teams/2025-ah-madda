@@ -1,4 +1,4 @@
-package com.ahmadda.learning;
+package com.ahmadda.learning.notification;
 
 import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.EventEmailPayload;
@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,11 +14,10 @@ import java.util.List;
 @Disabled
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @TestPropertySource(properties = "mail.mock=false")
-@Transactional
-class EmailNotifierTest {
+class SmtpEmailNotifierTest {
 
     @Autowired
-    private EmailNotifier emailNotifier;
+    private EmailNotifier smtpEmailNotifier;
 
     @Test
     void 실제_SMTP로_메일을_발송한다() {
@@ -54,6 +52,6 @@ class EmailNotifierTest {
         );
 
         // when // then
-        emailNotifier.sendEmails(List.of(recipientEmail), emailPayload);
+        smtpEmailNotifier.sendEmails(List.of(recipientEmail), emailPayload);
     }
 }

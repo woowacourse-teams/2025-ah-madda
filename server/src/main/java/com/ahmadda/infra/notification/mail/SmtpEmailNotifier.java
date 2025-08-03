@@ -1,7 +1,8 @@
-package com.ahmadda.infra.mail;
+package com.ahmadda.infra.notification.mail;
 
 import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.EventEmailPayload;
+import com.ahmadda.infra.notification.config.NotificationProperties;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class SmtpEmailNotifier implements EmailNotifier {
 
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
+    private final NotificationProperties notificationProperties;
 
     @Async
     @Override
@@ -63,7 +65,7 @@ public class SmtpEmailNotifier implements EmailNotifier {
         model.put("registrationEnd", body.registrationEnd());
         model.put("eventStart", body.eventStart());
         model.put("eventEnd", body.eventEnd());
-        model.put("eventId", body.eventId());
+        model.put("redirectUrl", notificationProperties.getRedirectUrlPrefix() + body.eventId());
 
         return model;
     }

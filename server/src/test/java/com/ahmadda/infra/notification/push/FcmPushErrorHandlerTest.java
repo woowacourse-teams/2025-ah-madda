@@ -1,4 +1,4 @@
-package com.ahmadda.infra.push;
+package com.ahmadda.infra.notification.push;
 
 import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessagingException;

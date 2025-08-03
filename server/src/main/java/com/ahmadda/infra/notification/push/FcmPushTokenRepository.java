@@ -1,4 +1,4 @@
-package com.ahmadda.infra.push;
+package com.ahmadda.infra.notification.push;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -8,5 +8,5 @@ public interface FcmPushTokenRepository extends JpaRepository<FcmPushToken, Long
 
     List<FcmPushToken> findAllByMemberIdIn(final List<Long> memberIds);
 
-    void deleteAllByPushTokenIn(List<String> pushTokens);
+    void deleteAllByPushTokenIn(final List<String> fcmPushTokens);
 }

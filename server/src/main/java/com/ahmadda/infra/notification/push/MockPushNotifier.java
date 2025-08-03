@@ -1,4 +1,4 @@
-package com.ahmadda.infra.push;
+package com.ahmadda.infra.notification.push;
 
 import com.ahmadda.domain.PushNotificationPayload;
 import com.ahmadda.domain.PushNotifier;

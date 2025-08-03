@@ -15,8 +15,8 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.PushNotificationPayload;
 import com.ahmadda.domain.PushNotifier;
-import com.ahmadda.infra.push.FcmPushToken;
-import com.ahmadda.infra.push.FcmPushTokenRepository;
+import com.ahmadda.infra.notification.push.FcmPushToken;
+import com.ahmadda.infra.notification.push.FcmPushTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
