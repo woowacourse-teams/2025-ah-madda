@@ -1,3 +1,5 @@
+const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
+
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { DefinePlugin } = require('webpack');
@@ -6,6 +8,7 @@ const Dotenv = require('dotenv-webpack');
 module.exports = {
   mode: 'development',
   entry: './src/main.tsx',
+
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
@@ -32,7 +35,13 @@ module.exports = {
       ),
       safe: true,
     }),
+    sentryWebpackPlugin({
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      org: 'ahmadda',
+      project: 'ahmadda',
+    }),
   ],
+
   module: {
     rules: [
       {
@@ -62,6 +71,7 @@ module.exports = {
     },
     extensions: ['.ts', '.tsx', '.js'],
   },
+
   devServer: {
     static: {
       directory: path.join(__dirname, 'dist'),
@@ -74,4 +84,6 @@ module.exports = {
       overlay: true,
     },
   },
+
+  devtool: 'source-map',
 };
