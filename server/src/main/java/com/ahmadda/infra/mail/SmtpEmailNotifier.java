@@ -2,7 +2,6 @@ package com.ahmadda.infra.mail;
 
 import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.EventEmailPayload;
-import com.ahmadda.infra.mail.exception.MailSendFailedException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -80,7 +79,6 @@ public class SmtpEmailNotifier implements EmailNotifier {
             helper.setText(text, true);
         } catch (MessagingException e) {
             log.error("mailError : {} ", e.getMessage(), e);
-            throw new MailSendFailedException("이메일 발송에 실패했습니다.", e);
         }
 
         return mimeMessage;

@@ -7,4 +7,6 @@ import java.util.List;
 public interface FcmPushTokenRepository extends JpaRepository<FcmPushToken, Long> {
 
     List<FcmPushToken> findAllByMemberIdIn(final List<Long> memberIds);
+
+    void deleteAllByPushTokenIn(List<String> pushTokens);
 }
