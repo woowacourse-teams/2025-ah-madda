@@ -39,6 +39,7 @@ export type CreateEventAPIRequest = {
 };
 
 export type EventFormData = Omit<CreateEventAPIRequest, 'organizerNickname'>;
+export type BasicEventFormFields = Omit<CreateEventAPIRequest, 'questions'>;
 
 export type Question = {
   questionId: number;

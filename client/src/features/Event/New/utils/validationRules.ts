@@ -1,4 +1,4 @@
-import { EventFormData } from '../../types/Event';
+import { BasicEventFormFields } from '../../types/Event';
 import { ERROR_MESSAGES, MAX_LENGTH } from '../constants/errorMessages';
 
 import { isAfterorEqual, isBefore, isFutureDate, isPositiveInteger } from './validators';
@@ -6,11 +6,11 @@ import { isAfterorEqual, isBefore, isFutureDate, isPositiveInteger } from './val
 type ValidationRule = {
   required?: boolean;
   maxLength?: number;
-  validator?: (value: string, formData: EventFormData) => string | null;
+  validator?: (value: string, formData: BasicEventFormFields) => string | null;
   label: string;
 };
 
-export const VALIDATION_RULES: Partial<Record<keyof EventFormData, ValidationRule>> = {
+export const VALIDATION_RULES: Partial<Record<keyof BasicEventFormFields, ValidationRule>> = {
   title: {
     required: true,
     maxLength: MAX_LENGTH,

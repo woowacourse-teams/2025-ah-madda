@@ -1,11 +1,11 @@
 import { useState, useMemo, useEffect } from 'react';
 
-import { CreateEventAPIRequest } from '../../types/Event';
+import { BasicEventFormFields, CreateEventAPIRequest } from '../../types/Event';
 import { FIELD_CONFIG } from '../constants/formFieldConfig';
 import { validateEventForm } from '../utils/validateEventForm';
 
 export const useBasicEventForm = () => {
-  const [basicForm, setBasicForm] = useState<CreateEventAPIRequest>({
+  const [basicForm, setBasicForm] = useState<BasicEventFormFields>({
     title: '',
     eventStart: '',
     eventEnd: '',
@@ -13,10 +13,9 @@ export const useBasicEventForm = () => {
     place: '',
     description: '',
     maxCapacity: 0,
-    questions: [],
   });
   const [touchedMap, setTouchedMap] = useState<
-    Partial<Record<keyof CreateEventAPIRequest, boolean>>
+    Partial<Record<keyof BasicEventFormFields, boolean>>
   >({});
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -25,13 +24,13 @@ export const useBasicEventForm = () => {
     setErrors(validation);
   }, [basicForm]);
 
-  const setTouched = (key: keyof CreateEventAPIRequest) => {
+  const setTouched = (key: keyof BasicEventFormFields) => {
     setTouchedMap((prev) => ({ ...prev, [key]: true }));
   };
 
-  const setValue = <K extends keyof CreateEventAPIRequest>(
+  const setValue = <K extends keyof BasicEventFormFields>(
     key: K,
-    value: CreateEventAPIRequest[K]
+    value: BasicEventFormFields[K]
   ) => {
     setBasicForm((prev) => ({ ...prev, [key]: value }));
 
@@ -47,7 +46,7 @@ export const useBasicEventForm = () => {
     return Object.keys(validation).length === 0;
   };
 
-  const validateField = (key: keyof CreateEventAPIRequest, value: string | number) => {
+  const validateField = (key: keyof BasicEventFormFields, value: string | number) => {
     const updated = { ...basicForm, [key]: value };
     const validation = validateEventForm(updated);
 
