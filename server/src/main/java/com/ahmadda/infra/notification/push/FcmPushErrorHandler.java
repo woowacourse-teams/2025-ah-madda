@@ -45,9 +45,8 @@ public class FcmPushErrorHandler {
                 deletableTokens.add(token);
             } else if (RETRYABLE_ERRORS.contains(errorCode)) {
                 // TODO: 추후 지수 백오프를 이용한 재시도 로직 구현
-                log.warn("FCM 푸시 재시도 대상 - token: {}, error: {}", token, errorCode);
             }
-            log.warn("FCM 푸시 실패 - token: {}, error: {}", token, errorCode);
+            log.warn("fcmPushError - token: {}, error: {}", token, errorCode);
         }
 
         if (!deletableTokens.isEmpty()) {

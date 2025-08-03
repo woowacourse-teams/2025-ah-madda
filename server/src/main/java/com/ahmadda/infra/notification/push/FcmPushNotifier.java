@@ -38,7 +38,7 @@ public class FcmPushNotifier implements PushNotifier {
 
             fcmPushErrorHandler.handleFailures(batchResponse, recipientPushTokens);
         } catch (FirebaseMessagingException e) {
-            log.error("fcmPushError: {}", e.getMessage(), e);
+            log.error("fcmMulticastPushError: {}", e.getMessage(), e);
         }
     }
 
