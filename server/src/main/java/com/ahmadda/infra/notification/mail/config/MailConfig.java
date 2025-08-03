@@ -17,13 +17,13 @@ public class MailConfig {
 
     @Bean
     @ConditionalOnProperty(name = "mail.mock", havingValue = "true")
-    public EmailNotifier mockMailService() {
+    public EmailNotifier mockEmailNotifier() {
         return new MockEmailNotifier();
     }
 
     @Bean
     @ConditionalOnProperty(name = "mail.mock", havingValue = "false", matchIfMissing = true)
-    public EmailNotifier mailServiceImpl(
+    public EmailNotifier smtpEmailNotifier(
             final JavaMailSender javaMailSender,
             final TemplateEngine templateEngine,
             final NotificationProperties notificationProperties
