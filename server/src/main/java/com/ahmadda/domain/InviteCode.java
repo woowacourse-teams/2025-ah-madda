@@ -1,0 +1,83 @@
+package com.ahmadda.domain;
+
+import com.ahmadda.domain.exception.UnauthorizedOperationException;
+import com.ahmadda.domain.util.Assert;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class InviteCode extends BaseEntity {
+
+    private static final int DEFAULT_EXPIRE_DAYS = 7;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "invite_code_id")
+    private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String code;
+
+    @Column(nullable = false)
+    private LocalDateTime expiresAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id", nullable = false)
+    private Organization organization;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "inviter_id", nullable = false)
+    private OrganizationMember inviter;
+
+    private InviteCode(
+            final String code,
+            final LocalDateTime expiresAt,
+            final Organization organization,
+            final OrganizationMember inviter
+    ) {
+        Assert.notBlank(code, "초대 코드는 공백이면 안됩니다.");
+        Assert.notNull(expiresAt, "만료 기한은 null이 되면 안됩니다.");
+        Assert.notNull(organization, "조직은 null이 되면 안됩니다.");
+        Assert.notNull(inviter, "초대자는는 null이 되면 안됩니다.");
+
+        this.code = code;
+        this.expiresAt = expiresAt;
+        this.organization = organization;
+        this.inviter = inviter;
+    }
+
+    public static InviteCode create(
+            final String code,
+            final Organization organization,
+            final OrganizationMember inviter,
+            final LocalDateTime currentDateTime
+    ) {
+        validateBelongToOrganization(organization, inviter);
+
+        LocalDateTime expiresAt = currentDateTime.plusDays(DEFAULT_EXPIRE_DAYS);
+
+        return new InviteCode(code, expiresAt, organization, inviter);
+    }
+
+    private static void validateBelongToOrganization(
+            final Organization organization,
+            final OrganizationMember organizationMember
+    ) {
+        if (!organizationMember.isBelongTo(organization)) {
+            throw new UnauthorizedOperationException("조직에 참여중인 조직원만 해당 조직의 초대코드를 만들 수 있습니다.");
+        }
+    }
+}
