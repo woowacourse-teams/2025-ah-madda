@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -52,12 +51,7 @@ public class FcmPushNotifier implements PushNotifier {
                         .setTitle(payload.title())
                         .setBody(payload.body())
                         .build())
-                .putAllData(Map.of(
-                        "eventId", payload.eventId()
-                                .toString(),
-                        "redirectUrl",
-                        notificationProperties.getRedirectUrlPrefix() + payload.eventId()
-                ))
+                .putData("redirectUrl", notificationProperties.getRedirectUrlPrefix() + payload.eventId())
                 .build();
     }
 }
