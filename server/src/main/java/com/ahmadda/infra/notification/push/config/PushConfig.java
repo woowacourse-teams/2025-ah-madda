@@ -4,7 +4,7 @@ import com.ahmadda.domain.PushNotifier;
 import com.ahmadda.infra.notification.config.NotificationProperties;
 import com.ahmadda.infra.notification.push.FcmPushErrorHandler;
 import com.ahmadda.infra.notification.push.FcmPushNotifier;
-import com.ahmadda.infra.notification.push.FcmPushTokenRepository;
+import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import com.ahmadda.infra.notification.push.MockPushNotifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -24,9 +24,9 @@ public class PushConfig {
     @Bean
     @ConditionalOnProperty(name = "push.mock", havingValue = "false", matchIfMissing = true)
     public PushNotifier fcmPushNotifier(
-            final FcmPushTokenRepository fcmPushTokenRepository,
+            final FcmRegistrationTokenRepository fcmRegistrationTokenRepository,
             final NotificationProperties notificationProperties
     ) {
-        return new FcmPushNotifier(new FcmPushErrorHandler(fcmPushTokenRepository), notificationProperties);
+        return new FcmPushNotifier(new FcmPushErrorHandler(fcmRegistrationTokenRepository), notificationProperties);
     }
 }

@@ -2,9 +2,9 @@ package com.ahmadda.application.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record PushNotificationRecipientRequest(
+public record FcmRegistrationTokenRequest(
         @NotBlank
-        String fcmPushToken
+        String registrationToken
 ) {
 
 }

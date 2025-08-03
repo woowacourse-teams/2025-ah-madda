@@ -20,14 +20,14 @@ import static org.mockito.Mockito.when;
 class FcmPushErrorHandlerTest {
 
     @Autowired
-    private FcmPushTokenRepository fcmPushTokenRepository;
+    private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
 
     @Test
     void 만료된_토큰이_있으면_제거한다() {
         // given
         var tokenValue = "expired-token";
-        var saved = fcmPushTokenRepository.save(
-                FcmPushToken.create(1L, tokenValue, java.time.LocalDateTime.now())
+        var saved = fcmRegistrationTokenRepository.save(
+                FcmRegistrationToken.create(1L, tokenValue, java.time.LocalDateTime.now())
         );
 
         var exception = mock(FirebaseMessagingException.class);
@@ -40,12 +40,12 @@ class FcmPushErrorHandlerTest {
         var batchResponse = mock(BatchResponse.class);
         when(batchResponse.getResponses()).thenReturn(List.of(response));
 
-        var sut = new FcmPushErrorHandler(fcmPushTokenRepository);
+        var sut = new FcmPushErrorHandler(fcmRegistrationTokenRepository);
 
         // when
         sut.handleFailures(batchResponse, List.of(tokenValue));
 
         // then
-        assertThat(fcmPushTokenRepository.findById(saved.getId())).isEmpty();
+        assertThat(fcmRegistrationTokenRepository.findById(saved.getId())).isEmpty();
     }
 }

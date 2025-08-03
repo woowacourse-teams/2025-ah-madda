@@ -21,7 +21,7 @@ class FcmPushNotifierTest {
     @Test
     void 실제_FCM으로_푸시를_전송한다() {
         // given
-        List<String> tokens = List.of(
+        List<String> registrationTokens = List.of(
                 "토큰을 입력하세요"
         );
 
@@ -32,6 +32,6 @@ class FcmPushNotifierTest {
         );
 
         // when // then
-        fcmPushNotifier.sendPushs(tokens, payload);
+        fcmPushNotifier.sendPushs(registrationTokens, payload);
     }
 }

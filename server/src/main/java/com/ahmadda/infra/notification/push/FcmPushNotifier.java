@@ -23,19 +23,22 @@ public class FcmPushNotifier implements PushNotifier {
 
     @Async
     @Override
-    public void sendPushs(final List<String> recipientPushTokens, final PushNotificationPayload payload) {
-        if (recipientPushTokens.isEmpty()) {
+    public void sendPushs(
+            final List<String> registrationTokens,
+            final PushNotificationPayload pushNotificationPayload
+    ) {
+        if (registrationTokens.isEmpty()) {
             return;
         }
 
-        MulticastMessage message = createMulticastMessage(recipientPushTokens, payload);
+        MulticastMessage message = createMulticastMessage(registrationTokens, pushNotificationPayload);
 
         try {
             // TODO. 추후 한번에 500개 이상의 토큰을 처리한다면 배치 처리를 고려해야 함
             BatchResponse batchResponse = FirebaseMessaging.getInstance()
                     .sendEachForMulticast(message);
 
-            fcmPushErrorHandler.handleFailures(batchResponse, recipientPushTokens);
+            fcmPushErrorHandler.handleFailures(batchResponse, registrationTokens);
         } catch (FirebaseMessagingException e) {
             log.error("fcmMulticastPushError: {}", e.getMessage(), e);
         }

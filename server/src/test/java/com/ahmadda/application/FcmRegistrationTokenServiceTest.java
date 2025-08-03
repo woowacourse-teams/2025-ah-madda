@@ -1,11 +1,11 @@
 package com.ahmadda.application;
 
+import com.ahmadda.application.dto.FcmRegistrationTokenRequest;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.dto.PushNotificationRecipientRequest;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.infra.notification.push.FcmPushTokenRepository;
+import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,35 +17,35 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Transactional
-class FcmPushTokenServiceTest {
+class FcmRegistrationTokenServiceTest {
 
     @Autowired
-    private FcmPushTokenService sut;
+    private FcmRegistrationTokenService sut;
 
     @Autowired
     private MemberRepository memberRepository;
 
     @Autowired
-    private FcmPushTokenRepository fcmPushTokenRepository;
+    private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
 
     @Test
     void 푸시알림_수신자를_등록한다() {
         // given
         var member = memberRepository.save(Member.create("홍길동", "test@example.com"));
         var loginMember = new LoginMember(member.getId());
-        var request = new PushNotificationRecipientRequest("토큰값");
+        var request = new FcmRegistrationTokenRequest("토큰값");
 
         // when
-        var saved = sut.registerFcmPushToken(request, loginMember);
+        var saved = sut.registerFcmRegistrationToken(request, loginMember);
 
         // then
-        assertThat(fcmPushTokenRepository.findById(saved.getId()))
+        assertThat(fcmRegistrationTokenRepository.findById(saved.getId()))
                 .isPresent()
-                .hasValueSatisfying(fcmPushToken -> {
+                .hasValueSatisfying(fcmRegistrationToken -> {
                     assertSoftly(softly -> {
-                        softly.assertThat(fcmPushToken.getMemberId())
+                        softly.assertThat(fcmRegistrationToken.getMemberId())
                                 .isEqualTo(member.getId());
-                        softly.assertThat(fcmPushToken.getPushToken())
+                        softly.assertThat(fcmRegistrationToken.getRegistrationToken())
                                 .isEqualTo("토큰값");
                     });
                 });
@@ -56,10 +56,10 @@ class FcmPushTokenServiceTest {
         // given
         var nonExistentMemberId = 999L;
         var loginMember = new LoginMember(nonExistentMemberId);
-        var request = new PushNotificationRecipientRequest("임의의토큰");
+        var request = new FcmRegistrationTokenRequest("임의의토큰");
 
         // when // then
-        assertThatThrownBy(() -> sut.registerFcmPushToken(request, loginMember))
+        assertThatThrownBy(() -> sut.registerFcmRegistrationToken(request, loginMember))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 회원입니다.");
     }

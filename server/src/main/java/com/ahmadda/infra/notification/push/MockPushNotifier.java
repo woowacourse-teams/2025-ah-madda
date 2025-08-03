@@ -10,13 +10,16 @@ import java.util.List;
 public class MockPushNotifier implements PushNotifier {
 
     @Override
-    public void sendPushs(final List<String> recipientPushTokens, final PushNotificationPayload payload) {
+    public void sendPushs(
+            final List<String> recipientPushTokens,
+            final PushNotificationPayload pushNotificationPayload
+    ) {
         log.info(
                 "[Mock Push] To: {} | Title: {} | Body: {} | Event ID: {}",
                 recipientPushTokens,
-                payload.title(),
-                payload.body(),
-                payload.eventId()
+                pushNotificationPayload.title(),
+                pushNotificationPayload.body(),
+                pushNotificationPayload.eventId()
         );
     }
 }

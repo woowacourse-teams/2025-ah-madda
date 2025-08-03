@@ -25,9 +25,9 @@ public class FcmPushErrorHandler {
             MessagingErrorCode.INTERNAL
     );
 
-    private final FcmPushTokenRepository fcmPushTokenRepository;
+    private final FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
 
-    public void handleFailures(final BatchResponse response, final List<String> tokens) {
+    public void handleFailures(final BatchResponse response, final List<String> registrationTokens) {
         List<SendResponse> responses = response.getResponses();
         List<String> deletableTokens = new ArrayList<>();
 
@@ -37,20 +37,20 @@ public class FcmPushErrorHandler {
                 continue;
             }
 
-            String token = tokens.get(i);
+            String registrationToken = registrationTokens.get(i);
             FirebaseMessagingException exception = sendResponse.getException();
             MessagingErrorCode errorCode = exception.getMessagingErrorCode();
 
             if (DELETABLE_ERRORS.contains(errorCode)) {
-                deletableTokens.add(token);
+                deletableTokens.add(registrationToken);
             } else if (RETRYABLE_ERRORS.contains(errorCode)) {
                 // TODO: 추후 지수 백오프를 이용한 재시도 로직 구현
             }
-            log.warn("fcmPushError - token: {}, error: {}", token, errorCode);
+            log.warn("fcmPushError - token: {}, error: {}", registrationToken, errorCode);
         }
 
         if (!deletableTokens.isEmpty()) {
-            fcmPushTokenRepository.deleteAllByPushTokenIn(deletableTokens);
+            fcmRegistrationTokenRepository.deleteAllByRegistrationTokenIn(deletableTokens);
         }
     }
 }

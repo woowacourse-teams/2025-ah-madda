@@ -22,8 +22,8 @@ import com.ahmadda.domain.PushNotificationPayload;
 import com.ahmadda.domain.PushNotifier;
 import com.ahmadda.domain.Question;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
-import com.ahmadda.infra.notification.push.FcmPushToken;
-import com.ahmadda.infra.notification.push.FcmPushTokenRepository;
+import com.ahmadda.infra.notification.push.FcmRegistrationToken;
+import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +64,7 @@ class EventServiceTest {
     private GuestRepository guestRepository;
 
     @Autowired
-    private FcmPushTokenRepository fcmPushTokenRepository;
+    private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
 
     @MockitoBean
     private EmailNotifier emailNotifier;
@@ -648,11 +648,11 @@ class EventServiceTest {
     }
 
     private void savePushToken(OrganizationMember organizationMember, String token) {
-        var fcmPushToken = FcmPushToken.create(
+        var fcmRegistrationToken = FcmRegistrationToken.create(
                 organizationMember.getMember()
                         .getId(), token, LocalDateTime.now()
         );
 
-        fcmPushTokenRepository.save(fcmPushToken);
+        fcmRegistrationTokenRepository.save(fcmRegistrationToken);
     }
 }
