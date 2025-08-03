@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+
 @Tag(name = "Organization InviteCode", description = "조직 초대코드 관련 API")
 @RestController
 @RequestMapping("/api/organizations")
@@ -106,7 +108,8 @@ public class OrganizationInviteCodeController {
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember
     ) {
-        InviteCode inviteCode = organizationInviteCodeService.createInviteCode(organizationId, loginMember);
+        InviteCode inviteCode =
+                organizationInviteCodeService.createInviteCode(organizationId, loginMember, LocalDateTime.now());
 
         return ResponseEntity.ok(new InviteCodeCreateResponse(inviteCode.getCode(), inviteCode.getExpiresAt()));
     }

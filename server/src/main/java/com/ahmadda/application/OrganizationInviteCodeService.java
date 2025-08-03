@@ -27,11 +27,11 @@ public class OrganizationInviteCodeService {
     private final RandomCodeGenerator randomCodeGenerator;
 
     @Transactional
-    public InviteCode createInviteCode(final Long organizationId, final LoginMember loginMember) {
+    public InviteCode createInviteCode(final Long organizationId, final LoginMember loginMember, LocalDateTime now) {
         Organization organization = getOrganization(organizationId);
         OrganizationMember inviter = getOrganizationMember(organizationId, loginMember);
 
-        return findOrCreateInviteCode(inviter, organization);
+        return findOrCreateInviteCode(inviter, organization, now);
     }
 
     private Organization getOrganization(final Long organizationId) {
@@ -44,14 +44,18 @@ public class OrganizationInviteCodeService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 조직원 정보입니다."));
     }
 
-    private InviteCode findOrCreateInviteCode(final OrganizationMember inviter, final Organization organization) {
-        return inviteCodeRepository.findByInviter(inviter)
+    private InviteCode findOrCreateInviteCode(
+            final OrganizationMember inviter,
+            final Organization organization,
+            LocalDateTime now
+    ) {
+        return inviteCodeRepository.findFirstByInviterAndExpiresAtAfter(inviter, now)
                 .orElseGet(() -> {
                     InviteCode inviteCode = InviteCode.create(
                             randomCodeGenerator.generate(INVITE_CODE_LENGTH),
                             organization,
                             inviter,
-                            LocalDateTime.now()
+                            now
                     );
 
                     return inviteCodeRepository.save(inviteCode);
