@@ -19,9 +19,9 @@ import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.PushNotificationPayload;
-import com.ahmadda.domain.PushNotificationRecipient;
-import com.ahmadda.domain.PushNotificationRecipientRepository;
 import com.ahmadda.domain.PushNotifier;
+import com.ahmadda.infra.push.FcmPushToken;
+import com.ahmadda.infra.push.FcmPushTokenRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -57,7 +57,7 @@ class EventNotificationServiceTest {
     private GuestRepository guestRepository;
 
     @Autowired
-    private PushNotificationRecipientRepository pushNotificationRecipientRepository;
+    private FcmPushTokenRepository fcmPushTokenRepository;
 
     @MockitoBean
     private EmailNotifier emailNotifier;
@@ -309,8 +309,11 @@ class EventNotificationServiceTest {
     }
 
     private void savePushToken(OrganizationMember organizationMember, String token) {
-        var recipient = PushNotificationRecipient.create(organizationMember.getMember(), token);
+        var fcmPushToken = FcmPushToken.create(
+                organizationMember.getMember()
+                        .getId(), token, LocalDateTime.now()
+        );
 
-        pushNotificationRecipientRepository.save(recipient);
+        fcmPushTokenRepository.save(fcmPushToken);
     }
 }

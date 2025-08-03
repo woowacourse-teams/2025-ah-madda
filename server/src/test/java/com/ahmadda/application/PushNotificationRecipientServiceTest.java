@@ -5,7 +5,7 @@ import com.ahmadda.application.dto.PushNotificationRecipientRequest;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.PushNotificationRecipientRepository;
+import com.ahmadda.infra.push.FcmPushTokenRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,7 +26,7 @@ class PushNotificationRecipientServiceTest {
     private MemberRepository memberRepository;
 
     @Autowired
-    private PushNotificationRecipientRepository recipientRepository;
+    private FcmPushTokenRepository fcmPushTokenRepository;
 
     @Test
     void 푸시알림_수신자를_등록한다() {
@@ -39,13 +39,13 @@ class PushNotificationRecipientServiceTest {
         var saved = sut.registerRecipient(request, loginMember);
 
         // then
-        assertThat(recipientRepository.findById(saved.getId()))
+        assertThat(fcmPushTokenRepository.findById(saved.getId()))
                 .isPresent()
-                .hasValueSatisfying(recipient -> {
+                .hasValueSatisfying(fcmPushToken -> {
                     assertSoftly(softly -> {
-                        softly.assertThat(recipient.getMember())
-                                .isEqualTo(member);
-                        softly.assertThat(recipient.getPushToken())
+                        softly.assertThat(fcmPushToken.getMemberId())
+                                .isEqualTo(member.getId());
+                        softly.assertThat(fcmPushToken.getPushToken())
                                 .isEqualTo("토큰값");
                     });
                 });

@@ -1,7 +1,7 @@
 package com.ahmadda.infra.jwt;
 
 import com.ahmadda.infra.jwt.config.JwtProperties;
-import com.ahmadda.infra.jwt.exception.InvalidTokenException;
+import com.ahmadda.infra.jwt.exception.InvalidJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.Test;
@@ -64,7 +64,7 @@ class JwtProviderTest {
 
         // when // then
         assertThatThrownBy(() -> sut.parsePayload(token))
-                .isInstanceOf(InvalidTokenException.class);
+                .isInstanceOf(InvalidJwtException.class);
     }
 
     @Test
@@ -88,24 +88,24 @@ class JwtProviderTest {
 
         // when // then
         assertThatThrownBy(() -> sut.parsePayload(token))
-                .isInstanceOf(InvalidTokenException.class);
+                .isInstanceOf(InvalidJwtException.class);
     }
 
     @Test
     void 페이로드_변환시_빈_토큰이면_예외가_발생한다() {
         assertThatThrownBy(() -> sut.parsePayload(""))
-                .isInstanceOf(InvalidTokenException.class);
+                .isInstanceOf(InvalidJwtException.class);
     }
 
     @Test
     void 페이로드_변환시_null_토큰이면_예외가_발생한다() {
         assertThatThrownBy(() -> sut.parsePayload(null))
-                .isInstanceOf(InvalidTokenException.class);
+                .isInstanceOf(InvalidJwtException.class);
     }
 
     @Test
     void 페이로드_변환시_형식이_잘못된_토큰이면_예외가_발생한다() {
         assertThatThrownBy(() -> sut.parsePayload("this.is.not.jwt"))
-                .isInstanceOf(InvalidTokenException.class);
+                .isInstanceOf(InvalidJwtException.class);
     }
 }

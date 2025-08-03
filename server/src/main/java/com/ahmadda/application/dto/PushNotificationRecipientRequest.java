@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 
 public record PushNotificationRecipientRequest(
         @NotBlank
-        String notificationToken
+        String fcmPushToken
 ) {
 
 }

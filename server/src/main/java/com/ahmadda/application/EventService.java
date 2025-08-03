@@ -19,9 +19,10 @@ import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.PushNotificationPayload;
-import com.ahmadda.domain.PushNotificationRecipient;
 import com.ahmadda.domain.PushNotifier;
 import com.ahmadda.domain.Question;
+import com.ahmadda.infra.push.FcmPushToken;
+import com.ahmadda.infra.push.FcmPushTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,7 @@ public class EventService {
     private final OrganizationMemberRepository organizationMemberRepository;
     private final EmailNotifier emailNotifier;
     private final PushNotifier pushNotifier;
+    private final FcmPushTokenRepository fcmPushTokenRepository;
 
     @Transactional
     public Event createEvent(
@@ -182,7 +184,7 @@ public class EventService {
 
     private void notifyEventCreated(final Event event, final Organization organization) {
         String content = "새로운 이벤트가 등록되었습니다.";
-        
+
         List<String> recipientEmails = event.getNonGuestOrganizationMembers(organization.getOrganizationMembers())
                 .stream()
                 .map(OrganizationMember::getMember)
@@ -192,16 +194,18 @@ public class EventService {
 
         emailNotifier.sendEmails(recipientEmails, eventEmailPayload);
 
-        List<String> recipientPushTokens = event.getNonGuestOrganizationMembers(organization.getOrganizationMembers())
+        List<Long> memberIds = event.getNonGuestOrganizationMembers(organization.getOrganizationMembers())
                 .stream()
-                .flatMap(organizationMember -> organizationMember.getMember()
-                        .getPushNotificationRecipients()
-                        .stream())
-                .map(PushNotificationRecipient::getPushToken)
+                .map(orgMember -> orgMember.getMember()
+                        .getId())
+                .toList();
+        List<String> fcmPushTokens = fcmPushTokenRepository.findAllByMemberIdIn(memberIds)
+                .stream()
+                .map(FcmPushToken::getPushToken)
                 .toList();
         PushNotificationPayload pushNotificationPayload = PushNotificationPayload.of(event, content);
 
-        pushNotifier.sendPushs(recipientPushTokens, pushNotificationPayload);
+        pushNotifier.sendPushs(fcmPushTokens, pushNotificationPayload);
 
     }
 
@@ -218,16 +222,18 @@ public class EventService {
 
         emailNotifier.sendEmails(recipientEmails, eventEmailPayload);
 
-        List<String> recipientPushTokens = event.getGuests()
+        List<Long> memberIds = event.getGuests()
                 .stream()
-                .flatMap(guest -> guest.getOrganizationMember()
-                        .getMember()
-                        .getPushNotificationRecipients()
-                        .stream())
-                .map(PushNotificationRecipient::getPushToken)
+                .map(Guest::getOrganizationMember)
+                .map(orgMember -> orgMember.getMember()
+                        .getId())
+                .toList();
+        List<String> fcmPushTokens = fcmPushTokenRepository.findAllByMemberIdIn(memberIds)
+                .stream()
+                .map(FcmPushToken::getPushToken)
                 .toList();
         PushNotificationPayload pushNotificationPayload = PushNotificationPayload.of(event, content);
 
-        pushNotifier.sendPushs(recipientPushTokens, pushNotificationPayload);
+        pushNotifier.sendPushs(fcmPushTokens, pushNotificationPayload);
     }
 }

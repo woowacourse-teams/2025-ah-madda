@@ -5,32 +5,35 @@ import com.ahmadda.application.dto.PushNotificationRecipientRequest;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.PushNotificationRecipient;
-import com.ahmadda.domain.PushNotificationRecipientRepository;
+import com.ahmadda.infra.push.FcmPushToken;
+import com.ahmadda.infra.push.FcmPushTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class PushNotificationRecipientService {
 
     private final MemberRepository memberRepository;
-    private final PushNotificationRecipientRepository pushNotificationRecipientRepository;
+    private final FcmPushTokenRepository fcmPushTokenRepository;
 
     @Transactional
-    public PushNotificationRecipient registerRecipient(
+    public FcmPushToken registerRecipient(
             final PushNotificationRecipientRequest request,
             final LoginMember loginMember
     ) {
         Member member = memberRepository.findById(loginMember.memberId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
 
-        PushNotificationRecipient pushNotificationRecipient = PushNotificationRecipient.create(
-                member,
-                request.notificationToken()
+        FcmPushToken fcmPushToken = FcmPushToken.create(
+                member.getId(),
+                request.fcmPushToken(),
+                LocalDateTime.now()
         );
 
-        return pushNotificationRecipientRepository.save(pushNotificationRecipient);
+        return fcmPushTokenRepository.save(fcmPushToken);
     }
 }
