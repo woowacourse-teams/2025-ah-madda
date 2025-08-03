@@ -12,25 +12,37 @@ export const useEventValidation = (formData: EventFormData) => {
   const [errors, setErrors] = useState<Partial<Record<keyof EventFormData, string>>>({});
   const [questionErrors, setQuestionErrors] = useState<Record<number, string>>({});
 
-  const validate = () => {
+  const validateFields = () => {
     const newErrors = validateAllFields(formData);
     setErrors(newErrors);
+    return newErrors;
+  };
 
+  const validateQuestions = () => {
     const newQuestionErrors: Record<number, string> = {};
     formData.questions.forEach((q, i) => {
-      if (q.questionText.trim() === '') {
+      if (!q.questionText || q.questionText.trim() === '') {
         newQuestionErrors[i] = ERROR_MESSAGES.REQUIRED('질문');
       }
     });
     setQuestionErrors(newQuestionErrors);
+    return newQuestionErrors;
+  };
 
-    const isValidQuestions =
-      formData.questions.length === 0 ||
-      Object.values(newQuestionErrors).every((msg) => msg === '');
+  const isAllValid = (
+    fieldErrors: Partial<Record<keyof EventFormData, string>>,
+    questionErrors: Record<number, string>
+  ) => {
+    const hasFieldErrors = Object.keys(fieldErrors).length > 0;
+    const hasInvalidQuestions =
+      formData.questions.length > 0 && Object.values(questionErrors).some((msg) => !!msg);
+    return !hasFieldErrors && !hasInvalidQuestions;
+  };
 
-    const isValidForm = Object.keys(newErrors).length === 0 && isValidQuestions;
-
-    return isValidForm;
+  const validate = () => {
+    const fieldErrors = validateFields();
+    const newQuestionErrors = validateQuestions();
+    return isAllValid(fieldErrors, newQuestionErrors);
   };
 
   const validateField = (field: keyof EventFormData, value: string) => {
