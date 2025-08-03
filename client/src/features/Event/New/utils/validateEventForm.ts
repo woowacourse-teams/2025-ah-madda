@@ -1,7 +1,7 @@
 import { EventFormData } from '../../types/Event';
+import { FIELD_CONFIG } from '../constants/formFieldConfig';
 
 import { getValidationMessage } from './getErrorMessage';
-import { VALIDATION_RULES } from './validationRules';
 
 export const validateAllFields = (
   formData: EventFormData
@@ -17,12 +17,10 @@ export const validateAllFields = (
 };
 
 export const isFormDataEmpty = (formData: EventFormData): boolean => {
-  const requiredFields: (keyof EventFormData)[] = Object.entries(VALIDATION_RULES)
-    .filter(([, rule]) => rule.required)
-    .map(([field]) => field) as (keyof EventFormData)[];
+  return Object.entries(FIELD_CONFIG).some(([key, config]) => {
+    if (!config.required) return false;
 
-  return requiredFields.some((key) => {
-    const value = formData[key];
-    return value?.toString().trim() === '';
+    const value = formData[key as keyof EventFormData];
+    return typeof value === 'string' ? value.trim() === '' : value == null;
   });
 };
