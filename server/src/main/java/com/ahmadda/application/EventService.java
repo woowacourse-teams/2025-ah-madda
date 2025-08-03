@@ -184,47 +184,36 @@ public class EventService {
 
     private void notifyEventCreated(final Event event, final Organization organization) {
         String content = "새로운 이벤트가 등록되었습니다.";
+        List<OrganizationMember> recipients =
+                event.getNonGuestOrganizationMembers(organization.getOrganizationMembers());
 
-        List<String> recipientEmails = event.getNonGuestOrganizationMembers(organization.getOrganizationMembers())
-                .stream()
-                .map(OrganizationMember::getMember)
-                .map(Member::getEmail)
-                .toList();
-        EventEmailPayload eventEmailPayload = EventEmailPayload.of(event, content);
-
-        emailNotifier.sendEmails(recipientEmails, eventEmailPayload);
-
-        List<Long> memberIds = event.getNonGuestOrganizationMembers(organization.getOrganizationMembers())
-                .stream()
-                .map(orgMember -> orgMember.getMember()
-                        .getId())
-                .toList();
-        List<String> registrationTokens = fcmRegistrationTokenRepository.findAllByMemberIdIn(memberIds)
-                .stream()
-                .map(FcmRegistrationToken::getRegistrationToken)
-                .toList();
-        PushNotificationPayload pushNotificationPayload = PushNotificationPayload.of(event, content);
-
-        pushNotifier.sendPushs(registrationTokens, pushNotificationPayload);
-
+        notifyEventChange(event, content, recipients);
     }
 
     private void notifyEventUpdated(final Event event) {
         String content = "이벤트 정보가 수정되었습니다.";
-
-        List<String> recipientEmails = event.getGuests()
+        List<OrganizationMember> recipients = event.getGuests()
                 .stream()
                 .map(Guest::getOrganizationMember)
+                .toList();
+        
+        notifyEventChange(event, content, recipients);
+    }
+
+    private void notifyEventChange(
+            final Event event,
+            final String content,
+            final List<OrganizationMember> recipients
+    ) {
+        List<String> recipientEmails = recipients.stream()
                 .map(OrganizationMember::getMember)
                 .map(Member::getEmail)
                 .toList();
-        EventEmailPayload eventEmailPayload = EventEmailPayload.of(event, content);
+        EventEmailPayload emailPayload = EventEmailPayload.of(event, content);
 
-        emailNotifier.sendEmails(recipientEmails, eventEmailPayload);
+        emailNotifier.sendEmails(recipientEmails, emailPayload);
 
-        List<Long> memberIds = event.getGuests()
-                .stream()
-                .map(Guest::getOrganizationMember)
+        List<Long> memberIds = recipients.stream()
                 .map(orgMember -> orgMember.getMember()
                         .getId())
                 .toList();
@@ -232,8 +221,8 @@ public class EventService {
                 .stream()
                 .map(FcmRegistrationToken::getRegistrationToken)
                 .toList();
-        PushNotificationPayload pushNotificationPayload = PushNotificationPayload.of(event, content);
+        PushNotificationPayload pushPayload = PushNotificationPayload.of(event, content);
 
-        pushNotifier.sendPushs(registrationTokens, pushNotificationPayload);
+        pushNotifier.sendPushs(registrationTokens, pushPayload);
     }
 }
