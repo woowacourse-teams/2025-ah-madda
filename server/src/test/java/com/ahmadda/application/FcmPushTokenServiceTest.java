@@ -17,10 +17,10 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Transactional
-class PushNotificationRecipientServiceTest {
+class FcmPushTokenServiceTest {
 
     @Autowired
-    private PushNotificationRecipientService sut;
+    private FcmPushTokenService sut;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -36,7 +36,7 @@ class PushNotificationRecipientServiceTest {
         var request = new PushNotificationRecipientRequest("토큰값");
 
         // when
-        var saved = sut.registerRecipient(request, loginMember);
+        var saved = sut.registerFcmPushToken(request, loginMember);
 
         // then
         assertThat(fcmPushTokenRepository.findById(saved.getId()))
@@ -59,7 +59,7 @@ class PushNotificationRecipientServiceTest {
         var request = new PushNotificationRecipientRequest("임의의토큰");
 
         // when // then
-        assertThatThrownBy(() -> sut.registerRecipient(request, loginMember))
+        assertThatThrownBy(() -> sut.registerFcmPushToken(request, loginMember))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 회원입니다.");
     }

@@ -15,13 +15,13 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class PushNotificationRecipientService {
+public class FcmPushTokenService {
 
     private final MemberRepository memberRepository;
     private final FcmPushTokenRepository fcmPushTokenRepository;
 
     @Transactional
-    public FcmPushToken registerRecipient(
+    public FcmPushToken registerFcmPushToken(
             final PushNotificationRecipientRequest request,
             final LoginMember loginMember
     ) {

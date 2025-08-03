@@ -1,6 +1,6 @@
 package com.ahmadda.presentation;
 
-import com.ahmadda.application.PushNotificationRecipientService;
+import com.ahmadda.application.FcmPushTokenService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.PushNotificationRecipientRequest;
 import com.ahmadda.presentation.resolver.AuthMember;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class PushNotificationRecipientController {
 
-    private final PushNotificationRecipientService pushNotificationRecipientService;
+    private final FcmPushTokenService fcmPushTokenService;
 
     @Operation(summary = "푸시 알림 수신자 등록", description = "로그인한 사용자의 디바이스를 푸시 알림 수신자로 등록합니다.")
     @ApiResponses(value = {
@@ -63,11 +63,11 @@ public class PushNotificationRecipientController {
             )
     })
     @PostMapping
-    public ResponseEntity<Void> registerRecipient(
+    public ResponseEntity<Void> registerFcmPushToken(
             @RequestBody @Valid final PushNotificationRecipientRequest request,
             @AuthMember final LoginMember loginMember
     ) {
-        pushNotificationRecipientService.registerRecipient(request, loginMember);
+        fcmPushTokenService.registerFcmPushToken(request, loginMember);
 
         return ResponseEntity.noContent()
                 .build();
