@@ -1,9 +1,7 @@
 import { css } from '@emotion/react';
-import { useQuery } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
 import { useNavigate } from 'react-router-dom';
 
-import { myQueryOptions } from '@/api/queries/my';
 import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
@@ -26,7 +24,6 @@ export const EventCreateForm = () => {
   const { formData, setValue } = useEventForm();
   const { errors, setQuestionErrors, validate, validateField, isFormValid } =
     useEventValidation(formData);
-  const { data: userProfile } = useQuery(myQueryOptions.profile());
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +34,6 @@ export const EventCreateForm = () => {
       eventStart: convertDatetimeLocalToKSTISOString(formData.eventStart),
       eventEnd: convertDatetimeLocalToKSTISOString(formData.eventEnd),
       registrationEnd: convertDatetimeLocalToKSTISOString(formData.registrationEnd),
-      organizerNickname: userProfile!.name,
     };
 
     addEvent(payload, {

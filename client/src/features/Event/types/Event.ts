@@ -35,7 +35,6 @@ export type CreateEventAPIRequest = {
   eventStart: string;
   eventEnd: string;
   registrationEnd: string;
-  organizerNickname: string;
   questions: QuestionRequest[];
 };
 

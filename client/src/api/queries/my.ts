@@ -6,7 +6,6 @@ import { fetcher } from '../fetcher';
 
 export const myQueryKeys = {
   all: () => ['my'],
-  profile: () => [...myQueryKeys.all(), 'profile'],
   event: {
     all: () => [...myQueryKeys.all(), 'event'],
     host: () => [...myQueryKeys.event.all(), 'host'],
@@ -15,12 +14,6 @@ export const myQueryKeys = {
 };
 
 export const myQueryOptions = {
-  profile: () =>
-    queryOptions({
-      queryKey: myQueryKeys.profile(),
-      queryFn: getMyProfile,
-    }),
-
   event: {
     hostEvents: (organizationId: number) =>
       queryOptions({
@@ -34,10 +27,6 @@ export const myQueryOptions = {
         queryFn: () => getParticipateEvents(organizationId),
       }),
   },
-};
-
-const getMyProfile = async (): Promise<{ id: number; name: string; email: string }> => {
-  return await fetcher.get('members/profile');
 };
 
 const getHostEvents = async (organizationId: number): Promise<Event[]> => {
