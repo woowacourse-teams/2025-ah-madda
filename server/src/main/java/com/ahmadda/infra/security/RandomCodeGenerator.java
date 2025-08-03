@@ -3,5 +3,5 @@ package com.ahmadda.infra.security;
 @FunctionalInterface
 public interface RandomCodeGenerator {
 
-    String generate(int length);
+    String generate(final int length);
 }

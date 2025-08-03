@@ -185,8 +185,16 @@ class OrganizationMemberEventServiceTest {
         );
 
         // then
-
-
+        assertSoftly(softly -> {
+            softly.assertThat(result)
+                    .hasSize(2);
+            softly.assertThat(result)
+                    .extracting(Event::getTitle)
+                    .containsExactlyInAnyOrder("참여 이벤트 1", "참여 이벤트 2");
+            softly.assertThat(result)
+                    .extracting(Event::getPlace)
+                    .containsExactlyInAnyOrder("장소1", "장소2");
+        });
     }
 
     @Test
