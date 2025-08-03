@@ -47,7 +47,7 @@ public class OrganizationInviteCodeService {
     private InviteCode findOrCreateInviteCode(
             final OrganizationMember inviter,
             final Organization organization,
-            LocalDateTime now
+            final LocalDateTime now
     ) {
         return inviteCodeRepository.findFirstByInviterAndExpiresAtAfter(inviter, now)
                 .orElseGet(() -> {
