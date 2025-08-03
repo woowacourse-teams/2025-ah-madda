@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { EventFormData } from '../../types/Event';
 import { ERROR_MESSAGES } from '../constants/errorMessages';
@@ -38,10 +38,14 @@ export const useEventValidation = (formData: EventFormData) => {
     setErrors((prev) => ({ ...prev, [field]: message }));
   };
 
-  const isFormValid =
-    !Object.values(errors).some((msg) => !!msg) &&
-    !isFormDataEmpty(formData) &&
-    !(formData.questions.length > 0 && Object.values(questionErrors).some((msg) => !!msg));
+  const isFormValid = useMemo(() => {
+    const hasFieldErrors = Object.values(errors).some((msg) => !!msg);
+    const hasEmptyFields = isFormDataEmpty(formData);
+    const hasInvalidQuestions =
+      formData.questions.length > 0 && Object.values(questionErrors).some((msg) => !!msg);
+
+    return !hasFieldErrors && !hasEmptyFields && !hasInvalidQuestions;
+  }, [errors, questionErrors, formData]);
 
   return {
     errors,
