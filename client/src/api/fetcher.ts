@@ -1,7 +1,10 @@
-import ky, { Options, ResponsePromise } from 'ky';
+import ky, { Options, ResponsePromise, HTTPError } from 'ky';
 
 import { ACCESS_TOKEN_KEY } from '@/shared/constants';
 import { getLocalStorage } from '@/shared/utils/localStorage';
+
+import { analytics } from '../lib/analytics';
+import { Sentry } from '../lib/sentry';
 
 const defaultOption: Options = {
   retry: 0,
@@ -21,16 +24,67 @@ export const instance = ky.create({
         if (token) {
           request.headers.set('Authorization', `Bearer ${token}`);
         }
+        request.headers.set('X-Request-Start-Time', Date.now().toString());
       },
     ],
-    afterResponse: [() => {}],
+    afterResponse: [
+      (request, options, response) => {
+        const startTime = Number(request.headers.get('X-Request-Start-Time')) || Date.now();
+        const duration = Date.now() - startTime;
+        analytics.trackApiCall(request.url, request.method, response.status, duration);
+
+        if (response.status >= 400) {
+          Sentry.captureException(
+            new Error(`API Error: ${response.status} ${response.statusText}`),
+            {
+              tags: {
+                api_error: true,
+                status_code: response.status.toString(),
+              },
+              extra: {
+                url: request.url,
+                method: request.method,
+                status: response.status,
+                statusText: response.statusText,
+              },
+            }
+          );
+        }
+      },
+    ],
   },
 
   ...defaultOption,
 });
 
 export async function parseResponse<T>(response: ResponsePromise) {
-  return await response.json<T>();
+  try {
+    return await response.json<T>();
+  } catch (error) {
+    if (error instanceof HTTPError) {
+      const errorData = {
+        status: error.response.status,
+        statusText: error.response.statusText,
+        url: error.response.url,
+      };
+
+      Sentry.captureException(error, {
+        tags: {
+          api_error: true,
+          status_code: error.response.status.toString(),
+        },
+        extra: errorData,
+      });
+    } else {
+      Sentry.captureException(error, {
+        tags: {
+          api_error: true,
+          error_type: 'response_parse_error',
+        },
+      });
+    }
+    throw error;
+  }
 }
 
 export const fetcher = {
