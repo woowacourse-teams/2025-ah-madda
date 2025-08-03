@@ -1,6 +1,6 @@
 import { HTTPError } from 'ky';
 
-import { useCancelParticipate } from '@/api/mutations/useCancelParticipate';
+import { useCancelParticipation } from '@/api/mutations/useCancelParticipation';
 import { useParticipateEvent } from '@/api/mutations/useParticipateEvent';
 import { Answer, GuestStatusAPIResponse } from '@/api/types/event';
 import { Button } from '@/shared/components/Button';
@@ -22,7 +22,7 @@ export const SubmitButtonCard = ({
   const isBeforeDeadline = now <= new Date(registrationEnd);
 
   const { mutate: participantMutate } = useParticipateEvent(eventId);
-  const { mutate: cancelParticipateMutate } = useCancelParticipate(eventId);
+  const { mutate: cancelParticipateMutate } = useCancelParticipation(eventId);
 
   const handleParticipantClick = () => {
     participantMutate(answers, {
