@@ -18,15 +18,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Push Notification", description = "푸시 알림 수신자 관련 API")
+@Tag(name = "FCM Push Token", description = "FCM 푸시 토큰 관련 API")
 @RestController
-@RequestMapping("/api/push-notification")
+@RequestMapping("/api/fcm-push-tokens")
 @RequiredArgsConstructor
-public class PushNotificationRecipientController {
+public class FcmPushTokenController {
 
     private final FcmPushTokenService fcmPushTokenService;
 
-    @Operation(summary = "푸시 알림 수신자 등록", description = "로그인한 사용자의 디바이스를 푸시 알림 수신자로 등록합니다.")
+    @Operation(summary = "FCM 푸시 토큰 등록", description = "로그인한 사용자의 디바이스에서 전달된 FCM 토큰을 서버에 등록합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(
