@@ -1,4 +1,12 @@
-export const MAX_LENGTH = 255;
+export const MAX_LENGTH = {
+  TITLE: 140,
+  DESCRIPTION: 10_000,
+  PLACE: 100,
+  QUESTION: 150,
+  ANSWER: 1_000,
+};
+
+export const MAX_QUESTIONS = 5;
 export const UNLIMITED_CAPACITY = 2_000_000_000;
 
 export const ERROR_MESSAGES = {

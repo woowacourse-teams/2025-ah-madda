@@ -3,8 +3,8 @@ import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 
-import { ERROR_MESSAGES } from '../constants/errorMessages';
 import { useQuestionManager } from '../hooks/useQuestionManager';
+import { getQuestionErrorMessage } from '../utils/getQuestionErrorMessage';
 
 import { QuestionItem } from './QuestionItem';
 
@@ -39,9 +39,7 @@ export const QuestionForm = ({ manager }: Props) => {
             isRequired={question.isRequired}
             onDelete={() => deleteQuestion(question.orderIndex)}
             onChange={(updated) => updateQuestion(question.orderIndex, updated)}
-            errorMessage={
-              !question.questionText?.trim() ? ERROR_MESSAGES.REQUIRED('질문') : undefined
-            }
+            errorMessage={getQuestionErrorMessage(question.questionText)}
           />
         ))}
       </Flex>

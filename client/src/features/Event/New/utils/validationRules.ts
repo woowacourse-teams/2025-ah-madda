@@ -13,7 +13,7 @@ type ValidationRule = {
 export const VALIDATION_RULES: Partial<Record<keyof BasicEventFormFields, ValidationRule>> = {
   title: {
     required: true,
-    maxLength: MAX_LENGTH,
+    maxLength: MAX_LENGTH.TITLE,
     label: '이벤트 이름',
   },
   eventStart: {
@@ -39,12 +39,12 @@ export const VALIDATION_RULES: Partial<Record<keyof BasicEventFormFields, Valida
   },
   place: {
     required: true,
-    maxLength: MAX_LENGTH,
+    maxLength: MAX_LENGTH.PLACE,
     label: '장소',
   },
   description: {
     required: true,
-    maxLength: MAX_LENGTH,
+    maxLength: MAX_LENGTH.DESCRIPTION,
     label: '설명',
   },
   maxCapacity: {

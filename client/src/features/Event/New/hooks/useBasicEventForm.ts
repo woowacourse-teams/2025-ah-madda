@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 
-import { BasicEventFormFields, CreateEventAPIRequest } from '../../types/Event';
+import { BasicEventFormFields } from '../../types/Event';
 import { FIELD_CONFIG } from '../constants/formFieldConfig';
 import { validateEventForm } from '../utils/validateEventForm';
 

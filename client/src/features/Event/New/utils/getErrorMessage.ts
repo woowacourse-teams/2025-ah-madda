@@ -4,7 +4,7 @@ import { ERROR_MESSAGES } from '../constants/errorMessages';
 import { VALIDATION_RULES } from './validationRules';
 import { isEmpty } from './validators';
 
-export const getValidationMessage = (
+export const getErrorMessage = (
   field: keyof BasicEventFormFields,
   value: string,
   formData: BasicEventFormFields

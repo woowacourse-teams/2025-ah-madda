@@ -1,6 +1,6 @@
 import { BasicEventFormFields } from '../../types/Event';
 
-import { getValidationMessage } from './getErrorMessage';
+import { getErrorMessage } from './getErrorMessage';
 
 export const validateEventForm = (
   formData: BasicEventFormFields
@@ -8,7 +8,7 @@ export const validateEventForm = (
   const newErrors: Partial<Record<keyof BasicEventFormFields, string>> = {};
 
   Object.entries(formData).forEach(([key, value]) => {
-    const msg = getValidationMessage(key as keyof BasicEventFormFields, value.toString(), formData);
+    const msg = getErrorMessage(key as keyof BasicEventFormFields, value.toString(), formData);
     if (msg) newErrors[key as keyof BasicEventFormFields] = msg;
   });
 
