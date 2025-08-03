@@ -1,27 +1,51 @@
+import { useReducer, useMemo } from 'react';
+
 import { QuestionRequest } from '../../types/Event';
 
-export const useQuestionManager = (
-  questions: QuestionRequest[],
-  setQuestions: (q: QuestionRequest[]) => void
-) => {
-  const addQuestion = () => {
-    const newQuestion = { orderIndex: questions.length, isRequired: false, questionText: '' };
-    setQuestions([...questions, newQuestion]);
-  };
+type Action =
+  | { type: 'ADD' }
+  | { type: 'DELETE'; index: number }
+  | { type: 'UPDATE'; index: number; data: Partial<QuestionRequest> };
 
-  const deleteQuestion = (index: number) => {
-    const updated = questions
-      .filter((_, idx) => idx !== index)
-      .map((question, idx) => ({ ...question, orderIndex: idx }));
-    setQuestions(updated);
-  };
+const reducer = (state: QuestionRequest[], action: Action): QuestionRequest[] => {
+  switch (action.type) {
+    case 'ADD': {
+      const newQuestion: QuestionRequest = {
+        orderIndex: state.length,
+        isRequired: false,
+        questionText: '',
+      };
+      return [...state, newQuestion];
+    }
+    case 'DELETE': {
+      return state.filter((_, i) => i !== action.index).map((q, i) => ({ ...q, orderIndex: i }));
+    }
+    case 'UPDATE': {
+      return state.map((q, i) => (i === action.index ? { ...q, ...action.data } : q));
+    }
+    default:
+      return state;
+  }
+};
 
-  const updateQuestion = (index: number, data: Partial<QuestionRequest>) => {
-    const updated = questions.map((question, idx) =>
-      idx === index ? { ...question, ...data } : question
-    );
-    setQuestions(updated);
-  };
+export const useQuestionManager = () => {
+  const [questions, dispatch] = useReducer(reducer, []);
 
-  return { addQuestion, deleteQuestion, updateQuestion };
+  const addQuestion = () => dispatch({ type: 'ADD' });
+  const deleteQuestion = (index: number) => dispatch({ type: 'DELETE', index });
+  const updateQuestion = (index: number, data: Partial<QuestionRequest>) =>
+    dispatch({ type: 'UPDATE', index, data });
+
+  const isValid = useMemo(
+    () => questions.length === 0 || questions.every((q) => q.questionText.trim() !== ''),
+    [questions]
+  );
+
+  return {
+    questions,
+    addQuestion,
+    deleteQuestion,
+    updateQuestion,
+    isValid,
+  };
 };

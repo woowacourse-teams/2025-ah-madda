@@ -1,9 +1,8 @@
 import { EventFormData } from '../../types/Event';
-import { FIELD_CONFIG } from '../constants/formFieldConfig';
 
 import { getValidationMessage } from './getErrorMessage';
 
-export const validateAllFields = (
+export const validateEventForm = (
   formData: EventFormData
 ): Partial<Record<keyof EventFormData, string>> => {
   const newErrors: Partial<Record<keyof EventFormData, string>> = {};
@@ -14,13 +13,4 @@ export const validateAllFields = (
   });
 
   return newErrors;
-};
-
-export const isFormDataEmpty = (formData: EventFormData): boolean => {
-  return Object.entries(FIELD_CONFIG).some(([key, config]) => {
-    if (!config.required) return false;
-
-    const value = formData[key as keyof EventFormData];
-    return typeof value === 'string' ? value.trim() === '' : value == null;
-  });
 };

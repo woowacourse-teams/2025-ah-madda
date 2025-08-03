@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import { css } from '@emotion/react';
 import { HTTPError } from 'ky';
 import { useNavigate } from 'react-router-dom';
@@ -8,10 +10,9 @@ import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
 
-import { QuestionRequest } from '../../types/Event';
 import { useAddEvent } from '../hooks/useAddEvent';
-import { useEventForm } from '../hooks/useEventForm';
-import { useEventValidation } from '../hooks/useEventValidation';
+import { useBasicEventForm } from '../hooks/useBasicEventForm';
+import { useQuestionManager } from '../hooks/useQuestionManager';
 import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
 
 import { QuestionForm } from './QuestionForm';
@@ -21,19 +22,31 @@ const ORGANIZATION_ID = 1; // 임시
 export const EventCreateForm = () => {
   const navigate = useNavigate();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
-  const { formData, setValue } = useEventForm();
-  const { errors, setQuestionErrors, validate, validateField, isFormValid } =
-    useEventValidation(formData);
+
+  const {
+    basicForm,
+    setValue,
+    touchedMap,
+    setTouched,
+    validateField,
+    errors,
+    isValid: isBasicFormValid,
+  } = useBasicEventForm();
+
+  const questionManager = useQuestionManager();
+
+  const isFormReady = isBasicFormValid && questionManager.isValid;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
+    if (!isBasicFormValid || !questionManager.isValid) return;
 
     const payload = {
-      ...formData,
-      eventStart: convertDatetimeLocalToKSTISOString(formData.eventStart),
-      eventEnd: convertDatetimeLocalToKSTISOString(formData.eventEnd),
-      registrationEnd: convertDatetimeLocalToKSTISOString(formData.registrationEnd),
+      ...basicForm,
+      questions: questionManager.questions,
+      eventStart: convertDatetimeLocalToKSTISOString(basicForm.eventStart),
+      eventEnd: convertDatetimeLocalToKSTISOString(basicForm.eventEnd),
+      registrationEnd: convertDatetimeLocalToKSTISOString(basicForm.registrationEnd),
     };
 
     addEvent(payload, {
@@ -58,10 +71,6 @@ export const EventCreateForm = () => {
     });
   };
 
-  const onQuestionsChange = (newQuestions: QuestionRequest[]) => {
-    setValue('questions', newQuestions);
-  };
-
   return (
     <form onSubmit={handleSubmit}>
       <Flex dir="column" gap="20px" padding="60px 0" width="100%">
@@ -78,13 +87,14 @@ export const EventCreateForm = () => {
             <Input
               id="title"
               label="이벤트 이름"
-              value={formData.title}
+              value={basicForm.title}
               onChange={(e) => {
                 setValue('title', e.target.value);
                 validateField('title', e.target.value);
               }}
-              errorMessage={errors.title}
-              isRequired={true}
+              onBlur={() => setTouched('title')}
+              errorMessage={touchedMap.title ? errors.title : ''}
+              isRequired
             />
 
             <Flex
@@ -102,32 +112,33 @@ export const EventCreateForm = () => {
                 type="datetime-local"
                 min="2025-07-31T14:00"
                 placeholder="2025.07.30 13:00"
-                value={formData.eventStart}
+                value={basicForm.eventStart}
                 onChange={(e) => {
                   const newValue = e.target.value;
-
                   setValue('eventStart', newValue);
                   validateField('eventStart', newValue);
 
                   setValue('registrationEnd', newValue);
                   validateField('registrationEnd', newValue);
                 }}
-                errorMessage={errors.eventStart}
-                isRequired={true}
+                onBlur={() => setTouched('eventStart')}
+                errorMessage={touchedMap.eventStart ? errors.eventStart : ''}
+                isRequired
               />
               <Input
                 id="eventEnd"
                 label="이벤트 종료일"
                 type="datetime-local"
                 placeholder="2025.07.30 15:00"
-                value={formData.eventEnd}
-                min={formData.eventStart}
+                value={basicForm.eventEnd}
+                min={basicForm.eventStart}
                 onChange={(e) => {
                   setValue('eventEnd', e.target.value);
                   validateField('eventEnd', e.target.value);
                 }}
-                errorMessage={errors.eventEnd}
-                isRequired={true}
+                onBlur={() => setTouched('eventEnd')}
+                errorMessage={touchedMap.eventEnd ? errors.eventEnd : ''}
+                isRequired
               />
             </Flex>
 
@@ -136,27 +147,29 @@ export const EventCreateForm = () => {
               label="신청 종료일"
               type="datetime-local"
               placeholder="2025.07.25 15:00"
-              value={formData.registrationEnd}
-              max={formData.eventStart}
+              value={basicForm.registrationEnd}
+              max={basicForm.eventStart}
               onChange={(e) => {
                 setValue('registrationEnd', e.target.value);
                 validateField('registrationEnd', e.target.value);
               }}
-              errorMessage={errors.registrationEnd}
-              isRequired={true}
+              onBlur={() => setTouched('registrationEnd')}
+              errorMessage={touchedMap.registrationEnd ? errors.registrationEnd : ''}
+              isRequired
             />
 
             <Input
               id="place"
               label="장소"
               placeholder="이벤트 장소를 입력해 주세요"
-              value={formData.place}
+              value={basicForm.place}
               onChange={(e) => {
                 setValue('place', e.target.value);
                 validateField('place', e.target.value);
               }}
-              errorMessage={errors.place}
-              isRequired={true}
+              onBlur={() => setTouched('place')}
+              errorMessage={touchedMap.place ? errors.place : ''}
+              isRequired
               max={12}
             />
 
@@ -164,13 +177,14 @@ export const EventCreateForm = () => {
               id="description"
               label="설명"
               placeholder="이벤트에 대한 설명을 입력해 주세요"
-              value={formData.description}
+              value={basicForm.description}
               onChange={(e) => {
                 setValue('description', e.target.value);
                 validateField('description', e.target.value);
               }}
-              errorMessage={errors.description}
-              isRequired={true}
+              onBlur={() => setTouched('description')}
+              errorMessage={touchedMap.description ? errors.description : ''}
+              isRequired
               max={80}
             />
 
@@ -179,26 +193,23 @@ export const EventCreateForm = () => {
               label="수용 인원"
               placeholder="최대 참가 인원을 입력해 주세요"
               type="number"
-              value={formData.maxCapacity}
+              value={basicForm.maxCapacity}
               min={1}
               onChange={(e) => setValue('maxCapacity', Number(e.target.value))}
-              isRequired={true}
+              onBlur={() => setTouched('maxCapacity')}
+              isRequired
             />
           </Flex>
         </Card>
 
-        <QuestionForm
-          questions={formData.questions}
-          onChange={onQuestionsChange}
-          onErrorChange={setQuestionErrors}
-        />
+        <QuestionForm manager={questionManager} />
 
         <Flex justifyContent="flex-end">
           <Button
             type="submit"
             color="black"
             size="sm"
-            disabled={!isFormValid}
+            disabled={!isFormReady}
             css={css`
               border-radius: 5px;
               font-size: 12px;
