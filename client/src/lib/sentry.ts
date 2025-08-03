@@ -5,8 +5,9 @@ const SENTRY_DSN =
   'https://ee98629c7681966d4c9aa6794c444f20@o4509767598997504.ingest.us.sentry.io/4509767646773248';
 
 export const initSentry = () => {
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Sentry initialized in development mode');
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('Sentry disabled in non-production environment');
+    return;
   }
 
   Sentry.init({
@@ -24,10 +25,37 @@ export const initSentry = () => {
       }),
     ],
 
-    tracesSampleRate: process.env.NODE_ENV === 'development' ? 1.0 : 0.1,
+    tracesSampleRate: process.env.NODE_ENV === 'production' ? 1.0 : 0.1,
 
     replaysSessionSampleRate: 0.1,
     replaysOnErrorSampleRate: 1.0,
+
+    beforeSend(event) {
+      if (event.exception) {
+        const error = event.exception.values?.[0];
+        if (error?.type === 'ReferenceError') {
+          const errorMessage = error.value || '';
+
+          const ignoredErrors = ['is not defined'];
+
+          if (ignoredErrors.some((ignored) => errorMessage.includes(ignored))) {
+            return null;
+          }
+        }
+        if (error?.type === 'TypeError') {
+          const errorMessage = error.value || '';
+          const ignoredErrors = [
+            'Cannot read properties of undefined',
+            'Cannot read properties of null',
+          ];
+          if (ignoredErrors.some((ignored) => errorMessage.includes(ignored))) {
+            return null;
+          }
+        }
+      }
+
+      return event;
+    },
 
     initialScope: {
       tags: {
