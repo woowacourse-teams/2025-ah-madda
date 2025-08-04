@@ -49,7 +49,7 @@ export const eventQueryOptions = {
   cancel: (eventId: number) =>
     queryOptions({
       queryKey: [...eventQueryKeys.cancel(), eventId],
-      queryFn: () => fetcher.delete<void>(`events/${eventId}`),
+      queryFn: () => fetcher.delete(`events/${eventId}`),
     }),
 };
 
