@@ -1,24 +1,22 @@
-import { StyledBadge } from './Badge.styled';
+import { ReactNode } from 'react';
 
-export type BadgeType = '모집중' | '예정' | '마감';
+import { Text } from '@/shared/components/Text';
+
+import { BADGE_VARIANTS, StyledBadge } from './Badge.styled';
 
 type BadgeProps = {
-  type: BadgeType;
+  variant: keyof typeof BADGE_VARIANTS;
+  children: ReactNode;
 };
 
-export const Badge = ({ type }: BadgeProps) => {
-  const getBadgeText = () => {
-    switch (type) {
-      case '모집중':
-        return '모집중';
-      case '예정':
-        return '예정';
-      case '마감':
-        return '신청마감';
-      default:
-        return '모집중';
-    }
-  };
+export const Badge = ({ variant = 'blue', children, ...props }: BadgeProps) => {
+  const style = BADGE_VARIANTS[variant];
 
-  return <StyledBadge type={type}>{getBadgeText()}</StyledBadge>;
+  return (
+    <StyledBadge backgroundColor={style.backgroundColor} textColor={style.textColor} {...props}>
+      <Text type="Label" weight="semibold" color={style.textColor}>
+        {children}
+      </Text>
+    </StyledBadge>
+  );
 };

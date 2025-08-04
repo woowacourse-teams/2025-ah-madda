@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
+import { Flex } from '../Flex';
+
 import { Badge } from './Badge';
 
 const meta: Meta<typeof Badge> = {
@@ -10,16 +12,16 @@ const meta: Meta<typeof Badge> = {
     docs: {
       description: {
         component:
-          'A badge component for displaying status information with different visual styles based on the type. Supports three types: recruiting, scheduled, and closed.',
+          'A badge component for displaying status information with different visual styles based on the variant. Supports three variants: blue, gray, and red.',
       },
     },
   },
   tags: ['autodocs'],
   argTypes: {
-    type: {
+    variant: {
       control: { type: 'select' },
-      options: ['모집중', '예정', '마감'],
-      description: 'The type of badge to display',
+      options: ['blue', 'gray', 'red'],
+      description: 'The variant of badge to display',
     },
   },
 };
@@ -29,16 +31,17 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    type: '모집중',
+    variant: 'blue',
+    children: '모집중',
   },
 };
 
-export const AllTypes: Story = {
+export const AllVariants: Story = {
   render: () => (
-    <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-      <Badge type="모집중" />
-      <Badge type="예정" />
-      <Badge type="마감" />
-    </div>
+    <Flex gap="16px" alignItems="center">
+      <Badge variant="blue">모집중</Badge>
+      <Badge variant="gray">예정</Badge>
+      <Badge variant="red">신청마감</Badge>
+    </Flex>
   ),
 };
