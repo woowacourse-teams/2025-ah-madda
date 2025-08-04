@@ -1,3 +1,6 @@
+import { HTTPError } from 'ky';
+
+import { useCancelParticipation } from '@/api/mutations/useCancelParticipation';
 import { useParticipateEvent } from '@/api/mutations/useParticipateEvent';
 import { Answer, GuestStatusAPIResponse } from '@/api/types/event';
 import { Button } from '@/shared/components/Button';
@@ -18,10 +21,11 @@ export const SubmitButtonCard = ({
   const now = new Date();
   const isBeforeDeadline = now <= new Date(registrationEnd);
 
-  const { mutate } = useParticipateEvent(eventId);
+  const { mutate: participantMutate } = useParticipateEvent(eventId);
+  const { mutate: cancelParticipateMutate } = useCancelParticipation(eventId);
 
-  const handleClick = () => {
-    mutate(answers, {
+  const handleParticipantClick = () => {
+    participantMutate(answers, {
       onSuccess: () => {
         alert('✅ 참가 신청이 완료되었습니다.');
       },
@@ -31,15 +35,36 @@ export const SubmitButtonCard = ({
     });
   };
 
+  const handelCancelParticipateClick = () => {
+    cancelParticipateMutate(undefined, {
+      onSuccess: () => {
+        alert('✅ 참가 신청이 취소되었습니다.');
+      },
+      onError: (error) => {
+        if (error instanceof HTTPError) {
+          error.response.json().then((errorData) => {
+            alert(`❌ ${errorData.detail}`);
+          });
+        }
+      },
+    });
+  };
+
   return (
     <Flex margin="10px 0 40px">
       <Button
-        width="100%"
-        color={!isGuest || isBeforeDeadline ? '#2563EB' : 'gray'}
-        disabled={!isBeforeDeadline || isGuest}
-        onClick={handleClick}
+        size="full"
+        color={!isGuest || isBeforeDeadline ? 'primary' : 'tertiary'}
+        disabled={!isBeforeDeadline}
+        onClick={isGuest ? handelCancelParticipateClick : handleParticipantClick}
       >
-        {isBeforeDeadline ? (!isGuest ? '신청 하기' : '신청 완료') : '신청 마감'}
+        {isBeforeDeadline
+          ? isGuest
+            ? '신청 취소'
+            : '신청 하기'
+          : isGuest
+            ? '신청 완료'
+            : '신청 마감'}
       </Button>
     </Flex>
   );
