@@ -31,3 +31,8 @@ management:
         enabled: true
         namespace: EC2/ahmadda-api
         step: 1m
+
+logging:
+  level:
+    io.micrometer.cloudwatch2: DEBUG
+    software.amazon.awssdk: DEBUG
