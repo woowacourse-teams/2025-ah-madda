@@ -7,7 +7,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-//TODO VO화 및 테이블상에서는 분리되게할것
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

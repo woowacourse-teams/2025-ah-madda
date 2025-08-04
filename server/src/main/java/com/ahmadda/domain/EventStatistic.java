@@ -2,6 +2,7 @@ package com.ahmadda.domain;
 
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import com.ahmadda.domain.util.Assert;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -33,7 +34,8 @@ public class EventStatistic extends BaseEntity {
     @JoinColumn(name = "event_id", unique = true)
     private Event event;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "eventStatistic")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "event_statistic_id")
     private final List<EventViewMatric> eventViewMatrics = new ArrayList<>();
 
     private EventStatistic(final Event event, LocalDateTime createdDatetime) {
