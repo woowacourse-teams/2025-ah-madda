@@ -38,9 +38,13 @@ const request = async <T>(path: string, method: HttpMethod, body?: object): Prom
 
   if (!response.ok) {
     try {
-      const errorData: HttpErrorResponse = await response.json();
-      throw new HttpError(response.status, errorData);
-    } catch {
+      const responseText = await response.json();
+      throw new HttpError(response.status, responseText);
+    } catch (parseError) {
+      if (parseError instanceof HttpError) {
+        throw parseError;
+      }
+
       throw new HttpError(response.status);
     }
   }
