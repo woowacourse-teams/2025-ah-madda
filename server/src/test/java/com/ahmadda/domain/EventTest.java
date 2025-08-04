@@ -45,7 +45,6 @@ class EventTest {
                         eventPeriod.end(),
                         now
                 ),
-                "이전 닉네임",
                 10
         );
 
@@ -61,12 +60,12 @@ class EventTest {
 
         // when
         sut.update(
-                sut.getOrganizer().getMember(),
+                sut.getOrganizer()
+                        .getMember(),
                 "수정된 제목",
                 "수정된 설명",
                 "수정된 장소",
                 updatedOperationPeriod,
-                "수정된 닉네임",
                 20
         );
 
@@ -80,8 +79,6 @@ class EventTest {
                     .isEqualTo("수정된 장소");
             softly.assertThat(sut.getEventOperationPeriod())
                     .isEqualTo(updatedOperationPeriod);
-            softly.assertThat(sut.getOrganizerNickname())
-                    .isEqualTo("수정된 닉네임");
             softly.assertThat(sut.getMaxCapacity())
                     .isEqualTo(20);
         });
@@ -106,7 +103,6 @@ class EventTest {
                         eventPeriod.end(),
                         now
                 ),
-                "이전 닉네임",
                 10
         );
 
@@ -129,7 +125,6 @@ class EventTest {
                 "수정된 설명",
                 "수정된 장소",
                 updatedOperationPeriod,
-                "수정된 닉네임",
                 20
         ))
                 .isInstanceOf(UnauthorizedOperationException.class)
@@ -398,9 +393,13 @@ class EventTest {
 
         //when // then
         assertSoftly(softly -> {
-            softly.assertThat(sut.getGuests().size()).isEqualTo(1L);
+            softly.assertThat(sut.getGuests()
+                            .size())
+                    .isEqualTo(1L);
             sut.cancelParticipation(organizationMember2, LocalDateTime.now());
-            softly.assertThat(sut.getGuests().size()).isEqualTo(0L);
+            softly.assertThat(sut.getGuests()
+                            .size())
+                    .isEqualTo(0L);
         });
     }
 
@@ -525,7 +524,6 @@ class EventTest {
                                 .plusDays(4),
                         LocalDateTime.now()
                 ),
-                "이벤트 근로",
                 maxCapacity,
                 questions
         );
@@ -543,7 +541,6 @@ class EventTest {
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
-                "이벤트 근로",
                 10
         );
     }
@@ -574,7 +571,6 @@ class EventTest {
                 createOrganizationMember(createMember(), organization),
                 organization,
                 eventOperationPeriod,
-                "이벤트 근로",
                 100
         );
     }
@@ -605,7 +601,6 @@ class EventTest {
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
-                "이벤트 근로",
                 10
         );
     }

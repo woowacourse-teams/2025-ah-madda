@@ -21,8 +21,6 @@ public record EventCreateRequest(
         LocalDateTime eventStart,
         @NotNull
         LocalDateTime eventEnd,
-        @NotBlank
-        String organizerNickname,
         int maxCapacity,
         @Valid
         List<QuestionCreateRequest> questions

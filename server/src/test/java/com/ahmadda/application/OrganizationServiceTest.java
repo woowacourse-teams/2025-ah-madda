@@ -234,7 +234,6 @@ class OrganizationServiceTest {
                         end.plusHours(1), end.plusHours(2),
                         start.minusDays(1)
                 ),
-                organizer.getNickname(),
                 100
         );
     }

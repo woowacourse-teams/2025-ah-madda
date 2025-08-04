@@ -374,7 +374,6 @@ class EventGuestServiceTest {
                         now.plusDays(1), now.plusDays(2),
                         now.minusDays(6)
                 ),
-                organizer.getNickname(),
                 100,
                 questions
         );
@@ -405,7 +404,6 @@ class EventGuestServiceTest {
                         eventEnd,
                         creationTime
                 ),
-                organizer.getNickname(),
                 100,
                 questions
         );
