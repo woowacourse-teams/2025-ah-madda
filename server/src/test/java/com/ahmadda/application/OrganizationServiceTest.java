@@ -56,7 +56,7 @@ class OrganizationServiceTest {
         organizationRepository.save(organization);
 
         // when
-        var found = sut.getOrganization(organization.getId());
+        var found = sut.getOrganizationById(organization.getId());
 
         // then
         assertSoftly(softly -> {
@@ -95,7 +95,7 @@ class OrganizationServiceTest {
     @Test
     void 존재하지_않는_조직_ID로_조회하면_예외가_발생한다() {
         // when // then
-        assertThatThrownBy(() -> sut.getOrganization(999L))
+        assertThatThrownBy(() -> sut.getOrganizationById(999L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 조직입니다.");
     }
@@ -156,14 +156,14 @@ class OrganizationServiceTest {
         var member1 = memberRepository.save(Member.create("user1", "user1@test.com"));
         var member2 = memberRepository.save(Member.create("user2", "user2@test.com"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        OrganizationMember inviter = createAndSaveOrganizationMember("surf", member2, organization);
-        InviteCode inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
+        var inviter = createAndSaveOrganizationMember("surf", member2, organization);
+        var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(member1.getId());
         var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode());
 
         // when
-        OrganizationMember organizationMember = sut.participateOrganization(organization.getId(), loginMember, request);
+        var organizationMember = sut.participateOrganization(organization.getId(), loginMember, request);
 
         // then
         assertThat(organizationMemberRepository.findById(organizationMember.getId()))
@@ -177,9 +177,9 @@ class OrganizationServiceTest {
         var member1 = memberRepository.save(Member.create("user1", "user1@test.com"));
         var member2 = memberRepository.save(Member.create("user2", "user2@test.com"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        OrganizationMember organizationMember = createAndSaveOrganizationMember("surf", member1, organization);
-        OrganizationMember inviter = createAndSaveOrganizationMember("tuda", member2, organization);
-        InviteCode inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
+        var organizationMember = createAndSaveOrganizationMember("surf", member1, organization);
+        var inviter = createAndSaveOrganizationMember("tuda", member2, organization);
+        var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(member1.getId());
         var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode());
@@ -196,8 +196,8 @@ class OrganizationServiceTest {
         var member1 = memberRepository.save(Member.create("user1", "user1@test.com"));
         var member2 = memberRepository.save(Member.create("user2", "user2@test.com"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        OrganizationMember inviter = createAndSaveOrganizationMember("surf", member2, organization);
-        InviteCode inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
+        var inviter = createAndSaveOrganizationMember("surf", member2, organization);
+        var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(member1.getId());
         var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode());
@@ -213,8 +213,8 @@ class OrganizationServiceTest {
         // given
         var member = memberRepository.save(Member.create("user2", "user2@test.com"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        OrganizationMember inviter = createAndSaveOrganizationMember("surf", member, organization);
-        InviteCode inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
+        var inviter = createAndSaveOrganizationMember("surf", member, organization);
+        var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(999L);
         var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode());
@@ -236,7 +236,7 @@ class OrganizationServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
-                .isInstanceOf(NotFoundException.class)
+                .isInstanceOf(BusinessFlowViolatedException.class)
                 .hasMessage("잘못된 초대코드입니다.");
     }
 

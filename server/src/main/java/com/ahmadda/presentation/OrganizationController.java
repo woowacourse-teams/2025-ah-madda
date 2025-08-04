@@ -115,7 +115,7 @@ public class OrganizationController {
     })
     @GetMapping("/{organizationId}")
     public ResponseEntity<OrganizationResponse> readOrganization(@PathVariable final Long organizationId) {
-        Organization organization = organizationService.getOrganization(organizationId);
+        Organization organization = organizationService.getOrganizationById(organizationId);
         OrganizationResponse organizationResponse = OrganizationResponse.from(organization);
 
         return ResponseEntity.ok(organizationResponse);
@@ -145,7 +145,7 @@ public class OrganizationController {
             @ApiResponse(
                     responseCode = "200",
                     content = @Content(
-                            schema = @Schema(implementation = OrganizationResponse.class)
+                            schema = @Schema(implementation = OrganizationParticipateResponse.class)
                     )
             ),
             @ApiResponse(
@@ -167,33 +167,75 @@ public class OrganizationController {
             @ApiResponse(
                     responseCode = "404",
                     content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Not Found",
-                                              "status": 404,
-                                              "detail": "존재하지 않는 조직입니다.",
-                                              "instance": "/api/organizations/{organizationId}/participation"
-                                            }
-                                            """
-                            )
+                            examples = {
+                                    @ExampleObject(
+                                            name = "조직 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 조직입니다.",
+                                                      "instance": "/api/organizations/{organizationId}/participation"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "회원 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 회원입니다",
+                                                      "instance": "/api/organizations/{organizationId}/participation"
+                                                    }
+                                                    """
+                                    )
+                            }
                     )
             ),
             @ApiResponse(
                     responseCode = "422",
                     content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Unprocessable Entity",
-                                              "status": 422,
-                                              "detail": "이미 참여한 조직입니다.",
-                                              "instance": "/api/organizations/{organizationId}/participation"
-                                            }
-                                            """
-                            )
+                            examples = {
+                                    @ExampleObject(
+                                            name = "이미 참여한 조직",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "이미 참여한 조직입니다.",
+                                                      "instance": "/api/organizations/{organizationId}/participation"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "조직의 초대코드가 아니거나 없는 경우",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "잘못된 초대코드입니다.",
+                                                      "instance": "/api/organizations/{organizationId}/participation"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "만료된 초대코드인 경우",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "초대코드가 만료되었습니다.",
+                                                      "instance": "/api/organizations/{organizationId}/participation"
+                                                    }
+                                                    """
+                                    )
+                            }
                     )
             )
     })

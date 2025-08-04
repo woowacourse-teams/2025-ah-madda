@@ -46,13 +46,12 @@ public class OrganizationService {
         return organizationRepository.save(organization);
     }
 
-    public Organization getOrganization(final Long organizationId) {
-        return organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직입니다."));
+    public Organization getOrganizationById(final Long organizationId) {
+        return getOrganization(organizationId);
     }
 
     public List<Event> getOrganizationEvents(final Long organizationId, final LoginMember loginMember) {
-        Organization organization = getOrganization(organizationId);
+        Organization organization = getOrganizationById(organizationId);
 
         if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId())) {
             throw new AccessDeniedException("조직에 참여하지 않아 권한이 없습니다.");
@@ -111,6 +110,11 @@ public class OrganizationService {
 
     private InviteCode getInviteCode(final String code) {
         return inviteCodeRepository.findByCode(code)
-                .orElseThrow(() -> new NotFoundException("잘못된 초대코드입니다."));
+                .orElseThrow(() -> new BusinessFlowViolatedException("잘못된 초대코드입니다."));
+    }
+
+    private Organization getOrganization(final Long organizationId) {
+        return organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직입니다."));
     }
 }
