@@ -29,5 +29,5 @@ management:
     export:
       cloudwatch:
         enabled: true
-        namespace: "EC2/ahmadda-api"
-        step: "1m"
+        namespace: EC2/ahmadda-api
+        step: 1m
