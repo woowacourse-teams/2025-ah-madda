@@ -27,9 +27,6 @@ export const initSentry = () => {
 
     tracesSampleRate: process.env.NODE_ENV === 'production' ? 1.0 : 0.1,
 
-    replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0,
-
     beforeSend(event) {
       if (event.exception) {
         const error = event.exception.values?.[0];
