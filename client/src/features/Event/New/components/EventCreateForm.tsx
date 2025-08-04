@@ -169,7 +169,6 @@ export const EventCreateForm = () => {
               }}
               onBlur={() => setTouched('place')}
               errorMessage={touchedMap.place ? errors.place : ''}
-              isRequired
               max={12}
             />
 
@@ -184,7 +183,6 @@ export const EventCreateForm = () => {
               }}
               onBlur={() => setTouched('description')}
               errorMessage={touchedMap.description ? errors.description : ''}
-              isRequired
               max={80}
             />
 

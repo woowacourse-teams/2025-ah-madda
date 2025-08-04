@@ -38,12 +38,10 @@ export const VALIDATION_RULES: Partial<Record<keyof BasicEventFormFields, Valida
     },
   },
   place: {
-    required: true,
     maxLength: MAX_LENGTH.PLACE,
     label: '장소',
   },
   description: {
-    required: true,
     maxLength: MAX_LENGTH.DESCRIPTION,
     label: '설명',
   },
