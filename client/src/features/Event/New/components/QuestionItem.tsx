@@ -1,9 +1,10 @@
-import { Card } from '../../../../shared/components/Card';
-import { Flex } from '../../../../shared/components/Flex';
-import { IconButton } from '../../../../shared/components/IconButton';
-import { Input } from '../../../../shared/components/Input';
-import { Switch } from '../../../../shared/components/Switch';
-import { Text } from '../../../../shared/components/Text';
+import { Card } from '@/shared/components/Card';
+import { Flex } from '@/shared/components/Flex';
+import { IconButton } from '@/shared/components/IconButton';
+import { Input } from '@/shared/components/Input';
+import { Switch } from '@/shared/components/Switch';
+import { Text } from '@/shared/components/Text';
+
 import { QuestionRequest } from '../../types/Event';
 
 export type QuestionItemProps = {

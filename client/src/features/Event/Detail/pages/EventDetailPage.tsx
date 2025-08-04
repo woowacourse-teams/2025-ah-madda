@@ -42,7 +42,7 @@ export const EventDetailPage = () => {
         <Header
           left={<IconButton name="logo" size={55} onClick={() => navigate('/event')} />}
           right={
-            <Button width="80px" size="sm" onClick={() => navigate('/event/my')}>
+            <Button size="sm" onClick={() => navigate('/event/my')}>
               내 이벤트
             </Button>
           }
