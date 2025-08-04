@@ -1,5 +1,3 @@
-import { useMemo } from 'react';
-
 import { css } from '@emotion/react';
 import { HTTPError } from 'ky';
 import { useNavigate } from 'react-router-dom';
@@ -47,7 +45,10 @@ export const EventCreateForm = () => {
       eventStart: convertDatetimeLocalToKSTISOString(basicForm.eventStart),
       eventEnd: convertDatetimeLocalToKSTISOString(basicForm.eventEnd),
       registrationEnd: convertDatetimeLocalToKSTISOString(basicForm.registrationEnd),
+      organizerNickname: '임시닉',
     };
+
+    console.log(payload);
 
     addEvent(payload, {
       onSuccess: ({ eventId }) => {
