@@ -17,6 +17,8 @@ spring:
 logging:
   level:
     org.hibernate.orm.jdbc.bind: trace
+    io.micrometer.cloudwatch2: DEBUG
+    software.amazon.awssdk: DEBUG
 
 jwt:
   secret-key: ${jwt.dev.secret-key}
@@ -27,3 +29,16 @@ cors:
     - http://localhost:5173
     - http://127.0.0.1:5173
     - https://ahmadda.com
+
+management:
+  metrics:
+    instrumentation:
+      http:
+        server:
+          enabled: true
+
+    export:
+      cloudwatch:
+        enabled: true
+        namespace: EC2/ahmadda-api
+        step: 1m
