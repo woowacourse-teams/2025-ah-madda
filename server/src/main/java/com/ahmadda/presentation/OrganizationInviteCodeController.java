@@ -3,7 +3,9 @@ package com.ahmadda.presentation;
 import com.ahmadda.application.OrganizationInviteCodeService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.InviteCode;
+import com.ahmadda.domain.Organization;
 import com.ahmadda.presentation.dto.InviteCodeCreateResponse;
+import com.ahmadda.presentation.dto.OrganizationResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,9 +16,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
@@ -49,7 +53,7 @@ public class OrganizationInviteCodeController {
                                               "title": "Unauthorized",
                                               "status": 401,
                                               "detail": "유효하지 않은 인증 정보 입니다.",
-                                              "instance": "/api/organizations/{organizationId}/invite_codes"
+                                              "instance": "/api/organizations/{organizationId}/invite-codes"
                                             }
                                             """
                             )
@@ -65,7 +69,7 @@ public class OrganizationInviteCodeController {
                                               "title": "Forbidden",
                                               "status": 403,
                                               "detail": "조직에 참여중인 조직원만 해당 조직의 초대코드를 만들 수 있습니다.",
-                                              "instance": "/api/organizations/{organizationId}/invite_codes"
+                                              "instance": "/api/organizations/{organizationId}/invite-codes"
                                             }
                                             """
                             )
@@ -83,7 +87,7 @@ public class OrganizationInviteCodeController {
                                                       "title": "Not Found",
                                                       "status": 404,
                                                       "detail": "존재하지 않는 조직 정보입니다.",
-                                                      "instance": "/api/organizations/{organizationId}/invite_codes"
+                                                      "instance": "/api/organizations/{organizationId}/invite-codes"
                                                     }
                                                     """
                                     ),
@@ -95,7 +99,7 @@ public class OrganizationInviteCodeController {
                                                       "title": "Not Found",
                                                       "status": 404,
                                                       "detail": "존재하지 않는 조직원 정보입니다.",
-                                                      "instance": "/api/organizations/{organizationId}/invite_codes"
+                                                      "instance": "/api/organizations/{organizationId}/invite-codes"
                                                     }
                                                     """
                                     ),
@@ -112,5 +116,56 @@ public class OrganizationInviteCodeController {
                 organizationInviteCodeService.createInviteCode(organizationId, loginMember, LocalDateTime.now());
 
         return ResponseEntity.ok(new InviteCodeCreateResponse(inviteCode.getCode(), inviteCode.getExpiresAt()));
+    }
+
+    @Operation(summary = "초대코드를 통해 조직 조회", description = "초대코드를 통해 조직을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            schema = @Schema(
+                                    implementation = OrganizationResponse.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "유효하지 않은 초대코드",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "유효하지 않은 초대코드입니다.",
+                                                      "instance": "/api/organizations/preview?inviteCode={inviteCode}"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "만료된 초대코드",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "만료된 초대코드입니다.",
+                                                      "instance": "/api/organizations/preview?inviteCode={inviteCode}"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            )
+    })
+    @GetMapping("/preview")
+    public ResponseEntity<OrganizationResponse> create(
+            @RequestParam final String inviteCode
+    ) {
+        Organization organization = organizationInviteCodeService.getOrganizationByCode(inviteCode);
+
+        return ResponseEntity.ok(OrganizationResponse.from(organization));
     }
 }

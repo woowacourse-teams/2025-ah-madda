@@ -181,7 +181,7 @@ class OrganizationInviteCodeServiceTest {
     }
 
     @Test
-    void 만료된_초대코드를_통해_조직을_조회할_수_있다() {
+    void 만료된_초대코드를_통해_조직을_조회한다면_예외가_발생한다() {
         //given
         var organization = createAndSaveOrganization("우테코");
         var member = createAndSaveMember("surf", "surf@ahmadda.com");
