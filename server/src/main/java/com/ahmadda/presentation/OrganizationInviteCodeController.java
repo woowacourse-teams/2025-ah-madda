@@ -161,7 +161,7 @@ public class OrganizationInviteCodeController {
             )
     })
     @GetMapping("/preview")
-    public ResponseEntity<OrganizationResponse> create(
+    public ResponseEntity<OrganizationResponse> getOrganizationByCode(
             @RequestParam final String inviteCode
     ) {
         Organization organization = organizationInviteCodeService.getOrganizationByCode(inviteCode);
