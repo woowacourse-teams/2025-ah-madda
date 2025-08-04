@@ -19,7 +19,7 @@ public class FcmRegistrationToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "fcm_push_token_id")
+    @Column(name = "fcm_registration_token_id")
     private Long id;
 
     @Column(name = "member_id", nullable = false)
