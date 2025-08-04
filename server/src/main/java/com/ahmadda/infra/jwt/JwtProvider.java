@@ -2,7 +2,7 @@ package com.ahmadda.infra.jwt;
 
 import com.ahmadda.infra.jwt.config.JwtProperties;
 import com.ahmadda.infra.jwt.dto.JwtMemberPayload;
-import com.ahmadda.infra.jwt.exception.InvalidTokenException;
+import com.ahmadda.infra.jwt.exception.InvalidJwtException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -51,7 +51,7 @@ public class JwtProvider {
                     .getPayload();
         } catch (JwtException | IllegalArgumentException e) {
             log.error("jwtError : {} ", e.getMessage(), e);
-            throw new InvalidTokenException("유효하지 않은 인증 정보입니다.");
+            throw new InvalidJwtException("유효하지 않은 인증 정보입니다.", e);
         }
     }
 }

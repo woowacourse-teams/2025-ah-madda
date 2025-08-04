@@ -9,19 +9,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.transaction.annotation.Transactional;
 
+@Disabled
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @TestPropertySource(properties = "slack.mock=false")
-@Transactional
-@Disabled
 class SlackReminderTest {
 
     @Autowired
-    SlackReminder slackReminder;
+    private SlackReminder slackReminder;
 
     @Test
-    void 실제_슬랙_리마인드_테스트() {
+    void 실제_슬랙으로_알람을_전송한다() {
+        // when // then
         slackReminder.alarmMemberCreation(MemberCreateAlarmPayload.from(Member.create("asdf", "asdf@naver.com")));
     }
 }

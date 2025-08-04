@@ -5,9 +5,10 @@ import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
-import com.ahmadda.infra.jwt.exception.InvalidTokenException;
+import com.ahmadda.infra.jwt.exception.InvalidJwtException;
+import com.ahmadda.infra.notification.push.exception.InvalidFcmRegistrationTokenException;
+import com.ahmadda.infra.oauth.exception.InvalidOauthTokenException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -55,8 +56,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
-    @ExceptionHandler({InvalidTokenException.class, InvalidAuthorizationException.class})
-    public ResponseEntity<Object> handleInvalidToken(final Exception ex, final WebRequest request) {
+    @ExceptionHandler({InvalidJwtException.class, InvalidOauthTokenException.class, InvalidAuthorizationException.class})
+    public ResponseEntity<Object> handleUnauthorized(final Exception ex, final WebRequest request) {
         ProblemDetail body =
                 super.createProblemDetail(ex, HttpStatus.UNAUTHORIZED, ex.getMessage(), null, null, request);
 
@@ -64,10 +65,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({AccessDeniedException.class, UnauthorizedOperationException.class})
-    public ResponseEntity<Object> handleAccessDenied(final Exception ex, final WebRequest request) {
+    public ResponseEntity<Object> handleForbidden(final Exception ex, final WebRequest request) {
         ProblemDetail body = super.createProblemDetail(ex, HttpStatus.FORBIDDEN, ex.getMessage(), null, null, request);
 
         return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.FORBIDDEN, request);
+    }
+
+    @ExceptionHandler(InvalidFcmRegistrationTokenException.class)
+    public ResponseEntity<Object> handleBadRequest(final Exception ex, final WebRequest request) {
+        ProblemDetail body =
+                super.createProblemDetail(ex, HttpStatus.BAD_REQUEST, ex.getMessage(), null, null, request);
+
+        return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
     @Override
@@ -78,9 +87,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             final WebRequest request
     ) {
         String validationErrorMessage = methodArgumentNotValidException.getBindingResult()
-                .getAllErrors()
+                .getFieldErrors()
                 .stream()
-                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
                 .collect(Collectors.joining(", "));
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(httpStatusCode, validationErrorMessage);
 
