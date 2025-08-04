@@ -18,3 +18,16 @@ cors:
     - http://localhost:5173
     - http://127.0.0.1:5173
     - https://ahmadda.com
+
+management:
+  metrics:
+    instrumentation:
+      http:
+        server:
+          enabled: true
+
+    export:
+      cloudwatch:
+        enabled: true
+        namespace: "EC2/ahmadda-api"
+        step: "1m"

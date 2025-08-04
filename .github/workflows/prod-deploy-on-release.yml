@@ -1,8 +1,13 @@
 name: Prod Deploy On Release
 
 on:
-  release:
-    types: [published]
+  pull_request:
+    paths:
+      - 'server/**'
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
   setup:
