@@ -4,9 +4,11 @@ import com.ahmadda.application.OrganizationService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.domain.Organization;
+import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.presentation.dto.OrganizationCreateResponse;
+import com.ahmadda.presentation.dto.OrganizationParticipateRequest;
+import com.ahmadda.presentation.dto.OrganizationParticipateResponse;
 import com.ahmadda.presentation.dto.OrganizationResponse;
-import com.ahmadda.presentation.dto.ParticipateRequestDto;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -196,14 +198,21 @@ public class OrganizationController {
             )
     })
     @PostMapping("/{organizationId}/participation")
-    public ResponseEntity<Void> participateOrganization(
+    public ResponseEntity<OrganizationParticipateResponse> participateOrganization(
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember,
-            @Valid @RequestBody final ParticipateRequestDto participateRequestDto
+            @Valid @RequestBody final OrganizationParticipateRequest organizationParticipateRequest
     ) {
-        organizationService.participateOrganization(organizationId, loginMember, participateRequestDto);
+        OrganizationMember organizationMember =
+                organizationService.participateOrganization(
+                        organizationId, loginMember,
+                        organizationParticipateRequest
+                );
 
-        return ResponseEntity.ok()
-                .build();
+        return ResponseEntity.ok(
+                new OrganizationParticipateResponse(
+                        organizationMember.getId(),
+                        organizationMember.getNickname()
+                ));
     }
 }

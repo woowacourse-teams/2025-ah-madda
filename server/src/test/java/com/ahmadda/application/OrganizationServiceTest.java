@@ -13,7 +13,7 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.presentation.dto.ParticipateRequestDto;
+import com.ahmadda.presentation.dto.OrganizationParticipateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -153,7 +153,7 @@ class OrganizationServiceTest {
         organizationMemberRepository.save(OrganizationMember.create("nickname", member, organization));
 
         var loginMember = new LoginMember(member.getId());
-        var request = new ParticipateRequestDto("new_nickname");
+        var request = new OrganizationParticipateRequest("new_nickname", "code");
 
         // when // then
         assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
@@ -167,7 +167,7 @@ class OrganizationServiceTest {
         var member = memberRepository.save(Member.create("user", "user@test.com"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
         var loginMember = new LoginMember(member.getId());
-        var request = new ParticipateRequestDto("new_nickname");
+        var request = new OrganizationParticipateRequest("new_nickname", "code");
 
         // when
         sut.participateOrganization(organization.getId(), loginMember, request);

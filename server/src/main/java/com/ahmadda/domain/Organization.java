@@ -74,6 +74,22 @@ public class Organization extends BaseEntity {
                 .toList();
     }
 
+    public OrganizationMember participate(
+            Member member,
+            String nickname,
+            InviteCode inviteCode,
+            LocalDateTime now
+    ) {
+        if (!inviteCode.matchesOrganization(this)) {
+            throw new BusinessRuleViolatedException("잘못된 초대코드입니다.");
+        }
+        if (inviteCode.isExpired(now)) {
+            throw new BusinessRuleViolatedException("초대코드가 만료되었습니다.");
+        }
+
+        return OrganizationMember.create(nickname, member, this);
+    }
+
     private void validateName(final String name) {
         Assert.notBlank(name, "이름은 공백이면 안됩니다.");
 
