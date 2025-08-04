@@ -2,7 +2,9 @@ import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
+import { useCloseEventRegistration } from '@/api/mutations/useCloseEventRegistration';
 import { eventQueryOptions } from '@/api/queries/event';
+import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
@@ -16,6 +18,7 @@ export const EventInfoSection = () => {
   const { eventId: eventIdParam } = useParams();
   const eventId = Number(eventIdParam);
   const { data: event } = useQuery(eventQueryOptions.detail(eventId));
+  const { mutate: closeEventRegistration } = useCloseEventRegistration(eventId);
 
   return (
     <Flex
@@ -45,6 +48,9 @@ export const EventInfoSection = () => {
             <Text type="Body" weight="regular" color="#4A5565">
               이벤트 정보
             </Text>
+            <Button size="sm" onClick={() => closeEventRegistration()}>
+              이벤트 마감
+            </Button>
           </Flex>
 
           <Text type="Body" weight="semibold" color="#0A0A0A">
