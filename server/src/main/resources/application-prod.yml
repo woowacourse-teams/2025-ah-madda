@@ -36,3 +36,6 @@ logging:
   level:
     io.micrometer.cloudwatch2: DEBUG
     software.amazon.awssdk: DEBUG
+
+notification:
+  redirect-url-prefix: https://ahmadda.com/event/

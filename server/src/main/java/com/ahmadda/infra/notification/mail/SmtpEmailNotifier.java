@@ -1,8 +1,9 @@
-package com.ahmadda.infra.mail;
+package com.ahmadda.infra.notification.mail;
 
+import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.EventEmailPayload;
-import com.ahmadda.domain.NotificationMailer;
-import com.ahmadda.infra.mail.exception.MailSendFailedException;
+import com.ahmadda.domain.OrganizationMember;
+import com.ahmadda.infra.notification.config.NotificationProperties;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -14,23 +15,36 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
-public class SmtpNotificationMailer implements NotificationMailer {
+public class SmtpEmailNotifier implements EmailNotifier {
 
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
+    private final NotificationProperties notificationProperties;
 
     @Async
     @Override
-    public void sendEmail(final String recipientEmail, final EventEmailPayload eventEmailPayload) {
+    public void sendEmails(final List<OrganizationMember> recipients, final EventEmailPayload eventEmailPayload) {
+        List<String> recipientEmails = getRecipientEmails(recipients);
         String subject = createSubject(eventEmailPayload.subject());
         String text = createText(eventEmailPayload.body());
-        MimeMessage mimeMessage = createMimeMessage(recipientEmail, subject, text);
+        // TODO. 추후 BCC 방식으로 묶어서 전송 고려
+        recipientEmails.forEach(recipientEmail -> {
+            MimeMessage mimeMessage = createMimeMessage(recipientEmail, subject, text);
 
-        javaMailSender.send(mimeMessage);
+            javaMailSender.send(mimeMessage);
+        });
+    }
+
+    private List<String> getRecipientEmails(List<OrganizationMember> recipients) {
+        return recipients.stream()
+                .map(organizationMember -> organizationMember.getMember()
+                        .getEmail())
+                .toList();
     }
 
     private String createSubject(final EventEmailPayload.Subject subject) {
@@ -60,7 +74,7 @@ public class SmtpNotificationMailer implements NotificationMailer {
         model.put("registrationEnd", body.registrationEnd());
         model.put("eventStart", body.eventStart());
         model.put("eventEnd", body.eventEnd());
-        model.put("eventId", body.eventId());
+        model.put("redirectUrl", notificationProperties.getRedirectUrlPrefix() + body.eventId());
 
         return model;
     }
@@ -76,7 +90,6 @@ public class SmtpNotificationMailer implements NotificationMailer {
             helper.setText(text, true);
         } catch (MessagingException e) {
             log.error("mailError : {} ", e.getMessage(), e);
-            throw new MailSendFailedException("이메일 발송에 실패했습니다.", e);
         }
 
         return mimeMessage;

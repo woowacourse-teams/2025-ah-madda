@@ -6,9 +6,9 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventEmailPayload;
-import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
@@ -18,7 +18,10 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.domain.PushNotificationPayload;
+import com.ahmadda.domain.PushNotifier;
 import com.ahmadda.domain.Question;
+import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +38,9 @@ public class EventService {
     private final EventRepository eventRepository;
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
-    private final EventNotification eventNotification;
+    private final EmailNotifier emailNotifier;
+    private final PushNotifier pushNotifier;
+    private final FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
 
     @Transactional
     public Event createEvent(
@@ -177,22 +182,41 @@ public class EventService {
     }
 
     private void notifyEventCreated(final Event event, final Organization organization) {
+        String content = "새로운 이벤트가 등록되었습니다.";
         List<OrganizationMember> recipients =
                 event.getNonGuestOrganizationMembers(organization.getOrganizationMembers());
-        String content = "새로운 이벤트가 등록되었습니다.";
-        EventEmailPayload eventEmailPayload = EventEmailPayload.of(event, content);
 
-        eventNotification.sendEmails(recipients, eventEmailPayload);
+        notifyEventChange(event, content, recipients);
     }
 
     private void notifyEventUpdated(final Event event) {
+        String content = "이벤트 정보가 수정되었습니다.";
         List<OrganizationMember> recipients = event.getGuests()
                 .stream()
                 .map(Guest::getOrganizationMember)
                 .toList();
-        String content = "이벤트 정보가 수정되었습니다.";
-        EventEmailPayload eventEmailPayload = EventEmailPayload.of(event, content);
 
-        eventNotification.sendEmails(recipients, eventEmailPayload);
+        notifyEventChange(event, content, recipients);
+    }
+
+    private void notifyEventChange(
+            final Event event,
+            final String content,
+            final List<OrganizationMember> recipients
+    ) {
+        sendEmailsToRecipients(event, content, recipients);
+        sendPushNotificationsToRecipients(event, content, recipients);
+    }
+
+    private void sendPushNotificationsToRecipients(Event event, String content, List<OrganizationMember> recipients) {
+        PushNotificationPayload pushPayload = PushNotificationPayload.of(event, content);
+
+        pushNotifier.sendPushs(recipients, pushPayload);
+    }
+
+    private void sendEmailsToRecipients(Event event, String content, List<OrganizationMember> recipients) {
+        EventEmailPayload emailPayload = EventEmailPayload.of(event, content);
+
+        emailNotifier.sendEmails(recipients, emailPayload);
     }
 }

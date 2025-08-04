@@ -37,3 +37,6 @@ management:
         enabled: true
         namespace: EC2/ahmadda-api
         step: 1m
+
+notification:
+  redirect-url-prefix: http://localhost:5173/event/
