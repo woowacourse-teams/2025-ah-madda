@@ -49,7 +49,7 @@ export const eventQueryOptions = {
   cancel: (eventId: number) =>
     queryOptions({
       queryKey: [...eventQueryKeys.cancel(), eventId],
-      queryFn: () => fetcher.delete<void>(`events/${eventId}`),
+      queryFn: () => fetcher.delete(`events/${eventId}`),
     }),
 };
 
@@ -62,9 +62,7 @@ const getNonGuests = async (eventId: number) => {
 };
 
 export const createEventAPI = (organizationId: number, data: CreateEventAPIRequest) => {
-  return fetcher.post<CreateEventAPIResponse>(`organizations/${organizationId}/events`, {
-    json: data,
-  });
+  return fetcher.post<CreateEventAPIResponse>(`organizations/${organizationId}/events`, data);
 };
 
 const getEventDetailAPI = (eventId: number) => {

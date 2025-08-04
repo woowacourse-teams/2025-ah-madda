@@ -1,7 +1,5 @@
 import { ComponentPropsWithRef, PropsWithChildren } from 'react';
 
-import { theme } from '@/shared/styles/theme';
-
 import { Icon } from '../Icon';
 import { IconName } from '../Icon/assets';
 

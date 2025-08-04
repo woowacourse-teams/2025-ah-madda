@@ -1,5 +1,3 @@
-import { HTTPError } from 'ky';
-
 import { useCancelParticipation } from '@/api/mutations/useCancelParticipation';
 import { useParticipateEvent } from '@/api/mutations/useParticipateEvent';
 import { Answer, GuestStatusAPIResponse } from '@/api/types/event';
@@ -41,11 +39,7 @@ export const SubmitButtonCard = ({
         alert('✅ 참가 신청이 취소되었습니다.');
       },
       onError: (error) => {
-        if (error instanceof HTTPError) {
-          error.response.json().then((errorData) => {
-            alert(`❌ ${errorData.detail}`);
-          });
-        }
+        alert(`${error.message}`);
       },
     });
   };
