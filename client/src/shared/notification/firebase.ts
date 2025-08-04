@@ -39,12 +39,22 @@ export const requestFCMPermission = async () => {
 
 export const setupForegroundMessage = () => {
   onMessage(messaging, (payload) => {
-    if (Notification.permission === 'granted') {
-      new Notification(payload.notification?.title || '새 알림', {
+    if (Notification.permission === 'granted' && payload.notification) {
+      const notification = new Notification(payload.notification?.title || '새 알림', {
         body: payload.notification?.body || '',
         icon: '/icon-192x192.png',
         data: payload.data,
       });
+
+      notification.onclick = (event) => {
+        const data = (event.target as Notification).data;
+        const url = data?.redirectUrl;
+
+        if (url) {
+          window.open(url, '_blank');
+        }
+        notification.close();
+      };
     }
   });
 };
