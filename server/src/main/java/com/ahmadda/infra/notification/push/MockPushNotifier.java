@@ -1,5 +1,6 @@
 package com.ahmadda.infra.notification.push;
 
+import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.PushNotificationPayload;
 import com.ahmadda.domain.PushNotifier;
 import lombok.extern.slf4j.Slf4j;
@@ -11,12 +12,12 @@ public class MockPushNotifier implements PushNotifier {
 
     @Override
     public void sendPushs(
-            final List<String> recipientPushTokens,
+            final List<OrganizationMember> recipients,
             final PushNotificationPayload pushNotificationPayload
     ) {
         log.info(
                 "[Mock Push] To: {} | Title: {} | Body: {} | Event ID: {}",
-                recipientPushTokens,
+                recipients,
                 pushNotificationPayload.title(),
                 pushNotificationPayload.body(),
                 pushNotificationPayload.eventId()

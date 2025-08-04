@@ -101,8 +101,8 @@ class EventNotificationServiceTest {
         var email = EventEmailPayload.of(event, request.content());
         var pushPayload = PushNotificationPayload.of(event, request.content());
 
-        verify(emailNotifier).sendEmails(List.of("ng1@email.com", "ng2@email.com"), email);
-        verify(pushNotifier).sendPushs(List.of("token-ng1", "token-ng2"), pushPayload);
+        verify(emailNotifier).sendEmails(List.of(ng1, ng2), email);
+        verify(pushNotifier).sendPushs(List.of(ng1, ng2), pushPayload);
     }
 
     @Test
@@ -193,8 +193,8 @@ class EventNotificationServiceTest {
         sut.notifySelectedOrganizationMembers(event.getId(), request, createLoginMember(organizer));
 
         // then
-        verify(emailNotifier).sendEmails(List.of("sel1@email.com", "sel2@email.com"), email);
-        verify(pushNotifier).sendPushs(List.of("token-ng1", "token-ng2"), pushPayload);
+        verify(emailNotifier).sendEmails(List.of(om1, om2), email);
+        verify(pushNotifier).sendPushs(List.of(om1, om2), pushPayload);
     }
 
     @Test

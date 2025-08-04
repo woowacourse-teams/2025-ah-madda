@@ -27,6 +27,10 @@ public class PushConfig {
             final FcmRegistrationTokenRepository fcmRegistrationTokenRepository,
             final NotificationProperties notificationProperties
     ) {
-        return new FcmPushNotifier(new FcmPushErrorHandler(fcmRegistrationTokenRepository), notificationProperties);
+        return new FcmPushNotifier(
+                fcmRegistrationTokenRepository,
+                new FcmPushErrorHandler(fcmRegistrationTokenRepository),
+                notificationProperties
+        );
     }
 }

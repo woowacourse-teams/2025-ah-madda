@@ -21,7 +21,6 @@ import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.PushNotificationPayload;
 import com.ahmadda.domain.PushNotifier;
 import com.ahmadda.domain.Question;
-import com.ahmadda.infra.notification.push.FcmRegistrationToken;
 import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -196,7 +195,7 @@ public class EventService {
                 .stream()
                 .map(Guest::getOrganizationMember)
                 .toList();
-        
+
         notifyEventChange(event, content, recipients);
     }
 
@@ -205,24 +204,19 @@ public class EventService {
             final String content,
             final List<OrganizationMember> recipients
     ) {
-        List<String> recipientEmails = recipients.stream()
-                .map(OrganizationMember::getMember)
-                .map(Member::getEmail)
-                .toList();
-        EventEmailPayload emailPayload = EventEmailPayload.of(event, content);
+        sendEmailsToRecipients(event, content, recipients);
+        sendPushNotificationsToRecipients(event, content, recipients);
+    }
 
-        emailNotifier.sendEmails(recipientEmails, emailPayload);
-
-        List<Long> memberIds = recipients.stream()
-                .map(orgMember -> orgMember.getMember()
-                        .getId())
-                .toList();
-        List<String> registrationTokens = fcmRegistrationTokenRepository.findAllByMemberIdIn(memberIds)
-                .stream()
-                .map(FcmRegistrationToken::getRegistrationToken)
-                .toList();
+    private void sendPushNotificationsToRecipients(Event event, String content, List<OrganizationMember> recipients) {
         PushNotificationPayload pushPayload = PushNotificationPayload.of(event, content);
 
-        pushNotifier.sendPushs(registrationTokens, pushPayload);
+        pushNotifier.sendPushs(recipients, pushPayload);
+    }
+
+    private void sendEmailsToRecipients(Event event, String content, List<OrganizationMember> recipients) {
+        EventEmailPayload emailPayload = EventEmailPayload.of(event, content);
+
+        emailNotifier.sendEmails(recipients, emailPayload);
     }
 }

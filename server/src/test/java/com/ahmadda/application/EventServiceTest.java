@@ -347,8 +347,8 @@ class EventServiceTest {
         var email = EventEmailPayload.of(savedEvent, "새로운 이벤트가 등록되었습니다.");
         var pushPayload = PushNotificationPayload.of(savedEvent, "새로운 이벤트가 등록되었습니다.");
 
-        verify(emailNotifier).sendEmails(List.of("m1@mail.com", "m2@mail.com"), email);
-        verify(pushNotifier).sendPushs(List.of("token-ng1", "token-ng2"), pushPayload);
+        verify(emailNotifier).sendEmails(List.of(om1, om2), email);
+        verify(pushNotifier).sendPushs(List.of(om1, om2), pushPayload);
     }
 
     @Test
@@ -546,8 +546,8 @@ class EventServiceTest {
         var email = EventEmailPayload.of(updatedEvent, "이벤트 정보가 수정되었습니다.");
         var pushPayload = PushNotificationPayload.of(updatedEvent, "이벤트 정보가 수정되었습니다.");
 
-        verify(emailNotifier).sendEmails(List.of("guest1@email.com", "guest2@email.com"), email);
-        verify(pushNotifier).sendPushs(List.of("token-ng1", "token-ng2"), pushPayload);
+        verify(emailNotifier).sendEmails(List.of(guestOrgMember1, guestOrgMember2), email);
+        verify(pushNotifier).sendPushs(List.of(guestOrgMember1, guestOrgMember2), pushPayload);
     }
 
     @Test

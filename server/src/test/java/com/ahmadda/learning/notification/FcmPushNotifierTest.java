@@ -1,13 +1,19 @@
 package com.ahmadda.learning.notification;
 
+import com.ahmadda.domain.Member;
+import com.ahmadda.domain.Organization;
+import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.PushNotificationPayload;
 import com.ahmadda.domain.PushNotifier;
+import com.ahmadda.infra.notification.push.FcmRegistrationToken;
+import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Disabled
@@ -18,20 +24,31 @@ class FcmPushNotifierTest {
     @Autowired
     private PushNotifier fcmPushNotifier;
 
+    @Autowired
+    private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
+
     @Test
     void 실제_FCM으로_푸시를_전송한다() {
         // given
-        List<String> registrationTokens = List.of(
-                "토큰을 입력하세요"
+        var member = Member.create("테스트 회원", "amadda.team@gmail.com");
+        var organization = Organization.create("테스트 조직", "설명", "logo.png");
+        var organizationMember = OrganizationMember.create("푸시대상", member, organization);
+
+        var token = FcmRegistrationToken.create(
+                member.getId(),
+                "f6L6AzpUV0TkUKEUOmIta8:APA91bH10zajy9WmAqqbfKl0c_9lUuNmggKaw82WDH-C9PqiK-KN2M5XUaL9CiKgl3oq61jRoRTrq7mZqZbqlb7887FLCY6BzctUE5l_25zWKMbbJ6EJ3Lg",
+                LocalDateTime.now()
         );
 
-        PushNotificationPayload payload = new PushNotificationPayload(
+        fcmRegistrationTokenRepository.save(token);
+
+        var payload = new PushNotificationPayload(
                 "테스트 알림 제목",
                 "이것은 테스트 메시지입니다.",
                 1L
         );
 
         // when // then
-        fcmPushNotifier.sendPushs(registrationTokens, payload);
+        fcmPushNotifier.sendPushs(List.of(organizationMember), payload);
     }
 }

@@ -15,7 +15,6 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.PushNotificationPayload;
 import com.ahmadda.domain.PushNotifier;
-import com.ahmadda.infra.notification.push.FcmRegistrationToken;
 import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -122,13 +121,9 @@ public class EventNotificationService {
             final Event event,
             final String content
     ) {
-        List<String> recipientEmails = recipients.stream()
-                .map(organizationMember -> organizationMember.getMember()
-                        .getEmail())
-                .toList();
         EventEmailPayload eventEmailPayload = EventEmailPayload.of(event, content);
 
-        emailNotifier.sendEmails(recipientEmails, eventEmailPayload);
+        emailNotifier.sendEmails(recipients, eventEmailPayload);
     }
 
     private void sendPushNotificationsToRecipients(
@@ -136,16 +131,8 @@ public class EventNotificationService {
             final Event event,
             final String content
     ) {
-        List<Long> memberIds = recipients.stream()
-                .map(orgMember -> orgMember.getMember()
-                        .getId())
-                .toList();
-        List<String> registrationTokens = fcmRegistrationTokenRepository.findAllByMemberIdIn(memberIds)
-                .stream()
-                .map(FcmRegistrationToken::getRegistrationToken)
-                .toList();
         PushNotificationPayload pushNotificationPayload = PushNotificationPayload.of(event, content);
 
-        pushNotifier.sendPushs(registrationTokens, pushNotificationPayload);
+        pushNotifier.sendPushs(recipients, pushNotificationPayload);
     }
 }

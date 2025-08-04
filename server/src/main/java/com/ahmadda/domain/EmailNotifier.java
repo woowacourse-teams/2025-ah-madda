@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface EmailNotifier {
 
-    void sendEmails(final List<String> recipientEmails, final EventEmailPayload eventEmailPayload);
+    void sendEmails(final List<OrganizationMember> recipients, final EventEmailPayload eventEmailPayload);
 }

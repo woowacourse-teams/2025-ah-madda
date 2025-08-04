@@ -2,6 +2,9 @@ package com.ahmadda.learning.notification;
 
 import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.EventEmailPayload;
+import com.ahmadda.domain.Member;
+import com.ahmadda.domain.Organization;
+import com.ahmadda.domain.OrganizationMember;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +28,10 @@ class SmtpEmailNotifierTest {
         var organizationName = "테스트 조직";
         var eventTitle = "테스트 이벤트";
         var organizerNickname = "주최자";
-        var recipientEmail = "amadda.team@gmail.com";
+
+        var member = Member.create("주최자", "amadda.team@gmail.com");
+        var organization = Organization.create(organizationName, "설명", "logo.png");
+        var organizationMember = OrganizationMember.create(organizerNickname, member, organization);
 
         var emailPayload = new EventEmailPayload(
                 new EventEmailPayload.Subject(
@@ -52,6 +58,6 @@ class SmtpEmailNotifierTest {
         );
 
         // when // then
-        smtpEmailNotifier.sendEmails(List.of(recipientEmail), emailPayload);
+        smtpEmailNotifier.sendEmails(List.of(organizationMember), emailPayload);
     }
 }

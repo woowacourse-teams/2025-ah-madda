@@ -1,5 +1,6 @@
 package com.ahmadda.infra.notification.push;
 
+import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.PushNotificationPayload;
 import com.ahmadda.domain.PushNotifier;
 import com.ahmadda.infra.notification.config.NotificationProperties;
@@ -18,19 +19,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FcmPushNotifier implements PushNotifier {
 
+    private final FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
     private final FcmPushErrorHandler fcmPushErrorHandler;
     private final NotificationProperties notificationProperties;
 
     @Async
     @Override
     public void sendPushs(
-            final List<String> registrationTokens,
+            final List<OrganizationMember> recipients,
             final PushNotificationPayload pushNotificationPayload
     ) {
-        if (registrationTokens.isEmpty()) {
+        if (recipients.isEmpty()) {
             return;
         }
-
+        List<String> registrationTokens = getRegistrationTokens(recipients);
         MulticastMessage message = createMulticastMessage(registrationTokens, pushNotificationPayload);
 
         try {
@@ -42,6 +44,18 @@ public class FcmPushNotifier implements PushNotifier {
         } catch (FirebaseMessagingException e) {
             log.error("fcmMulticastPushError: {}", e.getMessage(), e);
         }
+    }
+
+    private List<String> getRegistrationTokens(List<OrganizationMember> recipients) {
+        List<Long> memberIds = recipients.stream()
+                .map(organizationMember -> organizationMember.getMember()
+                        .getId())
+                .toList();
+
+        return fcmRegistrationTokenRepository.findAllByMemberIdIn(memberIds)
+                .stream()
+                .map(FcmRegistrationToken::getRegistrationToken)
+                .toList();
     }
 
     private MulticastMessage createMulticastMessage(

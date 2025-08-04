@@ -2,6 +2,7 @@ package com.ahmadda.infra.notification.mail;
 
 import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.EventEmailPayload;
+import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.infra.notification.config.NotificationProperties;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -27,7 +28,8 @@ public class SmtpEmailNotifier implements EmailNotifier {
 
     @Async
     @Override
-    public void sendEmails(final List<String> recipientEmails, final EventEmailPayload eventEmailPayload) {
+    public void sendEmails(final List<OrganizationMember> recipients, final EventEmailPayload eventEmailPayload) {
+        List<String> recipientEmails = getRecipientEmails(recipients);
         String subject = createSubject(eventEmailPayload.subject());
         String text = createText(eventEmailPayload.body());
         // TODO. 추후 BCC 방식으로 묶어서 전송 고려
@@ -36,6 +38,13 @@ public class SmtpEmailNotifier implements EmailNotifier {
 
             javaMailSender.send(mimeMessage);
         });
+    }
+
+    private List<String> getRecipientEmails(List<OrganizationMember> recipients) {
+        return recipients.stream()
+                .map(organizationMember -> organizationMember.getMember()
+                        .getEmail())
+                .toList();
     }
 
     private String createSubject(final EventEmailPayload.Subject subject) {
