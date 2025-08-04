@@ -2,6 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { DefinePlugin } = require('webpack');
 const Dotenv = require('dotenv-webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -14,12 +15,24 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
+      title: 'ah-madda',
       template: './index.html',
       filename: 'index.html',
       inject: true,
       templateParameters: {
         GOOGLE_ANALYTICS_ID: process.env.GOOGLE_ANALYTICS_ID || '',
       },
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'public',
+          to: '',
+          globOptions: {
+            ignore: ['**/index.html'],
+          },
+        },
+      ],
     }),
     new DefinePlugin({
       VERSION: JSON.stringify('1.0.0'),
