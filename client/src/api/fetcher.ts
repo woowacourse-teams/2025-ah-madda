@@ -1,5 +1,9 @@
+import * as Sentry from '@sentry/react';
+
 import { ACCESS_TOKEN_KEY } from '@/shared/constants';
 import { getLocalStorage } from '@/shared/utils/localStorage';
+
+import { analytics } from '../lib/analytics';
 
 type HttpMethod = 'GET' | 'POST' | 'DELETE' | 'PATCH' | 'PUT';
 
@@ -22,6 +26,9 @@ export class HttpError extends Error {
 }
 
 const request = async <T>(path: string, method: HttpMethod, body?: object): Promise<T> => {
+  const startTime = Date.now();
+  const url = process.env.API_BASE_URL + path;
+
   const config: RequestInit = {
     method,
     headers: {
@@ -34,20 +41,71 @@ const request = async <T>(path: string, method: HttpMethod, body?: object): Prom
     config.body = JSON.stringify(body);
   }
 
-  const response = await fetch(process.env.API_BASE_URL + path, config);
+  try {
+    const response = await fetch(url, config);
+    const duration = Date.now() - startTime;
 
-  if (!response.ok) {
-    try {
-      const errorData: HttpErrorResponse = await response.json();
-      throw new HttpError(response.status, errorData);
-    } catch {
-      throw new HttpError(response.status);
+    analytics.trackApiCall(url, method, response.status, duration);
+
+    if (!response.ok) {
+      Sentry.captureException(new Error(`API Error: ${response.status} ${response.statusText}`), {
+        tags: {
+          api_error: true,
+          status_code: response.status.toString(),
+        },
+        extra: {
+          url,
+          method,
+          status: response.status,
+          statusText: response.statusText,
+          duration,
+        },
+      });
+
+      try {
+        const errorData: HttpErrorResponse = await response.json();
+        throw new HttpError(response.status, errorData);
+      } catch {
+        throw new HttpError(response.status);
+      }
     }
+
+    if (response.status === 204) return undefined as T;
+
+    return response.json();
+  } catch (error) {
+    const duration = Date.now() - startTime;
+
+    if (error instanceof HttpError) {
+      Sentry.captureException(error, {
+        tags: {
+          api_error: true,
+          error_category: 'http_error',
+          status_code: error.status.toString(),
+        },
+        extra: {
+          url,
+          method,
+          status: error.status,
+          duration,
+        },
+      });
+    } else {
+      Sentry.captureException(error, {
+        tags: {
+          api_error: true,
+          error_category: 'network_error',
+        },
+        extra: {
+          url,
+          method,
+          duration,
+        },
+      });
+    }
+
+    throw error;
   }
-
-  if (response.status === 204) return undefined as T;
-
-  return response.json();
 };
 
 export const fetcher = {
