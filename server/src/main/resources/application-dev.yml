@@ -32,11 +32,6 @@ cors:
 
 management:
   metrics:
-    instrumentation:
-      http:
-        server:
-          enabled: true
-
     export:
       cloudwatch:
         enabled: true
