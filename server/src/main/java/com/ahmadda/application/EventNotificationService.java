@@ -113,6 +113,15 @@ public class EventNotificationService {
             final Event event,
             final String content
     ) {
+        sendEmailsToRecipients(recipients, event, content);
+        sendPushNotificationsToRecipients(recipients, event, content);
+    }
+
+    private void sendEmailsToRecipients(
+            final List<OrganizationMember> recipients,
+            final Event event,
+            final String content
+    ) {
         List<String> recipientEmails = recipients.stream()
                 .map(organizationMember -> organizationMember.getMember()
                         .getEmail())
@@ -120,7 +129,13 @@ public class EventNotificationService {
         EventEmailPayload eventEmailPayload = EventEmailPayload.of(event, content);
 
         emailNotifier.sendEmails(recipientEmails, eventEmailPayload);
+    }
 
+    private void sendPushNotificationsToRecipients(
+            final List<OrganizationMember> recipients,
+            final Event event,
+            final String content
+    ) {
         List<Long> memberIds = recipients.stream()
                 .map(orgMember -> orgMember.getMember()
                         .getId())
