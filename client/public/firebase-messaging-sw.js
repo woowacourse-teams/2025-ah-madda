@@ -49,17 +49,6 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-self.registration.showNotification(notificationTitle, {
-  body: payload.notification?.body || '내용 없음',
-  icon: '/icon-512x512.png',
-  data: {
-    redirectUrl: payload.data.redirectUrl,
-    eventId: payload.data.eventId,
-  },
-  tag: payload.data.eventId || 'default',
-  requireInteraction: true,
-});
-
 self.addEventListener('fetch', (event) => {
   if (event.request.mode === 'navigate') {
     event.respondWith(
