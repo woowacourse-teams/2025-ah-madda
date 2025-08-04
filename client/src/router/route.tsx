@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 
 import { App } from '@/App';
+import { ErrorPage } from '@/features/Error/pages/ErrorPage';
 import { EventDetailPage } from '@/features/Event/Detail/pages/EventDetailPage';
 import { EventManagePage } from '@/features/Event/Manage/pages/EventManagePage';
 import { MyEventPage } from '@/features/Event/My/pages/MyEventPage';
@@ -20,6 +21,10 @@ export const router = createBrowserRouter(
         {
           index: true,
           Component: HomePage,
+        },
+        {
+          path: '/error',
+          Component: ErrorPage,
         },
         {
           path: '/auth',
