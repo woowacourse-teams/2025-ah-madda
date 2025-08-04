@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class InviteCodeTest {
 
@@ -37,6 +38,28 @@ class InviteCodeTest {
 
         //then
         assertThat(inviteCode.getExpiresAt()).isEqualTo(currentDateTime.plusDays(7));
+    }
+
+    @Test
+    void 초대코드가_만료됐는지_확인할_수_있다() {
+        //given
+        var organization = createOrganization("우테코");
+        var member = createMember();
+        var inviter = createOrganizationMember(member, organization);
+        var expiredInviteCode = InviteCode.create("code", organization, inviter, LocalDateTime.of(2000, 1, 1, 0, 0));
+        var nonExpiredInviteCode = InviteCode.create("code", organization, inviter, LocalDateTime.now());
+
+        //when
+        var actual1 = expiredInviteCode.isExpired(LocalDateTime.now());
+        var actual2 = nonExpiredInviteCode.isExpired(LocalDateTime.now());
+
+        //then
+        assertSoftly(softly -> {
+            softly.assertThat(actual1)
+                    .isEqualTo(true);
+            softly.assertThat(actual2)
+                    .isEqualTo(false);
+        });
     }
 
     private OrganizationMember createOrganizationMember(Member member, Organization organization) {

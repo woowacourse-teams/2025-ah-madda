@@ -72,6 +72,10 @@ public class InviteCode extends BaseEntity {
         return new InviteCode(code, expiresAt, organization, inviter);
     }
 
+    public boolean isExpired(LocalDateTime currentDateTime) {
+        return currentDateTime.isAfter(expiresAt);
+    }
+
     private static void validateBelongToOrganization(
             final Organization organization,
             final OrganizationMember organizationMember
