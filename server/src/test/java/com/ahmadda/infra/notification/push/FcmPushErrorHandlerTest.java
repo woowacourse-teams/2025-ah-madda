@@ -23,7 +23,7 @@ class FcmPushErrorHandlerTest {
     private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
 
     @Test
-    void 만료된_토큰이_있으면_제거한다() {
+    void 유효하지_않은_토큰이_있으면_제거한다() {
         // given
         var tokenValue = "expired-token";
         var saved = fcmRegistrationTokenRepository.save(
