@@ -5,9 +5,7 @@ import { eventQueryKeys } from '../queries/event';
 import { Answer } from '../types/event';
 
 export const postEventParticipation = (eventId: number, answers: Answer[]) => {
-  return fetcher.post<void>(`events/${eventId}/participation`, {
-    json: { answers },
-  });
+  return fetcher.post<void>(`events/${eventId}/participation`, { answers });
 };
 
 export const useParticipateEvent = (eventId: number) => {
