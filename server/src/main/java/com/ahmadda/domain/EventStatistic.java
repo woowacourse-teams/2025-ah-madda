@@ -36,7 +36,7 @@ public class EventStatistic extends BaseEntity {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "event_statistic_id")
-    private final List<EventViewMatric> eventViewMatrics = new ArrayList<>();
+    private final List<EventViewMetric> eventViewMetrics = new ArrayList<>();
 
     private EventStatistic(final Event event, LocalDateTime createdDatetime) {
         validateEvent(event);
@@ -50,13 +50,13 @@ public class EventStatistic extends BaseEntity {
         return new EventStatistic(event, createdDatetime);
     }
 
-    public List<EventViewMatric> getEventViewMatrics(OrganizationMember organizationMember,
+    public List<EventViewMetric> getEventViewMetrics(OrganizationMember organizationMember,
                                                      LocalDateTime currentDateTime) {
         validateAccess(organizationMember);
 
         return Collections.unmodifiableList(
-                eventViewMatrics.stream()
-                        .filter((eventViewMatric) -> !eventViewMatric.isAfter(currentDateTime))
+                eventViewMetrics.stream()
+                        .filter((eventViewMetric) -> !eventViewMetric.isAfter(currentDateTime))
                         .toList()
         );
     }
@@ -76,8 +76,8 @@ public class EventStatistic extends BaseEntity {
         EventOperationPeriod eventOperationPeriod = event.getEventOperationPeriod();
 
         while (eventOperationPeriod.isBeforeEventEnd(currentDate)) {
-            EventViewMatric eventViewMatric = EventViewMatric.create(currentDate);
-            eventViewMatrics.add(eventViewMatric);
+            EventViewMetric eventViewMetric = EventViewMetric.create(currentDate);
+            eventViewMetrics.add(eventViewMetric);
             currentDate = currentDate.plusDays(1L);
         }
     }

@@ -1,6 +1,9 @@
 package com.ahmadda.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -10,22 +13,24 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class EventViewMatric {
+public class EventViewMetric {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "event_view_metric_id")
     private Long id;
 
     private LocalDateTime viewDate;
 
     private Integer viewCount;
 
-    public EventViewMatric(final LocalDateTime viewDate) {
+    public EventViewMetric(final LocalDateTime viewDate) {
         this.viewDate = viewDate;
         viewCount = 0;
     }
 
-    public static EventViewMatric create(final LocalDateTime viewDate) {
-        return new EventViewMatric(viewDate);
+    public static EventViewMetric create(final LocalDateTime viewDate) {
+        return new EventViewMetric(viewDate);
     }
 
     public boolean isAfter(LocalDateTime currentDateTime) {

@@ -22,7 +22,7 @@ class EventStatisticTest {
         var sut = EventStatistic.create(event, LocalDateTime.now());
 
         //then
-        assertThatThrownBy(() -> sut.getEventViewMatrics(notOrganizerOrganizationMember, LocalDateTime.now()))
+        assertThatThrownBy(() -> sut.getEventViewMetrics(notOrganizerOrganizationMember, LocalDateTime.now()))
                 .isInstanceOf(UnauthorizedOperationException.class)
                 .hasMessage("이벤트의 조회수는 이벤트의 주최자만 참조할 수 있습니다.");
     }
@@ -43,7 +43,7 @@ class EventStatisticTest {
         var sut = EventStatistic.create(event, startLocalDateTime);
 
         //then
-        assertThat(sut.getEventViewMatrics(organizationMember, endLocalDateTime)
+        assertThat(sut.getEventViewMetrics(organizationMember, endLocalDateTime)
                 .size())
                 .isEqualTo(eventDuration);
     }
@@ -62,7 +62,7 @@ class EventStatisticTest {
         var sut = EventStatistic.create(event, beforeEventEndDatetime);
 
         //then
-        assertThat(sut.getEventViewMatrics(organizationMember, beforeEventEndDatetime)
+        assertThat(sut.getEventViewMetrics(organizationMember, beforeEventEndDatetime)
                 .getFirst()
                 .getViewDate())
                 .isEqualTo(beforeEventEndDatetime);
@@ -85,7 +85,7 @@ class EventStatisticTest {
         var sut = EventStatistic.create(event, startLocalDateTime);
 
         //then
-        assertThat(sut.getEventViewMatrics(organizationMember, LocalDateTime.MAX)
+        assertThat(sut.getEventViewMetrics(organizationMember, LocalDateTime.MAX)
                 .size())
                 .isEqualTo(eventDuration);
     }
