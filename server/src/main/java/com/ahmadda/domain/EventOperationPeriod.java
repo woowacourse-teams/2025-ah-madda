@@ -7,13 +7,12 @@ import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
 
 @Embeddable
 @Getter
@@ -65,6 +64,10 @@ public class EventOperationPeriod {
         return eventPeriod.isNotStarted(currentDateTime);
     }
 
+    public boolean isBeforeEventEnd(final LocalDateTime currentDateTime) {
+        return eventPeriod.isBeforeEnd(currentDateTime);
+    }
+
     public boolean canNotRegistration(final LocalDateTime currentDateTime) {
         return !registrationPeriod.includes(currentDateTime);
     }
@@ -114,9 +117,12 @@ public class EventOperationPeriod {
         }
     }
 
-    public boolean willStartWithin(final LocalDateTime cancelParticipationTime,
-                                   final Duration duration) {
-        LocalDateTime cancelAvailableTime = eventPeriod.start().minus(duration);
+    public boolean willStartWithin(
+            final LocalDateTime cancelParticipationTime,
+            final Duration duration
+    ) {
+        LocalDateTime cancelAvailableTime = eventPeriod.start()
+                .minus(duration);
 
         return cancelParticipationTime.isAfter(cancelAvailableTime);
     }

@@ -1,14 +1,13 @@
 package com.ahmadda.domain;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-
-import java.time.LocalDateTime;
-
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class EventOperationPeriodTest {
 
@@ -32,8 +31,7 @@ class EventOperationPeriodTest {
                 eventPeriod.start(),
                 eventPeriod.end(),
                 currentTime
-        ))
-                .doesNotThrowAnyException();
+        )).doesNotThrowAnyException();
     }
 
     @Test

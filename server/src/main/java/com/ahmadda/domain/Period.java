@@ -3,11 +3,10 @@ package com.ahmadda.domain;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Embeddable;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Embeddable
 @EqualsAndHashCode
@@ -15,6 +14,7 @@ import java.time.LocalDateTime;
 public class Period {
 
     private LocalDateTime start;
+
     private LocalDateTime end;
 
     private Period(final LocalDateTime start, final LocalDateTime end) {
@@ -37,16 +37,16 @@ public class Period {
         return this.start.isAfter(other.end);
     }
 
-    public boolean isBefore(final Period other) {
-        return this.end.isBefore(other.start);
-    }
-
     public boolean isOverlappedWith(final Period other) {
         return this.start.isBefore(other.end) && other.start.isBefore(this.end);
     }
 
     public boolean isNotStarted(final LocalDateTime currentDateTime) {
         return start.isAfter(currentDateTime);
+    }
+
+    public boolean isBeforeEnd(final LocalDateTime currentDateTime) {
+        return end.isAfter(currentDateTime);
     }
 
     public boolean includes(final LocalDateTime dateTime) {

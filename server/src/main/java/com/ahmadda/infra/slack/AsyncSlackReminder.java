@@ -35,7 +35,7 @@ public class AsyncSlackReminder implements SlackReminder {
                     .retrieve();
             ResponseEntity<Void> bodilessEntity = retrieve.toBodilessEntity();
 
-            if (bodilessEntity.getStatusCode() != HttpStatus.ACCEPTED) {
+            if (bodilessEntity.getStatusCode() != HttpStatus.OK) {
                 throw new SlackReminderException("유저 생성 슬랙 알람을 보내는데 실패 하였습니다");
             }
         } catch (Exception e) {
