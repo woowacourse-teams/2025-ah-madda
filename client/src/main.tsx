@@ -25,8 +25,6 @@ if (GA_ID) {
 
   window.gtag('js', new Date());
   window.gtag('config', GA_ID);
-} else {
-  console.warn('❌ GOOGLE_ANALYTICS_ID를 찾을 수 없습니다.');
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
