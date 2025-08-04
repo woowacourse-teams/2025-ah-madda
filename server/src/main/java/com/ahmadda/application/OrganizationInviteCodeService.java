@@ -8,7 +8,7 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.infra.security.RandomCodeGenerator;
+import com.ahmadda.infra.generator.RandomCodeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +27,11 @@ public class OrganizationInviteCodeService {
     private final RandomCodeGenerator randomCodeGenerator;
 
     @Transactional
-    public InviteCode createInviteCode(final Long organizationId, final LoginMember loginMember, LocalDateTime now) {
+    public InviteCode createInviteCode(
+            final Long organizationId,
+            final LoginMember loginMember,
+            final LocalDateTime now
+    ) {
         Organization organization = getOrganization(organizationId);
         OrganizationMember inviter = getOrganizationMember(organizationId, loginMember);
 

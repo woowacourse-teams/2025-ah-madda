@@ -25,7 +25,7 @@ class InviteCodeTest {
     }
 
     @Test
-    void 초대코드를_생성할때_기본_만료날짜는_현재부터_7일_이후여야_한다() {
+    void 초대코드를_생성할때_기본_만료날짜는_현재부터_7일_뒤여야_한다() {
         //given
         var organization = createOrganization("우테코");
         var member = createMember();

@@ -10,7 +10,7 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.infra.security.RandomCodeGenerator;
+import com.ahmadda.infra.generator.RandomCodeGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,6 +27,19 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Transactional
 class OrganizationInviteCodeServiceTest {
+
+    @TestConfiguration
+    static class OrganizationInviteCodeServiceTestContextConfiguration {
+
+        @Bean
+        public RandomCodeGenerator randomCodeGenerator() {
+            return length -> {
+                StringBuilder sb = new StringBuilder();
+                sb.repeat('a', length);
+                return sb.toString();
+            };
+        }
+    }
 
     @Autowired
     private OrganizationInviteCodeService sut;
@@ -170,18 +183,5 @@ class OrganizationInviteCodeServiceTest {
     ) {
         InviteCode prevInviteCode = InviteCode.create(code, organization, organizationMember, now);
         return inviteCodeRepository.save(prevInviteCode);
-    }
-
-    @TestConfiguration
-    static class OrganizationInviteCodeServiceTestContextConfiguration {
-
-        @Bean
-        public RandomCodeGenerator randomCodeGenerator() {
-            return length -> {
-                StringBuilder sb = new StringBuilder();
-                sb.repeat('a', length);
-                return sb.toString();
-            };
-        }
     }
 }

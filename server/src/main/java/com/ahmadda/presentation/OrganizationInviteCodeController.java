@@ -103,7 +103,7 @@ public class OrganizationInviteCodeController {
                     )
             )
     })
-    @PostMapping("/{organizationId}/invite_codes")
+    @PostMapping("/{organizationId}/invite-codes")
     public ResponseEntity<InviteCodeCreateResponse> create(
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember

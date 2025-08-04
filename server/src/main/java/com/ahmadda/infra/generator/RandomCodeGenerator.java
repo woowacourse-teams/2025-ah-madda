@@ -1,4 +1,4 @@
-package com.ahmadda.infra.security;
+package com.ahmadda.infra.generator;
 
 @FunctionalInterface
 public interface RandomCodeGenerator {
