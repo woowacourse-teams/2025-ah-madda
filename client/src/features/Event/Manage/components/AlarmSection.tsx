@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-import { css } from '@emotion/react';
 import { useParams } from 'react-router-dom';
 
 import { useAddAlarm } from '@/api/mutations/useAddAlarm';
@@ -9,27 +8,34 @@ import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Input } from '@/shared/components/Input';
+import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 
-type AlarmSectionProps = {
+import { useNotificationForm } from '../hooks/useNotificationForm';
+
+export type AlarmSectionProps = {
+  organizationMemberIds: number[];
   pendingGuestsCount: number;
 };
 
-export const AlarmSection = ({ pendingGuestsCount }: AlarmSectionProps) => {
-  const [alarmMessage, setAlarmMessage] = useState('');
+export const AlarmSection = ({ organizationMemberIds, pendingGuestsCount }: AlarmSectionProps) => {
+  const { content, handleContentChange, resetContent } = useNotificationForm();
   const { eventId: eventIdParam } = useParams();
   const { mutate: postAlarm, isPending } = useAddAlarm({ eventId: Number(eventIdParam) });
 
   const handleSendAlarm = () => {
-    if (!alarmMessage.trim()) {
-      return;
-    }
-
-    postAlarm(alarmMessage, {
-      onSuccess: () => {
-        setAlarmMessage('');
-      },
-    });
+    postAlarm(
+      { organizationMemberIds, content },
+      {
+        onSuccess: () => {
+          resetContent();
+          return alert('알람이 성공적으로 전송되었습니다.');
+        },
+        onError: (error) => {
+          return alert(`알람 전송에 실패했습니다. ${error.message}`);
+        },
+      }
+    );
   };
 
   return (
@@ -41,42 +47,24 @@ export const AlarmSection = ({ pendingGuestsCount }: AlarmSectionProps) => {
             미신청자 알람
           </Text>
         </Flex>
-        <Flex dir="column" gap="20px">
+        <Flex dir="column">
           <Input
             id="alarm-message"
             label=""
             placeholder="알람 메시지를 입력하세요..."
-            value={alarmMessage}
-            onChange={(e) => setAlarmMessage(e.target.value)}
-            css={css`
-              & input {
-                background-color: #f3f3f5;
-                border: none;
-                border-radius: 6.75px;
-                padding: 8px 12px;
-                font-size: 12.3px;
-                color: #717182;
-                &::placeholder {
-                  color: #717182;
-                }
-              }
-            `}
+            value={content}
+            onChange={handleContentChange}
           />
 
           <Button
             size="full"
             color="primary"
-            disabled={!alarmMessage.trim() || isPending}
+            disabled={!content || organizationMemberIds.length === 0 || isPending}
             onClick={handleSendAlarm}
-            css={css`
-              border-radius: 6.75px;
-              opacity: ${alarmMessage.trim() && !isPending ? 1 : 0.5};
-              cursor: ${alarmMessage.trim() && !isPending ? 'pointer' : 'not-allowed'};
-            `}
           >
             {isPending ? '전송 중...' : '보내기'}
           </Button>
-
+          <Spacing height="8px" />
           <Text type="Label" weight="regular" color="#6A7282">
             {`${pendingGuestsCount}명의 미신청자에게 알람이 전송됩니다.`}
           </Text>
