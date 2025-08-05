@@ -18,14 +18,14 @@ export const GuestManageSection = () => {
 
   const {
     guestData,
-    toggleAll: handleGuestAllChecked,
-    toggleItem: handleGuestChecked,
+    toggleAll: toggleGuestAllChecked,
+    toggleItem: toggleGuestChecked,
     getCheckedGuests: getCheckedGuests,
   } = useCheckableGuests(guests);
   const {
     guestData: nonGuestData,
-    toggleAll: handleNonGuestAllChecked,
-    toggleItem: handleNonGuestChecked,
+    toggleAll: toggleNonGuestAllChecked,
+    toggleItem: toggleNonGuestChecked,
     getCheckedGuests: getCheckedNonGuests,
   } = useCheckableGuests(nonGuests);
 
@@ -61,11 +61,11 @@ export const GuestManageSection = () => {
       />
       <GuestViewSection
         guests={guestData}
-        onGuestChecked={handleGuestChecked}
-        onAllChecked={handleGuestAllChecked}
+        onGuestChecked={toggleGuestChecked}
+        onAllChecked={toggleGuestAllChecked}
         nonGuests={nonGuestData}
-        onNonGuestChecked={handleNonGuestChecked}
-        onNonGuestAllChecked={handleNonGuestAllChecked}
+        onNonGuestChecked={toggleNonGuestChecked}
+        onNonGuestAllChecked={toggleNonGuestAllChecked}
       />
     </Flex>
   );
