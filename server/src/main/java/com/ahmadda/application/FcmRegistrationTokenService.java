@@ -25,15 +25,21 @@ public class FcmRegistrationTokenService {
             final FcmRegistrationTokenRequest request,
             final LoginMember loginMember
     ) {
-        Member member = memberRepository.findById(loginMember.memberId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
+        return fcmRegistrationTokenRepository.findByRegistrationTokenAndMemberId(
+                        request.registrationToken(),
+                        loginMember.memberId()
+                )
+                .orElseGet(() -> {
+                    Member member = memberRepository.findById(loginMember.memberId())
+                            .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
 
-        FcmRegistrationToken fcmRegistrationToken = FcmRegistrationToken.create(
-                member.getId(),
-                request.registrationToken(),
-                LocalDateTime.now()
-        );
+                    FcmRegistrationToken registrationToken = FcmRegistrationToken.create(
+                            member.getId(),
+                            request.registrationToken(),
+                            LocalDateTime.now()
+                    );
 
-        return fcmRegistrationTokenRepository.save(fcmRegistrationToken);
+                    return fcmRegistrationTokenRepository.save(registrationToken);
+                });
     }
 }
