@@ -402,6 +402,49 @@ class EventServiceTest {
     }
 
     @Test
+    void 이벤트_생성시에_조회수_정보는_0으로_초기화된다() {
+        //given
+        var organization = createOrganization();
+        var organizationMember = createOrganizationMember(organization, createMember("서프", "surf@gmail.com"));
+
+        var now = LocalDateTime.now();
+
+        var request = new EventCreateRequest(
+                "UI/UX 이벤트",
+                "UI/UX 이벤트 입니다",
+                "선릉",
+                now.plusDays(4),
+                now.plusDays(5),
+                now.plusDays(6),
+                "이벤트 근로",
+                100,
+                List.of(
+                        new QuestionCreateRequest("1번 질문", true),
+                        new QuestionCreateRequest("2번 질문", false)
+                )
+        );
+
+        //when
+        var event = sut.createEvent(
+                organization.getId(),
+                new LoginMember(organizationMember.getMember().getId()),
+                request,
+                LocalDateTime.now());
+
+        //then
+        var startDate = event.getEventOperationPeriod().getRegistrationPeriod().start().toLocalDate();
+        var endDate = event.getEventOperationPeriod().getEventPeriod().end().toLocalDate();
+        var eventDuration = ChronoUnit.DAYS
+                .between(startDate, endDate) + 1;
+
+        var eventStatistic = eventStatisticRepository.findByEventId(event.getId()).get();
+        var eventViewMetrics = eventStatistic.getEventViewMetrics();
+
+        assertThat(eventViewMetrics)
+                .allMatch(eventViewMetric -> eventViewMetric.getViewCount() == 0);
+    }
+
+    @Test
     void 이벤트_조회시에_해당_날짜의_조회수도_증가한다() {
         //given
         var organization = createOrganization();
