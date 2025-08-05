@@ -31,8 +31,8 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-metrics:3.4.0'
+    
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
@@ -42,6 +42,7 @@ dependencies {
 
     implementation 'io.jsonwebtoken:jjwt:0.12.6'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
+    implementation 'com.google.firebase:firebase-admin:9.5.0'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

@@ -1,5 +1,8 @@
 server:
   port: 8080
+  tomcat:
+    mbean-registry:
+      enabled: true
 
 spring:
   profiles:
@@ -43,8 +46,13 @@ springdoc:
   default-produces-media-type: application/json
   swagger-ui:
     path: /specification
+    operations-sorter: method
+    persist-authorization: true
 
 management:
+  metrics:
+    enable:
+      all: false
   endpoints:
     web:
       exposure:

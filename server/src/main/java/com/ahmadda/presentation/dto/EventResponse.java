@@ -31,7 +31,8 @@ public record EventResponse(
                 event.getPlace(),
                 event.getRegistrationStart(),
                 event.getRegistrationEnd(),
-                event.getOrganizerNickname()
+                event.getOrganizer()
+                        .getNickname()
         );
     }
 }

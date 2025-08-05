@@ -70,9 +70,6 @@ public class Event extends BaseEntity {
     private EventOperationPeriod eventOperationPeriod;
 
     @Column(nullable = false)
-    private String organizerNickname;
-
-    @Column(nullable = false)
     private int maxCapacity;
 
     private Event(
@@ -82,7 +79,6 @@ public class Event extends BaseEntity {
             final OrganizationMember organizer,
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
-            final String organizerNickname,
             final int maxCapacity,
             final List<Question> questions
     ) {
@@ -90,7 +86,6 @@ public class Event extends BaseEntity {
         validateOrganizer(organizer);
         validateOrganization(organization);
         validateBelongToOrganization(organizer, organization);
-        validateOrganizerNickname(organizerNickname);
         validateMaxCapacity(maxCapacity);
 
         this.title = title;
@@ -99,7 +94,6 @@ public class Event extends BaseEntity {
         this.organizer = organizer;
         this.organization = organization;
         this.eventOperationPeriod = eventOperationPeriod;
-        this.organizerNickname = organizerNickname;
         this.maxCapacity = maxCapacity;
 
         organization.addEvent(this);
@@ -113,7 +107,6 @@ public class Event extends BaseEntity {
             final OrganizationMember organizer,
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
-            final String organizerNickname,
             final int maxCapacity,
             final Question... questions
     ) {
@@ -124,7 +117,6 @@ public class Event extends BaseEntity {
                 organizer,
                 organization,
                 eventOperationPeriod,
-                organizerNickname,
                 maxCapacity,
                 new ArrayList<>(List.of(questions))
         );
@@ -137,7 +129,6 @@ public class Event extends BaseEntity {
             final OrganizationMember organizer,
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
-            final String organizerNickname,
             final int maxCapacity,
             final List<Question> questions
     ) {
@@ -148,7 +139,6 @@ public class Event extends BaseEntity {
                 organizer,
                 organization,
                 eventOperationPeriod,
-                organizerNickname,
                 maxCapacity,
                 questions
         );
@@ -160,27 +150,20 @@ public class Event extends BaseEntity {
             final String description,
             final String place,
             final EventOperationPeriod eventOperationPeriod,
-            final String organizerNickname,
             final int maxCapacity
     ) {
         validateUpdatableBy(organizer);
         validateTitle(title);
-        validateOrganizerNickname(organizerNickname);
         validateMaxCapacity(maxCapacity);
 
         this.title = title;
         this.description = description;
         this.place = place;
         this.eventOperationPeriod = eventOperationPeriod;
-        this.organizerNickname = organizerNickname;
         this.maxCapacity = maxCapacity;
     }
 
     public boolean hasGuest(final OrganizationMember organizationMember) {
-        if (organizationMember.equals(organizer)) {
-            return true;
-        }
-
         return guests.stream()
                 .anyMatch(guest -> guest.isSameOrganizationMember(organizationMember));
     }
@@ -231,8 +214,10 @@ public class Event extends BaseEntity {
                 .equals(member);
     }
 
-    public void cancelParticipation(final OrganizationMember organizationMember,
-                                    final LocalDateTime cancelParticipateTime) {
+    public void cancelParticipation(
+            final OrganizationMember organizationMember,
+            final LocalDateTime cancelParticipateTime
+    ) {
         validateCancelParticipation(cancelParticipateTime);
         Guest guest = getGuestByOrganizationMember(organizationMember);
         guests.remove(guest);
@@ -286,9 +271,12 @@ public class Event extends BaseEntity {
         Assert.notNull(organization, "조직은 null이 되면 안됩니다.");
     }
 
-    private void validateBelongToOrganization(final OrganizationMember organizer, final Organization organization) {
-        if (!organizer.isBelongTo(organization)) {
-            throw new UnauthorizedOperationException("자신이 속한 조직에서만 이벤트를 생성할 수 있습니다.");
+    private void validateBelongToOrganization(
+            final OrganizationMember organizationMember,
+            final Organization organization
+    ) {
+        if (!organizationMember.isBelongTo(organization)) {
+            throw new UnauthorizedOperationException("자신이 속한 조직이 아닙니다.");
         }
     }
 

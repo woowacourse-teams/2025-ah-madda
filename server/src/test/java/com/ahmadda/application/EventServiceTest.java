@@ -1,26 +1,15 @@
 package com.ahmadda.application;
 
-import static java.util.stream.Collectors.toSet;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-
 import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
-import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventEmailPayload;
-import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
-import com.ahmadda.domain.EventStatisticRepository;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.GuestRepository;
 import com.ahmadda.domain.Member;
@@ -29,6 +18,8 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.domain.PushNotificationPayload;
+import com.ahmadda.domain.PushNotifier;
 import com.ahmadda.domain.Question;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import java.time.LocalDateTime;
@@ -36,12 +27,28 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import com.ahmadda.infra.notification.push.FcmRegistrationToken;
+import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import static java.util.stream.Collectors.toSet;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @Transactional
@@ -60,15 +67,24 @@ class EventServiceTest {
     private EventRepository eventRepository;
 
     @Autowired
-    private EventService sut;
+    private GuestRepository guestRepository;
+
+    @Autowired
+    private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
+
+    @MockitoBean
+    private EmailNotifier emailNotifier;
 
     @MockitoBean
     private EventNotification eventNotification;
 
     @Autowired
     private GuestRepository guestRepository;
+
     @Autowired
     private EventStatisticRepository eventStatisticRepository;
+
+    private PushNotifier pushNotifier;
 
     @Test
     void 이벤트를_생성할_수_있다() {
@@ -84,7 +100,6 @@ class EventServiceTest {
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
-                "이벤트 근로",
                 100,
                 List.of(new QuestionCreateRequest("1번 질문", true), new QuestionCreateRequest("2번 질문", false))
         );
@@ -187,7 +202,6 @@ class EventServiceTest {
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
-                "이밴트 근로",
                 100,
                 new ArrayList<>()
         );
@@ -196,8 +210,8 @@ class EventServiceTest {
 
         //when //then
         assertThatThrownBy(() -> sut.createEvent(organization1.getId(), loginMember, eventCreateRequest, now))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessage("조직에 소속되지 않은 회원입니다.");
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않은 조직원 정보입니다.");
     }
 
     @Test
@@ -227,7 +241,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization)).isInstanceOf(
                         UnauthorizedOperationException.class)
-                .hasMessage("자신이 속한 조직에서만 이벤트를 생성할 수 있습니다.");
+                .hasMessage("자신이 속한 조직이 아닙니다.");
     }
 
     @Test
@@ -258,7 +272,7 @@ class EventServiceTest {
                 now
         ))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 회원입니다.");
+                .hasMessage("존재하지 않은 조직원 정보입니다.");
     }
 
     @Test
@@ -282,8 +296,8 @@ class EventServiceTest {
                 notBelongingOrgMember.getId(),
                 now
         ))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessage("조직에 소속되지 않은 회원입니다.");
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않은 조직원 정보입니다.");
     }
 
     @Test
@@ -314,8 +328,11 @@ class EventServiceTest {
         var om2Member = createMember("m2", "m2@mail.com");
 
         var organizer = createOrganizationMember(organization, organizerMember);
-        createOrganizationMember(organization, om1Member);
-        createOrganizationMember(organization, om2Member);
+        var om1 = createOrganizationMember(organization, om1Member);
+        var om2 = createOrganizationMember(organization, om2Member);
+
+        savePushToken(om1, "token-ng1");
+        savePushToken(om2, "token-ng2");
 
         var now = LocalDateTime.now();
         var request = new EventCreateRequest(
@@ -340,22 +357,10 @@ class EventServiceTest {
 
         // then
         var email = EventEmailPayload.of(savedEvent, "새로운 이벤트가 등록되었습니다.");
-        verify(eventNotification).sendEmails(
-                argThat(recipients -> {
-                    var emails = recipients.stream()
-                            .map(om -> om.getMember()
-                                    .getEmail())
-                            .collect(toSet());
+        var pushPayload = PushNotificationPayload.of(savedEvent, "새로운 이벤트가 등록되었습니다.");
 
-                    var expected = Set.of(
-                            om1Member.getEmail(),
-                            om2Member.getEmail()
-                    );
-
-                    return emails.equals(expected);
-                }),
-                eq(email)
-        );
+        verify(emailNotifier).sendEmails(List.of(om1, om2), email);
+        verify(pushNotifier).sendPushs(List.of(om1, om2), pushPayload);
     }
 
     @Test
@@ -534,8 +539,6 @@ class EventServiceTest {
                                 .isEqualTo("수정된 설명");
                         softly.assertThat(savedEvent.getPlace())
                                 .isEqualTo("수정된 장소");
-                        softly.assertThat(savedEvent.getOrganizerNickname())
-                                .isEqualTo("수정된 닉네임");
                         softly.assertThat(savedEvent.getMaxCapacity())
                                 .isEqualTo(200);
 
@@ -569,7 +572,6 @@ class EventServiceTest {
                 now.plusDays(5),
                 now.plusDays(6),
                 now.plusDays(7),
-                "수정된 닉네임",
                 200
         );
 
@@ -598,7 +600,6 @@ class EventServiceTest {
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
-                "원래 닉네임",
                 50
         );
         eventRepository.save(event);
@@ -610,7 +611,6 @@ class EventServiceTest {
                 now.plusDays(5),
                 now.plusDays(6),
                 now.plusDays(7),
-                "수정된 닉네임",
                 200
         );
         var loginMember = new LoginMember(9999L);
@@ -633,8 +633,10 @@ class EventServiceTest {
         var guestOrgMember1 = createOrganizationMember(organization, guestMember1);
         var guestOrgMember2 = createOrganizationMember(organization, guestMember2);
 
-        var now = LocalDateTime.now();
+        savePushToken(guestOrgMember1, "token-ng1");
+        savePushToken(guestOrgMember2, "token-ng2");
 
+        var now = LocalDateTime.now();
         var event = Event.create(
                 "원래 제목",
                 "원래 설명",
@@ -646,7 +648,6 @@ class EventServiceTest {
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
-                "원래 닉네임",
                 50
         );
         eventRepository.save(event);
@@ -663,7 +664,6 @@ class EventServiceTest {
                 now.plusDays(5),
                 now.plusDays(6),
                 now.plusDays(7),
-                "수정된 닉네임",
                 200
         );
 
@@ -674,21 +674,62 @@ class EventServiceTest {
 
         // then
         var email = EventEmailPayload.of(updatedEvent, "이벤트 정보가 수정되었습니다.");
-        verify(eventNotification).sendEmails(
-                argThat(recipients -> {
-                    var emails = recipients.stream()
-                            .map(om -> om.getMember()
-                                    .getEmail())
-                            .collect(toSet());
-                    var expected = Set.of(
-                            guestMember1.getEmail(),
-                            guestMember2.getEmail()
-                    );
+        var pushPayload = PushNotificationPayload.of(updatedEvent, "이벤트 정보가 수정되었습니다.");
 
-                    return emails.equals(expected);
-                }),
-                eq(email)
-        );
+        verify(emailNotifier).sendEmails(List.of(guestOrgMember1, guestOrgMember2), email);
+        verify(pushNotifier).sendPushs(List.of(guestOrgMember1, guestOrgMember2), pushPayload);
+    }
+
+    @Test
+    void 로그인한_회원이_이벤트의_주최자인지_확인할_수_있다() {
+        //given
+        var organization = createOrganization();
+        var organizerMember = createMember("surf", "surf@ahmadda.com");
+        var nonOrganizerMember = createMember("tuda", "tuda@ahmadda.com");
+        var organizer = createOrganizationMember(organization, organizerMember);
+        var nonOrganizer = createOrganizationMember(organization, nonOrganizerMember);
+        var event = createEvent(organizer, organization);
+        var organizerLoginMember = createLoginMember(organizerMember);
+        var nonOrganizerLoginMember = createLoginMember(nonOrganizerMember);
+
+        //when
+        boolean actual1 = sut.isOrganizer(event.getId(), organizerLoginMember);
+        boolean actual2 = sut.isOrganizer(event.getId(), nonOrganizerLoginMember);
+
+        //then
+        assertSoftly(softly -> {
+            softly.assertThat(actual1)
+                    .isTrue();
+            softly.assertThat(actual2)
+                    .isFalse();
+        });
+    }
+
+    @Test
+    void 이벤트의_주최자인지_확인할때_존재하지_않는_이벤트라면_예외가_발생한다() {
+        //given
+        var organization = createOrganization();
+        var member = createMember("surf", "surf@ahmadda.com");
+        var loginMember = createLoginMember(member);
+
+        //when //then
+        assertThatThrownBy(() -> sut.isOrganizer(999L, loginMember))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않은 이벤트 정보입니다.");
+    }
+
+    @Test
+    void 이벤트의_주최자인지_확인할때_존재하지_않는_회원이라면_예외가_발생한다() {
+        //given
+        var organization = createOrganization();
+        var organizerMember = createMember("surf", "surf@ahmadda.com");
+        var organizer = createOrganizationMember(organization, organizerMember);
+        var event = createEvent(organizer, organization);
+
+        //when //then
+        assertThatThrownBy(() -> sut.isOrganizer(event.getId(), new LoginMember(999L)))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 회원입니다.");
     }
 
     private Organization createOrganization() {
@@ -734,5 +775,14 @@ class EventServiceTest {
         );
 
         return eventRepository.save(event);
+    }
+
+    private void savePushToken(OrganizationMember organizationMember, String token) {
+        var fcmRegistrationToken = FcmRegistrationToken.create(
+                organizationMember.getMember()
+                        .getId(), token, LocalDateTime.now()
+        );
+
+        fcmRegistrationTokenRepository.save(fcmRegistrationToken);
     }
 }
