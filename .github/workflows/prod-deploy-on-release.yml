@@ -55,9 +55,7 @@ jobs:
 
   deploy:
     needs: setup
-    runs-on:
-      - self-hosted
-      - ahmadda-runner
+    runs-on: [self-hosted, ahmadda-runner]
 
     steps:
       - name: Set tag name from setup output
