@@ -48,8 +48,6 @@ export const EventCreateForm = () => {
       organizerNickname: '임시닉',
     };
 
-    console.log(payload);
-
     addEvent(payload, {
       onSuccess: ({ eventId }) => {
         alert('😁 이벤트가 성공적으로 생성되었습니다!');
