@@ -1,6 +1,7 @@
 import { BasicEventFormFields } from '../../types/Event';
 import { ERROR_MESSAGES, MAX_LENGTH } from '../constants/errorMessages';
 
+import { getMaxEventEndDate, getMaxEventStartDate } from './date';
 import { isAfterorEqual, isBefore, isFutureDate, isPositiveInteger } from './validators';
 
 type ValidationRule = {
@@ -19,13 +20,32 @@ export const VALIDATION_RULES: Partial<Record<keyof BasicEventFormFields, Valida
   eventStart: {
     required: true,
     label: '이벤트 시작 시간',
-    validator: (value) => (!isFutureDate(value) ? ERROR_MESSAGES.EVENT_START_MUST_BE_FUTURE : null),
+    validator: (value) => {
+      if (!isFutureDate(value)) return ERROR_MESSAGES.EVENT_START_MUST_BE_FUTURE;
+
+      const maxDate = getMaxEventStartDate();
+      if (new Date(value) > maxDate) {
+        return ERROR_MESSAGES.EVENT_START_MUST_BE_BEFORE_END_OF_NEXT_YEAR;
+      }
+
+      return null;
+    },
   },
   eventEnd: {
     required: true,
     label: '이벤트 종료 시간',
-    validator: (value, formData) =>
-      isBefore(value, formData.eventStart) ? ERROR_MESSAGES.EVENT_END_MUST_BE_AFTER_START : null,
+    validator: (value, formData) => {
+      if (isBefore(value, formData.eventStart)) {
+        return ERROR_MESSAGES.EVENT_END_MUST_BE_AFTER_START;
+      }
+
+      const maxEnd = getMaxEventEndDate(formData.eventStart);
+      if (new Date(value) > maxEnd) {
+        return ERROR_MESSAGES.EVENT_END_MUST_BE_WITHIN_30_DAYS_FROM_START;
+      }
+
+      return null;
+    },
   },
   registrationEnd: {
     required: true,
