@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 public class Period {
 
     private LocalDateTime start;
-
     private LocalDateTime end;
 
     private Period(final LocalDateTime start, final LocalDateTime end) {

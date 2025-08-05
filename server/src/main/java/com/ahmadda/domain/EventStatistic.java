@@ -12,9 +12,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -38,44 +37,52 @@ public class EventStatistic extends BaseEntity {
     @JoinColumn(name = "event_statistic_id")
     private final List<EventViewMetric> eventViewMetrics = new ArrayList<>();
 
-    private EventStatistic(final Event event, LocalDateTime createdDatetime) {
+    private EventStatistic(final Event event) {
         validateEvent(event);
 
         this.event = event;
 
-        createEventViewMatricUntilEventEnd(event, createdDatetime);
+        createEventViewMatricUntilEventEnd(event);
     }
 
-    public static EventStatistic create(final Event event, final LocalDateTime createdDatetime) {
-        return new EventStatistic(event, createdDatetime);
+    public static EventStatistic create(final Event event) {
+        return new EventStatistic(event);
     }
 
-    public List<EventViewMetric> getEventViewMetrics(OrganizationMember organizationMember,
-                                                     LocalDateTime currentDateTime) {
-        validateAccess(organizationMember);
-
-        return Collections.unmodifiableList(
-                eventViewMetrics.stream()
-                        .filter((eventViewMetric) -> !eventViewMetric.isAfter(currentDateTime))
-                        .toList()
-        );
+    public void increaseViewCount(final LocalDate currentDate) {
+        eventViewMetrics.stream()
+                .filter((eventViewMetric) -> eventViewMetric.isSameDate(currentDate))
+                .findFirst()
+                .ifPresent(EventViewMetric::increaseViewCount);
     }
 
-    private static void validateEvent(final Event event) {
+    public List<EventViewMetric> findEventViewMetrics(final OrganizationMember organizationMember,
+                                                      final LocalDate currentDate) {
+        validateIsOrganizer(organizationMember);
+
+        return eventViewMetrics.stream()
+                        .filter((eventViewMetric) -> !eventViewMetric.isAfter(currentDate))
+                        .toList();
+    }
+
+    private void validateEvent(final Event event) {
         Assert.notNull(event, "이벤트 조회수의 이벤트가 null일 수 없습니다.");
     }
 
-    private void validateAccess(OrganizationMember organizationMember) {
+    private void validateIsOrganizer(final OrganizationMember organizationMember) {
         if (!event.getOrganizer().equals(organizationMember)) {
             throw new UnauthorizedOperationException("이벤트의 조회수는 이벤트의 주최자만 참조할 수 있습니다.");
         }
     }
 
-    private void createEventViewMatricUntilEventEnd(final Event event, LocalDateTime createdDatetime) {
-        LocalDateTime currentDate = createdDatetime;
+    private void createEventViewMatricUntilEventEnd(final Event event) {
+        LocalDate currentDate = LocalDate.from(
+                event.getEventOperationPeriod()
+                        .getRegistrationPeriod()
+                        .start());
         EventOperationPeriod eventOperationPeriod = event.getEventOperationPeriod();
 
-        while (eventOperationPeriod.isBeforeEventEnd(currentDate)) {
+        while (!eventOperationPeriod.isAfterEventEndDate(currentDate)) {
             EventViewMetric eventViewMetric = EventViewMetric.create(currentDate);
             eventViewMetrics.add(eventViewMetric);
             currentDate = currentDate.plusDays(1L);

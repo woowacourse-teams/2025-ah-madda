@@ -8,6 +8,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -19,7 +20,6 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EventOperationPeriod {
-
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "start", column = @Column(name = "registration_start")),
@@ -64,8 +64,9 @@ public class EventOperationPeriod {
         return eventPeriod.isNotStarted(currentDateTime);
     }
 
-    public boolean isBeforeEventEnd(final LocalDateTime currentDateTime) {
-        return eventPeriod.isBeforeEnd(currentDateTime);
+    public boolean isAfterEventEndDate(final LocalDate currentDate) {
+        LocalDate endDate = LocalDate.from(eventPeriod.end());
+        return endDate.isBefore(currentDate);
     }
 
     public boolean canNotRegistration(final LocalDateTime currentDateTime) {
