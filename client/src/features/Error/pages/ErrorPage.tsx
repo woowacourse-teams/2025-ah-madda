@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/shared/components/Button';
@@ -13,10 +12,6 @@ import { ErrorContainer } from '../containers/ErrorContainer';
 
 export const ErrorPage = () => {
   const navigate = useNavigate();
-
-  const handleGoHome = () => {
-    navigate('/');
-  };
 
   return (
     <PageLayout
@@ -40,14 +35,7 @@ export const ErrorPage = () => {
           </Flex>
 
           <Flex dir="row" gap="16px" justifyContent="center" margin="24px 0 0 0">
-            <Button
-              size="lg"
-              color="primary"
-              onClick={handleGoHome}
-              css={css`
-                min-width: 140px;
-              `}
-            >
+            <Button size="lg" color="primary" onClick={() => navigate('/')}>
               홈으로 가기
             </Button>
           </Flex>
