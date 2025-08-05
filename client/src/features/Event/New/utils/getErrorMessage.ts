@@ -1,14 +1,22 @@
-import { BasicEventFormFields } from '../../types/Event';
-import { ERROR_MESSAGES } from '../constants/errorMessages';
+import { BasicEventFormFields, CreateEventAPIRequest } from '../../types/Event';
+import { ERROR_MESSAGES, MAX_LENGTH } from '../constants/errorMessages';
 
 import { VALIDATION_RULES } from './validationRules';
 import { isEmpty } from './validators';
 
 export const getErrorMessage = (
-  field: keyof BasicEventFormFields,
+  field: keyof CreateEventAPIRequest,
   value: string,
-  formData: BasicEventFormFields
+  formData?: BasicEventFormFields
 ): string => {
+  if (field === 'questions') {
+    if (!value.trim()) return ERROR_MESSAGES.REQUIRED('질문');
+    if (value.length > MAX_LENGTH.QUESTION) {
+      return ERROR_MESSAGES.MAX_LENGTH('질문', MAX_LENGTH.QUESTION);
+    }
+    return '';
+  }
+
   const rule = VALIDATION_RULES[field];
   if (!rule) return '';
 
@@ -21,7 +29,7 @@ export const getErrorMessage = (
   }
 
   if (rule.validator) {
-    const customMessage = rule.validator(value, formData);
+    const customMessage = rule.validator(value, formData!);
     if (customMessage) return customMessage;
   }
 

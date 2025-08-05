@@ -4,7 +4,7 @@ import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 
 import { useQuestionManager } from '../hooks/useQuestionManager';
-import { getQuestionErrorMessage } from '../utils/getQuestionErrorMessage';
+import { getErrorMessage } from '../utils/getErrorMessage';
 
 import { QuestionItem } from './QuestionItem';
 
@@ -40,7 +40,7 @@ export const QuestionForm = ({
             isRequired={question.isRequired}
             onDelete={() => deleteQuestion(question.orderIndex)}
             onChange={(updated) => updateQuestion(question.orderIndex, updated)}
-            errorMessage={getQuestionErrorMessage(question.questionText)}
+            errorMessage={getErrorMessage('questions', question.questionText)}
           />
         ))}
       </Flex>
