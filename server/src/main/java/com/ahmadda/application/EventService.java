@@ -11,6 +11,8 @@ import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
+import com.ahmadda.domain.EventStatistic;
+import com.ahmadda.domain.EventStatisticRepository;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
@@ -19,14 +21,16 @@ import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Question;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.IntStream;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EventService {
@@ -36,6 +40,7 @@ public class EventService {
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
     private final EventNotification eventNotification;
+    private final EventStatisticRepository eventStatisticRepository;
 
     @Transactional
     public Event createEvent(
@@ -80,11 +85,22 @@ public class EventService {
         event.closeRegistrationAt(organizationMember, currentDateTime);
     }
 
+    //TODO 추후에 EventListener에 대해 협의해본뒤 리팩터링
+    @Transactional
     public Event getOrganizationMemberEvent(final LoginMember loginMember, final Long eventId) {
         Event event = getEvent(eventId);
 
         Organization organization = event.getOrganization();
         validateOrganizationAccess(organization.getId(), loginMember.memberId());
+
+        //TODO 추후에 EventListener에 대해 협의해본뒤 리팩터링
+        try{
+            EventStatistic eventStatistic = eventStatisticRepository.findByEventId(eventId)
+                    .orElseThrow(() -> new NotFoundException("해당되는 이벤트 조회수를 가져오는데 실패하였습니다."));
+            eventStatistic.increaseViewCount(LocalDate.now());
+        }catch (Exception e){
+            log.error("이벤트 조회수를 업데이트하는데 실패하였습니다 사유 : {}",e.getMessage(),e);
+        }
 
         return event;
     }

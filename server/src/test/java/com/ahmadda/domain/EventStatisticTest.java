@@ -40,14 +40,18 @@ class EventStatisticTest {
                 .end()
                 .toLocalDate();
 
+        var startDate = event.getEventOperationPeriod().getRegistrationPeriod().start().toLocalDate();
+        var endDate = event.getEventOperationPeriod().getEventPeriod().end().toLocalDate();
+        var eventDuration = ChronoUnit.DAYS
+                .between(startDate,endDate)+1;
+
         //when
         var sut = EventStatistic.create(event);
 
         //then
-        sut.findEventViewMetrics();
-        assertThat(sut.findEventViewMetrics(organizationMember, endLocalDate)
+        assertThat(sut.findEventViewMetrics(organizationMember, LocalDate.MAX)
                 .size())
-                .isEqualTo(sut.findEventViewMetrics().size());
+                .isEqualTo(eventDuration);
     }
 
     @Test
