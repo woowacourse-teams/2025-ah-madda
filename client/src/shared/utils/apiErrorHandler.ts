@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react';
 
 import { HttpError } from '@/api/fetcher';
 
-export const reportApiError = (error: HttpError) => {
+export const reportApiError = (error: unknown) => {
   if (error instanceof HttpError) {
     Sentry.captureException(error, {
       tags: {
