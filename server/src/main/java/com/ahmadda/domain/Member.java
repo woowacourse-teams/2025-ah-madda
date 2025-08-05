@@ -26,6 +26,9 @@ public class Member extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
+    private String picture;
+
     private Member(final String name, final String email) {
         validateName(name);
         validateEmail(email);
@@ -34,8 +37,22 @@ public class Member extends BaseEntity {
         this.email = email;
     }
 
+    //todo: 생성자 물어보기
+    private Member(final String name, final String email, final String picture) {
+        validateName(name);
+        validateEmail(email);
+
+        this.name = name;
+        this.email = email;
+        this.picture = picture;
+    }
+
     public static Member create(final String name, final String email) {
         return new Member(name, email);
+    }
+
+    public static Member create(final String name, final String email, final String userProfile) {
+        return new Member(name, email, userProfile);
     }
 
     private void validateName(final String name) {
