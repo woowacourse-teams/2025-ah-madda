@@ -37,7 +37,7 @@ export const GuestManageSection = () => {
     ...checkedNonGuests.map((nonGuest) => nonGuest.organizationMemberId),
   ];
 
-  const totalMessageReceiveGuestCount = selectedMemberIds.length;
+  const selectedGuestCount = selectedMemberIds.length;
 
   return (
     <Flex
@@ -57,7 +57,7 @@ export const GuestManageSection = () => {
     >
       <AlarmSection
         organizationMemberIds={selectedMemberIds}
-        pendingGuestsCount={totalMessageReceiveGuestCount}
+        selectedGuestCount={selectedGuestCount}
       />
       <GuestViewSection
         guests={guestData}

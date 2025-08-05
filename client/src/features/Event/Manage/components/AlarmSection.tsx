@@ -13,10 +13,10 @@ import { useNotificationForm } from '../hooks/useNotificationForm';
 
 export type AlarmSectionProps = {
   organizationMemberIds: number[];
-  pendingGuestsCount: number;
+  selectedGuestCount: number;
 };
 
-export const AlarmSection = ({ organizationMemberIds, pendingGuestsCount }: AlarmSectionProps) => {
+export const AlarmSection = ({ organizationMemberIds, selectedGuestCount }: AlarmSectionProps) => {
   const { content, handleContentChange, resetContent } = useNotificationForm();
   const { eventId: eventIdParam } = useParams();
   const { mutate: postAlarm, isPending } = useAddAlarm({ eventId: Number(eventIdParam) });
@@ -64,7 +64,7 @@ export const AlarmSection = ({ organizationMemberIds, pendingGuestsCount }: Alar
           </Button>
           <Spacing height="8px" />
           <Text type="Label" weight="regular" color="#6A7282">
-            {`${pendingGuestsCount}명의 미신청자에게 알람이 전송됩니다.`}
+            {`${selectedGuestCount}명의 미신청자에게 알람이 전송됩니다.`}
           </Text>
         </Flex>
       </Flex>
