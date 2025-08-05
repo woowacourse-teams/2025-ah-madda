@@ -3,6 +3,7 @@ const GA_TRACKING_ID = process.env.GOOGLE_ANALYTICS_ID;
 declare global {
   // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface Window {
+    dataLayer: unknown[];
     gtag: (
       command: 'config' | 'event' | 'js',
       targetId: string | Date,
