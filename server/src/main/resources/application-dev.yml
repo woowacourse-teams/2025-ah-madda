@@ -27,6 +27,7 @@ cors:
     - http://localhost:5173
     - http://127.0.0.1:5173
     - https://ahmadda.com
+    - https://prod.ahmadda.com
 
 notification:
   redirect-url-prefix: http://localhost:5173/event/
