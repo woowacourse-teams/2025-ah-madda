@@ -1,8 +1,13 @@
 name: Prod Deploy On Release
 
 on:
-  release:
-    types: [published]
+  pull_request:
+    paths:
+      - 'server/**'
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
   setup:
@@ -22,7 +27,7 @@ jobs:
         id: extract
         run: |
           TAG_NAME="${GITHUB_REF#refs/tags/}" 
-          echo "version=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "version=v0.0.2-alpha" >> $GITHUB_OUTPUT
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
