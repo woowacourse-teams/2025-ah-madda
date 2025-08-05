@@ -2,17 +2,16 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { fetcher } from '../fetcher';
 import { eventQueryKeys } from '../queries/event';
-import { Answer } from '../types/event';
 
-export const postEventParticipation = (eventId: number, answers: Answer[]) => {
-  return fetcher.post<void>(`events/${eventId}/participation`, { answers });
+export const deleteParticipation = async (eventId: number) => {
+  await fetcher.delete(`events/${eventId}/cancel-participate`);
 };
 
-export const useParticipateEvent = (eventId: number) => {
+export const useCancelParticipation = (eventId: number) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (answers: Answer[]) => postEventParticipation(eventId, answers),
+    mutationFn: () => deleteParticipation(eventId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [...eventQueryKeys.guestStatus(), eventId],

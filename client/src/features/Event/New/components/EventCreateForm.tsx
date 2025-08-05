@@ -1,6 +1,5 @@
 import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
-import { HTTPError } from 'ky';
 import { useNavigate } from 'react-router-dom';
 
 import { myQueryOptions } from '@/api/queries/my';
@@ -46,20 +45,7 @@ export const EventCreateForm = () => {
         navigate(`/event/${eventId}`);
       },
       onError: async (error) => {
-        if (error instanceof HTTPError) {
-          try {
-            const errorData = await error.response.json();
-            if (errorData.detail) {
-              alert(`❌ ${errorData.detail}`);
-            } else {
-              alert('❌ 알 수 없는 에러가 발생했습니다.');
-            }
-          } catch {
-            alert('❌ 에러 응답을 파싱할 수 없습니다.');
-          }
-        } else {
-          alert(`❌ ${error instanceof Error ? error.message : '알 수 없는 에러입니다.'}`);
-        }
+        alert(`${error.message}`);
       },
     });
   };
@@ -216,17 +202,7 @@ export const EventCreateForm = () => {
         />
 
         <Flex justifyContent="flex-end">
-          <Button
-            type="submit"
-            color="black"
-            size="sm"
-            disabled={!isFormValid}
-            css={css`
-              border-radius: 5px;
-              font-size: 12px;
-              padding: 7px;
-            `}
-          >
+          <Button type="submit" color="tertiary" size="md" disabled={!isFormValid}>
             이벤트 만들기
           </Button>
         </Flex>
