@@ -9,10 +9,21 @@ import { GuestList } from './GuestList';
 
 type GuestViewSectionProps = {
   guests: Guest[];
+  onGuestChecked: (organizationMemberId: number) => void;
+  onAllChecked: VoidFunction;
   nonGuests: NonGuest[];
+  onNonGuestChecked: (organizationMemberId: number) => void;
+  onNonGuestAllChecked: VoidFunction;
 };
 
-export const GuestViewSection = ({ guests, nonGuests }: GuestViewSectionProps) => {
+export const GuestViewSection = ({
+  guests,
+  onGuestChecked,
+  onAllChecked,
+  nonGuests,
+  onNonGuestChecked,
+  onNonGuestAllChecked,
+}: GuestViewSectionProps) => {
   return (
     <Card>
       <Flex as="section" dir="column" gap="20px">
@@ -23,12 +34,19 @@ export const GuestViewSection = ({ guests, nonGuests }: GuestViewSectionProps) =
           </Text>
         </Flex>
 
-        <GuestList title={`신청 완료 (${guests.length}명)`} titleColor="#00A63E" guests={guests} />
-
+        <GuestList
+          title={`신청 완료 (${guests.length}명)`}
+          titleColor="#00A63E"
+          guests={guests}
+          onChecked={onGuestChecked}
+          onAllChecked={onAllChecked}
+        />
         <GuestList
           title={`미신청 (${nonGuests.length}명)`}
           titleColor="#4A5565"
           guests={nonGuests}
+          onChecked={onNonGuestChecked}
+          onAllChecked={onNonGuestAllChecked}
         />
       </Flex>
     </Card>
