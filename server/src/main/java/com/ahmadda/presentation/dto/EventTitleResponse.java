@@ -4,7 +4,8 @@ import com.ahmadda.domain.Event;
 
 public record EventTitleResponse(
         Long eventId,
-        String title) {
+        String title
+) {
 
     public static EventTitleResponse from(final Event event) {
         return new EventTitleResponse(
