@@ -56,7 +56,9 @@ jobs:
 
   deploy:
     needs: setup
-    runs-on: self-hosted
+    runs-on: 
+      - self-hosted
+      - dev
 
     steps:
       - name: Set tag name from setup output
