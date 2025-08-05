@@ -10,7 +10,7 @@ import { Text } from '@/shared/components/Text';
 
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useBasicEventForm } from '../hooks/useBasicEventForm';
-import { useQuestionManager } from '../hooks/useQuestionManager';
+import { useQuestionForm } from '../hooks/useQuestionForm';
 import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
 
 import { QuestionForm } from './QuestionForm';
@@ -36,7 +36,7 @@ export const EventCreateForm = () => {
     deleteQuestion,
     updateQuestion,
     isValid: isQuestionValid,
-  } = useQuestionManager();
+  } = useQuestionForm();
 
   const isFormReady = isBasicFormValid && isQuestionValid;
 

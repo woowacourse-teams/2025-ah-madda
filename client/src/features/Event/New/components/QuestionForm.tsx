@@ -3,12 +3,12 @@ import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 
-import { useQuestionManager } from '../hooks/useQuestionManager';
+import { useQuestionForm } from '../hooks/useQuestionForm';
 import { getErrorMessage } from '../utils/getErrorMessage';
 
 import { QuestionItem } from './QuestionItem';
 
-type QuestionFormProps = Omit<ReturnType<typeof useQuestionManager>, 'isValid'>;
+type QuestionFormProps = Omit<ReturnType<typeof useQuestionForm>, 'isValid'>;
 
 export const QuestionForm = ({
   questions,

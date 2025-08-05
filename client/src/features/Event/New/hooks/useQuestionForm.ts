@@ -33,7 +33,7 @@ const reducer = (state: QuestionRequest[], action: Action): QuestionRequest[] =>
   }
 };
 
-export const useQuestionManager = () => {
+export const useQuestionForm = () => {
   const [questions, dispatch] = useReducer(reducer, []);
   const canAddQuestion = questions.length < MAX_QUESTIONS;
 
