@@ -3,10 +3,10 @@ package com.ahmadda.application;
 import com.ahmadda.application.dto.MemberCreateAlarmPayload;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
+import com.ahmadda.infra.alarm.slack.SlackAlarm;
 import com.ahmadda.infra.jwt.JwtProvider;
 import com.ahmadda.infra.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.oauth.dto.OAuthUserInfoResponse;
-import com.ahmadda.infra.slack.SlackReminder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +18,7 @@ public class LoginService {
     private final MemberRepository memberRepository;
     private final GoogleOAuthProvider googleOAuthProvider;
     private final JwtProvider jwtProvider;
-    private final SlackReminder slackReminder;
+    private final SlackAlarm slackAlarm;
 
     @Transactional
     public String login(final String code, final String redirectUri) {
@@ -34,7 +34,7 @@ public class LoginService {
                 .orElseGet(() -> {
                     Member newMember = Member.create(name, email);
 
-                    slackReminder.alarmMemberCreation(MemberCreateAlarmPayload.from(newMember));
+                    slackAlarm.alarmMemberCreation(MemberCreateAlarmPayload.from(newMember));
 
                     return memberRepository.save(newMember);
                 });

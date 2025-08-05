@@ -1,8 +1,7 @@
-package com.ahmadda.infra.slack.dto;
+package com.ahmadda.infra.alarm.slack.dto;
 
 import com.ahmadda.application.dto.MemberCreateAlarmPayload;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 
 public record MemberCreatAlarmRequestBody(
