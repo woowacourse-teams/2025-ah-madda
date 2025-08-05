@@ -30,7 +30,6 @@ class GuestTest {
                         now.plusDays(10), now.plusDays(11),
                         now
                 ),
-                organizer.getNickname(),
                 50
         );
         member = Member.create("참가자 회원", "guest@example.com");
@@ -90,7 +89,6 @@ class GuestTest {
                         now.plusDays(10), now.plusDays(11),
                         now
                 ),
-                organizationMember1.getNickname(),
                 50
         );
 
@@ -114,7 +112,6 @@ class GuestTest {
                         now.plusDays(10), now.plusDays(11),
                         now
                 ),
-                organizationMember.getNickname(),
                 50
         );
 
@@ -140,7 +137,6 @@ class GuestTest {
                         now.plusDays(10), now.plusDays(11),
                         now
                 ),
-                organizationMember1.getNickname(),
                 1
         );
         Guest.create(event, organizationMember2, event.getRegistrationStart());
@@ -245,7 +241,6 @@ class GuestTest {
                         now.plusDays(2), now.plusDays(3),
                         now
                 ),
-                organizer.getNickname(),
                 10,
                 questions
         );

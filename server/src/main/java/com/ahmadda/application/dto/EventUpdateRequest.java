@@ -19,8 +19,6 @@ public record EventUpdateRequest(
         LocalDateTime eventStart,
         @NotNull
         LocalDateTime eventEnd,
-        @NotBlank
-        String organizerNickname,
         int maxCapacity
 ) {
 

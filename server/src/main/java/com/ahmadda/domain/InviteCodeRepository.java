@@ -7,5 +7,7 @@ import java.util.Optional;
 
 public interface InviteCodeRepository extends JpaRepository<InviteCode, Long> {
 
-    Optional<InviteCode> findFirstByInviterAndExpiresAtAfter(OrganizationMember inviter, LocalDateTime now);
+    Optional<InviteCode> findFirstByInviterAndExpiresAtAfter(final OrganizationMember inviter, final LocalDateTime now);
+
+    Optional<InviteCode> findByCode(final String code);
 }

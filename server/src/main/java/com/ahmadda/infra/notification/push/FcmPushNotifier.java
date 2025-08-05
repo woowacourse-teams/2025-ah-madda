@@ -33,8 +33,11 @@ public class FcmPushNotifier implements PushNotifier {
             return;
         }
         List<String> registrationTokens = getRegistrationTokens(recipients);
-        MulticastMessage message = createMulticastMessage(registrationTokens, pushNotificationPayload);
+        if (registrationTokens.isEmpty()) {
+            return;
+        }
 
+        MulticastMessage message = createMulticastMessage(registrationTokens, pushNotificationPayload);
         try {
             // TODO. 추후 한번에 500개 이상의 토큰을 처리한다면 배치 처리를 고려해야 함
             BatchResponse batchResponse = FirebaseMessaging.getInstance()
@@ -46,7 +49,7 @@ public class FcmPushNotifier implements PushNotifier {
         }
     }
 
-    private List<String> getRegistrationTokens(List<OrganizationMember> recipients) {
+    private List<String> getRegistrationTokens(final List<OrganizationMember> recipients) {
         List<Long> memberIds = recipients.stream()
                 .map(organizationMember -> organizationMember.getMember()
                         .getId())
