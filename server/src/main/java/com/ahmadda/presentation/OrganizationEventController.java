@@ -692,7 +692,7 @@ public class OrganizationEventController {
                     )
             )
     })
-    @GetMapping("/events{eventId}/owned/template")
+    @GetMapping("/events/{eventId}/owned/template")
     public ResponseEntity<EventTemplateResponse> getOwnerEventTemplate(
             @PathVariable final Long eventId,
             @AuthMember final LoginMember loginMember
