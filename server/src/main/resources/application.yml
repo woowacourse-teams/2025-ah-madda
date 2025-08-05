@@ -29,6 +29,11 @@ spring:
           starttls:
             enable: true
 
+  cloud:
+    aws:
+      region:
+        static: ap-northeast-2
+
 oauth:
   google:
     client-id: ${oauth.google.client-id}
@@ -43,6 +48,8 @@ springdoc:
   default-produces-media-type: application/json
   swagger-ui:
     path: /specification
+    operations-sorter: method
+    persist-authorization: true
 
 management:
   endpoints:
@@ -58,6 +65,12 @@ management:
       enabled: false
     mail:
       enabled: false
+  cloudwatch:
+    metrics:
+      export:
+        enabled: true
+        step: 1m
+        namespace: EC2/ahmadda-api
 
 slack:
   bot-token: ${slack.bot-token}

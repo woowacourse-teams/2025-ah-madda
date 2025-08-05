@@ -31,7 +31,6 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -47,9 +46,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    implementation 'io.micrometer:micrometer-registry-cloudwatch2'
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-metrics:3.4.0'
 }
-
 tasks.named('test') {
     useJUnitPlatform()
 }
