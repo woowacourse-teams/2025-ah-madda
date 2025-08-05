@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
-import { HTTPError } from 'ky';
 import { useNavigate } from 'react-router-dom';
 
+import { HttpError } from '@/api/fetcher';
 import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
@@ -55,19 +55,14 @@ export const EventCreateForm = () => {
         alert('😁 이벤트가 성공적으로 생성되었습니다!');
         navigate(`/event/${eventId}`);
       },
-      onError: async (error) => {
-        if (!(error instanceof HTTPError)) {
-          return alert('네트워크 연결을 확인해주세요.');
+      onError: (error) => {
+        if (error instanceof HttpError) {
+          return alert(
+            error.data?.detail || '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
+          );
         }
 
-        try {
-          const errorData = await error.response.json();
-          return alert(
-            `${errorData.detail || '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'}`
-          );
-        } catch {
-          alert('요청 처리 중 문제가 발생했습니다.');
-        }
+        alert('네트워크 연결을 확인해주세요.');
       },
     });
   };

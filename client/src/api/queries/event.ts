@@ -18,6 +18,7 @@ export const eventQueryKeys = {
   nonGuests: () => [...eventQueryKeys.all(), 'nonGuests'],
   guestStatus: () => [...eventQueryKeys.all(), 'guestStatus'],
   participation: () => [...eventQueryKeys.all(), 'participation'],
+  cancel: () => [...eventQueryKeys.all(), 'cancel'],
 };
 
 export const eventQueryOptions = {
@@ -45,6 +46,11 @@ export const eventQueryOptions = {
       queryKey: [...eventQueryKeys.guestStatus(), eventId],
       queryFn: () => getGuestStatus(eventId),
     }),
+  cancel: (eventId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.cancel(), eventId],
+      queryFn: () => fetcher.delete(`events/${eventId}`),
+    }),
 };
 
 const getGuests = async (eventId: number) => {
@@ -56,9 +62,7 @@ const getNonGuests = async (eventId: number) => {
 };
 
 export const createEventAPI = (organizationId: number, data: CreateEventAPIRequest) => {
-  return fetcher.post<CreateEventAPIResponse>(`organizations/${organizationId}/events`, {
-    json: data,
-  });
+  return fetcher.post<CreateEventAPIResponse>(`organizations/${organizationId}/events`, data);
 };
 
 const getEventDetailAPI = (eventId: number) => {
