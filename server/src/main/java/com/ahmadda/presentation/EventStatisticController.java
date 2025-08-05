@@ -5,9 +5,7 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.EventViewMetric;
 import com.ahmadda.presentation.dto.EventViewMetricResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
-io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -66,9 +64,9 @@ public class EventStatisticController {
                                               "instance": "/api/events/{eventId}/statistic"
                                             }
                                             """
-                                    )
                             )
-                    ),
+                    )
+            ),
             @ApiResponse(
                     responseCode = "404",
                     content = @Content(
@@ -92,8 +90,8 @@ public class EventStatisticController {
     public ResponseEntity<List<EventViewMetricResponse>> eventStatisticResponses(
             @PathVariable final Long eventId,
             @AuthMember LoginMember loginMember
-    ){
-        List<EventViewMetric> metrics = eventStatisticService.getEventStatistic(eventId,loginMember);
+    ) {
+        List<EventViewMetric> metrics = eventStatisticService.getEventStatistic(eventId, loginMember);
         List<EventViewMetricResponse> metricResponses = metrics.stream()
                 .map(EventViewMetricResponse::from)
                 .toList();
