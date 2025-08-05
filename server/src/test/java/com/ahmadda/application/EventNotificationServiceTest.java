@@ -80,7 +80,7 @@ class EventNotificationServiceTest {
                         now.plusDays(1), now.plusDays(2),
                         now.minusDays(3)
                 ),
-                organizer.getNickname(), 100
+                100
         ));
 
         var request = createNotificationRequest();
@@ -141,7 +141,6 @@ class EventNotificationServiceTest {
                         now.plusDays(2), now.plusDays(3),
                         now.minusDays(2)
                 ),
-                organizer.getNickname(),
                 100
         ));
 
@@ -174,7 +173,6 @@ class EventNotificationServiceTest {
                         now.plusDays(1), now.plusDays(2),
                         now.minusDays(3)
                 ),
-                organizer.getNickname(),
                 100
         ));
 
@@ -232,7 +230,6 @@ class EventNotificationServiceTest {
                         now.plusDays(2), now.plusDays(3),
                         now.minusDays(2)
                 ),
-                organizer.getNickname(),
                 100
         ));
 
@@ -265,7 +262,6 @@ class EventNotificationServiceTest {
                         now.plusDays(2), now.plusDays(3),
                         now.minusDays(2)
                 ),
-                organizer.getNickname(),
                 100
         ));
 

@@ -679,6 +679,7 @@ public class OrganizationEventController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
+                                            name = "이벤트 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
@@ -690,6 +691,7 @@ public class OrganizationEventController {
                                                     """
                                     ),
                                     @ExampleObject(
+                                            name = "회원 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",

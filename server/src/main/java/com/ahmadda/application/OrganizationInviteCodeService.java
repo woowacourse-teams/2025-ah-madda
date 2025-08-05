@@ -1,6 +1,7 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.LoginMember;
+import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.InviteCode;
 import com.ahmadda.domain.InviteCodeRepository;
@@ -36,6 +37,17 @@ public class OrganizationInviteCodeService {
         OrganizationMember inviter = getOrganizationMember(organizationId, loginMember);
 
         return findOrCreateInviteCode(inviter, organization, now);
+    }
+
+    public Organization getOrganizationByCode(final String code) {
+        InviteCode inviteCode = inviteCodeRepository.findByCode(code)
+                .orElseThrow(() -> new BusinessFlowViolatedException("유효하지 않은 초대코드입니다."));
+
+        if (inviteCode.isExpired(LocalDateTime.now())) {
+            throw new BusinessFlowViolatedException("만료된 초대코드입니다.");
+        }
+        
+        return inviteCode.getOrganization();
     }
 
     private Organization getOrganization(final Long organizationId) {

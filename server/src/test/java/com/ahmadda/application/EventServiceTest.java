@@ -86,7 +86,6 @@ class EventServiceTest {
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
-                "이벤트 근로",
                 100,
                 List.of(new QuestionCreateRequest("1번 질문", true), new QuestionCreateRequest("2번 질문", false))
         );
@@ -136,7 +135,6 @@ class EventServiceTest {
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
-                "이벤트 근로",
                 100,
                 List.of(new QuestionCreateRequest("1번 질문", true), new QuestionCreateRequest("2번 질문", false))
         );
@@ -161,7 +159,6 @@ class EventServiceTest {
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
-                "이밴트 근로",
                 100,
                 new ArrayList<>()
         );
@@ -189,7 +186,6 @@ class EventServiceTest {
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
-                "이밴트 근로",
                 100,
                 new ArrayList<>()
         );
@@ -330,7 +326,6 @@ class EventServiceTest {
                 now.plusDays(4),
                 now.plusDays(5),
                 now.plusDays(6),
-                "이벤트 근로",
                 100,
                 List.of(
                         new QuestionCreateRequest("1번 질문", true),
@@ -370,7 +365,6 @@ class EventServiceTest {
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
-                "원래 닉네임",
                 50
         );
         eventRepository.save(event);
@@ -382,7 +376,6 @@ class EventServiceTest {
                 now.plusDays(5),
                 now.plusDays(6),
                 now.plusDays(7),
-                "수정된 닉네임",
                 200
         );
 
@@ -402,8 +395,6 @@ class EventServiceTest {
                                 .isEqualTo("수정된 설명");
                         softly.assertThat(savedEvent.getPlace())
                                 .isEqualTo("수정된 장소");
-                        softly.assertThat(savedEvent.getOrganizerNickname())
-                                .isEqualTo("수정된 닉네임");
                         softly.assertThat(savedEvent.getMaxCapacity())
                                 .isEqualTo(200);
 
@@ -437,7 +428,6 @@ class EventServiceTest {
                 now.plusDays(5),
                 now.plusDays(6),
                 now.plusDays(7),
-                "수정된 닉네임",
                 200
         );
 
@@ -466,7 +456,6 @@ class EventServiceTest {
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
-                "원래 닉네임",
                 50
         );
         eventRepository.save(event);
@@ -478,7 +467,6 @@ class EventServiceTest {
                 now.plusDays(5),
                 now.plusDays(6),
                 now.plusDays(7),
-                "수정된 닉네임",
                 200
         );
         var loginMember = new LoginMember(9999L);
@@ -516,7 +504,6 @@ class EventServiceTest {
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
-                "원래 닉네임",
                 50
         );
         eventRepository.save(event);
@@ -533,7 +520,6 @@ class EventServiceTest {
                 now.plusDays(5),
                 now.plusDays(6),
                 now.plusDays(7),
-                "수정된 닉네임",
                 200
         );
 
@@ -640,7 +626,6 @@ class EventServiceTest {
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
-                "이벤트 근로",
                 10
         );
 
