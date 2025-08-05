@@ -2,11 +2,13 @@ package com.ahmadda.presentation.dto;
 
 import com.ahmadda.domain.Event;
 
+
 public record EventTemplateResponse(
         Long eventId,
-        String tile,
+        String title,
         String description,
-        String organizerName
+        int maxCapacity,
+        String place
 ) {
 
     public static EventTemplateResponse from(final Event event) {
@@ -14,7 +16,8 @@ public record EventTemplateResponse(
                 event.getId(),
                 event.getTitle(),
                 event.getDescription(),
-                event.getOrganizerNickname()
+                event.getMaxCapacity(),
+                event.getPlace()
         );
     }
 }

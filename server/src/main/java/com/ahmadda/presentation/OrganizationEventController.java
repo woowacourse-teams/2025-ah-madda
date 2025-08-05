@@ -12,6 +12,7 @@ import com.ahmadda.presentation.dto.EventCreateResponse;
 import com.ahmadda.presentation.dto.EventDetailResponse;
 import com.ahmadda.presentation.dto.EventResponse;
 import com.ahmadda.presentation.dto.EventTemplateResponse;
+import com.ahmadda.presentation.dto.EventTitleResponse;
 import com.ahmadda.presentation.dto.EventUpdateResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
@@ -598,12 +599,12 @@ public class OrganizationEventController {
         return ResponseEntity.ok(eventResponses);
     }
 
-    @Operation(summary = "내가 이전에 주최한 이벤트 템플릿으로 불러오기", description = "본인의 이벤트 정보로 이벤트 템플릿을 조회합니디.")
+    @Operation(summary = "내가 이전에 주최한 이벤트 제목 조회", description = "본인의 이벤트 정보로 이벤트 제목 명을 불러옵니다")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
                     content = @Content(
-                            array = @ArraySchema(schema = @Schema(implementation = EventTemplateResponse.class))
+                            array = @ArraySchema(schema = @Schema(implementation = EventTitleResponse.class))
                     )
             ),
             @ApiResponse(
@@ -639,18 +640,73 @@ public class OrganizationEventController {
                     )
             )
     })
-    @GetMapping("/{organizationId}/events/owned/template")
-    public ResponseEntity<List<EventTemplateResponse>> getMyEventTemplate(
+    @GetMapping("/{organizationId}/events/owned/titles")
+    public ResponseEntity<List<EventTitleResponse>> getOwnerEventTitles(
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember
     ) {
         List<Event> ownerEvents = organizationMemberEventService.getOwnerEvents(organizationId, loginMember);
 
-        List<EventTemplateResponse> eventTemplateResponses = ownerEvents.stream()
-                .map(EventTemplateResponse::from)
+        List<EventTitleResponse> eventTemplateResponses = ownerEvents.stream()
+                .map(EventTitleResponse::from)
                 .toList();
 
         return ResponseEntity.ok(eventTemplateResponses);
+    }
+
+    @Operation(summary = "내가 이전에 주최한 이벤트 템플릿으로 불러오기", description = "본인의 이벤트 정보로 이벤트 템플릿을 조회합니디.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            schema = @Schema(
+                                    implementation = EventTemplateResponse.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/organizations/{organizationId}/events/owned"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "존재하지 않은 조직원 정보입니다.",
+                                              "instance": "/api/organizations/{organizationId}/events/owned"
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
+    @GetMapping("/events{eventId}/owned/template")
+    public ResponseEntity<EventTemplateResponse> getOwnerEventTemplate(
+            @PathVariable final Long eventId,
+            @AuthMember final LoginMember loginMember
+    ) {
+        Event organizationMemberEvent = eventService.getOrganizationMemberEvent(loginMember, eventId);
+
+        EventTemplateResponse response = EventTemplateResponse.from(organizationMemberEvent);
+
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "내가 참가한 이벤트 목록 조회", description = "로그인한 사용자가 참가한 이벤트 목록을 조회합니다.")
