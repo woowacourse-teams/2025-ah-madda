@@ -46,7 +46,7 @@ public class FcmPushNotifier implements PushNotifier {
         }
     }
 
-    private List<String> getRegistrationTokens(List<OrganizationMember> recipients) {
+    private List<String> getRegistrationTokens(final List<OrganizationMember> recipients) {
         List<Long> memberIds = recipients.stream()
                 .map(organizationMember -> organizationMember.getMember()
                         .getId())
