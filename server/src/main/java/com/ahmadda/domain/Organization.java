@@ -75,10 +75,10 @@ public class Organization extends BaseEntity {
     }
 
     public OrganizationMember participate(
-            Member member,
-            String nickname,
-            InviteCode inviteCode,
-            LocalDateTime now
+            final Member member,
+            final String nickname,
+            final InviteCode inviteCode,
+            final LocalDateTime now
     ) {
         if (!inviteCode.matchesOrganization(this)) {
             throw new BusinessRuleViolatedException("잘못된 초대코드입니다.");
