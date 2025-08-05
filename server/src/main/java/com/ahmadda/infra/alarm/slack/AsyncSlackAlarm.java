@@ -7,7 +7,9 @@ import com.ahmadda.infra.alarm.slack.exception.SlackAlarmException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.ResponseSpec;
@@ -16,12 +18,30 @@ import org.springframework.web.client.RestClient.ResponseSpec;
 @EnableConfigurationProperties(SlackAlarmProperties.class)
 public class AsyncSlackAlarm implements SlackAlarm {
 
-    private final SlackAlarmProperties slackAlarmProperties;
     private final RestClient restClient;
+    private final SlackAlarmProperties slackAlarmProperties;
 
-    public AsyncSlackAlarm(final RestClient restClient, final SlackAlarmProperties slackAlarmProperties) {
+    public AsyncSlackAlarm(
+            final RestClient.Builder restClientBuilder,
+            final SlackAlarmProperties slackAlarmProperties
+    ) {
+        restClientBuilder.requestFactory(simpleClientHttpRequestFactory(slackAlarmProperties));
+        restClientBuilder.baseUrl(slackAlarmProperties.getPostMessageUrl());
+        restClientBuilder.defaultHeaders(headers -> {
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(slackAlarmProperties.getBotToken());
+        });
+
+        this.restClient = restClientBuilder.build();
         this.slackAlarmProperties = slackAlarmProperties;
-        this.restClient = restClient;
+    }
+    
+    private SimpleClientHttpRequestFactory simpleClientHttpRequestFactory(final SlackAlarmProperties slackAlarmProperties) {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(slackAlarmProperties.getConnectTimeout());
+        factory.setReadTimeout(slackAlarmProperties.getReadTimeout());
+
+        return factory;
     }
 
     @Async
