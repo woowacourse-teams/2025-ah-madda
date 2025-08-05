@@ -23,10 +23,6 @@ export const router = createBrowserRouter(
           Component: HomePage,
         },
         {
-          path: '/error',
-          Component: ErrorPage,
-        },
-        {
           path: '/auth',
           Component: AuthCallback,
         },
