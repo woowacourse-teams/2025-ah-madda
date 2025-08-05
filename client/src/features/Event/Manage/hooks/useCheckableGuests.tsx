@@ -4,16 +4,15 @@ type CheckableGuest = {
   organizationMemberId: number;
   nickname: string;
 };
-export const useCheckedGuest = <T extends CheckableGuest>(initialGuests: T[]) => {
-  const [checkedIds, setCheckedIds] = useState<Set<number>>();
+export const useCheckableGuests = <T extends CheckableGuest>(guests: T[]) => {
+  const [checkedIds, setCheckedIds] = useState<Set<number>>(new Set());
 
   const handleAllChecked = () => {
     setCheckedIds((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.size === initialGuests.length) {
+      if (prev.size === guests.length) {
         return new Set();
       }
-      return new Set(initialGuests.map((guest) => guest.organizationMemberId));
+      return new Set(guests.map((guest) => guest.organizationMemberId));
     });
   };
 
@@ -29,14 +28,16 @@ export const useCheckedGuest = <T extends CheckableGuest>(initialGuests: T[]) =>
     });
   };
 
-  const guestData = initialGuests.map((guest) => ({
+  const guestData = guests.map((guest) => ({
     ...guest,
     isChecked: checkedIds?.has(guest.organizationMemberId) || false,
   }));
+  const getCheckedGuests = () => guestData.filter((guest) => guest.isChecked);
 
   return {
     guestData,
     handleAllChecked,
     handleGuestChecked,
+    getCheckedGuests,
   };
 };
