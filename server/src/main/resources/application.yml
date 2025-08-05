@@ -43,7 +43,9 @@ springdoc:
   default-produces-media-type: application/json
   swagger-ui:
     path: /specification
-
+    operations-sorter: method
+    persist-authorization: true
+    
 management:
   endpoints:
     web:
