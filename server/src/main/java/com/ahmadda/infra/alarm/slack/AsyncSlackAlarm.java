@@ -1,9 +1,9 @@
-package com.ahmadda.infra.slack;
+package com.ahmadda.infra.alarm.slack;
 
 import com.ahmadda.application.dto.MemberCreateAlarmPayload;
-import com.ahmadda.infra.slack.config.SlackAlarmProperties;
-import com.ahmadda.infra.slack.dto.MemberCreatAlarmRequestBody;
-import com.ahmadda.infra.slack.exception.SlackReminderException;
+import com.ahmadda.infra.alarm.slack.config.SlackAlarmProperties;
+import com.ahmadda.infra.alarm.slack.dto.MemberCreatAlarmRequestBody;
+import com.ahmadda.infra.alarm.slack.exception.SlackAlarmException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpStatus;
@@ -14,12 +14,12 @@ import org.springframework.web.client.RestClient.ResponseSpec;
 
 @Slf4j
 @EnableConfigurationProperties(SlackAlarmProperties.class)
-public class AsyncSlackReminder implements SlackReminder {
+public class AsyncSlackAlarm implements SlackAlarm {
 
     private final SlackAlarmProperties slackAlarmProperties;
     private final RestClient restClient;
 
-    public AsyncSlackReminder(final RestClient restClient, final SlackAlarmProperties slackAlarmProperties) {
+    public AsyncSlackAlarm(final RestClient restClient, final SlackAlarmProperties slackAlarmProperties) {
         this.slackAlarmProperties = slackAlarmProperties;
         this.restClient = restClient;
     }
@@ -35,8 +35,8 @@ public class AsyncSlackReminder implements SlackReminder {
                     .retrieve();
             ResponseEntity<Void> bodilessEntity = retrieve.toBodilessEntity();
 
-            if (bodilessEntity.getStatusCode() != HttpStatus.ACCEPTED) {
-                throw new SlackReminderException("유저 생성 슬랙 알람을 보내는데 실패 하였습니다");
+            if (bodilessEntity.getStatusCode() != HttpStatus.OK) {
+                throw new SlackAlarmException("유저 생성 슬랙 알람을 보내는데 실패 하였습니다");
             }
         } catch (Exception e) {
             log.error(

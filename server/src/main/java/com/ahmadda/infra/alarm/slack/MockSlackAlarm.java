@@ -1,10 +1,10 @@
-package com.ahmadda.infra.slack;
+package com.ahmadda.infra.alarm.slack;
 
 import com.ahmadda.application.dto.MemberCreateAlarmPayload;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class MockSlackReminder implements SlackReminder {
+public class MockSlackAlarm implements SlackAlarm {
 
     @Override
     public void alarmMemberCreation(final MemberCreateAlarmPayload memberCreateAlarmPayload) {

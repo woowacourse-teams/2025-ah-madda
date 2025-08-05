@@ -1,8 +1,8 @@
-package com.ahmadda.infra.slack.config;
+package com.ahmadda.infra.alarm.slack.config;
 
-import com.ahmadda.infra.slack.AsyncSlackReminder;
-import com.ahmadda.infra.slack.MockSlackReminder;
-import com.ahmadda.infra.slack.SlackReminder;
+import com.ahmadda.infra.alarm.slack.AsyncSlackAlarm;
+import com.ahmadda.infra.alarm.slack.MockSlackAlarm;
+import com.ahmadda.infra.alarm.slack.SlackAlarm;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -13,17 +13,17 @@ import org.springframework.web.client.RestClient;
 
 @Configuration
 @EnableConfigurationProperties(SlackAlarmProperties.class)
-public class SlackReminderConfig {
+public class SlackAlarmConfig {
 
     @Bean
     @ConditionalOnProperty(name = "slack.mock", havingValue = "true")
-    public SlackReminder mockSlackReminder() {
-        return new MockSlackReminder();
+    public SlackAlarm mockSlackReminder() {
+        return new MockSlackAlarm();
     }
 
     @Bean
     @ConditionalOnProperty(name = "slack.mock", havingValue = "false", matchIfMissing = true)
-    public SlackReminder slackReminder(
+    public SlackAlarm slackReminder(
             final RestClient.Builder restClientBuilder,
             final SlackAlarmProperties slackAlarmProperties
     ) {
@@ -36,7 +36,7 @@ public class SlackReminderConfig {
         });
         RestClient restClient = restClientBuilder.build();
 
-        return new AsyncSlackReminder(restClient, slackAlarmProperties);
+        return new AsyncSlackAlarm(restClient, slackAlarmProperties);
     }
 
     private SimpleClientHttpRequestFactory simpleClientHttpRequestFactory(final SlackAlarmProperties slackAlarmProperties) {
