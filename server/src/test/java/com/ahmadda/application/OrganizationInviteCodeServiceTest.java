@@ -166,7 +166,7 @@ class OrganizationInviteCodeServiceTest {
         var inviteCode = createAndSaveInviteCode("ahmada", organization, organizationMember, LocalDateTime.now());
 
         //when
-        Organization findOrganization = sut.getOrganizationByCode(inviteCode.getCode());
+        var findOrganization = sut.getOrganizationByCode(inviteCode.getCode());
 
         //then
         assertThat(findOrganization).isEqualTo(organization);
