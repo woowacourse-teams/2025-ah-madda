@@ -7,7 +7,7 @@ type CheckableGuest = {
 export const useCheckableGuests = <T extends CheckableGuest>(guests: T[]) => {
   const [checkedIds, setCheckedIds] = useState<Set<number>>(new Set());
 
-  const handleAllChecked = () => {
+  const toggleAll = () => {
     setCheckedIds((prev) => {
       if (prev.size === guests.length) {
         return new Set();
@@ -16,7 +16,7 @@ export const useCheckableGuests = <T extends CheckableGuest>(guests: T[]) => {
     });
   };
 
-  const handleGuestChecked = (organizationMemberId: number) => {
+  const toggleItem = (organizationMemberId: number) => {
     setCheckedIds((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(organizationMemberId)) {
@@ -36,8 +36,8 @@ export const useCheckableGuests = <T extends CheckableGuest>(guests: T[]) => {
 
   return {
     guestData,
-    handleAllChecked,
-    handleGuestChecked,
+    toggleAll,
+    toggleItem,
     getCheckedGuests,
   };
 };
