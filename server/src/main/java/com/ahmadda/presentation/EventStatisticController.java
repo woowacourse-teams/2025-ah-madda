@@ -89,7 +89,7 @@ public class EventStatisticController {
     @GetMapping
     public ResponseEntity<List<EventViewMetricResponse>> eventStatisticResponses(
             @PathVariable final Long eventId,
-            @AuthMember LoginMember loginMember
+            @AuthMember final LoginMember loginMember
     ) {
         List<EventViewMetric> metrics = eventStatisticService.getEventStatistic(eventId, loginMember);
         List<EventViewMetricResponse> metricResponses = metrics.stream()
