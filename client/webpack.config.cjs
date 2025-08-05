@@ -97,6 +97,4 @@ module.exports = {
       overlay: true,
     },
   },
-
-  devtool: 'source-map',
 };
