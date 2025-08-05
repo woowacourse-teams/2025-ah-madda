@@ -26,7 +26,7 @@ public class FcmRegistrationToken {
     private Long memberId;
 
     // TODO. 추후 기기당 토큰의 중복을 허용할지 여부를 결정해야 함
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String registrationToken;
 
     @Column(nullable = false)
