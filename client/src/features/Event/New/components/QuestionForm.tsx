@@ -32,7 +32,7 @@ export const QuestionForm = ({
             + 질문 추가
           </Button>
         </Flex>
-        {questions.map((question) => (
+        {(questions ?? []).map((question) => (
           <QuestionItem
             key={question.orderIndex}
             orderIndex={question.orderIndex}
