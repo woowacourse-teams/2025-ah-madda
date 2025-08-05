@@ -29,17 +29,23 @@ export const EventCreateForm = () => {
     isValid: isBasicFormValid,
   } = useBasicEventForm();
 
-  const questionManager = useQuestionManager();
+  const {
+    questions,
+    addQuestion,
+    deleteQuestion,
+    updateQuestion,
+    isValid: isQuestionValid,
+  } = useQuestionManager();
 
-  const isFormReady = isBasicFormValid && questionManager.isValid;
+  const isFormReady = isBasicFormValid && isQuestionValid;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isBasicFormValid || !questionManager.isValid) return;
+    if (!isBasicFormValid || !isQuestionValid) return;
 
     const payload = {
       ...basicForm,
-      questions: questionManager.questions,
+      questions: questions,
       eventStart: convertDatetimeLocalToKSTISOString(basicForm.eventStart),
       eventEnd: convertDatetimeLocalToKSTISOString(basicForm.eventEnd),
       registrationEnd: convertDatetimeLocalToKSTISOString(basicForm.registrationEnd),
@@ -186,7 +192,12 @@ export const EventCreateForm = () => {
           </Flex>
         </Card>
 
-        <QuestionForm manager={questionManager} />
+        <QuestionForm
+          questions={questions}
+          addQuestion={addQuestion}
+          deleteQuestion={deleteQuestion}
+          updateQuestion={updateQuestion}
+        />
 
         <Flex justifyContent="flex-end">
           <Button
