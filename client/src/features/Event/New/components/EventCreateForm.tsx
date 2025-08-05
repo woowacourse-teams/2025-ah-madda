@@ -5,14 +5,18 @@ import { HttpError } from '@/api/fetcher';
 import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
+import { Icon } from '@/shared/components/Icon';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
+import { useModal } from '@/shared/hooks/useModal';
 
+import { UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useBasicEventForm } from '../hooks/useBasicEventForm';
 import { useQuestionForm } from '../hooks/useQuestionForm';
 import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
 
+import { MaxCapacityModal } from './MaxCapacityModal';
 import { QuestionForm } from './QuestionForm';
 
 const ORGANIZATION_ID = 1; // 임시
@@ -20,6 +24,7 @@ const ORGANIZATION_ID = 1; // 임시
 export const EventCreateForm = () => {
   const navigate = useNavigate();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
+  const { isOpen: isModalOpen, open, close } = useModal();
 
   const {
     basicForm,
@@ -154,7 +159,6 @@ export const EventCreateForm = () => {
               value={basicForm.place}
               onChange={handleChange}
               errorMessage={errors.place}
-              max={12}
             />
 
             <Input
@@ -165,19 +169,50 @@ export const EventCreateForm = () => {
               value={basicForm.description}
               onChange={handleChange}
               errorMessage={errors.description}
-              max={80}
             />
 
-            <Input
-              id="maxCapacity"
-              name="maxCapacity"
-              label="수용 인원"
-              placeholder="최대 참가 인원을 입력해 주세요"
-              type="number"
-              value={basicForm.maxCapacity}
-              min={1}
-              onChange={handleChange}
-              isRequired
+            <Flex
+              height="45px"
+              justifyContent="space-between"
+              alignItems="center"
+              padding="8px 12px"
+              onClick={open}
+              css={css`
+                cursor: pointer;
+                transition: background-color 0.2s;
+                border-radius: 8px;
+                &:hover {
+                  background-color: #f5f5f5;
+                }
+              `}
+            >
+              <Flex alignItems="center" gap="8px">
+                <Icon name="user" size={18} />
+                <Text type="Label" color="gray">
+                  수용 인원
+                </Text>
+                <Text type="Label">
+                  {basicForm.maxCapacity === UNLIMITED_CAPACITY
+                    ? '무제한'
+                    : `${basicForm.maxCapacity}명`}
+                </Text>
+              </Flex>
+
+              <Text type="Label" color="gray">
+                ✏️
+              </Text>
+            </Flex>
+
+            <MaxCapacityModal
+              isOpen={isModalOpen}
+              initialValue={
+                basicForm.maxCapacity === UNLIMITED_CAPACITY ? 10 : basicForm.maxCapacity
+              }
+              onClose={close}
+              onSubmit={(value) => {
+                handleValueChange('maxCapacity', value);
+                validateField('maxCapacity', value.toString());
+              }}
             />
           </Flex>
         </Card>

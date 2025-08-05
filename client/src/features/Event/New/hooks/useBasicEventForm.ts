@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 
 import { BasicEventFormFields } from '../../types/Event';
+import { UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { FIELD_CONFIG } from '../constants/formFieldConfig';
 import { validateEventForm } from '../utils/validateEventForm';
 
@@ -12,7 +13,7 @@ export const useBasicEventForm = () => {
     registrationEnd: '',
     place: '',
     description: '',
-    maxCapacity: 0,
+    maxCapacity: UNLIMITED_CAPACITY,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
