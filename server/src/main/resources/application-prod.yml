@@ -13,7 +13,7 @@ spring:
     aws:
       region:
         static: ap-northeast-2
-        
+
 jwt:
   secret-key: ${jwt.prod.secret-key}
   access-expiration: ${jwt.prod.access-expiration}
@@ -28,6 +28,13 @@ notification:
   redirect-url-prefix: https://ahmadda.com/event/
 
 management:
+  metrics:
+    enable:
+      system.cpu.usage: true
+      jvm.memory.used: true
+      http.server.requests: true
+      tomcat.threads: true
+      executor: true
   cloudwatch:
     metrics:
       export:

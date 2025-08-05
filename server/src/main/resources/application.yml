@@ -53,17 +53,11 @@ management:
   metrics:
     enable:
       all: false
-      system.cpu.usage: true
-      jvm.memory.used: true
-      http.server.requests: true
-      tomcat.threads: true
-      executor: true
   endpoints:
     web:
       exposure:
         include:
           - health
-          - metrics
     jmx:
       exposure:
         exclude: '*'
