@@ -60,7 +60,6 @@ public class EventService {
                 organizer,
                 organization,
                 eventOperationPeriod,
-                eventCreateRequest.organizerNickname(),
                 eventCreateRequest.maxCapacity(),
                 createQuestions(eventCreateRequest.questions())
         );
@@ -116,7 +115,6 @@ public class EventService {
                 eventUpdateRequest.description(),
                 eventUpdateRequest.place(),
                 updatedOperationPeriod,
-                eventUpdateRequest.organizerNickname(),
                 eventUpdateRequest.maxCapacity()
         );
 

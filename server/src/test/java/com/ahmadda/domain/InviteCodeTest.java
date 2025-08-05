@@ -62,6 +62,28 @@ class InviteCodeTest {
         });
     }
 
+    @Test
+    void 특정_조직의_초대코드인지_확인할_수_있다() {
+        //given
+        var wooteco = createOrganization("우테코");
+        var ahmadda = createOrganization("아맞다");
+        var member = createMember();
+        var inviter = createOrganizationMember(member, wooteco);
+        var wootecoInviteCode = InviteCode.create("code", wooteco, inviter, LocalDateTime.of(2000, 1, 1, 0, 0));
+
+        //when
+        var actual1 = wootecoInviteCode.matchesOrganization(wooteco);
+        var actual2 = wootecoInviteCode.matchesOrganization(ahmadda);
+
+        //then
+        assertSoftly(softly -> {
+            softly.assertThat(actual1)
+                    .isEqualTo(true);
+            softly.assertThat(actual2)
+                    .isEqualTo(false);
+        });
+    }
+  
     private OrganizationMember createOrganizationMember(Member member, Organization organization) {
         return OrganizationMember.create("nickname", member, organization);
     }
