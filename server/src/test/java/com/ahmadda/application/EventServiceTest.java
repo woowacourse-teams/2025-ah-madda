@@ -1,5 +1,14 @@
 package com.ahmadda.application;
 
+import static java.util.stream.Collectors.toSet;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+
 import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.LoginMember;
@@ -11,6 +20,7 @@ import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventNotification;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
+import com.ahmadda.domain.EventStatisticRepository;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.GuestRepository;
 import com.ahmadda.domain.Member;
@@ -21,26 +31,17 @@ import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Question;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import static java.util.stream.Collectors.toSet;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @Transactional
@@ -66,6 +67,8 @@ class EventServiceTest {
 
     @Autowired
     private GuestRepository guestRepository;
+    @Autowired
+    private EventStatisticRepository eventStatisticRepository;
 
     @Test
     void 이벤트를_생성할_수_있다() {
@@ -353,6 +356,88 @@ class EventServiceTest {
                 }),
                 eq(email)
         );
+    }
+
+    @Test
+    void 이벤트_생성시에_조회수_정보가_생성된다() {
+        //given
+        var organization = createOrganization();
+        var organizationMember = createOrganizationMember(organization, createMember("서프", "surf@gmail.com"));
+
+        var now = LocalDateTime.now();
+
+        var request = new EventCreateRequest(
+                "UI/UX 이벤트",
+                "UI/UX 이벤트 입니다",
+                "선릉",
+                now.plusDays(4),
+                now.plusDays(5),
+                now.plusDays(6),
+                "이벤트 근로",
+                100,
+                List.of(
+                        new QuestionCreateRequest("1번 질문", true),
+                        new QuestionCreateRequest("2번 질문", false)
+                )
+        );
+
+        //when
+        var event = sut.createEvent(
+                organization.getId(),
+                new LoginMember(organizationMember.getMember().getId()),
+                request,
+                LocalDateTime.now());
+
+        //then
+        var startDate = event.getEventOperationPeriod().getRegistrationPeriod().start().toLocalDate();
+        var endDate = event.getEventOperationPeriod().getEventPeriod().end().toLocalDate();
+        var eventDuration = ChronoUnit.DAYS
+                .between(startDate, endDate) + 1;
+
+        var eventStatistic = eventStatisticRepository.findByEventId(event.getId()).get();
+        var eventViewMetrics = eventStatistic.getEventViewMetrics();
+
+        assertThat(eventViewMetrics.size())
+                .isEqualTo(eventDuration);
+    }
+
+    @Test
+    void 이벤트_조회시에_해당_날짜의_조회수도_증가한다() {
+        //given
+        var organization = createOrganization();
+        var organizationMember = createOrganizationMember(organization, createMember("서프", "surf@gmail.com"));
+        var now = LocalDateTime.now();
+
+        var request = new EventCreateRequest(
+                "UI/UX 이벤트",
+                "UI/UX 이벤트 입니다",
+                "선릉",
+                now.plusDays(4),
+                now.plusDays(5),
+                now.plusDays(6),
+                "이벤트 근로",
+                100,
+                List.of(
+                        new QuestionCreateRequest("1번 질문", true),
+                        new QuestionCreateRequest("2번 질문", false)
+                )
+        );
+
+        var event = sut.createEvent(organization.getId(), new LoginMember(organizationMember.getMember().getId()),
+                request,
+                LocalDateTime.now());
+
+        var all = eventStatisticRepository.findAll();
+
+        var eventStatistic = eventStatisticRepository.findByEventId(event.getId()).get();
+        var eventViewMetrics = eventStatistic.getEventViewMetrics();
+
+        //when
+        sut.getOrganizationMemberEvent(new LoginMember(organizationMember.getMember().getId()), event.getId());
+
+        //then
+        assertThat(eventViewMetrics)
+                .anyMatch((eventViewMetric) -> eventViewMetric.getViewCount() == 1);
     }
 
     @Test

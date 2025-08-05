@@ -67,8 +67,13 @@ public class EventService {
 
         Event savedEvent = eventRepository.save(event);
         notifyEventCreated(savedEvent, organization);
+        createEventStatistic(savedEvent);
 
         return savedEvent;
+    }
+
+    private void createEventStatistic(final Event savedEvent) {
+        eventStatisticRepository.save(EventStatistic.create(savedEvent));
     }
 
     @Transactional
@@ -94,12 +99,12 @@ public class EventService {
         validateOrganizationAccess(organization.getId(), loginMember.memberId());
 
         //TODO 추후에 EventListener에 대해 협의해본뒤 리팩터링
-        try{
+        try {
             EventStatistic eventStatistic = eventStatisticRepository.findByEventId(eventId)
                     .orElseThrow(() -> new NotFoundException("해당되는 이벤트 조회수를 가져오는데 실패하였습니다."));
             eventStatistic.increaseViewCount(LocalDate.now());
-        }catch (Exception e){
-            log.error("이벤트 조회수를 업데이트하는데 실패하였습니다 사유 : {}",e.getMessage(),e);
+        } catch (Exception e) {
+            log.error("이벤트 조회수를 업데이트하는데 실패하였습니다 사유 : {}", e.getMessage(), e);
         }
 
         return event;
