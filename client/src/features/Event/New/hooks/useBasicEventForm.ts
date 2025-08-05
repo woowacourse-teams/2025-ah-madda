@@ -28,7 +28,7 @@ export const useBasicEventForm = () => {
     setTouchedMap((prev) => ({ ...prev, [key]: true }));
   };
 
-  const setValue = <K extends keyof BasicEventFormFields>(
+  const handleValueChange = <K extends keyof BasicEventFormFields>(
     key: K,
     value: BasicEventFormFields[K]
   ) => {
@@ -57,7 +57,7 @@ export const useBasicEventForm = () => {
 
   return {
     basicForm,
-    setValue,
+    handleValueChange,
     setTouched,
     validate,
     validateField,

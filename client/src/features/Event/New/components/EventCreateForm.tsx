@@ -23,7 +23,7 @@ export const EventCreateForm = () => {
 
   const {
     basicForm,
-    setValue,
+    handleValueChange,
     touchedMap,
     setTouched,
     validateField,
@@ -85,7 +85,7 @@ export const EventCreateForm = () => {
               label="이벤트 이름"
               value={basicForm.title}
               onChange={(e) => {
-                setValue('title', e.target.value);
+                handleValueChange('title', e.target.value);
                 validateField('title', e.target.value);
               }}
               onBlur={() => setTouched('title')}
@@ -111,10 +111,10 @@ export const EventCreateForm = () => {
                 value={basicForm.eventStart}
                 onChange={(e) => {
                   const newValue = e.target.value;
-                  setValue('eventStart', newValue);
+                  handleValueChange('eventStart', newValue);
                   validateField('eventStart', newValue);
 
-                  setValue('registrationEnd', newValue);
+                  handleValueChange('registrationEnd', newValue);
                   validateField('registrationEnd', newValue);
                 }}
                 onBlur={() => setTouched('eventStart')}
@@ -129,7 +129,7 @@ export const EventCreateForm = () => {
                 value={basicForm.eventEnd}
                 min={basicForm.eventStart}
                 onChange={(e) => {
-                  setValue('eventEnd', e.target.value);
+                  handleValueChange('eventEnd', e.target.value);
                   validateField('eventEnd', e.target.value);
                 }}
                 onBlur={() => setTouched('eventEnd')}
@@ -146,7 +146,7 @@ export const EventCreateForm = () => {
               value={basicForm.registrationEnd}
               max={basicForm.eventStart}
               onChange={(e) => {
-                setValue('registrationEnd', e.target.value);
+                handleValueChange('registrationEnd', e.target.value);
                 validateField('registrationEnd', e.target.value);
               }}
               onBlur={() => setTouched('registrationEnd')}
@@ -160,7 +160,7 @@ export const EventCreateForm = () => {
               placeholder="이벤트 장소를 입력해 주세요"
               value={basicForm.place}
               onChange={(e) => {
-                setValue('place', e.target.value);
+                handleValueChange('place', e.target.value);
                 validateField('place', e.target.value);
               }}
               onBlur={() => setTouched('place')}
@@ -174,7 +174,7 @@ export const EventCreateForm = () => {
               placeholder="이벤트에 대한 설명을 입력해 주세요"
               value={basicForm.description}
               onChange={(e) => {
-                setValue('description', e.target.value);
+                handleValueChange('description', e.target.value);
                 validateField('description', e.target.value);
               }}
               onBlur={() => setTouched('description')}
@@ -189,7 +189,7 @@ export const EventCreateForm = () => {
               type="number"
               value={basicForm.maxCapacity}
               min={1}
-              onChange={(e) => setValue('maxCapacity', Number(e.target.value))}
+              onChange={(e) => handleValueChange('maxCapacity', Number(e.target.value))}
               onBlur={() => setTouched('maxCapacity')}
               isRequired
             />
