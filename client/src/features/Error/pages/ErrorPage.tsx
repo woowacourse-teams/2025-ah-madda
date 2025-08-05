@@ -11,15 +11,7 @@ import { colors } from '@/shared/styles/colors';
 
 import { ErrorContainer } from '../containers/ErrorContainer';
 
-type ErrorPageProps = {
-  title?: string;
-  message?: string;
-};
-
-export const ErrorPage = ({
-  title = '문제가 발생했습니다',
-  message = '예상치 못한 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-}: ErrorPageProps) => {
+export const ErrorPage = () => {
   const navigate = useNavigate();
 
   const handleGoHome = () => {
@@ -35,19 +27,17 @@ export const ErrorPage = ({
       <ErrorContainer>
         <Flex dir="column" height="100%" justifyContent="center" alignItems="center" gap="24px">
           <Text type="Heading" weight="bold" color="#0A0A0A">
-            {title}
+            문제가 발생했습니다
           </Text>
 
-          <Text
-            css={css`
-              font-size: 18px;
-              color: ${colors.gray600};
-              margin: 0;
-              line-height: 1.6;
-            `}
-          >
-            {message}
-          </Text>
+          <Flex dir="column" alignItems="center" justifyContent="center" gap="8px">
+            <Text type="Body" weight="medium" color={colors.gray600}>
+              예상치 못한 오류가 발생했습니다.
+            </Text>
+            <Text type="Body" weight="medium" color={colors.gray600}>
+              잠시 후 다시 시도해주세요.
+            </Text>
+          </Flex>
 
           <Flex dir="row" gap="16px" justifyContent="center" margin="24px 0 0 0">
             <Button
