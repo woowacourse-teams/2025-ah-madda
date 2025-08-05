@@ -38,15 +38,15 @@ export const GuestViewSection = ({
           title={`신청 완료 (${guests.length}명)`}
           titleColor="#00A63E"
           guests={guests}
-          onChecked={onGuestChecked}
-          onAllChecked={onAllChecked}
+          onGuestChecked={onGuestChecked}
+          onAllGuestChecked={onAllChecked}
         />
         <GuestList
           title={`미신청 (${nonGuests.length}명)`}
           titleColor="#4A5565"
           guests={nonGuests}
-          onChecked={onNonGuestChecked}
-          onAllChecked={onNonGuestAllChecked}
+          onGuestChecked={onNonGuestChecked}
+          onAllGuestChecked={onNonGuestAllChecked}
         />
       </Flex>
     </Card>
