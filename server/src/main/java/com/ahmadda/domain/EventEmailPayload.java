@@ -21,7 +21,8 @@ public record EventEmailPayload(
                 event.getOrganization()
                         .getName(),
                 event.getTitle(),
-                event.getOrganizerNickname(),
+                event.getOrganizer()
+                        .getNickname(),
                 event.getPlace(),
                 event.getRegistrationStart(),
                 event.getRegistrationEnd(),

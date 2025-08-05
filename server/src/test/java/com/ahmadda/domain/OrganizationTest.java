@@ -49,7 +49,6 @@ class OrganizationTest {
                         start, end,
                         start.minusDays(6)
                 ),
-                organizer.getNickname(),
                 50
         );
     }
