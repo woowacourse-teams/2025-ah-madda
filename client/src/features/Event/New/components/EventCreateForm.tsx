@@ -24,8 +24,6 @@ export const EventCreateForm = () => {
   const {
     basicForm,
     handleValueChange,
-    touchedMap,
-    setTouched,
     validateField,
     errors,
     isValid: isBasicFormValid,
@@ -86,8 +84,7 @@ export const EventCreateForm = () => {
                 handleValueChange('title', e.target.value);
                 validateField('title', e.target.value);
               }}
-              onBlur={() => setTouched('title')}
-              errorMessage={touchedMap.title ? errors.title : ''}
+              errorMessage={errors.title}
               isRequired
             />
 
@@ -109,14 +106,14 @@ export const EventCreateForm = () => {
                 value={basicForm.eventStart}
                 onChange={(e) => {
                   const newValue = e.target.value;
+
                   handleValueChange('eventStart', newValue);
                   validateField('eventStart', newValue);
 
                   handleValueChange('registrationEnd', newValue);
                   validateField('registrationEnd', newValue);
                 }}
-                onBlur={() => setTouched('eventStart')}
-                errorMessage={touchedMap.eventStart ? errors.eventStart : ''}
+                errorMessage={errors.eventStart}
                 isRequired
               />
               <Input
@@ -130,8 +127,7 @@ export const EventCreateForm = () => {
                   handleValueChange('eventEnd', e.target.value);
                   validateField('eventEnd', e.target.value);
                 }}
-                onBlur={() => setTouched('eventEnd')}
-                errorMessage={touchedMap.eventEnd ? errors.eventEnd : ''}
+                errorMessage={errors.eventEnd}
                 isRequired
               />
             </Flex>
@@ -147,8 +143,7 @@ export const EventCreateForm = () => {
                 handleValueChange('registrationEnd', e.target.value);
                 validateField('registrationEnd', e.target.value);
               }}
-              onBlur={() => setTouched('registrationEnd')}
-              errorMessage={touchedMap.registrationEnd ? errors.registrationEnd : ''}
+              errorMessage={errors.registrationEnd}
               isRequired
             />
 
@@ -161,8 +156,7 @@ export const EventCreateForm = () => {
                 handleValueChange('place', e.target.value);
                 validateField('place', e.target.value);
               }}
-              onBlur={() => setTouched('place')}
-              errorMessage={touchedMap.place ? errors.place : ''}
+              errorMessage={errors.place}
               max={12}
             />
 
@@ -175,8 +169,7 @@ export const EventCreateForm = () => {
                 handleValueChange('description', e.target.value);
                 validateField('description', e.target.value);
               }}
-              onBlur={() => setTouched('description')}
-              errorMessage={touchedMap.description ? errors.description : ''}
+              errorMessage={errors.description}
               max={80}
             />
 
@@ -188,7 +181,6 @@ export const EventCreateForm = () => {
               value={basicForm.maxCapacity}
               min={1}
               onChange={(e) => handleValueChange('maxCapacity', Number(e.target.value))}
-              onBlur={() => setTouched('maxCapacity')}
               isRequired
             />
           </Flex>
