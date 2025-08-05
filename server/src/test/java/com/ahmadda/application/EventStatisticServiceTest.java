@@ -3,6 +3,7 @@ package com.ahmadda.application;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.ahmadda.application.dto.LoginMember;
+import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventOperationPeriod;
@@ -57,8 +58,8 @@ class EventStatisticServiceTest {
 
         //when // then
         assertThatThrownBy(() -> eventStatisticService.getEventStatistic(event.getId(), loginMember))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원입니다.");
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessage("조직의 조직원만 접근할 수 있습니다.");
     }
 
     @Test
@@ -125,7 +126,6 @@ class EventStatisticServiceTest {
                 organizer,
                 organization,
                 operationPeriod,
-                "테스트 주최자",
                 30
         );
         return eventRepository.save(event);

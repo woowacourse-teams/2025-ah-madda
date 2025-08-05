@@ -1,15 +1,23 @@
 package com.ahmadda.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.verify;
+
 import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
+import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
+import com.ahmadda.domain.EventStatisticRepository;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.GuestRepository;
 import com.ahmadda.domain.Member;
@@ -22,35 +30,21 @@ import com.ahmadda.domain.PushNotificationPayload;
 import com.ahmadda.domain.PushNotifier;
 import com.ahmadda.domain.Question;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
+import com.ahmadda.infra.notification.push.FcmRegistrationToken;
+import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import com.ahmadda.infra.notification.push.FcmRegistrationToken;
-import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import static java.util.stream.Collectors.toSet;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-
-@SpringBootTest
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @Transactional
 class EventServiceTest {
 
@@ -76,15 +70,14 @@ class EventServiceTest {
     private EmailNotifier emailNotifier;
 
     @MockitoBean
-    private EventNotification eventNotification;
-
-    @Autowired
-    private GuestRepository guestRepository;
+    private PushNotifier pushNotifier;
 
     @Autowired
     private EventStatisticRepository eventStatisticRepository;
 
-    private PushNotifier pushNotifier;
+
+    @Autowired
+    private EventService sut;
 
     @Test
     void 이벤트를_생성할_수_있다() {
@@ -149,7 +142,6 @@ class EventServiceTest {
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
-                "이벤트 근로",
                 100,
                 List.of(new QuestionCreateRequest("1번 질문", true), new QuestionCreateRequest("2번 질문", false))
         );
@@ -173,8 +165,8 @@ class EventServiceTest {
                 "UI/UX 이벤트 입니다",
                 "선릉",
                 now.plusDays(4),
-                now.plusDays(5), now.plusDays(6),
-                "이밴트 근로",
+                now.plusDays(5),
+                now.plusDays(6),
                 100,
                 new ArrayList<>()
         );
@@ -183,8 +175,8 @@ class EventServiceTest {
 
         //when //then
         assertThatThrownBy(() -> sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 회원입니다.");
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessage("조직에 소속되지 않은 회원입니다.");
     }
 
     @Test
@@ -210,8 +202,8 @@ class EventServiceTest {
 
         //when //then
         assertThatThrownBy(() -> sut.createEvent(organization1.getId(), loginMember, eventCreateRequest, now))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 조직원 정보입니다.");
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessage("조직에 소속되지 않은 회원입니다.");
     }
 
     @Test
@@ -271,8 +263,8 @@ class EventServiceTest {
                 999L,
                 now
         ))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 조직원 정보입니다.");
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessage("조직에 소속되지 않은 회원입니다.");
     }
 
     @Test
@@ -296,8 +288,8 @@ class EventServiceTest {
                 notBelongingOrgMember.getId(),
                 now
         ))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 조직원 정보입니다.");
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessage("조직에 소속되지 않은 회원입니다.");
     }
 
     @Test
@@ -342,7 +334,7 @@ class EventServiceTest {
                 now.plusDays(4),
                 now.plusDays(5),
                 now.plusDays(6),
-                "이벤트 근로",
+
                 100,
                 List.of(
                         new QuestionCreateRequest("1번 질문", true),
@@ -378,7 +370,7 @@ class EventServiceTest {
                 now.plusDays(4),
                 now.plusDays(5),
                 now.plusDays(6),
-                "이벤트 근로",
+
                 100,
                 List.of(
                         new QuestionCreateRequest("1번 질문", true),
@@ -421,7 +413,7 @@ class EventServiceTest {
                 now.plusDays(4),
                 now.plusDays(5),
                 now.plusDays(6),
-                "이벤트 근로",
+
                 100,
                 List.of(
                         new QuestionCreateRequest("1번 질문", true),
@@ -463,7 +455,7 @@ class EventServiceTest {
                 now.plusDays(4),
                 now.plusDays(5),
                 now.plusDays(6),
-                "이벤트 근로",
+
                 100,
                 List.of(
                         new QuestionCreateRequest("1번 질문", true),
@@ -507,7 +499,6 @@ class EventServiceTest {
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
-                "원래 닉네임",
                 50
         );
         eventRepository.save(event);
@@ -519,7 +510,6 @@ class EventServiceTest {
                 now.plusDays(5),
                 now.plusDays(6),
                 now.plusDays(7),
-                "수정된 닉네임",
                 200
         );
 
@@ -770,7 +760,6 @@ class EventServiceTest {
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
-                "이벤트 근로",
                 10
         );
 

@@ -197,7 +197,6 @@ class EventStatisticTest {
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
-                "이벤트 근로",
                 10
         );
     }
