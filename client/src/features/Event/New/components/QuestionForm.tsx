@@ -8,13 +8,14 @@ import { getQuestionErrorMessage } from '../utils/getQuestionErrorMessage';
 
 import { QuestionItem } from './QuestionItem';
 
-type Props = {
-  manager: ReturnType<typeof useQuestionManager>;
-};
+type QuestionFormProps = Omit<ReturnType<typeof useQuestionManager>, 'isValid'>;
 
-export const QuestionForm = ({ manager }: Props) => {
-  const { questions, addQuestion, deleteQuestion, updateQuestion } = manager;
-
+export const QuestionForm = ({
+  questions,
+  addQuestion,
+  deleteQuestion,
+  updateQuestion,
+}: QuestionFormProps) => {
   return (
     <Card>
       <Flex dir="column" gap="16px">
