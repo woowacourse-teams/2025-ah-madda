@@ -83,7 +83,7 @@ class InviteCodeTest {
                     .isEqualTo(false);
         });
     }
-
+  
     private OrganizationMember createOrganizationMember(Member member, Organization organization) {
         return OrganizationMember.create("nickname", member, organization);
     }
