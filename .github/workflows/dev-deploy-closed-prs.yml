@@ -60,7 +60,7 @@ jobs:
     needs: setup
     runs-on:
       - self-hosted
-      - ahmadda-dev-runner
+      - ahamadda-dev-runner
 
     steps:
       - name: Set tag name from setup output
