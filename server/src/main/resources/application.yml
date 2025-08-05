@@ -48,8 +48,11 @@ springdoc:
     path: /specification
     operations-sorter: method
     persist-authorization: true
-    
+
 management:
+  metrics:
+    enable:
+      all: false
   endpoints:
     web:
       exposure:
