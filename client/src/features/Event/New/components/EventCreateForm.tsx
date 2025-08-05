@@ -25,6 +25,7 @@ export const EventCreateForm = () => {
     basicForm,
     handleValueChange,
     validateField,
+    handleChange,
     errors,
     isValid: isBasicFormValid,
   } = useBasicEventForm();
@@ -84,12 +85,10 @@ export const EventCreateForm = () => {
           <Flex dir="column">
             <Input
               id="title"
+              name="title"
               label="이벤트 이름"
               value={basicForm.title}
-              onChange={(e) => {
-                handleValueChange('title', e.target.value);
-                validateField('title', e.target.value);
-              }}
+              onChange={handleChange}
               errorMessage={errors.title}
               isRequired
             />
@@ -105,17 +104,15 @@ export const EventCreateForm = () => {
             >
               <Input
                 id="eventStart"
+                name="eventStart"
                 label="이벤트 시작일"
                 type="datetime-local"
                 min="2025-07-31T14:00"
                 placeholder="2025.07.30 13:00"
                 value={basicForm.eventStart}
                 onChange={(e) => {
+                  handleChange(e);
                   const newValue = e.target.value;
-
-                  handleValueChange('eventStart', newValue);
-                  validateField('eventStart', newValue);
-
                   handleValueChange('registrationEnd', newValue);
                   validateField('registrationEnd', newValue);
                 }}
@@ -124,15 +121,13 @@ export const EventCreateForm = () => {
               />
               <Input
                 id="eventEnd"
+                name="eventEnd"
                 label="이벤트 종료일"
                 type="datetime-local"
                 placeholder="2025.07.30 15:00"
                 value={basicForm.eventEnd}
                 min={basicForm.eventStart}
-                onChange={(e) => {
-                  handleValueChange('eventEnd', e.target.value);
-                  validateField('eventEnd', e.target.value);
-                }}
+                onChange={handleChange}
                 errorMessage={errors.eventEnd}
                 isRequired
               />
@@ -140,53 +135,48 @@ export const EventCreateForm = () => {
 
             <Input
               id="registrationEnd"
+              name="registrationEnd"
               label="신청 종료일"
               type="datetime-local"
               placeholder="2025.07.25 15:00"
               value={basicForm.registrationEnd}
               max={basicForm.eventStart}
-              onChange={(e) => {
-                handleValueChange('registrationEnd', e.target.value);
-                validateField('registrationEnd', e.target.value);
-              }}
+              onChange={handleChange}
               errorMessage={errors.registrationEnd}
               isRequired
             />
 
             <Input
               id="place"
+              name="place"
               label="장소"
               placeholder="이벤트 장소를 입력해 주세요"
               value={basicForm.place}
-              onChange={(e) => {
-                handleValueChange('place', e.target.value);
-                validateField('place', e.target.value);
-              }}
+              onChange={handleChange}
               errorMessage={errors.place}
               max={12}
             />
 
             <Input
               id="description"
+              name="description"
               label="설명"
               placeholder="이벤트에 대한 설명을 입력해 주세요"
               value={basicForm.description}
-              onChange={(e) => {
-                handleValueChange('description', e.target.value);
-                validateField('description', e.target.value);
-              }}
+              onChange={handleChange}
               errorMessage={errors.description}
               max={80}
             />
 
             <Input
               id="maxCapacity"
+              name="maxCapacity"
               label="수용 인원"
               placeholder="최대 참가 인원을 입력해 주세요"
               type="number"
               value={basicForm.maxCapacity}
               min={1}
-              onChange={(e) => handleValueChange('maxCapacity', Number(e.target.value))}
+              onChange={handleChange}
               isRequired
             />
           </Flex>

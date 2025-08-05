@@ -17,24 +17,30 @@ export const useBasicEventForm = () => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleValueChange = <K extends keyof BasicEventFormFields>(
-    key: K,
-    value: BasicEventFormFields[K]
-  ) => {
-    setBasicForm((prev) => ({ ...prev, [key]: value }));
+  const handleValueChange = (key: keyof BasicEventFormFields, value: string | number) => {
+    setBasicForm((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   };
 
   const validateField = (key: keyof BasicEventFormFields, value: string | number) => {
     const updated = { ...basicForm, [key]: value };
     const validation = validateEventForm(updated);
 
-    setErrors((prev) => ({ ...prev, [key]: validation[key] || '' }));
+    setErrors((prev) => ({
+      ...prev,
+      [key]: validation[key] || '',
+    }));
   };
 
-  const validate = () => {
-    const validation = validateEventForm(basicForm);
-    setErrors(validation);
-    return Object.keys(validation).length === 0;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
+    const parsedValue = type === 'number' ? Number(value) : value;
+    const key = name as keyof BasicEventFormFields;
+
+    handleValueChange(key, parsedValue);
+    validateField(key, parsedValue);
   };
 
   const isValid = useMemo(() => {
@@ -57,7 +63,7 @@ export const useBasicEventForm = () => {
     basicForm,
     handleValueChange,
     validateField,
-    validate,
+    handleChange,
     isValid,
     errors,
   };
