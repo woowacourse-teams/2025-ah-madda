@@ -4,4 +4,7 @@ export const isRegistrationEndAfterEventStart = (registrationEnd: string, eventS
   new Date(registrationEnd) > new Date(eventStart);
 export const isEventEndBeforeOrEqualEventStart = (eventEnd: string, eventStart: string) =>
   new Date(eventEnd) <= new Date(eventStart);
-export const isPositiveInteger = (value: string) => /^\d+$/.test(value) && parseInt(value) > 0;
+export const isPositiveInteger = (value: string) => {
+  const num = Number(value);
+  return Number.isInteger(num) && num > 0;
+};
