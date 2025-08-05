@@ -19,10 +19,14 @@ const reducer = (state: QuestionRequest[], action: Action): QuestionRequest[] =>
       return [...state, newQuestion];
     }
     case 'DELETE': {
-      return state.filter((_, i) => i !== action.index).map((q, i) => ({ ...q, orderIndex: i }));
+      return state
+        .filter((_, currentIndex) => currentIndex !== action.index)
+        .map((question, newIndex) => ({ ...question, orderIndex: newIndex }));
     }
     case 'UPDATE': {
-      return state.map((q, i) => (i === action.index ? { ...q, ...action.data } : q));
+      return state.map((question, currentIndex) =>
+        currentIndex === action.index ? { ...question, ...action.data } : question
+      );
     }
     default:
       return state;
@@ -40,14 +44,19 @@ export const useQuestionManager = () => {
     }
     dispatch({ type: 'ADD' });
   };
-  const deleteQuestion = (index: number) => dispatch({ type: 'DELETE', index });
-  const updateQuestion = (index: number, data: Partial<QuestionRequest>) =>
+
+  const deleteQuestion = (index: number) => {
+    dispatch({ type: 'DELETE', index });
+  };
+
+  const updateQuestion = (index: number, data: Partial<QuestionRequest>) => {
     dispatch({ type: 'UPDATE', index, data });
+  };
 
   const isValid = useMemo(() => {
-    return questions.every((q) => {
-      if (!q.questionText.trim()) return false;
-      if (q.questionText.length > MAX_LENGTH.QUESTION) return false;
+    return questions.every((question) => {
+      if (!question.questionText.trim()) return false;
+      if (question.questionText.length > MAX_LENGTH.QUESTION) return false;
       return true;
     });
   }, [questions]);
