@@ -1,15 +1,14 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.EventCreateRequest;
-import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.Email;
+import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventNotification;
+import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
@@ -19,8 +18,10 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Period;
+import com.ahmadda.domain.PushNotificationPayload;
+import com.ahmadda.domain.PushNotifier;
 import com.ahmadda.domain.Question;
+import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +38,9 @@ public class EventService {
     private final EventRepository eventRepository;
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
-    private final EventNotification eventNotification;
+    private final EmailNotifier emailNotifier;
+    private final PushNotifier pushNotifier;
+    private final FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
 
     @Transactional
     public Event createEvent(
@@ -47,7 +50,7 @@ public class EventService {
             final LocalDateTime currentDateTime
     ) {
         Organization organization = getOrganization(organizationId);
-        OrganizationMember organizer = validateOrganizationAccess(organizationId, loginMember.memberId());
+        OrganizationMember organizer = getOrganizationMember(organizationId, loginMember.memberId());
 
         EventOperationPeriod eventOperationPeriod = createEventOperationPeriod(eventCreateRequest, currentDateTime);
         Event event = Event.create(
@@ -72,11 +75,11 @@ public class EventService {
     public void closeEventRegistration(
             final Long eventId,
             final Long memberId,
-            final LocalDateTime currentDateTime) {
+            final LocalDateTime currentDateTime
+    ) {
         Event event = getEvent(eventId);
         Organization organization = event.getOrganization();
-
-        OrganizationMember organizationMember = validateOrganizationAccess(organization.getId(), memberId);
+        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), memberId);
 
         event.closeRegistrationAt(organizationMember, currentDateTime);
     }
@@ -97,31 +100,18 @@ public class EventService {
             final EventUpdateRequest eventUpdateRequest,
             final LocalDateTime currentDateTime
     ) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않은 이벤트 정보입니다."));
+        Event event = getEvent(eventId);
+        Member member = getMember(loginMember.memberId());
 
-        Member member = memberRepository.findById(loginMember.memberId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
-        if (!event.isOrganizer(member)) {
-            throw new AccessDeniedException("이벤트의 주최자만 수정할 수 있습니다.");
-        }
-
-        Period updatedRegistrationPeriod = event.getEventOperationPeriod()
-                .getRegistrationPeriod()
-                .update(
-                        event.getEventOperationPeriod()
-                                .getRegistrationPeriod()
-                                .start(),
-                        eventUpdateRequest.registrationEnd()
-                );
-        Period updatedEventPeriod = event.getEventOperationPeriod()
-                .getEventPeriod()
-                .update(eventUpdateRequest.eventStart(), eventUpdateRequest.eventEnd());
-
-        EventOperationPeriod updatedOperationPeriod = event.getEventOperationPeriod()
-                .update(updatedRegistrationPeriod, updatedEventPeriod, currentDateTime);
-
+        EventOperationPeriod updatedOperationPeriod = EventOperationPeriod.create(
+                event.getRegistrationStart(),
+                eventUpdateRequest.registrationEnd(),
+                eventUpdateRequest.eventStart(),
+                eventUpdateRequest.eventEnd(),
+                currentDateTime
+        );
         event.update(
+                member,
                 eventUpdateRequest.title(),
                 eventUpdateRequest.description(),
                 eventUpdateRequest.place(),
@@ -135,16 +125,28 @@ public class EventService {
         return event;
     }
 
+    public boolean isOrganizer(final Long eventId, final LoginMember loginMember) {
+        Event event = getEvent(eventId);
+        Member member = getMember(loginMember.memberId());
+
+        return event.isOrganizer(member);
+    }
+
+    private Member getMember(final Long loginMember) {
+        return memberRepository.findById(loginMember)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
+    }
+
     private EventOperationPeriod createEventOperationPeriod(
             final EventCreateRequest eventCreateRequest,
             final LocalDateTime currentDateTime
     ) {
-        Period registrationPeriod = Period.create(currentDateTime, eventCreateRequest.registrationEnd());
-        Period eventPeriod = Period.create(eventCreateRequest.eventStart(), eventCreateRequest.eventEnd());
 
         return EventOperationPeriod.create(
-                registrationPeriod,
-                eventPeriod,
+                currentDateTime,
+                eventCreateRequest.registrationEnd(),
+                eventCreateRequest.eventStart(),
+                eventCreateRequest.eventEnd(),
                 currentDateTime
         );
     }
@@ -159,12 +161,15 @@ public class EventService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않은 조직 정보입니다."));
     }
 
-    private OrganizationMember validateOrganizationAccess(final Long organizationId, final Long memberId) {
-        memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
+    private void validateOrganizationAccess(final Long organizationId, final Long memberId) {
+        if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, memberId)) {
+            throw new AccessDeniedException("조직에 소속되지 않은 회원입니다.");
+        }
+    }
 
+    private OrganizationMember getOrganizationMember(final Long organizationId, final Long memberId) {
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
-                .orElseThrow(() -> new AccessDeniedException("조직에 소속되지 않은 멤버입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않은 조직원 정보입니다."));
     }
 
     private List<Question> createQuestions(final List<QuestionCreateRequest> questionCreateRequests) {
@@ -177,22 +182,41 @@ public class EventService {
     }
 
     private void notifyEventCreated(final Event event, final Organization organization) {
+        String content = "새로운 이벤트가 등록되었습니다.";
         List<OrganizationMember> recipients =
                 event.getNonGuestOrganizationMembers(organization.getOrganizationMembers());
-        String content = "새로운 이벤트가 등록되었습니다.";
-        Email email = Email.of(event, content);
 
-        eventNotification.sendEmails(recipients, email);
+        notifyEventChange(event, content, recipients);
     }
 
     private void notifyEventUpdated(final Event event) {
+        String content = "이벤트 정보가 수정되었습니다.";
         List<OrganizationMember> recipients = event.getGuests()
                 .stream()
                 .map(Guest::getOrganizationMember)
                 .toList();
-        String content = "이벤트 정보가 수정되었습니다.";
-        Email email = Email.of(event, content);
 
-        eventNotification.sendEmails(recipients, email);
+        notifyEventChange(event, content, recipients);
+    }
+
+    private void notifyEventChange(
+            final Event event,
+            final String content,
+            final List<OrganizationMember> recipients
+    ) {
+        sendEmailsToRecipients(event, content, recipients);
+        sendPushNotificationsToRecipients(event, content, recipients);
+    }
+
+    private void sendPushNotificationsToRecipients(Event event, String content, List<OrganizationMember> recipients) {
+        PushNotificationPayload pushPayload = PushNotificationPayload.of(event, content);
+
+        pushNotifier.sendPushs(recipients, pushPayload);
+    }
+
+    private void sendEmailsToRecipients(Event event, String content, List<OrganizationMember> recipients) {
+        EventEmailPayload emailPayload = EventEmailPayload.of(event, content);
+
+        emailNotifier.sendEmails(recipients, emailPayload);
     }
 }

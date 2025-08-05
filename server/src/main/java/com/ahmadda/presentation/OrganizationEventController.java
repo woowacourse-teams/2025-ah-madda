@@ -14,6 +14,7 @@ import com.ahmadda.presentation.dto.EventResponse;
 import com.ahmadda.presentation.dto.EventTemplateResponse;
 import com.ahmadda.presentation.dto.EventTitleResponse;
 import com.ahmadda.presentation.dto.EventUpdateResponse;
+import com.ahmadda.presentation.dto.OrganizerStatusResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -152,17 +153,18 @@ public class OrganizationEventController {
             @ApiResponse(
                     responseCode = "403",
                     content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Forbidden",
-                                              "status": 403,
-                                              "detail": "조직에 소속되지 않은 멤버입니다.",
-                                              "instance": "/api/organizations/{organizationId}/events"
-                                            }
-                                            """
-                            )
+                            examples = {
+                                    @ExampleObject(
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Forbidden",
+                                                      "status": 403,
+                                                      "detail": "자신이 속한 조직이 아닙니다.",
+                                                      "instance": "/api/organizations/{organizationId}/events"
+                                                    }
+                                                    """
+                                    )}
                     )
             ),
             @ApiResponse(
@@ -182,17 +184,17 @@ public class OrganizationEventController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "회원 없음",
+                                            name = "조직원 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않는 회원입니다.",
+                                                      "detail": "존재하지 않은 조직원 정보입니다.",
                                                       "instance": "/api/organizations/{organizationId}/events"
                                                     }
                                                     """
-                                    )
+                                    ),
                             }
                     )
             ),
@@ -244,18 +246,6 @@ public class OrganizationEventController {
                                                       "title": "Unprocessable Entity",
                                                       "status": 422,
                                                       "detail": "신청 기간은 이벤트 기간보다 앞서야 합니다.",
-                                                      "instance": "/api/organizations/{organizationId}/events"
-                                                    }
-                                                    """
-                                    ),
-                                    @ExampleObject(
-                                            name = "다른 조직에서 생성 시도",
-                                            value = """
-                                                    {
-                                                      "type": "about:blank",
-                                                      "title": "Unprocessable Entity",
-                                                      "status": 422,
-                                                      "detail": "자신이 속한 조직에서만 이벤트를 생성할 수 있습니다.",
                                                       "instance": "/api/organizations/{organizationId}/events"
                                                     }
                                                     """
@@ -323,7 +313,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Forbidden",
                                               "status": 403,
-                                              "detail": "조직에 소속되지 않은 멤버입니다.",
+                                              "detail": "이벤트의 주최자만 마감할 수 있습니다.",
                                               "instance": "/api/organizations/events/{eventId}/registration/close"
                                             }
                                             """
@@ -333,20 +323,18 @@ public class OrganizationEventController {
             @ApiResponse(
                     responseCode = "404",
                     content = @Content(
-                            examples = {
-                                    @ExampleObject(
-                                            name = "회원 없음",
-                                            value = """
-                                                    {
-                                                      "type": "about:blank",
-                                                      "title": "Not Found",
-                                                      "status": 404,
-                                                      "detail": "존재하지 않는 회원입니다.",
-                                                      "instance": "/api/organizations/events/{eventId}/registration/close"
-                                                    }
-                                                    """
-                                    )
-                            }
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "존재하지 않는 회원입니다.",
+                                              "instance": "/api/organizations/events/{eventId}/registration/close"
+                                            }
+                                            """
+                            )
+
                     )
             ),
             @ApiResponse(
@@ -378,18 +366,6 @@ public class OrganizationEventController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "이벤트 주최자가 아님",
-                                            value = """
-                                                    {
-                                                      "type": "about:blank",
-                                                      "title": "Unprocessable Entity",
-                                                      "status": 422,
-                                                      "detail": "주최자만 마감할 수 있습니다.",
-                                                      "instance": "/api/organizations/events/{eventId}/registration/close"
-                                                    }
-                                                    """
-                                    ),
-                                    @ExampleObject(
                                             name = "마감 시간은 현재 등록 종료 시간보다 이전이어야 함",
                                             value = """
                                                     {
@@ -408,7 +384,8 @@ public class OrganizationEventController {
     @PostMapping("/events/{eventId}/registration/close")
     public ResponseEntity<Void> closeOrganizationEvent(
             @PathVariable final Long eventId,
-            @AuthMember final LoginMember loginMember) {
+            @AuthMember final LoginMember loginMember
+    ) {
         eventService.closeEventRegistration(
                 eventId,
                 loginMember.memberId(),
@@ -520,6 +497,22 @@ public class OrganizationEventController {
                     )
             ),
             @ApiResponse(
+                    responseCode = "403",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Forbidden",
+                                              "status": 403,
+                                              "detail": "조직에 소속되지 않은 회원입니다.",
+                                              "instance": "/api/organizations/events/{eventId}/registration/close"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
                     responseCode = "404",
                     content = @Content(
                             examples = @ExampleObject(
@@ -537,8 +530,10 @@ public class OrganizationEventController {
             )
     })
     @GetMapping("/events/{eventId}")
-    public ResponseEntity<EventDetailResponse> getOrganizationEvent(@AuthMember final LoginMember loginMember,
-                                                                    @PathVariable final Long eventId) {
+    public ResponseEntity<EventDetailResponse> getOrganizationEvent(
+            @AuthMember final LoginMember loginMember,
+            @PathVariable final Long eventId
+    ) {
         Event event = eventService.getOrganizationMemberEvent(loginMember, eventId);
 
         return ResponseEntity.ok(EventDetailResponse.from(event));
@@ -763,5 +758,71 @@ public class OrganizationEventController {
                 .toList();
 
         return ResponseEntity.ok(eventResponses);
+    }
+
+    @Operation(summary = "내가 특정 이벤트의 주최자인지 확인", description = "내가 주최한 이벤트인지 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            schema = @Schema(
+                                    implementation = OrganizerStatusResponse.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/organizations/events/{eventId}/organizer-status"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않은 이벤트 정보입니다.",
+                                                      "instance": "/api/organizations/events/{eventId}/organizer-status"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 회원입니다.",
+                                                      "instance": "/api/organizations/events/{eventId}/organizer-status"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            )
+    })
+    @GetMapping("/events/{eventId}/organizer-status")
+    public ResponseEntity<OrganizerStatusResponse> isOrganizer(
+            @PathVariable final Long eventId,
+            @AuthMember final LoginMember loginMember
+    ) {
+        boolean isOrganizer = eventService.isOrganizer(eventId, loginMember);
+
+        return ResponseEntity.ok(new OrganizerStatusResponse(isOrganizer));
     }
 }

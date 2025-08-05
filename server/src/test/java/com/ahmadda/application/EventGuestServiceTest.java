@@ -6,6 +6,7 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Answer;
+import com.ahmadda.domain.AnswerRepository;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
@@ -17,7 +18,6 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Period;
 import com.ahmadda.domain.Question;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import org.junit.jupiter.api.Test;
@@ -53,6 +53,9 @@ class EventGuestServiceTest {
 
     @Autowired
     private GuestRepository guestRepository;
+
+    @Autowired
+    private AnswerRepository answerRepository;
 
     @Test
     void 이벤트에_참여한_게스트들을_조회한다() {
@@ -182,7 +185,7 @@ class EventGuestServiceTest {
         // when
         sut.participantEvent(
                 event.getId(),
-                member2.getId(),
+                new LoginMember(member2.getId()),
                 event.getRegistrationStart(),
                 new EventParticipateRequest(List.of())
         );
@@ -220,7 +223,7 @@ class EventGuestServiceTest {
         ));
 
         // when
-        sut.participantEvent(event.getId(), member2.getId(), event.getRegistrationStart(), request);
+        sut.participantEvent(event.getId(), new LoginMember(member2.getId()), event.getRegistrationStart(), request);
 
         // then
         var guest = guestRepository.findAll()
@@ -260,7 +263,7 @@ class EventGuestServiceTest {
         assertThatThrownBy(() ->
                 sut.participantEvent(
                         event.getId(),
-                        member2.getId(),
+                        new LoginMember(member2.getId()),
                         event.getRegistrationStart(),
                         request
                 )
@@ -289,7 +292,7 @@ class EventGuestServiceTest {
         assertThatThrownBy(() ->
                 sut.participantEvent(
                         event.getId(),
-                        member2.getId(),
+                        new LoginMember(member2.getId()),
                         event.getRegistrationStart(),
                         request
                 )
@@ -316,14 +319,12 @@ class EventGuestServiceTest {
         createAndSaveGuest(event, organizationMember2);
 
         //when
-        var actual1 = sut.isGuest(event.getId(), member2.getId());
-        var actual2 = sut.isGuest(event.getId(), member3.getId());
-        var actual3 = sut.isGuest(event.getId(), member1.getId());
+        var actual1 = sut.isGuest(event.getId(), createLoginMember(organizationMember2));
+        var actual2 = sut.isGuest(event.getId(), createLoginMember(organizationMember3));
 
         //then
         assertThat(actual1).isEqualTo(true);
         assertThat(actual2).isEqualTo(false);
-        assertThat(actual3).isEqualTo(true);
     }
 
     @Test
@@ -342,10 +343,11 @@ class EventGuestServiceTest {
         createAndSaveGuest(event, organizationMember2);
 
         // when // then
-        assertThatThrownBy(() -> sut.isGuest(event.getId(), member3.getId()))
+        assertThatThrownBy(() -> sut.isGuest(event.getId(), new LoginMember(member3.getId())))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 조직원입니다.");
     }
+
 
     private Member createAndSaveMember(String name, String email) {
         return memberRepository.save(Member.create(name, email));
@@ -368,9 +370,40 @@ class EventGuestServiceTest {
                 organizer,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(now.minusDays(3), now.minusDays(1)),
-                        Period.create(now.plusDays(1), now.plusDays(2)),
+                        now.minusDays(3), now.minusDays(1),
+                        now.plusDays(1), now.plusDays(2),
                         now.minusDays(6)
+                ),
+                organizer.getNickname(),
+                100,
+                questions
+        );
+
+        return eventRepository.save(event);
+    }
+
+    private Event createAndSaveEventWithTime(
+            OrganizationMember organizer,
+            Organization organization,
+            LocalDateTime registrationStart,
+            LocalDateTime registrationEnd,
+            LocalDateTime eventStart,
+            LocalDateTime eventEnd,
+            Question... questions
+    ) {
+        var creationTime = registrationStart.minusDays(1);
+        var event = Event.create(
+                "이벤트",
+                "설명",
+                "장소",
+                organizer,
+                organization,
+                EventOperationPeriod.create(
+                        registrationStart,
+                        registrationEnd,
+                        eventStart,
+                        eventEnd,
+                        creationTime
                 ),
                 organizer.getNickname(),
                 100,

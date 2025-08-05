@@ -33,10 +33,6 @@ public class Period {
         return new Period(start, end);
     }
 
-    public Period update(final LocalDateTime start, final LocalDateTime end) {
-        return new Period(start, end);
-    }
-    
     public boolean isAfter(final Period other) {
         return this.start.isAfter(other.end);
     }

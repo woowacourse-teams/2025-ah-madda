@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -355,7 +356,7 @@ public class EventGuestController {
     ) {
         eventGuestService.participantEvent(
                 eventId,
-                loginMember.memberId(),
+                loginMember,
                 LocalDateTime.now(),
                 eventParticipateRequest
         );
@@ -427,8 +428,84 @@ public class EventGuestController {
             @PathVariable final Long eventId,
             @AuthMember final LoginMember loginMember
     ) {
-        boolean isGuest = eventGuestService.isGuest(eventId, loginMember.memberId());
+        boolean isGuest = eventGuestService.isGuest(eventId, loginMember);
 
         return ResponseEntity.ok(new GuestStatusResponse(isGuest));
+    }
+
+    @Operation(summary = "이벤트 참여 취소", description = "이벤트 ID에 해당하는 이벤트 참여를 취소합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/events/{eventId}/cancel-participate"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "이벤트 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 이벤트입니다.",
+                                                      "instance": "/api/events/{eventId}/cancel-participate"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "조직원 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 조직원입니다.",
+                                                      "instance": "/api/events/{eventId}/cancel-participate"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "참여하지 않은 이벤트",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "이벤트의 참가자 목록에서 일치하는 조직원을 찾을 수 없습니다.",
+                                                      "instance": "/api/events/{eventId}/cancel-participate"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            )
+    })
+    @DeleteMapping("/{eventId}/cancel-participate")
+    public ResponseEntity<Void> cancelParticipate(
+            @PathVariable final Long eventId,
+            @AuthMember final LoginMember loginMember
+    ) {
+        eventGuestService.cancelParticipation(eventId, loginMember);
+
+        return ResponseEntity.noContent()
+                .build();
     }
 }

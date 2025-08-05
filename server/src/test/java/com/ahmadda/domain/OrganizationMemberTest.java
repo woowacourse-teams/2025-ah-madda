@@ -16,7 +16,7 @@ class OrganizationMemberTest {
 
     @BeforeEach
     void setUp() {
-        member = Member.create("테스트 멤버", "test@example.com");
+        member = Member.create("테스트 회원", "test@example.com");
         organization = Organization.create("테스트 조직", "조직 설명", "image.png");
         sut = OrganizationMember.create("주최자", member, organization);
     }
@@ -48,8 +48,8 @@ class OrganizationMemberTest {
         return Event.create(
                 title, "설명", "장소", sut, organization,
                 EventOperationPeriod.create(
-                        Period.create(now.plusDays(1), now.plusDays(5)),
-                        Period.create(now.plusDays(10), now.plusDays(11)),
+                        now.plusDays(1), now.plusDays(5),
+                        now.plusDays(10), now.plusDays(11),
                         now
                 ),
                 "이벤트 근로",

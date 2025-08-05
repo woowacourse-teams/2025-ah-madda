@@ -1,8 +1,8 @@
 package com.ahmadda.infra.slack;
 
-import com.ahmadda.application.dto.MemberCreateAlarmDto;
+import com.ahmadda.application.dto.MemberCreateAlarmPayload;
 import com.ahmadda.infra.slack.config.SlackAlarmProperties;
-import com.ahmadda.infra.slack.dto.MemberCreationAlarmPayload;
+import com.ahmadda.infra.slack.dto.MemberCreatAlarmRequestBody;
 import com.ahmadda.infra.slack.exception.SlackReminderException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -25,10 +25,13 @@ public class AsyncSlackReminder implements SlackReminder {
     }
 
     @Async
-    public void alarmMemberCreation(final MemberCreateAlarmDto memberCreateAlarmDto) {
+    public void alarmMemberCreation(final MemberCreateAlarmPayload memberCreateAlarmPayload) {
         try {
             ResponseSpec retrieve = restClient.post()
-                    .body(MemberCreationAlarmPayload.create(memberCreateAlarmDto, slackAlarmProperties.getChannelId()))
+                    .body(MemberCreatAlarmRequestBody.create(
+                            memberCreateAlarmPayload,
+                            slackAlarmProperties.getChannelId()
+                    ))
                     .retrieve();
             ResponseEntity<Void> bodilessEntity = retrieve.toBodilessEntity();
 
@@ -36,9 +39,10 @@ public class AsyncSlackReminder implements SlackReminder {
                 throw new SlackReminderException("유저 생성 슬랙 알람을 보내는데 실패 하였습니다");
             }
         } catch (Exception e) {
-            log.error("Slack 회원 가입 알림 전송에 실패했습니다. member={}",
-                      memberCreateAlarmDto,
-                      e
+            log.error(
+                    "Slack 회원 가입 알림 전송에 실패했습니다. member={}",
+                    memberCreateAlarmPayload,
+                    e
             );
         }
     }
