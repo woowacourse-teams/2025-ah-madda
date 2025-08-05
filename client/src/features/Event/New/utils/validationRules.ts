@@ -2,7 +2,12 @@ import { BasicEventFormFields } from '../../types/Event';
 import { ERROR_MESSAGES, MAX_LENGTH } from '../constants/errorMessages';
 
 import { getMaxEventEndDate, getMaxEventStartDate } from './date';
-import { isAfter, isBeforeorEqual, isFutureDate, isPositiveInteger } from './validators';
+import {
+  isRegistrationEndAfterEventStart,
+  isEventEndBeforeOrEqualEventStart,
+  isFutureDate,
+  isPositiveInteger,
+} from './validators';
 
 type ValidationRule = {
   required?: boolean;
@@ -19,7 +24,7 @@ export const VALIDATION_RULES: Partial<Record<keyof BasicEventFormFields, Valida
   },
   eventStart: {
     required: true,
-    label: '이벤트 시작 시간',
+    label: '이벤트 시작일',
     validator: (value) => {
       if (!isFutureDate(value)) return ERROR_MESSAGES.EVENT_START_MUST_BE_FUTURE;
 
@@ -33,9 +38,9 @@ export const VALIDATION_RULES: Partial<Record<keyof BasicEventFormFields, Valida
   },
   eventEnd: {
     required: true,
-    label: '이벤트 종료 시간',
+    label: '이벤트 종료일',
     validator: (value, formData) => {
-      if (isBeforeorEqual(value, formData.eventStart)) {
+      if (isEventEndBeforeOrEqualEventStart(value, formData.eventStart)) {
         return ERROR_MESSAGES.EVENT_END_MUST_BE_AFTER_START;
       }
 
@@ -49,10 +54,10 @@ export const VALIDATION_RULES: Partial<Record<keyof BasicEventFormFields, Valida
   },
   registrationEnd: {
     required: true,
-    label: '신청 마감 시간',
+    label: '신청 종료일',
     validator: (value, formData) => {
       if (!isFutureDate(value)) return ERROR_MESSAGES.EVENT_START_MUST_BE_FUTURE;
-      if (isAfter(value, formData.eventStart))
+      if (isRegistrationEndAfterEventStart(value, formData.eventStart))
         return ERROR_MESSAGES.REGISTRATION_DEADLINE_BEFORE_EVENT_START;
       return null;
     },
