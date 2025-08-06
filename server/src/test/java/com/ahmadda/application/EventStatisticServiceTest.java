@@ -47,16 +47,16 @@ class EventStatisticServiceTest {
 
     @Test
     void 존재하지_않는_조직원일시_예외가_발생한다() {
-        //given
-        Organization organization = createOrganization();
-        Member member = createMember();
-        OrganizationMember organizationMember = createOrganizationMember(organization, member);
-        Event event = createEvent(organization, organizationMember);
+        // given
+        var organization = createOrganization();
+        var member = createMember();
+        var organizationMember = createOrganizationMember(organization, member);
+        var event = createEvent(organization, organizationMember);
         createEventStatistic(event);
 
-        LoginMember loginMember = new LoginMember(-1L);
+        var loginMember = new LoginMember(-1L);
 
-        //when // then
+        // when // then
         assertThatThrownBy(() -> eventStatisticService.getEventStatistic(event.getId(), loginMember))
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessage("조직의 조직원만 접근할 수 있습니다.");
@@ -64,15 +64,15 @@ class EventStatisticServiceTest {
 
     @Test
     void 존재하지_않는_이벤트일시_예외가_발생한다() {
-        //given
-        Organization organization = createOrganization();
-        Member member = createMember();
+        // given
+        var organization = createOrganization();
+        var member = createMember();
         createOrganizationMember(organization, member);
 
-        LoginMember loginMember = new LoginMember(member.getId());
-        Long nonExistentEventId = 999L;
+        var loginMember = new LoginMember(member.getId());
+        var nonExistentEventId = 999L;
 
-        //when // then
+        // when // then
         assertThatThrownBy(() -> eventStatisticService.getEventStatistic(nonExistentEventId, loginMember))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("요청한 이벤트 조회수 정보가 존재하지 않습니다.");
@@ -80,15 +80,15 @@ class EventStatisticServiceTest {
 
     @Test
     void 존재하지_않는_이벤트_조회수_정보일시_예외가_발생한다() {
-        //given
-        Organization organization = createOrganization();
-        Member member = createMember();
-        OrganizationMember organizationMember = createOrganizationMember(organization, member);
-        Event event = createEvent(organization, organizationMember);
+        // given
+        var organization = createOrganization();
+        var member = createMember();
+        var organizationMember = createOrganizationMember(organization, member);
+        var event = createEvent(organization, organizationMember);
 
-        LoginMember loginMember = new LoginMember(member.getId());
+        var loginMember = new LoginMember(member.getId());
 
-        //when // then
+        // when // then
         assertThatThrownBy(() -> eventStatisticService.getEventStatistic(event.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("요청한 이벤트 조회수 정보가 존재하지 않습니다.");
