@@ -20,7 +20,10 @@ export const Info = () => {
   const navigate = useNavigate();
 
   //E.TODO 추후 organizationId 받아오기
-  const { data: profileData } = useQuery(organizationQueryOptions.profile(1));
+  const { data: profileData } = useQuery({
+    ...organizationQueryOptions.profile(1),
+    enabled: isAuthenticated(),
+  });
 
   const handleButtonClick = () => {
     if (profileData?.nickname) {
