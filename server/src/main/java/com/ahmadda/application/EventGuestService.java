@@ -132,7 +132,7 @@ public class EventGuestService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 질문입니다."));
     }
 
-    private Guest getGuest(Long guestId) {
+    private Guest getGuest(final Long guestId) {
         return guestRepository.findById(guestId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 게스트입니다."));
     }

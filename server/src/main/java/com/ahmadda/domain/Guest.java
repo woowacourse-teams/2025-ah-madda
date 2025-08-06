@@ -110,7 +110,7 @@ public class Guest extends BaseEntity {
         }
     }
 
-    public List<Answer> viewAnswersAs(OrganizationMember organizationMember) {
+    public List<Answer> viewAnswersAs(final OrganizationMember organizationMember) {
         if (!canViewAnswers(organizationMember)) {
             throw new UnauthorizedOperationException("답변을 볼 권한이 없습니다.");
         }
@@ -118,7 +118,7 @@ public class Guest extends BaseEntity {
         return answers;
     }
 
-    private boolean canViewAnswers(OrganizationMember organizationMember) {
+    private boolean canViewAnswers(final OrganizationMember organizationMember) {
         return event.isOrganizer(organizationMember) || this.organizationMember.equals(organizationMember);
     }
 }
