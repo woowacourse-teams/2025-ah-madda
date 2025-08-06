@@ -55,9 +55,9 @@ const request = async <T>(path: string, method: HttpMethod, body?: object): Prom
 };
 
 export const fetcher = {
-  get: <T>(path: string) => request<T>(path, 'GET'),
-  post: <T>(path: string, body?: object) => request<T>(path, 'POST', body),
-  patch: <T>(path: string, body?: object) => request<T>(path, 'PATCH', body),
-  put: <T>(path: string, body?: object) => request<T>(path, 'PUT', body),
-  delete: (path: string) => request<void>(path, 'DELETE'),
+  get: <T>(path: string): Promise<T> => request<T>(path, 'GET'),
+  post: <T>(path: string, body?: object): Promise<T> => request<T>(path, 'POST', body),
+  patch: <T>(path: string, body?: object): Promise<T> => request<T>(path, 'PATCH', body),
+  put: <T>(path: string, body?: object): Promise<T> => request<T>(path, 'PUT', body),
+  delete: (path: string): Promise<void> => request<void>(path, 'DELETE'),
 };

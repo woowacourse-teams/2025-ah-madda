@@ -1,7 +1,11 @@
+import { useEffect } from 'react';
+
 import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
+import { useUpdateEvent } from '@/api/mutations/useUpdateEvent';
+import { getEventDetailAPI } from '@/api/queries/event';
 import { myQueryOptions } from '@/api/queries/my';
 import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
@@ -19,13 +23,42 @@ import { QuestionForm } from './QuestionForm';
 const ORGANIZATION_ID = 1; // 임시
 const ORGANIZER_NICKNAME = '임시닉네임';
 
-export const EventCreateForm = () => {
+type EventCreateFormProps = {
+  isEdit: boolean;
+  eventId?: number;
+};
+
+export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const navigate = useNavigate();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
-  const { formData, handleChange, setQuestions } = useEventForm();
+  const { mutate: updateEvent } = useUpdateEvent();
+  const { formData, setFormData, handleChange, setQuestions } = useEventForm();
   const { errors, setQuestionErrors, validate, validateField, isFormValid } =
     useEventValidation(formData);
   const { data: userProfile } = useQuery(myQueryOptions.profile());
+
+  const { data: eventDetail } = useQuery({
+    queryKey: ['event', 'detail', Number(eventId)],
+    queryFn: () => getEventDetailAPI(Number(eventId)),
+    enabled: isEdit,
+  });
+
+  useEffect(() => {
+    if (!eventDetail) return;
+
+    setFormData({
+      title: eventDetail.title,
+      description: eventDetail.description,
+      place: eventDetail.place,
+      registrationEnd: eventDetail.registrationEnd,
+      eventStart: eventDetail.eventStart,
+      eventEnd: eventDetail.eventEnd,
+      maxCapacity: eventDetail.maxCapacity,
+      questions: eventDetail.questions ?? [],
+    });
+  }, [eventDetail, setFormData]);
+
+  console.log('[eventDetail]', eventDetail);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,15 +72,22 @@ export const EventCreateForm = () => {
       organizerNickname: userProfile?.name ?? ORGANIZER_NICKNAME,
     };
 
-    addEvent(payload, {
-      onSuccess: ({ eventId }) => {
-        alert('😁 이벤트가 성공적으로 생성되었습니다!');
-        navigate(`/event/${eventId}`);
-      },
-      onError: async (error) => {
-        alert(`${error.message}`);
-      },
-    });
+    const onSuccess = ({ eventId }: { eventId: number }) => {
+      alert(`😁 이벤트가 성공적으로 ${isEdit ? '수정' : '생성'}되었습니다!`);
+      navigate(`/event/${eventId}`);
+    };
+
+    const onError = (error: Error) => {
+      alert(`${error.message}`);
+    };
+
+    if (isEdit && eventId !== undefined) {
+      console.log('제출 payload:', payload);
+
+      updateEvent({ eventId, payload }, { onSuccess, onError });
+    } else {
+      addEvent(payload, { onSuccess, onError });
+    }
   };
 
   return (
@@ -203,7 +243,7 @@ export const EventCreateForm = () => {
 
         <Flex justifyContent="flex-end">
           <Button type="submit" color="tertiary" size="md" disabled={!isFormValid}>
-            이벤트 만들기
+            {isEdit ? '이벤트 수정' : '이벤트 만들기'}
           </Button>
         </Flex>
       </Flex>
