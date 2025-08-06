@@ -3,27 +3,16 @@ import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
 
-import { Guest, NonGuest } from '../types';
+import { Guest, NonGuest } from '../../Manage/types';
 
 import { GuestList } from './GuestList';
 
 type GuestViewSectionProps = {
   guests: Guest[];
-  onGuestChecked: (organizationMemberId: number) => void;
-  onAllChecked: VoidFunction;
   nonGuests: NonGuest[];
-  onNonGuestChecked: (organizationMemberId: number) => void;
-  onNonGuestAllChecked: VoidFunction;
 };
 
-export const GuestViewSection = ({
-  guests,
-  onGuestChecked,
-  onAllChecked,
-  nonGuests,
-  onNonGuestChecked,
-  onNonGuestAllChecked,
-}: GuestViewSectionProps) => {
+export const GuestDetailSection = ({ guests, nonGuests }: GuestViewSectionProps) => {
   return (
     <Card>
       <Flex as="section" dir="column" gap="20px">
@@ -34,19 +23,11 @@ export const GuestViewSection = ({
           </Text>
         </Flex>
 
-        <GuestList
-          title={`신청 완료 (${guests.length}명)`}
-          titleColor="#00A63E"
-          guests={guests}
-          onGuestChecked={onGuestChecked}
-          onAllGuestChecked={onAllChecked}
-        />
+        <GuestList title={`신청 완료 (${guests.length}명)`} titleColor="#00A63E" guests={guests} />
         <GuestList
           title={`미신청 (${nonGuests.length}명)`}
           titleColor="#4A5565"
           guests={nonGuests}
-          onGuestChecked={onNonGuestChecked}
-          onAllGuestChecked={onNonGuestAllChecked}
         />
       </Flex>
     </Card>
