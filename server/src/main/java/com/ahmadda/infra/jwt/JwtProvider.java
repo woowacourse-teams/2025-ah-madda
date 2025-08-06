@@ -4,8 +4,10 @@ import com.ahmadda.infra.jwt.config.JwtProperties;
 import com.ahmadda.infra.jwt.dto.JwtMemberPayload;
 import com.ahmadda.infra.jwt.exception.InvalidJwtException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -49,6 +51,10 @@ public class JwtProvider {
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
+        } catch (MalformedJwtException e) {
+            throw new InvalidJwtException("잘못된 형식의 토큰입니다.", e);
+        } catch (ExpiredJwtException e) {
+            throw new InvalidJwtException("만료기한이 지난 토큰입니다.", e);
         } catch (JwtException | IllegalArgumentException e) {
             log.error("jwtError : {} ", e.getMessage(), e);
             throw new InvalidJwtException("인증 토큰을 파싱하는데 실패하였습니다.", e);
