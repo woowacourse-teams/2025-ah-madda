@@ -64,7 +64,7 @@ export const AlarmSection = ({ organizationMemberIds, selectedGuestCount }: Alar
           </Button>
           <Spacing height="8px" />
           <Text type="Label" weight="regular" color="#6A7282">
-            {`${selectedGuestCount}명의 미신청자에게 알람이 전송됩니다.`}
+            {`선택한 ${selectedGuestCount}명에게 알람이 전송됩니다.`}
           </Text>
         </Flex>
       </Flex>
