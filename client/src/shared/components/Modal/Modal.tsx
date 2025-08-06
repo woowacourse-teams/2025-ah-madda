@@ -5,6 +5,8 @@ import { createPortal } from 'react-dom';
 import { useEscapeKey } from '../../hooks/useEscapeKey';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
 import { useLockScroll } from '../../hooks/useLockScroll';
+import { Button } from '../Button';
+import { IconButton } from '../IconButton';
 
 import {
   StyledModalLayout,
@@ -63,7 +65,7 @@ export const Modal = ({
         <StyledModalWrapper ref={modalRef}>
           {showCloseButton && (
             <StyledCloseButtonWrapper>
-              <button onClick={onClose}>X</button>
+              <IconButton onClick={onClose} name="close" />
             </StyledCloseButtonWrapper>
           )}
           {children}
