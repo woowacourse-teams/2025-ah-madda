@@ -1,15 +1,17 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
+import { useCreateInviteCode } from '@/api/mutations/useCreateInviteCode';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
-import { Event } from '../../types/Event';
+import { Event, Organization } from '../../types/Event';
 import { EventContainer } from '../containers/EventContainer';
+import { copyInviteMessage } from '../utils/copyInviteMessage';
 import { groupEventsByDate } from '../utils/groupEventsByDate';
 
 import { ActionButtons } from './ActionButtons';
@@ -18,11 +20,24 @@ import { EventSection } from './EventSection';
 
 type EventListProps = {
   events: Event[];
-};
+} & Pick<Organization, 'organizationId'>;
 
-export const EventList = ({ events }: EventListProps) => {
+export const EventList = ({ organizationId, events }: EventListProps) => {
   const groupedEvents = groupEventsByDate(events);
-  const navigate = useNavigate();
+  const { mutate: mutateCreateInviteCode } = useCreateInviteCode(Number(organizationId));
+
+  const handleCreateInviteCode = () => {
+    mutateCreateInviteCode(undefined, {
+      onSuccess: (data) => {
+        copyInviteMessage(
+          process.env.NODE_ENV === 'production'
+            ? `https://www.ahmadda.com/invite_code?=${data.inviteCode}`
+            : `http://localhost:5173/invite_code?=${data.inviteCode}`
+        );
+        alert(`초대 코드가 복사되었습니다.`);
+      },
+    });
+  };
 
   return (
     <EventContainer>
@@ -43,7 +58,7 @@ export const EventList = ({ events }: EventListProps) => {
         </Text>
       </Flex>
       <Flex dir="column" width="100%" gap="20px">
-        <ActionButtons />
+        <ActionButtons onIssueInviteCode={handleCreateInviteCode} />
         {groupedEvents.length === 0 ? (
           <Flex justifyContent="center" alignItems="center" height="200px">
             <Text type="Heading" weight="semibold">
