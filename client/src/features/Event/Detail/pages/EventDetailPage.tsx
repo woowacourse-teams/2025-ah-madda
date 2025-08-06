@@ -19,10 +19,11 @@ import { EventDetailContainer } from '../containers/EventDetailContainer';
 export const EventDetailPage = () => {
   const navigate = useNavigate();
   const { eventId } = useParams();
-  const [{ data: event }, { data: guestStatus }] = useSuspenseQueries({
+  const [{ data: event }, { data: guestStatus }, { data: organizerStatus }] = useSuspenseQueries({
     queries: [
       eventQueryOptions.detail(Number(eventId)),
       eventQueryOptions.guestStatus(Number(eventId)),
+      eventQueryOptions.organizer(Number(eventId)),
     ],
   });
 
@@ -42,7 +43,7 @@ export const EventDetailPage = () => {
         <Header
           left={<IconButton name="logo" size={55} onClick={() => navigate('/event')} />}
           right={
-            <Button width="80px" size="sm" onClick={() => navigate('/event/my')}>
+            <Button size="sm" onClick={() => navigate('/event/my')}>
               내 이벤트
             </Button>
           }
@@ -65,7 +66,11 @@ export const EventDetailPage = () => {
           </Tabs.List>
 
           <Tabs.Content value="detail">
-            <EventDetailContent isGuest={guestStatus.isGuest} {...event} />
+            <EventDetailContent
+              isGuest={guestStatus.isGuest}
+              isOrganizer={organizerStatus.isOrganizer}
+              {...event}
+            />
           </Tabs.Content>
 
           <Tabs.Content value="applications">
