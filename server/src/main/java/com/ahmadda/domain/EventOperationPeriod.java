@@ -41,7 +41,7 @@ public class EventOperationPeriod {
             final Period eventPeriod,
             final LocalDateTime currentDateTime
     ) {
-        validateRegistrationPeriod(registrationPeriod, currentDateTime);
+        validateRegistrationPeriod(registrationPeriod);
         validateEventPeriod(eventPeriod, currentDateTime);
         validatePeriodRelationship(registrationPeriod, eventPeriod);
 
@@ -91,15 +91,9 @@ public class EventOperationPeriod {
     }
 
     private void validateRegistrationPeriod(
-            final Period registrationPeriod,
-            final LocalDateTime currentDateTime
+            final Period registrationPeriod
     ) {
         Assert.notNull(registrationPeriod, "이벤트 신청 기간은 null이 되면 안됩니다.");
-
-        if (registrationPeriod.start()
-                .isBefore(currentDateTime)) {
-            throw new BusinessRuleViolatedException("이벤트 신청 시작 시간은 현재 시점보다 미래여야 합니다.");
-        }
     }
 
     private void validateEventPeriod(final Period eventPeriod, final LocalDateTime currentDateTime) {
