@@ -56,8 +56,8 @@ export const Input = ({
         {label}
         {isRequired && <StyledRequiredMark>*</StyledRequiredMark>}
       </StyledLabel>
-      <StyledInput id={id} error={isError} {...props} />
-      <StyledHelperText error={isError}>
+      <StyledInput id={id} isError={isError} {...props} />
+      <StyledHelperText isError={isError}>
         {isError ? (errorMessage ?? ' ') : (helperText ?? ' ')}
       </StyledHelperText>
     </StyledWrapper>
