@@ -54,7 +54,7 @@ class FcmRegistrationTokenServiceTest {
     @Test
     void 중복된_토큰을_등록하면_기존_토큰을_반환하고_새로_저장하지_않는다() {
         // given
-        var member = memberRepository.save(Member.create("홍길동", "test@example.com"));
+        var member = memberRepository.save(Member.create("홍길동", "test@example.com", "testPicture"));
         var loginMember = new LoginMember(member.getId());
         var request = new FcmRegistrationTokenRequest("중복된토큰");
 

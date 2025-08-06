@@ -121,7 +121,7 @@ class EventNotificationSchedulerTest {
             String email,
             Organization organization
     ) {
-        var member = memberRepository.save(Member.create(nickname, email));
+        var member = memberRepository.save(Member.create(nickname, email, "testPicture"));
 
         return organizationMemberRepository.save(OrganizationMember.create(nickname, member, organization));
     }
