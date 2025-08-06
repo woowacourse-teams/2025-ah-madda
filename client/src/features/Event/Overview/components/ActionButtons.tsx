@@ -3,15 +3,17 @@ import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
-import { theme } from '@/shared/styles/theme';
 
-export const ActionButtons = () => {
+type ActionButtonsProps = {
+  onIssueInviteCode: () => void;
+};
+export const ActionButtons = ({ onIssueInviteCode }: ActionButtonsProps) => {
   const navigate = useNavigate();
 
   return (
     <>
       <DesktopButtonContainer>
-        <Button size="md" iconName="share" onClick={() => navigate('/event/new')}>
+        <Button size="md" iconName="share" onClick={onIssueInviteCode}>
           조직 초대
         </Button>
         <Button size="md" iconName="plus" onClick={() => navigate('/event/new')}>
@@ -20,7 +22,7 @@ export const ActionButtons = () => {
       </DesktopButtonContainer>
 
       <MobileFixedCTA>
-        <Button size="md" iconName="share" variant="outline" onClick={() => navigate('/event/new')}>
+        <Button size="md" iconName="share" variant="outline" onClick={onIssueInviteCode}>
           조직 초대
         </Button>
         <Button size="md" iconName="plus" onClick={() => navigate('/event/new')}>
