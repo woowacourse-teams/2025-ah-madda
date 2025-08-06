@@ -18,18 +18,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventNotificationScheduler {
 
+    // TODO. 추후 5분이라는 시간을 보장하도록 구현
     private static final int REMINDER_MINUTES_BEFORE = 5;
 
     private final EventRepository eventRepository;
     private final EmailNotifier emailNotifier;
     private final PushNotifier pushNotifier;
 
-    // TODO. 추후 5분이라는 시간을 보장하도록 구현
-    @Scheduled(fixedRate = 300_000)
-    public void sendRegistrationEndReminders() {
+    // TODO. 추후 중복 알람을 방지하도록 구현
+    @Scheduled(fixedRate = 180_000)
+    public void notifyRegistrationClosingEvents() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime targetTime = now.plusMinutes(REMINDER_MINUTES_BEFORE);
-        // TODO. 추후 중복 알람을 방지하도록 구현
+
         List<Event> upcomingEvents =
                 eventRepository.findAllByEventOperationPeriodRegistrationPeriodEndBetween(now, targetTime);
 
