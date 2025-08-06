@@ -4,7 +4,7 @@ import { Guest, NonGuest } from '../../features/Event/Manage/types';
 import { CreateEventAPIRequest, EventDetail } from '../../features/Event/types/Event';
 import { fetcher } from '../fetcher';
 import { postAlarm } from '../mutations/useAddAlarm';
-import { GuestStatusAPIResponse } from '../types/event';
+import { GuestStatusAPIResponse, OrganizerStatusAPIResponse } from '../types/event';
 import { NotificationAPIRequest } from '../types/notification';
 
 type CreateEventAPIResponse = {
