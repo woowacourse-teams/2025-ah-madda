@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
 
@@ -15,12 +13,29 @@ import { theme } from '@/shared/styles/theme';
 type TemplateModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  onConfirm: (eventId: number) => void;
+  onSelect: (eventId: number) => void;
+  selectedEventId: number;
 };
 
-export const TemplateModal = ({ isOpen, onClose }: TemplateModalProps) => {
+export const TemplateModal = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  onSelect,
+  selectedEventId,
+}: TemplateModalProps) => {
   //E.TODO organizationId 받아오기
   const { data: eventTitles } = useQuery(eventQueryOptions.titles(1));
-  const [selectedEvent, setSelectedEvent] = useState<number>(0);
+
+  const handleConfirm = () => {
+    onConfirm(selectedEventId);
+    onClose();
+  };
+
+  const handleClose = () => {
+    onClose();
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} showCloseButton={false}>
@@ -55,12 +70,12 @@ export const TemplateModal = ({ isOpen, onClose }: TemplateModalProps) => {
           `}
         >
           {eventTitles?.map((event) => {
-            const isSelected = selectedEvent === event.eventId;
+            const isSelected = selectedEventId === event.eventId;
 
             return (
               <Card
                 key={event.eventId}
-                onClick={() => setSelectedEvent(event.eventId)}
+                onClick={() => onSelect(event.eventId)}
                 css={css`
                   cursor: pointer;
                   padding: 16px;
@@ -93,10 +108,10 @@ export const TemplateModal = ({ isOpen, onClose }: TemplateModalProps) => {
         <Spacing height="1px" />
 
         <Flex gap="12px" justifyContent="flex-end">
-          <Button color="secondary" variant="outline" onClick={onClose}>
+          <Button color="secondary" variant="outline" onClick={handleClose}>
             취소
           </Button>
-          <Button color="primary" onClick={() => {}}>
+          <Button color="primary" disabled={selectedEventId === 0} onClick={handleConfirm}>
             불러오기
           </Button>
         </Flex>

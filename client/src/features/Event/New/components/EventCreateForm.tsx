@@ -13,6 +13,7 @@ import { useModal } from '@/shared/hooks/useModal';
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useEventForm } from '../hooks/useEventForm';
 import { useEventValidation } from '../hooks/useEventValidation';
+import { useTemplateLoader } from '../hooks/useTemplateLoader';
 import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
 
 import { QuestionForm } from './QuestionForm';
@@ -24,11 +25,22 @@ const ORGANIZER_NICKNAME = '임시닉네임';
 export const EventCreateForm = () => {
   const navigate = useNavigate();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
-  const { formData, handleChange, setQuestions } = useEventForm();
+  const { formData, handleChange, setQuestions, setFormData } = useEventForm();
   const { errors, setQuestionErrors, validate, validateField, isFormValid } =
     useEventValidation(formData);
   const { data: userProfile } = useQuery(myQueryOptions.profile());
   const { isOpen, open, close } = useModal();
+  const { template, selectedEventId, handleSelectEvent } = useTemplateLoader();
+
+  const handleTemplateLoad = () => {
+    setFormData({
+      ...formData,
+      title: template?.title ?? '',
+      description: template?.description ?? '',
+      place: template?.place ?? '',
+      maxCapacity: template?.maxCapacity ?? '',
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,13 +78,8 @@ export const EventCreateForm = () => {
         <Card>
           <Flex justifyContent="space-between">
             <Text type="Body">기본 질문</Text>
-            <Button
-              size="md"
-              onClick={() => {
-                open();
-              }}
-            >
-              템플릿 불러오기
+            <Button size="sm" onClick={open}>
+              템플릿
             </Button>
           </Flex>
           <Flex dir="column">
@@ -220,7 +227,14 @@ export const EventCreateForm = () => {
           </Button>
         </Flex>
       </Flex>
-      <TemplateModal isOpen={isOpen} onClose={close} />
+
+      <TemplateModal
+        isOpen={isOpen}
+        onClose={close}
+        onConfirm={handleTemplateLoad}
+        onSelect={handleSelectEvent}
+        selectedEventId={selectedEventId}
+      />
     </form>
   );
 };
