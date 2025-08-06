@@ -38,8 +38,8 @@ public class Member extends BaseEntity {
         this.profileImageUrl = profileImageUrl;
     }
 
-    public static Member create(final String name, final String email, final String picture) {
-        return new Member(name, email, picture);
+    public static Member create(final String name, final String email, final String profileImageUrl) {
+        return new Member(name, email, profileImageUrl);
     }
 
     private void validateName(final String name) {
