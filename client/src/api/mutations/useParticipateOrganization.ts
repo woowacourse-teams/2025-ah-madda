@@ -7,10 +7,7 @@ const participantOrganization = async (
   organizationId: number,
   data: OrganizationParticipateAPIRequest
 ) => {
-  return fetcher.post<OrganizationParticipateAPIRequest>(
-    `organizations/${organizationId}/participation`,
-    data
-  );
+  return fetcher.post(`organizations/${organizationId}/participation`, data);
 };
 
 export const useParticipateOrganization = (organizationId: number) => {
