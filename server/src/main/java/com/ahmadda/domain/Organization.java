@@ -33,6 +33,12 @@ public class Organization extends BaseEntity {
     @Column(name = "organization_id")
     private Long id;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
+    private final List<Event> events = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
+    private final List<OrganizationMember> organizationMembers = new ArrayList<>();
+
     @Column(nullable = false)
     private String description;
 
@@ -41,12 +47,6 @@ public class Organization extends BaseEntity {
 
     @Column(nullable = false)
     private String name;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
-    private final List<Event> events = new ArrayList<>();
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
-    private final List<OrganizationMember> organizationMembers = new ArrayList<>();
 
     private Organization(final String name, final String description, final String imageUrl) {
         validateName(name);
@@ -62,15 +62,14 @@ public class Organization extends BaseEntity {
         return new Organization(name, description, imageUrl);
     }
 
-    public void addEvent(Event event) {
+    public void addEvent(final Event event) {
         this.events.add(event);
     }
 
-    public List<Event> getActiveEvents() {
-        LocalDateTime currentDateTime = LocalDateTime.now();
+    public List<Event> getActiveEvents(final LocalDateTime currentDateTime) {
 
         return events.stream()
-                .filter((event) -> event.isNotStarted(currentDateTime))
+                .filter((event) -> event.isRegistrationEnd(currentDateTime))
                 .toList();
     }
 

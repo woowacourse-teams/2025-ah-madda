@@ -37,6 +37,12 @@ public class Event extends BaseEntity {
     private static final int MAX_CAPACITY = 2_100_000_000;
     private static final Duration BEFORE_EVENT_STARTED_CANCEL_AVAILABLE_MINUTE = Duration.ofMinutes(10);
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
+    private final List<Guest> guests = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<Question> questions = new ArrayList<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id")
@@ -59,12 +65,6 @@ public class Event extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
-    private final List<Guest> guests = new ArrayList<>();
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<Question> questions = new ArrayList<>();
 
     @Embedded
     private EventOperationPeriod eventOperationPeriod;
@@ -214,8 +214,8 @@ public class Event extends BaseEntity {
                 .equals(member);
     }
 
-    public boolean isOrganizer(final OrganizationMember organizer) {
-        return this.organizer.equals(organizer);
+    public boolean isOrganizer(final OrganizationMember organizationMember) {
+        return organizer.equals(organizationMember);
     }
 
     public void cancelParticipation(
@@ -225,6 +225,12 @@ public class Event extends BaseEntity {
         validateCancelParticipation(cancelParticipateTime);
         Guest guest = getGuestByOrganizationMember(organizationMember);
         guests.remove(guest);
+    }
+
+    public boolean isRegistrationEnd(final LocalDateTime currentDateTime) {
+        return eventOperationPeriod.getRegistrationPeriod()
+                .end()
+                .isAfter(currentDateTime);
     }
 
     private void validateCancelParticipation(final LocalDateTime cancelParticipationTime) {
@@ -282,10 +288,6 @@ public class Event extends BaseEntity {
         if (!organizationMember.isBelongTo(organization)) {
             throw new UnauthorizedOperationException("자신이 속한 조직이 아닙니다.");
         }
-    }
-
-    private void validateOrganizerNickname(final String organizerNickname) {
-        Assert.notBlank(organizerNickname, "주최자 이름은 공백이면 안됩니다.");
     }
 
     private void validateMaxCapacity(final int maxCapacity) {

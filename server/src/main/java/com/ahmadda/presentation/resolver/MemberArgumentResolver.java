@@ -49,6 +49,6 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
             return header.substring(BEARER_TYPE.length())
                     .trim();
         }
-        throw new InvalidAuthorizationException("유효하지 않은 인증 정보 입니다.");
+        throw new InvalidAuthorizationException("인증 토큰 정보가 존재하지 않거나 유효하지 않습니다.");
     }
 }
