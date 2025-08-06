@@ -25,16 +25,14 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EventStatistic extends BaseEntity {
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "event_statistic_id", nullable = false)
+    private final List<EventViewMetric> eventViewMetrics = new ArrayList<>();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_statistic_id")
     private Long id;
-
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "event_statistic_id", nullable = false)
-    private List<EventViewMetric> eventViewMetrics = new ArrayList<>();
-
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", unique = true, nullable = false)
     private Event event;
 
@@ -73,8 +71,7 @@ public class EventStatistic extends BaseEntity {
     }
 
     private void validateIsOrganizer(final OrganizationMember organizationMember) {
-        if (!event.getOrganizer()
-                .equals(organizationMember)) {
+        if (!event.isOrganizer(organizationMember)) {
             throw new UnauthorizedOperationException("이벤트의 조회수는 이벤트의 주최자만 조회할 수 있습니다.");
         }
     }

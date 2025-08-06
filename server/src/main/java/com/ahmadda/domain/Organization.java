@@ -37,8 +37,10 @@ public class Organization extends BaseEntity {
     private Long id;
     @Column(nullable = false)
     private String description;
+
     @Column(nullable = false)
     private String imageUrl;
+
     @Column(nullable = false)
     private String name;
 
@@ -60,7 +62,7 @@ public class Organization extends BaseEntity {
         this.events.add(event);
     }
 
-    public List<Event> getActiveEvents(LocalDateTime currentDateTime) {
+    public List<Event> getActiveEvents(final LocalDateTime currentDateTime) {
 
         return events.stream()
                 .filter((event) -> event.isRegistrationEnd(currentDateTime))

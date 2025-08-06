@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Slf4j
@@ -20,6 +21,7 @@ public class EventCreatedListener {
     private final EventRepository eventRepository;
 
     @EventListener
+    @Transactional
     public void onEventCreated(final EventCreated eventCreated) {
         Event event = eventRepository.findById(eventCreated.eventId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 이벤트입니다."));

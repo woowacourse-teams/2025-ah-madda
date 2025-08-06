@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -19,9 +20,11 @@ public class EventReadListener {
     private final EventStatisticRepository eventStatisticRepository;
 
     @EventListener
+    @Transactional
     public void onEventCreated(final EventRead eventRead) {
         EventStatistic eventStatistic = eventStatisticRepository.findByEventId(eventRead.eventId())
                 .orElseThrow(() -> new NotFoundException("해당되는 이벤트의 조회수를 가져오는데 실패하였습니다."));
+        
         eventStatistic.increaseViewCount(LocalDate.now());
     }
 }

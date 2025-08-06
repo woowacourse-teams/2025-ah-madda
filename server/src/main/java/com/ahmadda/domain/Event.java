@@ -65,7 +65,7 @@ public class Event extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
-    
+
     @Embedded
     private EventOperationPeriod eventOperationPeriod;
 
@@ -214,6 +214,10 @@ public class Event extends BaseEntity {
                 .equals(member);
     }
 
+    public boolean isOrganizer(final OrganizationMember organizationMember) {
+        return organizer.equals(organizationMember);
+    }
+
     public void cancelParticipation(
             final OrganizationMember organizationMember,
             final LocalDateTime cancelParticipateTime
@@ -223,7 +227,7 @@ public class Event extends BaseEntity {
         guests.remove(guest);
     }
 
-    public boolean isRegistrationEnd(LocalDateTime currentDateTime) {
+    public boolean isRegistrationEnd(final LocalDateTime currentDateTime) {
         return eventOperationPeriod.getRegistrationPeriod()
                 .end()
                 .isAfter(currentDateTime);

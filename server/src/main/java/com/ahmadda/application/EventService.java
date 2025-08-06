@@ -77,6 +77,7 @@ public class EventService {
         notifyEventCreated(savedEvent, organization);
 
         eventPublisher.publishEvent(EventCreated.from(savedEvent.getId()));
+
         return savedEvent;
     }
 
@@ -93,7 +94,6 @@ public class EventService {
         event.closeRegistrationAt(organizationMember, currentDateTime);
     }
 
-    //TODO 추후에 EventListener에 대해 협의해본뒤 리팩터링
     @Transactional
     public Event getOrganizationMemberEvent(final LoginMember loginMember, final Long eventId) {
         Event event = getEvent(eventId);
@@ -103,6 +103,7 @@ public class EventService {
         validateOrganizationAccess(organization.getId(), loginMember.memberId());
 
         eventPublisher.publishEvent(EventRead.from(event));
+
         return event;
     }
 
