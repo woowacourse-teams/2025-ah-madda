@@ -26,33 +26,20 @@ public class Member extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
-    private String picture;
+    @Column(nullable = true)
+    private String profileImageUrl;
 
-    private Member(final String name, final String email) {
+    private Member(final String name, final String email, final String profileImageUrl) {
         validateName(name);
         validateEmail(email);
 
         this.name = name;
         this.email = email;
+        this.profileImageUrl = profileImageUrl;
     }
 
-    //todo: 생성자 물어보기
-    private Member(final String name, final String email, final String picture) {
-        validateName(name);
-        validateEmail(email);
-
-        this.name = name;
-        this.email = email;
-        this.picture = picture;
-    }
-
-    public static Member create(final String name, final String email) {
-        return new Member(name, email);
-    }
-
-    public static Member create(final String name, final String email, final String userProfile) {
-        return new Member(name, email, userProfile);
+    public static Member create(final String name, final String email, final String picture) {
+        return new Member(name, email, picture);
     }
 
     private void validateName(final String name) {

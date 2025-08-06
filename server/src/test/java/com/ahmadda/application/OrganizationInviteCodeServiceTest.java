@@ -29,31 +29,14 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 @Transactional
 class OrganizationInviteCodeServiceTest {
 
-    @TestConfiguration
-    static class OrganizationInviteCodeServiceTestContextConfiguration {
-
-        @Bean
-        public RandomCodeGenerator randomCodeGenerator() {
-            return length -> {
-                StringBuilder sb = new StringBuilder();
-                sb.repeat('a', length);
-                return sb.toString();
-            };
-        }
-    }
-
     @Autowired
     private OrganizationInviteCodeService sut;
-
     @Autowired
     private MemberRepository memberRepository;
-
     @Autowired
     private OrganizationRepository organizationRepository;
-
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
-
     @Autowired
     private InviteCodeRepository inviteCodeRepository;
 
@@ -202,7 +185,7 @@ class OrganizationInviteCodeServiceTest {
     }
 
     private Member createAndSaveMember(String name, String email) {
-        var member = Member.create(name, email);
+        var member = Member.create(name, email, "testPicture");
         return memberRepository.save(member);
     }
 
@@ -223,5 +206,18 @@ class OrganizationInviteCodeServiceTest {
     ) {
         InviteCode prevInviteCode = InviteCode.create(code, organization, organizationMember, now);
         return inviteCodeRepository.save(prevInviteCode);
+    }
+
+    @TestConfiguration
+    static class OrganizationInviteCodeServiceTestContextConfiguration {
+
+        @Bean
+        public RandomCodeGenerator randomCodeGenerator() {
+            return length -> {
+                StringBuilder sb = new StringBuilder();
+                sb.repeat('a', length);
+                return sb.toString();
+            };
+        }
     }
 }

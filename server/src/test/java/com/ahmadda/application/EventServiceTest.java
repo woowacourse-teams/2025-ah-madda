@@ -399,16 +399,16 @@ class EventServiceTest {
                                 .isEqualTo(200);
 
                         softly.assertThat(savedEvent.getEventOperationPeriod()
-                                        .getRegistrationPeriod()
-                                        .end())
+                                                  .getRegistrationPeriod()
+                                                  .end())
                                 .isEqualTo(now.plusDays(5));
                         softly.assertThat(savedEvent.getEventOperationPeriod()
-                                        .getEventPeriod()
-                                        .start())
+                                                  .getEventPeriod()
+                                                  .start())
                                 .isEqualTo(now.plusDays(6));
                         softly.assertThat(savedEvent.getEventOperationPeriod()
-                                        .getEventPeriod()
-                                        .end())
+                                                  .getEventPeriod()
+                                                  .end())
                                 .isEqualTo(now.plusDays(7));
                     });
                 });
@@ -599,11 +599,11 @@ class EventServiceTest {
     }
 
     private Member createMember() {
-        return memberRepository.save(Member.create("name", "ahmadda@ahmadda.com"));
+        return memberRepository.save(Member.create("name", "ahmadda@ahmadda.com", "testPicture"));
     }
 
     private Member createMember(String name, String email) {
-        return memberRepository.save(Member.create(name, email));
+        return memberRepository.save(Member.create(name, email, "testPicture"));
     }
 
     private OrganizationMember createOrganizationMember(Organization organization, Member member) {

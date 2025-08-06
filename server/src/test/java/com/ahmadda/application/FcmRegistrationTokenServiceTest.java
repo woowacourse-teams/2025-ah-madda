@@ -31,7 +31,7 @@ class FcmRegistrationTokenServiceTest {
     @Test
     void 푸시알림_수신자를_등록한다() {
         // given
-        var member = memberRepository.save(Member.create("홍길동", "test@example.com"));
+        var member = memberRepository.save(Member.create("홍길동", "test@example.com", "testPicture"));
         var loginMember = new LoginMember(member.getId());
         var request = new FcmRegistrationTokenRequest("토큰값");
 

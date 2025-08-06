@@ -25,7 +25,7 @@ class MemberServiceTest {
     @Test
     void 자신의_회원_정보를_조회한다() {
         // given
-        var member = memberRepository.save(Member.create("홍길동", "hong@gildong.com"));
+        var member = memberRepository.save(Member.create("홍길동", "hong@gildong.com", "testPicture"));
         var loginMember = new LoginMember(member.getId());
 
         // when
@@ -36,9 +36,11 @@ class MemberServiceTest {
             softly.assertThat(result.getId())
                     .isEqualTo(member.getId());
             softly.assertThat(result.getName())
-                    .isEqualTo(member.getName());
+                    .isEqualTo("홍길동");
             softly.assertThat(result.getEmail())
-                    .isEqualTo(member.getEmail());
+                    .isEqualTo("hong@gildong.com");
+            softly.assertThat(result.getProfileImageUrl())
+                    .isEqualTo("testPicture");
         });
     }
 

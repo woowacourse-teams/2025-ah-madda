@@ -16,7 +16,7 @@ class OrganizationMemberTest {
 
     @BeforeEach
     void setUp() {
-        member = Member.create("테스트 회원", "test@example.com");
+        member = Member.create("테스트 회원", "test@example.com", "testPicture");
         organization = Organization.create("테스트 조직", "조직 설명", "image.png");
         sut = OrganizationMember.create("주최자", member, organization);
     }
@@ -24,7 +24,7 @@ class OrganizationMemberTest {
     @Test
     void 게스트로_참여한_이벤트_목록을_조회한다() {
         // given
-        var participantMember = Member.create("참여자", "participant@example.com");
+        var participantMember = Member.create("참여자", "participant@example.com", "testPicture");
         var participant = OrganizationMember.create("참여자 조직원", participantMember, organization);
 
         var event1 = createEventForTest("이벤트 1");

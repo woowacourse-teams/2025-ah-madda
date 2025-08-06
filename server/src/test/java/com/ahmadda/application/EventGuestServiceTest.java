@@ -261,12 +261,12 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.participantEvent(
-                        event.getId(),
-                        new LoginMember(member2.getId()),
-                        event.getRegistrationStart(),
-                        request
-                )
+                                   sut.participantEvent(
+                                           event.getId(),
+                                           new LoginMember(member2.getId()),
+                                           event.getRegistrationStart(),
+                                           request
+                                   )
         )
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessageContaining("필수 질문에 대한 답변이 누락되었습니다");
@@ -290,12 +290,12 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.participantEvent(
-                        event.getId(),
-                        new LoginMember(member2.getId()),
-                        event.getRegistrationStart(),
-                        request
-                )
+                                   sut.participantEvent(
+                                           event.getId(),
+                                           new LoginMember(member2.getId()),
+                                           event.getRegistrationStart(),
+                                           request
+                                   )
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("존재하지 않는 질문입니다.");
@@ -350,7 +350,7 @@ class EventGuestServiceTest {
 
 
     private Member createAndSaveMember(String name, String email) {
-        return memberRepository.save(Member.create(name, email));
+        return memberRepository.save(Member.create(name, email, "testPicture"));
     }
 
     private Organization createAndSaveOrganization() {

@@ -18,7 +18,7 @@ class OrganizationTest {
     @BeforeEach
     void setUp() {
         sut = Organization.create("테스트 조직", "조직 설명", "image.png");
-        var member = Member.create("주최자 회원", "organizer@example.com");
+        var member = Member.create("주최자 회원", "organizer@example.com", "testPicture");
         organizer = OrganizationMember.create("주최자", member, sut);
     }
 
@@ -46,7 +46,7 @@ class OrganizationTest {
     @Test
     void 조직에_참여할_수_있다() {
         //given
-        var member = Member.create("주최자 회원", "organizer@example.com");
+        var member = Member.create("주최자 회원", "organizer@example.com", "testPicture");
         var inviteCode = InviteCode.create("code", sut, organizer, LocalDateTime.now());
 
         //when
@@ -67,7 +67,7 @@ class OrganizationTest {
     void 조직의_초대코드가_아닌_초대코드로_조직에_참여한다면_예외가_발생한다() {
         //given
         var organization = Organization.create("테스트 조직2", "조직 설명", "image.png");
-        var member = Member.create("주최자 회원", "organizer@example.com");
+        var member = Member.create("주최자 회원", "organizer@example.com", "testPicture");
         var inviter = OrganizationMember.create("test", member, organization);
         var inviteCode = InviteCode.create("code", organization, inviter, LocalDateTime.now());
 
@@ -80,7 +80,7 @@ class OrganizationTest {
     @Test
     void 만료된_초대코드로_조직에_참여한다면_예외가_발생한다() {
         //given
-        var member = Member.create("주최자 회원", "organizer@example.com");
+        var member = Member.create("주최자 회원", "organizer@example.com", "testPicture");
         var inviteCode = InviteCode.create("code", sut, organizer, LocalDateTime.of(2000, 1, 1, 0, 0));
 
         //when //then

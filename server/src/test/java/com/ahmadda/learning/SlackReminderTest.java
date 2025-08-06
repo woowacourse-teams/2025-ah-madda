@@ -21,6 +21,9 @@ class SlackReminderTest {
     @Test
     void 실제_슬랙으로_알람을_전송한다() {
         // when // then
-        slackReminder.alarmMemberCreation(MemberCreateAlarmPayload.from(Member.create("asdf", "asdf@naver.com")));
+        slackReminder.alarmMemberCreation(MemberCreateAlarmPayload.from(Member.create("asdf",
+                                                                                      "asdf@naver.com",
+                                                                                      "testPicture"
+        )));
     }
 }
