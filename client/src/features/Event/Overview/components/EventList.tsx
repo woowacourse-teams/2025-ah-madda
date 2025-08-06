@@ -29,11 +29,13 @@ export const EventList = ({ organizationId, events }: EventListProps) => {
   const handleCreateInviteCode = () => {
     mutateCreateInviteCode(undefined, {
       onSuccess: (data) => {
-        copyInviteMessage(
+        const baseUrl =
           process.env.NODE_ENV === 'production'
-            ? `https://www.ahmadda.com/invite_code?=${data.inviteCode}`
-            : `http://localhost:5173/invite_code?=${data.inviteCode}`
-        );
+            ? 'https://www.ahmadda.com'
+            : 'http://localhost:5173';
+
+        const inviteUrl = `${baseUrl}/invite?code=${data.inviteCode}`;
+        copyInviteMessage(inviteUrl);
         alert(`초대 코드가 복사되었습니다.`);
       },
     });
