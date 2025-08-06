@@ -29,10 +29,10 @@ public class LoginService {
         return jwtProvider.createToken(member.getId());
     }
 
-    private Member findOrCreateMember(final String name, final String email, final String picture) {
+    private Member findOrCreateMember(final String name, final String email, final String profileImageUrl) {
         return memberRepository.findByEmail(email)
                 .orElseGet(() -> {
-                    Member newMember = Member.create(name, email, picture);
+                    Member newMember = Member.create(name, email, profileImageUrl);
 
                     slackReminder.alarmMemberCreation(MemberCreateAlarmPayload.from(newMember));
 
