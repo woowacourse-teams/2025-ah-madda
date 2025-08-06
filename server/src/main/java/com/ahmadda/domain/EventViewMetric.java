@@ -25,7 +25,7 @@ public class EventViewMetric extends BaseEntity {
     private LocalDate viewDate;
 
     @Column(nullable = false)
-    private Integer viewCount;
+    private int viewCount;
 
     private EventViewMetric(final LocalDate viewDate) {
         this.viewDate = viewDate;

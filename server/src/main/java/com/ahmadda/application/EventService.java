@@ -4,6 +4,8 @@ import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
+import com.ahmadda.application.event.EventCreated;
+import com.ahmadda.application.event.EventRead;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.EmailNotifier;
@@ -26,6 +28,7 @@ import com.ahmadda.domain.Question;
 import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +50,7 @@ public class EventService {
     private final PushNotifier pushNotifier;
     private final FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
     private final EventStatisticRepository eventStatisticRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Event createEvent(
@@ -72,8 +76,8 @@ public class EventService {
 
         Event savedEvent = eventRepository.save(event);
         notifyEventCreated(savedEvent, organization);
-        createEventStatistic(savedEvent);
 
+        eventPublisher.publishEvent(EventCreated.from(savedEvent.getId()));
         return savedEvent;
     }
 
@@ -100,6 +104,8 @@ public class EventService {
         validateOrganizationAccess(organization.getId(), loginMember.memberId());
 
         //TODO 추후에 EventListener에 대해 협의해본뒤 리팩터링
+        //TODOTDOTODO
+        eventPublisher.publishEvent(EventRead.from(event));
         try {
             EventStatistic eventStatistic = eventStatisticRepository.findByEventId(eventId)
                     .orElseThrow(() -> new NotFoundException("해당되는 이벤트 조회수를 가져오는데 실패하였습니다."));

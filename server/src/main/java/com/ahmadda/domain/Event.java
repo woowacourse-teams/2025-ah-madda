@@ -36,27 +36,36 @@ public class Event extends BaseEntity {
     private static final int MIN_CAPACITY = 1;
     private static final int MAX_CAPACITY = 2_100_000_000;
     private static final Duration BEFORE_EVENT_STARTED_CANCEL_AVAILABLE_MINUTE = Duration.ofMinutes(10);
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
     private final List<Guest> guests = new ArrayList<>();
+
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Question> questions = new ArrayList<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id")
     private Long id;
+
     @Column(nullable = false)
     private String title;
+
     @Lob
     @Nullable
     private String description;
+
     @Nullable
     private String place;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organizer_id", nullable = false)
     private OrganizationMember organizer;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
+    
     @Embedded
     private EventOperationPeriod eventOperationPeriod;
 

@@ -1,0 +1,10 @@
+package com.ahmadda.application.event;
+
+import com.ahmadda.domain.Event;
+
+public record EventRead(Long eventId) {
+
+    public static EventRead from(Event event) {
+        return new EventRead(event.getId());
+    }
+}
