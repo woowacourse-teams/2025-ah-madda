@@ -24,14 +24,15 @@ import com.ahmadda.domain.PushNotificationPayload;
 import com.ahmadda.domain.PushNotifier;
 import com.ahmadda.domain.Question;
 import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Service
@@ -95,6 +96,7 @@ public class EventService {
         Event event = getEvent(eventId);
 
         Organization organization = event.getOrganization();
+
         validateOrganizationAccess(organization.getId(), loginMember.memberId());
 
         //TODO 추후에 EventListener에 대해 협의해본뒤 리팩터링
@@ -178,13 +180,13 @@ public class EventService {
 
     private void validateOrganizationAccess(final Long organizationId, final Long memberId) {
         if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, memberId)) {
-            throw new AccessDeniedException("조직에 소속되지 않은 회원입니다.");
+            throw new AccessDeniedException("조직에 소속되지 않아 권한이 없습니다.");
         }
     }
 
     private OrganizationMember getOrganizationMember(final Long organizationId, final Long memberId) {
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
-                .orElseThrow(() -> new AccessDeniedException("조직에 소속되지 않은 회원입니다."));
+                .orElseThrow(() -> new NotFoundException("조직원을 찾을 수 없습니다."));
     }
 
     private List<Question> createQuestions(final List<QuestionCreateRequest> questionCreateRequests) {

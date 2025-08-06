@@ -1,7 +1,6 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventRepository;
@@ -11,10 +10,11 @@ import com.ahmadda.domain.EventViewMetric;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
-import java.time.LocalDate;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,9 +34,11 @@ public class EventStatisticService {
     }
 
     private OrganizationMember getOrganizationMember(final LoginMember loginMember, final Organization organization) {
-        return organizationMemberRepository.findByOrganizationIdAndMemberId(organization.getId(),
-                        loginMember.memberId())
-                .orElseThrow(() -> new AccessDeniedException("조직의 조직원만 접근할 수 있습니다."));
+        return organizationMemberRepository.findByOrganizationIdAndMemberId(
+                        organization.getId(),
+                        loginMember.memberId()
+                )
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직원입니다."));
     }
 
     private Event getEvent(final Long eventId) {

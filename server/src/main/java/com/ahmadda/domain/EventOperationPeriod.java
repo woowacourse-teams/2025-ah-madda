@@ -7,19 +7,21 @@ import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Embeddable
 @Getter
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EventOperationPeriod {
+
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "start", column = @Column(name = "registration_start")),
@@ -118,10 +120,7 @@ public class EventOperationPeriod {
         }
     }
 
-    public boolean willStartWithin(
-            final LocalDateTime cancelParticipationTime,
-            final Duration duration
-    ) {
+    public boolean willStartWithin(final LocalDateTime cancelParticipationTime, final Duration duration) {
         LocalDateTime cancelAvailableTime = eventPeriod.start()
                 .minus(duration);
 

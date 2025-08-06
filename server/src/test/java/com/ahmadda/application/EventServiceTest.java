@@ -1,16 +1,9 @@
 package com.ahmadda.application;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.verify;
-
 import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
-import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.Event;
@@ -32,10 +25,6 @@ import com.ahmadda.domain.Question;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import com.ahmadda.infra.notification.push.FcmRegistrationToken;
 import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +32,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @Transactional
@@ -175,8 +175,8 @@ class EventServiceTest {
 
         //when //then
         assertThatThrownBy(() -> sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessage("조직에 소속되지 않은 회원입니다.");
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("조직원을 찾을 수 없습니다.");
     }
 
     @Test
@@ -202,8 +202,8 @@ class EventServiceTest {
 
         //when //then
         assertThatThrownBy(() -> sut.createEvent(organization1.getId(), loginMember, eventCreateRequest, now))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessage("조직에 소속되지 않은 회원입니다.");
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("조직원을 찾을 수 없습니다.");
     }
 
     @Test
@@ -263,8 +263,8 @@ class EventServiceTest {
                 999L,
                 now
         ))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessage("조직에 소속되지 않은 회원입니다.");
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("조직원을 찾을 수 없습니다.");
     }
 
     @Test
@@ -288,8 +288,8 @@ class EventServiceTest {
                 notBelongingOrgMember.getId(),
                 now
         ))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessage("조직에 소속되지 않은 회원입니다.");
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("조직원을 찾을 수 없습니다.");
     }
 
     @Test
@@ -381,17 +381,26 @@ class EventServiceTest {
         //when
         var event = sut.createEvent(
                 organization.getId(),
-                new LoginMember(organizationMember.getMember().getId()),
+                new LoginMember(organizationMember.getMember()
+                        .getId()),
                 request,
-                LocalDateTime.now());
+                LocalDateTime.now()
+        );
 
         //then
-        var startDate = event.getEventOperationPeriod().getRegistrationPeriod().start().toLocalDate();
-        var endDate = event.getEventOperationPeriod().getEventPeriod().end().toLocalDate();
+        var startDate = event.getEventOperationPeriod()
+                .getRegistrationPeriod()
+                .start()
+                .toLocalDate();
+        var endDate = event.getEventOperationPeriod()
+                .getEventPeriod()
+                .end()
+                .toLocalDate();
         var eventDuration = ChronoUnit.DAYS
                 .between(startDate, endDate) + 1;
 
-        var eventStatistic = eventStatisticRepository.findByEventId(event.getId()).get();
+        var eventStatistic = eventStatisticRepository.findByEventId(event.getId())
+                .get();
         var eventViewMetrics = eventStatistic.getEventViewMetrics();
 
         assertThat(eventViewMetrics.size())
@@ -424,17 +433,26 @@ class EventServiceTest {
         //when
         var event = sut.createEvent(
                 organization.getId(),
-                new LoginMember(organizationMember.getMember().getId()),
+                new LoginMember(organizationMember.getMember()
+                        .getId()),
                 request,
-                LocalDateTime.now());
+                LocalDateTime.now()
+        );
 
         //then
-        var startDate = event.getEventOperationPeriod().getRegistrationPeriod().start().toLocalDate();
-        var endDate = event.getEventOperationPeriod().getEventPeriod().end().toLocalDate();
+        var startDate = event.getEventOperationPeriod()
+                .getRegistrationPeriod()
+                .start()
+                .toLocalDate();
+        var endDate = event.getEventOperationPeriod()
+                .getEventPeriod()
+                .end()
+                .toLocalDate();
         var eventDuration = ChronoUnit.DAYS
                 .between(startDate, endDate) + 1;
 
-        var eventStatistic = eventStatisticRepository.findByEventId(event.getId()).get();
+        var eventStatistic = eventStatisticRepository.findByEventId(event.getId())
+                .get();
         var eventViewMetrics = eventStatistic.getEventViewMetrics();
 
         assertThat(eventViewMetrics)
@@ -463,17 +481,25 @@ class EventServiceTest {
                 )
         );
 
-        var event = sut.createEvent(organization.getId(), new LoginMember(organizationMember.getMember().getId()),
+        var event = sut.createEvent(
+                organization.getId(),
+                new LoginMember(organizationMember.getMember()
+                        .getId()),
                 request,
-                LocalDateTime.now());
+                LocalDateTime.now()
+        );
 
         var all = eventStatisticRepository.findAll();
 
-        var eventStatistic = eventStatisticRepository.findByEventId(event.getId()).get();
+        var eventStatistic = eventStatisticRepository.findByEventId(event.getId())
+                .get();
         var eventViewMetrics = eventStatistic.getEventViewMetrics();
 
         //when
-        sut.getOrganizationMemberEvent(new LoginMember(organizationMember.getMember().getId()), event.getId());
+        sut.getOrganizationMemberEvent(
+                new LoginMember(organizationMember.getMember()
+                        .getId()), event.getId()
+        );
 
         //then
         assertThat(eventViewMetrics)
