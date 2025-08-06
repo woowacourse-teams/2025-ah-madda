@@ -53,7 +53,6 @@ export const useInviteOrganizationProcess = () => {
 
   return {
     organizationData,
-    isPending,
     handleJoin,
     handleClose,
   };
