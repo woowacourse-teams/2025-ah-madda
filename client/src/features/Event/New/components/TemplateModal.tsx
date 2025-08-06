@@ -38,7 +38,14 @@ export const TemplateModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} showCloseButton={false}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      showCloseButton={false}
+      css={css`
+        width: 400px;
+      `}
+    >
       <Flex dir="column" gap="24px" width="100%">
         <Text type="Title" weight="bold" color={theme.colors.gray900}>
           템플릿 불러오기
@@ -87,8 +94,14 @@ export const TemplateModal = ({
                   }
                 `}
               >
-                <Flex alignItems="center" gap="12px">
-                  <Text type="Body" weight="medium" color={theme.colors.gray900}>
+                <Flex
+                  alignItems="center"
+                  gap="12px"
+                  css={css`
+                    overflow: hidden;
+                  `}
+                >
+                  <Text as="span" type="Body" weight="medium" color={theme.colors.gray900}>
                     {event.title}
                   </Text>
                 </Flex>
