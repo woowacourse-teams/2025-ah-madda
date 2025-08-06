@@ -29,7 +29,10 @@ export const useInviteOrganizationProcess = () => {
     }
   }, [inviteCode, navigate]);
 
-  const { data: organizationData } = useQuery(organizationQueryOptions.preview(inviteCode ?? ''));
+  const { data: organizationData } = useQuery({
+    ...organizationQueryOptions.preview(inviteCode!),
+    enabled: !!inviteCode && isAuthenticated(),
+  });
   const { mutate: joinOrganization } = useParticipateOrganization(
     organizationData?.organizationId ?? 0
   );
