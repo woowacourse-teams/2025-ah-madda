@@ -5,6 +5,7 @@ import { CreateEventAPIRequest, EventDetail } from '../../features/Event/types/E
 import { fetcher } from '../fetcher';
 import { postAlarm } from '../mutations/useAddAlarm';
 import {
+  EventTemplateAPIResponse,
   EventTitleAPIResponse,
   GuestStatusAPIResponse,
   OrganizerStatusAPIResponse,
@@ -26,6 +27,7 @@ export const eventQueryKeys = {
   participation: () => [...eventQueryKeys.all(), 'participation'],
   cancel: () => [...eventQueryKeys.all(), 'cancel'],
   titles: () => [...eventQueryKeys.all(), 'titles'],
+  template: () => [...eventQueryKeys.all(), 'template'],
 };
 
 export const eventQueryOptions = {
@@ -68,6 +70,11 @@ export const eventQueryOptions = {
       queryKey: [...eventQueryKeys.titles(), eventId],
       queryFn: () => getEventTitles(eventId),
     }),
+  template: (eventId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.template(), eventId],
+      queryFn: () => getEventTemplate(eventId),
+    }),
 };
 
 const getGuests = async (eventId: number) => {
@@ -99,5 +106,11 @@ const getOrganizerStatus = async (eventId: number) => {
 const getEventTitles = async (organizationId: number) => {
   return await fetcher.get<EventTitleAPIResponse[]>(
     `organizations/${organizationId}/events/owned/titles`
+  );
+};
+
+const getEventTemplate = async (eventId: number) => {
+  return await fetcher.get<EventTemplateAPIResponse>(
+    `organizations/events/${eventId}/owned/template`
   );
 };
