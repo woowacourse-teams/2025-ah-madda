@@ -7,9 +7,11 @@ import { Delete } from './delete';
 import { Location } from './location';
 import { Logo } from './logo';
 import { Plus } from './plus';
+import { Share } from './share';
 import { User } from './user';
 
 export const Icons = {
+  alarm: Alarm,
   back: Back,
   calendar: Calendar,
   clock: Clock,
@@ -18,8 +20,8 @@ export const Icons = {
   location: Location,
   logo: Logo,
   plus: Plus,
+  share: Share,
   user: User,
-  alarm: Alarm,
 };
 
 export type IconName = keyof typeof Icons;
