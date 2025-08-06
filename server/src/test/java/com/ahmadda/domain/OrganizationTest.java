@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -26,12 +25,24 @@ class OrganizationTest {
     void 활성화된_이벤트_목록을_조회한다() {
         // given
         var now = LocalDateTime.now();
-        var pastEvent = createEventForTest("과거 이벤트", now.minusDays(2), now.minusDays(1));
-        var activeEvent1 = createEventForTest("활성 이벤트 1", now.plusDays(1), now.plusDays(2));
-        var activeEvent2 = createEventForTest("활성 이벤트 2", now.plusDays(3), now.plusDays(4));
+        var pastEvent = createEventForTest(
+                "과거 이벤트",
+                now.minusDays(3), now.minusDays(2),
+                now.minusDays(1), now.plusDays(1)
+        );
+        var activeEvent1 = createEventForTest(
+                "활성 이벤트 1",
+                now.minusDays(1), now.plusDays(1),
+                now.plusDays(2), now.plusDays(3)
+        );
+        var activeEvent2 = createEventForTest(
+                "활성 이벤트 2",
+                now.minusDays(1), now.plusDays(1),
+                now.plusDays(2), now.plusDays(3)
+        );
 
         // when
-        List<Event> activeEvents = sut.getActiveEvents();
+        var activeEvents = sut.getActiveEvents(now);
 
         // then
         assertSoftly(softly -> {
@@ -89,13 +100,19 @@ class OrganizationTest {
                 .hasMessage("초대코드가 만료되었습니다.");
     }
 
-    private Event createEventForTest(String title, LocalDateTime start, LocalDateTime end) {
+    private Event createEventForTest(
+            String title,
+            LocalDateTime registrationStart,
+            LocalDateTime registrationEnd,
+            LocalDateTime eventStart,
+            LocalDateTime eventEnd
+    ) {
         return Event.create(
                 title, "설명", "장소", organizer, sut,
                 EventOperationPeriod.create(
-                        start.minusDays(5), start.minusDays(1),
-                        start, end,
-                        start.minusDays(6)
+                        registrationStart, registrationEnd,
+                        eventStart, eventEnd,
+                        registrationStart.minusDays(1)
                 ),
                 50
         );

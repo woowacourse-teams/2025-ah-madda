@@ -57,7 +57,7 @@ public class OrganizationService {
             throw new AccessDeniedException("조직에 참여하지 않아 권한이 없습니다.");
         }
 
-        return organization.getActiveEvents();
+        return organization.getActiveEvents(LocalDateTime.now());
     }
 
     //TODO 07.25 이후 리팩터링 및 제거하기

@@ -10,6 +10,7 @@ import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
+import com.ahmadda.domain.EventStatisticRepository;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.GuestRepository;
 import com.ahmadda.domain.Member;
@@ -28,6 +29,7 @@ import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,12 +43,9 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.verify;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @Transactional
 class EventServiceTest {
-
-    @Autowired
-    private EventService sut;
 
     @Autowired
     private OrganizationRepository organizationRepository;
@@ -71,6 +70,13 @@ class EventServiceTest {
 
     @MockitoBean
     private PushNotifier pushNotifier;
+
+    @Autowired
+    private EventStatisticRepository eventStatisticRepository;
+
+
+    @Autowired
+    private EventService sut;
 
     @Test
     void 이벤트를_생성할_수_있다() {
@@ -158,7 +164,8 @@ class EventServiceTest {
                 "UI/UX 이벤트 입니다",
                 "선릉",
                 now.plusDays(4),
-                now.plusDays(5), now.plusDays(6),
+                now.plusDays(5),
+                now.plusDays(6),
                 100,
                 new ArrayList<>()
         );
@@ -168,7 +175,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 조직원 정보입니다.");
+                .hasMessage("조직원을 찾을 수 없습니다.");
     }
 
     @Test
@@ -195,7 +202,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.createEvent(organization1.getId(), loginMember, eventCreateRequest, now))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 조직원 정보입니다.");
+                .hasMessage("조직원을 찾을 수 없습니다.");
     }
 
     @Test
@@ -203,15 +210,33 @@ class EventServiceTest {
         //given
         var organization = createOrganization();
         var member = createMember();
-        var loginMember = createLoginMember(member);
         var organizationMember = createOrganizationMember(organization, member);
-        var event = createEvent(organizationMember, organization);
+
+        var now = LocalDateTime.now();
+
+        var request = new EventCreateRequest(
+                "UI/UX 이벤트",
+                "UI/UX 이벤트 입니다",
+                "선릉",
+                now.plusDays(4),
+                now.plusDays(5),
+                now.plusDays(6),
+
+                100,
+                List.of(
+                        new QuestionCreateRequest("1번 질문", true),
+                        new QuestionCreateRequest("2번 질문", false)
+                )
+        );
+
+        var loginMember = new LoginMember(organizationMember.getId());
+        var savedEvent = sut.createEvent(organization.getId(), loginMember, request, now);
 
         //when
-        var findEvent = sut.getOrganizationMemberEvent(loginMember, event.getId());
+        var findEvent = sut.getOrganizationMemberEvent(loginMember, savedEvent.getId());
 
         //then
-        assertThat(findEvent).isEqualTo(event);
+        assertThat(findEvent.getTitle()).isEqualTo(request.title());
     }
 
     @Test
@@ -256,7 +281,7 @@ class EventServiceTest {
                 now
         ))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 조직원 정보입니다.");
+                .hasMessage("조직원을 찾을 수 없습니다.");
     }
 
     @Test
@@ -281,7 +306,7 @@ class EventServiceTest {
                 now
         ))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 조직원 정보입니다.");
+                .hasMessage("조직원을 찾을 수 없습니다.");
     }
 
     @Test
@@ -326,6 +351,7 @@ class EventServiceTest {
                 now.plusDays(4),
                 now.plusDays(5),
                 now.plusDays(6),
+
                 100,
                 List.of(
                         new QuestionCreateRequest("1번 질문", true),

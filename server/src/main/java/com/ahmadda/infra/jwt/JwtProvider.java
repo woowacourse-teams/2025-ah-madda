@@ -51,7 +51,7 @@ public class JwtProvider {
                     .getPayload();
         } catch (JwtException | IllegalArgumentException e) {
             log.error("jwtError : {} ", e.getMessage(), e);
-            throw new InvalidJwtException("유효하지 않은 인증 정보입니다.", e);
+            throw new InvalidJwtException("인증 토큰을 파싱하는데 실패하였습니다.", e);
         }
     }
 }

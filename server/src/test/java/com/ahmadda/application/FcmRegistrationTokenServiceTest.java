@@ -52,6 +52,27 @@ class FcmRegistrationTokenServiceTest {
     }
 
     @Test
+    void 중복된_토큰을_등록하면_기존_토큰을_반환하고_새로_저장하지_않는다() {
+        // given
+        var member = memberRepository.save(Member.create("홍길동", "test@example.com"));
+        var loginMember = new LoginMember(member.getId());
+        var request = new FcmRegistrationTokenRequest("중복된토큰");
+
+        var firstSaved = sut.registerFcmRegistrationToken(request, loginMember);
+
+        // when
+        var secondSaved = sut.registerFcmRegistrationToken(request, loginMember);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(secondSaved.getId())
+                    .isEqualTo(firstSaved.getId());
+            softly.assertThat(fcmRegistrationTokenRepository.count())
+                    .isEqualTo(1);
+        });
+    }
+
+    @Test
     void 회원이_존재하지_않으면_예외가_발생한다() {
         // given
         var nonExistentMemberId = 999L;
