@@ -9,6 +9,7 @@ import { OverviewPage } from '@/features/Event/Overview/pages/OverviewPage';
 import { HomePage } from '@/features/Home/page/HomePage';
 
 import { AuthCallback } from './AuthCallback';
+import { InviteHandler } from './InviteHandler';
 import { ProtectRoute } from './ProtectRoute';
 
 export const router = createBrowserRouter(
@@ -20,6 +21,10 @@ export const router = createBrowserRouter(
         {
           index: true,
           Component: HomePage,
+        },
+        {
+          path: '/invite',
+          Component: InviteHandler,
         },
         {
           path: '/auth',
