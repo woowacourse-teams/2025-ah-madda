@@ -8,6 +8,7 @@ export const organizationQueryKeys = {
   all: () => ['organization'],
   event: () => [...organizationQueryKeys.all(), 'event'],
   profile: () => [...organizationQueryKeys.all(), 'profile'],
+  preview: () => [...organizationQueryKeys.all(), 'preview'],
 };
 export const organizationQueryOptions = {
   // S.TODO : 추후 수정 ':organizationId' : number
@@ -28,6 +29,12 @@ export const organizationQueryOptions = {
       queryKey: [...organizationQueryKeys.profile(), organizationId],
       queryFn: () => getOrganizationProfile({ organizationId }),
     }),
+
+  preview: (inviteCode: string) =>
+    queryOptions({
+      queryKey: [...organizationQueryKeys.all(), 'preview', inviteCode],
+      queryFn: () => getOrganizationPreview(inviteCode),
+    }),
 };
 
 const getAllEventAPI = ({ organizationId }: { organizationId: number }) => {
@@ -40,4 +47,8 @@ const getOrganization = ({ organizationId }: { organizationId: string }) => {
 
 const getOrganizationProfile = ({ organizationId }: { organizationId: number }) => {
   return fetcher.get<{ nickname: string }>(`organizations/${organizationId}/profile`);
+};
+
+export const getOrganizationPreview = (inviteCode: string) => {
+  return fetcher.get<Organization>(`organizations/preview?inviteCode=${inviteCode}`);
 };
