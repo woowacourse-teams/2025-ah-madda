@@ -58,8 +58,6 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     });
   }, [eventDetail, setFormData]);
 
-  console.log('[eventDetail]', eventDetail);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
@@ -82,8 +80,6 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     };
 
     if (isEdit && eventId !== undefined) {
-      console.log('제출 payload:', payload);
-
       updateEvent({ eventId, payload }, { onSuccess, onError });
     } else {
       addEvent(payload, { onSuccess, onError });
