@@ -1,15 +1,13 @@
-import { useState } from 'react';
-
 import styled from '@emotion/styled';
 
 import { StatisticsAPIResponse } from '@/api/types/event';
+import { Card } from '@/shared/components/Card/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
-import { Card } from '../../../../shared/components/Card/Card';
 import { useHoverIndex } from '../hooks/useHoverIndex';
 
 import { Chart } from './Chart';
