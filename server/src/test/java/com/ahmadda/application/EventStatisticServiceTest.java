@@ -100,7 +100,7 @@ class EventStatisticServiceTest {
     }
 
     private Member createMember() {
-        Member member = Member.create("테스트 사용자", "test@example.com");
+        Member member = Member.create("테스트 사용자", "test@example.com", "testPicture");
         return memberRepository.save(member);
     }
 

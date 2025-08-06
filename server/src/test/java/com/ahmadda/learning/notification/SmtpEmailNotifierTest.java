@@ -29,7 +29,7 @@ class SmtpEmailNotifierTest {
         var eventTitle = "테스트 이벤트";
         var organizerNickname = "주최자";
 
-        var member = Member.create("주최자", "amadda.team@gmail.com");
+        var member = Member.create("주최자", "amadda.team@gmail.com", "testPicture");
         var organization = Organization.create(organizationName, "설명", "logo.png");
         var organizationMember = OrganizationMember.create(organizerNickname, member, organization);
 

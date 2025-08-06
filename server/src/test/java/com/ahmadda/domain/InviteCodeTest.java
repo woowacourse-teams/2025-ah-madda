@@ -83,13 +83,13 @@ class InviteCodeTest {
                     .isEqualTo(false);
         });
     }
-  
+
     private OrganizationMember createOrganizationMember(Member member, Organization organization) {
         return OrganizationMember.create("nickname", member, organization);
     }
 
     private Member createMember() {
-        return Member.create("이재훈", "dlwogns3413@ahamadda.com");
+        return Member.create("이재훈", "dlwogns3413@ahamadda.com", "testPicture");
     }
 
     private Organization createOrganization(String name) {
