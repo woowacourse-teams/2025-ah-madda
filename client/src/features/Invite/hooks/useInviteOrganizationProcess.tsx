@@ -16,11 +16,16 @@ export const useInviteOrganizationProcess = () => {
   const inviteCode = searchParams.get('code');
 
   useEffect(() => {
-    if (!inviteCode || !isAuthenticated()) {
+    if (!inviteCode) {
+      alert('유효하지 않은 초대 링크입니다.');
       navigate('/');
-      if (!isAuthenticated()) {
-        alert('로그인이 필요한 서비스입니다.');
-      }
+      return;
+    }
+
+    if (!isAuthenticated()) {
+      alert('로그인이 필요한 서비스입니다.');
+      navigate('/');
+      return;
     }
   }, [inviteCode, navigate]);
 
