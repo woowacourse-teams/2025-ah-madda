@@ -4,6 +4,8 @@ import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
+import com.ahmadda.application.event.EventCreated;
+import com.ahmadda.application.event.EventRead;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.EmailNotifier;
@@ -11,6 +13,8 @@ import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
+import com.ahmadda.domain.EventStatistic;
+import com.ahmadda.domain.EventStatisticRepository;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
@@ -23,6 +27,8 @@ import com.ahmadda.domain.PushNotifier;
 import com.ahmadda.domain.Question;
 import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +36,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.IntStream;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EventService {
@@ -41,6 +48,8 @@ public class EventService {
     private final EmailNotifier emailNotifier;
     private final PushNotifier pushNotifier;
     private final FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
+    private final EventStatisticRepository eventStatisticRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Event createEvent(
@@ -67,6 +76,8 @@ public class EventService {
         Event savedEvent = eventRepository.save(event);
         notifyEventCreated(savedEvent, organization);
 
+        eventPublisher.publishEvent(EventCreated.from(savedEvent.getId()));
+
         return savedEvent;
     }
 
@@ -83,11 +94,15 @@ public class EventService {
         event.closeRegistrationAt(organizationMember, currentDateTime);
     }
 
+    @Transactional
     public Event getOrganizationMemberEvent(final LoginMember loginMember, final Long eventId) {
         Event event = getEvent(eventId);
 
         Organization organization = event.getOrganization();
+
         validateOrganizationAccess(organization.getId(), loginMember.memberId());
+
+        eventPublisher.publishEvent(EventRead.from(event));
 
         return event;
     }
@@ -161,13 +176,13 @@ public class EventService {
 
     private void validateOrganizationAccess(final Long organizationId, final Long memberId) {
         if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, memberId)) {
-            throw new AccessDeniedException("조직에 소속되지 않은 회원입니다.");
+            throw new AccessDeniedException("조직에 소속되지 않아 권한이 없습니다.");
         }
     }
 
     private OrganizationMember getOrganizationMember(final Long organizationId, final Long memberId) {
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않은 조직원 정보입니다."));
+                .orElseThrow(() -> new NotFoundException("조직원을 찾을 수 없습니다."));
     }
 
     private List<Question> createQuestions(final List<QuestionCreateRequest> questionCreateRequests) {
@@ -216,5 +231,9 @@ public class EventService {
         EventEmailPayload emailPayload = EventEmailPayload.of(event, content);
 
         emailNotifier.sendEmails(recipients, emailPayload);
+    }
+
+    private void createEventStatistic(final Event savedEvent) {
+        eventStatisticRepository.save(EventStatistic.create(savedEvent));
     }
 }
