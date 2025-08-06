@@ -32,7 +32,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -103,17 +102,7 @@ public class EventService {
 
         validateOrganizationAccess(organization.getId(), loginMember.memberId());
 
-        //TODO 추후에 EventListener에 대해 협의해본뒤 리팩터링
-        //TODOTDOTODO
         eventPublisher.publishEvent(EventRead.from(event));
-        try {
-            EventStatistic eventStatistic = eventStatisticRepository.findByEventId(eventId)
-                    .orElseThrow(() -> new NotFoundException("해당되는 이벤트 조회수를 가져오는데 실패하였습니다."));
-            eventStatistic.increaseViewCount(LocalDate.now());
-        } catch (Exception e) {
-            log.error("이벤트 조회수를 업데이트하는데 실패하였습니다 사유 : {}", e.getMessage(), e);
-        }
-
         return event;
     }
 

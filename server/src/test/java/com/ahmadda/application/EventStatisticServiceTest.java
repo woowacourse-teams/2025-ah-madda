@@ -1,9 +1,6 @@
 package com.ahmadda.application;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventOperationPeriod;
@@ -16,12 +13,15 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @Transactional
@@ -58,8 +58,8 @@ class EventStatisticServiceTest {
 
         // when // then
         assertThatThrownBy(() -> eventStatisticService.getEventStatistic(event.getId(), loginMember))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessage("조직의 조직원만 접근할 수 있습니다.");
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 조직원입니다.");
     }
 
     @Test

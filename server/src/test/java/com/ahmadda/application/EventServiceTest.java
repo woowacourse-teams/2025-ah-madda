@@ -210,15 +210,33 @@ class EventServiceTest {
         //given
         var organization = createOrganization();
         var member = createMember();
-        var loginMember = createLoginMember(member);
         var organizationMember = createOrganizationMember(organization, member);
-        var event = createEvent(organizationMember, organization);
+
+        var now = LocalDateTime.now();
+
+        var request = new EventCreateRequest(
+                "UI/UX 이벤트",
+                "UI/UX 이벤트 입니다",
+                "선릉",
+                now.plusDays(4),
+                now.plusDays(5),
+                now.plusDays(6),
+
+                100,
+                List.of(
+                        new QuestionCreateRequest("1번 질문", true),
+                        new QuestionCreateRequest("2번 질문", false)
+                )
+        );
+
+        var loginMember = new LoginMember(organizationMember.getId());
+        var savedEvent = sut.createEvent(organization.getId(), loginMember, request, now);
 
         //when
-        var findEvent = sut.getOrganizationMemberEvent(loginMember, event.getId());
+        var findEvent = sut.getOrganizationMemberEvent(loginMember, savedEvent.getId());
 
         //then
-        assertThat(findEvent).isEqualTo(event);
+        assertThat(findEvent.getTitle()).isEqualTo(request.title());
     }
 
     @Test

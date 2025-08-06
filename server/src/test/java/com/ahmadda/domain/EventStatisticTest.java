@@ -1,14 +1,15 @@
 package com.ahmadda.domain;
 
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
+import org.junit.jupiter.api.Test;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class EventStatisticTest {
 
@@ -17,8 +18,10 @@ class EventStatisticTest {
         //given
         var organization = createOrganization("우테코1");
         var organizationMember = createOrganizationMember(createMember("서프", "surf@gmail.com"), organization);
-        var notOrganizerOrganizationMember = createOrganizationMember(createMember("투다", "tuda@gmail.com"),
-                organization);
+        var notOrganizerOrganizationMember = createOrganizationMember(
+                createMember("투다", "tuda@gmail.com"),
+                organization
+        );
         var event = createEvent(organizationMember, organization);
 
         //when
@@ -27,7 +30,7 @@ class EventStatisticTest {
         //then
         assertThatThrownBy(() -> sut.findEventViewMetrics(notOrganizerOrganizationMember, LocalDate.now()))
                 .isInstanceOf(UnauthorizedOperationException.class)
-                .hasMessage("이벤트의 조회수는 이벤트의 주최자만 참조할 수 있습니다.");
+                .hasMessage("이벤트의 조회수는 이벤트의 주최자만 조회할 수 있습니다.");
     }
 
     @Test
@@ -42,8 +45,14 @@ class EventStatisticTest {
                 .end()
                 .toLocalDate();
 
-        var startDate = event.getEventOperationPeriod().getRegistrationPeriod().start().toLocalDate();
-        var endDate = event.getEventOperationPeriod().getEventPeriod().end().toLocalDate();
+        var startDate = event.getEventOperationPeriod()
+                .getRegistrationPeriod()
+                .start()
+                .toLocalDate();
+        var endDate = event.getEventOperationPeriod()
+                .getEventPeriod()
+                .end()
+                .toLocalDate();
         var eventDuration = ChronoUnit.DAYS
                 .between(startDate, endDate) + 1;
 
@@ -63,8 +72,14 @@ class EventStatisticTest {
         var organizationMember = createOrganizationMember(createMember("서프", "surf@gmail.com"), organization);
         var event = createEvent(organizationMember, organization);
 
-        var startLocalDate = event.getEventOperationPeriod().getRegistrationPeriod().start().toLocalDate();
-        var endLocalDate = event.getEventOperationPeriod().getEventPeriod().end().toLocalDate();
+        var startLocalDate = event.getEventOperationPeriod()
+                .getRegistrationPeriod()
+                .start()
+                .toLocalDate();
+        var endLocalDate = event.getEventOperationPeriod()
+                .getEventPeriod()
+                .end()
+                .toLocalDate();
         var eventDuration = ChronoUnit.DAYS
                 .between(startLocalDate, endLocalDate) + 1;
 
@@ -165,7 +180,8 @@ class EventStatisticTest {
         sut.increaseViewCount(LocalDate.MAX);
 
         //then
-        assertThat(sut.findEventViewMetrics(organizationMember, startDatetime).stream()
+        assertThat(sut.findEventViewMetrics(organizationMember, startDatetime)
+                .stream()
                 .map(EventViewMetric::getViewCount)
                 .toList())
                 .contains(0, 0);
