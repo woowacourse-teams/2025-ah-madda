@@ -211,7 +211,7 @@ export const EventCreateForm = () => {
         <Flex justifyContent="flex-end">
           <Button
             type="submit"
-            color="black"
+            color="tertiary"
             size="sm"
             disabled={!isFormReady}
             css={css`

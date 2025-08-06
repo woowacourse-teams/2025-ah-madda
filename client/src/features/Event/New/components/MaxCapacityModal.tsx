@@ -59,12 +59,12 @@ export const MaxCapacityModal = ({ isOpen, initialValue, onClose, onSubmit }: Pr
               onClose();
             }}
             size="sm"
-            color="gray"
+            color="tertiary"
           >
             무제한
           </Button>
 
-          <Button onClick={handleConfirm} size="sm" color="black">
+          <Button onClick={handleConfirm} size="sm" color="secondary">
             설정
           </Button>
         </Flex>
