@@ -2,6 +2,7 @@ import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
+import { HttpError } from '@/api/fetcher';
 import { useCloseEventRegistration } from '@/api/mutations/useCloseEventRegistration';
 import { eventQueryOptions } from '@/api/queries/event';
 import { Button } from '@/shared/components/Button';
@@ -17,8 +18,26 @@ import { formatDateTime } from '../../My/utils/date';
 export const EventInfoSection = () => {
   const { eventId: eventIdParam } = useParams();
   const eventId = Number(eventIdParam);
-  const { data: event } = useQuery(eventQueryOptions.detail(eventId));
-  const { mutate: closeEventRegistration } = useCloseEventRegistration(eventId);
+  const { data: event, refetch } = useQuery(eventQueryOptions.detail(eventId));
+  const { mutate: closeEventRegistration } = useCloseEventRegistration();
+
+  const isClosed = event?.registrationEnd ? new Date(event.registrationEnd) < new Date() : false;
+
+  const handleButtonClick = () => {
+    if (confirm('이벤트를 마감하시겠습니까?')) {
+      closeEventRegistration(eventId, {
+        onSuccess: () => {
+          alert('이벤트가 마감되었습니다.');
+          refetch();
+        },
+        onError: (error) => {
+          if (error instanceof HttpError) {
+            alert(error.message);
+          }
+        },
+      });
+    }
+  };
 
   return (
     <Flex
@@ -44,12 +63,20 @@ export const EventInfoSection = () => {
         <Flex dir="column" gap="16px">
           <Flex alignItems="center" gap="8px">
             <Icon name="calendar" size={14} />
-            <Text type="Body" weight="regular" color="#4A5565">
-              이벤트 정보
-            </Text>
-            <Button size="sm" onClick={() => closeEventRegistration()}>
-              이벤트 마감
-            </Button>
+            <Flex dir="row" width="100%" justifyContent="space-between" alignItems="center">
+              <Text type="Body" weight="regular" color="#4A5565">
+                이벤트 정보
+              </Text>
+              {isClosed ? (
+                <Button size="sm" color="tertiary" variant="solid" disabled>
+                  마감됨
+                </Button>
+              ) : (
+                <Button size="sm" color="tertiary" variant="solid" onClick={handleButtonClick}>
+                  마감하기
+                </Button>
+              )}
+            </Flex>
           </Flex>
 
           <Text type="Body" weight="semibold" color="#0A0A0A">

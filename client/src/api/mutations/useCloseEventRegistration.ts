@@ -4,15 +4,15 @@ import { fetcher } from '../fetcher';
 import { eventQueryKeys } from '../queries/event';
 
 export const closeEventRegistration = async (eventId: number) => {
-  await fetcher.post(`organizations/events/${eventId}/registration/close`);
+  return await fetcher.post(`organizations/events/${eventId}/registration/close`);
 };
 
-export const useCloseEventRegistration = (eventId: number) => {
+export const useCloseEventRegistration = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => closeEventRegistration(eventId),
-    onSuccess: () => {
+    mutationFn: (eventId: number) => closeEventRegistration(eventId),
+    onSuccess: (eventId) => {
       queryClient.invalidateQueries({
         queryKey: [...eventQueryKeys.detail(), eventId],
       });
