@@ -7,9 +7,9 @@ import { MyEventPage } from '@/features/Event/My/pages/MyEventPage';
 import { NewEventPage } from '@/features/Event/New/pages/NewEventPage';
 import { OverviewPage } from '@/features/Event/Overview/pages/OverviewPage';
 import { HomePage } from '@/features/Home/page/HomePage';
+import { InvitePage } from '@/features/Invite/page/InvitePage';
 
 import { AuthCallback } from './AuthCallback';
-import { InviteHandler } from './InviteHandler';
 import { ProtectRoute } from './ProtectRoute';
 
 export const router = createBrowserRouter(
@@ -24,7 +24,7 @@ export const router = createBrowserRouter(
         },
         {
           path: '/invite',
-          Component: InviteHandler,
+          Component: InvitePage,
         },
         {
           path: '/auth',
