@@ -26,12 +26,13 @@ public class Member extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     private String profileImageUrl;
 
     private Member(final String name, final String email, final String profileImageUrl) {
         validateName(name);
         validateEmail(email);
+        validateProfileImageUrl(profileImageUrl);
 
         this.name = name;
         this.email = email;
@@ -48,5 +49,9 @@ public class Member extends BaseEntity {
 
     private void validateEmail(final String email) {
         Assert.notBlank(email, "이메일은 공백이면 안됩니다.");
+    }
+
+    private void validateProfileImageUrl(final String profileImageUrl) {
+        Assert.notBlank(profileImageUrl, "이미지 URI는 공백이면 안됩니다.");
     }
 }
