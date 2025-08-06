@@ -38,6 +38,10 @@ export const router = createBrowserRouter(
               Component: NewEventPage,
             },
             {
+              path: '/event/edit/:eventId',
+              Component: NewEventPage,
+            },
+            {
               path: 'my',
               Component: MyEventPage,
             },

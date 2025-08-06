@@ -4,7 +4,7 @@ import { Guest, NonGuest } from '../../features/Event/Manage/types';
 import { CreateEventAPIRequest, EventDetail } from '../../features/Event/types/Event';
 import { fetcher } from '../fetcher';
 import { postAlarm } from '../mutations/useAddAlarm';
-import { GuestStatusAPIResponse } from '../types/event';
+import { GuestStatusAPIResponse, OrganizerStatusAPIResponse } from '../types/event';
 
 type CreateEventAPIResponse = {
   eventId: number;
@@ -15,6 +15,7 @@ export const eventQueryKeys = {
   detail: () => [...eventQueryKeys.all(), 'detail'],
   alarm: () => [...eventQueryKeys.all(), 'alarm'],
   guests: () => [...eventQueryKeys.all(), 'guests'],
+  organizer: () => [...eventQueryKeys.all(), 'organizer'],
   nonGuests: () => [...eventQueryKeys.all(), 'nonGuests'],
   guestStatus: () => [...eventQueryKeys.all(), 'guestStatus'],
   participation: () => [...eventQueryKeys.all(), 'participation'],
@@ -35,6 +36,11 @@ export const eventQueryOptions = {
     queryOptions({
       queryKey: [...eventQueryKeys.guests(), eventId],
       queryFn: () => getGuests(eventId),
+    }),
+  organizer: (eventId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.organizer(), eventId],
+      queryFn: () => getOrganizerStatus(eventId),
     }),
   nonGuests: (eventId: number) =>
     queryOptions({
@@ -71,4 +77,10 @@ const getEventDetailAPI = (eventId: number) => {
 
 const getGuestStatus = async (eventId: number) => {
   return await fetcher.get<GuestStatusAPIResponse>(`events/${eventId}/guest-status`);
+};
+
+const getOrganizerStatus = async (eventId: number) => {
+  return await fetcher.get<OrganizerStatusAPIResponse>(
+    `organizations/events/${eventId}/organizer-status`
+  );
 };

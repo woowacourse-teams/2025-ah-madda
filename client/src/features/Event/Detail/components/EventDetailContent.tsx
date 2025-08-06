@@ -1,9 +1,11 @@
 import { useState } from 'react';
 
 import { css } from '@emotion/react';
+import { useNavigate } from 'react-router-dom';
 
-import { GuestStatusAPIResponse } from '@/api/types/event';
+import { GuestStatusAPIResponse, OrganizerStatusAPIResponse } from '@/api/types/event';
 import { Answer } from '@/api/types/event';
+import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 
 import { EventDetail } from '../../types/Event';
@@ -16,7 +18,7 @@ import { PreQuestionCard } from './PreQuestionCard';
 import { SubmitButtonCard } from './SubmitButtonCard';
 import { TimeInfoCard } from './TimeInfoCard';
 
-type EventDetailContentProps = EventDetail & GuestStatusAPIResponse;
+type EventDetailContentProps = EventDetail & GuestStatusAPIResponse & OrganizerStatusAPIResponse;
 
 export const EventDetailContent = ({
   eventId,
@@ -29,6 +31,7 @@ export const EventDetailContent = ({
   description,
   questions,
   isGuest,
+  isOrganizer,
 }: EventDetailContentProps) => {
   const [answers, setAnswers] = useState<Answer[]>(
     questions.map(({ questionId }) => ({
@@ -36,6 +39,8 @@ export const EventDetailContent = ({
       answerText: '',
     }))
   );
+
+  const navigate = useNavigate();
 
   const handleChangeAnswer = (questionId: number, answerText: string) => {
     setAnswers((prev) =>
@@ -45,6 +50,14 @@ export const EventDetailContent = ({
 
   return (
     <Flex dir="column" width="100%" padding="20px 0" gap="20px">
+      {isOrganizer && (
+        <Flex justifyContent="flex-end">
+          <Button color="secondary" onClick={() => navigate(`/event/edit/${eventId}`)}>
+            ✏️ 수정
+          </Button>
+        </Flex>
+      )}
+
       <Flex
         dir="row"
         gap="24px"
