@@ -4,7 +4,8 @@ import { Guest, NonGuest } from '../../features/Event/Manage/types';
 import { CreateEventAPIRequest, EventDetail } from '../../features/Event/types/Event';
 import { fetcher } from '../fetcher';
 import { postAlarm } from '../mutations/useAddAlarm';
-import { GuestStatusAPIResponse, OrganizerStatusAPIResponse } from '../types/event';
+import { GuestStatusAPIResponse } from '../types/event';
+import { NotificationAPIRequest } from '../types/notification';
 
 type CreateEventAPIResponse = {
   eventId: number;
@@ -30,7 +31,7 @@ export const eventQueryOptions = {
     }),
   alarms: (eventId: number) => ({
     mutationKey: [...eventQueryKeys.alarm(), eventId],
-    mutationFn: (content: string) => postAlarm(eventId, content),
+    mutationFn: (data: NotificationAPIRequest) => postAlarm(eventId, data),
   }),
   guests: (eventId: number) =>
     queryOptions({
