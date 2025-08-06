@@ -1,8 +1,10 @@
 import { useState } from 'react';
 
 import { css } from '@emotion/react';
+import { useQuery } from '@tanstack/react-query';
 
-import { GuestStatusAPIResponse } from '@/api/types/event';
+import { eventQueryOptions } from '@/api/queries/event';
+import { GuestStatusAPIResponse, OrganizerStatusAPIResponse } from '@/api/types/event';
 import { Answer } from '@/api/types/event';
 import { Flex } from '@/shared/components/Flex';
 
@@ -16,7 +18,7 @@ import { PreQuestionCard } from './PreQuestionCard';
 import { SubmitButtonCard } from './SubmitButtonCard';
 import { TimeInfoCard } from './TimeInfoCard';
 
-type EventDetailContentProps = EventDetail & GuestStatusAPIResponse;
+type EventDetailContentProps = EventDetail & GuestStatusAPIResponse & OrganizerStatusAPIResponse;
 
 export const EventDetailContent = ({
   eventId,
@@ -29,7 +31,9 @@ export const EventDetailContent = ({
   description,
   questions,
   isGuest,
+  isOrganizer,
 }: EventDetailContentProps) => {
+  // const { data: organizerStatus } = useQuery(eventQueryOptions.organizer(eventId));
   const [answers, setAnswers] = useState<Answer[]>(
     questions.map(({ questionId }) => ({
       questionId,
@@ -72,13 +76,14 @@ export const EventDetailContent = ({
         answers={answers}
         onChangeAnswer={handleChangeAnswer}
       />
-
-      <SubmitButtonCard
-        isGuest={isGuest}
-        registrationEnd={registrationEnd}
-        eventId={eventId}
-        answers={answers}
-      />
+      {!isOrganizer && (
+        <SubmitButtonCard
+          isGuest={isGuest}
+          registrationEnd={registrationEnd}
+          eventId={eventId}
+          answers={answers}
+        />
+      )}
     </Flex>
   );
 };
