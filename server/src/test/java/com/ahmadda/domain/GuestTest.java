@@ -1,6 +1,7 @@
 package com.ahmadda.domain;
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -225,6 +226,70 @@ class GuestTest {
         assertThatThrownBy(() -> guest.submitAnswers(answers))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessageContaining("이벤트에 포함되지 않은 질문입니다");
+    }
+
+    @Test
+    void 게스트의_답변을_주최자가_볼_수_있다() {
+        // given
+        var now = LocalDateTime.now();
+        var question1 = Question.create("질문1", true, 0);
+        var question2 = Question.create("질문2", false, 1);
+        var event = createEvent("이벤트", participant, now, question1, question2);
+
+        var guest = Guest.create(event, otherParticipant, now);
+        var answers = Map.of(
+                question1, "답변1",
+                question2, "답변2"
+        );
+        guest.submitAnswers(answers);
+
+        // when
+        var retrievedAnswers = guest.viewAnswersAs(participant);
+
+        // then
+        assertThat(retrievedAnswers).hasSize(2);
+        assertThat(retrievedAnswers)
+                .extracting(Answer::getAnswerText)
+                .containsExactlyInAnyOrder("답변1", "답변2");
+    }
+
+    @Test
+    void 게스트_본인은_자신의_답변을_볼_수_있다() {
+        // given
+        var now = LocalDateTime.now();
+        var question = Question.create("질문", true, 0);
+        var event = createEvent("이벤트", participant, now, question);
+        var guest = Guest.create(event, otherParticipant, now);
+
+        var answers = Map.of(question, "답변");
+        guest.submitAnswers(answers);
+
+        // when
+        var retrievedAnswers = guest.viewAnswersAs(otherParticipant);
+
+        // then
+        assertThat(retrievedAnswers).hasSize(1);
+        assertThat(retrievedAnswers.get(0)
+                .getAnswerText()).isEqualTo("답변");
+    }
+
+    @Test
+    void 게스트의_답변을_조회할_권한이_없으면_예외가_발생한다() {
+        // given
+        var now = LocalDateTime.now();
+        var question = Question.create("질문", true, 0);
+        var event = createEvent("이벤트", participant, now, question);
+        var otherMember = Member.create("다른 회원", "email@email.com");
+        var othrerOrganizationMember =
+                OrganizationMember.create("다른 게스트", otherMember, participant.getOrganization());
+        var guest = Guest.create(event, otherParticipant, now);
+        var answers = Map.of(question, "답변");
+        guest.submitAnswers(answers);
+
+        // when // then
+        assertThatThrownBy(() -> guest.viewAnswersAs(othrerOrganizationMember))
+                .isInstanceOf(UnauthorizedOperationException.class)
+                .hasMessage("답변을 볼 권한이 없습니다.");
     }
 
     private Event createEvent(

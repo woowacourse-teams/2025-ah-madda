@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -348,6 +349,101 @@ class EventGuestServiceTest {
                 .hasMessage("존재하지 않는 조직원입니다.");
     }
 
+    @Test
+    void 주최자는_게스트의_답변을_볼_수_있다() {
+        //given
+        var organization = createAndSaveOrganization();
+        var organizerMember = createAndSaveMember("이재훈", "surf@ahmadda.com");
+        var guestMember = createAndSaveMember("머피", "mpi@ahmadda.com");
+        var organizer = createAndSaveOrganizationMember("surf1", organizerMember, organization);
+        var organizationMember = createAndSaveOrganizationMember("mpi", guestMember, organization);
+        var question1 = Question.create("1", true, 1);
+        var question2 = Question.create("2", true, 2);
+        var event = createAndSaveEvent(
+                organizer,
+                organization,
+                question1,
+                question2
+        );
+        var guest = createAndSaveGuest(event, organizationMember);
+        guest.submitAnswers(Map.of(
+                question1, "answer1",
+                question2, "answer2"
+        ));
+
+        //when
+        var answers = sut.getAnswers(event.getId(), guest.getId(), new LoginMember(organizerMember.getId()));
+
+        //then
+        assertSoftly(softly -> {
+            softly.assertThat(answers)
+                    .hasSize(2);
+            softly.assertThat(answers)
+                    .extracting("answerText")
+                    .contains("answer1", "answer2");
+        });
+    }
+
+    @Test
+    void 이벤트가_없다면_게스트의_답변을_볼때_예외가_발생한다() {
+        //given
+        var organization = createAndSaveOrganization();
+        var organizerMember = createAndSaveMember("이재훈", "surf@ahmadda.com");
+
+        //when //then
+        assertThatThrownBy(() -> sut.getAnswers(999L, 1L, new LoginMember(organizerMember.getId())))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 이벤트입니다.");
+    }
+
+    @Test
+    void 주최자가_없다면_게스트의_답변을_볼때_예외가_발생한다() {
+        //given
+        var organization = createAndSaveOrganization();
+        var organizerMember = createAndSaveMember("이재훈", "surf@ahmadda.com");
+        var guestMember = createAndSaveMember("머피", "mpi@ahmadda.com");
+        var organizer = createAndSaveOrganizationMember("surf1", organizerMember, organization);
+        var organizationMember = createAndSaveOrganizationMember("mpi", guestMember, organization);
+        var question1 = Question.create("1", true, 1);
+        var question2 = Question.create("2", true, 2);
+        var event = createAndSaveEvent(
+                organizer,
+                organization,
+                question1,
+                question2
+        );
+        var guest = createAndSaveGuest(event, organizationMember);
+        guest.submitAnswers(Map.of(
+                question1, "answer1",
+                question2, "answer2"
+        ));
+
+        //when //then
+        assertThatThrownBy(() -> sut.getAnswers(event.getId(), 1L, new LoginMember(999L)))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 조직원입니다.");
+    }
+
+    @Test
+    void 게스트가_없다면_게스트의_답변을_볼때_예외가_발생한다() {
+        //given
+        var organization = createAndSaveOrganization();
+        var organizerMember = createAndSaveMember("이재훈", "surf@ahmadda.com");
+        var organizer = createAndSaveOrganizationMember("surf1", organizerMember, organization);
+        var question1 = Question.create("1", true, 1);
+        var question2 = Question.create("2", true, 2);
+        var event = createAndSaveEvent(
+                organizer,
+                organization,
+                question1,
+                question2
+        );
+
+        //when //then
+        assertThatThrownBy(() -> sut.getAnswers(event.getId(), 999L, new LoginMember(organizerMember.getId())))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 게스트입니다.");
+    }
 
     private Member createAndSaveMember(String name, String email) {
         return memberRepository.save(Member.create(name, email));

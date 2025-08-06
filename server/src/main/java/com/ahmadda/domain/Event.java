@@ -214,6 +214,10 @@ public class Event extends BaseEntity {
                 .equals(member);
     }
 
+    public boolean isOrganizer(final OrganizationMember organizer) {
+        return this.organizer.equals(organizer);
+    }
+
     public void cancelParticipation(
             final OrganizationMember organizationMember,
             final LocalDateTime cancelParticipateTime

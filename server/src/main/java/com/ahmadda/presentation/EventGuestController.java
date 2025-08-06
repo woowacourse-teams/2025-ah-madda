@@ -3,7 +3,9 @@ package com.ahmadda.presentation;
 import com.ahmadda.application.EventGuestService;
 import com.ahmadda.application.EventService;
 import com.ahmadda.application.dto.EventParticipateRequest;
+import com.ahmadda.application.dto.GuestAnswerResponse;
 import com.ahmadda.application.dto.LoginMember;
+import com.ahmadda.domain.Answer;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.OrganizationMember;
@@ -507,5 +509,20 @@ public class EventGuestController {
 
         return ResponseEntity.noContent()
                 .build();
+    }
+
+    @GetMapping("/{eventId}/guests/{guestId}/answers")
+    public ResponseEntity<List<GuestAnswerResponse>> getAnswers(
+            @PathVariable final Long eventId,
+            @PathVariable final Long guestId,
+            @AuthMember final LoginMember loginMember
+    ) {
+        List<Answer> answers = eventGuestService.getAnswers(eventId, guestId, loginMember);
+
+        List<GuestAnswerResponse> guestAnswerResponses = answers.stream()
+                .map(GuestAnswerResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(guestAnswerResponses);
     }
 }

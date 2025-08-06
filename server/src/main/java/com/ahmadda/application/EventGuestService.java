@@ -5,6 +5,7 @@ import com.ahmadda.application.dto.EventParticipateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.domain.Answer;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
@@ -91,6 +92,15 @@ public class EventGuestService {
         return event.hasGuest(organizationMember);
     }
 
+    public List<Answer> getAnswers(final Long eventId, Long guestId, final LoginMember organizerLoginMember) {
+        Event event = getEvent(eventId);
+        Organization organization = event.getOrganization();
+        OrganizationMember organizer = getOrganizationMember(organization.getId(), organizerLoginMember.memberId());
+        Guest guest = getGuest(guestId);
+
+        return guest.viewAnswersAs(organizer);
+    }
+
     private void validateOrganizationAccess(final LoginMember loginMember, final Organization organization) {
         if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(
                 organization.getId(),
@@ -120,5 +130,10 @@ public class EventGuestService {
     private Question getQuestion(final Long questionId) {
         return questionRepository.findById(questionId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 질문입니다."));
+    }
+
+    private Guest getGuest(Long guestId) {
+        return guestRepository.findById(guestId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 게스트입니다."));
     }
 }
