@@ -6,7 +6,7 @@ import { FIELD_CONFIG } from '../constants/formFieldConfig';
 import { validateEventForm } from '../utils/validateEventForm';
 
 export const useBasicEventForm = () => {
-  const [basicForm, setBasicForm] = useState<BasicEventFormFields>({
+  const [basicEventForm, setBasicEventForm] = useState<BasicEventFormFields>({
     title: '',
     eventStart: '',
     eventEnd: '',
@@ -19,14 +19,14 @@ export const useBasicEventForm = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleValueChange = (key: keyof BasicEventFormFields, value: string | number) => {
-    setBasicForm((prev) => ({
+    setBasicEventForm((prev) => ({
       ...prev,
       [key]: value,
     }));
   };
 
   const validateField = (key: keyof BasicEventFormFields, value: string | number) => {
-    const updated = { ...basicForm, [key]: value };
+    const updated = { ...basicEventForm, [key]: value };
     const validation = validateEventForm(updated);
 
     setErrors((prev) => ({
@@ -47,7 +47,7 @@ export const useBasicEventForm = () => {
   const isValid = useMemo(() => {
     const hasNoErrors = Object.values(errors).every((value) => !value);
 
-    const allRequiredFieldsFilled = Object.entries(basicForm).every(([key, value]) => {
+    const allRequiredFieldsFilled = Object.entries(basicEventForm).every(([key, value]) => {
       const isRequired = FIELD_CONFIG[key as keyof BasicEventFormFields]?.required;
       if (!isRequired) return true;
 
@@ -58,10 +58,10 @@ export const useBasicEventForm = () => {
     });
 
     return hasNoErrors && allRequiredFieldsFilled;
-  }, [basicForm, errors]);
+  }, [basicEventForm, errors]);
 
   return {
-    basicForm,
+    basicEventForm,
     handleValueChange,
     validateField,
     handleChange,

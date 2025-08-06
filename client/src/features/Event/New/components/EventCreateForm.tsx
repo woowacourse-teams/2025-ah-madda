@@ -27,7 +27,7 @@ export const EventCreateForm = () => {
   const { isOpen: isModalOpen, open, close } = useModal();
 
   const {
-    basicForm,
+    basicEventForm,
     handleValueChange,
     validateField,
     handleChange,
@@ -50,11 +50,11 @@ export const EventCreateForm = () => {
     if (!isBasicFormValid || !isQuestionValid) return;
 
     const payload = {
-      ...basicForm,
+      ...basicEventForm,
       questions: questions,
-      eventStart: convertDatetimeLocalToKSTISOString(basicForm.eventStart),
-      eventEnd: convertDatetimeLocalToKSTISOString(basicForm.eventEnd),
-      registrationEnd: convertDatetimeLocalToKSTISOString(basicForm.registrationEnd),
+      eventStart: convertDatetimeLocalToKSTISOString(basicEventForm.eventStart),
+      eventEnd: convertDatetimeLocalToKSTISOString(basicEventForm.eventEnd),
+      registrationEnd: convertDatetimeLocalToKSTISOString(basicEventForm.registrationEnd),
       organizerNickname: '임시닉',
     };
 
@@ -92,7 +92,7 @@ export const EventCreateForm = () => {
               id="title"
               name="title"
               label="이벤트 이름"
-              value={basicForm.title}
+              value={basicEventForm.title}
               onChange={handleChange}
               errorMessage={errors.title}
               isRequired
@@ -114,7 +114,7 @@ export const EventCreateForm = () => {
                 type="datetime-local"
                 min="2025-07-31T14:00"
                 placeholder="2025.07.30 13:00"
-                value={basicForm.eventStart}
+                value={basicEventForm.eventStart}
                 onChange={(e) => {
                   handleChange(e);
                   const newValue = e.target.value;
@@ -130,8 +130,8 @@ export const EventCreateForm = () => {
                 label="이벤트 종료일"
                 type="datetime-local"
                 placeholder="2025.07.30 15:00"
-                value={basicForm.eventEnd}
-                min={basicForm.eventStart}
+                value={basicEventForm.eventEnd}
+                min={basicEventForm.eventStart}
                 onChange={handleChange}
                 errorMessage={errors.eventEnd}
                 isRequired
@@ -144,8 +144,8 @@ export const EventCreateForm = () => {
               label="신청 종료일"
               type="datetime-local"
               placeholder="2025.07.25 15:00"
-              value={basicForm.registrationEnd}
-              max={basicForm.eventStart}
+              value={basicEventForm.registrationEnd}
+              max={basicEventForm.eventStart}
               onChange={handleChange}
               errorMessage={errors.registrationEnd}
               isRequired
@@ -156,7 +156,7 @@ export const EventCreateForm = () => {
               name="place"
               label="장소"
               placeholder="이벤트 장소를 입력해 주세요"
-              value={basicForm.place}
+              value={basicEventForm.place}
               onChange={handleChange}
               errorMessage={errors.place}
             />
@@ -166,7 +166,7 @@ export const EventCreateForm = () => {
               name="description"
               label="설명"
               placeholder="이벤트에 대한 설명을 입력해 주세요"
-              value={basicForm.description}
+              value={basicEventForm.description}
               onChange={handleChange}
               errorMessage={errors.description}
             />
@@ -176,9 +176,9 @@ export const EventCreateForm = () => {
               name="maxCapacity"
               label="수용 인원"
               value={
-                basicForm.maxCapacity === UNLIMITED_CAPACITY
+                basicEventForm.maxCapacity === UNLIMITED_CAPACITY
                   ? '무제한'
-                  : `${basicForm.maxCapacity}명`
+                  : `${basicEventForm.maxCapacity}명`
               }
               readOnly
               onClick={open}
@@ -190,7 +190,7 @@ export const EventCreateForm = () => {
             <MaxCapacityModal
               isOpen={isModalOpen}
               initialValue={
-                basicForm.maxCapacity === UNLIMITED_CAPACITY ? 10 : basicForm.maxCapacity
+                basicEventForm.maxCapacity === UNLIMITED_CAPACITY ? 10 : basicEventForm.maxCapacity
               }
               onClose={close}
               onSubmit={(value) => {
