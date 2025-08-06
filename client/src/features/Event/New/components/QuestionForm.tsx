@@ -14,9 +14,15 @@ type QuestionFormProps = {
   questions: QuestionRequest[];
   onChange: (updated: QuestionRequest[]) => void;
   onErrorChange: (errors: Record<number, string>) => void;
+  isEditable?: boolean;
 };
 
-export const QuestionForm = ({ questions, onChange, onErrorChange }: QuestionFormProps) => {
+export const QuestionForm = ({
+  questions,
+  onChange,
+  onErrorChange,
+  isEditable = true,
+}: QuestionFormProps) => {
   const [questionErrors, setQuestionErrors] = useState<Record<number, string>>({});
 
   const addQuestion = () => {
@@ -71,27 +77,38 @@ export const QuestionForm = ({ questions, onChange, onErrorChange }: QuestionFor
       <Flex dir="column" gap="16px">
         <Flex justifyContent="space-between" alignItems="center">
           <Text type="Body">사전 질문</Text>
-          <Button
-            size="md"
-            color="tertiary"
-            variant="outline"
-            iconName="plus"
-            onClick={addQuestion}
-          >
-            질문 추가
-          </Button>
+          {isEditable ? (
+            <Button
+              size="md"
+              color="tertiary"
+              variant="outline"
+              iconName="plus"
+              onClick={addQuestion}
+            >
+              질문 추가
+            </Button>
+          ) : (
+            <Text type="Label" color="gray">
+              질문은 수정할 수 없습니다.
+            </Text>
+          )}
         </Flex>
-        {questions.map((question) => (
-          <QuestionItem
-            key={question.orderIndex}
-            orderIndex={question.orderIndex}
-            questionText={question.questionText}
-            isRequired={question.isRequired}
-            onDelete={() => deleteQuestion(question.orderIndex)}
-            onChange={(updated) => updateQuestion(question.orderIndex, updated)}
-            errorMessage={questionErrors[question.orderIndex]}
-          />
-        ))}
+
+        {isEditable && (
+          <>
+            {questions.map((question) => (
+              <QuestionItem
+                key={question.orderIndex}
+                orderIndex={question.orderIndex}
+                questionText={question.questionText}
+                isRequired={question.isRequired}
+                onDelete={() => deleteQuestion(question.orderIndex)}
+                onChange={(updated) => updateQuestion(question.orderIndex, updated)}
+                errorMessage={questionErrors[question.orderIndex]}
+              />
+            ))}
+          </>
+        )}
       </Flex>
     </Card>
   );

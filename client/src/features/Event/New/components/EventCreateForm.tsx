@@ -94,7 +94,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     <form onSubmit={handleSubmit}>
       <Flex dir="column" gap="20px" padding="60px 0" width="100%">
         <Text type="Title" weight="bold">
-          새 이벤트 만들기
+          {isEdit ? '이벤트 수정' : '새 이벤트 만들기'}
         </Text>
         <Text type="Body" color="gray">
           이벤트 정보를 입력해 주세요
@@ -239,6 +239,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
           questions={formData.questions}
           onChange={setQuestions}
           onErrorChange={setQuestionErrors}
+          isEditable={!isEdit}
         />
 
         <Flex justifyContent="flex-end">
