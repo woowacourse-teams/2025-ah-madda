@@ -1,9 +1,7 @@
 import { useState } from 'react';
 
 import { css } from '@emotion/react';
-import { useQuery } from '@tanstack/react-query';
 
-import { eventQueryOptions } from '@/api/queries/event';
 import { GuestStatusAPIResponse, OrganizerStatusAPIResponse } from '@/api/types/event';
 import { Answer } from '@/api/types/event';
 import { Flex } from '@/shared/components/Flex';
@@ -33,7 +31,6 @@ export const EventDetailContent = ({
   isGuest,
   isOrganizer,
 }: EventDetailContentProps) => {
-  // const { data: organizerStatus } = useQuery(eventQueryOptions.organizer(eventId));
   const [answers, setAnswers] = useState<Answer[]>(
     questions.map(({ questionId }) => ({
       questionId,
