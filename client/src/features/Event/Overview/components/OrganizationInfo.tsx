@@ -7,39 +7,45 @@ import { Text } from '@/shared/components/Text';
 
 import { Organization } from '../../types/Event';
 
-type OrganizationProps = {
-  totalEvents: number;
-} & Omit<Organization, 'organizationId'>;
+type OrganizationProps = Omit<Organization, 'organizationId'>;
 
 // S.TODO : 추후 imageUrl 적용
-export const OrganizationInfo = ({
-  name,
-  description,
-  imageUrl,
-  totalEvents = 0,
-}: OrganizationProps) => {
+export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationProps) => {
   return (
     <Flex
       dir="column"
       width="100%"
       gap="20px"
-      padding="60px 0 0 0"
+      margin="0px auto"
+      padding="80px 0 10px 0"
       css={css`
-        max-width: 1120px;
-        margin: 0 auto;
+        @media (max-width: 768px) {
+          padding: 40px 0 0 0;
+        }
       `}
     >
-      <Flex padding="20px 10px" justifyContent="space-between" alignItems="center" width="100%">
-        <Flex dir="column" gap="8px">
-          <Text type="Display" weight="bold">
-            {name}
-          </Text>
-          <Text as="h2" type="Heading">
-            {description}
-          </Text>
-          <Text type="Body">{`${totalEvents}개의 이벤트가 열려있어요!`}</Text>
+      <Flex padding="0 10px" justifyContent="space-between" alignItems="center" width="100%">
+        <Flex
+          justifyContent="space-between"
+          alignItems="center"
+          padding="20px 10px"
+          css={css`
+            @media (max-width: 481px) {
+              flex-direction: column;
+              align-items: flex-start;
+            }
+          `}
+        >
+          <Img src={Woowa} />
+          <Flex dir="column" gap="8px">
+            <Text type="Display" weight="bold">
+              {name}
+            </Text>
+            <Text as="h2" type="Heading">
+              {description}
+            </Text>
+          </Flex>
         </Flex>
-        <Img src={Woowa} />
       </Flex>
     </Flex>
   );
@@ -47,7 +53,7 @@ export const OrganizationInfo = ({
 
 const Img = styled.img`
   width: 100%;
-  max-width: clamp(160px, 30vw, 252px);
+  max-width: clamp(140px, 30vw, 160px);
   height: auto;
   margin-right: 20px;
   padding: 20px 0;
