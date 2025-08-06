@@ -20,7 +20,7 @@ export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationPr
       padding="80px 0 10px 0"
       css={css`
         @media (max-width: 768px) {
-          padding: 40px 0 0 0;
+          padding: 80px 0 0 0;
         }
       `}
     >
