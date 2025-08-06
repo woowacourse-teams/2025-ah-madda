@@ -12,17 +12,22 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EventStatistic extends BaseEntity {
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "event_statistic_id")
+    private final List<EventViewMetric> eventViewMetrics = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,10 +37,6 @@ public class EventStatistic extends BaseEntity {
     @OneToOne(optional = false)
     @JoinColumn(name = "event_id", unique = true)
     private Event event;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "event_statistic_id")
-    private final List<EventViewMetric> eventViewMetrics = new ArrayList<>();
 
     private EventStatistic(final Event event) {
         validateEvent(event);
@@ -56,13 +57,15 @@ public class EventStatistic extends BaseEntity {
                 .ifPresent(EventViewMetric::increaseViewCount);
     }
 
-    public List<EventViewMetric> findEventViewMetrics(final OrganizationMember organizationMember,
-                                                      final LocalDate currentDate) {
+    public List<EventViewMetric> findEventViewMetrics(
+            final OrganizationMember organizationMember,
+            final LocalDate currentDate
+    ) {
         validateIsOrganizer(organizationMember);
 
         return eventViewMetrics.stream()
-                        .filter((eventViewMetric) -> !eventViewMetric.isAfter(currentDate))
-                        .toList();
+                .filter((eventViewMetric) -> !eventViewMetric.isAfter(currentDate))
+                .toList();
     }
 
     private void validateEvent(final Event event) {
@@ -70,8 +73,9 @@ public class EventStatistic extends BaseEntity {
     }
 
     private void validateIsOrganizer(final OrganizationMember organizationMember) {
-        if (!event.getOrganizer().equals(organizationMember)) {
-            throw new UnauthorizedOperationException("이벤트의 조회수는 이벤트의 주최자만 참조할 수 있습니다.");
+        if (!event.getOrganizer()
+                .equals(organizationMember)) {
+            throw new UnauthorizedOperationException("이벤트의 조회수는 이벤트의 주최자만 조회할 수 있습니다.");
         }
     }
 

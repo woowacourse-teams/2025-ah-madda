@@ -5,26 +5,29 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class EventViewMetric extends BaseEntity{
+public class EventViewMetric extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_view_metric_id")
     private Long id;
 
+    @Column(nullable = false)
     private LocalDate viewDate;
 
+    @Column(nullable = false)
     private Integer viewCount;
 
-    public EventViewMetric(final LocalDate viewDate) {
+    private EventViewMetric(final LocalDate viewDate) {
         this.viewDate = viewDate;
         viewCount = 0;
     }
