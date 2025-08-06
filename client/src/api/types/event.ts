@@ -10,3 +10,8 @@ export type GuestStatusAPIResponse = {
 export type OrganizerStatusAPIResponse = {
   isOrganizer: boolean;
 };
+
+export type EventTitleAPIResponse = {
+  eventId: number;
+  title: string;
+};

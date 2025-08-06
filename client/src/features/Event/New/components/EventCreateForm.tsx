@@ -8,6 +8,7 @@ import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
+import { useModal } from '@/shared/hooks/useModal';
 
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useEventForm } from '../hooks/useEventForm';
@@ -15,6 +16,7 @@ import { useEventValidation } from '../hooks/useEventValidation';
 import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
 
 import { QuestionForm } from './QuestionForm';
+import { TemplateModal } from './TemplateModal';
 
 const ORGANIZATION_ID = 1; // 임시
 const ORGANIZER_NICKNAME = '임시닉네임';
@@ -26,6 +28,7 @@ export const EventCreateForm = () => {
   const { errors, setQuestionErrors, validate, validateField, isFormValid } =
     useEventValidation(formData);
   const { data: userProfile } = useQuery(myQueryOptions.profile());
+  const { isOpen, open, close } = useModal();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +64,17 @@ export const EventCreateForm = () => {
         </Text>
 
         <Card>
-          <Text type="Body">기본 질문</Text>
+          <Flex justifyContent="space-between">
+            <Text type="Body">기본 질문</Text>
+            <Button
+              size="md"
+              onClick={() => {
+                open();
+              }}
+            >
+              템플릿 불러오기
+            </Button>
+          </Flex>
           <Flex dir="column">
             <Input
               id="title"
@@ -207,6 +220,7 @@ export const EventCreateForm = () => {
           </Button>
         </Flex>
       </Flex>
+      <TemplateModal isOpen={isOpen} onClose={close} />
     </form>
   );
 };
