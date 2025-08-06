@@ -40,7 +40,7 @@ export const OverviewPage = () => {
         imageUrl={organizationData?.imageUrl ?? ''}
       />
 
-      <EventList events={eventData ?? []} />
+      <EventList organizationId={organizationData?.organizationId ?? 0} events={eventData ?? []} />
     </PageLayout>
   );
 };
