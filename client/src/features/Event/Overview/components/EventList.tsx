@@ -4,12 +4,15 @@ import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
+import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
+import { theme } from '@/shared/styles/theme';
 
 import { Event } from '../../types/Event';
 import { EventContainer } from '../containers/EventContainer';
 import { groupEventsByDate } from '../utils/groupEventsByDate';
 
+import { ActionButtons } from './ActionButtons';
 import { EventCard } from './EventCard';
 import { EventSection } from './EventSection';
 
@@ -24,19 +27,23 @@ export const EventList = ({ events }: EventListProps) => {
   return (
     <EventContainer>
       <Flex
-        dir="column"
         width="100%"
-        gap="20px"
+        justifyContent="flex-start"
+        alignItems="center"
+        gap="5px"
+        padding="10px"
         css={css`
-          max-width: 1120px;
-          margin: 0 auto;
+          border-radius: 8px;
+          background-color: ${theme.colors.primary50};
         `}
       >
-        <Flex justifyContent="flex-end" alignItems="center">
-          <Button size="md" iconName="plus" onClick={() => navigate('/event/new')}>
-            이벤트 생성
-          </Button>
-        </Flex>
+        <Icon name="calendar" color="primary500" size={20} />
+        <Text weight="bold" color={theme.colors.primary500}>
+          {events.length}개의 이벤트가 열려있어요!
+        </Text>
+      </Flex>
+      <Flex dir="column" width="100%" gap="20px">
+        <ActionButtons />
         {groupedEvents.length === 0 ? (
           <Flex justifyContent="center" alignItems="center" height="200px">
             <Text type="Heading" weight="semibold">
