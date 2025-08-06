@@ -27,14 +27,18 @@ public class Organization extends BaseEntity {
     private static final int MAX_NAME_LENGTH = 20;
     private static final int MIN_DESCRIPTION_LENGTH = 2;
     private static final int MIN_NAME_LENGTH = 2;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
-    private final List<Event> events = new ArrayList<>();
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
-    private final List<OrganizationMember> organizationMembers = new ArrayList<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "organization_id")
     private Long id;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
+    private final List<Event> events = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
+    private final List<OrganizationMember> organizationMembers = new ArrayList<>();
+
     @Column(nullable = false)
     private String description;
 

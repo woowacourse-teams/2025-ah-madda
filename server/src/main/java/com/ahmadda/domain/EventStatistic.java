@@ -25,13 +25,15 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EventStatistic extends BaseEntity {
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "event_statistic_id", nullable = false)
-    private final List<EventViewMetric> eventViewMetrics = new ArrayList<>();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_statistic_id")
     private Long id;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "event_statistic_id", nullable = false)
+    private final List<EventViewMetric> eventViewMetrics = new ArrayList<>();
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", unique = true, nullable = false)
     private Event event;
