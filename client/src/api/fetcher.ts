@@ -1,4 +1,5 @@
 import { ACCESS_TOKEN_KEY } from '@/shared/constants';
+import { reportApiError } from '@/shared/utils/apiErrorHandler';
 import { getLocalStorage } from '@/shared/utils/localStorage';
 
 type HttpMethod = 'GET' | 'POST' | 'DELETE' | 'PATCH' | 'PUT';
@@ -42,6 +43,7 @@ const request = async <T>(path: string, method: HttpMethod, body?: object): Prom
       throw new HttpError(response.status, responseText);
     } catch (parseError) {
       if (parseError instanceof HttpError) {
+        reportApiError(parseError);
         throw parseError;
       }
 
@@ -51,7 +53,12 @@ const request = async <T>(path: string, method: HttpMethod, body?: object): Prom
 
   if (response.status === 204) return undefined as T;
 
-  return response.json();
+  const text = await response.text();
+  if (!text) {
+    return undefined as T;
+  }
+
+  return JSON.parse(text);
 };
 
 export const fetcher = {

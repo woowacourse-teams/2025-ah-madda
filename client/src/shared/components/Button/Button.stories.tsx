@@ -1,11 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
+import { Flex } from '../Flex';
+
 import { Button } from './Button';
 
 const meta = {
   title: 'components/Button',
   component: Button,
   tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component: 'Button component is a styled button that can be used to trigger actions.',
+      },
+    },
+  },
 } satisfies Meta<typeof Button>;
 
 export default meta;
@@ -13,12 +22,11 @@ type Story = StoryObj<typeof Button>;
 
 export const Basic: Story = {
   args: {
-    children: 'Button',
-    width: '8rem',
     size: 'md',
-    variant: 'filled',
-    color: '#2563EB',
-    fontColor: '#FFFFFF',
+    color: 'primary',
+    variant: 'solid',
+    disabled: false,
+    children: 'Button',
   },
   argTypes: {
     type: { control: false },
@@ -27,22 +35,79 @@ export const Basic: Story = {
   render: (args) => <Button {...args} />,
 };
 
+export const Primary: Story = {
+  args: {
+    color: 'primary',
+    children: 'Primary Button',
+  },
+  render: (args) => (
+    <Flex dir="column" gap="10px">
+      <Button size="sm" {...args}>
+        Primary
+      </Button>
+      <Button size="md" {...args}>
+        Primary
+      </Button>
+      <Button size="lg" {...args}>
+        Primary
+      </Button>
+    </Flex>
+  ),
+};
+
+export const Secondary: Story = {
+  args: {
+    color: 'secondary',
+    children: 'Secondary Button',
+  },
+  render: (args) => (
+    <Flex dir="column" gap="10px">
+      <Button size="sm" {...args}>
+        Second
+      </Button>
+      <Button size="md" {...args}>
+        Secondary
+      </Button>
+      <Button size="lg" {...args}>
+        Secondary
+      </Button>
+    </Flex>
+  ),
+};
+
+export const Tertiary: Story = {
+  args: {
+    color: 'tertiary',
+    children: 'Tertiary Button',
+  },
+  render: (args) => (
+    <Flex dir="column" gap="10px">
+      <Button size="sm" {...args}>
+        Tertiary
+      </Button>
+      <Button size="md" {...args}>
+        Tertiary
+      </Button>
+      <Button size="lg" {...args}>
+        Tertiary
+      </Button>
+    </Flex>
+  ),
+};
+
 export const Outlined: Story = {
   args: {
-    width: '10rem',
-    variant: 'outlined',
-    color: '#808080',
-    fontColor: '#000000',
-    children: 'Outlined Button',
+    variant: 'outline',
+    children: 'Outlined',
   },
   render: (args) => <Button {...args} />,
 };
 
 export const FullWidth: Story = {
   args: {
+    size: 'full',
+    color: 'primary',
     children: 'Full Width Button',
-    width: '100%',
-    color: '#409869',
   },
   render: (args) => <Button {...args} />,
 };
