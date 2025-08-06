@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Modal } from '@/shared/components/Modal';
 import { Text } from '@/shared/components/Text';
+
+import { UNLIMITED_CAPACITY } from '../constants/errorMessages';
 
 type Props = {
   isOpen: boolean;
@@ -15,15 +17,6 @@ type Props = {
 
 export const MaxCapacityModal = ({ isOpen, initialValue, onClose, onSubmit }: Props) => {
   const [value, setValue] = useState(initialValue.toString());
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 0);
-    }
-  }, [isOpen]);
 
   const handleConfirm = () => {
     const parsed = Number(value);
@@ -38,17 +31,17 @@ export const MaxCapacityModal = ({ isOpen, initialValue, onClose, onSubmit }: Pr
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} showCloseButton={false}>
-      <Flex dir="column" padding="24px" gap="20px" width="300px">
-        <Text type="Title" weight="bold">
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <Flex dir="column" gap="20px" width="300px">
+        <Text type="Heading" weight="bold">
           최대 수용 인원
         </Text>
 
         <Input
           id="maxCapacityInput"
-          label="수용 인원"
+          label="수용 인원을 입력해주세요."
           type="text"
-          ref={inputRef}
+          autoFocus
           value={value}
           onChange={(e) => {
             const raw = e.target.value;
@@ -59,12 +52,20 @@ export const MaxCapacityModal = ({ isOpen, initialValue, onClose, onSubmit }: Pr
           }}
         />
 
-        <Flex gap="10px" justifyContent="flex-end">
-          <Button onClick={onClose} size="sm" color="gray">
-            취소
+        <Flex justifyContent="space-between" width="100%">
+          <Button
+            onClick={() => {
+              onSubmit(UNLIMITED_CAPACITY);
+              onClose();
+            }}
+            size="sm"
+            color="gray"
+          >
+            무제한
           </Button>
+
           <Button onClick={handleConfirm} size="sm" color="black">
-            제한 설정
+            설정
           </Button>
         </Flex>
       </Flex>

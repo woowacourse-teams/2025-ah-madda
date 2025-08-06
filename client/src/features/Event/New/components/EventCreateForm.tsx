@@ -171,37 +171,21 @@ export const EventCreateForm = () => {
               errorMessage={errors.description}
             />
 
-            <Flex
-              height="45px"
-              justifyContent="space-between"
-              alignItems="center"
-              padding="8px 12px"
+            <Input
+              id="maxCapacity"
+              name="maxCapacity"
+              label="수용 인원"
+              value={
+                basicForm.maxCapacity === UNLIMITED_CAPACITY
+                  ? '무제한'
+                  : `${basicForm.maxCapacity}명`
+              }
+              readOnly
               onClick={open}
               css={css`
                 cursor: pointer;
-                transition: background-color 0.2s;
-                border-radius: 8px;
-                &:hover {
-                  background-color: #f5f5f5;
-                }
               `}
-            >
-              <Flex alignItems="center" gap="8px">
-                <Icon name="user" size={18} />
-                <Text type="Label" color="gray">
-                  수용 인원
-                </Text>
-                <Text type="Label">
-                  {basicForm.maxCapacity === UNLIMITED_CAPACITY
-                    ? '무제한'
-                    : `${basicForm.maxCapacity}명`}
-                </Text>
-              </Flex>
-
-              <Text type="Label" color="gray">
-                ✏️
-              </Text>
-            </Flex>
+            />
 
             <MaxCapacityModal
               isOpen={isModalOpen}
