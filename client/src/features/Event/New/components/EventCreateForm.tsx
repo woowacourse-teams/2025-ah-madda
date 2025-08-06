@@ -153,7 +153,6 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 error={!!errors.eventStart}
                 errorMessage={errors.eventStart}
                 isRequired={true}
-                step={600}
               />
               <Input
                 id="eventEnd"
