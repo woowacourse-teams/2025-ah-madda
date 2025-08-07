@@ -3,6 +3,7 @@
     <include resource="logger/file/info-appender.xml"/>
     <include resource="logger/file/warn-appender.xml"/>
     <include resource="logger/file/error-appender.xml"/>
+    <include resource="logger/cloudwatch/info-threshold-appender.xml"/>
 
     <property name="LOG_FILE_PATH" value="/app/logs/ahmadda"/>
 
@@ -10,6 +11,7 @@
         <appender-ref ref="info-appender"/>
         <appender-ref ref="warn-appender"/>
         <appender-ref ref="error-appender"/>
+        <appender-ref ref="cloudwatch-appender"/>
     </root>
 
 </configuration>
