@@ -73,21 +73,6 @@ class EventStatisticTest {
         var event = createEvent(organizationMember, organization);
         var now = LocalDateTime.now();
 
-        var endLocalDate = event.getEventOperationPeriod()
-                .getEventPeriod()
-                .end()
-                .toLocalDate();
-
-        var startDate = event.getEventOperationPeriod()
-                .getRegistrationPeriod()
-                .start()
-                .toLocalDate();
-        var endDate = event.getEventOperationPeriod()
-                .getEventPeriod()
-                .end()
-                .toLocalDate();
-
-
         var modifyRegistrationPeriod = Period.create(now.plusDays(1), now.plusDays(2));
         var modifyEventPeriod = Period.create(now.plusDays(3), now.plusDays(8));
 
@@ -100,7 +85,7 @@ class EventStatisticTest {
                 now
         );
 
-        EventStatistic sut = EventStatistic.create(event);
+        var sut = EventStatistic.create(event);
 
         event.update(
                 organizationMember.getMember(),
@@ -243,7 +228,7 @@ class EventStatisticTest {
     }
 
     private Member createMember(String name, String email) {
-        return Member.create(name, email, "testPicture");
+        return Member.create(name, email);
     }
 
     private Organization createOrganization(String name) {
