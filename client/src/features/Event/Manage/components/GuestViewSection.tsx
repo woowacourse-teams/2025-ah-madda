@@ -1,10 +1,18 @@
+import { useState } from 'react';
+
+import { useQuery } from '@tanstack/react-query';
+import { useParams } from 'react-router-dom';
+
+import { myQueryOptions } from '@/api/queries/my';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
+import { useModal } from '@/shared/hooks/useModal';
 
 import { Guest, NonGuest } from '../types';
 
+import { GuestAnswerModal } from './GuestAnswerModal';
 import { GuestList } from './GuestList';
 
 type GuestViewSectionProps = {
@@ -24,31 +32,58 @@ export const GuestViewSection = ({
   onNonGuestChecked,
   onNonGuestAllChecked,
 }: GuestViewSectionProps) => {
-  return (
-    <Card>
-      <Flex as="section" dir="column" gap="20px">
-        <Flex alignItems="center" gap="8px">
-          <Icon name="user" size={18} />
-          <Text type="Body" weight="regular" color="#4A5565">
-            게스트 조회
-          </Text>
-        </Flex>
+  const { eventId } = useParams();
+  const [selectedGuest, setSelectedGuest] = useState<Guest | null>(null);
+  const { isOpen, open, close } = useModal();
 
-        <GuestList
-          title={`신청 완료 (${guests.length}명)`}
-          titleColor="#00A63E"
-          guests={guests}
-          onGuestChecked={onGuestChecked}
-          onAllGuestChecked={onAllChecked}
-        />
-        <GuestList
-          title={`미신청 (${nonGuests.length}명)`}
-          titleColor="#4A5565"
-          guests={nonGuests}
-          onGuestChecked={onNonGuestChecked}
-          onAllGuestChecked={onNonGuestAllChecked}
-        />
-      </Flex>
-    </Card>
+  const { data: guestAnswers } = useQuery({
+    ...myQueryOptions.event.guestAnswers(Number(eventId), selectedGuest?.guestId ?? 0),
+    enabled: !!selectedGuest?.guestId,
+  });
+
+  const handleGuestClick = (guest: Guest | NonGuest) => {
+    if ('guestId' in guest) {
+      setSelectedGuest(guest);
+      open();
+    }
+  };
+
+  return (
+    <>
+      <Card>
+        <Flex as="section" dir="column" gap="20px">
+          <Flex alignItems="center" gap="8px">
+            <Icon name="user" size={18} />
+            <Text type="Body" weight="regular" color="#4A5565">
+              게스트 조회
+            </Text>
+          </Flex>
+
+          <GuestList
+            title={`신청 완료 (${guests.length}명)`}
+            titleColor="#00A63E"
+            guests={guests}
+            onGuestChecked={onGuestChecked}
+            onAllGuestChecked={onAllChecked}
+            onGuestClick={handleGuestClick}
+          />
+          <GuestList
+            title={`미신청 (${nonGuests.length}명)`}
+            titleColor="#4A5565"
+            guests={nonGuests}
+            onGuestChecked={onNonGuestChecked}
+            onAllGuestChecked={onNonGuestAllChecked}
+            onGuestClick={handleGuestClick}
+          />
+        </Flex>
+      </Card>
+
+      <GuestAnswerModal
+        isOpen={isOpen}
+        onClose={close}
+        guest={selectedGuest}
+        guestAnswers={guestAnswers}
+      />
+    </>
   );
 };
