@@ -7,14 +7,15 @@ import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
+import com.ahmadda.domain.InviteCode;
+import com.ahmadda.domain.InviteCodeRepository;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Period;
-import com.ahmadda.presentation.dto.ParticipateRequestDto;
+import com.ahmadda.presentation.dto.OrganizationParticipateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,6 +44,9 @@ class OrganizationServiceTest {
     private EventRepository eventRepository;
 
     @Autowired
+    private InviteCodeRepository inviteCodeRepository;
+
+    @Autowired
     private OrganizationService sut;
 
     @Test
@@ -52,7 +56,7 @@ class OrganizationServiceTest {
         organizationRepository.save(organization);
 
         // when
-        var found = sut.getOrganization(organization.getId());
+        var found = sut.getOrganizationById(organization.getId());
 
         // then
         assertSoftly(softly -> {
@@ -91,7 +95,7 @@ class OrganizationServiceTest {
     @Test
     void 존재하지_않는_조직_ID로_조회하면_예외가_발생한다() {
         // when // then
-        assertThatThrownBy(() -> sut.getOrganization(999L))
+        assertThatThrownBy(() -> sut.getOrganizationById(999L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 조직입니다.");
     }
@@ -99,7 +103,7 @@ class OrganizationServiceTest {
     @Test
     void 존재하지_않는_조직의_이벤트를_조회하면_예외가_발생한다() {
         // given
-        var member = memberRepository.save(Member.create("user", "user@test.com"));
+        var member = memberRepository.save(Member.create("user", "user@test.com", "testPicture"));
         var loginMember = new LoginMember(member.getId());
 
         // when // then
@@ -111,7 +115,7 @@ class OrganizationServiceTest {
     @Test
     void 여러_조직의_이벤트가_있을때_선택된_조직의_활성화된_이벤트만_가져온다() {
         // given
-        var member = memberRepository.save(Member.create("name", "test@test.com"));
+        var member = memberRepository.save(Member.create("name", "test@test.com", "testPicture"));
         var loginMember = new LoginMember(member.getId());
         var orgA = organizationRepository.save(createOrganization("OrgA", "DescA", "a.png"));
         var orgB = organizationRepository.save(createOrganization("OrgB", "DescB", "b.png"));
@@ -136,25 +140,49 @@ class OrganizationServiceTest {
     @Test
     void 조직원이_아니면_조직의_이벤트를_조회시_예외가_발생한다() {
         // given
-        var member = memberRepository.save(Member.create("user", "user@test.com"));
+        var member = memberRepository.save(Member.create("user", "user@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
         var loginMember = new LoginMember(member.getId());
 
-        // when & then
+        // when // then
         assertThatThrownBy(() -> sut.getOrganizationEvents(organization.getId(), loginMember))
                 .isInstanceOf(BusinessFlowViolatedException.class)
                 .hasMessage("조직에 참여하지 않아 권한이 없습니다.");
     }
 
     @Test
+    void 초대코드를_통해_조직에_참여할_수_있다() {
+        // given
+        var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
+        var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
+        var inviter = createAndSaveOrganizationMember("surf", member2, organization);
+        var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
+
+        var loginMember = new LoginMember(member1.getId());
+        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode());
+
+        // when
+        var organizationMember = sut.participateOrganization(organization.getId(), loginMember, request);
+
+        // then
+        assertThat(organizationMemberRepository.findById(organizationMember.getId()))
+                .isPresent()
+                .hasValue(organizationMember);
+    }
+
+    @Test
     void 이미_참여한_조직에_중복_참여하면_예외가_발생한다() {
         // given
-        var member = memberRepository.save(Member.create("user", "user@test.com"));
+        var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        organizationMemberRepository.save(OrganizationMember.create("nickname", member, organization));
+        var organizationMember = createAndSaveOrganizationMember("surf", member1, organization);
+        var inviter = createAndSaveOrganizationMember("tuda", member2, organization);
+        var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
 
-        var loginMember = new LoginMember(member.getId());
-        var request = new ParticipateRequestDto("new_nickname");
+        var loginMember = new LoginMember(member1.getId());
+        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode());
 
         // when // then
         assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
@@ -163,27 +191,53 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void 조직에_참여할_수_있다() {
+    void 존재하지_않는_조직에_참여한다면_예외가_발생한다() {
         // given
-        var member = memberRepository.save(Member.create("user", "user@test.com"));
+        var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
+        var inviter = createAndSaveOrganizationMember("surf", member2, organization);
+        var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
+
+        var loginMember = new LoginMember(member1.getId());
+        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode());
+
+        // when // then
+        assertThatThrownBy(() -> sut.participateOrganization(999L, loginMember, request))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 조직입니다.");
+    }
+
+    @Test
+    void 존재하지_않는_회원이_조직에_참여하려_한다면_예외가_발생한다() {
+        // given
+        var member = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
+        var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
+        var inviter = createAndSaveOrganizationMember("surf", member, organization);
+        var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
+
+        var loginMember = new LoginMember(999L);
+        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode());
+
+        // when // then
+        assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 회원입니다");
+    }
+
+    @Test
+    void 존재하지_않는_초대코드로_조직에_참여하려_한다면_예외가_발생한다() {
+        // given
+        var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
+
         var loginMember = new LoginMember(member.getId());
-        var request = new ParticipateRequestDto("new_nickname");
+        var request = new OrganizationParticipateRequest("new_nickname", "notFoundCode");
 
-        // when
-        sut.participateOrganization(organization.getId(), loginMember, request);
-
-        // then
-        var organizationMembers = organizationMemberRepository.findAll();
-
-        assertSoftly(softly -> {
-            softly.assertThat(organizationMembers).hasSize(1);
-
-            var saved = organizationMembers.get(0);
-            softly.assertThat(saved.getNickname()).isEqualTo("new_nickname");
-            softly.assertThat(saved.getMember()).isEqualTo(member);
-            softly.assertThat(saved.getOrganization()).isEqualTo(organization);
-        });
+        // when // then
+        assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
+                .isInstanceOf(BusinessFlowViolatedException.class)
+                .hasMessage("잘못된 초대코드입니다.");
     }
 
     @Test
@@ -227,11 +281,10 @@ class OrganizationServiceTest {
                 organizer,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(start, end),
-                        Period.create(end.plusHours(1), end.plusHours(2)),
+                        start, end,
+                        end.plusHours(1), end.plusHours(2),
                         start.minusDays(1)
                 ),
-                organizer.getNickname(),
                 100
         );
     }
@@ -242,5 +295,24 @@ class OrganizationServiceTest {
             String imageUrl
     ) {
         return new OrganizationCreateRequest(name, description, imageUrl);
+    }
+
+    private OrganizationMember createAndSaveOrganizationMember(
+            String nickname,
+            Member member,
+            Organization organization
+    ) {
+        var organizationMember = OrganizationMember.create(nickname, member, organization);
+        return organizationMemberRepository.save(organizationMember);
+    }
+
+    private InviteCode createAndSaveInviteCode(
+            String code,
+            Organization organization,
+            OrganizationMember organizationMember,
+            LocalDateTime now
+    ) {
+        InviteCode prevInviteCode = InviteCode.create(code, organization, organizationMember, now);
+        return inviteCodeRepository.save(prevInviteCode);
     }
 }

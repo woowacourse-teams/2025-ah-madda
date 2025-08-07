@@ -6,6 +6,7 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Answer;
+import com.ahmadda.domain.AnswerRepository;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
@@ -17,7 +18,6 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Period;
 import com.ahmadda.domain.Question;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import org.junit.jupiter.api.Test;
@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -53,6 +54,9 @@ class EventGuestServiceTest {
 
     @Autowired
     private GuestRepository guestRepository;
+
+    @Autowired
+    private AnswerRepository answerRepository;
 
     @Test
     void 이벤트에_참여한_게스트들을_조회한다() {
@@ -182,7 +186,7 @@ class EventGuestServiceTest {
         // when
         sut.participantEvent(
                 event.getId(),
-                member2.getId(),
+                new LoginMember(member2.getId()),
                 event.getRegistrationStart(),
                 new EventParticipateRequest(List.of())
         );
@@ -220,7 +224,7 @@ class EventGuestServiceTest {
         ));
 
         // when
-        sut.participantEvent(event.getId(), member2.getId(), event.getRegistrationStart(), request);
+        sut.participantEvent(event.getId(), new LoginMember(member2.getId()), event.getRegistrationStart(), request);
 
         // then
         var guest = guestRepository.findAll()
@@ -258,12 +262,12 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.participantEvent(
-                        event.getId(),
-                        member2.getId(),
-                        event.getRegistrationStart(),
-                        request
-                )
+                                   sut.participantEvent(
+                                           event.getId(),
+                                           new LoginMember(member2.getId()),
+                                           event.getRegistrationStart(),
+                                           request
+                                   )
         )
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessageContaining("필수 질문에 대한 답변이 누락되었습니다");
@@ -287,12 +291,12 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.participantEvent(
-                        event.getId(),
-                        member2.getId(),
-                        event.getRegistrationStart(),
-                        request
-                )
+                                   sut.participantEvent(
+                                           event.getId(),
+                                           new LoginMember(member2.getId()),
+                                           event.getRegistrationStart(),
+                                           request
+                                   )
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("존재하지 않는 질문입니다.");
@@ -316,14 +320,12 @@ class EventGuestServiceTest {
         createAndSaveGuest(event, organizationMember2);
 
         //when
-        var actual1 = sut.isGuest(event.getId(), member2.getId());
-        var actual2 = sut.isGuest(event.getId(), member3.getId());
-        var actual3 = sut.isGuest(event.getId(), member1.getId());
+        var actual1 = sut.isGuest(event.getId(), createLoginMember(organizationMember2));
+        var actual2 = sut.isGuest(event.getId(), createLoginMember(organizationMember3));
 
         //then
         assertThat(actual1).isEqualTo(true);
         assertThat(actual2).isEqualTo(false);
-        assertThat(actual3).isEqualTo(true);
     }
 
     @Test
@@ -342,13 +344,109 @@ class EventGuestServiceTest {
         createAndSaveGuest(event, organizationMember2);
 
         // when // then
-        assertThatThrownBy(() -> sut.isGuest(event.getId(), member3.getId()))
+        assertThatThrownBy(() -> sut.isGuest(event.getId(), new LoginMember(member3.getId())))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 조직원입니다.");
     }
 
+    @Test
+    void 주최자는_게스트의_답변을_볼_수_있다() {
+        //given
+        var organization = createAndSaveOrganization();
+        var organizerMember = createAndSaveMember("이재훈", "surf@ahmadda.com");
+        var guestMember = createAndSaveMember("머피", "mpi@ahmadda.com");
+        var organizer = createAndSaveOrganizationMember("surf1", organizerMember, organization);
+        var organizationMember = createAndSaveOrganizationMember("mpi", guestMember, organization);
+        var question1 = Question.create("1", true, 1);
+        var question2 = Question.create("2", true, 2);
+        var event = createAndSaveEvent(
+                organizer,
+                organization,
+                question1,
+                question2
+        );
+        var guest = createAndSaveGuest(event, organizationMember);
+        guest.submitAnswers(Map.of(
+                question1, "answer1",
+                question2, "answer2"
+        ));
+
+        //when
+        var answers = sut.getAnswers(event.getId(), guest.getId(), new LoginMember(organizerMember.getId()));
+
+        //then
+        assertSoftly(softly -> {
+            softly.assertThat(answers)
+                    .hasSize(2);
+            softly.assertThat(answers)
+                    .extracting("answerText")
+                    .contains("answer1", "answer2");
+        });
+    }
+
+    @Test
+    void 이벤트가_없다면_게스트의_답변을_볼때_예외가_발생한다() {
+        //given
+        var organization = createAndSaveOrganization();
+        var organizerMember = createAndSaveMember("이재훈", "surf@ahmadda.com");
+
+        //when //then
+        assertThatThrownBy(() -> sut.getAnswers(999L, 1L, new LoginMember(organizerMember.getId())))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 이벤트입니다.");
+    }
+
+    @Test
+    void 주최자가_없다면_게스트의_답변을_볼때_예외가_발생한다() {
+        //given
+        var organization = createAndSaveOrganization();
+        var organizerMember = createAndSaveMember("이재훈", "surf@ahmadda.com");
+        var guestMember = createAndSaveMember("머피", "mpi@ahmadda.com");
+        var organizer = createAndSaveOrganizationMember("surf1", organizerMember, organization);
+        var organizationMember = createAndSaveOrganizationMember("mpi", guestMember, organization);
+        var question1 = Question.create("1", true, 1);
+        var question2 = Question.create("2", true, 2);
+        var event = createAndSaveEvent(
+                organizer,
+                organization,
+                question1,
+                question2
+        );
+        var guest = createAndSaveGuest(event, organizationMember);
+        guest.submitAnswers(Map.of(
+                question1, "answer1",
+                question2, "answer2"
+        ));
+
+        //when //then
+        assertThatThrownBy(() -> sut.getAnswers(event.getId(), 1L, new LoginMember(999L)))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 조직원입니다.");
+    }
+
+    @Test
+    void 게스트가_없다면_게스트의_답변을_볼때_예외가_발생한다() {
+        //given
+        var organization = createAndSaveOrganization();
+        var organizerMember = createAndSaveMember("이재훈", "surf@ahmadda.com");
+        var organizer = createAndSaveOrganizationMember("surf1", organizerMember, organization);
+        var question1 = Question.create("1", true, 1);
+        var question2 = Question.create("2", true, 2);
+        var event = createAndSaveEvent(
+                organizer,
+                organization,
+                question1,
+                question2
+        );
+
+        //when //then
+        assertThatThrownBy(() -> sut.getAnswers(event.getId(), 999L, new LoginMember(organizerMember.getId())))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 게스트입니다.");
+    }
+
     private Member createAndSaveMember(String name, String email) {
-        return memberRepository.save(Member.create(name, email));
+        return memberRepository.save(Member.create(name, email, "testPicture"));
     }
 
     private Organization createAndSaveOrganization() {
@@ -368,11 +466,40 @@ class EventGuestServiceTest {
                 organizer,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(now.minusDays(3), now.minusDays(1)),
-                        Period.create(now.plusDays(1), now.plusDays(2)),
+                        now.minusDays(3), now.minusDays(1),
+                        now.plusDays(1), now.plusDays(2),
                         now.minusDays(6)
                 ),
-                organizer.getNickname(),
+                100,
+                questions
+        );
+
+        return eventRepository.save(event);
+    }
+
+    private Event createAndSaveEventWithTime(
+            OrganizationMember organizer,
+            Organization organization,
+            LocalDateTime registrationStart,
+            LocalDateTime registrationEnd,
+            LocalDateTime eventStart,
+            LocalDateTime eventEnd,
+            Question... questions
+    ) {
+        var creationTime = registrationStart.minusDays(1);
+        var event = Event.create(
+                "이벤트",
+                "설명",
+                "장소",
+                organizer,
+                organization,
+                EventOperationPeriod.create(
+                        registrationStart,
+                        registrationEnd,
+                        eventStart,
+                        eventEnd,
+                        creationTime
+                ),
                 100,
                 questions
         );

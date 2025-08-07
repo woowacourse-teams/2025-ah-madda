@@ -1,6 +1,7 @@
 package com.ahmadda.domain;
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,24 +20,27 @@ class GuestTest {
 
     @BeforeEach
     void setUp() {
-        var organizerMember = Member.create("주최자 멤버", "organizer@example.com");
+        var organizerMember = Member.create("주최자 회원", "organizer@example.com", "testPicture");
         var organization = Organization.create("테스트 조직", "조직 설명", "image.png");
         var organizer = OrganizationMember.create("주최자", organizerMember, organization);
         var now = LocalDateTime.now();
         event = Event.create(
                 "테스트 이벤트", "설명", "장소", organizer, organization,
                 EventOperationPeriod.create(
-                        Period.create(now.plusDays(1), now.plusDays(5)),
-                        Period.create(now.plusDays(10), now.plusDays(11)),
+                        now.plusDays(1), now.plusDays(5),
+                        now.plusDays(10), now.plusDays(11),
                         now
                 ),
-                organizer.getNickname(),
                 50
         );
-        member = Member.create("참가자 멤버", "guest@example.com");
+        member = Member.create("참가자 회원", "guest@example.com", "testPicture");
         participant = OrganizationMember.create("참가자", member, organization);
         otherParticipant =
-                OrganizationMember.create("다른 참가자", Member.create("다른 멤버", "other@example.com"), organization);
+                OrganizationMember.create(
+                        "다른 참가자",
+                        Member.create("다른 회원", "other@example.com", "testPicture"),
+                        organization
+                );
     }
 
     @Test
@@ -86,11 +90,10 @@ class GuestTest {
         var event = Event.create(
                 "테스트 이벤트", "설명", "장소", organizationMember1, organization1,
                 EventOperationPeriod.create(
-                        Period.create(now.plusDays(1), now.plusDays(5)),
-                        Period.create(now.plusDays(10), now.plusDays(11)),
+                        now.plusDays(1), now.plusDays(5),
+                        now.plusDays(10), now.plusDays(11),
                         now
                 ),
-                organizationMember1.getNickname(),
                 50
         );
 
@@ -110,11 +113,10 @@ class GuestTest {
         var event = Event.create(
                 "테스트 이벤트", "설명", "장소", organizationMember, organization,
                 EventOperationPeriod.create(
-                        Period.create(now.plusDays(1), now.plusDays(5)),
-                        Period.create(now.plusDays(10), now.plusDays(11)),
+                        now.plusDays(1), now.plusDays(5),
+                        now.plusDays(10), now.plusDays(11),
                         now
                 ),
-                organizationMember.getNickname(),
                 50
         );
 
@@ -136,11 +138,10 @@ class GuestTest {
         var event = Event.create(
                 "테스트 이벤트", "설명", "장소", organizationMember1, organization,
                 EventOperationPeriod.create(
-                        Period.create(now.plusDays(1), now.plusDays(5)),
-                        Period.create(now.plusDays(10), now.plusDays(11)),
+                        now.plusDays(1), now.plusDays(5),
+                        now.plusDays(10), now.plusDays(11),
                         now
                 ),
-                organizationMember1.getNickname(),
                 1
         );
         Guest.create(event, organizationMember2, event.getRegistrationStart());
@@ -231,6 +232,70 @@ class GuestTest {
                 .hasMessageContaining("이벤트에 포함되지 않은 질문입니다");
     }
 
+    @Test
+    void 게스트의_답변을_주최자가_볼_수_있다() {
+        // given
+        var now = LocalDateTime.now();
+        var question1 = Question.create("질문1", true, 0);
+        var question2 = Question.create("질문2", false, 1);
+        var event = createEvent("이벤트", participant, now, question1, question2);
+
+        var guest = Guest.create(event, otherParticipant, now);
+        var answers = Map.of(
+                question1, "답변1",
+                question2, "답변2"
+        );
+        guest.submitAnswers(answers);
+
+        // when
+        var retrievedAnswers = guest.viewAnswersAs(participant);
+
+        // then
+        assertThat(retrievedAnswers).hasSize(2);
+        assertThat(retrievedAnswers)
+                .extracting(Answer::getAnswerText)
+                .containsExactlyInAnyOrder("답변1", "답변2");
+    }
+
+    @Test
+    void 게스트_본인은_자신의_답변을_볼_수_있다() {
+        // given
+        var now = LocalDateTime.now();
+        var question = Question.create("질문", true, 0);
+        var event = createEvent("이벤트", participant, now, question);
+        var guest = Guest.create(event, otherParticipant, now);
+
+        var answers = Map.of(question, "답변");
+        guest.submitAnswers(answers);
+
+        // when
+        var retrievedAnswers = guest.viewAnswersAs(otherParticipant);
+
+        // then
+        assertThat(retrievedAnswers).hasSize(1);
+        assertThat(retrievedAnswers.get(0)
+                .getAnswerText()).isEqualTo("답변");
+    }
+
+    @Test
+    void 게스트의_답변을_조회할_권한이_없으면_예외가_발생한다() {
+        // given
+        var now = LocalDateTime.now();
+        var question = Question.create("질문", true, 0);
+        var event = createEvent("이벤트", participant, now, question);
+        var otherMember = Member.create("다른 회원", "email@email.com", "profileUrl");
+        var othrerOrganizationMember =
+                OrganizationMember.create("다른 게스트", otherMember, participant.getOrganization());
+        var guest = Guest.create(event, otherParticipant, now);
+        var answers = Map.of(question, "답변");
+        guest.submitAnswers(answers);
+
+        // when // then
+        assertThatThrownBy(() -> guest.viewAnswersAs(othrerOrganizationMember))
+                .isInstanceOf(UnauthorizedOperationException.class)
+                .hasMessage("답변을 볼 권한이 없습니다.");
+    }
+
     private Event createEvent(
             String title,
             OrganizationMember organizer,
@@ -241,11 +306,10 @@ class GuestTest {
                 title, "설명", "장소", organizer,
                 organizer.getOrganization(),
                 EventOperationPeriod.create(
-                        Period.create(now, now.plusDays(1)),
-                        Period.create(now.plusDays(2), now.plusDays(3)),
+                        now, now.plusDays(1),
+                        now.plusDays(2), now.plusDays(3),
                         now
                 ),
-                organizer.getNickname(),
                 10,
                 questions
         );

@@ -13,7 +13,6 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Period;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -199,7 +198,7 @@ class OrganizationMemberEventServiceTest {
     }
 
     @Test
-    void 존재하지_않는_멤버로_주최_이벤트_조회하면_예외가_발생한다() {
+    void 존재하지_않는_회원으로_주최_이벤트_조회하면_예외가_발생한다() {
         // given
         var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
         var loginMember = new LoginMember(999L);
@@ -228,7 +227,7 @@ class OrganizationMemberEventServiceTest {
     }
 
     private Member createAndSaveMember(String name, String email) {
-        var member = Member.create(name, email);
+        var member = Member.create(name, email, "testPicture");
         return memberRepository.save(member);
     }
 
@@ -258,20 +257,15 @@ class OrganizationMemberEventServiceTest {
                 organizer,
                 organization,
                 EventOperationPeriod.create(
-                        Period.create(
-                                LocalDateTime.now()
-                                        .minusDays(10),
-                                LocalDateTime.now()
-                                        .minusDays(1)
-                        ),
-                        Period.create(
-                                eventStart,
-                                eventEnd
-                        ),
+                        LocalDateTime.now()
+                                .minusDays(10),
+                        LocalDateTime.now()
+                                .minusDays(1),
+                        eventStart,
+                        eventEnd,
                         LocalDateTime.now()
                                 .minusDays(20)
                 ),
-                organizer.getNickname(),
                 maxCapacity
         );
         return eventRepository.save(event);
