@@ -9,8 +9,7 @@
 
         <encoder>
             <charset>UTF-8</charset>
-            <pattern>[%cyan(%level)][%d{MM-dd HH:mm:ss}][%magenta(%X{request_id:-startup})][%blue(%replace(%logger{20}){'\\w\\.', ''})] %msg %n
-            </pattern>
+            <pattern>[%level][%d{MM-dd HH:mm:ss}][%X{request_id:-startup}][%replace(%logger{20}){'\\w\\.', ''}] %msg%n</pattern>
         </encoder>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
