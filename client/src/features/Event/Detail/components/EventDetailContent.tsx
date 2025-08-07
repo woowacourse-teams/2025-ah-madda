@@ -85,13 +85,14 @@ export const EventDetailContent = ({
         answers={answers}
         onChangeAnswer={handleChangeAnswer}
       />
-
-      <SubmitButtonCard
-        isGuest={isGuest}
-        registrationEnd={registrationEnd}
-        eventId={eventId}
-        answers={answers}
-      />
+      {!isOrganizer && (
+        <SubmitButtonCard
+          isGuest={isGuest}
+          registrationEnd={registrationEnd}
+          eventId={eventId}
+          answers={answers}
+        />
+      )}
     </Flex>
   );
 };
