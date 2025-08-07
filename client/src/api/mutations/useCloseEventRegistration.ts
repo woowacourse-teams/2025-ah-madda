@@ -12,18 +12,9 @@ export const useCloseEventRegistration = () => {
 
   return useMutation({
     mutationFn: (eventId: number) => closeEventRegistration(eventId),
-    onSuccess: (eventId) => {
-      const keys = [
-        [...eventQueryKeys.detail(), eventId],
-        [...eventQueryKeys.guests(), eventId],
-        [...eventQueryKeys.nonGuests(), eventId],
-        [...eventQueryKeys.guestStatus(), eventId],
-      ];
-
-      keys.forEach((key) => {
-        queryClient.invalidateQueries({
-          queryKey: key,
-        });
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: eventQueryKeys.detail(),
       });
     },
   });
