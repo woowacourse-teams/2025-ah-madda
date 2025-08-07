@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 
+import { CheckBox } from '@/shared/components/CheckBox';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 
@@ -7,84 +8,77 @@ import { GUEST_STYLES } from '../constants';
 import { Guest, NonGuest } from '../types';
 
 type GuestItemProps = {
+  onGuestChecked: (organizationMemberId: number) => void;
   guest: Guest | NonGuest;
+  onGuestClick?: (guest: Guest | NonGuest) => void;
 };
 
 type GuestItemVariant = 'completed' | 'pending';
 
-export const GuestItem = ({ guest }: GuestItemProps) => {
-  const isGuest = 'guestId' in guest;
-  const variant = isGuest ? 'completed' : 'pending';
-  const { badgeTextColor, badgeText } = GUEST_STYLES[variant];
-
-  return (
-    <StyledGuestItemContainer
-      justifyContent="space-between"
-      alignItems="center"
-      padding="4px 8px"
-      variant={variant}
-    >
-      <Text type="caption" weight="regular" color={GUEST_STYLES.common.nameTextColor}>
-        {guest.nickname}
-      </Text>
-      <StyledGuestBadge
-        alignItems="center"
-        gap="8px"
-        padding="3.75px 7.8px 4.75px 8px"
-        justifyContent="center"
-        variant={variant}
-      >
-        <Text type="caption" weight="regular" color={badgeTextColor}>
-          {badgeText}
-        </Text>
-      </StyledGuestBadge>
-    </StyledGuestItemContainer>
-  );
-};
-
 type GuestItemContainerProps = {
   variant: GuestItemVariant;
+  clickable?: boolean;
 };
 
-type GuestBadgeProps = GuestItemContainerProps;
+export const GuestItem = ({ guest, onGuestChecked, onGuestClick }: GuestItemProps) => {
+  const isGuest = 'guestId' in guest;
+  const variant = isGuest ? 'completed' : 'pending';
+
+  const handleGuestClick = () => {
+    if (onGuestClick && isGuest) {
+      onGuestClick(guest);
+    }
+  };
+
+  return (
+    <Flex width="100%" gap="8px" alignItems="center" padding="0 0 0 20px">
+      <Flex width="30px">
+        <CheckBox
+          checked={guest.isChecked}
+          onClick={() => onGuestChecked(guest.organizationMemberId)}
+        />
+      </Flex>
+      <StyledGuestItemContainer
+        variant={variant}
+        alignItems="center"
+        padding="12px"
+        onClick={handleGuestClick}
+        clickable={isGuest}
+      >
+        <Text type="Label" weight="regular" color={GUEST_STYLES.common.nameTextColor}>
+          {guest.nickname}
+        </Text>
+      </StyledGuestItemContainer>
+    </Flex>
+  );
+};
 
 const getContainerStyles = (variant: GuestItemVariant) => {
   if (variant === 'completed') {
     return `
       background-color: #F0FDF4;
-      &:hover {
-        background-color: #E6F2E6;
-      }
     `;
   }
 
   return `
     background-color: #F9FAFB;
-    &:hover {
-      background-color: #1414140d;
-    }
-  `;
-};
-
-const getBadgeStyles = (variant: GuestItemVariant) => {
-  if (variant === 'completed') {
-    return `
-      background: #DCFCE7;
-    `;
-  }
-
-  return `
-    background: #ECEEF2;
   `;
 };
 
 export const StyledGuestItemContainer = styled(Flex)<GuestItemContainerProps>`
+  width: 100%;
   border-radius: 8px;
-  cursor: pointer;
   ${({ variant }) => getContainerStyles(variant)}
-`;
-
-export const StyledGuestBadge = styled(Flex)<GuestBadgeProps>`
-  border-radius: 6.75px;
-  ${({ variant }) => getBadgeStyles(variant)}
+  ${({ clickable }) =>
+    clickable &&
+    `
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background-color: #DCFCE7;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    `}
 `;

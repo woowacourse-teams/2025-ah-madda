@@ -12,7 +12,6 @@ export const LocationCard = ({ place }: LocationCardProps) => {
   return (
     <Flex
       dir="column"
-      height="235px"
       css={css`
         flex: 1;
       `}
@@ -25,9 +24,9 @@ export const LocationCard = ({ place }: LocationCardProps) => {
         <Flex dir="column" gap="16px">
           <Flex gap="8px" alignItems="center">
             <Icon name="location" size={18} />
-            <Text type="caption">장소</Text>
+            <Text type="Body">장소</Text>
           </Flex>
-          <Text type="caption">{place}</Text>
+          <Text type="Label">{place}</Text>
         </Flex>
       </Card>
     </Flex>

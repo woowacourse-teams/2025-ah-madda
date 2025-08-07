@@ -1,150 +1,265 @@
 import { css } from '@emotion/react';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
-import { Button } from '../../../../shared/components/Button';
-import { Card } from '../../../../shared/components/Card';
-import { Flex } from '../../../../shared/components/Flex';
-import { Input } from '../../../../shared/components/Input';
-import { Text } from '../../../../shared/components/Text';
-import { useAddEvent } from '../hooks/useAddEvent';
-import { useEventForm } from '../hooks/useEventForm';
-import { convertToISOString } from '../utils/convertToISOString';
+import { HttpError } from '@/api/fetcher';
+import { getEventDetailAPI } from '@/api/queries/event';
+import { Button } from '@/shared/components/Button';
+import { Card } from '@/shared/components/Card';
+import { Flex } from '@/shared/components/Flex';
+import { Input } from '@/shared/components/Input';
+import { Text } from '@/shared/components/Text';
+import { useModal } from '@/shared/hooks/useModal';
+import { trackCreateEvent } from '@/shared/lib/gaEvents';
 
+import { UNLIMITED_CAPACITY } from '../constants/errorMessages';
+import { useAddEvent } from '../hooks/useAddEvent';
+import { useBasicEventForm } from '../hooks/useBasicEventForm';
+import { useQuestionForm } from '../hooks/useQuestionForm';
+import { useTemplateLoader } from '../hooks/useTemplateLoader';
+import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
+
+import { MaxCapacityModal } from './MaxCapacityModal';
 import { QuestionForm } from './QuestionForm';
+import { TemplateModal } from './TemplateModal';
 
 const ORGANIZATION_ID = 1; // 임시
 
-export const EventCreateForm = () => {
+type EventCreateFormProps = {
+  isEdit: boolean;
+  eventId?: number;
+};
+
+export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const navigate = useNavigate();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
+  const { data: eventDetail } = useQuery({
+    queryKey: ['event', 'detail', Number(eventId)],
+    queryFn: () => getEventDetailAPI(Number(eventId)),
+    enabled: isEdit,
+  });
+  const {
+    isOpen: isTemplateModalOpen,
+    open: templateModalOpen,
+    close: templateModalClose,
+  } = useModal();
+  const {
+    isOpen: isCapacityModalOpen,
+    open: capacityModalOpen,
+    close: capacityModalClose,
+  } = useModal();
 
-  const { formData, handleChange, setQuestions } = useEventForm();
+  const {
+    basicEventForm,
+    handleValueChange,
+    validateField,
+    handleChange,
+    errors,
+    isValid: isBasicFormValid,
+    loadFormData,
+  } = useBasicEventForm(isEdit ? eventDetail : undefined);
+
+  const {
+    questions,
+    addQuestion,
+    deleteQuestion,
+    updateQuestion,
+    isValid: isQuestionValid,
+  } = useQuestionForm();
+
+  const isFormReady = isBasicFormValid && isQuestionValid;
+
+  const { template, selectedEventId, handleSelectEvent } = useTemplateLoader();
+
+  const handleTemplateLoad = () => {
+    loadFormData(template ?? {});
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isBasicFormValid || !isQuestionValid) return;
 
     const payload = {
-      ...formData,
-      eventStart: convertToISOString(formData.eventStart),
-      eventEnd: convertToISOString(formData.eventEnd),
-      registrationStart: convertToISOString(formData.registrationStart),
-      registrationEnd: convertToISOString(formData.registrationEnd),
+      ...basicEventForm,
+      questions: questions,
+      eventStart: convertDatetimeLocalToKSTISOString(basicEventForm.eventStart),
+      eventEnd: convertDatetimeLocalToKSTISOString(basicEventForm.eventEnd),
+      registrationEnd: convertDatetimeLocalToKSTISOString(basicEventForm.registrationEnd),
     };
 
     addEvent(payload, {
       onSuccess: ({ eventId }) => {
+        trackCreateEvent();
+        alert(`😁 이벤트가 성공적으로 ${isEdit ? '수정' : '생성'}되었습니다!`);
         navigate(`/event/${eventId}`);
+      },
+      onError: (error) => {
+        if (error instanceof HttpError) {
+          return alert(
+            error.data?.detail || '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
+          );
+        }
+
+        alert('네트워크 연결을 확인해주세요.');
       },
     });
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <Flex as="form" onSubmit={handleSubmit}>
       <Flex dir="column" gap="20px" padding="60px 0" width="100%">
         <Text type="Title" weight="bold">
-          새 이벤트 만들기
+          {isEdit ? '이벤트 수정' : '새 이벤트 만들기'}
         </Text>
-        <Text type="caption" color="gray">
-          이벤트 정보를 입력해 주세요
-        </Text>
+        <Flex justifyContent="space-between" alignItems="center">
+          <Text type="Body" color="gray">
+            이벤트 정보를 입력해 주세요
+          </Text>
+          <Button size="sm" onClick={templateModalOpen}>
+            템플릿
+          </Button>
+        </Flex>
 
         <Card>
-          <Text type="caption">기본 질문</Text>
-          <Flex dir="column" gap="8px">
+          <Flex justifyContent="space-between">
+            <Text type="Heading">기본 질문</Text>
+          </Flex>
+          <Flex dir="column">
             <Input
               id="title"
+              name="title"
               label="이벤트 이름"
-              value={formData.title}
-              onChange={handleChange('title')}
+              value={basicEventForm.title}
+              onChange={handleChange}
+              errorMessage={errors.title}
+              isRequired
             />
 
-            <Flex gap="16px">
+            <Flex
+              dir="row"
+              gap="16px"
+              css={css`
+                @media (max-width: 768px) {
+                  flex-direction: column;
+                }
+              `}
+            >
               <Input
                 id="eventStart"
-                label="이벤트 시작 날짜/시간"
+                name="eventStart"
+                label="이벤트 시작일"
+                type="datetime-local"
+                min="2025-07-31T14:00"
                 placeholder="2025.07.30 13:00"
-                value={formData.eventStart}
-                onChange={handleChange('eventStart')}
+                value={basicEventForm.eventStart}
+                onChange={(e) => {
+                  handleChange(e);
+                  const newValue = e.target.value;
+                  handleValueChange('registrationEnd', newValue);
+                  validateField('registrationEnd', newValue);
+                }}
+                errorMessage={errors.eventStart}
+                isRequired
               />
               <Input
                 id="eventEnd"
-                label="이벤트 종료 날짜/시간"
+                name="eventEnd"
+                label="이벤트 종료일"
+                type="datetime-local"
                 placeholder="2025.07.30 15:00"
-                value={formData.eventEnd}
-                onChange={handleChange('eventEnd')}
-              />
-            </Flex>
-
-            <Flex gap="16px">
-              <Input
-                id="registrationStart"
-                label="신청 시작 날짜/시간"
-                placeholder="2025.07.25 13:00"
-                value={formData.registrationStart}
-                onChange={handleChange('registrationStart')}
-              />
-              <Input
-                id="registrationEnd"
-                label="신청 종료 날짜/시간"
-                placeholder="2025.07.25 15:00"
-                value={formData.registrationEnd}
-                onChange={handleChange('registrationEnd')}
+                value={basicEventForm.eventEnd}
+                min={basicEventForm.eventStart}
+                onChange={handleChange}
+                errorMessage={errors.eventEnd}
+                isRequired
               />
             </Flex>
 
             <Input
+              id="registrationEnd"
+              name="registrationEnd"
+              label="신청 종료일"
+              type="datetime-local"
+              placeholder="2025.07.25 15:00"
+              value={basicEventForm.registrationEnd}
+              max={basicEventForm.eventStart}
+              onChange={handleChange}
+              errorMessage={errors.registrationEnd}
+              isRequired
+            />
+
+            <Input
               id="place"
+              name="place"
               label="장소"
               placeholder="이벤트 장소를 입력해 주세요"
-              value={formData.place}
-              onChange={handleChange('place')}
+              value={basicEventForm.place}
+              onChange={handleChange}
+              errorMessage={errors.place}
             />
 
             <Input
               id="description"
+              name="description"
               label="설명"
               placeholder="이벤트에 대한 설명을 입력해 주세요"
-              value={formData.description}
-              onChange={handleChange('description')}
+              value={basicEventForm.description}
+              onChange={handleChange}
+              errorMessage={errors.description}
             />
 
-            <Flex gap="16px">
-              <Input
-                id="author"
-                label="주최자 이름"
-                placeholder="주최자 이름을 입력해 주세요"
-                value={formData.organizerNickname}
-                onChange={handleChange('organizerNickname')}
-              />
-              <Input
-                id="maxCapacity"
-                label="수용 인원"
-                placeholder="최대 참가 인원을 입력해 주세요"
-                type="number"
-                value={formData.maxCapacity.toString()}
-                onChange={handleChange('maxCapacity')}
-              />
-            </Flex>
+            <Input
+              id="maxCapacity"
+              name="maxCapacity"
+              label="수용 인원"
+              value={
+                basicEventForm.maxCapacity === UNLIMITED_CAPACITY
+                  ? '무제한'
+                  : `${basicEventForm.maxCapacity}명`
+              }
+              readOnly
+              onClick={capacityModalOpen}
+              css={css`
+                cursor: pointer;
+              `}
+            />
+
+            <MaxCapacityModal
+              isOpen={isCapacityModalOpen}
+              initialValue={
+                basicEventForm.maxCapacity === UNLIMITED_CAPACITY ? 10 : basicEventForm.maxCapacity
+              }
+              onClose={capacityModalClose}
+              onSubmit={(value) => {
+                handleValueChange('maxCapacity', value);
+                validateField('maxCapacity', value.toString());
+              }}
+            />
           </Flex>
         </Card>
 
-        <QuestionForm questions={formData.questions} onChange={setQuestions} />
+        <QuestionForm
+          questions={questions}
+          addQuestion={addQuestion}
+          deleteQuestion={deleteQuestion}
+          updateQuestion={updateQuestion}
+          isEditable={!isEdit}
+        />
 
         <Flex justifyContent="flex-end">
-          <Button
-            type="submit"
-            color="black"
-            size="sm"
-            css={css`
-              border-radius: 5px;
-              font-size: 12px;
-              padding: 7px;
-            `}
-          >
-            이벤트 만들기
+          <Button type="submit" color="primary" size="full" disabled={!isFormReady}>
+            {isEdit ? '이벤트 수정' : '이벤트 만들기'}
           </Button>
         </Flex>
       </Flex>
-    </form>
+
+      <TemplateModal
+        isOpen={isTemplateModalOpen}
+        onClose={templateModalClose}
+        onConfirm={handleTemplateLoad}
+        onSelect={handleSelectEvent}
+        selectedEventId={selectedEventId}
+      />
+    </Flex>
   );
 };

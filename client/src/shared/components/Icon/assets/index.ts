@@ -1,25 +1,29 @@
 import { Alarm } from './alarm';
 import { Back } from './back';
 import { Calendar } from './calendar';
+import { Chart } from './chart';
 import { Clock } from './clock';
 import { Close } from './close';
 import { Delete } from './delete';
 import { Location } from './location';
 import { Logo } from './logo';
 import { Plus } from './plus';
-import { Users } from './users';
+import { Share } from './share';
+import { User } from './user';
 
 export const Icons = {
+  alarm: Alarm,
   back: Back,
   calendar: Calendar,
+  chart: Chart,
   clock: Clock,
   close: Close,
   delete: Delete,
   location: Location,
   logo: Logo,
   plus: Plus,
-  users: Users,
-  alarm: Alarm,
+  share: Share,
+  user: User,
 };
 
 export type IconName = keyof typeof Icons;

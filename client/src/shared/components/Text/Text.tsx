@@ -1,9 +1,9 @@
-import { ComponentProps } from 'react';
+import { ComponentProps, ReactNode } from 'react';
 
 import { StyledText } from './Text.styled';
 
-export type TextElementType = 'h1' | 'h2' | 'h3' | 'p' | 'label';
-type TypographyType = 'Head' | 'Title' | 'Body' | 'caption';
+export type TextElementType = 'h1' | 'h2' | 'h3' | 'p' | 'label' | 'span';
+type TypographyType = 'Display' | 'Title' | 'Heading' | 'Body' | 'Label';
 type WeightType = 'regular' | 'medium' | 'semibold' | 'bold';
 export type TextProps<T extends TextElementType> = {
   /**
@@ -30,7 +30,7 @@ export type TextProps<T extends TextElementType> = {
   /**
    * The content to be displayed inside the text component.
    */
-  children: React.ReactNode;
+  children: ReactNode;
 } & Omit<ComponentProps<T>, 'as' | 'children' | 'color'>;
 
 export const Text = <T extends TextElementType = 'p'>({

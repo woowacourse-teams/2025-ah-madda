@@ -31,21 +31,19 @@ export type CreateEventAPIRequest = {
   title: string;
   description: string;
   place: string;
-  maxCapacity: number;
+  maxCapacity: number | '';
   eventStart: string;
   eventEnd: string;
-  registrationStart: string;
   registrationEnd: string;
-  organizerNickname: string;
   questions: QuestionRequest[];
 };
 
+export type EventFormData = Omit<CreateEventAPIRequest, 'organizerNickname'>;
+export type BasicEventFormFields = Omit<CreateEventAPIRequest, 'questions'>;
+
 export type Question = {
   questionId: number;
-  questionText: string;
-  isRequired: boolean;
-  orderIndex: number;
-};
+} & QuestionRequest;
 
 export type QuestionRequest = {
   questionText: string;

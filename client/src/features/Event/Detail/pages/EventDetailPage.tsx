@@ -1,19 +1,30 @@
-import { useQuery } from '@tanstack/react-query';
+import { css } from '@emotion/react';
+import { useSuspenseQueries } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { eventQueryOptions } from '@/api/queries/event';
+import { Button } from '@/shared/components/Button';
+import { Flex } from '@/shared/components/Flex';
+import { Header } from '@/shared/components/Header';
+import { IconButton } from '@/shared/components/IconButton';
+import { PageLayout } from '@/shared/components/PageLayout';
+import { Tabs } from '@/shared/components/Tabs';
+import { Text } from '@/shared/components/Text';
 
-import { Flex } from '../../../../shared/components/Flex';
-import { Header } from '../../../../shared/components/Header';
-import { IconButton } from '../../../../shared/components/IconButton';
-import { PageLayout } from '../../../../shared/components/PageLayout';
-import { Text } from '../../../../shared/components/Text';
+import { ApplicationsTab } from '../components/ApplicationsTab';
 import { EventDetailContent } from '../components/EventDetailContent';
+import { EventDetailTitle } from '../components/EventDetailTitle';
+import { EventDetailContainer } from '../containers/EventDetailContainer';
 
 export const EventDetailPage = () => {
   const navigate = useNavigate();
   const { eventId } = useParams();
-  const { data: event } = useQuery(eventQueryOptions.detail(Number(eventId)));
+  const [{ data: event }, { data: guestStatus }] = useSuspenseQueries({
+    queries: [
+      eventQueryOptions.detail(Number(eventId)),
+      eventQueryOptions.guestStatus(Number(eventId)),
+    ],
+  });
 
   if (!event) {
     return (
@@ -29,16 +40,39 @@ export const EventDetailPage = () => {
     <PageLayout
       header={
         <Header
-          left={
-            <Flex alignItems="center" gap="12px">
-              <IconButton name="back" size={14} onClick={() => navigate(-1)} />
-              <Text type="caption">돌아가기</Text>
-            </Flex>
+          left={<IconButton name="logo" size={55} onClick={() => navigate('/event')} />}
+          right={
+            <Button size="sm" onClick={() => navigate('/event/my')}>
+              내 이벤트
+            </Button>
           }
         />
       }
     >
-      <EventDetailContent {...event} />
+      <EventDetailContainer>
+        <EventDetailTitle title={event.title} organizerName={event.organizerName} />
+        <Tabs defaultValue="detail">
+          <Tabs.List
+            css={css`
+              width: 40%;
+              @media (max-width: 768px) {
+                width: 100%;
+              }
+            `}
+          >
+            <Tabs.Trigger value="detail">이벤트 정보</Tabs.Trigger>
+            <Tabs.Trigger value="applications">신청 현황</Tabs.Trigger>
+          </Tabs.List>
+
+          <Tabs.Content value="detail">
+            <EventDetailContent isGuest={guestStatus.isGuest} {...event} />
+          </Tabs.Content>
+
+          <Tabs.Content value="applications">
+            <ApplicationsTab eventId={Number(eventId)} />
+          </Tabs.Content>
+        </Tabs>
+      </EventDetailContainer>
     </PageLayout>
   );
 };

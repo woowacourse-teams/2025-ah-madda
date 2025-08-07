@@ -4,21 +4,28 @@ import styled from '@emotion/styled';
 import { TextElementType, TextProps } from './Text';
 
 const fontTypes = {
-  Head: css`
-    font-size: 2rem;
-  `,
-  Title: css`
-    font-size: 1.5rem;
+  Display: css`
+    font-size: 2.25rem;
 
     @media (max-width: 768px) {
-      font-size: 1.25rem;
+      font-size: 2rem;
     }
   `,
-  Body: css`
+  Title: css`
+    font-size: 1.75rem;
+
+    @media (max-width: 768px) {
+      font-size: 1.3rem;
+    }
+  `,
+  Heading: css`
     font-size: 1.25rem;
   `,
-  caption: css`
+  Body: css`
     font-size: 1rem;
+  `,
+  Label: css`
+    font-size: 0.875rem;
   `,
 };
 

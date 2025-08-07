@@ -1,0 +1,71 @@
+import { Meta, ColorPalette, ColorItem } from '@storybook/addon-docs/blocks';
+import { colors } from './colors';
+
+<Meta title="foundations/Colors" />
+
+<ColorPalette>
+  <ColorItem
+    title="Primary"
+    subtitle="Main brand colors"
+    colors={{
+      50: colors.primary50,
+      100: colors.primary100,
+      200: colors.primary200,
+      300: colors.primary300,
+      400: colors.primary400,
+      500: colors.primary500,
+      600: colors.primary600,
+      700: colors.primary700,
+      800: colors.primary800,
+    }}
+  />
+  <ColorItem 
+    title="Secondary" 
+    subtitle="Accent and highlights" 
+    colors={{
+      50: colors.secondary50,
+      100: colors.secondary100,
+      200: colors.secondary200,
+      300: colors.secondary300,
+      400: colors.secondary400,
+      500: colors.secondary500,
+      600: colors.secondary600,
+      700: colors.secondary700,
+      800: colors.secondary800,
+      900: colors.secondary900,
+    }}
+  />
+  <ColorItem 
+    title="Gray" 
+    subtitle="Neutral foundations" 
+    colors={{
+      50: colors.gray50,
+      100: colors.gray100,
+      200: colors.gray200,
+      300: colors.gray300,
+      400: colors.gray400,
+      500: colors.gray500,
+      600: colors.gray600,
+      700: colors.gray700,
+      800: colors.gray800,
+      900: colors.gray900,
+    }}
+  />
+
+<ColorItem
+  title="Red"
+  subtitle="Alerts and errors"
+  colors={{
+    50: colors.red50,
+    100: colors.red100,
+    200: colors.red200,
+    300: colors.red300,
+    400: colors.red400,
+    500: colors.red500,
+    600: colors.red600,
+    700: colors.red700,
+    800: colors.red800,
+    900: colors.red900,
+  }}
+/>
+</ColorPalette>

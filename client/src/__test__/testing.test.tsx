@@ -21,10 +21,6 @@ describe('RTL Test', () => {
       </QueryClientProvider>
     );
 
-    screen.debug();
-
-    expect(
-      screen.getByText('슬랙이나 메신저에서 참여하고 싶었던 이벤트를 놓친 경험 있으신가요?')
-    ).toBeInTheDocument();
+    expect(screen.getByText('채널이 너무 많아 정보가 분산되어 알 수 없었다.')).toBeInTheDocument();
   });
 });
