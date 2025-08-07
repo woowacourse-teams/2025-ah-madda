@@ -19,11 +19,10 @@ import { EventDetailContainer } from '../containers/EventDetailContainer';
 export const EventDetailPage = () => {
   const navigate = useNavigate();
   const { eventId } = useParams();
-  const [{ data: event }, { data: guestStatus }, { data: organizerStatus }] = useSuspenseQueries({
+  const [{ data: event }, { data: guestStatus }] = useSuspenseQueries({
     queries: [
       eventQueryOptions.detail(Number(eventId)),
       eventQueryOptions.guestStatus(Number(eventId)),
-      eventQueryOptions.organizer(Number(eventId)),
     ],
   });
 
@@ -66,11 +65,7 @@ export const EventDetailPage = () => {
           </Tabs.List>
 
           <Tabs.Content value="detail">
-            <EventDetailContent
-              isGuest={guestStatus.isGuest}
-              isOrganizer={organizerStatus.isOrganizer}
-              {...event}
-            />
+            <EventDetailContent isGuest={guestStatus.isGuest} {...event} />
           </Tabs.Content>
 
           <Tabs.Content value="applications">
