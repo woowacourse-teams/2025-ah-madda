@@ -15,7 +15,6 @@ export const PreQuestionCard = ({ questions, answers, onChangeAnswer }: PreQuest
     <Card>
       <Flex dir="column" gap="16px">
         <Text type="Body">사전 질문</Text>
-        Label
         <Flex dir="column" gap="24px">
           {questions.map((question) => (
             <Flex key={question.questionId} dir="column" gap="4px">

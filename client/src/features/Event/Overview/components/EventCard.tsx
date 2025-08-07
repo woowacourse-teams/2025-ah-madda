@@ -5,8 +5,11 @@ import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Text } from '@/shared/components/Text';
-import { trackClickEventCard } from '@/shared/lib/gaEvents';
 
+import { trackClickEventCard } from '@/shared/lib/gaEvents';
+import { theme } from '@/shared/styles/theme';
+
+import { UNLIMITED_CAPACITY } from '../../New/constants/errorMessages';
 import { Event } from '../../types/Event';
 import { formatDateTime } from '../utils/formatDateTime';
 import { formatTime } from '../utils/formatTime';
@@ -24,7 +27,11 @@ export const EventCard = ({
   maxCapacity,
 }: Event) => {
   const navigate = useNavigate();
-  const isRegistrationOpen = new Date(registrationEnd) > new Date();
+
+  const isUnlimited = maxCapacity === UNLIMITED_CAPACITY;
+  const progressValue = isUnlimited ? 1 : Number(currentGuestCount);
+  const progressMax = isUnlimited ? 1 : maxCapacity;
+  const progressColor = isUnlimited ? theme.colors.primary700 : 'black';
 
   const handleClickCard = () => {
     trackClickEventCard(title);
@@ -38,9 +45,6 @@ export const EventCard = ({
           <Text as="h2" type="Heading" color="#ffffff" weight="semibold">
             {title.length > 15 ? `${title.slice(0, 12)}...` : title}
           </Text>
-          <Badge isRegistrationOpen={isRegistrationOpen}>
-            {isRegistrationOpen ? '모집중' : '모집마감'}
-          </Badge>
         </Flex>
         <Text type="Body" color="#99A1AF">
           {description}
@@ -79,10 +83,10 @@ export const EventCard = ({
             참여 현황
           </Text>
           <Text type="Label" color="#99A1AF">
-            {`${currentGuestCount}/${maxCapacity} 명`}
+            {isUnlimited ? '무제한' : `${currentGuestCount}/${maxCapacity} 명`}
           </Text>
         </Flex>
-        <ProgressBar value={Number(currentGuestCount)} max={maxCapacity} color="black" />
+        <ProgressBar value={progressValue} max={progressMax} color={progressColor} />
       </Flex>
     </CardWrapper>
   );

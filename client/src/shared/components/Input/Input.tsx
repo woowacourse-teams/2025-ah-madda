@@ -35,12 +35,6 @@ export type InputProps = {
   isRequired?: boolean;
 
   /**
-   * Whether the input is in an error state.
-   * When true, errorMessage will be shown instead of helperText.
-   */
-  error?: boolean;
-
-  /**
    * Message displayed when the input is invalid.
    */
   errorMessage?: string;
@@ -51,19 +45,20 @@ export const Input = ({
   label,
   helperText,
   isRequired = false,
-  error = false,
   errorMessage,
   ...props
 }: InputProps) => {
+  const isError = !!errorMessage;
+
   return (
     <StyledWrapper>
       <StyledLabel htmlFor={id}>
         {label}
         {isRequired && <StyledRequiredMark>*</StyledRequiredMark>}
       </StyledLabel>
-      <StyledInput id={id} error={error} {...props} />
-      <StyledHelperText error={error}>
-        {error ? (errorMessage ?? ' ') : (helperText ?? ' ')}
+      <StyledInput id={id} isError={isError} {...props} />
+      <StyledHelperText isError={isError}>
+        {isError ? (errorMessage ?? ' ') : (helperText ?? ' ')}
       </StyledHelperText>
     </StyledWrapper>
   );

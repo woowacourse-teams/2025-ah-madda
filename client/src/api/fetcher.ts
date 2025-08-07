@@ -1,10 +1,11 @@
 import { ACCESS_TOKEN_KEY } from '@/shared/constants';
 import { reportApiError } from '@/shared/utils/apiErrorHandler';
 import { getLocalStorage } from '@/shared/utils/localStorage';
+import { tokenErrorHandler } from '@/shared/utils/tokenErrorHandler';
 
 type HttpMethod = 'GET' | 'POST' | 'DELETE' | 'PATCH' | 'PUT';
 
-type HttpErrorResponse = {
+export type HttpErrorResponse = {
   type: string;
   title: string;
   status: number;
@@ -40,6 +41,7 @@ const request = async <T>(path: string, method: HttpMethod, body?: object): Prom
   if (!response.ok) {
     try {
       const responseText = await response.json();
+      tokenErrorHandler(responseText);
       throw new HttpError(response.status, responseText);
     } catch (parseError) {
       if (parseError instanceof HttpError) {

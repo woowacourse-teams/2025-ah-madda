@@ -37,7 +37,6 @@ export const QuestionItem = ({
         placeholder="질문을 입력해주세요."
         value={questionText}
         onChange={handleTextChange}
-        error={!!errorMessage}
         errorMessage={errorMessage}
         isRequired={true}
       />

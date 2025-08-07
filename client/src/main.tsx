@@ -10,7 +10,6 @@ import { initSentry } from './lib/sentry';
 import { router } from './router/route';
 import { theme } from './shared/styles/theme';
 
-
 initSentry();
 
 const GA_ID = process.env.GOOGLE_ANALYTICS_ID;
@@ -30,7 +29,6 @@ if (GA_ID) {
   window.gtag('js', new Date());
   window.gtag('config', GA_ID);
 }
-
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
