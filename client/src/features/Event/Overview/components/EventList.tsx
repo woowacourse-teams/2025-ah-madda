@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
-import { useCreateInviteCode } from '@/api/mutations/useCreateInviteCode';
+import { createInviteCode } from '@/api/mutations/useCreateInviteCode';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
@@ -22,18 +22,19 @@ type EventListProps = {
 
 export const EventList = ({ organizationId, events }: EventListProps) => {
   const groupedEvents = groupEventsByDate(events);
-  const { mutate: mutateCreateInviteCode } = useCreateInviteCode(Number(organizationId));
 
-  const handleCreateInviteCode = () => {
-    mutateCreateInviteCode(undefined, {
-      onSuccess: (data) => {
-        const baseUrl =
-          process.env.NODE_ENV === 'production' ? 'https://ahmadda.com' : 'http://localhost:5173';
+  const handleCreateInviteCode = async () => {
+    try {
+      const data = await createInviteCode(Number(organizationId));
+      const baseUrl =
+        process.env.NODE_ENV === 'production' ? 'https://ahmadda.com' : 'http://localhost:5173';
+      const inviteUrl = `${baseUrl}/invite?code=${data.inviteCode}`;
+      await copyInviteMessage(inviteUrl);
 
-        const inviteUrl = `${baseUrl}/invite?code=${data.inviteCode}`;
-        copyInviteMessage(inviteUrl);
-      },
-    });
+      alert('초대 코드가 복사되었습니다.');
+    } catch {
+      alert('초대 코드 생성에 실패했습니다.');
+    }
   };
 
   return (
