@@ -1,16 +1,19 @@
 import { useState } from 'react';
 
 import { css } from '@emotion/react';
+import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 
+import { eventQueryOptions } from '@/api/queries/event';
 import { GuestStatusAPIResponse } from '@/api/types/event';
 import { Answer } from '@/api/types/event';
+import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 
 import { EventDetail } from '../../types/Event';
 import { formatKoreanDateTime } from '../utils/formatKoreanDateTime';
 
 import { DescriptionCard } from './DescriptionCard';
-import { EventDetailTitle } from './EventDetailTitle';
 import { LocationCard } from './LocationCard';
 import { ParticipantsCard } from './ParticipantsCard';
 import { PreQuestionCard } from './PreQuestionCard';
@@ -21,8 +24,6 @@ type EventDetailContentProps = EventDetail & GuestStatusAPIResponse;
 
 export const EventDetailContent = ({
   eventId,
-  title,
-  organizerName,
   registrationEnd,
   eventStart,
   eventEnd,
@@ -40,24 +41,31 @@ export const EventDetailContent = ({
     }))
   );
 
+  const navigate = useNavigate();
+
   const handleChangeAnswer = (questionId: number, answerText: string) => {
     setAnswers((prev) =>
       prev.map((answer) => (answer.questionId === questionId ? { ...answer, answerText } : answer))
     );
   };
 
+  const { data: isOrganizerResponse } = useQuery(eventQueryOptions.organizer(eventId));
+  const isOrganizer = isOrganizerResponse?.isOrganizer;
+
   return (
-    <Flex
-      dir="column"
-      width="100%"
-      margin="0 auto"
-      padding="80px 24px 0"
-      gap="24px"
-      css={css`
-        max-width: 784px;
-      `}
-    >
-      <EventDetailTitle title={title} organizerName={organizerName} />
+    <Flex dir="column" width="100%" padding="20px 0" gap="20px">
+      {isOrganizer && (
+        <Flex justifyContent="flex-end">
+          <Button
+            color="secondary"
+            variant="outline"
+            onClick={() => navigate(`/event/edit/${eventId}`)}
+          >
+            수정
+          </Button>
+        </Flex>
+      )}
+
       <Flex
         dir="row"
         gap="24px"
@@ -73,23 +81,26 @@ export const EventDetailContent = ({
           eventStart={formatKoreanDateTime(eventStart)}
           eventEnd={formatKoreanDateTime(eventEnd)}
         />
-        <LocationCard place={place} />
+        {place && <LocationCard place={place} />}
       </Flex>
 
       <ParticipantsCard currentGuestCount={currentGuestCount} maxCapacity={maxCapacity} />
-      <DescriptionCard description={description} />
-      <PreQuestionCard
-        questions={questions}
-        answers={answers}
-        onChangeAnswer={handleChangeAnswer}
-      />
-
-      <SubmitButtonCard
-        isGuest={isGuest}
-        registrationEnd={registrationEnd}
-        eventId={eventId}
-        answers={answers}
-      />
+      {description && <DescriptionCard description={description} />}
+      {questions.length > 0 && (
+        <PreQuestionCard
+          questions={questions}
+          answers={answers}
+          onChangeAnswer={handleChangeAnswer}
+        />
+      )}
+      {!isOrganizer && (
+        <SubmitButtonCard
+          isGuest={isGuest}
+          registrationEnd={registrationEnd}
+          eventId={eventId}
+          answers={answers}
+        />
+      )}
     </Flex>
   );
 };

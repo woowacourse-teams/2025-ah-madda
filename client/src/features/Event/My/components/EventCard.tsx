@@ -6,7 +6,9 @@ import { Icon } from '@/shared/components/Icon';
 import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
+import { theme } from '@/shared/styles/theme';
 
+import { UNLIMITED_CAPACITY } from '../../New/constants/errorMessages';
 import { formatDateTime } from '../../Overview/utils/formatDateTime';
 import { formatTime } from '../../Overview/utils/formatTime';
 import { Event } from '../../types/Event';
@@ -31,6 +33,11 @@ export const EventCard = ({
 }: EventCardProps) => {
   const navigate = useNavigate();
 
+  const isUnlimited = maxCapacity === UNLIMITED_CAPACITY;
+  const progressValue = isUnlimited ? 1 : Number(currentGuestCount);
+  const progressMax = isUnlimited ? 1 : maxCapacity;
+  const progressColor = isUnlimited ? theme.colors.primary700 : 'black';
+
   const handleClick = () => {
     if (cardType === 'host') {
       navigate(`/event/manage/${eventId}`);
@@ -51,22 +58,22 @@ export const EventCard = ({
       </Flex>
 
       <Flex dir="column" gap="10px">
-        <Flex alignItems="baseline" gap="3.5px">
-          <Icon name="calendar" size={14} color="#99A1AF" />
+        <Flex alignItems="center" gap="3.5px">
+          <Icon name="calendar" size={16} color="white" />
           <Text type="Label" weight="regular" color="#99A1AF">
             {`신청 마감 ${formatTime(registrationEnd)} 까지`}
           </Text>
         </Flex>
 
-        <Flex alignItems="baseline" gap="3.5px">
-          <Icon name="clock" size={14} color="#99A1AF" />
+        <Flex alignItems="center" gap="3.5px">
+          <Icon name="clock" size={16} color="white" />
           <Text type="Label" weight="regular" color="#99A1AF">
             {`이벤트 시간 ${formatDateTime(eventStart, eventEnd)}`}
           </Text>
         </Flex>
 
         <Flex gap="7px" alignItems="center">
-          <Icon name="location" size={10.5} color="#99A1AF" />
+          <Icon name="location" size={16} color="white" />
           <Text type="Label" weight="regular" color="#99A1AF">
             {`장소 ${place}`}
           </Text>
@@ -89,10 +96,10 @@ export const EventCard = ({
             참여 현황
           </Text>
           <Text type="Label" color="#99A1AF">
-            {`${currentGuestCount}/${maxCapacity} 명`}
+            {isUnlimited ? '무제한' : `${currentGuestCount}/${maxCapacity} 명`}
           </Text>
         </Flex>
-        <ProgressBar value={Number(currentGuestCount)} max={maxCapacity} color="black" />
+        <ProgressBar value={progressValue} max={progressMax} color={progressColor} />
       </Flex>
     </EventCardWrapper>
   );

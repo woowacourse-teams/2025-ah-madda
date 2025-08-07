@@ -4,7 +4,14 @@ import { Guest, NonGuest } from '../../features/Event/Manage/types';
 import { CreateEventAPIRequest, EventDetail } from '../../features/Event/types/Event';
 import { fetcher } from '../fetcher';
 import { postAlarm } from '../mutations/useAddAlarm';
-import { GuestStatusAPIResponse } from '../types/event';
+import {
+  GuestStatusAPIResponse,
+  OrganizerStatusAPIResponse,
+  StatisticsAPIResponse,
+  EventTemplateAPIResponse,
+  EventTitleAPIResponse,
+} from '../types/event';
+import { NotificationAPIRequest } from '../types/notification';
 
 type CreateEventAPIResponse = {
   eventId: number;
@@ -15,9 +22,14 @@ export const eventQueryKeys = {
   detail: () => [...eventQueryKeys.all(), 'detail'],
   alarm: () => [...eventQueryKeys.all(), 'alarm'],
   guests: () => [...eventQueryKeys.all(), 'guests'],
+  organizer: () => [...eventQueryKeys.all(), 'organizer'],
   nonGuests: () => [...eventQueryKeys.all(), 'nonGuests'],
   guestStatus: () => [...eventQueryKeys.all(), 'guestStatus'],
   participation: () => [...eventQueryKeys.all(), 'participation'],
+  cancel: () => [...eventQueryKeys.all(), 'cancel'],
+  statistic: () => [...eventQueryKeys.all(), 'statistic'],
+  titles: () => [...eventQueryKeys.all(), 'titles'],
+  template: () => [...eventQueryKeys.all(), 'template'],
 };
 
 export const eventQueryOptions = {
@@ -28,12 +40,17 @@ export const eventQueryOptions = {
     }),
   alarms: (eventId: number) => ({
     mutationKey: [...eventQueryKeys.alarm(), eventId],
-    mutationFn: (content: string) => postAlarm(eventId, content),
+    mutationFn: (data: NotificationAPIRequest) => postAlarm(eventId, data),
   }),
   guests: (eventId: number) =>
     queryOptions({
       queryKey: [...eventQueryKeys.guests(), eventId],
       queryFn: () => getGuests(eventId),
+    }),
+  organizer: (eventId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.organizer(), eventId],
+      queryFn: () => getOrganizerStatus(eventId),
     }),
   nonGuests: (eventId: number) =>
     queryOptions({
@@ -44,6 +61,26 @@ export const eventQueryOptions = {
     queryOptions({
       queryKey: [...eventQueryKeys.guestStatus(), eventId],
       queryFn: () => getGuestStatus(eventId),
+    }),
+  cancel: (eventId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.cancel(), eventId],
+      queryFn: () => fetcher.delete(`events/${eventId}`),
+    }),
+  statistic: (eventId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.statistic(), eventId],
+      queryFn: () => fetcher.get<StatisticsAPIResponse[]>(`events/${eventId}/statistic`),
+    }),
+  titles: (organizationId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.titles(), organizationId],
+      queryFn: () => getEventTitles(organizationId),
+    }),
+  template: (eventId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.template(), eventId],
+      queryFn: () => getEventTemplate(eventId),
     }),
 };
 
@@ -56,15 +93,35 @@ const getNonGuests = async (eventId: number) => {
 };
 
 export const createEventAPI = (organizationId: number, data: CreateEventAPIRequest) => {
-  return fetcher.post<CreateEventAPIResponse>(`organizations/${organizationId}/events`, {
-    json: data,
-  });
+  return fetcher.post<CreateEventAPIResponse>(`organizations/${organizationId}/events`, data);
 };
 
-const getEventDetailAPI = (eventId: number) => {
+export const getEventDetailAPI = (eventId: number) => {
   return fetcher.get<EventDetail>(`organizations/events/${eventId}`);
+};
+
+export const updateEventAPI = (eventId: number, data: CreateEventAPIRequest) => {
+  return fetcher.patch<void>(`organizations/events/${eventId}`, data);
 };
 
 const getGuestStatus = async (eventId: number) => {
   return await fetcher.get<GuestStatusAPIResponse>(`events/${eventId}/guest-status`);
+};
+
+const getOrganizerStatus = async (eventId: number) => {
+  return await fetcher.get<OrganizerStatusAPIResponse>(
+    `organizations/events/${eventId}/organizer-status`
+  );
+};
+
+const getEventTitles = async (organizationId: number) => {
+  return await fetcher.get<EventTitleAPIResponse[]>(
+    `organizations/${organizationId}/events/owned/titles`
+  );
+};
+
+const getEventTemplate = async (eventId: number) => {
+  return await fetcher.get<EventTemplateAPIResponse>(
+    `organizations/events/${eventId}/owned/template`
+  );
 };
