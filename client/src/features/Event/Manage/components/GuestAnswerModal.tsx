@@ -1,4 +1,5 @@
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 
 import type { GuestAnswerAPIResponse } from '@/api/types/my';
 import { Button } from '@/shared/components/Button';
@@ -38,37 +39,16 @@ export const GuestAnswerModal = ({
       `}
     >
       <Flex dir="column" gap="24px" width="100%">
-        <Text type="Title" weight="bold" color={theme.colors.gray900}>
+        <Text type="Heading" weight="bold" color={theme.colors.gray900}>
           {guest.nickname}님의 답변
         </Text>
 
-        <Flex
-          dir="column"
-          gap="16px"
-          css={css`
-            max-height: 400px;
-            overflow-y: auto;
-            padding-right: 4px;
-
-            &::-webkit-scrollbar {
-              width: 6px;
-            }
-
-            &::-webkit-scrollbar-thumb {
-              background: ${theme.colors.gray300};
-              border-radius: 3px;
-
-              &:hover {
-                background: ${theme.colors.gray400};
-              }
-            }
-          `}
-        >
+        <StyledFlex dir="column" gap="16px">
           {guestAnswers && guestAnswers.length > 0 ? (
             <Flex dir="column" gap="16px">
               {guestAnswers.map((answer: GuestAnswerAPIResponse, index: number) => (
                 <Flex key={index} dir="column" gap="8px">
-                  <Text type="Label" weight="medium" color={theme.colors.gray900}>
+                  <Text type="Body" weight="medium" color={theme.colors.gray900}>
                     질문 {answer.orderIndex}: {answer.questionText}
                   </Text>
                   <Text type="Body" weight="regular" color={theme.colors.gray600}>
@@ -82,7 +62,7 @@ export const GuestAnswerModal = ({
               사전 질문에 대한 답변이 존재하지 않습니다.
             </Text>
           )}
-        </Flex>
+        </StyledFlex>
 
         <Spacing height="1px" />
 
@@ -95,3 +75,22 @@ export const GuestAnswerModal = ({
     </Modal>
   );
 };
+
+const StyledFlex = styled(Flex)`
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 4px;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: ${theme.colors.gray300};
+    border-radius: 3px;
+
+    &:hover {
+      background: ${theme.colors.gray400};
+    }
+  }
+`;
