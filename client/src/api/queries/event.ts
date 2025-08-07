@@ -65,10 +65,10 @@ export const eventQueryOptions = {
       queryKey: [...eventQueryKeys.cancel(), eventId],
       queryFn: () => fetcher.delete(`events/${eventId}`),
     }),
-  titles: (eventId: number) =>
+  titles: (organizationId: number) =>
     queryOptions({
-      queryKey: [...eventQueryKeys.titles(), eventId],
-      queryFn: () => getEventTitles(eventId),
+      queryKey: [...eventQueryKeys.titles(), organizationId],
+      queryFn: () => getEventTitles(organizationId),
     }),
   template: (eventId: number) =>
     queryOptions({
