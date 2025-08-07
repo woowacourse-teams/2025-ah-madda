@@ -38,7 +38,16 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     queryFn: () => getEventDetailAPI(Number(eventId)),
     enabled: isEdit,
   });
-  const { isOpen: isModalOpen, open, close } = useModal();
+  const {
+    isOpen: isTemplateModalOpen,
+    open: templateModalOpen,
+    close: templateModalClose,
+  } = useModal();
+  const {
+    isOpen: isCapacityModalOpen,
+    open: capacityModalOpen,
+    close: capacityModalClose,
+  } = useModal();
 
   const {
     basicEventForm,
@@ -106,7 +115,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
           <Text type="Body" color="gray">
             이벤트 정보를 입력해 주세요
           </Text>
-          <Button size="sm" onClick={open}>
+          <Button size="sm" onClick={templateModalOpen}>
             템플릿
           </Button>
         </Flex>
@@ -209,18 +218,18 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                   : `${basicEventForm.maxCapacity}명`
               }
               readOnly
-              onClick={open}
+              onClick={capacityModalOpen}
               css={css`
                 cursor: pointer;
               `}
             />
 
             <MaxCapacityModal
-              isOpen={isModalOpen}
+              isOpen={isCapacityModalOpen}
               initialValue={
                 basicEventForm.maxCapacity === UNLIMITED_CAPACITY ? 10 : basicEventForm.maxCapacity
               }
-              onClose={close}
+              onClose={capacityModalClose}
               onSubmit={(value) => {
                 handleValueChange('maxCapacity', value);
                 validateField('maxCapacity', value.toString());
@@ -255,8 +264,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       </Flex>
 
       <TemplateModal
-        isOpen={isModalOpen}
-        onClose={close}
+        isOpen={isTemplateModalOpen}
+        onClose={templateModalClose}
         onConfirm={handleTemplateLoad}
         onSelect={handleSelectEvent}
         selectedEventId={selectedEventId}
