@@ -1,12 +1,10 @@
-import { useState } from 'react';
-
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Modal } from '@/shared/components/Modal';
 import { Text } from '@/shared/components/Text';
 
-import { UNLIMITED_CAPACITY } from '../constants/errorMessages';
+import { useMaxCapacity } from '../hooks/useMaxCapacity';
 
 type Props = {
   isOpen: boolean;
@@ -16,23 +14,22 @@ type Props = {
 };
 
 export const MaxCapacityModal = ({ isOpen, initialValue, onClose, onSubmit }: Props) => {
-  const [value, setValue] = useState(initialValue.toString());
+  const { maxCapacity, handleMaxCapacityChange } = useMaxCapacity(initialValue);
 
-  const handleConfirm = () => {
-    const parsed = Number(value);
+  const handleLimitedCapacity = () => {
+    if (maxCapacity === 0) return alert('수용 인원은 1명 이상이여야 합니다.');
+    onSubmit(Number(maxCapacity));
+    onClose();
+  };
 
-    if (!Number.isInteger(parsed) || parsed < 1) {
-      alert('수용 인원은 1 이상의 정수여야 합니다.');
-      return;
-    }
-
-    onSubmit(parsed);
+  const handleUnlimitedCapacity = () => {
+    onSubmit(Number.POSITIVE_INFINITY);
     onClose();
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <Flex dir="column" gap="20px" width="300px">
+      <Flex dir="column" gap="10px" width="380px">
         <Text type="Heading" weight="bold">
           최대 수용 인원
         </Text>
@@ -42,29 +39,15 @@ export const MaxCapacityModal = ({ isOpen, initialValue, onClose, onSubmit }: Pr
           label="수용 인원을 입력해주세요."
           type="text"
           autoFocus
-          value={value}
-          onChange={(e) => {
-            const raw = e.target.value;
-
-            if (/^\d*$/.test(raw)) {
-              setValue(raw);
-            }
-          }}
+          value={maxCapacity}
+          onChange={handleMaxCapacityChange}
         />
 
-        <Flex justifyContent="space-between" width="100%">
-          <Button
-            onClick={() => {
-              onSubmit(UNLIMITED_CAPACITY);
-              onClose();
-            }}
-            size="sm"
-            color="tertiary"
-          >
+        <Flex justifyContent="space-between" gap="12px">
+          <Button onClick={handleUnlimitedCapacity} size="full" variant="outline">
             무제한
           </Button>
-
-          <Button onClick={handleConfirm} size="sm" color="secondary">
+          <Button onClick={handleLimitedCapacity} size="full" color="secondary">
             설정
           </Button>
         </Flex>
