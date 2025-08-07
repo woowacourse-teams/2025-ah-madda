@@ -35,6 +35,7 @@ management:
       jvm.memory.used: true
       http.server.requests: true
       tomcat.threads: true
+      app.health.status: true
       executor: true
   cloudwatch:
     metrics:
