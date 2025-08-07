@@ -39,7 +39,8 @@ describe('EventManagePage 테스트', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText('이벤트 정보')).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: '이벤트 정보' })).toBeInTheDocument();
+
         expect(screen.getByText('테스트 이벤트')).toBeInTheDocument();
         expect(screen.getByText('테스트 이벤트 설명')).toBeInTheDocument();
       });

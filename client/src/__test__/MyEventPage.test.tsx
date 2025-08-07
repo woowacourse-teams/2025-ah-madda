@@ -42,7 +42,9 @@ describe('MyEventPage 테스트', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText('진행 중인 이벤트')).toBeInTheDocument();
+        expect(
+          screen.getByText('내가 주최한 이벤트와 참여한 이벤트를 볼 수 있습니다.')
+        ).toBeInTheDocument();
       });
     });
 
@@ -96,8 +98,8 @@ describe('MyEventPage 테스트', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText('5/20명')).toBeInTheDocument();
-        expect(screen.getByText('10/30명')).toBeInTheDocument();
+        expect(screen.getByText('5/20 명')).toBeInTheDocument();
+        expect(screen.getByText('10/30 명')).toBeInTheDocument();
       });
     });
   });

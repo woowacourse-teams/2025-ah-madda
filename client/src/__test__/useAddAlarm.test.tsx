@@ -52,9 +52,10 @@ describe('useAddAlarm', () => {
 
       await postAlarm(eventId, content);
 
-      expect(mockFetcher.post).toHaveBeenCalledWith(`events/${eventId}/notify-non-guests`, {
-        json: { content },
-      });
+      expect(mockFetcher.post).toHaveBeenCalledWith(
+        `events/${eventId}/notify-organization-members`,
+        content
+      );
     });
   });
 });
