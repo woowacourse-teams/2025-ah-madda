@@ -9,14 +9,13 @@ import { formatDate } from '../util/formatDate';
 
 type ChartProps = {
   statistics: StatisticsAPIResponse[];
+  maxViews: number;
   hoveredIndex: number | null;
   onChangeHover: (index: number | null) => void;
 };
 
 const gridLine = [0, 25, 50, 75, 100] as const;
-export const Chart = ({ statistics, hoveredIndex, onChangeHover }: ChartProps) => {
-  const maxViews = Math.max(...statistics.map((item) => item.count));
-
+export const Chart = ({ statistics, maxViews, hoveredIndex, onChangeHover }: ChartProps) => {
   return (
     <Flex dir="column">
       <ChartContainer>

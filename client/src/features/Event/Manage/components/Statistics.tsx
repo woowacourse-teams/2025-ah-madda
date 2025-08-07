@@ -57,6 +57,7 @@ export const Statistics = ({ statistics }: StatisticsProps) => {
           <ChartWrapper>
             <Chart
               statistics={statistics}
+              maxViews={maxViews}
               hoveredIndex={hoveredIndex}
               onChangeHover={handleChangeHover}
             />
