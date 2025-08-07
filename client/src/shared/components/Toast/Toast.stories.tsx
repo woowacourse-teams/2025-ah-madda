@@ -1,58 +1,49 @@
-import { useState } from 'react';
+import { Meta, StoryObj } from '@storybook/react';
 
-import type { Meta, StoryObj } from '@storybook/react';
+import { Button } from '@/shared/components/Button';
 
-import { Toast } from './Toast';
+import { ToastProvider, useToast } from './ToastContext';
 
 const meta = {
   title: 'components/Toast',
-  component: Toast,
   tags: ['autodocs'],
   parameters: {
     docs: {
       description: {
-        component:
-          'Toast component to notify users of success or error events. Automatically disappears after a given duration.',
+        component: 'Toast system using context. Call `useToast().openToast()` to trigger.',
       },
     },
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof Toast>;
+} satisfies Meta;
 
 export default meta;
-type Story = StoryObj<typeof Toast>;
+type Story = StoryObj;
 
-const ToastExample = ({
-  message,
-  duration,
-  variant,
-}: {
-  message: string;
-  duration?: number;
-  variant?: 'success' | 'error';
-}) => {
-  const [show, setShow] = useState(true);
+const ToastStoryExample = () => {
+  const toast = useToast();
 
   return (
-    <div style={{ minHeight: '300px', position: 'relative' }}>
-      <button onClick={() => setShow(true)}>Show Toast</button>
-      {show && (
-        <Toast
-          message={message}
-          duration={duration}
-          variant={variant}
-          onClose={() => setShow(false)}
-        />
-      )}
+    <div style={{ padding: '2rem' }}>
+      <Button
+        onClick={() =>
+          toast.openToast({
+            message: '스토리북에서도 잘 작동해요!',
+            variant: 'success',
+            duration: 2000,
+          })
+        }
+      >
+        Show Toast
+      </Button>
     </div>
   );
 };
 
 export const Basic: Story = {
-  args: {
-    message: '이벤트 생성에 실패했어요.',
-    duration: 3000,
-    variant: 'error',
-  },
-  render: (args) => <ToastExample {...args} />,
+  render: () => (
+    <ToastProvider>
+      <ToastStoryExample />
+    </ToastProvider>
+  ),
 };

@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react';
-
 import { createPortal } from 'react-dom';
 
 import { Flex } from '@/shared/components/Flex';
@@ -44,18 +42,6 @@ export type ToastProps = {
 };
 
 export const Toast = ({ message, duration = 3000, onClose, variant = 'success' }: ToastProps) => {
-  const [isVisible, setIsVisible] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(false);
-      onClose?.();
-    }, duration);
-    return () => clearTimeout(timer);
-  }, [duration, onClose]);
-
-  if (!isVisible) return null;
-
   const variantColor = variant === 'success' ? '#3D84FF' : '#F52C1F';
 
   const toastContent = (
@@ -67,7 +53,7 @@ export const Toast = ({ message, duration = 3000, onClose, variant = 'success' }
           </Text>
         </Flex>
 
-        <StyledToastCloseButton onClick={() => setIsVisible(false)} aria-label="close">
+        <StyledToastCloseButton onClick={onClose} aria-label="close">
           <Icon name="close" size={16} />
         </StyledToastCloseButton>
 
