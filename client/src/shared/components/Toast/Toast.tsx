@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
+import { theme } from '@/shared/styles/theme';
 
 import {
   StyledToastLayout,
@@ -42,7 +43,7 @@ export type ToastProps = {
 };
 
 export const Toast = ({ message, duration = 3000, onClose, variant = 'success' }: ToastProps) => {
-  const variantColor = variant === 'success' ? '#3D84FF' : '#F52C1F';
+  const variantColor = variant === 'success' ? theme.colors.primary600 : theme.colors.red600;
 
   const toastContent = (
     <StyledToastLayout>
