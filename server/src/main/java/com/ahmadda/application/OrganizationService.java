@@ -1,26 +1,27 @@
 package com.ahmadda.application;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.InviteCode;
+import com.ahmadda.domain.InviteCodeRepository;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.presentation.dto.ParticipateRequestDto;
-
+import com.ahmadda.presentation.dto.OrganizationParticipateRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +33,7 @@ public class OrganizationService {
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
     private final MemberRepository memberRepository;
+    private final InviteCodeRepository inviteCodeRepository;
 
     @Transactional
     public Organization createOrganization(final OrganizationCreateRequest organizationCreateRequest) {
@@ -44,19 +46,18 @@ public class OrganizationService {
         return organizationRepository.save(organization);
     }
 
-    public Organization getOrganization(final Long organizationId) {
-        return organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직입니다."));
+    public Organization getOrganizationById(final Long organizationId) {
+        return getOrganization(organizationId);
     }
 
     public List<Event> getOrganizationEvents(final Long organizationId, final LoginMember loginMember) {
-        Organization organization = getOrganization(organizationId);
+        Organization organization = getOrganizationById(organizationId);
 
         if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId())) {
             throw new AccessDeniedException("조직에 참여하지 않아 권한이 없습니다.");
         }
 
-        return organization.getActiveEvents();
+        return organization.getActiveEvents(LocalDateTime.now());
     }
 
     //TODO 07.25 이후 리팩터링 및 제거하기
@@ -74,23 +75,46 @@ public class OrganizationService {
     }
 
     @Transactional
-    public void participateOrganization(
+    public OrganizationMember participateOrganization(
             final Long organizationId,
             final LoginMember loginMember,
-            final ParticipateRequestDto participateRequestDto
+            final OrganizationParticipateRequest organizationParticipateRequest
     ) {
-        Long memberId = loginMember.memberId();
-        if (organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, memberId)) {
-            throw new BusinessFlowViolatedException("이미 참여한 조직입니다.");
-        }
+        validateAlreadyParticipationMember(organizationId, loginMember);
 
         Organization organization = getOrganization(organizationId);
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다"));
+        Member member = getMember(loginMember);
+        InviteCode inviteCode = getInviteCode(organizationParticipateRequest.inviteCode());
 
         OrganizationMember organizationMember =
-                OrganizationMember.create(participateRequestDto.nickname(), member, organization);
+                organization.participate(
+                        member,
+                        organizationParticipateRequest.nickname(),
+                        inviteCode,
+                        LocalDateTime.now()
+                );
 
-        organizationMemberRepository.save(organizationMember);
+        return organizationMemberRepository.save(organizationMember);
+    }
+
+    private void validateAlreadyParticipationMember(final Long organizationId, final LoginMember loginMember) {
+        if (organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId())) {
+            throw new BusinessFlowViolatedException("이미 참여한 조직입니다.");
+        }
+    }
+
+    private Member getMember(final LoginMember loginMember) {
+        return memberRepository.findById(loginMember.memberId())
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다"));
+    }
+
+    private InviteCode getInviteCode(final String code) {
+        return inviteCodeRepository.findByCode(code)
+                .orElseThrow(() -> new BusinessFlowViolatedException("잘못된 초대코드입니다."));
+    }
+
+    private Organization getOrganization(final Long organizationId) {
+        return organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직입니다."));
     }
 }

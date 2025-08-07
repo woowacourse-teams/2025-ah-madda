@@ -1,12 +1,12 @@
 package com.ahmadda.application;
 
-import com.ahmadda.application.dto.MemberCreateAlarmDto;
+import com.ahmadda.application.dto.MemberCreateAlarmPayload;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.infra.jwt.JwtTokenProvider;
+import com.ahmadda.infra.alarm.slack.SlackAlarm;
+import com.ahmadda.infra.jwt.JwtProvider;
 import com.ahmadda.infra.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.oauth.dto.OAuthUserInfoResponse;
-import com.ahmadda.infra.slack.SlackReminder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,24 +17,24 @@ public class LoginService {
 
     private final MemberRepository memberRepository;
     private final GoogleOAuthProvider googleOAuthProvider;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final SlackReminder slackReminder;
+    private final JwtProvider jwtProvider;
+    private final SlackAlarm slackAlarm;
 
     @Transactional
     public String login(final String code, final String redirectUri) {
         OAuthUserInfoResponse userInfo = googleOAuthProvider.getUserInfo(code, redirectUri);
 
-        Member member = findOrCreateMember(userInfo.name(), userInfo.email());
-        
-        return jwtTokenProvider.createToken(member.getId());
+        Member member = findOrCreateMember(userInfo.name(), userInfo.email(), userInfo.picture());
+
+        return jwtProvider.createToken(member.getId());
     }
 
-    private Member findOrCreateMember(final String name, final String email) {
+    private Member findOrCreateMember(final String name, final String email, final String profileImageUrl) {
         return memberRepository.findByEmail(email)
                 .orElseGet(() -> {
-                    Member newMember = Member.create(name, email);
+                    Member newMember = Member.create(name, email, profileImageUrl);
 
-                    slackReminder.alarmMemberCreation(MemberCreateAlarmDto.from(newMember));
+                    slackAlarm.alarmMemberCreation(MemberCreateAlarmPayload.from(newMember));
 
                     return memberRepository.save(newMember);
                 });

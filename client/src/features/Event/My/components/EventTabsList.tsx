@@ -7,10 +7,13 @@ import { UI_LABELS, TAB_VALUES } from '../constants';
 
 export const EventTabsList = () => {
   return (
-    <Flex width="392px" margin="20px 0 0 0">
+    <Flex>
       <Tabs.List
         css={css`
-          width: 100%;
+          width: 40%;
+          @media (max-width: 768px) {
+            width: 100%;
+          }
         `}
       >
         <Tabs.Trigger value={TAB_VALUES.HOST}>{UI_LABELS.HOST_TAB}</Tabs.Trigger>

@@ -12,6 +12,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Embeddable
@@ -39,19 +41,24 @@ public class EventOperationPeriod {
             final Period eventPeriod,
             final LocalDateTime currentDateTime
     ) {
-        validateRegistrationPeriod(registrationPeriod, currentDateTime);
+        validateRegistrationPeriod(registrationPeriod);
         validateEventPeriod(eventPeriod, currentDateTime);
-        validate(registrationPeriod, eventPeriod);
+        validatePeriodRelationship(registrationPeriod, eventPeriod);
 
         this.registrationPeriod = registrationPeriod;
         this.eventPeriod = eventPeriod;
     }
 
     public static EventOperationPeriod create(
-            final Period registrationPeriod,
-            final Period eventPeriod,
+            final LocalDateTime registrationStart,
+            final LocalDateTime registrationEnd,
+            final LocalDateTime eventStart,
+            final LocalDateTime eventEnd,
             final LocalDateTime currentDateTime
     ) {
+        Period registrationPeriod = Period.create(registrationStart, registrationEnd);
+        Period eventPeriod = Period.create(eventStart, eventEnd);
+
         return new EventOperationPeriod(registrationPeriod, eventPeriod, currentDateTime);
     }
 
@@ -59,20 +66,34 @@ public class EventOperationPeriod {
         return eventPeriod.isNotStarted(currentDateTime);
     }
 
+    public boolean isAfterEventEndDate(final LocalDate currentDate) {
+        LocalDate endDate = LocalDate.from(eventPeriod.end());
+        return endDate.isBefore(currentDate);
+    }
+
     public boolean canNotRegistration(final LocalDateTime currentDateTime) {
         return !registrationPeriod.includes(currentDateTime);
     }
 
+    public void closeRegistration(final LocalDateTime closeTime) {
+        Period closePeriod = Period.create(this.registrationPeriod.start(), closeTime);
+
+        validateClosePeriod(closeTime);
+        validatePeriodRelationship(closePeriod, this.eventPeriod);
+
+        this.registrationPeriod = closePeriod;
+    }
+
+    private void validateClosePeriod(final LocalDateTime closeDateTime) {
+        if (closeDateTime.isAfter(this.registrationPeriod.end())) {
+            throw new BusinessRuleViolatedException("이미 신청이 마감된 이벤트입니다.");
+        }
+    }
+
     private void validateRegistrationPeriod(
-            final Period registrationPeriod,
-            final LocalDateTime currentDateTime
+            final Period registrationPeriod
     ) {
         Assert.notNull(registrationPeriod, "이벤트 신청 기간은 null이 되면 안됩니다.");
-
-        if (registrationPeriod.start()
-                .isBefore(currentDateTime)) {
-            throw new BusinessRuleViolatedException("이벤트 신청 시작 시간은 현재 시점보다 미래여야 합니다.");
-        }
     }
 
     private void validateEventPeriod(final Period eventPeriod, final LocalDateTime currentDateTime) {
@@ -84,12 +105,19 @@ public class EventOperationPeriod {
         }
     }
 
-    private void validate(final Period registrationPeriod, final Period eventPeriod) {
+    private void validatePeriodRelationship(final Period registrationPeriod, final Period eventPeriod) {
         if (registrationPeriod.isOverlappedWith(eventPeriod)) {
             throw new BusinessRuleViolatedException("신청 기간과 이벤트 기간이 겹칠 수 없습니다.");
         }
         if (registrationPeriod.isAfter(eventPeriod)) {
             throw new BusinessRuleViolatedException("신청 기간은 이벤트 기간보다 앞서야 합니다.");
         }
+    }
+
+    public boolean willStartWithin(final LocalDateTime cancelParticipationTime, final Duration duration) {
+        LocalDateTime cancelAvailableTime = eventPeriod.start()
+                .minus(duration);
+
+        return cancelParticipationTime.isAfter(cancelAvailableTime);
     }
 }

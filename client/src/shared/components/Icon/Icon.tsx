@@ -1,5 +1,7 @@
 import { SVGProps } from 'react';
 
+import { colorMap, IconColor } from '@/shared/styles/colors';
+
 import { IconName, Icons } from './assets';
 
 type IconProps = {
@@ -15,12 +17,14 @@ type IconProps = {
   size?: number;
   /**
    * Color of the icon.
-   * @default '#2B2B2B'
+   * @default 'gray'
    */
-  color?: string;
+  color?: IconColor;
 } & SVGProps<SVGSVGElement>;
 
 export const Icon = ({ name, size, color, ...props }: IconProps) => {
   const SvgIcon = Icons[name];
-  return <SvgIcon width={size} height={size} color={color} {...props} />;
+  const fillColor = colorMap[color ?? 'gray'];
+
+  return <SvgIcon width={size} height={size} color={fillColor} {...props} />;
 };

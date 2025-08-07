@@ -5,6 +5,7 @@ import com.ahmadda.application.dto.EventParticipateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.domain.Answer;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
@@ -53,13 +54,13 @@ public class EventGuestService {
     @Transactional
     public void participantEvent(
             final Long eventId,
-            final Long memberId,
+            final LoginMember loginMember,
             final LocalDateTime currentDateTime,
             final EventParticipateRequest eventParticipateRequest
     ) {
         Event event = getEvent(eventId);
         Organization organization = event.getOrganization();
-        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), memberId);
+        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), loginMember.memberId());
 
         Guest guest = Guest.create(event, organizationMember, currentDateTime);
 
@@ -69,12 +70,35 @@ public class EventGuestService {
         guestRepository.save(guest);
     }
 
-    public boolean isGuest(final Long eventId, final Long memberId) {
+    @Transactional
+    public void cancelParticipation(
+            final Long eventId,
+            final LoginMember loginMember
+    ) {
+        Event event = getEvent(eventId);
+        Long organizationId = event.getOrganization()
+                .getId();
+        OrganizationMember organizationMember = getOrganizationMember(organizationId, loginMember.memberId());
+
+        event.cancelParticipation(organizationMember, LocalDateTime.now());
+        guestRepository.deleteByEventAndOrganizationMember(event, organizationMember);
+    }
+
+    public boolean isGuest(final Long eventId, final LoginMember loginMember) {
         Event event = getEvent(eventId);
         Organization organization = event.getOrganization();
-        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), memberId);
+        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), loginMember.memberId());
 
         return event.hasGuest(organizationMember);
+    }
+
+    public List<Answer> getAnswers(final Long eventId, final Long guestId, final LoginMember organizerLoginMember) {
+        Event event = getEvent(eventId);
+        Organization organization = event.getOrganization();
+        OrganizationMember organizer = getOrganizationMember(organization.getId(), organizerLoginMember.memberId());
+        Guest guest = getGuest(guestId);
+
+        return guest.viewAnswersAs(organizer);
     }
 
     private void validateOrganizationAccess(final LoginMember loginMember, final Organization organization) {
@@ -106,5 +130,10 @@ public class EventGuestService {
     private Question getQuestion(final Long questionId) {
         return questionRepository.findById(questionId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 질문입니다."));
+    }
+
+    private Guest getGuest(final Long guestId) {
+        return guestRepository.findById(guestId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 게스트입니다."));
     }
 }

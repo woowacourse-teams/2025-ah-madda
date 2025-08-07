@@ -1,6 +1,7 @@
 export type Guest = {
   guestId: number;
   organizationMemberId: number;
+  isChecked?: boolean;
   nickname: string;
 };
 

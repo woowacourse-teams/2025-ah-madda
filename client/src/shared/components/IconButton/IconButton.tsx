@@ -1,5 +1,7 @@
 import { ComponentProps } from 'react';
 
+import { colorMap, IconColor } from '@/shared/styles/colors';
+
 import { IconName } from '../Icon/assets';
 import { Icon } from '../Icon/Icon';
 
@@ -17,14 +19,16 @@ export type IconButtonProps = {
   size?: number;
   /**
    * The color of the icon.
-   * @default '#2B2B2B'
+   * @default 'gray'
    */
-  color?: string;
+  color?: IconColor;
 } & ComponentProps<'button'>;
 
 export const IconButton = ({ name, size = 20, color, ...props }: IconButtonProps) => {
+  const fillColor = colorMap[color ?? 'gray'];
+
   return (
-    <StyledIconButton type="button" color={color} {...props}>
+    <StyledIconButton type="button" color={fillColor as IconColor} {...props}>
       <Icon name={name} size={size} color={color} />
     </StyledIconButton>
   );
