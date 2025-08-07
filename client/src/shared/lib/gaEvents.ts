@@ -16,10 +16,10 @@ export const trackSendAlarm = (selectedGuestCount: number) => {
   });
 };
 
-export const trackCreateEvent = (title: string) => {
+export const trackCreateEvent = () => {
   event({
     action: 'click_create_event',
     category: 'engagement',
-    label: title,
+    label: '이벤트 생성',
   });
 };
