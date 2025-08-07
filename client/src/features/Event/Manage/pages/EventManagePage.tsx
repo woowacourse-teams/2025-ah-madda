@@ -70,17 +70,6 @@ export const EventManagePage = () => {
             <Tabs.Trigger value="detail">이벤트 정보</Tabs.Trigger>
             <Tabs.Trigger value="applications">신청 현황</Tabs.Trigger>
           </Tabs.List>
-          <DesktopButtonContainer justifyContent="flex-end">
-            {isClosed ? (
-              <Button size="sm" color="tertiary" variant="solid" disabled>
-                마감됨
-              </Button>
-            ) : (
-              <Button size="sm" color="tertiary" variant="solid" onClick={handleButtonClick}>
-                마감하기
-              </Button>
-            )}
-          </DesktopButtonContainer>
 
           <Tabs.Content value="detail">
             <EventInfoSection event={event} />
@@ -91,42 +80,38 @@ export const EventManagePage = () => {
           </Tabs.Content>
         </Tabs>
 
-        <MobileFixedCTA>
+        <ButtonWrapper justifyContent="center">
           {isClosed ? (
-            <Button size="md" color="tertiary" variant="solid" disabled>
+            <Button size="sm" color="tertiary" variant="solid" disabled>
               마감됨
             </Button>
           ) : (
-            <Button size="md" color="tertiary" variant="solid" onClick={handleButtonClick}>
+            <Button size="sm" color="tertiary" variant="solid" onClick={handleButtonClick}>
               마감하기
             </Button>
           )}
-        </MobileFixedCTA>
+        </ButtonWrapper>
       </EventManageContainer>
     </PageLayout>
   );
 };
 
-const DesktopButtonContainer = styled(Flex)`
-  @media (max-width: 768px) {
-    display: none;
+const ButtonWrapper = styled(Flex)`
+  display: flex;
+  position: fixed;
+  bottom: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: 100%;
+  max-width: 1072px;
+  padding: 20px 0;
+
+  > button {
+    width: 100%;
   }
-`;
-
-const MobileFixedCTA = styled.div`
-  display: none;
 
   @media (max-width: 768px) {
-    display: flex;
-    position: fixed;
-    bottom: 20px;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    padding: 0 20px;
-
-    > button {
-      width: 100%;
-    }
+    padding: 20px 20px;
   }
 `;
