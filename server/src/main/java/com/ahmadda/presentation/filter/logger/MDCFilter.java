@@ -5,20 +5,21 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-import java.io.IOException;
-import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.util.UUID;
+
 @Slf4j
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class MDCFilter implements Filter {
 
-    private final String REQUEST_ID = "request_id";
+    private static final String REQUEST_ID = "request_id";
 
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
