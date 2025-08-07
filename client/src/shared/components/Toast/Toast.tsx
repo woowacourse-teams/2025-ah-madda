@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { createPortal } from 'react-dom';
+
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
@@ -56,7 +58,7 @@ export const Toast = ({ message, duration = 3000, onClose, variant = 'success' }
 
   const variantColor = variant === 'success' ? '#3D84FF' : '#F52C1F';
 
-  return (
+  const toastContent = (
     <StyledToastLayout>
       <StyledToastContainer>
         <Flex dir="column" alignItems="flex-start">
@@ -73,4 +75,6 @@ export const Toast = ({ message, duration = 3000, onClose, variant = 'success' }
       </StyledToastContainer>
     </StyledToastLayout>
   );
+
+  return createPortal(toastContent, document.body);
 };
