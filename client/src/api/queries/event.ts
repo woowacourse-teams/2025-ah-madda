@@ -82,8 +82,12 @@ export const createEventAPI = (organizationId: number, data: CreateEventAPIReque
   return fetcher.post<CreateEventAPIResponse>(`organizations/${organizationId}/events`, data);
 };
 
-const getEventDetailAPI = (eventId: number) => {
+export const getEventDetailAPI = (eventId: number) => {
   return fetcher.get<EventDetail>(`organizations/events/${eventId}`);
+};
+
+export const updateEventAPI = (eventId: number, data: CreateEventAPIRequest) => {
+  return fetcher.patch<void>(`organizations/events/${eventId}`, data);
 };
 
 const getGuestStatus = async (eventId: number) => {
