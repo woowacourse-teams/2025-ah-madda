@@ -11,6 +11,7 @@
             <charset>UTF-8</charset>
             <pattern>[%level][%d{MM-dd HH:mm:ss}][%X{request_id:-startup}][%replace(%logger{20}){'\\w\\.', ''}] %msg%n</pattern>
         </encoder>
+
         <logGroupName>/aws/ec2/ahmadda-prod-server</logGroupName>
         <logStreamName>logs</logStreamName>
 
