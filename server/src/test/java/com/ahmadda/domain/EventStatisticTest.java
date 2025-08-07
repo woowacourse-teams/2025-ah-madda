@@ -61,7 +61,7 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, LocalDate.MAX)
-                .size())
+                           .size())
                 .isEqualTo(eventDuration);
     }
 
@@ -124,7 +124,7 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, endLocalDate)
-                .size())
+                           .size())
                 .isEqualTo(eventDuration);
     }
 
@@ -144,8 +144,8 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, beforeEventEndDatetime)
-                .getLast()
-                .getViewDate())
+                           .getLast()
+                           .getViewDate())
                 .isEqualTo(beforeEventEndDatetime);
     }
 
@@ -173,7 +173,7 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, LocalDate.MAX)
-                .size())
+                           .size())
                 .isEqualTo(eventDuration);
     }
 
@@ -195,8 +195,8 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, startDatetime)
-                .getFirst()
-                .getViewCount()).isEqualTo(1L);
+                           .getFirst()
+                           .getViewCount()).isEqualTo(1L);
     }
 
     @Test
@@ -217,9 +217,9 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, startDatetime)
-                .stream()
-                .map(EventViewMetric::getViewCount)
-                .toList())
+                           .stream()
+                           .map(EventViewMetric::getViewCount)
+                           .toList())
                 .contains(0, 0);
     }
 
@@ -228,7 +228,7 @@ class EventStatisticTest {
     }
 
     private Member createMember(String name, String email) {
-        return Member.create(name, email);
+        return Member.create(name, email, "testPicture");
     }
 
     private Organization createOrganization(String name) {

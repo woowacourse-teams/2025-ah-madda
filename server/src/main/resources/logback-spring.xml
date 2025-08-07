@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="5 seconds">
+
+    <timestamp key="DATE_FORMAT" datePattern="yyyy-MM-dd"/>
+
+    <springProfile name="local">
+        <include resource="logger/logback-spring-local.xml"/>
+    </springProfile>
+
+    <springProfile name="dev">
+        <include resource="logger/logback-spring-dev.xml"/>
+    </springProfile>
+
+    <springProfile name="staging">
+        <include resource="logger/logback-spring-prod.xml"/>
+    </springProfile>
+
+</configuration>

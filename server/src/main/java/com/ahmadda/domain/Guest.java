@@ -2,6 +2,7 @@ package com.ahmadda.domain;
 
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -42,7 +43,7 @@ public class Guest extends BaseEntity {
     private OrganizationMember organizationMember;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "guest", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Answer> answers = new ArrayList<>();
+    private final List<Answer> answers = new ArrayList<>();
 
     private Guest(final Event event, final OrganizationMember organizationMember, final LocalDateTime currentDateTime) {
         validateEvent(event);
@@ -51,7 +52,7 @@ public class Guest extends BaseEntity {
 
         this.event = event;
         this.organizationMember = organizationMember;
-        
+
         event.participate(this, currentDateTime);
     }
 
@@ -107,5 +108,17 @@ public class Guest extends BaseEntity {
         if (!organizationMember.isBelongTo(event.getOrganization())) {
             throw new BusinessRuleViolatedException("같은 조직의 이벤트에만 게스트로 참여가능합니다.");
         }
+    }
+
+    public List<Answer> viewAnswersAs(final OrganizationMember organizationMember) {
+        if (!canViewAnswers(organizationMember)) {
+            throw new UnauthorizedOperationException("답변을 볼 권한이 없습니다.");
+        }
+
+        return answers;
+    }
+
+    private boolean canViewAnswers(final OrganizationMember organizationMember) {
+        return event.isOrganizer(organizationMember) || this.organizationMember.equals(organizationMember);
     }
 }

@@ -3,7 +3,9 @@ package com.ahmadda.presentation;
 import com.ahmadda.application.EventGuestService;
 import com.ahmadda.application.EventService;
 import com.ahmadda.application.dto.EventParticipateRequest;
+import com.ahmadda.application.dto.GuestAnswerResponse;
 import com.ahmadda.application.dto.LoginMember;
+import com.ahmadda.domain.Answer;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.OrganizationMember;
@@ -13,6 +15,7 @@ import com.ahmadda.presentation.dto.GuestStatusResponse;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -507,5 +510,104 @@ public class EventGuestController {
 
         return ResponseEntity.noContent()
                 .build();
+    }
+
+    @Operation(summary = "게스트 답변 조회", description = "게스트의 답변을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            array = @ArraySchema(schema = @Schema(implementation = GuestAnswerResponse.class))
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/events/{eventId}/guests/{guestId}/answers"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "이벤트 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 이벤트입니다.",
+                                                      "instance": "/api/events/{eventId}/guests/{guestId}/answers"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "조직원 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 조직원입니다.",
+                                                      "instance": "/api/events/{eventId}/guests/{guestId}/answers"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "게스트 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 게스트입니다.",
+                                                      "instance": "/api/events/{eventId}/guests/{guestId}/answers"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "답변을 볼 권한이 없습니다.",
+                                              "instance": "/api/events/{eventId}/guests/{guestId}/answers"
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
+    @GetMapping("/{eventId}/guests/{guestId}/answers")
+    public ResponseEntity<List<GuestAnswerResponse>> getAnswers(
+            @PathVariable final Long eventId,
+            @PathVariable final Long guestId,
+            @AuthMember final LoginMember loginMember
+    ) {
+        List<Answer> answers = eventGuestService.getAnswers(eventId, guestId, loginMember);
+
+        List<GuestAnswerResponse> guestAnswerResponses = answers.stream()
+                .map(GuestAnswerResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(guestAnswerResponses);
     }
 }

@@ -35,7 +35,7 @@ class OrganizationMemberServiceTest {
     @Test
     void 자신의_조직원_정보를_조회한다() {
         // given
-        var member = memberRepository.save(Member.create("홍길동", "hong@email.com"));
+        var member = memberRepository.save(Member.create("홍길동", "hong@email.com", "testPicture"));
         var organization = organizationRepository.save(Organization.create("우테코", "설명", "img.png"));
         var organizationMember = organizationMemberRepository.save(
                 OrganizationMember.create("닉네임", member, organization)
@@ -61,7 +61,7 @@ class OrganizationMemberServiceTest {
     @Test
     void 존재하지_않는_조직원이면_예외가_발생한다() {
         // given
-        var member = memberRepository.save(Member.create("홍길동", "hong@email.com"));
+        var member = memberRepository.save(Member.create("홍길동", "hong@email.com", "testPicture"));
         var organization = organizationRepository.save(Organization.create("우테코", "설명", "img.png"));
         var loginMember = new LoginMember(member.getId());
 

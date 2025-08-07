@@ -227,7 +227,7 @@ class OrganizationMemberEventServiceTest {
     }
 
     private Member createAndSaveMember(String name, String email) {
-        var member = Member.create(name, email);
+        var member = Member.create(name, email, "testPicture");
         return memberRepository.save(member);
     }
 
