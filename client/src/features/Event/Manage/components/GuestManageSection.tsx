@@ -1,5 +1,4 @@
-import { css } from '@emotion/react';
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQueries } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
 import { eventQueryOptions } from '@/api/queries/event';
@@ -9,12 +8,20 @@ import { useCheckableGuests } from '../hooks/useCheckableGuests';
 
 import { AlarmSection } from './AlarmSection';
 import { GuestViewSection } from './GuestViewSection';
+import { Statistics } from './Statistics';
 
 export const GuestManageSection = () => {
   const { eventId: eventIdParam } = useParams();
   const eventId = Number(eventIdParam);
-  const { data: guests = [] } = useQuery(eventQueryOptions.guests(eventId));
-  const { data: nonGuests = [] } = useQuery(eventQueryOptions.nonGuests(eventId));
+
+  const [{ data: guests = [] }, { data: nonGuests = [] }, { data: statisticsData = [] }] =
+    useSuspenseQueries({
+      queries: [
+        eventQueryOptions.guests(eventId),
+        eventQueryOptions.nonGuests(eventId),
+        eventQueryOptions.statistic(eventId),
+      ],
+    });
 
   const {
     guestData,
@@ -40,21 +47,8 @@ export const GuestManageSection = () => {
   const selectedGuestCount = selectedMemberIds.length;
 
   return (
-    <Flex
-      as="section"
-      dir="column"
-      gap="24px"
-      width="100%"
-      margin="0 auto"
-      padding="0 16px"
-      css={css`
-        max-width: 800px;
-
-        @media (max-width: 768px) {
-          padding: 0 20px;
-        }
-      `}
-    >
+    <Flex as="section" dir="column" gap="24px" width="100%" margin="0 auto" padding="20px 20px 0">
+      <Statistics statistics={statisticsData} />
       <AlarmSection
         organizationMemberIds={selectedMemberIds}
         selectedGuestCount={selectedGuestCount}
