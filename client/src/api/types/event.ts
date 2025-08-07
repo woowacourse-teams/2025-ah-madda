@@ -26,3 +26,15 @@ export type StatisticsAPIResponse = {
   date: string;
   count: number;
 };
+
+export type EventTitleAPIResponse = {
+  eventId: number;
+  title: string;
+};
+
+export type EventTemplateAPIResponse = Pick<
+  CreateEventAPIRequest,
+  'title' | 'description' | 'maxCapacity' | 'place'
+> & {
+  eventId: number;
+};

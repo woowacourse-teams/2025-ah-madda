@@ -3,13 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import { HttpError } from '@/api/fetcher';
-import { useUpdateEvent } from '@/api/mutations/useUpdateEvent';
 import { getEventDetailAPI } from '@/api/queries/event';
-import { myQueryOptions } from '@/api/queries/my';
 import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
-import { Icon } from '@/shared/components/Icon';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
 import { useModal } from '@/shared/hooks/useModal';
@@ -19,10 +16,12 @@ import { UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useBasicEventForm } from '../hooks/useBasicEventForm';
 import { useQuestionForm } from '../hooks/useQuestionForm';
+import { useTemplateLoader } from '../hooks/useTemplateLoader';
 import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
 
 import { MaxCapacityModal } from './MaxCapacityModal';
 import { QuestionForm } from './QuestionForm';
+import { TemplateModal } from './TemplateModal';
 
 const ORGANIZATION_ID = 1; // 임시
 
@@ -48,6 +47,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     handleChange,
     errors,
     isValid: isBasicFormValid,
+    loadFormData,
   } = useBasicEventForm(isEdit ? eventDetail : undefined);
 
   const {
@@ -59,6 +59,12 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   } = useQuestionForm();
 
   const isFormReady = isBasicFormValid && isQuestionValid;
+
+  const { template, selectedEventId, handleSelectEvent } = useTemplateLoader();
+
+  const handleTemplateLoad = () => {
+    loadFormData(template ?? {});
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,12 +102,19 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         <Text type="Title" weight="bold">
           {isEdit ? '이벤트 수정' : '새 이벤트 만들기'}
         </Text>
-        <Text type="Body" color="gray">
-          이벤트 정보를 입력해 주세요
-        </Text>
+        <Flex justifyContent="space-between" alignItems="center">
+          <Text type="Body" color="gray">
+            이벤트 정보를 입력해 주세요
+          </Text>
+          <Button size="sm" onClick={open}>
+            템플릿
+          </Button>
+        </Flex>
 
         <Card>
-          <Text type="Body">기본 질문</Text>
+          <Flex justifyContent="space-between">
+            <Text type="Heading">기본 질문</Text>
+          </Flex>
           <Flex dir="column">
             <Input
               id="title"
@@ -240,6 +253,14 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
           </Button>
         </Flex>
       </Flex>
+
+      <TemplateModal
+        isOpen={isModalOpen}
+        onClose={close}
+        onConfirm={handleTemplateLoad}
+        onSelect={handleSelectEvent}
+        selectedEventId={selectedEventId}
+      />
     </form>
   );
 };

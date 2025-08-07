@@ -61,6 +61,13 @@ export const useBasicEventForm = (initialData?: Partial<CreateEventAPIRequest>) 
     return hasNoErrors && allRequiredFieldsFilled;
   }, [basicEventForm, errors]);
 
+  const loadFormData = (data: Partial<CreateEventAPIRequest>) => {
+    setBasicEventForm((prev) => ({
+      ...prev,
+      ...data,
+    }));
+  };
+
   return {
     basicEventForm,
     handleValueChange,
@@ -68,5 +75,6 @@ export const useBasicEventForm = (initialData?: Partial<CreateEventAPIRequest>) 
     handleChange,
     isValid,
     errors,
+    loadFormData,
   };
 };
