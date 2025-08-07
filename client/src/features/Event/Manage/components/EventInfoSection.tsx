@@ -30,8 +30,6 @@ export const EventInfoSection = () => {
                 이벤트 정보
               </Text>
             </Flex>
-            {/* A.TODO: 주최자 확인 API 연결 후 주석 해제 예정 */}
-            {/* {isOrganizer && ( */}
             <Flex justifyContent="flex-end">
               <Button
                 color="secondary"
@@ -41,7 +39,6 @@ export const EventInfoSection = () => {
                 수정
               </Button>
             </Flex>
-            {/* )} */}
           </Flex>
 
           <Text type="Body" weight="semibold" color="#0A0A0A">

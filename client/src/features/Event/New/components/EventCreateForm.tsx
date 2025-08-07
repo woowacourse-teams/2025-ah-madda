@@ -33,8 +33,6 @@ type EventCreateFormProps = {
 export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const navigate = useNavigate();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
-  const { mutate: updateEvent } = useUpdateEvent();
-  const { data: userProfile } = useQuery(myQueryOptions.profile());
   const { data: eventDetail } = useQuery({
     queryKey: ['event', 'detail', Number(eventId)],
     queryFn: () => getEventDetailAPI(Number(eventId)),

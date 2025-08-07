@@ -1,11 +1,11 @@
 import { useState, useMemo } from 'react';
 
-import { BasicEventFormFields } from '../../types/Event';
+import { BasicEventFormFields, CreateEventAPIRequest } from '../../types/Event';
 import { UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { FIELD_CONFIG } from '../constants/formFieldConfig';
 import { validateEventForm } from '../utils/validateEventForm';
 
-export const useBasicEventForm = () => {
+export const useBasicEventForm = (initialData?: Partial<CreateEventAPIRequest>) => {
   const [basicEventForm, setBasicEventForm] = useState<BasicEventFormFields>({
     title: '',
     eventStart: '',
@@ -14,6 +14,7 @@ export const useBasicEventForm = () => {
     place: '',
     description: '',
     maxCapacity: UNLIMITED_CAPACITY,
+    ...initialData,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});

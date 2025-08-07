@@ -1,8 +1,10 @@
 import { useState } from 'react';
 
 import { css } from '@emotion/react';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
+import { eventQueryOptions } from '@/api/queries/event';
 import { GuestStatusAPIResponse } from '@/api/types/event';
 import { Answer } from '@/api/types/event';
 import { Button } from '@/shared/components/Button';
@@ -47,20 +49,22 @@ export const EventDetailContent = ({
     );
   };
 
+  const { data: isOrganizerResponse } = useQuery(eventQueryOptions.organizer(eventId));
+  const isOrganizer = isOrganizerResponse?.isOrganizer;
+
   return (
     <Flex dir="column" width="100%" padding="20px 0" gap="20px">
-      {/* A.TODO: 주최자 확인 API 연결 후 주석 해제 예정 */}
-      {/* {isOrganizer && ( */}
-      <Flex justifyContent="flex-end">
-        <Button
-          color="secondary"
-          variant="outline"
-          onClick={() => navigate(`/event/edit/${eventId}`)}
-        >
-          수정
-        </Button>
-      </Flex>
-      {/* )} */}
+      {isOrganizer && (
+        <Flex justifyContent="flex-end">
+          <Button
+            color="secondary"
+            variant="outline"
+            onClick={() => navigate(`/event/edit/${eventId}`)}
+          >
+            수정
+          </Button>
+        </Flex>
+      )}
 
       <Flex
         dir="row"

@@ -9,6 +9,10 @@ export type GuestStatusAPIResponse = {
   isGuest: boolean;
 };
 
+export type OrganizerStatusAPIResponse = {
+  isOrganizer: boolean;
+};
+
 export type UpdateEventParams = {
   eventId: number;
   payload: CreateEventAPIRequest;
