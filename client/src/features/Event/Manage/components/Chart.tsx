@@ -105,7 +105,7 @@ const TooltipContainer = styled.div<{ bottom: number }>`
   position: absolute;
   bottom: ${({ bottom }) => `${bottom}px`};
   left: 50%;
-  translateX(-50%);
+  transform: translateX(-50%);
   background-color: ${theme.colors.primary600};
   padding: 12px;
   border-radius: 6px;
