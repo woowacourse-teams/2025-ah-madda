@@ -1,17 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { CreateEventAPIRequest } from '@/features/Event/types/Event';
-
 import { fetcher } from '../fetcher';
-
-type UpdateEventParams = {
-  eventId: number;
-  payload: CreateEventAPIRequest;
-};
-
-type UpdateEventResponse = {
-  eventId: number;
-};
+import { UpdateEventParams, UpdateEventResponse } from '../types/event';
 
 export const useUpdateEvent = () => {
   const queryClient = useQueryClient();
