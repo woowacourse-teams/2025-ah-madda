@@ -32,16 +32,17 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const navigate = useNavigate();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
   const { mutate: updateEvent } = useUpdateEvent();
-  const { formData, setFormData, handleChange, setQuestions } = useEventForm();
-  const { errors, setQuestionErrors, validate, validateField, isFormValid } =
-    useEventValidation(formData);
   const { data: userProfile } = useQuery(myQueryOptions.profile());
-
   const { data: eventDetail } = useQuery({
     queryKey: ['event', 'detail', Number(eventId)],
     queryFn: () => getEventDetailAPI(Number(eventId)),
     enabled: isEdit,
   });
+  const { formData, setFormData, handleChange, setQuestions } = useEventForm(
+    isEdit ? eventDetail : undefined
+  );
+  const { errors, setQuestionErrors, validate, validateField, isFormValid } =
+    useEventValidation(formData);
 
   useEffect(() => {
     if (!eventDetail) return;

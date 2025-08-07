@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import type { CreateEventAPIRequest, QuestionRequest } from '@/features/Event/types/Event';
 
-export const useEventForm = () => {
+export const useEventForm = (initialData?: Partial<CreateEventAPIRequest>) => {
   const [formData, setFormData] = useState<Omit<CreateEventAPIRequest, 'organizerNickname'>>({
     title: '',
     description: '',
@@ -12,6 +12,7 @@ export const useEventForm = () => {
     registrationEnd: '',
     maxCapacity: 0,
     questions: [],
+    ...initialData,
   });
 
   const handleChange =
