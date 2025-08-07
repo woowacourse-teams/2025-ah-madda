@@ -1,11 +1,15 @@
+const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
+
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { DefinePlugin } = require('webpack');
 const Dotenv = require('dotenv-webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'development',
   entry: './src/main.tsx',
+
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
@@ -14,20 +18,43 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
+      title: 'ah-madda',
       template: './index.html',
       filename: 'index.html',
       inject: true,
+      templateParameters: {
+        GOOGLE_ANALYTICS_ID: process.env.GOOGLE_ANALYTICS_ID || '',
+      },
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'public',
+          to: '',
+          globOptions: {
+            ignore: ['**/index.html'],
+          },
+        },
+      ],
     }),
     new DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('development'),
       VERSION: JSON.stringify('1.0.0'),
       __DEV__: JSON.stringify(true),
     }),
     new Dotenv({
-      path: path.resolve(__dirname, '.env'),
+      path: path.resolve(
+        __dirname,
+        process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development'
+      ),
       safe: true,
     }),
+    sentryWebpackPlugin({
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      org: 'ahmadda',
+      project: 'ahmadda',
+    }),
   ],
+
   module: {
     rules: [
       {
@@ -57,6 +84,7 @@ module.exports = {
     },
     extensions: ['.ts', '.tsx', '.js'],
   },
+
   devServer: {
     static: {
       directory: path.join(__dirname, 'dist'),

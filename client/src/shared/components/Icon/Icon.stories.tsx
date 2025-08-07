@@ -22,7 +22,7 @@ type Story = StoryObj<typeof Icon>;
 
 export const Basic: Story = {
   args: {
-    name: 'users',
+    name: 'user',
     size: 24,
     color: 'red',
   },
@@ -41,9 +41,8 @@ export const Basic: Story = {
     },
     color: {
       control: {
-        type: 'color',
+        options: ['primary', 'gray', 'red', 'white'],
       },
-      defaultValue: '#2B2B2B',
     },
   },
   render: (args) => <Icon {...args} />,

@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
 
-import { myEventQueryOptions } from '@/api/queries/my';
+import { myQueryOptions } from '@/api/queries/my';
 import { Tabs } from '@/shared/components/Tabs';
 
 import { UI_LABELS, STATUS_MESSAGES, TAB_VALUES } from '../constants';
@@ -13,14 +13,19 @@ export const EventTabs = () => {
   // E.TODO: organizationMemberId를 실제로 가져오는 로직 필요
   const organizationMemberId = 1; // 임시 값
 
-  const { data: hostEvents = [] } = useQuery(myEventQueryOptions.hostEvents(organizationMemberId));
+  const { data: hostEvents = [] } = useQuery(myQueryOptions.event.hostEvents(organizationMemberId));
 
   const { data: participateEvents = [] } = useQuery(
-    myEventQueryOptions.participateEvents(organizationMemberId)
+    myQueryOptions.event.participateEvents(organizationMemberId)
   );
 
   return (
-    <Tabs defaultValue={TAB_VALUES.HOST}>
+    <Tabs
+      defaultValue={TAB_VALUES.HOST}
+      css={css`
+        width: 100%;
+      `}
+    >
       <EventTabsList />
 
       <Tabs.Content
@@ -33,6 +38,7 @@ export const EventTabs = () => {
           events={hostEvents}
           title={UI_LABELS.ONGOING_HOST_EVENTS}
           emptyMessage={STATUS_MESSAGES.NO_HOST_EVENTS}
+          cardType={TAB_VALUES.HOST}
         />
       </Tabs.Content>
 
@@ -46,6 +52,7 @@ export const EventTabs = () => {
           events={participateEvents}
           title={UI_LABELS.PARTICIPATING_EVENTS}
           emptyMessage={STATUS_MESSAGES.NO_PARTICIPATE_EVENTS}
+          cardType={TAB_VALUES.PARTICIPATE}
         />
       </Tabs.Content>
     </Tabs>

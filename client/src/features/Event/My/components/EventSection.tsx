@@ -12,14 +12,15 @@ type EventSectionProps = {
   events: Event[];
   title: string;
   emptyMessage: string;
+  cardType: 'host' | 'participate';
 };
 
-export const EventSection = ({ events, title, emptyMessage }: EventSectionProps) => {
+export const EventSection = ({ events, title, emptyMessage, cardType }: EventSectionProps) => {
   return (
     <Flex dir="column" gap="16px">
       <Flex alignItems="center" gap="8px">
-        <Icon name="calendar" size={21} color="#0A0A0A" />
-        <Text type="Body" weight="bold" color="black">
+        <Icon name="calendar" size={21} />
+        <Text as="h2" type="Heading" weight="bold" color="black">
           {title}
         </Text>
       </Flex>
@@ -27,7 +28,7 @@ export const EventSection = ({ events, title, emptyMessage }: EventSectionProps)
       {events.length > 0 ? (
         <EventCardContainer>
           {events.map((event) => (
-            <EventCard key={event.eventId} {...event} />
+            <EventCard key={event.eventId} {...event} cardType={cardType} />
           ))}
         </EventCardContainer>
       ) : (

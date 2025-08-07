@@ -1,62 +1,114 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
+import { theme } from '@/shared/styles/theme';
+
 import { ButtonProps } from './Button';
 
 const sizeStyles = {
   sm: css`
-    padding: 0.375rem 0.75rem;
-    font-size: 0.875rem;
+    width: 80px;
+    height: 32px;
+    font-size: 16px;
+    font-weight: 500;
   `,
   md: css`
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
+    width: 138px;
+    height: 42px;
+    font-size: 16px;
+    font-weight: 600;
   `,
   lg: css`
-    padding: 0.625rem 1.25rem;
-    font-size: 1.125rem;
+    width: 240px;
+    height: 50px;
+    font-size: 16px;
+    font-weight: 600;
   `,
-  xl: css`
-    padding: 0.75rem 1.5rem;
-    font-size: 1.25rem;
+  full: css`
+    width: 100%;
+    height: 50px;
+    font-size: 16px;
+    font-weight: 600;
+  `,
+} as const;
+
+const colorStyles = {
+  primary: css`
+    color: white;
+    background-color: ${theme.colors.primary600};
+
+    &:hover {
+      background-color: ${theme.colors.primary700};
+    }
+
+    &:disabled {
+      background-color: ${theme.colors.gray400};
+      color: ${theme.colors.gray200};
+    }
+  `,
+  secondary: css`
+    color: ${theme.colors.primary600};
+    background-color: ${theme.colors.primary50};
+
+    &:hover {
+      background-color: ${theme.colors.primary100};
+    }
+
+    &:disabled {
+      background-color: ${theme.colors.gray200};
+      color: ${theme.colors.gray400};
+    }
+  `,
+  tertiary: css`
+    color: white;
+    background-color: ${theme.colors.gray800};
+
+    &:hover {
+      background-color: ${theme.colors.gray900};
+    }
+
+    &:disabled {
+      background-color: ${theme.colors.gray600};
+      color: ${theme.colors.gray400};
+    }
   `,
 } as const;
 
 const variantStyles = {
-  filled: (color: string) => css`
-    background-color: ${color};
-    &:hover {
-      background-color: ${color};
-      opacity: 0.7;
-    }
-  `,
-  outlined: (color: string) => css`
-    border: 1px solid ${color};
-    background-color: transparent;
+  outline: css`
+    color: ${theme.colors.gray500};
+    border: 1px solid ${theme.colors.gray300};
+    background-color: ${theme.colors.white};
 
     &:hover {
-      background-color: ${color.startsWith('#') ? `${color}1A` : `rgba(0, 0, 0, 0.1)`};
+      background-color: white;
+      color: ${theme.colors.gray600};
+      border: 1.5px solid ${theme.colors.gray400};
       opacity: 0.8;
     }
+
+    &:disabled {
+      border: 1px solid ${theme.colors.gray50};
+      color: ${theme.colors.gray50};
+    }
   `,
-};
+} as const;
 
 export const StyledButton = styled.button<ButtonProps>`
+  height: 40px;
   cursor: pointer;
-  font-weight: 500;
   background-color: transparent;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0.5rem 1rem;
+  gap: ${({ iconName }) => (iconName ? '2px' : '0')};
   border: none;
-  border-radius: 0.75rem;
+  border-radius: 4px;
   line-height: 1.4;
-  width: ${({ width }) => width ?? 'auto'};
-  color: ${({ fontColor }) => fontColor ?? '#FFFFFF'};
 
   ${({ size }) => sizeStyles[size ?? 'md']}
-  ${({ variant, color }) => variantStyles[variant ?? 'filled'](color ?? 'black')};
+  ${({ color, variant = 'solid' }) =>
+    variant === 'outline' ? variantStyles.outline : colorStyles[color ?? 'primary']}
 
   &:disabled {
     opacity: 0.5;
