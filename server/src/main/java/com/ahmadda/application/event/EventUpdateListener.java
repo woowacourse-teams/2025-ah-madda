@@ -19,8 +19,8 @@ public class EventUpdateListener {
 
     @EventListener
     @Transactional
-    public void onEventCreated(final EventRead eventRead) {
-        EventStatistic eventStatistic = eventStatisticRepository.findByEventId(eventRead.eventId())
+    public void onEventCreated(final EventUpdated eventUpdated) {
+        EventStatistic eventStatistic = eventStatisticRepository.findByEventId(eventUpdated.eventId())
                 .orElseThrow(() -> new NotFoundException("해당되는 이벤트의 조회수를 가져오는데 실패하였습니다."));
 
         eventStatistic.updateEventViewMatricUntilEventEnd();
