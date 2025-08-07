@@ -1,8 +1,3 @@
-import { useQuery } from '@tanstack/react-query';
-import { useNavigate, useParams } from 'react-router-dom';
-
-import { eventQueryOptions } from '@/api/queries/event';
-import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
@@ -14,32 +9,20 @@ import { formatDateTime } from '../../My/utils/date';
 import type { Event } from '../../types/Event';
 
 type EventInfoSectionProps = {
-  eventId: number;
   event: Event;
 };
 
-export const EventInfoSection = ({ eventId, event }: EventInfoSectionProps) => {
-  const navigate = useNavigate();
-
+export const EventInfoSection = ({ event }: EventInfoSectionProps) => {
   return (
     <Flex as="section" dir="column" gap="24px" width="100%" margin="0 auto" padding="20px 0">
       <Card>
         <Flex dir="column" gap="16px">
-          <Flex justifyContent="space-between">
-            <Flex alignItems="center" gap="8px">
-              <Icon name="calendar" size={14} />
+          <Flex alignItems="center" gap="8px">
+            <Icon name="calendar" size={14} />
+            <Flex dir="row" width="100%" justifyContent="space-between" alignItems="center">
               <Text type="Body" weight="regular" color="#4A5565">
                 이벤트 정보
               </Text>
-            </Flex>
-            <Flex justifyContent="flex-end">
-              <Button
-                color="secondary"
-                variant="outline"
-                onClick={() => navigate(`/event/edit/${eventId}`)}
-              >
-                수정
-              </Button>
             </Flex>
           </Flex>
 
