@@ -45,7 +45,7 @@ public class EventStatistic extends BaseEntity {
 
         this.event = event;
 
-        createEventViewMatricUntilEventEnd(event);
+        updateEventViewMatricUntilEventEnd();
     }
 
     public static EventStatistic create(final Event event) {
@@ -80,8 +80,7 @@ public class EventStatistic extends BaseEntity {
         }
     }
 
-    //TODO 테스트 작성
-    private void createEventViewMatricUntilEventEnd(final Event event) {
+    public void updateEventViewMatricUntilEventEnd() {
         LocalDate currentDate = LocalDate.from(
                 event.getEventOperationPeriod()
                         .getRegistrationPeriod()
