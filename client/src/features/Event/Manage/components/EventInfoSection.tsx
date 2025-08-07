@@ -1,10 +1,3 @@
-import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom';
-
-import { HttpError } from '@/api/fetcher';
-import { useCloseEventRegistration } from '@/api/mutations/useCloseEventRegistration';
-import { eventQueryOptions } from '@/api/queries/event';
-import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
@@ -13,31 +6,13 @@ import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 
 import { formatDateTime } from '../../My/utils/date';
+import type { Event } from '../../types/Event';
 
-export const EventInfoSection = () => {
-  const { eventId: eventIdParam } = useParams();
-  const eventId = Number(eventIdParam);
-  const { data: event, refetch } = useQuery(eventQueryOptions.detail(eventId));
-  const { mutate: closeEventRegistration } = useCloseEventRegistration();
+type EventInfoSectionProps = {
+  event: Event;
+};
 
-  const isClosed = event?.registrationEnd ? new Date(event.registrationEnd) < new Date() : false;
-
-  const handleButtonClick = () => {
-    if (confirm('이벤트를 마감하시겠습니까?')) {
-      closeEventRegistration(eventId, {
-        onSuccess: () => {
-          alert('이벤트가 마감되었습니다.');
-          refetch();
-        },
-        onError: (error) => {
-          if (error instanceof HttpError) {
-            alert(error.message);
-          }
-        },
-      });
-    }
-  };
-
+export const EventInfoSection = ({ event }: EventInfoSectionProps) => {
   return (
     <Flex as="section" dir="column" gap="24px" width="100%" margin="0 auto" padding="20px 0">
       <Card>
@@ -48,53 +23,42 @@ export const EventInfoSection = () => {
               <Text type="Body" weight="regular" color="#4A5565">
                 이벤트 정보
               </Text>
-              {isClosed ? (
-                <Button size="sm" color="tertiary" variant="solid" disabled>
-                  마감됨
-                </Button>
-              ) : (
-                <Button size="sm" color="tertiary" variant="solid" onClick={handleButtonClick}>
-                  마감하기
-                </Button>
-              )}
             </Flex>
           </Flex>
 
           <Text type="Body" weight="semibold" color="#0A0A0A">
-            {event?.title}
+            {event.title}
           </Text>
 
           <Text type="Label" weight="regular" color="#4A5565">
-            {event?.description}
+            {event.description}
           </Text>
 
           <Flex alignItems="center" gap="8px">
             <Icon name="user" size={14} />
             <Text type="Label" weight="regular" color="#4A5565">
-              {`주최자: ${event?.organizerName}`}
+              {`주최자: ${event.organizerName}`}
             </Text>
           </Flex>
 
           <Flex alignItems="center" gap="8px">
             <Icon name="location" size={14} />
             <Text type="Label" weight="regular" color="#4A5565">
-              {event?.place}
+              {event.place}
             </Text>
           </Flex>
 
           <Flex alignItems="center" gap="8px">
             <Icon name="calendar" size={14} />
             <Text type="Label" weight="regular" color="#4A5565">
-              {`신청 마감: ${formatDateTime(event?.registrationEnd ?? '')}`}
+              {`신청 마감: ${formatDateTime(event.registrationEnd ?? '')}`}
             </Text>
           </Flex>
 
           <Flex alignItems="center" gap="8px">
             <Icon name="clock" size={14} />
             <Text type="Label" weight="regular" color="#4A5565">
-              {`이벤트 일시: ${formatDateTime(event?.eventStart ?? '')} ~ ${formatDateTime(
-                event?.eventEnd ?? ''
-              )}`}
+              {`이벤트 일시: ${formatDateTime(event.eventStart ?? '')} ~ ${formatDateTime(event.eventEnd ?? '')}`}
             </Text>
           </Flex>
           <Spacing height="1px" color="#ECEEF2" />
@@ -108,14 +72,10 @@ export const EventInfoSection = () => {
                 </Text>
               </Flex>
               <Text type="Label" weight="regular" color="#4A5565">
-                {`${event?.currentGuestCount}/${event?.maxCapacity}명`}
+                {`${event.currentGuestCount}/${event.maxCapacity}명`}
               </Text>
             </Flex>
-            <ProgressBar
-              value={event?.currentGuestCount ?? 0}
-              max={event?.maxCapacity ?? 0}
-              color="#0A0A0A"
-            />
+            <ProgressBar value={event.currentGuestCount} max={event.maxCapacity} color="#0A0A0A" />
           </Flex>
         </Flex>
       </Card>
