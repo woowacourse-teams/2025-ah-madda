@@ -2,7 +2,6 @@ package com.ahmadda.domain;
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,6 +10,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -423,7 +423,7 @@ class EventTest {
         sut.closeRegistrationAt(baseOrganizer, registrationCloseTime);
 
         // then
-        Assertions.assertThat(sut.getRegistrationEnd())
+        assertThat(sut.getRegistrationEnd())
                 .isEqualTo(registrationCloseTime);
     }
 
@@ -502,6 +502,30 @@ class EventTest {
         assertThatThrownBy(() -> sut.closeRegistrationAt(baseOrganizer, registrationCloseOverTime))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage("이미 신청이 마감된 이벤트입니다.");
+    }
+
+    @Test
+    void 이벤트가_정원이_다_찼는지_확인할_수_있다() {
+        // given
+        var now = LocalDateTime.now();
+        var registrationPeriod = Period.create(now.plusDays(1), now.plusDays(2));
+        var sut = createEvent(now, registrationPeriod);
+
+        createOrganizationMember("게스트1", createMember("게스트1", "g1@email.com"), baseOrganization);
+        createOrganizationMember("게스트2", createMember("게스트2", "g2@email.com"), baseOrganization);
+        createOrganizationMember("게스트3", createMember("게스트3", "g3@email.com"), baseOrganization);
+
+        for (int i = 0; i < 10; i++) {
+            var member = createMember("게스트" + i, "guest" + i + "@email.com");
+            var orgMember = createOrganizationMember("게스트" + i, member, baseOrganization);
+            Guest.create(sut, orgMember, registrationPeriod.start());
+        }
+
+        // when
+        boolean isFull = sut.isFull();
+
+        // then
+        assertThat(isFull).isTrue();
     }
 
     private Event createEvent(String title, int maxCapacity, Question... questions) {

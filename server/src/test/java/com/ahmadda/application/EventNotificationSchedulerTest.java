@@ -5,6 +5,8 @@ import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
+import com.ahmadda.domain.Guest;
+import com.ahmadda.domain.GuestRepository;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
@@ -15,6 +17,7 @@ import com.ahmadda.domain.PushNotificationPayload;
 import com.ahmadda.domain.PushNotifier;
 import com.ahmadda.infra.notification.push.FcmRegistrationToken;
 import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -46,6 +49,9 @@ class EventNotificationSchedulerTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private GuestRepository guestRepository;
 
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
@@ -107,6 +113,45 @@ class EventNotificationSchedulerTest {
         }
     }
 
+    @Test
+    void 정원이_다_찼다면_알림을_전송하지_않는다() {
+        // given
+        var organization = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        var host = saveOrganizationMember("주최자", "host@email.com", organization);
+
+        var ng1 = saveOrganizationMember("비게스트1", "ng1@email.com", organization);
+        var ng2 = saveOrganizationMember("비게스트2", "ng2@email.com", organization);
+
+        var now = LocalDateTime.now();
+        var registrationEnd = now.plusMinutes(4);
+
+        var event = eventRepository.save(Event.create(
+                "이벤트", "설명", "장소",
+                host, organization,
+                EventOperationPeriod.create(
+                        now.minusDays(2),
+                        registrationEnd,
+                        now.plusDays(1),
+                        now.plusDays(2),
+                        now.minusDays(3)
+                ),
+                2
+        ));
+
+        createAndSaveGuest(event, saveOrganizationMember("게스트1", "g1@email.com", organization));
+        createAndSaveGuest(event, saveOrganizationMember("게스트2", "g2@email.com", organization));
+
+        saveFcmRegistrationToken(ng1, "token-ng1");
+        saveFcmRegistrationToken(ng2, "token-ng2");
+
+        // when
+        sut.notifyRegistrationClosingEvents();
+
+        // then
+        verify(emailNotifier, Mockito.never()).sendEmails(any(), any());
+        verify(pushNotifier, Mockito.never()).sendPushs(any(), any());
+    }
+
     private static Stream<Arguments> registrationEndOffsets() {
         return Stream.of(
                 Arguments.of(4, true),
@@ -135,5 +180,11 @@ class EventNotificationSchedulerTest {
         );
 
         fcmRegistrationTokenRepository.save(fcmToken);
+    }
+
+    private Guest createAndSaveGuest(Event event, OrganizationMember participant) {
+        var guest = Guest.create(event, participant, event.getRegistrationStart());
+
+        return guestRepository.save(guest);
     }
 }
