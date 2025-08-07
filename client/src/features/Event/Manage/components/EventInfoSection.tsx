@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { eventQueryOptions } from '@/api/queries/event';
 import { Button } from '@/shared/components/Button';
-
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
@@ -15,12 +14,13 @@ import { formatDateTime } from '../../My/utils/date';
 import type { Event } from '../../types/Event';
 
 type EventInfoSectionProps = {
+  eventId: number;
   event: Event;
 };
 
-const navigate = useNavigate();
+export const EventInfoSection = ({ eventId, event }: EventInfoSectionProps) => {
+  const navigate = useNavigate();
 
-export const EventInfoSection = ({ event }: EventInfoSectionProps) => {
   return (
     <Flex as="section" dir="column" gap="24px" width="100%" margin="0 auto" padding="20px 0">
       <Card>
