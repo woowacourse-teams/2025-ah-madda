@@ -79,7 +79,7 @@ jobs:
 
       - name: Run container
         run: |
-          sudo docker run 
+          sudo docker run \
             --name ahmadda-dev-server \
             --restart unless-stopped \
             -p 8080:8080 \
