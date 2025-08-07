@@ -5,10 +5,11 @@ import { CreateEventAPIRequest, EventDetail } from '../../features/Event/types/E
 import { fetcher } from '../fetcher';
 import { postAlarm } from '../mutations/useAddAlarm';
 import {
-  EventTemplateAPIResponse,
-  EventTitleAPIResponse,
   GuestStatusAPIResponse,
   OrganizerStatusAPIResponse,
+  StatisticsAPIResponse,
+  EventTemplateAPIResponse,
+  EventTitleAPIResponse,
 } from '../types/event';
 import { NotificationAPIRequest } from '../types/notification';
 
@@ -26,6 +27,7 @@ export const eventQueryKeys = {
   guestStatus: () => [...eventQueryKeys.all(), 'guestStatus'],
   participation: () => [...eventQueryKeys.all(), 'participation'],
   cancel: () => [...eventQueryKeys.all(), 'cancel'],
+  statistic: () => [...eventQueryKeys.all(), 'statistic'],
   titles: () => [...eventQueryKeys.all(), 'titles'],
   template: () => [...eventQueryKeys.all(), 'template'],
 };
@@ -65,6 +67,11 @@ export const eventQueryOptions = {
       queryKey: [...eventQueryKeys.cancel(), eventId],
       queryFn: () => fetcher.delete(`events/${eventId}`),
     }),
+  statistic: (eventId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.statistic(), eventId],
+      queryFn: () => fetcher.get<StatisticsAPIResponse[]>(`events/${eventId}/statistic`),
+    }),
   titles: (organizationId: number) =>
     queryOptions({
       queryKey: [...eventQueryKeys.titles(), organizationId],
@@ -89,8 +96,12 @@ export const createEventAPI = (organizationId: number, data: CreateEventAPIReque
   return fetcher.post<CreateEventAPIResponse>(`organizations/${organizationId}/events`, data);
 };
 
-const getEventDetailAPI = (eventId: number) => {
+export const getEventDetailAPI = (eventId: number) => {
   return fetcher.get<EventDetail>(`organizations/events/${eventId}`);
+};
+
+export const updateEventAPI = (eventId: number, data: CreateEventAPIRequest) => {
+  return fetcher.patch<void>(`organizations/events/${eventId}`, data);
 };
 
 const getGuestStatus = async (eventId: number) => {

@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
@@ -11,6 +11,8 @@ import { EventCreateForm } from '../components/EventCreateForm';
 
 export const NewEventPage = () => {
   const navigate = useNavigate();
+  const { eventId } = useParams();
+  const isEdit = !!eventId;
 
   return (
     <PageLayout
@@ -35,7 +37,7 @@ export const NewEventPage = () => {
           max-width: 784px;
         `}
       >
-        <EventCreateForm />
+        <EventCreateForm isEdit={isEdit} eventId={eventId ? Number(eventId) : undefined} />
       </Flex>
     </PageLayout>
   );
