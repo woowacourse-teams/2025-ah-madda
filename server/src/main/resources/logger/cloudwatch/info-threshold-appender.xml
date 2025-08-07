@@ -9,8 +9,7 @@
 
         <encoder>
             <charset>UTF-8</charset>
-            <pattern>[%cyan(%level)][%d{MM-dd
-                HH:mm:ss}][%magenta(%X{request_id:-startup})][%blue(%replace(%logger{20}){'\\w\\.', ''})] %msg %n
+            <pattern>[%cyan(%level)][%d{MM-dd HH:mm:ss}][%magenta(%X{request_id:-startup})][%blue(%replace(%logger{20}){'\\w\\.', ''})] %msg %n
             </pattern>
         </encoder>
 
@@ -20,7 +19,7 @@
             <maxHistory>30</maxHistory>
         </rollingPolicy>
 
-        <logGroupName>ahmadda-dev-server/info-threshold-log</logGroupName>
+        <logGroupName>ahmadda-prod-server</logGroupName>
         <logStreamUuidPrefix>${DATE_PREFIX}-log-</logStreamUuidPrefix>
         <logRegion>ap-northeast-2</logRegion>
 

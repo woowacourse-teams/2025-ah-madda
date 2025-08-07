@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="5 seconds">
-    <timestamp key="DATE_PREFIX" datePattern="yyyy-MM-dd"/>
-    
-    <include resource="logger/file/info-appender.xml"/>
-    <include resource="logger/file/warn-appender.xml"/>
-    <include resource="logger/file/error-appender.xml"/>
-    <include resource="logger/cloudwatch/info-threshold-appender.xml"/>
+    <include resource="logger/console/console-appender.xml"/>
+    <include resource="logger/console/parameter-appender.xml"/>
 
-    <property name="LOG_FILE_PATH" value="/app/logs/ahmadda"/>
+    <logger name="org.springframework.boot" level="INFO">
+        <appender-ref ref="console-appender"/>
+    </logger>
 
-    <root level="INFO">
-        <appender-ref ref="info-appender"/>
-        <appender-ref ref="warn-appender"/>
-        <appender-ref ref="error-appender"/>
-        <appender-ref ref="cloudwatch-appender"/>
-    </root>
+    <logger name="com.ahmadda" level="TRACE">
+        <appender-ref ref="console-appender"/>
+    </logger>
+
+    <logger name="org.hibernate.orm.jdbc.bind" level="TRACE">
+        <appender-ref ref="parameter-appender"/>
+    </logger>
 
 </configuration>
