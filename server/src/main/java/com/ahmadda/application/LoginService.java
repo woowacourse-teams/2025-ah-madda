@@ -24,15 +24,15 @@ public class LoginService {
     public String login(final String code, final String redirectUri) {
         OAuthUserInfoResponse userInfo = googleOAuthProvider.getUserInfo(code, redirectUri);
 
-        Member member = findOrCreateMember(userInfo.name(), userInfo.email());
+        Member member = findOrCreateMember(userInfo.name(), userInfo.email(), userInfo.picture());
 
         return jwtProvider.createToken(member.getId());
     }
 
-    private Member findOrCreateMember(final String name, final String email) {
+    private Member findOrCreateMember(final String name, final String email, final String profileImageUrl) {
         return memberRepository.findByEmail(email)
                 .orElseGet(() -> {
-                    Member newMember = Member.create(name, email);
+                    Member newMember = Member.create(name, email, profileImageUrl);
 
                     slackAlarm.alarmMemberCreation(MemberCreateAlarmPayload.from(newMember));
 

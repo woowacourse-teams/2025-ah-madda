@@ -34,15 +34,17 @@ public class EventNotificationScheduler {
         List<Event> upcomingEvents =
                 eventRepository.findAllByEventOperationPeriodRegistrationPeriodEndBetween(now, targetTime);
 
-        upcomingEvents.forEach(upcomingEvent -> {
-            List<OrganizationMember> recipients = upcomingEvent.getNonGuestOrganizationMembers(
-                    upcomingEvent.getOrganization()
-                            .getOrganizationMembers()
-            );
-            String content = "이벤트 신청 마감이 임박했습니다.";
+        upcomingEvents.stream()
+                .filter(event -> !event.isFull()).
+                forEach(upcomingEvent -> {
+                    List<OrganizationMember> recipients = upcomingEvent.getNonGuestOrganizationMembers(
+                            upcomingEvent.getOrganization()
+                                    .getOrganizationMembers()
+                    );
+                    String content = "이벤트 신청 마감이 임박했습니다.";
 
-            sendNotificationToRecipients(recipients, upcomingEvent, content);
-        });
+                    sendNotificationToRecipients(recipients, upcomingEvent, content);
+                });
     }
 
     private void sendNotificationToRecipients(

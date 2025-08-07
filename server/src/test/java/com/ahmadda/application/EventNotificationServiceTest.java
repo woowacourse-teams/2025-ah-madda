@@ -205,7 +205,7 @@ class EventNotificationServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.notifySelectedOrganizationMembers(999L, request, createLoginMember(organizer))
+                                   sut.notifySelectedOrganizationMembers(999L, request, createLoginMember(organizer))
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 이벤트입니다.");
@@ -238,7 +238,10 @@ class EventNotificationServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.notifySelectedOrganizationMembers(event.getId(), request, createLoginMember(other))
+                                   sut.notifySelectedOrganizationMembers(event.getId(),
+                                                                         request,
+                                                                         createLoginMember(other)
+                                   )
         )
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessage("이벤트 주최자가 아닙니다.");
@@ -274,7 +277,10 @@ class EventNotificationServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.notifySelectedOrganizationMembers(event.getId(), request, createLoginMember(organizer))
+                                   sut.notifySelectedOrganizationMembers(event.getId(),
+                                                                         request,
+                                                                         createLoginMember(organizer)
+                                   )
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 조직원입니다.");
@@ -293,7 +299,7 @@ class EventNotificationServiceTest {
             String email,
             Organization organization
     ) {
-        var member = memberRepository.save(Member.create(nickname, email));
+        var member = memberRepository.save(Member.create(nickname, email, "testPicture"));
 
         return organizationMemberRepository.save(OrganizationMember.create(nickname, member, organization));
     }

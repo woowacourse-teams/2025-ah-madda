@@ -52,9 +52,10 @@ class LoginServiceTest {
         var email = "test@example.com";
         var accessToken = "access_token";
         var redirectUri = "redirectUri";
+        var testPicture = "testPicture";
 
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
-                .willReturn(new OAuthUserInfoResponse(email, name));
+                .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
 
         given(jwtProvider.createToken(any(Long.class)))
                 .willReturn(accessToken);
@@ -74,14 +75,15 @@ class LoginServiceTest {
         var email = "test@example.com";
         var accessToken = "access_token";
         var redirectUri = "redirectUri";
+        var testPicture = "testPicture";
 
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
-                .willReturn(new OAuthUserInfoResponse(email, name));
+                .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
 
         given(jwtProvider.createToken(any(Long.class)))
                 .willReturn(accessToken);
 
-        Member member = Member.create(name, email);
+        Member member = Member.create(name, email, testPicture);
         memberRepository.save(member);
 
         // when
@@ -99,6 +101,7 @@ class LoginServiceTest {
         var email = "test@example.com";
         var accessToken = "access_token";
         var redirectUri = "redirectUri";
+        var testPicture = "testPicture";
 
         var memberCreateAlarmDto = new MemberCreateAlarmPayload(name, email);
         var expectedLog = String.format(
@@ -107,7 +110,7 @@ class LoginServiceTest {
         );
 
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
-                .willReturn(new OAuthUserInfoResponse(email, name));
+                .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
 
         given(jwtProvider.createToken(any(Long.class)))
                 .willReturn(accessToken);

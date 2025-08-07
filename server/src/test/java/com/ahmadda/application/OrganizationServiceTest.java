@@ -103,7 +103,7 @@ class OrganizationServiceTest {
     @Test
     void 존재하지_않는_조직의_이벤트를_조회하면_예외가_발생한다() {
         // given
-        var member = memberRepository.save(Member.create("user", "user@test.com"));
+        var member = memberRepository.save(Member.create("user", "user@test.com", "testPicture"));
         var loginMember = new LoginMember(member.getId());
 
         // when // then
@@ -115,7 +115,7 @@ class OrganizationServiceTest {
     @Test
     void 여러_조직의_이벤트가_있을때_선택된_조직의_활성화된_이벤트만_가져온다() {
         // given
-        var member = memberRepository.save(Member.create("name", "test@test.com"));
+        var member = memberRepository.save(Member.create("name", "test@test.com", "testPicture"));
         var loginMember = new LoginMember(member.getId());
         var orgA = organizationRepository.save(createOrganization("OrgA", "DescA", "a.png"));
         var orgB = organizationRepository.save(createOrganization("OrgB", "DescB", "b.png"));
@@ -140,7 +140,7 @@ class OrganizationServiceTest {
     @Test
     void 조직원이_아니면_조직의_이벤트를_조회시_예외가_발생한다() {
         // given
-        var member = memberRepository.save(Member.create("user", "user@test.com"));
+        var member = memberRepository.save(Member.create("user", "user@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
         var loginMember = new LoginMember(member.getId());
 
@@ -153,8 +153,8 @@ class OrganizationServiceTest {
     @Test
     void 초대코드를_통해_조직에_참여할_수_있다() {
         // given
-        var member1 = memberRepository.save(Member.create("user1", "user1@test.com"));
-        var member2 = memberRepository.save(Member.create("user2", "user2@test.com"));
+        var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
         var inviter = createAndSaveOrganizationMember("surf", member2, organization);
         var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
@@ -174,8 +174,8 @@ class OrganizationServiceTest {
     @Test
     void 이미_참여한_조직에_중복_참여하면_예외가_발생한다() {
         // given
-        var member1 = memberRepository.save(Member.create("user1", "user1@test.com"));
-        var member2 = memberRepository.save(Member.create("user2", "user2@test.com"));
+        var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
         var organizationMember = createAndSaveOrganizationMember("surf", member1, organization);
         var inviter = createAndSaveOrganizationMember("tuda", member2, organization);
@@ -193,8 +193,8 @@ class OrganizationServiceTest {
     @Test
     void 존재하지_않는_조직에_참여한다면_예외가_발생한다() {
         // given
-        var member1 = memberRepository.save(Member.create("user1", "user1@test.com"));
-        var member2 = memberRepository.save(Member.create("user2", "user2@test.com"));
+        var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
         var inviter = createAndSaveOrganizationMember("surf", member2, organization);
         var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
@@ -211,7 +211,7 @@ class OrganizationServiceTest {
     @Test
     void 존재하지_않는_회원이_조직에_참여하려_한다면_예외가_발생한다() {
         // given
-        var member = memberRepository.save(Member.create("user2", "user2@test.com"));
+        var member = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
         var inviter = createAndSaveOrganizationMember("surf", member, organization);
         var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
@@ -228,7 +228,7 @@ class OrganizationServiceTest {
     @Test
     void 존재하지_않는_초대코드로_조직에_참여하려_한다면_예외가_발생한다() {
         // given
-        var member = memberRepository.save(Member.create("user1", "user1@test.com"));
+        var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
 
         var loginMember = new LoginMember(member.getId());
