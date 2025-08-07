@@ -11,12 +11,7 @@ export const myQueryKeys = {
     all: () => [...myQueryKeys.all(), 'event'],
     host: () => [...myQueryKeys.event.all(), 'host'],
     participate: () => [...myQueryKeys.event.all(), 'participate'],
-    guestAnswers: (eventId: number, guestId: number) => [
-      ...myQueryKeys.event.all(),
-      'guestAnswers',
-      eventId,
-      guestId,
-    ],
+    guestAnswers: () => [...myQueryKeys.event.all(), 'guestAnswers'],
   },
 };
 
@@ -36,7 +31,7 @@ export const myQueryOptions = {
 
     guestAnswers: (eventId: number, guestId: number) =>
       queryOptions({
-        queryKey: [...myQueryKeys.event.guestAnswers(eventId, guestId)],
+        queryKey: [...myQueryKeys.event.guestAnswers(), eventId, guestId],
         queryFn: () => getGuestAnswers(eventId, guestId),
       }),
   },

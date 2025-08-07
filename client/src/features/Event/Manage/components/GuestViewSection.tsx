@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
@@ -50,7 +51,12 @@ export const GuestViewSection = ({
 
   return (
     <>
-      <Card>
+      <Card
+        css={css`
+          position: relative;
+          bottom: 20px;
+        `}
+      >
         <Flex as="section" dir="column" gap="20px">
           <Flex alignItems="center" gap="8px">
             <Icon name="user" size={18} />

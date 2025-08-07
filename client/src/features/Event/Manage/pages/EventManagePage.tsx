@@ -81,12 +81,13 @@ export const EventManagePage = () => {
         </Tabs>
 
         <ButtonWrapper justifyContent="center">
+          {/* E.TODO 마감됨 버튼이 너무커서 겹치는 이슈 -> footer 구현 후 해결 여부 확인 */}
           {isClosed ? (
-            <Button size="sm" color="tertiary" variant="solid" disabled>
+            <Button size="full" color="tertiary" variant="solid" disabled>
               마감됨
             </Button>
           ) : (
-            <Button size="sm" color="tertiary" variant="solid" onClick={handleButtonClick}>
+            <Button size="full" color="tertiary" variant="solid" onClick={handleButtonClick}>
               마감하기
             </Button>
           )}
