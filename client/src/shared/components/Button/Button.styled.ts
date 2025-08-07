@@ -78,7 +78,7 @@ const variantStyles = {
   outline: css`
     color: ${theme.colors.gray500};
     border: 1px solid ${theme.colors.gray300};
-    background-color: transparent;
+    background-color: ${theme.colors.white};
 
     &:hover {
       background-color: white;

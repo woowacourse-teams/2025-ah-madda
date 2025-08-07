@@ -6,7 +6,9 @@ import { Icon } from '@/shared/components/Icon';
 import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
+import { theme } from '@/shared/styles/theme';
 
+import { UNLIMITED_CAPACITY } from '../../New/constants/errorMessages';
 import { formatDateTime } from '../../Overview/utils/formatDateTime';
 import { formatTime } from '../../Overview/utils/formatTime';
 import { Event } from '../../types/Event';
@@ -30,6 +32,11 @@ export const EventCard = ({
   cardType,
 }: EventCardProps) => {
   const navigate = useNavigate();
+
+  const isUnlimited = maxCapacity === UNLIMITED_CAPACITY;
+  const progressValue = isUnlimited ? 1 : Number(currentGuestCount);
+  const progressMax = isUnlimited ? 1 : maxCapacity;
+  const progressColor = isUnlimited ? theme.colors.primary700 : 'black';
 
   const handleClick = () => {
     if (cardType === 'host') {
@@ -89,10 +96,10 @@ export const EventCard = ({
             참여 현황
           </Text>
           <Text type="Label" color="#99A1AF">
-            {`${currentGuestCount}/${maxCapacity} 명`}
+            {isUnlimited ? '무제한' : `${currentGuestCount}/${maxCapacity} 명`}
           </Text>
         </Flex>
-        <ProgressBar value={Number(currentGuestCount)} max={maxCapacity} color="black" />
+        <ProgressBar value={progressValue} max={progressMax} color={progressColor} />
       </Flex>
     </EventCardWrapper>
   );

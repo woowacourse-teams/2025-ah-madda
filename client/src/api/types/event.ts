@@ -17,3 +17,8 @@ export type UpdateEventParams = {
 export type UpdateEventResponse = {
   eventId: number;
 };
+
+export type StatisticsAPIResponse = {
+  date: string;
+  count: number;
+};

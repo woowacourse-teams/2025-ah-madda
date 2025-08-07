@@ -4,7 +4,11 @@ import { Guest, NonGuest } from '../../features/Event/Manage/types';
 import { CreateEventAPIRequest, EventDetail } from '../../features/Event/types/Event';
 import { fetcher } from '../fetcher';
 import { postAlarm } from '../mutations/useAddAlarm';
-import { GuestStatusAPIResponse } from '../types/event';
+import {
+  GuestStatusAPIResponse,
+  OrganizerStatusAPIResponse,
+  StatisticsAPIResponse,
+} from '../types/event';
 import { NotificationAPIRequest } from '../types/notification';
 
 type CreateEventAPIResponse = {
@@ -20,6 +24,7 @@ export const eventQueryKeys = {
   guestStatus: () => [...eventQueryKeys.all(), 'guestStatus'],
   participation: () => [...eventQueryKeys.all(), 'participation'],
   cancel: () => [...eventQueryKeys.all(), 'cancel'],
+  statistic: () => [...eventQueryKeys.all(), 'statistic'],
 };
 
 export const eventQueryOptions = {
@@ -51,6 +56,11 @@ export const eventQueryOptions = {
     queryOptions({
       queryKey: [...eventQueryKeys.cancel(), eventId],
       queryFn: () => fetcher.delete(`events/${eventId}`),
+    }),
+  statistic: (eventId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.statistic(), eventId],
+      queryFn: () => fetcher.get<StatisticsAPIResponse[]>(`events/${eventId}/statistic`),
     }),
 };
 

@@ -1,10 +1,11 @@
+import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/shared/components/Button';
-import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
 import { IconButton } from '@/shared/components/IconButton';
 import { PageLayout } from '@/shared/components/PageLayout';
+import { Tabs } from '@/shared/components/Tabs';
 
 import { EventInfoSection } from '../components/EventInfoSection';
 import { GuestManageSection } from '../components/GuestManageSection';
@@ -27,10 +28,27 @@ export const EventManagePage = () => {
       }
     >
       <EventManageContainer>
-        <Flex as="main" gap="40px" width="100%" dir="column">
-          <EventInfoSection />
-          <GuestManageSection />
-        </Flex>
+        <Tabs defaultValue="detail">
+          <Tabs.List
+            css={css`
+              width: 40%;
+              @media (max-width: 768px) {
+                width: 100%;
+              }
+            `}
+          >
+            <Tabs.Trigger value="detail">이벤트 정보</Tabs.Trigger>
+            <Tabs.Trigger value="applications">신청 현황</Tabs.Trigger>
+          </Tabs.List>
+
+          <Tabs.Content value="detail">
+            <EventInfoSection />
+          </Tabs.Content>
+
+          <Tabs.Content value="applications">
+            <GuestManageSection />
+          </Tabs.Content>
+        </Tabs>
       </EventManageContainer>
     </PageLayout>
   );

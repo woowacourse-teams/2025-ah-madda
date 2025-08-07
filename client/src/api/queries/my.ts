@@ -1,10 +1,11 @@
+import { queryOptions } from '@tanstack/react-query';
+
 import { Event } from '@/features/Event/types/Event';
 
 import { fetcher } from '../fetcher';
 
 export const myQueryKeys = {
   all: () => ['my'],
-  profile: () => [...myQueryKeys.all(), 'profile'],
   event: {
     all: () => [...myQueryKeys.all(), 'event'],
     host: () => [...myQueryKeys.event.all(), 'host'],
@@ -13,24 +14,19 @@ export const myQueryKeys = {
 };
 
 export const myQueryOptions = {
-  profile: () => ({
-    queryKey: myQueryKeys.profile(),
-    queryFn: getMyProfile,
-  }),
   event: {
-    hostEvents: (organizationId: number) => ({
-      queryKey: [...myQueryKeys.event.host(), organizationId],
-      queryFn: () => getHostEvents(organizationId),
-    }),
-    participateEvents: (organizationId: number) => ({
-      queryKey: [...myQueryKeys.event.participate(), organizationId],
-      queryFn: () => getParticipateEvents(organizationId),
-    }),
-  },
-};
+    hostEvents: (organizationId: number) =>
+      queryOptions({
+        queryKey: [...myQueryKeys.event.host(), organizationId],
+        queryFn: () => getHostEvents(organizationId),
+      }),
 
-const getMyProfile = async (): Promise<{ id: number; name: string; email: string }> => {
-  return await fetcher.get('members/profile');
+    participateEvents: (organizationId: number) =>
+      queryOptions({
+        queryKey: [...myQueryKeys.event.participate(), organizationId],
+        queryFn: () => getParticipateEvents(organizationId),
+      }),
+  },
 };
 
 const getHostEvents = async (organizationId: number): Promise<Event[]> => {

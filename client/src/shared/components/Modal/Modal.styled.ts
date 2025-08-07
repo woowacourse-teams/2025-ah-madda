@@ -31,4 +31,20 @@ export const StyledCloseButtonWrapper = styled.div`
   top: 16px;
   right: 16px;
   z-index: 1;
+
+  button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #333;
+
+    &:hover {
+      color: #000;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
 `;

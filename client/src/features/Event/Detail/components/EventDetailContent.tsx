@@ -77,24 +77,26 @@ export const EventDetailContent = ({
           eventStart={formatKoreanDateTime(eventStart)}
           eventEnd={formatKoreanDateTime(eventEnd)}
         />
-        <LocationCard place={place} />
+        {place && <LocationCard place={place} />}
       </Flex>
 
       <ParticipantsCard currentGuestCount={currentGuestCount} maxCapacity={maxCapacity} />
-
-      <DescriptionCard description={description} />
-
-      <PreQuestionCard
-        questions={questions}
-        answers={answers}
-        onChangeAnswer={handleChangeAnswer}
-      />
-      <SubmitButtonCard
-        isGuest={isGuest}
-        registrationEnd={registrationEnd}
-        eventId={eventId}
-        answers={answers}
-      />
+      {description && <DescriptionCard description={description} />}
+      {questions.length > 0 && (
+        <PreQuestionCard
+          questions={questions}
+          answers={answers}
+          onChangeAnswer={handleChangeAnswer}
+        />
+      )}
+      {!isOrganizer && (
+        <SubmitButtonCard
+          isGuest={isGuest}
+          registrationEnd={registrationEnd}
+          eventId={eventId}
+          answers={answers}
+        />
+      )}
     </Flex>
   );
 };

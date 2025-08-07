@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -21,25 +20,7 @@ export const EventInfoSection = () => {
   const navigate = useNavigate();
 
   return (
-    <Flex
-      as="section"
-      dir="column"
-      gap="24px"
-      width="100%"
-      margin="0 auto"
-      padding="0 16px"
-      css={css`
-        max-width: 800px;
-
-        @media (max-width: 768px) {
-          padding: 0 20px;
-        }
-
-        @media (max-width: 480px) {
-          padding: 0 16px;
-        }
-      `}
-    >
+    <Flex as="section" dir="column" gap="24px" width="100%" margin="0 auto" padding="20px 0">
       <Card>
         <Flex dir="column" gap="16px">
           <Flex justifyContent="space-between">
