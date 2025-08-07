@@ -6,8 +6,11 @@ import { RouterProvider } from 'react-router-dom';
 
 import './reset.css';
 import { ClientQueryProvider } from './api/ClientQueryProvider';
+import { initSentry } from './lib/sentry';
 import { router } from './router/route';
 import { theme } from './shared/styles/theme';
+
+initSentry();
 
 const GA_ID = process.env.GOOGLE_ANALYTICS_ID;
 
