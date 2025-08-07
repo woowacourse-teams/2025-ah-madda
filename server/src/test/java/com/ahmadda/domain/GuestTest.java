@@ -36,9 +36,10 @@ class GuestTest {
         member = Member.create("참가자 회원", "guest@example.com", "testPicture");
         participant = OrganizationMember.create("참가자", member, organization);
         otherParticipant =
-                OrganizationMember.create("다른 참가자",
-                                          Member.create("다른 회원", "other@example.com", "testPicture"),
-                                          organization
+                OrganizationMember.create(
+                        "다른 참가자",
+                        Member.create("다른 회원", "other@example.com", "testPicture"),
+                        organization
                 );
     }
 
@@ -73,7 +74,7 @@ class GuestTest {
 
         //then
         assertThat(event.getGuests()
-                           .contains(guest)).isTrue();
+                .contains(guest)).isTrue();
     }
 
     @Test
@@ -282,7 +283,7 @@ class GuestTest {
         var now = LocalDateTime.now();
         var question = Question.create("질문", true, 0);
         var event = createEvent("이벤트", participant, now, question);
-        var otherMember = Member.create("다른 회원", "email@email.com");
+        var otherMember = Member.create("다른 회원", "email@email.com", "profileUrl");
         var othrerOrganizationMember =
                 OrganizationMember.create("다른 게스트", otherMember, participant.getOrganization());
         var guest = Guest.create(event, otherParticipant, now);
