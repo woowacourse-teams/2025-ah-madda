@@ -1,4 +1,5 @@
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 import { useQuery } from '@tanstack/react-query';
 
 import { eventQueryOptions } from '@/api/queries/event';
@@ -16,6 +17,10 @@ type TemplateModalProps = {
   onConfirm: (eventId: number) => void;
   onSelect: (eventId: number) => void;
   selectedEventId: number;
+};
+
+type StyledCardProps = {
+  isSelected: boolean;
 };
 
 export const TemplateModal = ({
@@ -80,19 +85,10 @@ export const TemplateModal = ({
             const isSelected = selectedEventId === event.eventId;
 
             return (
-              <Card
+              <StyledCard
                 key={event.eventId}
                 onClick={() => onSelect(event.eventId)}
-                css={css`
-                  cursor: pointer;
-                  padding: 16px;
-                  background-color: ${isSelected ? theme.colors.primary50 : theme.colors.white};
-                  border-radius: 8px;
-                  transition: all 0.2s ease;
-                  &:hover {
-                    background-color: ${theme.colors.primary50};
-                  }
-                `}
+                isSelected={isSelected}
               >
                 <Flex
                   alignItems="center"
@@ -105,7 +101,7 @@ export const TemplateModal = ({
                     {event.title}
                   </Text>
                 </Flex>
-              </Card>
+              </StyledCard>
             );
           })}
         </Flex>
@@ -132,3 +128,15 @@ export const TemplateModal = ({
     </Modal>
   );
 };
+
+const StyledCard = styled(Card)<StyledCardProps>`
+  cursor: pointer;
+  padding: 16px;
+  background-color: ${({ isSelected }) =>
+    isSelected ? theme.colors.primary50 : theme.colors.white};
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  &:hover {
+    background-color: ${theme.colors.primary50};
+  }
+`;
