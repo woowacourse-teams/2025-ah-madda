@@ -92,7 +92,7 @@ public class EventGuestService {
         return event.hasGuest(organizationMember);
     }
 
-    public List<Answer> getAnswers(final Long eventId, Long guestId, final LoginMember organizerLoginMember) {
+    public List<Answer> getAnswers(final Long eventId, final Long guestId, final LoginMember organizerLoginMember) {
         Event event = getEvent(eventId);
         Organization organization = event.getOrganization();
         OrganizationMember organizer = getOrganizationMember(organization.getId(), organizerLoginMember.memberId());
