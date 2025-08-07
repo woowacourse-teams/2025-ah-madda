@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 
-import { GuestStatusAPIResponse, OrganizerStatusAPIResponse } from '@/api/types/event';
+import { GuestStatusAPIResponse } from '@/api/types/event';
 import { Answer } from '@/api/types/event';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
@@ -18,7 +18,7 @@ import { PreQuestionCard } from './PreQuestionCard';
 import { SubmitButtonCard } from './SubmitButtonCard';
 import { TimeInfoCard } from './TimeInfoCard';
 
-type EventDetailContentProps = EventDetail & GuestStatusAPIResponse & OrganizerStatusAPIResponse;
+type EventDetailContentProps = EventDetail & GuestStatusAPIResponse;
 
 export const EventDetailContent = ({
   eventId,
@@ -31,7 +31,6 @@ export const EventDetailContent = ({
   description,
   questions,
   isGuest,
-  isOrganizer,
 }: EventDetailContentProps) => {
   const [answers, setAnswers] = useState<Answer[]>(
     questions.map(({ questionId }) => ({
@@ -50,13 +49,14 @@ export const EventDetailContent = ({
 
   return (
     <Flex dir="column" width="100%" padding="20px 0" gap="20px">
-      {isOrganizer && (
-        <Flex justifyContent="flex-end">
-          <Button color="secondary" onClick={() => navigate(`/event/edit/${eventId}`)}>
-            ✏️ 수정
-          </Button>
-        </Flex>
-      )}
+      {/* A.TODO: 주최자 확인 API 연결 후 주석 해제 예정 */}
+      {/* {isOrganizer && ( */}
+      <Flex justifyContent="flex-end">
+        <Button color="secondary" onClick={() => navigate(`/event/edit/${eventId}`)}>
+          ✏️ 수정
+        </Button>
+      </Flex>
+      {/* )} */}
 
       <Flex
         dir="row"
@@ -85,14 +85,12 @@ export const EventDetailContent = ({
         answers={answers}
         onChangeAnswer={handleChangeAnswer}
       />
-      {!isOrganizer && (
-        <SubmitButtonCard
-          isGuest={isGuest}
-          registrationEnd={registrationEnd}
-          eventId={eventId}
-          answers={answers}
-        />
-      )}
+      <SubmitButtonCard
+        isGuest={isGuest}
+        registrationEnd={registrationEnd}
+        eventId={eventId}
+        answers={answers}
+      />
     </Flex>
   );
 };
