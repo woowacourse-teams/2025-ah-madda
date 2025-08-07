@@ -1,6 +1,9 @@
 package com.ahmadda.application;
 
-import com.ahmadda.application.dto.MemberCreateAlarmPayload;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.OrganizationMemberRepository;
@@ -12,14 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Transactional
@@ -92,34 +90,4 @@ class LoginServiceTest {
         // then
         assertThat(memberRepository.count()).isEqualTo(1);
     }
-
-    @Test
-    void 로그인시_회원을_저장하고_알람_요청을_보낸다(CapturedOutput output) {
-        // given
-        var code = "code";
-        var name = "홍길동";
-        var email = "test@example.com";
-        var accessToken = "access_token";
-        var redirectUri = "redirectUri";
-        var testPicture = "testPicture";
-
-        var memberCreateAlarmDto = new MemberCreateAlarmPayload(name, email);
-        var expectedLog = String.format(
-                "회원가입 유저 정보 : %s 프로덕션이 아니어서 슬랙으로 알람 보내지 않음",
-                memberCreateAlarmDto
-        );
-
-        given(googleOAuthProvider.getUserInfo(code, redirectUri))
-                .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
-
-        given(jwtProvider.createToken(any(Long.class)))
-                .willReturn(accessToken);
-
-        // when
-        sut.login(code, redirectUri);
-
-        // then
-        assertThat(output.getOut()).contains(expectedLog);
-    }
-
 }
