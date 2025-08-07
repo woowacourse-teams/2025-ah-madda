@@ -47,10 +47,11 @@ export const colors = {
 };
 
 export type ColorType = typeof colors;
-export type IconColor = 'primary' | 'secondary' | 'gray' | 'red' | 'white';
+export type IconColor = 'primary' | 'primary500' | 'secondary' | 'gray' | 'red' | 'white';
 
 export const colorMap: Record<IconColor, string> = {
   primary: colors.primary800,
+  primary500: colors.primary500,
   secondary: colors.secondary900,
   gray: colors.gray800,
   red: colors.red700,

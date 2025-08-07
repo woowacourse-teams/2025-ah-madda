@@ -23,7 +23,6 @@ export const EventCard = ({
   maxCapacity,
 }: Event) => {
   const navigate = useNavigate();
-  const isRegistrationOpen = new Date(registrationEnd) > new Date();
 
   return (
     <CardWrapper onClick={() => navigate(`/event/${eventId}`)}>
@@ -32,9 +31,6 @@ export const EventCard = ({
           <Text as="h2" type="Heading" color="#ffffff" weight="semibold">
             {title.length > 15 ? `${title.slice(0, 12)}...` : title}
           </Text>
-          <Badge isRegistrationOpen={isRegistrationOpen}>
-            {isRegistrationOpen ? '모집중' : '모집마감'}
-          </Badge>
         </Flex>
         <Text type="Body" color="#99A1AF">
           {description}
