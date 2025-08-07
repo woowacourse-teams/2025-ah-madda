@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="5 seconds">
+    <include resource="logger/file/info-appender.xml"/>
+    <include resource="logger/file/warn-appender.xml"/>
+    <include resource="logger/file/error-appender.xml"/>
+
+    <property name="LOG_FILE_PATH" value="/app/logs/ahmadda"/>
+
+    <root level="INFO">
+        <appender-ref ref="info-appender"/>
+        <appender-ref ref="warn-appender"/>
+        <appender-ref ref="error-appender"/>
+    </root>
+
+</configuration>
