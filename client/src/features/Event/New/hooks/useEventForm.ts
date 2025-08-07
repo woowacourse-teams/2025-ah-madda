@@ -27,10 +27,20 @@ export const useEventForm = () => {
     }));
   };
 
+  const loadFormData = (template: Partial<CreateEventAPIRequest>) => {
+    setFormData((prev) => ({
+      ...prev,
+      title: template.title ?? prev.title,
+      description: template.description ?? prev.description,
+      place: template.place ?? prev.place,
+      maxCapacity: template.maxCapacity ?? prev.maxCapacity,
+    }));
+  };
+
   return {
     formData,
-    setFormData,
     handleChange,
     setQuestions,
+    loadFormData,
   };
 };

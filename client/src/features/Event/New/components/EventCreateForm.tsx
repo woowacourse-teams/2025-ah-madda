@@ -25,7 +25,7 @@ const ORGANIZER_NICKNAME = '임시닉네임';
 export const EventCreateForm = () => {
   const navigate = useNavigate();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
-  const { formData, handleChange, setQuestions, setFormData } = useEventForm();
+  const { formData, handleChange, setQuestions, loadFormData } = useEventForm();
   const { errors, setQuestionErrors, validate, validateField, isFormValid } =
     useEventValidation(formData);
   const { data: userProfile } = useQuery(myQueryOptions.profile());
@@ -33,13 +33,7 @@ export const EventCreateForm = () => {
   const { template, selectedEventId, handleSelectEvent } = useTemplateLoader();
 
   const handleTemplateLoad = () => {
-    setFormData({
-      ...formData,
-      title: template?.title ?? '',
-      description: template?.description ?? '',
-      place: template?.place ?? '',
-      maxCapacity: template?.maxCapacity ?? '',
-    });
+    loadFormData(template ?? {});
   };
 
   const handleSubmit = (e: React.FormEvent) => {
