@@ -8,6 +8,7 @@ import { Icon } from '@/shared/components/Icon';
 import { Input } from '@/shared/components/Input';
 import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
+import { trackSendAlarm } from '@/shared/lib/gaEvents';
 
 import { useNotificationForm } from '../hooks/useNotificationForm';
 
@@ -22,6 +23,8 @@ export const AlarmSection = ({ organizationMemberIds, selectedGuestCount }: Alar
   const { mutate: postAlarm, isPending } = useAddAlarm({ eventId: Number(eventIdParam) });
 
   const handleSendAlarm = () => {
+    trackSendAlarm(selectedGuestCount);
+
     postAlarm(
       { organizationMemberIds, content },
       {

@@ -5,6 +5,7 @@ import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Text } from '@/shared/components/Text';
+import { trackClickEventCard } from '@/shared/lib/gaEvents';
 
 import { Event } from '../../types/Event';
 import { formatDateTime } from '../utils/formatDateTime';
@@ -25,8 +26,13 @@ export const EventCard = ({
   const navigate = useNavigate();
   const isRegistrationOpen = new Date(registrationEnd) > new Date();
 
+  const handleClickCard = () => {
+    trackClickEventCard(title);
+    navigate(`/event/${eventId}`);
+  };
+
   return (
-    <CardWrapper onClick={() => navigate(`/event/${eventId}`)}>
+    <CardWrapper onClick={handleClickCard}>
       <Flex dir="column" gap="8px">
         <Flex justifyContent="space-between" alignItems="center" gap="8px">
           <Text as="h2" type="Heading" color="#ffffff" weight="semibold">

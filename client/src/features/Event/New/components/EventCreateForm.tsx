@@ -8,6 +8,7 @@ import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
+import { trackCreateEvent } from '@/shared/lib/gaEvents';
 
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useEventForm } from '../hooks/useEventForm';
@@ -30,6 +31,8 @@ export const EventCreateForm = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+
+    trackCreateEvent(formData.title);
 
     const payload = {
       ...formData,
