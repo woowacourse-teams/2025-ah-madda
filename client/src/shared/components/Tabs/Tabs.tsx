@@ -1,4 +1,13 @@
-import { createContext, useContext, useState, ComponentProps, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  ComponentProps,
+  ReactNode,
+  Children,
+  ReactElement,
+  isValidElement,
+} from 'react';
 
 import { StyledTabs, StyledTabsContent, StyledTabsList, StyledTabsTrigger } from './Tabs.styled';
 
@@ -60,8 +69,16 @@ export const Tabs = ({ defaultValue, children, ...props }: TabsProps) => {
 };
 
 export const TabsList = ({ children, ...props }: TabsListProps) => {
+  const { activeTab } = useTabsContext();
+  const tabValues = Children.toArray(children)
+    .filter((child): child is ReactElement<{ value: string }> => isValidElement(child))
+    .map((child) => child.props?.value);
+
+  const activeTabIndex = tabValues.indexOf(activeTab);
+  const tabCount = tabValues.length;
+
   return (
-    <StyledTabsList role="tablist" {...props}>
+    <StyledTabsList role="tablist" tabCount={tabCount} activeTabIndex={activeTabIndex} {...props}>
       {children}
     </StyledTabsList>
   );

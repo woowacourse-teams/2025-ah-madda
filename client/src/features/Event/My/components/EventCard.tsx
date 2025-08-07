@@ -6,7 +6,9 @@ import { Icon } from '@/shared/components/Icon';
 import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
+import { theme } from '@/shared/styles/theme';
 
+import { UNLIMITED_CAPACITY } from '../../New/constants/errorMessages';
 import { formatDateTime } from '../../Overview/utils/formatDateTime';
 import { formatTime } from '../../Overview/utils/formatTime';
 import { Event } from '../../types/Event';
@@ -31,6 +33,11 @@ export const EventCard = ({
 }: EventCardProps) => {
   const navigate = useNavigate();
 
+  const isUnlimited = maxCapacity === UNLIMITED_CAPACITY;
+  const progressValue = isUnlimited ? 1 : Number(currentGuestCount);
+  const progressMax = isUnlimited ? 1 : maxCapacity;
+  const progressColor = isUnlimited ? theme.colors.primary700 : 'black';
+
   const handleClick = () => {
     if (cardType === 'host') {
       navigate(`/event/manage/${eventId}`);
@@ -42,32 +49,32 @@ export const EventCard = ({
   return (
     <EventCardWrapper onClick={handleClick}>
       <Flex dir="column" gap="3.5px">
-        <Text type="Title" weight="semibold" color="white">
-          {title}
+        <Text as="h2" type="Heading" weight="semibold" color="white">
+          {title.length > 15 ? `${title.slice(0, 12)}...` : title}
         </Text>
-        <Text type="caption" weight="regular" color="#99A1AF">
+        <Text type="Body" weight="regular" color="#99A1AF">
           {description}
         </Text>
       </Flex>
 
       <Flex dir="column" gap="10px">
-        <Flex alignItems="baseline" gap="3.5px">
-          <Icon name="calendar" size={14} color="#99A1AF" />
-          <Text type="caption" weight="regular" color="#99A1AF">
+        <Flex alignItems="center" gap="3.5px">
+          <Icon name="calendar" size={16} color="white" />
+          <Text type="Label" weight="regular" color="#99A1AF">
             {`신청 마감 ${formatTime(registrationEnd)} 까지`}
           </Text>
         </Flex>
 
-        <Flex alignItems="baseline" gap="3.5px">
-          <Icon name="clock" size={14} color="#99A1AF" />
-          <Text type="caption" weight="regular" color="#99A1AF">
+        <Flex alignItems="center" gap="3.5px">
+          <Icon name="clock" size={16} color="white" />
+          <Text type="Label" weight="regular" color="#99A1AF">
             {`이벤트 시간 ${formatDateTime(eventStart, eventEnd)}`}
           </Text>
         </Flex>
 
         <Flex gap="7px" alignItems="center">
-          <Icon name="location" size={10.5} color="#99A1AF" />
-          <Text type="caption" weight="regular" color="#99A1AF">
+          <Icon name="location" size={16} color="white" />
+          <Text type="Label" weight="regular" color="#99A1AF">
             {`장소 ${place}`}
           </Text>
         </Flex>
@@ -76,22 +83,23 @@ export const EventCard = ({
 
       <Flex dir="column" gap="14px" alignItems="flex-end">
         <Flex width="100%" justifyContent="space-between" alignItems="center">
-          <Text type="caption" color="#99A1AF">
+          <Text type="Label" color="#99A1AF">
             주최자
           </Text>
-          <Text type="caption" weight="regular" color="#99A1AF">
+          <Text type="Label" weight="regular" color="#99A1AF">
             {organizerName}
           </Text>
         </Flex>
+
         <Flex width="100%" justifyContent="space-between" alignItems="center">
-          <Text type="caption" color="#99A1AF">
+          <Text type="Label" color="#99A1AF">
             참여 현황
           </Text>
-          <Text type="caption" weight="regular" color="#99A1AF">
-            {`${currentGuestCount}/${maxCapacity}명`}
+          <Text type="Label" color="#99A1AF">
+            {isUnlimited ? '무제한' : `${currentGuestCount}/${maxCapacity} 명`}
           </Text>
         </Flex>
-        <ProgressBar value={currentGuestCount} max={maxCapacity} color="black" />
+        <ProgressBar value={progressValue} max={progressMax} color={progressColor} />
       </Flex>
     </EventCardWrapper>
   );

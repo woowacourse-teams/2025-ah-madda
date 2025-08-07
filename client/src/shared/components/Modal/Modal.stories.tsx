@@ -52,6 +52,5 @@ export const Basic: Story = {
   args: {
     showCloseButton: true,
     shouldCloseOnBackdropClick: true,
-    size: 'sm',
   },
 };
