@@ -31,7 +31,7 @@ export const Statistics = ({ statistics }: StatisticsProps) => {
               통계
             </Text>
           </Flex>
-          <Text>총 조회수 {totalCount}</Text>
+          <Text>총 조회수 {totalCount}회</Text>
         </Flex>
         <Spacing height="20px" />
         <ChartContainer>
