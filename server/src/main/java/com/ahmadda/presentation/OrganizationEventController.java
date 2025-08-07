@@ -649,6 +649,7 @@ public class OrganizationEventController {
         return ResponseEntity.ok(eventTemplateResponses);
     }
 
+    
     @Operation(summary = "내가 이전에 주최한 이벤트 템플릿으로 불러오기", description = "본인의 이벤트 정보로 이벤트 템플릿을 조회합니디.")
     @ApiResponses(value = {
             @ApiResponse(
