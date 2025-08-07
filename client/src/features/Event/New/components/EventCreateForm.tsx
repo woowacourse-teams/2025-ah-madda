@@ -13,6 +13,7 @@ import { Icon } from '@/shared/components/Icon';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
 import { useModal } from '@/shared/hooks/useModal';
+import { trackCreateEvent } from '@/shared/lib/gaEvents';
 
 import { UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { useAddEvent } from '../hooks/useAddEvent';
@@ -73,6 +74,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
 
     addEvent(payload, {
       onSuccess: ({ eventId }) => {
+        trackCreateEvent();
         alert(`😁 이벤트가 성공적으로 ${isEdit ? '수정' : '생성'}되었습니다!`);
         navigate(`/event/${eventId}`);
       },

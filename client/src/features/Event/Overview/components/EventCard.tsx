@@ -5,6 +5,8 @@ import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Text } from '@/shared/components/Text';
+
+import { trackClickEventCard } from '@/shared/lib/gaEvents';
 import { theme } from '@/shared/styles/theme';
 
 import { UNLIMITED_CAPACITY } from '../../New/constants/errorMessages';
@@ -31,8 +33,13 @@ export const EventCard = ({
   const progressMax = isUnlimited ? 1 : maxCapacity;
   const progressColor = isUnlimited ? theme.colors.primary700 : 'black';
 
+  const handleClickCard = () => {
+    trackClickEventCard(title);
+    navigate(`/event/${eventId}`);
+  };
+
   return (
-    <CardWrapper onClick={() => navigate(`/event/${eventId}`)}>
+    <CardWrapper onClick={handleClickCard}>
       <Flex dir="column" gap="8px">
         <Flex justifyContent="space-between" alignItems="center" gap="8px">
           <Text as="h2" type="Heading" color="#ffffff" weight="semibold">
