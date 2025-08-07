@@ -33,6 +33,7 @@ management:
     enable:
       system.cpu.usage: true
       jvm.memory.used: true
+      jvm.memory.max: true
       http.server.requests: true
       tomcat.threads: true
       app.health.status: true
