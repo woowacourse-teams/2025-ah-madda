@@ -52,8 +52,12 @@ export const EventDetailContent = ({
       {/* A.TODO: 주최자 확인 API 연결 후 주석 해제 예정 */}
       {/* {isOrganizer && ( */}
       <Flex justifyContent="flex-end">
-        <Button color="secondary" onClick={() => navigate(`/event/edit/${eventId}`)}>
-          ✏️ 수정
+        <Button
+          color="secondary"
+          variant="outline"
+          onClick={() => navigate(`/event/edit/${eventId}`)}
+        >
+          수정
         </Button>
       </Flex>
       {/* )} */}
