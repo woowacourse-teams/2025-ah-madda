@@ -1,8 +1,9 @@
 import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { eventQueryOptions } from '@/api/queries/event';
+import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
@@ -16,6 +17,8 @@ export const EventInfoSection = () => {
   const { eventId: eventIdParam } = useParams();
   const eventId = Number(eventIdParam);
   const { data: event } = useQuery(eventQueryOptions.detail(eventId));
+
+  const navigate = useNavigate();
 
   return (
     <Flex
@@ -39,11 +42,25 @@ export const EventInfoSection = () => {
     >
       <Card>
         <Flex dir="column" gap="16px">
-          <Flex alignItems="center" gap="8px">
-            <Icon name="calendar" size={14} />
-            <Text type="Body" weight="regular" color="#4A5565">
-              이벤트 정보
-            </Text>
+          <Flex justifyContent="space-between">
+            <Flex alignItems="center" gap="8px">
+              <Icon name="calendar" size={14} />
+              <Text type="Body" weight="regular" color="#4A5565">
+                이벤트 정보
+              </Text>
+            </Flex>
+            {/* A.TODO: 주최자 확인 API 연결 후 주석 해제 예정 */}
+            {/* {isOrganizer && ( */}
+            <Flex justifyContent="flex-end">
+              <Button
+                color="secondary"
+                variant="outline"
+                onClick={() => navigate(`/event/edit/${eventId}`)}
+              >
+                수정
+              </Button>
+            </Flex>
+            {/* )} */}
           </Flex>
 
           <Text type="Body" weight="semibold" color="#0A0A0A">
