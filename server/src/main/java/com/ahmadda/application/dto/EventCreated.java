@@ -1,4 +1,4 @@
-package com.ahmadda.application.event;
+package com.ahmadda.application.dto;
 
 public record EventCreated(
         Long eventId

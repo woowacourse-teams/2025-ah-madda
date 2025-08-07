@@ -66,6 +66,42 @@ class EventStatisticTest {
     }
 
     @Test
+    void 이벤트_통계가_이미_생성된_이후에도_최신_이벤트_정보를_반영할_수_있다() {
+        //given
+        var organization = createOrganization("우테코1");
+        var organizationMember = createOrganizationMember(createMember("서프", "surf@gmail.com"), organization);
+        var event = createEvent(organizationMember, organization);
+        var now = LocalDateTime.now();
+
+        var modifyRegistrationPeriod = Period.create(now.plusDays(1), now.plusDays(2));
+        var modifyEventPeriod = Period.create(now.plusDays(3), now.plusDays(8));
+
+        var eventDuration = ChronoUnit.DAYS
+                .between(modifyRegistrationPeriod.start(), modifyEventPeriod.end()) + 1;
+
+        var afterEventPeriod = EventOperationPeriod.create(
+                modifyRegistrationPeriod.start(), modifyRegistrationPeriod.end(),
+                modifyEventPeriod.start(), modifyEventPeriod.end(),
+                now
+        );
+
+        var sut = EventStatistic.create(event);
+
+        event.update(
+                organizationMember.getMember(),
+                "수정된 타이틀", "수정된 내용", "수정된 장소", afterEventPeriod, 20
+        );
+
+        //when
+        sut.updateEventViewMatricUntilEventEnd();
+
+        //then
+        assertThat(sut.findEventViewMetrics(organizationMember, LocalDate.MAX)
+                .size())
+                .isEqualTo(eventDuration);
+    }
+
+    @Test
     void 이벤트종료일_당일인_경우_이벤트_종료일까지의_조회수를_가져올_수_있다() {
         //given
         var organization = createOrganization("우테코1");

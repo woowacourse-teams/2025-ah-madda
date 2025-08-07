@@ -18,7 +18,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -30,7 +32,7 @@ public class EventStatistic extends BaseEntity {
     @Column(name = "event_statistic_id")
     private Long id;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "event_statistic_id", nullable = false)
     private final List<EventViewMetric> eventViewMetrics = new ArrayList<>();
 
@@ -43,7 +45,7 @@ public class EventStatistic extends BaseEntity {
 
         this.event = event;
 
-        createEventViewMatricUntilEventEnd(event);
+        updateEventViewMatricUntilEventEnd();
     }
 
     public static EventStatistic create(final Event event) {
@@ -78,17 +80,32 @@ public class EventStatistic extends BaseEntity {
         }
     }
 
-    private void createEventViewMatricUntilEventEnd(final Event event) {
-        LocalDate currentDate = LocalDate.from(
-                event.getEventOperationPeriod()
-                        .getRegistrationPeriod()
-                        .start());
+    public void updateEventViewMatricUntilEventEnd() {
+        LocalDate currentDate = LocalDate.from(event.getEventOperationPeriod()
+                .getRegistrationPeriod()
+                .start());
+
         EventOperationPeriod eventOperationPeriod = event.getEventOperationPeriod();
 
+        Set<LocalDate> existViewMetricDates = calculateExistViewMetricDate();
+
         while (!eventOperationPeriod.isAfterEventEndDate(currentDate)) {
-            EventViewMetric eventViewMetric = EventViewMetric.create(currentDate);
-            eventViewMetrics.add(eventViewMetric);
+            if (!existViewMetricDates.contains(currentDate)) {
+                EventViewMetric eventViewMetric = EventViewMetric.create(currentDate);
+                eventViewMetrics.add(eventViewMetric);
+                existViewMetricDates.add(currentDate);
+            }
+
             currentDate = currentDate.plusDays(1L);
         }
+    }
+
+    private Set<LocalDate> calculateExistViewMetricDate() {
+        Set<LocalDate> localDates = new HashSet<>();
+        for (EventViewMetric eventViewMetric : eventViewMetrics) {
+            localDates.add(eventViewMetric.getViewDate());
+        }
+
+        return localDates;
     }
 }
