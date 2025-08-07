@@ -43,7 +43,7 @@ export const GuestAnswerModal = ({
               {guestAnswers.map((answer: GuestAnswerAPIResponse, index: number) => (
                 <Flex key={index} dir="column" gap="8px">
                   <Text type="Body" weight="medium" color={theme.colors.gray900}>
-                    질문 {answer.orderIndex}: {answer.questionText}
+                    질문 {answer.orderIndex + 1}: {answer.questionText}
                   </Text>
                   <Text type="Body" weight="regular" color={theme.colors.gray600}>
                     답변: {answer.answerText}
