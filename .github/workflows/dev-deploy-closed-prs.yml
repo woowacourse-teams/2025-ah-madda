@@ -1,11 +1,13 @@
 name: Dev Deploy Closed Prs
 
 on:
-  push:
-    branches:
-      - be/dev
+  pull_request:
     paths:
       - 'server/**'
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
   setup:
@@ -79,7 +81,7 @@ jobs:
 
       - name: Run container
         run: |
-          sudo docker run --name ahmadda-dev-server \
+          sudo docker run -v /home/ubuntu/app/logs:/app/logs --name ahmadda-dev-server \
             --restart unless-stopped \
             -p 8080:8080 \
             -e PROFILE=dev \
