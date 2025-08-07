@@ -35,7 +35,10 @@ describe('useAddAlarm', () => {
         ),
       });
 
-      result.current.mutate(emptyContent);
+      result.current.mutate({
+        content: emptyContent,
+        organizationMemberIds: [],
+      });
 
       await waitFor(() => {
         expect(mockFetcher.post).not.toHaveBeenCalled();
@@ -46,15 +49,18 @@ describe('useAddAlarm', () => {
   describe('postAlarm 함수', () => {
     test('올바른 API 경로와 데이터로 POST 요청을 보낸다', async () => {
       const eventId = 123;
-      const content = '직접 호출 테스트';
+      const notificationData = {
+        content: '직접 호출 테스트',
+        organizationMemberIds: [1, 2, 3],
+      };
 
       mockFetcher.post.mockResolvedValue(undefined);
 
-      await postAlarm(eventId, content);
+      await postAlarm(eventId, notificationData);
 
       expect(mockFetcher.post).toHaveBeenCalledWith(
         `events/${eventId}/notify-organization-members`,
-        content
+        notificationData
       );
     });
   });
