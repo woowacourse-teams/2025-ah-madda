@@ -1,6 +1,11 @@
 name: Prod Deploy On Release
 
 on:
+  push:
+    branches:
+      - be/dev
+    paths:
+      - 'server/**'
   release:
     types: [published]
 
@@ -78,7 +83,7 @@ jobs:
 
       - name: Run container
         run: |
-          sudo docker run -v /home/ubuntu/app/logs:/app/logs 
+          sudo docker run -v /home/ubuntu/app/logs:/app/logs \
             --name ahmadda-prod-server \
             --restart unless-stopped \
             -p 80:8080 \
