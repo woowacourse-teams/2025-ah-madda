@@ -116,11 +116,16 @@ export const TemplateModal = ({
 
         <Spacing height="1px" />
 
-        <Flex gap="12px" justifyContent="flex-end">
-          <Button color="secondary" variant="outline" onClick={handleClose}>
+        <Flex gap="12px" justifyContent="center">
+          <Button color="secondary" variant="outline" size="full" onClick={handleClose}>
             취소
           </Button>
-          <Button color="primary" disabled={selectedEventId === 0} onClick={handleConfirm}>
+          <Button
+            color="primary"
+            size="full"
+            disabled={selectedEventId === 0}
+            onClick={handleConfirm}
+          >
             불러오기
           </Button>
         </Flex>

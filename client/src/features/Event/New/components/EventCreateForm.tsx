@@ -68,19 +68,23 @@ export const EventCreateForm = () => {
   return (
     <form onSubmit={handleSubmit}>
       <Flex dir="column" gap="20px" padding="60px 0" width="100%">
-        <Text type="Title" weight="bold">
-          새 이벤트 만들기
-        </Text>
-        <Text type="Body" color="gray">
-          이벤트 정보를 입력해 주세요
-        </Text>
+        <Flex justifyContent="space-between" alignItems="center">
+          <Flex dir="column" gap="8px">
+            <Text type="Title" weight="bold">
+              새 이벤트 만들기
+            </Text>
+            <Text type="Body" color="gray">
+              이벤트 정보를 입력해 주세요
+            </Text>
+          </Flex>
+          <Button size="sm" onClick={open}>
+            템플릿
+          </Button>
+        </Flex>
 
         <Card>
           <Flex justifyContent="space-between">
-            <Text type="Body">기본 질문</Text>
-            <Button size="sm" onClick={open}>
-              템플릿
-            </Button>
+            <Text type="Heading">기본 질문</Text>
           </Flex>
           <Flex dir="column">
             <Input
