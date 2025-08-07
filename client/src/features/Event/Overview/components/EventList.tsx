@@ -1,9 +1,7 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { useNavigate, useParams } from 'react-router-dom';
 
 import { useCreateInviteCode } from '@/api/mutations/useCreateInviteCode';
-import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';

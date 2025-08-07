@@ -5,7 +5,6 @@ import { createPortal } from 'react-dom';
 import { useEscapeKey } from '../../hooks/useEscapeKey';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
 import { useLockScroll } from '../../hooks/useLockScroll';
-import { Button } from '../Button';
 import { IconButton } from '../IconButton';
 
 import {
