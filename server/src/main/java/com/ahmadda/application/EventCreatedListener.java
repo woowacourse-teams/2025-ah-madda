@@ -1,6 +1,9 @@
-package com.ahmadda.application.event;
+package com.ahmadda.application;
 
+import com.ahmadda.application.dto.EventCreated;
 import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.EventStatistic;
 import com.ahmadda.domain.EventStatisticRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,22 +12,21 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class EventReadListener {
+public class EventCreatedListener {
 
     private final EventStatisticRepository eventStatisticRepository;
+    private final EventRepository eventRepository;
 
     @EventListener
     @Transactional
-    public void onEventCreated(final EventRead eventRead) {
-        EventStatistic eventStatistic = eventStatisticRepository.findByEventId(eventRead.eventId())
-                .orElseThrow(() -> new NotFoundException("해당되는 이벤트의 조회수를 가져오는데 실패하였습니다."));
-        
-        eventStatistic.increaseViewCount(LocalDate.now());
+    public void onEventCreated(final EventCreated eventCreated) {
+        Event event = eventRepository.findById(eventCreated.eventId())
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 이벤트입니다."));
+
+        eventStatisticRepository.save(EventStatistic.create(event));
     }
 }

@@ -81,10 +81,9 @@ public class EventStatistic extends BaseEntity {
     }
 
     public void updateEventViewMatricUntilEventEnd() {
-        LocalDate currentDate = LocalDate.from(
-                event.getEventOperationPeriod()
-                        .getRegistrationPeriod()
-                        .start());
+        LocalDate currentDate = LocalDate.from(event.getEventOperationPeriod()
+                .getRegistrationPeriod()
+                .start());
 
         EventOperationPeriod eventOperationPeriod = event.getEventOperationPeriod();
 
@@ -94,6 +93,7 @@ public class EventStatistic extends BaseEntity {
             if (!existViewMetricDates.contains(currentDate)) {
                 EventViewMetric eventViewMetric = EventViewMetric.create(currentDate);
                 eventViewMetrics.add(eventViewMetric);
+                existViewMetricDates.add(currentDate);
             }
 
             currentDate = currentDate.plusDays(1L);
