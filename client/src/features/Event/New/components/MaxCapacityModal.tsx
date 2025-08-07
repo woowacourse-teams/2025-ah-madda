@@ -4,6 +4,7 @@ import { Input } from '@/shared/components/Input';
 import { Modal } from '@/shared/components/Modal';
 import { Text } from '@/shared/components/Text';
 
+import { UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { useMaxCapacity } from '../hooks/useMaxCapacity';
 
 type Props = {
@@ -23,7 +24,7 @@ export const MaxCapacityModal = ({ isOpen, initialValue, onClose, onSubmit }: Pr
   };
 
   const handleUnlimitedCapacity = () => {
-    onSubmit(Number.POSITIVE_INFINITY);
+    onSubmit(UNLIMITED_CAPACITY);
     onClose();
   };
 
