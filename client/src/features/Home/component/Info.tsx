@@ -13,7 +13,7 @@ import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
 import { useModal } from '@/shared/hooks/useModal';
 
-import { NicknameModal } from './NicknameModal';
+import { GuideModal } from './GuideModal';
 
 export const Info = () => {
   const { isOpen, open, close } = useModal();
@@ -25,18 +25,19 @@ export const Info = () => {
     enabled: isAuthenticated(),
   });
 
-  const handleButtonClick = () => {
-    if (profileData?.nickname) {
-      navigate('/event');
-      return;
-    }
-
+  const handelGuideOpenClick = () => {
     if (!isAuthenticated()) {
       alert('로그인이 필요한 서비스입니다. 먼저 로그인해 주세요.');
       return;
     }
-
     open();
+  };
+
+  const handleEnterClick = () => {
+    if (profileData?.nickname) {
+      navigate('/event');
+      return;
+    }
   };
 
   return (
@@ -97,11 +98,11 @@ export const Info = () => {
             <PointIcon src={Point} alt="Point" className="point3" />
           </Flex>
         </Flex>
-        <Button size="full" onClick={handleButtonClick}>
+        <Button size="full" onClick={handleEnterClick}>
           이벤트 보러가기
         </Button>
       </Flex>
-      <NicknameModal isOpen={isOpen} onClose={close} />
+      <GuideModal isOpen={isOpen} onClose={close} onEnter={handelGuideOpenClick} />
     </>
   );
 };
