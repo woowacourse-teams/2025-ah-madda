@@ -77,55 +77,57 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     loadFormData(template ?? {});
   };
 
+  const handleError = (error: unknown) => {
+    if (error instanceof HttpError) {
+      alert(error.data?.detail || '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      return;
+    }
+    alert('네트워크 연결을 확인해주세요.');
+  };
+
+  const buildPayload = () => ({
+    ...basicEventForm,
+    questions,
+    eventStart: convertDatetimeLocalToKSTISOString(basicEventForm.eventStart),
+    eventEnd: convertDatetimeLocalToKSTISOString(basicEventForm.eventEnd),
+    registrationEnd: convertDatetimeLocalToKSTISOString(basicEventForm.registrationEnd),
+  });
+
+  const submitCreate = (payload: ReturnType<typeof buildPayload>) => {
+    addEvent(payload, {
+      onSuccess: ({ eventId }) => {
+        trackCreateEvent();
+        alert('😁 이벤트가 성공적으로 생성되었습니다!');
+        navigate(`/event/${eventId}`);
+      },
+      onError: handleError,
+    });
+  };
+
+  const submitUpdate = (eventId: number, payload: ReturnType<typeof buildPayload>) => {
+    updateEvent(
+      { eventId, payload },
+      {
+        onSuccess: () => {
+          alert('😁 이벤트가 성공적으로 수정되었습니다!');
+          navigate(`/event/${eventId}`);
+        },
+        onError: handleError,
+      }
+    );
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isBasicFormValid || !isQuestionValid) return;
 
-    const payload = {
-      ...basicEventForm,
-      questions: questions,
-      eventStart: convertDatetimeLocalToKSTISOString(basicEventForm.eventStart),
-      eventEnd: convertDatetimeLocalToKSTISOString(basicEventForm.eventEnd),
-      registrationEnd: convertDatetimeLocalToKSTISOString(basicEventForm.registrationEnd),
-    };
+    const payload = buildPayload();
 
     if (isEdit && eventId) {
-      updateEvent(
-        { eventId, payload },
-        {
-          onSuccess: () => {
-            alert('😁 이벤트가 성공적으로 수정되었습니다!');
-            navigate(`/event/${eventId}`);
-          },
-          onError: (error) => {
-            if (error instanceof HttpError) {
-              return alert(
-                error.data?.detail || '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
-              );
-            }
-            alert('네트워크 연결을 확인해주세요.');
-          },
-        }
-      );
-      return;
+      submitUpdate(eventId, payload);
+    } else {
+      submitCreate(payload);
     }
-
-    addEvent(payload, {
-      onSuccess: ({ eventId }) => {
-        trackCreateEvent();
-        alert(`😁 이벤트가 성공적으로 생성되었습니다!`);
-        navigate(`/event/${eventId}`);
-      },
-      onError: (error) => {
-        if (error instanceof HttpError) {
-          return alert(
-            error.data?.detail || '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
-          );
-        }
-
-        alert('네트워크 연결을 확인해주세요.');
-      },
-    });
   };
 
   return (
