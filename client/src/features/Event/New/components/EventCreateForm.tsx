@@ -131,7 +131,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   };
 
   return (
-    <Flex onSubmit={handleSubmit}>
+    <Flex>
       <Flex dir="column" gap="20px" padding="60px 0" width="100%">
         <Text type="Title" weight="bold">
           {isEdit ? '이벤트 수정' : '새 이벤트 만들기'}
@@ -272,7 +272,13 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         />
 
         <Flex justifyContent="flex-end">
-          <Button type="submit" color="primary" size="full" disabled={!isFormReady}>
+          <Button
+            type="submit"
+            color="primary"
+            size="full"
+            disabled={!isFormReady}
+            onClick={handleSubmit}
+          >
             {isEdit ? '이벤트 수정' : '이벤트 만들기'}
           </Button>
         </Flex>
