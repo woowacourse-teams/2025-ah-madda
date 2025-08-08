@@ -33,7 +33,7 @@ export const SubmitButtonCard = ({
     });
   };
 
-  const handelCancelParticipateClick = () => {
+  const handleCancelParticipateClick = () => {
     cancelParticipateMutate(undefined, {
       onSuccess: () => {
         alert('✅ 참가 신청이 취소되었습니다.');
@@ -50,7 +50,7 @@ export const SubmitButtonCard = ({
         size="full"
         color={!isGuest || isBeforeDeadline ? 'primary' : 'tertiary'}
         disabled={!isBeforeDeadline}
-        onClick={isGuest ? handelCancelParticipateClick : handleParticipantClick}
+        onClick={isGuest ? handleCancelParticipateClick : handleParticipantClick}
       >
         {isBeforeDeadline
           ? isGuest
