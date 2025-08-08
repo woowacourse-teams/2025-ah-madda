@@ -22,7 +22,6 @@ export const GuideModal = ({ isOpen, onClose, onEnter }: GuideModalProps) => {
       onClose={onClose}
       showCloseButton={false}
       css={css`
-        width: clamp(380px, 50vw, 480px);
         max-height: 80vh;
         overflow-y: auto;
       `}
