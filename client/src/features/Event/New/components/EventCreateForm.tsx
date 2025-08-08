@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import { HttpError } from '@/api/fetcher';
+import { useUpdateEvent } from '@/api/mutations/useUpdateEvent';
 import { getEventDetailAPI } from '@/api/queries/event';
 import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
@@ -33,6 +34,7 @@ type EventCreateFormProps = {
 export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const navigate = useNavigate();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
+  const { mutate: updateEvent } = useUpdateEvent();
   const { data: eventDetail } = useQuery({
     queryKey: ['event', 'detail', Number(eventId)],
     queryFn: () => getEventDetailAPI(Number(eventId)),
@@ -87,10 +89,31 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       registrationEnd: convertDatetimeLocalToKSTISOString(basicEventForm.registrationEnd),
     };
 
+    if (isEdit && eventId) {
+      updateEvent(
+        { eventId, payload },
+        {
+          onSuccess: () => {
+            alert('😁 이벤트가 성공적으로 수정되었습니다!');
+            navigate(`/event/${eventId}`);
+          },
+          onError: (error) => {
+            if (error instanceof HttpError) {
+              return alert(
+                error.data?.detail || '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
+              );
+            }
+            alert('네트워크 연결을 확인해주세요.');
+          },
+        }
+      );
+      return;
+    }
+
     addEvent(payload, {
       onSuccess: ({ eventId }) => {
         trackCreateEvent();
-        alert(`😁 이벤트가 성공적으로 ${isEdit ? '수정' : '생성'}되었습니다!`);
+        alert(`😁 이벤트가 성공적으로 생성되었습니다!`);
         navigate(`/event/${eventId}`);
       },
       onError: (error) => {
