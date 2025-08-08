@@ -9,7 +9,7 @@ import { Text } from '@/shared/components/Text';
 
 import { TAB_DATA } from '../fixture/tab.data';
 
-import { Information } from './Infomation';
+import { Information } from './Information';
 
 type GuideModalProps = {
   onEnter: () => void;
