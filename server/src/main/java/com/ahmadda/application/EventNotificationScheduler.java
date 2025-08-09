@@ -10,6 +10,7 @@ import com.ahmadda.domain.PushNotifier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +28,7 @@ public class EventNotificationScheduler {
 
     // TODO. 추후 중복 알람을 방지하도록 구현
     @Scheduled(fixedRate = 180_000)
+    @Transactional(readOnly = true)
     public void notifyRegistrationClosingEvents() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime targetTime = now.plusMinutes(REMINDER_MINUTES_BEFORE);
