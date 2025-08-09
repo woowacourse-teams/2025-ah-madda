@@ -31,8 +31,8 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'io.awspring.cloud:spring-cloud-aws-starter-metrics:3.4.0'
 
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-metrics:3.4.0'
     implementation 'ca.pjer:logback-awslogs-appender:1.6.0'
 
     compileOnly 'org.projectlombok:lombok'
