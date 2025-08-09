@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <included>
-    <appender name="cloudwatch-appender" class="ca.pjer.logback.AwsLogsAppender">
+    <appender name="cloudwatch-info-threshold-appender" class="ca.pjer.logback.AwsLogsAppender">
 
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>
 
-        <encoder>
-            <charset>UTF-8</charset>
+        <layout class="ch.qos.logback.classic.PatternLayout">
             <pattern>[%level][%d{MM-dd HH:mm:ss}][%X{request_id:-startup}][%replace(%logger{20}){'\\w\\.', ''}] %msg%n</pattern>
-        </encoder>
+            <charset>UTF-8</charset>
+        </layout>
 
         <logGroupName>/aws/ec2/ahmadda-prod-server</logGroupName>
         <logStreamName>logs</logStreamName>
-
         <logRegion>ap-northeast-2</logRegion>
 
         <maxBatchLogEvents>50</maxBatchLogEvents>
