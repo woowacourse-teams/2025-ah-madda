@@ -38,6 +38,10 @@ management:
       tomcat.threads: true
       app.health.status: true
       executor: true
+      hikaricp.connections.active: true
+      hikaricp.connections.pending: true
+      hikaricp.connections.max: true
+      hikaricp.connections.timeout: true
   cloudwatch:
     metrics:
       export:
