@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<included>
+    <appender name="console-parameter-appender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern> %replace(%msg){' \\[(\\d*)\\] as \\[\\w*\\] - ', '$1 - '} %n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+</included>

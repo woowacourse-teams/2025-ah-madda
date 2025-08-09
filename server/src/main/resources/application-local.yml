@@ -6,10 +6,6 @@ spring:
         detector:
           enabled: true
 
-logging:
-  level:
-    org.hibernate.orm.jdbc.bind: trace
-
 jwt:
   secret-key: ${jwt.local.secret-key}
   access-expiration: ${jwt.local.access-expiration}

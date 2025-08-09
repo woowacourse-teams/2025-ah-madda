@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <included>
-    <appender name="info-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-
-        <file>${LOG_FILE_PATH}/${DATE_FORMAT}/info/info.log</file>
+    <appender name="file-info-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE_PATH}/info/current.log</file>
 
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>INFO</level>
@@ -11,15 +9,15 @@
             <onMismatch>DENY</onMismatch>
         </filter>
 
-        <encoder>
-            <pattern>[%cyan(%level)][%d{MM-dd HH:mm:ss}][%magenta(%X{request_id:-startup})][%blue(%replace(%logger{20}){'\\w\\.', ''})] %msg %n</pattern>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[%level][%d{MM-dd HH:mm:ss}][%X{request_id:-startup}][%replace(%logger{20}){'\\w\\.', ''}] %msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_FILE_PATH}/%d{yyyy-MM-dd}/info/info%i.log</fileNamePattern>
+            <fileNamePattern>${LOG_FILE_PATH}/%d{yyyy-MM-dd}/info/info-%i.log</fileNamePattern>
             <maxFileSize>50MB</maxFileSize>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
-
     </appender>
 </included>
