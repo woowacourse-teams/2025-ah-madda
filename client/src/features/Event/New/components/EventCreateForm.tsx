@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import { HttpError } from '@/api/fetcher';
+import { useUpdateEvent } from '@/api/mutations/useUpdateEvent';
 import { getEventDetailAPI } from '@/api/queries/event';
 import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
@@ -33,6 +34,7 @@ type EventCreateFormProps = {
 export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const navigate = useNavigate();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
+  const { mutate: updateEvent } = useUpdateEvent();
   const { data: eventDetail } = useQuery({
     queryKey: ['event', 'detail', Number(eventId)],
     queryFn: () => getEventDetailAPI(Number(eventId)),
@@ -75,38 +77,61 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     loadFormData(template ?? {});
   };
 
+  const handleError = (error: unknown) => {
+    if (error instanceof HttpError) {
+      alert(error.data?.detail || '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      return;
+    }
+    alert('네트워크 연결을 확인해주세요.');
+  };
+
+  const buildPayload = () => ({
+    ...basicEventForm,
+    questions,
+    eventStart: convertDatetimeLocalToKSTISOString(basicEventForm.eventStart),
+    eventEnd: convertDatetimeLocalToKSTISOString(basicEventForm.eventEnd),
+    registrationEnd: convertDatetimeLocalToKSTISOString(basicEventForm.registrationEnd),
+  });
+
+  const submitCreate = (payload: ReturnType<typeof buildPayload>) => {
+    addEvent(payload, {
+      onSuccess: ({ eventId }) => {
+        trackCreateEvent();
+        alert('😁 이벤트가 성공적으로 생성되었습니다!');
+        navigate(`/event/${eventId}`);
+      },
+      onError: handleError,
+    });
+  };
+
+  const submitUpdate = (eventId: number, payload: ReturnType<typeof buildPayload>) => {
+    updateEvent(
+      { eventId, payload },
+      {
+        onSuccess: () => {
+          alert('😁 이벤트가 성공적으로 수정되었습니다!');
+          navigate(`/event/${eventId}`);
+        },
+        onError: handleError,
+      }
+    );
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isBasicFormValid || !isQuestionValid) return;
 
-    const payload = {
-      ...basicEventForm,
-      questions: questions,
-      eventStart: convertDatetimeLocalToKSTISOString(basicEventForm.eventStart),
-      eventEnd: convertDatetimeLocalToKSTISOString(basicEventForm.eventEnd),
-      registrationEnd: convertDatetimeLocalToKSTISOString(basicEventForm.registrationEnd),
-    };
+    const payload = buildPayload();
 
-    addEvent(payload, {
-      onSuccess: ({ eventId }) => {
-        trackCreateEvent();
-        alert(`😁 이벤트가 성공적으로 ${isEdit ? '수정' : '생성'}되었습니다!`);
-        navigate(`/event/${eventId}`);
-      },
-      onError: (error) => {
-        if (error instanceof HttpError) {
-          return alert(
-            error.data?.detail || '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
-          );
-        }
-
-        alert('네트워크 연결을 확인해주세요.');
-      },
-    });
+    if (isEdit && eventId) {
+      submitUpdate(eventId, payload);
+    } else {
+      submitCreate(payload);
+    }
   };
 
   return (
-    <Flex as="form" onSubmit={handleSubmit}>
+    <Flex>
       <Flex dir="column" gap="20px" padding="60px 0" width="100%">
         <Text type="Title" weight="bold">
           {isEdit ? '이벤트 수정' : '새 이벤트 만들기'}
@@ -247,7 +272,13 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         />
 
         <Flex justifyContent="flex-end">
-          <Button type="submit" color="primary" size="full" disabled={!isFormReady}>
+          <Button
+            type="submit"
+            color="primary"
+            size="full"
+            disabled={!isFormReady}
+            onClick={handleSubmit}
+          >
             {isEdit ? '이벤트 수정' : '이벤트 만들기'}
           </Button>
         </Flex>
