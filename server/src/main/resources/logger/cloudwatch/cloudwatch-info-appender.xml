@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <appender name="cloudwatch-info-appender" class="com.j256.cloudwatchlogbackappender.CloudWatchAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <region>ap-northeast-2</region>
+        <logGroup>/aws/ec2/ahmadda-prod-server</logGroup>
+        <logStream>logs-info</logStream>
+
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[%level][%d{MM-dd HH:mm:ss}][%X{request_id:-startup}][%replace(%logger{20}){'\\w\\.', ''}] %msg%n%ex</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <maxBatchSize>50</maxBatchSize>
+        <maxBatchTimeMillis>30000</maxBatchTimeMillis>
+    </appender>
+</included>
