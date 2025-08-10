@@ -5,9 +5,7 @@ import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
@@ -18,12 +16,9 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.PushNotificationPayload;
-import com.ahmadda.domain.PushNotifier;
 import com.ahmadda.domain.Question;
+import com.ahmadda.domain.ReminderNotifier;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
-import com.ahmadda.infra.notification.push.FcmRegistrationToken;
-import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -65,14 +60,8 @@ class EventServiceTest {
     @Autowired
     private GuestRepository guestRepository;
 
-    @Autowired
-    private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
-
     @MockitoBean
-    private EmailNotifier emailNotifier;
-
-    @MockitoBean
-    private PushNotifier pushNotifier;
+    private ReminderNotifier reminderNotifier;
 
     @Test
     void 이벤트를_생성할_수_있다() {
@@ -332,12 +321,9 @@ class EventServiceTest {
         var om1Member = createMember("m1", "m1@mail.com");
         var om2Member = createMember("m2", "m2@mail.com");
 
-        var organizer = createOrganizationMember(organization, organizerMember);
+        createOrganizationMember(organization, organizerMember);
         var om1 = createOrganizationMember(organization, om1Member);
         var om2 = createOrganizationMember(organization, om2Member);
-
-        savePushToken(om1, "token-ng1");
-        savePushToken(om2, "token-ng2");
 
         var now = LocalDateTime.now();
         var request = new EventCreateRequest(
@@ -361,11 +347,7 @@ class EventServiceTest {
         var savedEvent = sut.createEvent(organization.getId(), loginMember, request, now);
 
         // then
-        var email = EventEmailPayload.of(savedEvent, "새로운 이벤트가 등록되었습니다.");
-        var pushPayload = PushNotificationPayload.of(savedEvent, "새로운 이벤트가 등록되었습니다.");
-
-        verify(emailNotifier).sendEmails(List.of(om1, om2), email);
-        verify(pushNotifier).sendPushs(List.of(om1, om2), pushPayload);
+        verify(reminderNotifier).remind(List.of(om1, om2), savedEvent, "새로운 이벤트가 등록되었습니다.");
     }
 
     @Disabled
@@ -513,9 +495,6 @@ class EventServiceTest {
         var guestOrgMember1 = createOrganizationMember(organization, guestMember1);
         var guestOrgMember2 = createOrganizationMember(organization, guestMember2);
 
-        savePushToken(guestOrgMember1, "token-ng1");
-        savePushToken(guestOrgMember2, "token-ng2");
-
         var now = LocalDateTime.now();
         var event = Event.create(
                 "원래 제목",
@@ -553,11 +532,7 @@ class EventServiceTest {
         var updatedEvent = sut.updateEvent(event.getId(), loginMember, updateRequest, now);
 
         // then
-        var email = EventEmailPayload.of(updatedEvent, "이벤트 정보가 수정되었습니다.");
-        var pushPayload = PushNotificationPayload.of(updatedEvent, "이벤트 정보가 수정되었습니다.");
-
-        verify(emailNotifier).sendEmails(List.of(guestOrgMember1, guestOrgMember2), email);
-        verify(pushNotifier).sendPushs(List.of(guestOrgMember1, guestOrgMember2), pushPayload);
+        verify(reminderNotifier).remind(List.of(guestOrgMember1, guestOrgMember2), event, "이벤트 정보가 수정되었습니다.");
     }
 
     @Test
@@ -654,14 +629,5 @@ class EventServiceTest {
         );
 
         return eventRepository.save(event);
-    }
-
-    private void savePushToken(OrganizationMember organizationMember, String token) {
-        var fcmRegistrationToken = FcmRegistrationToken.create(
-                organizationMember.getMember()
-                        .getId(), token, LocalDateTime.now()
-        );
-
-        fcmRegistrationTokenRepository.save(fcmRegistrationToken);
     }
 }

@@ -9,13 +9,9 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
-import com.ahmadda.domain.EventStatistic;
-import com.ahmadda.domain.EventStatisticRepository;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
@@ -23,10 +19,8 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.PushNotificationPayload;
-import com.ahmadda.domain.PushNotifier;
 import com.ahmadda.domain.Question;
-import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
+import com.ahmadda.domain.ReminderNotifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -46,10 +40,7 @@ public class EventService {
     private final EventRepository eventRepository;
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
-    private final EmailNotifier emailNotifier;
-    private final PushNotifier pushNotifier;
-    private final FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
-    private final EventStatisticRepository eventStatisticRepository;
+    private final ReminderNotifier reminderNotifier;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
@@ -202,7 +193,7 @@ public class EventService {
         List<OrganizationMember> recipients =
                 event.getNonGuestOrganizationMembers(organization.getOrganizationMembers());
 
-        notifyEventChange(event, content, recipients);
+        reminderNotifier.remind(recipients, event, content);
     }
 
     private void notifyEventUpdated(final Event event) {
@@ -212,31 +203,6 @@ public class EventService {
                 .map(Guest::getOrganizationMember)
                 .toList();
 
-        notifyEventChange(event, content, recipients);
-    }
-
-    private void notifyEventChange(
-            final Event event,
-            final String content,
-            final List<OrganizationMember> recipients
-    ) {
-        sendEmailsToRecipients(event, content, recipients);
-        sendPushNotificationsToRecipients(event, content, recipients);
-    }
-
-    private void sendPushNotificationsToRecipients(Event event, String content, List<OrganizationMember> recipients) {
-        PushNotificationPayload pushPayload = PushNotificationPayload.of(event, content);
-
-        pushNotifier.sendPushs(recipients, pushPayload);
-    }
-
-    private void sendEmailsToRecipients(Event event, String content, List<OrganizationMember> recipients) {
-        EventEmailPayload emailPayload = EventEmailPayload.of(event, content);
-
-        emailNotifier.sendEmails(recipients, emailPayload);
-    }
-
-    private void createEventStatistic(final Event savedEvent) {
-        eventStatisticRepository.save(EventStatistic.create(savedEvent));
+        reminderNotifier.remind(recipients, event, content);
     }
 }
