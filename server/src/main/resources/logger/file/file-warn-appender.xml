@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <included>
-    <appender name="warn-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-
-        <file>${LOG_FILE_PATH}/${DATE_FORMAT}/warn/warn.log</file>
+    <appender name="file-warn-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE_PATH}/warn/current.log</file>
 
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>WARN</level>
@@ -11,15 +9,15 @@
             <onMismatch>DENY</onMismatch>
         </filter>
 
-        <encoder>
-            <pattern>[%red(%level)][%d{MM-dd HH:mm:ss}][%magenta(%X{request_id:-startup})][%red(%replace(%logger{20}){'\\w\\.', ''}:%line)] %msg %n</pattern>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[%level][%d{MM-dd HH:mm:ss}][%X{request_id:-startup}][%replace(%logger{20}){'\\w\\.', ''}] %msg%n%ex</pattern>
+            <charset>UTF-8</charset>
         </encoder>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_FILE_PATH}/%d{yyyy-MM-dd}/warn/warn%i.log</fileNamePattern>
+            <fileNamePattern>${LOG_FILE_PATH}/%d{yyyy-MM-dd}/warn/warn-%i.log</fileNamePattern>
             <maxFileSize>50MB</maxFileSize>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
-
     </appender>
 </included>
