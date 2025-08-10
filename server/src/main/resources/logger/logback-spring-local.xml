@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration scan="true" scanPeriod="5 seconds">
+<included>
     <include resource="logger/console/console-appender.xml"/>
     <include resource="logger/console/console-parameter-appender.xml"/>
 
@@ -12,4 +12,4 @@
     <logger name="org.hibernate.orm.jdbc.bind" level="TRACE" additivity="false">
         <appender-ref ref="console-parameter-appender"/>
     </logger>
-</configuration>
+</included>

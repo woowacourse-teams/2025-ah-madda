@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration scan="true" scanPeriod="5 seconds">
+<configuration scan="false">
     <springProfile name="local">
         <include resource="logger/logback-spring-local.xml"/>
     </springProfile>

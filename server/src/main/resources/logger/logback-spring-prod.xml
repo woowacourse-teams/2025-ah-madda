@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration scan="true" scanPeriod="5 seconds">
+<included>
     <property name="LOG_FILE_PATH" value="/app/logs"/>
 
     <include resource="logger/file/file-info-appender.xml"/>
@@ -17,4 +17,4 @@
         <appender-ref ref="cloudwatch-warn-appender"/>
         <appender-ref ref="cloudwatch-error-appender"/>
     </root>
-</configuration>
+</included>
