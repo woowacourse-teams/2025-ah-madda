@@ -11,10 +11,9 @@
         <logGroup>/aws/ec2/ahmadda-prod-server</logGroup>
         <logStream>logs-warn</logStream>
 
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+        <layout class="ch.qos.logback.classic.PatternLayout">
             <pattern>[%level][%d{MM-dd HH:mm:ss}][%X{request_id:-startup}][%replace(%logger{20}){'\\w\\.', ''}] %msg%n%ex</pattern>
-            <charset>UTF-8</charset>
-        </encoder>
+        </layout>
 
         <maxBatchSize>50</maxBatchSize>
         <maxBatchTimeMillis>30000</maxBatchTimeMillis>
