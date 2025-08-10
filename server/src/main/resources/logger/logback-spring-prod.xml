@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="5 seconds">
-    <property name="LOG_FILE_PATH" value="/app/logs/ahmadda"/>
+    <property name="LOG_FILE_PATH" value="/app/logs"/>
 
     <include resource="logger/file/file-info-appender.xml"/>
     <include resource="logger/file/file-warn-appender.xml"/>
