@@ -7,15 +7,16 @@
             <onMismatch>DENY</onMismatch>
         </filter>
 
-        <awsRegion>ap-northeast-2</awsRegion>
-        <logGroupName>/aws/ec2/ahmadda-prod-server</logGroupName>
-        <logStreamName>logs-info</logStreamName>
-
         <layout class="ch.qos.logback.classic.PatternLayout">
             <pattern>[%level][%d{MM-dd HH:mm:ss}][%X{request_id:-startup}][%replace(%logger{20}){'\\w\\.', ''}] %msg%n%ex</pattern>
         </layout>
 
-        <maxBatchSize>50</maxBatchSize>
-        <maxBatchTimeMillis>30000</maxBatchTimeMillis>
+        <logGroupName>/aws/ec2/ahmadda-prod-server</logGroupName>
+        <logStreamName>logs-info</logStreamName>
+        <logRegion>ap-northeast-2</logRegion>
+
+        <maxBatchLogEvents>50</maxBatchLogEvents>
+        <maxFlushTimeMillis>30000</maxFlushTimeMillis>
+        <maxBlockTimeMillis>5000</maxBlockTimeMillis>
     </appender>
 </included>
