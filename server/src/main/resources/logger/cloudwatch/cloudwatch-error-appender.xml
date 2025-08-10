@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <included>
-    <appender name="cloudwatch-error-appender" class="com.j256.cloudwatchlogbackappender.CloudWatchAppender">
+    <appender name="cloudwatch-error-appender" class="ca.pjer.logback.AwsLogsAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>ERROR</level>
             <onMatch>ACCEPT</onMatch>

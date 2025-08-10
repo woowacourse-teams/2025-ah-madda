@@ -33,8 +33,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-metrics:3.4.0'
-    implementation 'com.j256.cloudwatchlogbackappender:cloudwatchlogbackappender:2.1'
-    
+    implementation 'ca.pjer:logback-awslogs-appender:1.6.0'
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
