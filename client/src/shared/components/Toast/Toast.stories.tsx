@@ -10,7 +10,8 @@ const meta = {
   parameters: {
     docs: {
       description: {
-        component: 'Toast system using context. Call `useToast().openToast()` to trigger.',
+        component:
+          'Toast system using context. Call `useToast().success()` or `useToast().error()` to trigger.',
       },
     },
     layout: 'fullscreen',
@@ -21,21 +22,13 @@ export default meta;
 type Story = StoryObj;
 
 const ToastStoryExample = () => {
-  const toast = useToast();
+  const { success, error } = useToast();
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <Button
-        onClick={() =>
-          toast.openToast({
-            message: '스토리북에서도 잘 작동해요!',
-            variant: 'success',
-            duration: 2000,
-          })
-        }
-      >
-        Show Toast
-      </Button>
+    <div style={{ padding: '2rem', display: 'flex', gap: '0.75rem' }}>
+      <Button onClick={() => success('성공 토스트!')}>Success</Button>
+      <Button onClick={() => error('에러 토스트!')}>Error</Button>
+      <Button onClick={() => success('5초 동안 표시!', { duration: 5000 })}>Success (5s)</Button>
     </div>
   );
 };
