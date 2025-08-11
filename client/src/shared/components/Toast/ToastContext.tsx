@@ -3,7 +3,8 @@ import { createContext, useContext, useState, useRef } from 'react';
 import { Toast, ToastVariant } from './Toast';
 
 type ToastContextType = {
-  openToast: (options: { message: string; variant?: ToastVariant; duration?: number }) => void;
+  success: (message: string, options?: { duration?: number }) => void;
+  error: (message: string, options?: { duration?: number }) => void;
 };
 
 type ToastState = {
@@ -57,8 +58,15 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
     }, duration);
   };
 
+  const success = (message: string, options?: { duration?: number }) => {
+    openToast({ message, variant: 'success', duration: options?.duration });
+  };
+  const error = (message: string, options?: { duration?: number }) => {
+    openToast({ message, variant: 'error', duration: options?.duration });
+  };
+
   return (
-    <ToastContext.Provider value={{ openToast }}>
+    <ToastContext.Provider value={{ success, error }}>
       {children}
       {toastState.isVisible && (
         <Toast
