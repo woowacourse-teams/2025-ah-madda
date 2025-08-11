@@ -20,7 +20,9 @@ import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Question;
-import com.ahmadda.domain.ReminderNotifier;
+import com.ahmadda.domain.Reminder;
+import com.ahmadda.domain.ReminderHistory;
+import com.ahmadda.domain.ReminderHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -40,7 +42,8 @@ public class EventService {
     private final EventRepository eventRepository;
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
-    private final ReminderNotifier reminderNotifier;
+    private final Reminder reminder;
+    private final ReminderHistoryRepository reminderHistoryRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
@@ -193,7 +196,7 @@ public class EventService {
         List<OrganizationMember> recipients =
                 event.getNonGuestOrganizationMembers(organization.getOrganizationMembers());
 
-        reminderNotifier.remind(recipients, event, content);
+        sendAndRecordReminder(event, recipients, content);
     }
 
     private void notifyEventUpdated(final Event event) {
@@ -203,6 +206,15 @@ public class EventService {
                 .map(Guest::getOrganizationMember)
                 .toList();
 
-        reminderNotifier.remind(recipients, event, content);
+        sendAndRecordReminder(event, recipients, content);
+    }
+
+    private void sendAndRecordReminder(
+            final Event event,
+            final List<OrganizationMember> recipients,
+            final String content
+    ) {
+        List<ReminderHistory> reminderHistories = reminder.remind(recipients, event, content);
+        reminderHistoryRepository.saveAll(reminderHistories);
     }
 }

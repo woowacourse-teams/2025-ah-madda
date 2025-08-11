@@ -11,7 +11,9 @@ import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.ReminderNotifier;
+import com.ahmadda.domain.Reminder;
+import com.ahmadda.domain.ReminderHistory;
+import com.ahmadda.domain.ReminderHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,9 +27,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EventNotificationService {
 
-    private final ReminderNotifier reminderNotifier;
+    private final Reminder reminder;
     private final EventRepository eventRepository;
     private final MemberRepository memberRepository;
+    private final ReminderHistoryRepository reminderHistoryRepository;
 
     public void notifyNonGuestOrganizationMembers(
             final Long eventId,
@@ -40,7 +43,7 @@ public class EventNotificationService {
                 .getOrganizationMembers();
 
         List<OrganizationMember> recipients = event.getNonGuestOrganizationMembers(organizationMembers);
-        reminderNotifier.remind(recipients, event, request.content());
+        sendAndRecordReminder(recipients, event, request.content());
     }
 
     public void notifySelectedOrganizationMembers(
@@ -52,7 +55,7 @@ public class EventNotificationService {
         validateOrganizer(event, loginMember.memberId());
 
         List<OrganizationMember> recipients = getEventRecipientsFromIds(event, request.organizationMemberIds());
-        reminderNotifier.remind(recipients, event, request.content());
+        sendAndRecordReminder(recipients, event, request.content());
     }
 
     private Event getEvent(final Long eventId) {
@@ -99,5 +102,14 @@ public class EventNotificationService {
         if (!allExist) {
             throw new NotFoundException("존재하지 않는 조직원입니다.");
         }
+    }
+
+    private void sendAndRecordReminder(
+            final List<OrganizationMember> recipients,
+            final Event event,
+            final String request
+    ) {
+        List<ReminderHistory> reminderHistories = reminder.remind(recipients, event, request);
+        reminderHistoryRepository.saveAll(reminderHistories);
     }
 }

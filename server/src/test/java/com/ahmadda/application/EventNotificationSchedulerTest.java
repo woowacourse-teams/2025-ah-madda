@@ -11,7 +11,9 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.ReminderNotifier;
+import com.ahmadda.domain.Reminder;
+import com.ahmadda.domain.ReminderHistory;
+import com.ahmadda.domain.ReminderHistoryRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -19,13 +21,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
@@ -51,8 +54,11 @@ class EventNotificationSchedulerTest {
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
 
-    @MockitoBean
-    private ReminderNotifier reminderNotifier;
+    @MockitoSpyBean
+    private Reminder reminder;
+
+    @Autowired
+    private ReminderHistoryRepository reminderHistoryRepository;
 
     @ParameterizedTest
     @MethodSource("registrationEndOffsets")
@@ -88,10 +94,57 @@ class EventNotificationSchedulerTest {
 
         // then
         if (expectToSend) {
-            verify(reminderNotifier).remind(List.of(ng1, ng2), event, "이벤트 신청 마감이 임박했습니다.");
+            verify(reminder).remind(List.of(ng1, ng2), event, "이벤트 신청 마감이 임박했습니다.");
         } else {
-            verify(reminderNotifier, Mockito.never()).remind(any(), any(), any());
+            verify(reminder, Mockito.never()).remind(any(), any(), any());
         }
+    }
+
+    @Test
+    void 등록_마감_임박_이벤트의_리마인더_호출_후_히스토리가_저장된다() {
+        // given
+        var org = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        var host = saveOrganizationMember("주최자", "host@email.com", org);
+        var ng1 = saveOrganizationMember("비게스트1", "ng1@email.com", org);
+        var ng2 = saveOrganizationMember("비게스트2", "ng2@email.com", org);
+
+        var now = LocalDateTime.now();
+        var event = eventRepository.save(Event.create(
+                "이벤트", "설명", "장소",
+                host, org,
+                EventOperationPeriod.create(
+                        now.minusDays(2),
+                        now.plusMinutes(4),
+                        now.plusDays(1),
+                        now.plusDays(2),
+                        now.minusDays(3)
+                ),
+                100
+        ));
+
+        var content = "이벤트 신청 마감이 임박했습니다.";
+
+        // when
+        sut.notifyRegistrationClosingEvents();
+
+        // then
+        var saved = reminderHistoryRepository.findAll();
+        assertSoftly(softly -> {
+            softly.assertThat(saved)
+                    .hasSize(2);
+            softly.assertThat(saved)
+                    .extracting(ReminderHistory::getEvent)
+                    .containsOnly(event);
+            softly.assertThat(saved)
+                    .extracting(ReminderHistory::getOrganizationMember)
+                    .containsExactlyInAnyOrder(ng1, ng2);
+            softly.assertThat(saved)
+                    .extracting(ReminderHistory::getContent)
+                    .containsOnly(content);
+            softly.assertThat(saved)
+                    .allSatisfy(h -> softly.assertThat(h.getSentAt())
+                            .isNotNull());
+        });
     }
 
     @Test
@@ -126,7 +179,7 @@ class EventNotificationSchedulerTest {
         sut.notifyRegistrationClosingEvents();
 
         // then
-        verify(reminderNotifier, Mockito.never()).remind(any(), any(), any());
+        verify(reminder, Mockito.never()).remind(any(), any(), any());
     }
 
     private static Stream<Arguments> registrationEndOffsets() {

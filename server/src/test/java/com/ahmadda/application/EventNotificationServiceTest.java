@@ -16,17 +16,20 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.ReminderNotifier;
+import com.ahmadda.domain.Reminder;
+import com.ahmadda.domain.ReminderHistory;
+import com.ahmadda.domain.ReminderHistoryRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -51,8 +54,11 @@ class EventNotificationServiceTest {
     @Autowired
     private GuestRepository guestRepository;
 
-    @MockitoBean
-    private ReminderNotifier reminderNotifier;
+    @MockitoSpyBean
+    private Reminder reminder;
+
+    @Autowired
+    private ReminderHistoryRepository reminderHistoryRepository;
 
     @Test
     void 비게스트_조직원에게_알람을_전송한다() {
@@ -84,7 +90,57 @@ class EventNotificationServiceTest {
         sut.notifyNonGuestOrganizationMembers(event.getId(), request, createLoginMember(organizer));
 
         // then
-        verify(reminderNotifier).remind(List.of(ng1, ng2), event, request.content());
+        verify(reminder).remind(List.of(ng1, ng2), event, request.content());
+    }
+
+    @Test
+    void 비게스트_조직원에게_알람_전송_후_히스토리가_저장된다() {
+        // given
+        var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
+        var now = LocalDateTime.now();
+
+        var event = eventRepository.save(Event.create(
+                "이벤트제목", "설명", "장소",
+                organizer, organization,
+                EventOperationPeriod.create(
+                        now.minusDays(2), now.minusDays(1),
+                        now.plusDays(1), now.plusDays(2),
+                        now.minusDays(3)
+                ),
+                100
+        ));
+
+        var guest = saveOrganizationMember("게스트", "guest@email.com", organization);
+        guestRepository.save(Guest.create(event, guest, event.getRegistrationStart()));
+
+        var ng1 = saveOrganizationMember("비게스트1", "ng1@email.com", organization);
+        var ng2 = saveOrganizationMember("비게스트2", "ng2@email.com", organization);
+
+        var request = createNotificationRequest(); // content: "이메일 내용입니다."
+        var content = request.content();
+
+        // when
+        sut.notifyNonGuestOrganizationMembers(event.getId(), request, createLoginMember(organizer));
+
+        // then
+        var saved = reminderHistoryRepository.findAll();
+        assertSoftly(softly -> {
+            softly.assertThat(saved)
+                    .hasSize(2);
+            softly.assertThat(saved)
+                    .extracting(ReminderHistory::getEvent)
+                    .containsOnly(event);
+            softly.assertThat(saved)
+                    .extracting(ReminderHistory::getOrganizationMember)
+                    .containsExactlyInAnyOrder(ng1, ng2);
+            softly.assertThat(saved)
+                    .extracting(ReminderHistory::getContent)
+                    .containsOnly(content);
+            softly.assertThat(saved)
+                    .allSatisfy(h -> softly.assertThat(h.getSentAt())
+                            .isNotNull());
+        });
     }
 
     @Test
@@ -168,7 +224,58 @@ class EventNotificationServiceTest {
         sut.notifySelectedOrganizationMembers(event.getId(), request, createLoginMember(organizer));
 
         // then
-        verify(reminderNotifier).remind(List.of(om1, om2), event, request.content());
+        verify(reminder).remind(List.of(om1, om2), event, request.content());
+    }
+
+    @Test
+    void 선택된_조직원에게_알람_전송_후_히스토리가_저장된다() {
+        // given
+        var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
+        var now = LocalDateTime.now();
+
+        var event = eventRepository.save(Event.create(
+                "이벤트제목", "설명", "장소",
+                organizer, organization,
+                EventOperationPeriod.create(
+                        now.minusDays(2), now.minusDays(1),
+                        now.plusDays(1), now.plusDays(2),
+                        now.minusDays(3)
+                ),
+                100
+        ));
+
+        var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization);
+        var om2 = saveOrganizationMember("선택2", "sel2@email.com", organization);
+        var notSelected = saveOrganizationMember("비선택", "nsel@email.com", organization);
+
+        var request = createSelectedMembersRequest(List.of(om1.getId(), om2.getId()));
+        var content = request.content();
+
+        // when
+        sut.notifySelectedOrganizationMembers(event.getId(), request, createLoginMember(organizer));
+
+        // then
+        var saved = reminderHistoryRepository.findAll();
+        assertSoftly(softly -> {
+            softly.assertThat(saved)
+                    .hasSize(2);
+            softly.assertThat(saved)
+                    .extracting(ReminderHistory::getEvent)
+                    .containsOnly(event);
+            softly.assertThat(saved)
+                    .extracting(ReminderHistory::getOrganizationMember)
+                    .containsExactlyInAnyOrder(om1, om2);
+            softly.assertThat(saved)
+                    .extracting(ReminderHistory::getOrganizationMember)
+                    .doesNotContain(notSelected);
+            softly.assertThat(saved)
+                    .extracting(ReminderHistory::getContent)
+                    .containsOnly(content);
+            softly.assertThat(saved)
+                    .allSatisfy(h -> softly.assertThat(h.getSentAt())
+                            .isNotNull());
+        });
     }
 
     @Test

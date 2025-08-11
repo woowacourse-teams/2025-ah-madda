@@ -3,7 +3,9 @@ package com.ahmadda.application;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.ReminderNotifier;
+import com.ahmadda.domain.Reminder;
+import com.ahmadda.domain.ReminderHistory;
+import com.ahmadda.domain.ReminderHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -21,7 +23,8 @@ public class EventNotificationScheduler {
     private static final Duration REMINDER_BEFORE = Duration.ofMinutes(5);
 
     private final EventRepository eventRepository;
-    private final ReminderNotifier reminderNotifier;
+    private final Reminder reminder;
+    private final ReminderHistoryRepository reminderHistoryRepository;
 
     // TODO. 추후 중복 알람을 방지하도록 구현
     @Scheduled(fixedRate = 180_000)
@@ -42,7 +45,16 @@ public class EventNotificationScheduler {
                     );
                     String content = "이벤트 신청 마감이 임박했습니다.";
 
-                    reminderNotifier.remind(recipients, upcomingEvent, content);
+                    sendAndRecordReminder(upcomingEvent, recipients, content);
                 });
+    }
+
+    private void sendAndRecordReminder(
+            final Event upcomingEvent,
+            final List<OrganizationMember> recipients,
+            final String content
+    ) {
+        List<ReminderHistory> reminderHistories = reminder.remind(recipients, upcomingEvent, content);
+        reminderHistoryRepository.saveAll(reminderHistories);
     }
 }

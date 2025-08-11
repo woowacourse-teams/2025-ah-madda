@@ -80,6 +80,7 @@ public class EventNotificationController {
                     )
             )
     })
+    @Deprecated
     @PostMapping("/{eventId}/notify-non-guests")
     public ResponseEntity<Void> notifyNonGuests(
             @PathVariable final Long eventId,
