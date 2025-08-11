@@ -90,21 +90,25 @@ class EventUpdateListenerTest {
 
     private Organization createOrganization() {
         var organization = Organization.create("우테코", "우테코입니다.", "image");
+        
         return organizationRepository.save(organization);
     }
 
     private Member createMember(String name, String email) {
         var member = Member.create(name, email, "testPicture");
+
         return memberRepository.save(member);
     }
 
     private OrganizationMember createOrganizationMember(Organization organization, Member member) {
         var organizationMember = OrganizationMember.create("surf", member, organization);
+
         return organizationMemberRepository.save(organizationMember);
     }
 
     private Event createEvent(OrganizationMember organizer, Organization organization, EventOperationPeriod period) {
         var event = Event.create("title", "description", "place", organizer, organization, period, 100);
+
         return eventRepository.save(event);
     }
 }

@@ -52,7 +52,7 @@ public class EventStatistic extends BaseEntity {
         return new EventStatistic(event);
     }
 
-    public void increaseViewCount(final LocalDate currentDate, Member member) {
+    public void increaseViewCount(final LocalDate currentDate, final Member member) {
         if (event.isOrganizer(member)) {
             return;
         }

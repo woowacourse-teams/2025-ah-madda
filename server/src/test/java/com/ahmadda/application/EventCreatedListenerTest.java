@@ -81,6 +81,7 @@ class EventCreatedListenerTest {
 
     private Organization createOrganization() {
         var organization = Organization.create("우테코", "우테코입니다.", "image");
+
         return organizationRepository.save(organization);
     }
 
@@ -90,6 +91,7 @@ class EventCreatedListenerTest {
 
     private OrganizationMember createOrganizationMember(Organization organization, Member member) {
         var organizationMember = OrganizationMember.create("surf", member, organization);
+        
         return organizationMemberRepository.save(organizationMember);
     }
 
@@ -108,6 +110,7 @@ class EventCreatedListenerTest {
                 ),
                 10
         );
+
         return eventRepository.save(event);
     }
 }
