@@ -650,7 +650,7 @@ class EventServiceTest {
                     .containsExactlyInAnyOrder(om1, om2);
             softly.assertThat(savedHistories)
                     .extracting(ReminderHistory::getContent)
-                    .containsOnly("이벤트가 수정되었습니다.");
+                    .containsOnly("이벤트 정보가 수정되었습니다.");
             softly.assertThat(savedHistories)
                     .allSatisfy(h -> softly.assertThat(h.getSentAt())
                             .isNotNull());
