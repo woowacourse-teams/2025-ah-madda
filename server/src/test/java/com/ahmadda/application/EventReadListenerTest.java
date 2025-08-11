@@ -48,7 +48,7 @@ class EventReadListenerTest {
     private OrganizationMemberRepository organizationMemberRepository;
 
     @Test
-    void 이벤트_조회_이벤트가_발행되고_해당_이벤트에_대한_통계가_존재하면_조회수가_1_증가한다() {
+    void 해당_이벤트에_대한_통계가_존재하면_조회수가_1_증가한다() {
         // given
         var organization = createOrganization();
         var organizer = createMember("organizer", "organizer@mail.com");
@@ -63,9 +63,10 @@ class EventReadListenerTest {
         sut.onEventReaded(eventRead);
 
         // then
-        var actual = eventStatisticRepository.findByEventId(event.getId())
+        var eventStatistic = eventStatisticRepository.findByEventId(event.getId())
                 .get();
-        var viewCount = actual.getEventViewMetrics()
+
+        var viewCount = eventStatistic.getEventViewMetrics()
                 .stream()
                 .filter(metric -> metric.isSameDate(LocalDate.now()))
                 .findFirst()
@@ -75,7 +76,7 @@ class EventReadListenerTest {
     }
 
     @Test
-    void 이벤트_조회_이벤트가_발행되고_해당_이벤트에_대한_통계가_존재하지_않으면_통계를_생성하고_조회수를_1로_만든다() {
+    void 해당_이벤트에_대한_통계가_존재하지_않으면_통계를_생성하고_조회수를_1로_만든다() {
         // given
         var organization = createOrganization();
         var organizer = createMember("organizer", "organizer@mail.com");
@@ -89,9 +90,9 @@ class EventReadListenerTest {
         sut.onEventReaded(eventRead);
 
         // then
-        var actual = eventStatisticRepository.findByEventId(event.getId())
+        var eventStatistic = eventStatisticRepository.findByEventId(event.getId())
                 .get();
-        var viewCount = actual.getEventViewMetrics()
+        var viewCount = eventStatistic.getEventViewMetrics()
                 .stream()
                 .filter(metric -> metric.isSameDate(LocalDate.now()))
                 .findFirst()
