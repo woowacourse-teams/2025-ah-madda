@@ -54,6 +54,13 @@ public class FcmRegistrationToken {
         return new FcmRegistrationToken(memberId, registrationToken, timeStamp);
     }
 
+    public static FcmRegistrationToken createNow(
+            final Long memberId,
+            final String registrationToken
+    ) {
+        return new FcmRegistrationToken(memberId, registrationToken, LocalDateTime.now());
+    }
+
     private void validateMemberId(final Long memberId) {
         if (memberId == null) {
             throw new InvalidFcmRegistrationTokenException("memberId는 null일 수 없습니다.");

@@ -11,6 +11,7 @@ public class ReminderNotifier {
 
     private final EmailNotifier emailNotifier;
     private final PushNotifier pushNotifier;
+    private final ReminderHistoryRepository reminderHistoryRepository;
 
     // TODO. 추후 recipients의 알람 타입 에 따라 이메일, 푸시 알림을 선택적으로 보낼 수 있도록 구현
     public void remind(
@@ -23,5 +24,10 @@ public class ReminderNotifier {
 
         PushNotificationPayload pushPayload = PushNotificationPayload.of(event, content);
         pushNotifier.sendPushs(recipients, pushPayload);
+
+        List<ReminderHistory> histories = recipients.stream()
+                .map(recipient -> ReminderHistory.createNow(event, recipient, content))
+                .toList();
+        reminderHistoryRepository.saveAll(histories);
     }
 }
