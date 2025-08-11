@@ -4,7 +4,8 @@ import styled from '@emotion/styled';
 export const StyledToastLayout = styled.div`
   position: fixed;
   top: 25px;
-  right: 30px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 1000;
 `;
 
