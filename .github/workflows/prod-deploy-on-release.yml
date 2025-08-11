@@ -1,13 +1,13 @@
 name: Prod Deploy On Release
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
     paths:
       - 'server/**'
-  release:
-    types: [published]
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
   setup:
