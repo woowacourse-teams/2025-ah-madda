@@ -28,7 +28,7 @@ public class EventNotificationScheduler {
 
     // TODO. 추후 중복 알람을 방지하도록 구현
     @Scheduled(fixedRate = 180_000)
-    @Transactional(readOnly = true)
+    @Transactional
     public void notifyRegistrationClosingEvents() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime targetTime = now.plus(REMINDER_BEFORE);
