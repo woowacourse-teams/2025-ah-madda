@@ -6,6 +6,13 @@ type ToastContextType = {
   openToast: (options: { message: string; variant?: ToastVariant; duration?: number }) => void;
 };
 
+type ToastState = {
+  message: string;
+  variant: ToastVariant;
+  duration: number;
+  isVisible: boolean;
+};
+
 const ToastContext = createContext<ToastContextType | null>(null);
 
 export const useToast = () => {
@@ -15,12 +22,7 @@ export const useToast = () => {
 };
 
 export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
-  const [toastState, setToastState] = useState<{
-    message: string;
-    variant: ToastVariant;
-    duration: number;
-    isVisible: boolean;
-  }>({
+  const [toastState, setToastState] = useState<ToastState>({
     message: '',
     variant: 'success',
     duration: 3000,
