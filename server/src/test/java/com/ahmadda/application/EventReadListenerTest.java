@@ -2,6 +2,7 @@ package com.ahmadda.application;
 
 import com.ahmadda.application.dto.EventRead;
 import com.ahmadda.application.dto.LoginMember;
+import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
@@ -16,13 +17,13 @@ import com.ahmadda.domain.OrganizationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Transactional
@@ -30,9 +31,6 @@ class EventReadListenerTest {
 
     @Autowired
     private EventReadListener sut;
-
-    @Autowired
-    private ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
     private EventStatisticRepository eventStatisticRepository;
@@ -62,11 +60,13 @@ class EventReadListenerTest {
         var eventRead = new EventRead(event.getId(), new LoginMember(reader.getId()));
 
         // when
-        applicationEventPublisher.publishEvent(eventRead);
+        sut.onEventReaded(eventRead);
 
         // then
-        var actual = eventStatisticRepository.findByEventId(event.getId()).get();
-        var viewCount = actual.getEventViewMetrics().stream()
+        var actual = eventStatisticRepository.findByEventId(event.getId())
+                .get();
+        var viewCount = actual.getEventViewMetrics()
+                .stream()
                 .filter(metric -> metric.isSameDate(LocalDate.now()))
                 .findFirst()
                 .get()
@@ -86,16 +86,46 @@ class EventReadListenerTest {
         var eventRead = new EventRead(event.getId(), new LoginMember(reader.getId()));
 
         // when
-        applicationEventPublisher.publishEvent(eventRead);
+        sut.onEventReaded(eventRead);
 
         // then
-        var actual = eventStatisticRepository.findByEventId(event.getId()).get();
-        var viewCount = actual.getEventViewMetrics().stream()
+        var actual = eventStatisticRepository.findByEventId(event.getId())
+                .get();
+        var viewCount = actual.getEventViewMetrics()
+                .stream()
                 .filter(metric -> metric.isSameDate(LocalDate.now()))
                 .findFirst()
                 .get()
                 .getViewCount();
         assertThat(viewCount).isEqualTo(1);
+    }
+
+    @Test
+    void 이벤트_조회시_회원이_존재하지_않으면_예외가_발생한다() {
+        // given
+        var organization = createOrganization();
+        var organizer = createMember("organizer", "organizer@mail.com");
+        var organizationMember = createOrganizationMember(organization, organizer);
+        var event = createEvent(organizationMember, organization);
+
+        var eventRead = new EventRead(event.getId(), new LoginMember(999L));
+
+        // when // then
+        assertThatThrownBy(() -> sut.onEventReaded(eventRead))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 회원입니다.");
+    }
+
+    @Test
+    void 이벤트_조회시_이벤트가_존재하지_않으면_예외가_발생한다() {
+        // given
+        var reader = createMember("reader", "reader@mail.com");
+        var eventRead = new EventRead(999L, new LoginMember(reader.getId()));
+
+        // when // then
+        assertThatThrownBy(() -> sut.onEventReaded(eventRead))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 이벤트입니다");
     }
 
     private Organization createOrganization() {
