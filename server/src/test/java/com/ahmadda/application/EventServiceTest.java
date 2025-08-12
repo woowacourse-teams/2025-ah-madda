@@ -583,13 +583,12 @@ class EventServiceTest {
         var loginMember = new LoginMember(organizerMember.getId());
 
         // when
-        var updatedEvent = sut.updateEvent(event.getId(), loginMember, updateRequest, now);
+        sut.updateEvent(event.getId(), loginMember, updateRequest, now);
 
         // then
         verify(reminder).remind(List.of(guestOrgMember1, guestOrgMember2), event, "이벤트 정보가 수정되었습니다.");
     }
 
-    @Disabled
     @Test
     void 이벤트_수정_후_리마인더_히스토리가_저장된다() {
         // given
@@ -619,6 +618,10 @@ class EventServiceTest {
                 ),
                 100
         ));
+        var guest1 = Guest.create(event, om1, now.plusDays(1));
+        var guest2 = Guest.create(event, om2, now.plusDays(1));
+        guestRepository.save(guest1);
+        guestRepository.save(guest2);
 
         var updateRequest = new EventUpdateRequest(
                 "수정된 제목",
