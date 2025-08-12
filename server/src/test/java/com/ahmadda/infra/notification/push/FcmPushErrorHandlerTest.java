@@ -27,7 +27,7 @@ class FcmPushErrorHandlerTest {
         // given
         var tokenValue = "expired-token";
         var saved = fcmRegistrationTokenRepository.save(
-                FcmRegistrationToken.create(1L, tokenValue, java.time.LocalDateTime.now())
+                FcmRegistrationToken.createNow(1L, tokenValue)
         );
 
         var exception = mock(FirebaseMessagingException.class);

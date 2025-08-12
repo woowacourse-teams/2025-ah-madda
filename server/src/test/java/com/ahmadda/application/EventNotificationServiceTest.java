@@ -5,9 +5,7 @@ import com.ahmadda.application.dto.NonGuestsNotificationRequest;
 import com.ahmadda.application.dto.SelectedOrganizationMembersNotificationRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
@@ -18,20 +16,20 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.PushNotificationPayload;
-import com.ahmadda.domain.PushNotifier;
-import com.ahmadda.infra.notification.push.FcmRegistrationToken;
-import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
+import com.ahmadda.domain.Reminder;
+import com.ahmadda.domain.ReminderHistory;
+import com.ahmadda.domain.ReminderHistoryRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -56,20 +54,17 @@ class EventNotificationServiceTest {
     @Autowired
     private GuestRepository guestRepository;
 
+    @MockitoSpyBean
+    private Reminder reminder;
+
     @Autowired
-    private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
-
-    @MockitoBean
-    private EmailNotifier emailNotifier;
-
-    @MockitoBean
-    private PushNotifier pushNotifier;
+    private ReminderHistoryRepository reminderHistoryRepository;
 
     @Test
     void 비게스트_조직원에게_알람을_전송한다() {
         // given
         var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
-        var organizer = createAndSaveOrganizationMember("주최자", "host@email.com", organization);
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
         var now = LocalDateTime.now();
 
         var event = eventRepository.save(Event.create(
@@ -85,31 +80,74 @@ class EventNotificationServiceTest {
 
         var request = createNotificationRequest();
 
-        var guest = createAndSaveOrganizationMember("게스트", "guest@email.com", organization);
+        var guest = saveOrganizationMember("게스트", "guest@email.com", organization);
         guestRepository.save(Guest.create(event, guest, event.getRegistrationStart()));
 
-        var ng1 = createAndSaveOrganizationMember("비게스트1", "ng1@email.com", organization);
-        var ng2 = createAndSaveOrganizationMember("비게스트2", "ng2@email.com", organization);
-
-        savePushToken(ng1, "token-ng1");
-        savePushToken(ng2, "token-ng2");
+        var ng1 = saveOrganizationMember("비게스트1", "ng1@email.com", organization);
+        var ng2 = saveOrganizationMember("비게스트2", "ng2@email.com", organization);
 
         // when
         sut.notifyNonGuestOrganizationMembers(event.getId(), request, createLoginMember(organizer));
 
         // then
-        var email = EventEmailPayload.of(event, request.content());
-        var pushPayload = PushNotificationPayload.of(event, request.content());
+        verify(reminder).remind(List.of(ng1, ng2), event, request.content());
+    }
 
-        verify(emailNotifier).sendEmails(List.of(ng1, ng2), email);
-        verify(pushNotifier).sendPushs(List.of(ng1, ng2), pushPayload);
+    @Test
+    void 비게스트_조직원에게_알람_전송_후_히스토리가_저장된다() {
+        // given
+        var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
+        var now = LocalDateTime.now();
+
+        var event = eventRepository.save(Event.create(
+                "이벤트제목", "설명", "장소",
+                organizer, organization,
+                EventOperationPeriod.create(
+                        now.minusDays(2), now.minusDays(1),
+                        now.plusDays(1), now.plusDays(2),
+                        now.minusDays(3)
+                ),
+                100
+        ));
+
+        var guest = saveOrganizationMember("게스트", "guest@email.com", organization);
+        guestRepository.save(Guest.create(event, guest, event.getRegistrationStart()));
+
+        var ng1 = saveOrganizationMember("비게스트1", "ng1@email.com", organization);
+        var ng2 = saveOrganizationMember("비게스트2", "ng2@email.com", organization);
+
+        var request = createNotificationRequest(); // content: "이메일 내용입니다."
+        var content = request.content();
+
+        // when
+        sut.notifyNonGuestOrganizationMembers(event.getId(), request, createLoginMember(organizer));
+
+        // then
+        var saved = reminderHistoryRepository.findAll();
+        assertSoftly(softly -> {
+            softly.assertThat(saved)
+                    .hasSize(2);
+            softly.assertThat(saved)
+                    .extracting(ReminderHistory::getEvent)
+                    .containsOnly(event);
+            softly.assertThat(saved)
+                    .extracting(ReminderHistory::getOrganizationMember)
+                    .containsExactlyInAnyOrder(ng1, ng2);
+            softly.assertThat(saved)
+                    .extracting(ReminderHistory::getContent)
+                    .containsOnly(content);
+            softly.assertThat(saved)
+                    .allSatisfy(h -> softly.assertThat(h.getSentAt())
+                            .isNotNull());
+        });
     }
 
     @Test
     void 존재하지_않는_이벤트로_메일_전송시_예외가_발생한다() {
         // given
         var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
-        var organizer = createAndSaveOrganizationMember("주최자", "host@email.com", organization);
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
         var loginMember = createLoginMember(organizer);
 
         // when // then
@@ -126,8 +164,8 @@ class EventNotificationServiceTest {
     void 주최자가_아닌_회원이_메일을_전송하면_예외가_발생한다() {
         // given
         var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
-        var organizer = createAndSaveOrganizationMember("주최자", "host@email.com", organization);
-        var other = createAndSaveOrganizationMember("다른사람", "other@email.com", organization);
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
+        var other = saveOrganizationMember("다른사람", "other@email.com", organization);
         var now = LocalDateTime.now();
 
         var event = eventRepository.save(Event.create(
@@ -159,7 +197,7 @@ class EventNotificationServiceTest {
     void 선택된_조직원에게_알람을_전송한다() {
         // given
         var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
-        var organizer = createAndSaveOrganizationMember("주최자", "host@email.com", organization);
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
         var now = LocalDateTime.now();
 
         var event = eventRepository.save(Event.create(
@@ -176,36 +214,81 @@ class EventNotificationServiceTest {
                 100
         ));
 
-        var om1 = createAndSaveOrganizationMember("선택1", "sel1@email.com", organization);
-        var om2 = createAndSaveOrganizationMember("선택2", "sel2@email.com", organization);
-        var om3 = createAndSaveOrganizationMember("비선택", "nsel@email.com", organization);
-
-        savePushToken(om1, "token-ng1");
-        savePushToken(om2, "token-ng2");
+        var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization);
+        var om2 = saveOrganizationMember("선택2", "sel2@email.com", organization);
+        saveOrganizationMember("비선택", "nsel@email.com", organization);
 
         var request = createSelectedMembersRequest(List.of(om1.getId(), om2.getId()));
-        var email = EventEmailPayload.of(event, request.content());
-        var pushPayload = PushNotificationPayload.of(event, request.content());
 
         // when
         sut.notifySelectedOrganizationMembers(event.getId(), request, createLoginMember(organizer));
 
         // then
-        verify(emailNotifier).sendEmails(List.of(om1, om2), email);
-        verify(pushNotifier).sendPushs(List.of(om1, om2), pushPayload);
+        verify(reminder).remind(List.of(om1, om2), event, request.content());
+    }
+
+    @Test
+    void 선택된_조직원에게_알람_전송_후_히스토리가_저장된다() {
+        // given
+        var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
+        var now = LocalDateTime.now();
+
+        var event = eventRepository.save(Event.create(
+                "이벤트제목", "설명", "장소",
+                organizer, organization,
+                EventOperationPeriod.create(
+                        now.minusDays(2), now.minusDays(1),
+                        now.plusDays(1), now.plusDays(2),
+                        now.minusDays(3)
+                ),
+                100
+        ));
+
+        var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization);
+        var om2 = saveOrganizationMember("선택2", "sel2@email.com", organization);
+        var notSelected = saveOrganizationMember("비선택", "nsel@email.com", organization);
+
+        var request = createSelectedMembersRequest(List.of(om1.getId(), om2.getId()));
+        var content = request.content();
+
+        // when
+        sut.notifySelectedOrganizationMembers(event.getId(), request, createLoginMember(organizer));
+
+        // then
+        var saved = reminderHistoryRepository.findAll();
+        assertSoftly(softly -> {
+            softly.assertThat(saved)
+                    .hasSize(2);
+            softly.assertThat(saved)
+                    .extracting(ReminderHistory::getEvent)
+                    .containsOnly(event);
+            softly.assertThat(saved)
+                    .extracting(ReminderHistory::getOrganizationMember)
+                    .containsExactlyInAnyOrder(om1, om2);
+            softly.assertThat(saved)
+                    .extracting(ReminderHistory::getOrganizationMember)
+                    .doesNotContain(notSelected);
+            softly.assertThat(saved)
+                    .extracting(ReminderHistory::getContent)
+                    .containsOnly(content);
+            softly.assertThat(saved)
+                    .allSatisfy(h -> softly.assertThat(h.getSentAt())
+                            .isNotNull());
+        });
     }
 
     @Test
     void 존재하지_않는_이벤트로_알람_전송시_예외가_발생한다() {
         // given
         var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
-        var organizer = createAndSaveOrganizationMember("주최자", "host@email.com", organization);
-        var om = createAndSaveOrganizationMember("대상자", "target@email.com", organization);
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
+        var om = saveOrganizationMember("대상자", "target@email.com", organization);
         var request = createSelectedMembersRequest(java.util.List.of(om.getId()));
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.notifySelectedOrganizationMembers(999L, request, createLoginMember(organizer))
+                sut.notifySelectedOrganizationMembers(999L, request, createLoginMember(organizer))
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 이벤트입니다.");
@@ -215,8 +298,8 @@ class EventNotificationServiceTest {
     void 주최자가_아닌_회원이_전송하면_예외가_발생한다() {
         // given
         var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
-        var organizer = createAndSaveOrganizationMember("주최자", "host@email.com", organization);
-        var other = createAndSaveOrganizationMember("다른사람", "other@email.com", organization);
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
+        var other = saveOrganizationMember("다른사람", "other@email.com", organization);
 
         var now = LocalDateTime.now();
         var event = eventRepository.save(Event.create(
@@ -233,15 +316,16 @@ class EventNotificationServiceTest {
                 100
         ));
 
-        var om = createAndSaveOrganizationMember("대상자", "target@email.com", organization);
+        var om = saveOrganizationMember("대상자", "target@email.com", organization);
         var request = createSelectedMembersRequest(java.util.List.of(om.getId()));
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.notifySelectedOrganizationMembers(event.getId(),
-                                                                         request,
-                                                                         createLoginMember(other)
-                                   )
+                sut.notifySelectedOrganizationMembers(
+                        event.getId(),
+                        request,
+                        createLoginMember(other)
+                )
         )
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessage("이벤트 주최자가 아닙니다.");
@@ -251,7 +335,7 @@ class EventNotificationServiceTest {
     void 요청에_존재하지_않는_조직원_ID가_포함되면_예외가_발생한다() {
         // given
         var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
-        var organizer = createAndSaveOrganizationMember("주최자", "host@email.com", organization);
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
 
         var now = LocalDateTime.now();
         var event = eventRepository.save(Event.create(
@@ -268,19 +352,20 @@ class EventNotificationServiceTest {
                 100
         ));
 
-        var validOm = createAndSaveOrganizationMember("유효", "valid@email.com", organization);
+        var validOm = saveOrganizationMember("유효", "valid@email.com", organization);
 
         var otherOrg = organizationRepository.save(Organization.create("다른조직", "설명", "img2.png"));
-        var otherOm = createAndSaveOrganizationMember("다른조직원", "otherorg@email.com", otherOrg);
+        var otherOm = saveOrganizationMember("다른조직원", "otherorg@email.com", otherOrg);
 
         var request = createSelectedMembersRequest(java.util.List.of(validOm.getId(), otherOm.getId()));
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.notifySelectedOrganizationMembers(event.getId(),
-                                                                         request,
-                                                                         createLoginMember(organizer)
-                                   )
+                sut.notifySelectedOrganizationMembers(
+                        event.getId(),
+                        request,
+                        createLoginMember(organizer)
+                )
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 조직원입니다.");
@@ -294,7 +379,7 @@ class EventNotificationServiceTest {
         return new SelectedOrganizationMembersNotificationRequest(organizationMemberIds, "이메일 내용입니다.");
     }
 
-    private OrganizationMember createAndSaveOrganizationMember(
+    private OrganizationMember saveOrganizationMember(
             String nickname,
             String email,
             Organization organization
@@ -308,14 +393,5 @@ class EventNotificationServiceTest {
         var member = organizationMember.getMember();
 
         return new LoginMember(member.getId());
-    }
-
-    private void savePushToken(OrganizationMember organizationMember, String token) {
-        var fcmRegistrationToken = FcmRegistrationToken.create(
-                organizationMember.getMember()
-                        .getId(), token, LocalDateTime.now()
-        );
-
-        fcmRegistrationTokenRepository.save(fcmRegistrationToken);
     }
 }

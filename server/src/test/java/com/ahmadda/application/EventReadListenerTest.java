@@ -60,7 +60,7 @@ class EventReadListenerTest {
         var eventRead = new EventRead(event.getId(), new LoginMember(reader.getId()));
 
         // when
-        sut.onEventReaded(eventRead);
+        sut.onEventRead(eventRead);
 
         // then
         var eventStatistic = eventStatisticRepository.findByEventId(event.getId())
@@ -87,7 +87,7 @@ class EventReadListenerTest {
         var eventRead = new EventRead(event.getId(), new LoginMember(reader.getId()));
 
         // when
-        sut.onEventReaded(eventRead);
+        sut.onEventRead(eventRead);
 
         // then
         var eventStatistic = eventStatisticRepository.findByEventId(event.getId())
@@ -112,7 +112,7 @@ class EventReadListenerTest {
         var eventRead = new EventRead(event.getId(), new LoginMember(999L));
 
         // when // then
-        assertThatThrownBy(() -> sut.onEventReaded(eventRead))
+        assertThatThrownBy(() -> sut.onEventRead(eventRead))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 회원입니다.");
     }
@@ -124,7 +124,7 @@ class EventReadListenerTest {
         var eventRead = new EventRead(999L, new LoginMember(reader.getId()));
 
         // when // then
-        assertThatThrownBy(() -> sut.onEventReaded(eventRead))
+        assertThatThrownBy(() -> sut.onEventRead(eventRead))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 이벤트입니다");
     }
