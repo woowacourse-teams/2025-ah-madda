@@ -32,11 +32,11 @@ public class EventNotificationScheduler {
     @Scheduled(fixedRate = 180_000)
     @Transactional
     public void notifyRegistrationClosingEvents() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime windowEnd = now.plus(SCHEDULER_SCAN_WINDOW);
+        LocalDateTime windowStart = LocalDateTime.now();
+        LocalDateTime windowEnd = windowStart.plus(SCHEDULER_SCAN_WINDOW);
 
         List<Event> upcomingEvents =
-                eventRepository.findAllByEventOperationPeriodRegistrationPeriodEndBetween(now, windowEnd);
+                eventRepository.findAllByEventOperationPeriodRegistrationPeriodEndBetween(windowStart, windowEnd);
 
         upcomingEvents.stream()
                 .filter(event -> !event.isFull()).
