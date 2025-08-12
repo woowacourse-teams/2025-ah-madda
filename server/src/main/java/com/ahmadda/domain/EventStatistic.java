@@ -52,7 +52,11 @@ public class EventStatistic extends BaseEntity {
         return new EventStatistic(event);
     }
 
-    public void increaseViewCount(final LocalDate currentDate) {
+    public void increaseViewCount(final LocalDate currentDate, final Member member) {
+        if (event.isOrganizer(member)) {
+            return;
+        }
+
         eventViewMetrics.stream()
                 .filter((eventViewMetric) -> eventViewMetric.isSameDate(currentDate))
                 .findFirst()

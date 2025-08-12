@@ -103,7 +103,7 @@ public class EventService {
 
         validateOrganizationAccess(organization.getId(), loginMember.memberId());
 
-        eventPublisher.publishEvent(EventRead.from(event));
+        eventPublisher.publishEvent(EventRead.from(event, loginMember));
 
         return event;
     }

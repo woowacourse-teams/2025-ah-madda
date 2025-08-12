@@ -268,6 +268,7 @@ class OrganizationMemberEventServiceTest {
                 ),
                 maxCapacity
         );
+        
         return eventRepository.save(event);
     }
 
