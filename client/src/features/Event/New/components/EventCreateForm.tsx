@@ -10,6 +10,7 @@ import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
+import { Textarea } from '@/shared/components/Textarea';
 import { useModal } from '@/shared/hooks/useModal';
 import { trackCreateEvent } from '@/shared/lib/gaEvents';
 
@@ -223,7 +224,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               errorMessage={errors.place}
             />
 
-            <Input
+            <Textarea
               id="description"
               name="description"
               label="설명"
