@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface TemplateRepository extends JpaRepository<Template, Long> {
 
-    boolean existsByIdAndMemberId(Long templateId, Long memberId);
+    boolean existsByIdAndMemberId(final Long templateId, final Long memberId);
 
-    List<Template> findAllByMemberId(Long memberId);
+    List<Template> findAllByMemberId(final Long memberId);
 }
