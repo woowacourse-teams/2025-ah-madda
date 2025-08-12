@@ -84,11 +84,13 @@ export const EventCard = ({
           </Text>
         </Flex>
         <Spacing height="2px" />
-        <Flex justifyContent="space-between" alignItems="center" gap="20px">
+        <Flex width="100%" justifyContent="space-between" alignItems="center" gap="8px">
           <ProgressBar value={progressValue} max={progressMax} color={theme.colors.primary500} />
-          <Text type="Label" color="#99A1AF" weight="semibold">
-            {isUnlimited ? '무제한' : `${currentGuestCount}/${maxCapacity}`}
-          </Text>
+          <Flex width="15%" justifyContent="center" alignItems="center">
+            <Text type="Label" color="#99A1AF" weight="semibold">
+              {isUnlimited ? '무제한' : `${currentGuestCount} / ${maxCapacity}`}
+            </Text>
+          </Flex>
         </Flex>
       </Flex>
     </CardWrapper>
