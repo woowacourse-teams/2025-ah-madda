@@ -8,7 +8,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class EventPokeHistoryTest {
+class EventPokeTest {
 
     @Test
     void 스스로에게_포키를_보낼_때_예외가_발생한다() {
@@ -19,7 +19,7 @@ class EventPokeHistoryTest {
         var event = createEvent(organization, sender, LocalDateTime.now());
 
         // when // then
-        assertThatThrownBy(() -> EventPokeHistory.create(sender, sender, event, LocalDateTime.now()))
+        assertThatThrownBy(() -> EventPoke.create(sender, sender, event, LocalDateTime.now()))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage("스스로에게 포키를 보낼 수 없습니다");
     }
@@ -35,7 +35,7 @@ class EventPokeHistoryTest {
         var event = createEvent(organization, organizer, LocalDateTime.now());
 
         // when // then
-        assertThatThrownBy(() -> EventPokeHistory.create(sender, organizer, event, LocalDateTime.now()))
+        assertThatThrownBy(() -> EventPoke.create(sender, organizer, event, LocalDateTime.now()))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage("주최자에게 포키를 보낼 수 없습니다");
     }
@@ -52,7 +52,7 @@ class EventPokeHistoryTest {
         var event = createEvent(organization, recipient, LocalDateTime.now());
 
         // when // then
-        assertThatThrownBy(() -> EventPokeHistory.create(sender, recipient, event, LocalDateTime.now()))
+        assertThatThrownBy(() -> EventPoke.create(sender, recipient, event, LocalDateTime.now()))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage("포키를 보내려면 해당 조직에 참여하고 있어야 합니다.");
     }
@@ -69,7 +69,7 @@ class EventPokeHistoryTest {
         var event = createEvent(organization, sender, LocalDateTime.now());
 
         // when // then
-        assertThatThrownBy(() -> EventPokeHistory.create(sender, recipient, event, LocalDateTime.now()))
+        assertThatThrownBy(() -> EventPoke.create(sender, recipient, event, LocalDateTime.now()))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage("포키 대상이 해당 조직에 참여하고 있어야 합니다.");
     }

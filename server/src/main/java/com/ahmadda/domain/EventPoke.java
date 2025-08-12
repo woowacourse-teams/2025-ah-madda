@@ -9,37 +9,38 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
-public class EventPokeHistory extends BaseEntity {
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class EventPoke extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sender_id", unique = true, nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY) // 다대일 관계가 더 자연스럽습니다.
+    @JoinColumn(name = "event_id", nullable = false)
+    private Event event;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id", nullable = false)
     private OrganizationMember sender;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recipient_id", unique = true, nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recipient_id", nullable = false)
     private OrganizationMember recipient;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id", unique = true, nullable = false)
-    private Event event;
 
     @Column(nullable = false)
     private LocalDateTime sentAt;
 
-    protected EventPokeHistory() {
-
-    }
-
-    private EventPokeHistory(
+    private EventPoke(
             final OrganizationMember sender,
             final OrganizationMember recipient,
             final Event event,
@@ -57,18 +58,17 @@ public class EventPokeHistory extends BaseEntity {
         this.sentAt = sentAt;
     }
 
-    private void validateSentAt(LocalDateTime sentAt) {
-        Assert.notNull(sentAt, "포크 전송 날짜는 null 일 수 없습니다.");
-
-    }
-
-    public static EventPokeHistory create(
+    public static EventPoke create(
             final OrganizationMember sendOrganizationMember,
             final OrganizationMember receiveOrganizationMember,
             final Event event,
             final LocalDateTime dateTime
     ) {
-        return new EventPokeHistory(sendOrganizationMember, receiveOrganizationMember, event, dateTime);
+        return new EventPoke(sendOrganizationMember, receiveOrganizationMember, event, dateTime);
+    }
+
+    private void validateSentAt(LocalDateTime sentAt) {
+        Assert.notNull(sentAt, "포크 전송 날짜는 null 일 수 없습니다.");
     }
 
     private void validateReceiveOrganizationMember(
