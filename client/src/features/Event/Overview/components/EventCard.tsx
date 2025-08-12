@@ -15,7 +15,7 @@ import { Event } from '../../types/Event';
 import { badgeText } from '../utils/badgeText';
 import { calculateCapacityStatus } from '../utils/calculateCapacityStatus';
 import { formatDateTime } from '../utils/formatDateTime';
-import { removeNewline } from '../utils/removeNewline';
+import { normalizeWhitespace } from '../utils/normalizeWhitespace';
 
 export const EventCard = ({
   eventId,
@@ -62,7 +62,7 @@ export const EventCard = ({
           `}
         >
           <Text type="Body" color={theme.colors.gray700}>
-            {removeNewline(description)}
+            {normalizeWhitespace(description)}
           </Text>
         </Flex>
         <Flex alignItems="center" gap="4px" height="100%">
