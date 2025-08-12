@@ -36,22 +36,24 @@ public class EventReadListener {
         eventStatisticRepository.findByEventId(eventRead.eventId())
                 .ifPresentOrElse(
                         eventStatistic -> {
-                            eventStatistic.increaseViewCount(
-                                    LocalDate.now(),
-                                    member
-                            );
+                            increaseViewCount(eventStatistic, member);
                         },
                         () -> {
                             Event event = eventRepository.findById(eventRead.eventId())
                                     .orElseThrow((() -> new NotFoundException("존재하지 않는 이벤트입니다")));
 
                             EventStatistic eventStatistic = EventStatistic.create(event);
-                            eventStatistic.increaseViewCount(
-                                    LocalDate.now(),
-                                    member
-                            );
+
+                            increaseViewCount(eventStatistic, member);
                             eventStatisticRepository.save(eventStatistic);
                         }
                 );
+    }
+
+    private static void increaseViewCount(EventStatistic eventStatistic, Member member) {
+        eventStatistic.increaseViewCount(
+                LocalDate.now(),
+                member
+        );
     }
 }
