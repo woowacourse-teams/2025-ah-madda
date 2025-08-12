@@ -32,7 +32,7 @@ import java.util.List;
 
 @Tag(name = "Template", description = "템플릿 관련 API")
 @RestController
-@RequestMapping("/api/me/templates")
+@RequestMapping("/api/templates")
 @RequiredArgsConstructor
 public class TemplateController {
 
@@ -55,7 +55,7 @@ public class TemplateController {
                                       "title": "Not Found",
                                       "status": 404,
                                       "detail": "존재하지 않는 회원입니다.",
-                                      "instance": "/api/me/templates"
+                                      "instance": "/api/templates"
                                     }
                                     """
                     ))
@@ -70,7 +70,7 @@ public class TemplateController {
 
         TemplateCreateResponse response = TemplateCreateResponse.from(template);
 
-        return ResponseEntity.created(URI.create("/api/me/templates/" + template.getId()))
+        return ResponseEntity.created(URI.create("/api/templates/" + template.getId()))
                 .body(response);
     }
 
@@ -94,7 +94,7 @@ public class TemplateController {
                                               "title": "Not Found",
                                               "status": 404,
                                               "detail": "존재하지 않는 회원입니다.",
-                                              "instance": "/api/me/templates"
+                                              "instance": "/api/templates"
                                             }
                                             """
                             ))
@@ -127,7 +127,7 @@ public class TemplateController {
                                               "title": "Forbidden",
                                               "status": 403,
                                               "detail": "본인이 작성한 템플릿이 아닙니다.",
-                                              "instance": "/api/me/templates/{templateId}"
+                                              "instance": "/api/templates/{templateId}"
                                             }
                                             """
                             ))
@@ -143,7 +143,7 @@ public class TemplateController {
                                               "title": "Not Found",
                                               "status": 404,
                                               "detail": "존재하지 않는 회원입니다.",
-                                              "instance": "/api/me/templates/{templateId}"
+                                              "instance": "/api/templates/{templateId}"
                                             }
                                             """
                             ),
@@ -155,7 +155,7 @@ public class TemplateController {
                                               "title": "Not Found",
                                               "status": 404,
                                               "detail": "존재하지 않는 템플릿입니다.",
-                                              "instance": "/api/me/templates/{templateId}"
+                                              "instance": "/api/templates/{templateId}"
                                             }
                                             """
                             )
@@ -188,7 +188,7 @@ public class TemplateController {
                                       "title": "Forbidden",
                                       "status": 403,
                                       "detail": "본인이 작성한 템플릿이 아닙니다.",
-                                      "instance": "/api/me/templates/{templateId}"
+                                      "instance": "/api/templates/{templateId}"
                                     }
                                     """
                     ))
@@ -204,7 +204,7 @@ public class TemplateController {
                                               "title": "Not Found",
                                               "status": 404,
                                               "detail": "존재하지 않는 회원입니다.",
-                                              "instance": "/api/me/templates/{templateId}"
+                                              "instance": "/api/templates/{templateId}"
                                             }
                                             """
                             ),
@@ -216,7 +216,7 @@ public class TemplateController {
                                               "title": "Not Found",
                                               "status": 404,
                                               "detail": "존재하지 않는 템플릿입니다.",
-                                              "instance": "/api/me/templates/{templateId}"
+                                              "instance": "/api/templates/{templateId}"
                                             }
                                             """
                             )
