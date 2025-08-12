@@ -13,13 +13,17 @@
                    style="max-width:600px; background:#ffffff; border-radius:12px; overflow:hidden;">
                 <tr>
                     <td style="padding:16px 20px; background:#3D84FF; color:#ffffff; font-family:Arial, Helvetica, sans-serif; font-size:18px; font-weight:600;">
-                        [[${organizationName}]]
+                        <div style="display:flex; align-items:center;">
+                            <img src="https://private-user-images.githubusercontent.com/118044367/477144027-259d9e05-8904-405b-b148-80bfe88142bc.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NTUwMTM2ODIsIm5iZiI6MTc1NTAxMzM4MiwicGF0aCI6Ii8xMTgwNDQzNjcvNDc3MTQ0MDI3LTI1OWQ5ZTA1LTg5MDQtNDA1Yi1iMTQ4LTgwYmZlODgxNDJiYy5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwODEyJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDgxMlQxNTQzMDJaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1mYzY3NzJhNzRkZWI5MDBmNGExYjI1NWRjMmE0ZTMxMGViY2VkZWJmYzRlNzA3ZTk3YmFmMGI0YjY2NmU5OGM3JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.1ps-slNyQvAqdYqAI81LgoToxIftZfnsehNcusN0jl8"
+                                 alt="로고" style="height:32px; margin-right:8px; vertical-align:middle;"/>
+                            <span th:text="${organizationName}">조직 이름</span>
+                        </div>
                     </td>
                 </tr>
                 <tr>
                     <td style="padding:20px 20px 8px 20px; font-family:Arial, Helvetica, sans-serif;">
-                        <div style="font-size:20px; line-height:1.4; color:#111827; font-weight:700;">
-                            [[${content}]]
+                        <div style="font-size:20px; line-height:1.4; color:#111827; font-weight:700;"
+                             th:text="${content}">이벤트 내용
                         </div>
                     </td>
                 </tr>
@@ -28,36 +32,39 @@
                         <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                             <tr>
                                 <td colspan="2"
-                                    style="padding:10px 0 6px 0; font-size:16px; color:#111827; font-weight:700;">
-                                    이벤트 정보
+                                    style="padding:10px 0 6px 0; font-size:16px; color:#111827; font-weight:700;">이벤트 정보
                                 </td>
                             </tr>
                             <tr>
                                 <td style="width:100px; padding:6px 0; font-size:14px; color:#6b7280;">제목</td>
-                                <td style="padding:6px 0; font-size:14px; color:#111827; font-weight:600;">
-                                    [[${title}]]
+                                <td style="padding:6px 0; font-size:14px; color:#111827; font-weight:600;"
+                                    th:text="${title}">이벤트 제목
                                 </td>
                             </tr>
                             <tr>
                                 <td style="width:100px; padding:6px 0; font-size:14px; color:#6b7280;">주최자</td>
-                                <td style="padding:6px 0; font-size:14px; color:#111827;">[[${organizerNickname}]]</td>
+                                <td style="padding:6px 0; font-size:14px; color:#111827;"
+                                    th:text="${organizerNickname}">주최자
+                                </td>
                             </tr>
                             <tr>
                                 <td style="width:100px; padding:6px 0; font-size:14px; color:#6b7280;">장소</td>
-                                <td style="padding:6px 0; font-size:14px; color:#111827;">[[${place}]]</td>
+                                <td style="padding:6px 0; font-size:14px; color:#111827;" th:text="${place}">장소</td>
                             </tr>
                             <tr>
                                 <td style="width:100px; padding:6px 0; font-size:14px; color:#6b7280;">모집기간</td>
                                 <td style="padding:6px 0; font-size:14px; color:#111827;">
-                                    [[${#temporals.format(registrationStart, 'yyyy년 MM월 dd일 HH:mm')}]] ~
-                                    [[${#temporals.format(registrationEnd, 'yyyy년 MM월 dd일 HH:mm')}]]
+                                    <span th:text="${#temporals.format(registrationStart, 'yyyy년 MM월 dd일 HH:mm')}">등록 시작</span>
+                                    ~
+                                    <span th:text="${#temporals.format(registrationEnd, 'yyyy년 MM월 dd일 HH:mm')}">등록 종료</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td style="width:100px; padding:6px 0; font-size:14px; color:#6b7280;">진행기간</td>
                                 <td style="padding:6px 0; font-size:14px; color:#111827;">
-                                    [[${#temporals.format(eventStart, 'yyyy년 MM월 dd일 HH:mm')}]] ~
-                                    [[${#temporals.format(eventEnd, 'yyyy년 MM월 dd일 HH:mm')}]]
+                                    <span th:text="${#temporals.format(eventStart, 'yyyy년 MM월 dd일 HH:mm')}">이벤트 시작</span>
+                                    ~
+                                    <span th:text="${#temporals.format(eventEnd, 'yyyy년 MM월 dd일 HH:mm')}">이벤트 종료</span>
                                 </td>
                             </tr>
                         </table>
