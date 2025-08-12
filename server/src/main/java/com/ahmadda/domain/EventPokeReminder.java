@@ -25,7 +25,7 @@ public class EventPokeReminder {
             final OrganizationMember recipient,
             final Event event
     ) {
-        int count = eventPokeHistoryRepository.countEventPokeHistoryByEventAndSenderAndReceiver(
+        int count = eventPokeHistoryRepository.countEventPokeHistoryByEventAndSenderAndRecipient(
                 event,
                 sender,
                 recipient

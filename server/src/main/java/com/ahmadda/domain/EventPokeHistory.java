@@ -18,29 +18,29 @@ public class EventPokeHistory extends BaseEntity {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_poke_history_id", unique = true, nullable = false)
+    @JoinColumn(name = "sender_id", unique = true, nullable = false)
     private OrganizationMember sender;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_poke_history_id", unique = true, nullable = false)
-    private OrganizationMember receiver;
+    @JoinColumn(name = "recipient_id", unique = true, nullable = false)
+    private OrganizationMember recipient;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_poke_history_id", unique = true, nullable = false)
+    @JoinColumn(name = "event_id", unique = true, nullable = false)
     private Event event;
 
     private EventPokeHistory(
             final OrganizationMember sender,
-            final OrganizationMember receiver,
+            final OrganizationMember recipient,
             final Event event
     ) {
         validateEvent(event);
-        validatePokeOrganizationMembers(sender, receiver);
-        validateOrganizationParticipate(event, sender, receiver);
-        validateReceiveOrganizationMember(event, receiver);
+        validatePokeOrganizationMembers(sender, recipient);
+        validateOrganizationParticipate(event, sender, recipient);
+        validateReceiveOrganizationMember(event, recipient);
 
         this.sender = sender;
-        this.receiver = receiver;
+        this.recipient = recipient;
         this.event = event;
     }
 
@@ -84,6 +84,7 @@ public class EventPokeHistory extends BaseEntity {
             final OrganizationMember receiveOrganizationMember
     ) {
         Organization organization = event.getOrganization();
+
         if (!organization.isExistOrganizationMember(sendOrganizationMember)) {
             throw new BusinessRuleViolatedException("포키를 보내려면 해당 조직에 참여하고 있어야 합니다.");
         }

@@ -1,5 +1,7 @@
 package com.ahmadda.infra.notification.push;
 
+import com.ahmadda.application.exception.BusinessFlowViolatedException;
+import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.PushNotificationPayload;
 import com.ahmadda.domain.PushNotifier;
@@ -7,6 +9,7 @@ import com.ahmadda.infra.notification.config.NotificationProperties;
 import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.Notification;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +52,20 @@ public class FcmPushNotifier implements PushNotifier {
         }
     }
 
+    @Override
+    public void sendPush(OrganizationMember recipient, PushNotificationPayload pushNotificationPayload) {
+        String registrationToken = getRegistrationToken(recipient);
+        Message message = createSingleMessage(registrationToken, pushNotificationPayload);
+
+        try {
+            FirebaseMessaging.getInstance()
+                    .send(message);
+
+        } catch (FirebaseMessagingException e) {
+            fcmPushErrorHandler.handleFailure(registrationToken, e);
+        }
+    }
+
     private List<String> getRegistrationTokens(final List<OrganizationMember> recipients) {
         List<Long> memberIds = recipients.stream()
                 .map(organizationMember -> organizationMember.getMember()
@@ -59,6 +76,39 @@ public class FcmPushNotifier implements PushNotifier {
                 .stream()
                 .map(FcmRegistrationToken::getRegistrationToken)
                 .toList();
+    }
+
+    private String getRegistrationToken(final OrganizationMember recipient) {
+        Long memberId = recipient.getMember()
+                .getId();
+
+        try {
+            return fcmRegistrationTokenRepository.findByMemberId(memberId)
+                    .orElseThrow(() -> new NotFoundException("유저의 fcm 토큰을 찾는데 실패했습니다."))
+                    .getRegistrationToken();
+        } catch (BusinessFlowViolatedException exception) {
+            log.error(
+                    "유저의 fcm 토큰을 찾는데 실패했습니다. 대상 멤버 id: {}",
+                    recipient.getMember()
+                            .getId(),
+                    exception
+            );
+            throw exception;
+        }
+    }
+
+    private Message createSingleMessage(
+            final String recipientPushToken,
+            final PushNotificationPayload payload
+    ) {
+        return Message.builder()
+                .setToken(recipientPushToken)
+                .setNotification(Notification.builder()
+                        .setTitle(payload.title())
+                        .setBody(payload.body())
+                        .build())
+                .putData("redirectUrl", notificationProperties.getRedirectUrlPrefix() + payload.eventId())
+                .build();
     }
 
     private MulticastMessage createMulticastMessage(
