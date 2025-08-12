@@ -25,7 +25,7 @@ export type IconButtonProps = {
 } & ComponentProps<'button'>;
 
 export const IconButton = ({ name, size = 20, color, ...props }: IconButtonProps) => {
-  const fillColor = colorMap[color ?? 'gray900'];
+  const fillColor = colorMap[color ?? 'gray'];
 
   return (
     <StyledIconButton type="button" color={fillColor as IconColor} {...props}>

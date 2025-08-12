@@ -66,19 +66,19 @@ export const EventCard = ({
           </Text>
         </Flex>
         <Flex alignItems="center" gap="4px" height="100%">
-          <Icon name="location" size={16} color="gray" />
+          <Icon name="location" size={16} color="gray500" />
           <Text type="Label" color="#99A1AF">
             {place}
           </Text>
         </Flex>
         <Flex alignItems="center" gap="4px" height="100%">
-          <Icon name="clock" size={16} color="gray" />
+          <Icon name="clock" size={16} color="gray500" />
           <Text type="Label" color={theme.colors.gray500}>
             {formatDateTime(eventStart, eventEnd)}
           </Text>
         </Flex>
         <Flex alignItems="center" gap="4px" height="100%">
-          <Icon name="user" size={16} color="gray" />
+          <Icon name="user" size={16} color="gray500" />
           <Text type="Label" color={theme.colors.gray500}>
             {organizerName} 주최
           </Text>

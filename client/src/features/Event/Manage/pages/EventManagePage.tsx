@@ -52,7 +52,6 @@ export const EventManagePage = () => {
             <Icon
               name="logo"
               size={55}
-              color="gray900"
               onClick={() => navigate('/event')}
               css={css`
                 cursor: pointer;

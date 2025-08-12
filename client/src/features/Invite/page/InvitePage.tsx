@@ -15,7 +15,6 @@ export const InvitePage = () => {
             <Icon
               name="logo"
               size={55}
-              color="gray900"
               css={css`
                 cursor: pointer;
               `}
