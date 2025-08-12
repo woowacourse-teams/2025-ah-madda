@@ -50,6 +50,7 @@ export const EventCard = ({
             {title.length > 17 ? `${title.slice(0, 19)}...` : title}
           </Text>
         </Flex>
+        {/* S.TODO: 추후 구조 개선 */}
         <Flex
           css={css`
             display: -webkit-box;
