@@ -1,16 +1,16 @@
 package com.ahmadda.presentation.dto;
 
-import com.ahmadda.domain.Template;
+import com.ahmadda.domain.EventTemplate;
 
 public record TemplateResponse(
         Long templateId,
         String description
 ) {
 
-    public static TemplateResponse from(final Template template) {
+    public static TemplateResponse from(final EventTemplate eventTemplate) {
         return new TemplateResponse(
-                template.getId(),
-                template.getDescription()
+                eventTemplate.getId(),
+                eventTemplate.getDescription()
         );
     }
 }

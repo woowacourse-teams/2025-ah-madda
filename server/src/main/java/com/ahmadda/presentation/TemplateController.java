@@ -1,8 +1,8 @@
 package com.ahmadda.presentation;
 
-import com.ahmadda.application.TemplateService;
+import com.ahmadda.application.EventTemplateService;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.domain.Template;
+import com.ahmadda.domain.EventTemplate;
 import com.ahmadda.presentation.dto.TemplateCreateRequest;
 import com.ahmadda.presentation.dto.TemplateCreateResponse;
 import com.ahmadda.presentation.dto.TemplateResponse;
@@ -36,7 +36,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TemplateController {
 
-    private final TemplateService templateService;
+    private final EventTemplateService eventTemplateService;
 
     @Operation(summary = "템플릿 생성", description = "로그인한 회원이 새 템플릿을 생성합니다.")
     @ApiResponses(value = {
@@ -66,11 +66,11 @@ public class TemplateController {
             @AuthMember final LoginMember loginMember,
             @RequestBody @Valid final TemplateCreateRequest templateCreateRequest
     ) {
-        Template template = templateService.createTemplate(loginMember, templateCreateRequest);
+        EventTemplate eventTemplate = eventTemplateService.createTemplate(loginMember, templateCreateRequest);
 
-        TemplateCreateResponse response = TemplateCreateResponse.from(template);
+        TemplateCreateResponse response = TemplateCreateResponse.from(eventTemplate);
 
-        return ResponseEntity.created(URI.create("/api/templates/" + template.getId()))
+        return ResponseEntity.created(URI.create("/api/eventTemplates/" + eventTemplate.getId()))
                 .body(response);
     }
 
@@ -102,9 +102,9 @@ public class TemplateController {
     })
     @GetMapping
     public ResponseEntity<List<TemplateTitleResponse>> getMyTemplates(@AuthMember final LoginMember loginMember) {
-        List<Template> templates = templateService.getTemplates(loginMember);
+        List<EventTemplate> eventTemplates = eventTemplateService.getTemplates(loginMember);
 
-        List<TemplateTitleResponse> responses = templates.stream()
+        List<TemplateTitleResponse> responses = eventTemplates.stream()
                 .map(TemplateTitleResponse::from)
                 .toList();
 
@@ -167,9 +167,9 @@ public class TemplateController {
             @AuthMember final LoginMember loginMember,
             @PathVariable final Long templateId
     ) {
-        Template template = templateService.getTemplate(loginMember, templateId);
+        EventTemplate eventTemplate = eventTemplateService.getTemplate(loginMember, templateId);
 
-        TemplateResponse response = TemplateResponse.from(template);
+        TemplateResponse response = TemplateResponse.from(eventTemplate);
 
         return ResponseEntity.ok(response);
     }
@@ -228,7 +228,7 @@ public class TemplateController {
             @AuthMember final LoginMember loginMember,
             @PathVariable final Long templateId
     ) {
-        templateService.deleteTemplate(loginMember, templateId);
+        eventTemplateService.deleteTemplate(loginMember, templateId);
 
         return ResponseEntity.noContent()
                 .build();

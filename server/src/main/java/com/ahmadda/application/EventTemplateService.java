@@ -3,10 +3,10 @@ package com.ahmadda.application;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.domain.EventTemplate;
+import com.ahmadda.domain.EventTemplateRepository;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.Template;
-import com.ahmadda.domain.TemplateRepository;
 import com.ahmadda.presentation.dto.TemplateCreateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,26 +16,27 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class TemplateService {
+public class EventTemplateService {
 
     private final MemberRepository memberRepository;
-    private final TemplateRepository templateRepository;
+    private final EventTemplateRepository eventTemplateRepository;
 
     @Transactional
-    public Template createTemplate(final LoginMember loginMember, final TemplateCreateRequest templateCreateRequest) {
+    public EventTemplate createTemplate(final LoginMember loginMember,
+                                        final TemplateCreateRequest templateCreateRequest) {
         Member member = getMember(loginMember);
-        Template template = Template.create(
+        EventTemplate eventTemplate = EventTemplate.create(
                 member,
                 templateCreateRequest.title(),
                 templateCreateRequest.description()
         );
 
-        templateRepository.save(template);
+        eventTemplateRepository.save(eventTemplate);
 
-        return template;
+        return eventTemplate;
     }
 
-    public Template getTemplate(final LoginMember loginMember, final Long templateId) {
+    public EventTemplate getTemplate(final LoginMember loginMember, final Long templateId) {
         Member member = getMember(loginMember);
 
         validateTemplateWriter(templateId, member.getId());
@@ -43,7 +44,7 @@ public class TemplateService {
         return getTemplate(templateId);
     }
 
-    public List<Template> getTemplates(final LoginMember loginMember) {
+    public List<EventTemplate> getTemplates(final LoginMember loginMember) {
         Member member = getMember(loginMember);
 
         return getOwnTemplates(member.getId());
@@ -52,25 +53,25 @@ public class TemplateService {
     @Transactional
     public void deleteTemplate(final LoginMember loginMember, final Long templateId) {
         Member member = getMember(loginMember);
-        Template deleteTemplate = getTemplate(templateId);
+        EventTemplate deleteEventTemplate = getTemplate(templateId);
 
         validateTemplateWriter(templateId, member.getId());
 
-        templateRepository.delete(deleteTemplate);
+        eventTemplateRepository.delete(deleteEventTemplate);
     }
 
-    private List<Template> getOwnTemplates(final Long memberId) {
-        return templateRepository.findAllByMemberId(memberId);
+    private List<EventTemplate> getOwnTemplates(final Long memberId) {
+        return eventTemplateRepository.findAllByMemberId(memberId);
     }
 
     private void validateTemplateWriter(final Long templateId, final Long memberId) {
-        if (!templateRepository.existsByIdAndMemberId(templateId, memberId)) {
+        if (!eventTemplateRepository.existsByIdAndMemberId(templateId, memberId)) {
             throw new AccessDeniedException("본인이 작성한 템플릿이 아닙니다.");
         }
     }
 
-    private Template getTemplate(final Long templateId) {
-        return templateRepository.findById(templateId)
+    private EventTemplate getTemplate(final Long templateId) {
+        return eventTemplateRepository.findById(templateId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 템플릿입니다."));
     }
 

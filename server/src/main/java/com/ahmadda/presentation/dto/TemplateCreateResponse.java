@@ -1,6 +1,6 @@
 package com.ahmadda.presentation.dto;
 
-import com.ahmadda.domain.Template;
+import com.ahmadda.domain.EventTemplate;
 
 public record TemplateCreateResponse(
         Long templateId,
@@ -8,11 +8,11 @@ public record TemplateCreateResponse(
         String description
 ) {
 
-    public static TemplateCreateResponse from(final Template template) {
+    public static TemplateCreateResponse from(final EventTemplate eventTemplate) {
         return new TemplateCreateResponse(
-                template.getId(),
-                template.getTitle(),
-                template.getDescription()
+                eventTemplate.getId(),
+                eventTemplate.getTitle(),
+                eventTemplate.getDescription()
         );
     }
 }

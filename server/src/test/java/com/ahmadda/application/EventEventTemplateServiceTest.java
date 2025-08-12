@@ -3,10 +3,10 @@ package com.ahmadda.application;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.domain.EventTemplate;
+import com.ahmadda.domain.EventTemplateRepository;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.Template;
-import com.ahmadda.domain.TemplateRepository;
 import com.ahmadda.presentation.dto.TemplateCreateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +19,16 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Transactional
-class TemplateServiceTest {
+class EventEventTemplateServiceTest {
 
     @Autowired
-    private TemplateService sut;
+    private EventTemplateService sut;
 
     @Autowired
     private MemberRepository memberRepository;
 
     @Autowired
-    private TemplateRepository templateRepository;
+    private EventTemplateRepository eventTemplateRepository;
 
     @Test
     void 템플릿을_생성할_수_있다() {
@@ -137,7 +137,7 @@ class TemplateServiceTest {
         sut.deleteTemplate(loginMember, tmpl.getId());
 
         // then
-        assertThat(templateRepository.findById(tmpl.getId())).isEmpty();
+        assertThat(eventTemplateRepository.findById(tmpl.getId())).isEmpty();
     }
 
     @Test
@@ -153,7 +153,7 @@ class TemplateServiceTest {
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessage("본인이 작성한 템플릿이 아닙니다.");
 
-        assertThat(templateRepository.findById(myTmpl.getId())).isPresent();
+        assertThat(eventTemplateRepository.findById(myTmpl.getId())).isPresent();
     }
 
     @Test
@@ -190,11 +190,11 @@ class TemplateServiceTest {
         return memberRepository.save(Member.create(name, email, "pic"));
     }
 
-    private Template createTemplate(Member member) {
-        return templateRepository.save(Template.create(member, "title", "desc"));
+    private EventTemplate createTemplate(Member member) {
+        return eventTemplateRepository.save(EventTemplate.create(member, "title", "desc"));
     }
 
-    private Template createTemplate(Member member, String title, String description) {
-        return templateRepository.save(Template.create(member, title, description));
+    private EventTemplate createTemplate(Member member, String title, String description) {
+        return eventTemplateRepository.save(EventTemplate.create(member, title, description));
     }
 }

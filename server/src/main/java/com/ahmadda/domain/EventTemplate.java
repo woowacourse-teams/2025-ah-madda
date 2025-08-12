@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Template {
+public class EventTemplate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +33,7 @@ public class Template {
     @Column(nullable = false)
     private String description;
 
-    private Template(final Member member, final String title, final String description) {
+    private EventTemplate(final Member member, final String title, final String description) {
         validateMember(member);
         validateTitle(title);
         validateDescription(description);
@@ -43,8 +43,8 @@ public class Template {
         this.description = description;
     }
 
-    public static Template create(final Member member, final String title, final String description) {
-        return new Template(member, title, description);
+    public static EventTemplate create(final Member member, final String title, final String description) {
+        return new EventTemplate(member, title, description);
     }
 
     private void validateMember(final Member member) {
