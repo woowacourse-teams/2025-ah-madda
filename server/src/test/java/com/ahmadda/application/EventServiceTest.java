@@ -22,7 +22,6 @@ import com.ahmadda.domain.ReminderHistory;
 import com.ahmadda.domain.ReminderHistoryRepository;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import org.assertj.core.groups.Tuple;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -407,7 +406,6 @@ class EventServiceTest {
         });
     }
 
-    @Disabled
     @Test
     void 이벤트를_수정할_수_있다() {
         // given
@@ -539,7 +537,6 @@ class EventServiceTest {
                 .hasMessage("존재하지 않는 회원입니다.");
     }
 
-    @Disabled
     @Test
     void 이벤트_수정_시_게스트들에게_알림을_보낸다() {
         // given

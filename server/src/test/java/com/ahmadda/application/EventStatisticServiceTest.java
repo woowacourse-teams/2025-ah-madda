@@ -128,6 +128,7 @@ class EventStatisticServiceTest {
                 operationPeriod,
                 30
         );
+
         return eventRepository.save(event);
     }
 
