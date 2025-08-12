@@ -2,12 +2,12 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 
-import { Button } from '../../../../shared/components/Button';
-import { Calendar } from '../../../../shared/components/Calendar/Calendar';
-import { Flex } from '../../../../shared/components/Flex';
-import { Modal } from '../../../../shared/components/Modal';
-import { Text } from '../../../../shared/components/Text';
-import { TimePicker } from '../../../../shared/components/TimePicker';
+import { Button } from '@/shared/components/Button';
+import { Calendar } from '@/shared/components/Calendar/Calendar';
+import { Flex } from '@/shared/components/Flex';
+import { Modal } from '@/shared/components/Modal';
+import { Text } from '@/shared/components/Text';
+import { TimePicker } from '@/shared/components/TimePicker';
 
 type DatePickerModalProps = {
   isOpen: boolean;
