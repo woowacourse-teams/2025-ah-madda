@@ -89,6 +89,11 @@ public class Organization extends BaseEntity {
         return OrganizationMember.create(nickname, member, this);
     }
 
+    public boolean isExistOrganizationMember(final OrganizationMember otherOrganizationMember) {
+        return organizationMembers.stream()
+                .anyMatch((organizationMember) -> organizationMember.equals(otherOrganizationMember));
+    }
+
     private void validateName(final String name) {
         Assert.notBlank(name, "이름은 공백이면 안됩니다.");
 

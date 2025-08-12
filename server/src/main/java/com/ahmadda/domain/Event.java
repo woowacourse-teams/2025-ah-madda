@@ -236,7 +236,7 @@ public class Event extends BaseEntity {
     public boolean isFull() {
         return guests.size() >= maxCapacity;
     }
-    
+
     private void validateCancelParticipation(final LocalDateTime cancelParticipationTime) {
         if (eventOperationPeriod.willStartWithin(
                 cancelParticipationTime,

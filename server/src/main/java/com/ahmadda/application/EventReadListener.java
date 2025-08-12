@@ -50,7 +50,7 @@ public class EventReadListener {
                 );
     }
 
-    private static void increaseViewCount(EventStatistic eventStatistic, Member member) {
+    private void increaseViewCount(final EventStatistic eventStatistic, final Member member) {
         eventStatistic.increaseViewCount(
                 LocalDate.now(),
                 member
