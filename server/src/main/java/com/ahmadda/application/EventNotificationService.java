@@ -15,7 +15,6 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.PushNotificationPayload;
 import com.ahmadda.domain.PushNotifier;
-import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +32,6 @@ public class EventNotificationService {
     private final PushNotifier pushNotifier;
     private final EventRepository eventRepository;
     private final MemberRepository memberRepository;
-    private final FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
 
     public void notifyNonGuestOrganizationMembers(
             final Long eventId,
