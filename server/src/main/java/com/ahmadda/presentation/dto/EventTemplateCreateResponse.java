@@ -2,14 +2,16 @@ package com.ahmadda.presentation.dto;
 
 import com.ahmadda.domain.EventTemplate;
 
-public record TemplateResponse(
+public record EventTemplateCreateResponse(
         Long templateId,
+        String title,
         String description
 ) {
 
-    public static TemplateResponse from(final EventTemplate eventTemplate) {
-        return new TemplateResponse(
+    public static EventTemplateCreateResponse from(final EventTemplate eventTemplate) {
+        return new EventTemplateCreateResponse(
                 eventTemplate.getId(),
+                eventTemplate.getTitle(),
                 eventTemplate.getDescription()
         );
     }

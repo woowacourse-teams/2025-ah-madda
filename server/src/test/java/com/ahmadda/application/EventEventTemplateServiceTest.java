@@ -7,7 +7,7 @@ import com.ahmadda.domain.EventTemplate;
 import com.ahmadda.domain.EventTemplateRepository;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.presentation.dto.TemplateCreateRequest;
+import com.ahmadda.presentation.dto.EventTemplateCreateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,7 +35,7 @@ class EventEventTemplateServiceTest {
         // given
         var savedMember = createMember();
         var login = new LoginMember(savedMember.getId());
-        var req = new TemplateCreateRequest("title", "desc");
+        var req = new EventTemplateCreateRequest("title", "desc");
 
         // when
         var saved = sut.createTemplate(login, req);
@@ -53,7 +53,7 @@ class EventEventTemplateServiceTest {
     void 회원이_존재하지_않으면_예외가_발생한다() {
         // given
         var invalid = new LoginMember(999_999L);
-        var req = new TemplateCreateRequest("title", "description");
+        var req = new EventTemplateCreateRequest("title", "description");
 
         // when // then
         assertThatThrownBy(() -> sut.createTemplate(invalid, req))

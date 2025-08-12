@@ -7,7 +7,7 @@ import com.ahmadda.domain.EventTemplate;
 import com.ahmadda.domain.EventTemplateRepository;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.presentation.dto.TemplateCreateRequest;
+import com.ahmadda.presentation.dto.EventTemplateCreateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,12 +23,12 @@ public class EventTemplateService {
 
     @Transactional
     public EventTemplate createTemplate(final LoginMember loginMember,
-                                        final TemplateCreateRequest templateCreateRequest) {
+                                        final EventTemplateCreateRequest eventTemplateCreateRequest) {
         Member member = getMember(loginMember);
         EventTemplate eventTemplate = EventTemplate.create(
                 member,
-                templateCreateRequest.title(),
-                templateCreateRequest.description()
+                eventTemplateCreateRequest.title(),
+                eventTemplateCreateRequest.description()
         );
 
         eventTemplateRepository.save(eventTemplate);

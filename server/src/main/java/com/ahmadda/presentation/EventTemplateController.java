@@ -3,10 +3,10 @@ package com.ahmadda.presentation;
 import com.ahmadda.application.EventTemplateService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.EventTemplate;
-import com.ahmadda.presentation.dto.TemplateCreateRequest;
-import com.ahmadda.presentation.dto.TemplateCreateResponse;
-import com.ahmadda.presentation.dto.TemplateResponse;
-import com.ahmadda.presentation.dto.TemplateTitleResponse;
+import com.ahmadda.presentation.dto.EventTemplateCreateRequest;
+import com.ahmadda.presentation.dto.EventTemplateCreateResponse;
+import com.ahmadda.presentation.dto.EventTemplateResponse;
+import com.ahmadda.presentation.dto.EventTemplateTitleResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -34,7 +34,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/templates")
 @RequiredArgsConstructor
-public class TemplateController {
+public class EventTemplateController {
 
     private final EventTemplateService eventTemplateService;
 
@@ -43,7 +43,7 @@ public class TemplateController {
             @ApiResponse(
                     responseCode = "201",
                     content = @Content(
-                            schema = @Schema(implementation = TemplateCreateResponse.class)
+                            schema = @Schema(implementation = EventTemplateCreateResponse.class)
                     )
             ),
             @ApiResponse(
@@ -62,13 +62,13 @@ public class TemplateController {
             )
     })
     @PostMapping
-    public ResponseEntity<TemplateCreateResponse> createTemplate(
+    public ResponseEntity<EventTemplateCreateResponse> createTemplate(
             @AuthMember final LoginMember loginMember,
-            @RequestBody @Valid final TemplateCreateRequest templateCreateRequest
+            @RequestBody @Valid final EventTemplateCreateRequest eventTemplateCreateRequest
     ) {
-        EventTemplate eventTemplate = eventTemplateService.createTemplate(loginMember, templateCreateRequest);
+        EventTemplate eventTemplate = eventTemplateService.createTemplate(loginMember, eventTemplateCreateRequest);
 
-        TemplateCreateResponse response = TemplateCreateResponse.from(eventTemplate);
+        EventTemplateCreateResponse response = EventTemplateCreateResponse.from(eventTemplate);
 
         return ResponseEntity.created(URI.create("/api/eventTemplates/" + eventTemplate.getId()))
                 .body(response);
@@ -80,7 +80,7 @@ public class TemplateController {
                     responseCode = "200",
                     content = @Content(
                             array = @ArraySchema(
-                                    schema = @Schema(implementation = TemplateTitleResponse.class)
+                                    schema = @Schema(implementation = EventTemplateTitleResponse.class)
                             )
                     )
             ),
@@ -101,11 +101,11 @@ public class TemplateController {
             )
     })
     @GetMapping
-    public ResponseEntity<List<TemplateTitleResponse>> getMyTemplates(@AuthMember final LoginMember loginMember) {
+    public ResponseEntity<List<EventTemplateTitleResponse>> getMyTemplates(@AuthMember final LoginMember loginMember) {
         List<EventTemplate> eventTemplates = eventTemplateService.getTemplates(loginMember);
 
-        List<TemplateTitleResponse> responses = eventTemplates.stream()
-                .map(TemplateTitleResponse::from)
+        List<EventTemplateTitleResponse> responses = eventTemplates.stream()
+                .map(EventTemplateTitleResponse::from)
                 .toList();
 
         return ResponseEntity.ok(responses);
@@ -115,7 +115,7 @@ public class TemplateController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    content = @Content(schema = @Schema(implementation = TemplateResponse.class))
+                    content = @Content(schema = @Schema(implementation = EventTemplateResponse.class))
             ),
             @ApiResponse(
                     responseCode = "403",
@@ -163,13 +163,13 @@ public class TemplateController {
             )
     })
     @GetMapping("/{templateId}")
-    public ResponseEntity<TemplateResponse> getMyTemplate(
+    public ResponseEntity<EventTemplateResponse> getMyTemplate(
             @AuthMember final LoginMember loginMember,
             @PathVariable final Long templateId
     ) {
         EventTemplate eventTemplate = eventTemplateService.getTemplate(loginMember, templateId);
 
-        TemplateResponse response = TemplateResponse.from(eventTemplate);
+        EventTemplateResponse response = EventTemplateResponse.from(eventTemplate);
 
         return ResponseEntity.ok(response);
     }

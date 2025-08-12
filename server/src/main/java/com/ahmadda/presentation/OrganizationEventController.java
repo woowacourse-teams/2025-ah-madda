@@ -10,8 +10,8 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.Event;
 import com.ahmadda.presentation.dto.EventCreateResponse;
 import com.ahmadda.presentation.dto.EventDetailResponse;
+import com.ahmadda.presentation.dto.EventLoadResponse;
 import com.ahmadda.presentation.dto.EventResponse;
-import com.ahmadda.presentation.dto.EventTemplateResponse;
 import com.ahmadda.presentation.dto.EventTitleResponse;
 import com.ahmadda.presentation.dto.EventUpdateResponse;
 import com.ahmadda.presentation.dto.OrganizerStatusResponse;
@@ -649,14 +649,14 @@ public class OrganizationEventController {
         return ResponseEntity.ok(eventTemplateResponses);
     }
 
-    
+
     @Operation(summary = "내가 이전에 주최한 이벤트 템플릿으로 불러오기", description = "본인의 이벤트 정보로 이벤트 템플릿을 조회합니디.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
                     content = @Content(
                             schema = @Schema(
-                                    implementation = EventTemplateResponse.class
+                                    implementation = EventLoadResponse.class
                             )
                     )
             ),
@@ -694,13 +694,13 @@ public class OrganizationEventController {
             )
     })
     @GetMapping("/events/{eventId}/owned/template")
-    public ResponseEntity<EventTemplateResponse> getOwnerEventTemplate(
+    public ResponseEntity<EventLoadResponse> getOwnerEventTemplate(
             @PathVariable final Long eventId,
             @AuthMember final LoginMember loginMember
     ) {
         Event organizationMemberEvent = eventService.getOrganizationMemberEvent(loginMember, eventId);
 
-        EventTemplateResponse response = EventTemplateResponse.from(organizationMemberEvent);
+        EventLoadResponse response = EventLoadResponse.from(organizationMemberEvent);
 
         return ResponseEntity.ok(response);
     }
