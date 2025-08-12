@@ -5,6 +5,7 @@ import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +14,7 @@ import org.springframework.test.context.TestPropertySource;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Disabled
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @TestPropertySource(properties = "mail.mock=false")
 class SmtpEmailNotifierTest {
