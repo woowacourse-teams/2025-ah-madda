@@ -85,7 +85,7 @@ class ReminderTest {
     @Test
     void 알람_히스토리가_생성된다() {
         // given
-        var organization = organizationRepository.save(Organization.create("우테को", "설명", "img.png"));
+        var organization = organizationRepository.save(Organization.create("우테코", "설명", "img.png"));
         var organizerMember = memberRepository.save(Member.create("주최자", "host@example.com", "pic"));
         var organizer =
                 organizationMemberRepository.save(OrganizationMember.create("host", organizerMember, organization));
