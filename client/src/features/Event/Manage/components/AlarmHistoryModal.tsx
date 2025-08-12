@@ -28,9 +28,15 @@ export const AlarmHistoryModal = ({ notifyData, isOpen, onClose }: AlarmHistoryM
         알림 내역
       </Text>
       <HistoryContainer>
-        {notifyData.map((history, index) => (
-          <HistoryCard key={index} {...history} />
-        ))}
+        {notifyData.length === 0 ? (
+          <Flex height="200px" justifyContent="center" alignItems="center">
+            <Text type="Body" weight="regular" color={theme.colors.gray500}>
+              알림 내역이 없습니다.
+            </Text>
+          </Flex>
+        ) : (
+          notifyData.map((history, index) => <HistoryCard key={index} {...history} />)
+        )}
       </HistoryContainer>
     </Modal>
   );

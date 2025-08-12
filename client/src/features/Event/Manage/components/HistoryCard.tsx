@@ -30,6 +30,6 @@ export const HistoryCard = ({ recipientCount, content, sentAt }: NotifyHistoryAP
 };
 
 const StyledHistoryCard = styled(Flex)`
-  padding: 12px;
+  padding: 12px 8px;
   border-bottom: 1px solid ${theme.colors.gray200};
 `;
