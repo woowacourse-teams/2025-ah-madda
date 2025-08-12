@@ -2,6 +2,7 @@ package com.ahmadda.domain;
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.util.Assert;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +10,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+
+import java.time.LocalDateTime;
 
 @Entity
 public class EventPokeHistory extends BaseEntity {
@@ -29,31 +32,43 @@ public class EventPokeHistory extends BaseEntity {
     @JoinColumn(name = "event_id", unique = true, nullable = false)
     private Event event;
 
+    @Column(nullable = false)
+    private LocalDateTime sentAt;
+
+    protected EventPokeHistory() {
+
+    }
+
     private EventPokeHistory(
             final OrganizationMember sender,
             final OrganizationMember recipient,
-            final Event event
+            final Event event,
+            final LocalDateTime sentAt
     ) {
         validateEvent(event);
         validatePokeOrganizationMembers(sender, recipient);
         validateOrganizationParticipate(event, sender, recipient);
         validateReceiveOrganizationMember(event, recipient);
+        validateSentAt(sentAt);
 
         this.sender = sender;
         this.recipient = recipient;
         this.event = event;
+        this.sentAt = sentAt;
     }
 
-    protected EventPokeHistory() {
+    private void validateSentAt(LocalDateTime sentAt) {
+        Assert.notNull(sentAt, "포크 전송 날짜는 null 일 수 없습니다.");
 
     }
 
     public static EventPokeHistory create(
             final OrganizationMember sendOrganizationMember,
             final OrganizationMember receiveOrganizationMember,
-            final Event event
+            final Event event,
+            final LocalDateTime dateTime
     ) {
-        return new EventPokeHistory(sendOrganizationMember, receiveOrganizationMember, event);
+        return new EventPokeHistory(sendOrganizationMember, receiveOrganizationMember, event, dateTime);
     }
 
     private void validateReceiveOrganizationMember(
@@ -72,8 +87,7 @@ public class EventPokeHistory extends BaseEntity {
         Assert.notNull(sendOrganizationMember, "포키를 보내는 조직원은 null이 되면 안됩니다.");
         Assert.notNull(receiveOrganizationMember, "포키를 받는 조직원은 null이 되면 안됩니다.");
 
-        if (sendOrganizationMember.getId()
-                .equals(receiveOrganizationMember.getId())) {
+        if (sendOrganizationMember.equals(receiveOrganizationMember)) {
             throw new BusinessRuleViolatedException("스스로에게 포키를 보낼 수 없습니다");
         }
     }
