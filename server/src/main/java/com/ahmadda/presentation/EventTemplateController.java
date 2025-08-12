@@ -4,7 +4,6 @@ import com.ahmadda.application.EventTemplateService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.EventTemplate;
 import com.ahmadda.presentation.dto.EventTemplateCreateRequest;
-import com.ahmadda.presentation.dto.EventTemplateCreateResponse;
 import com.ahmadda.presentation.dto.EventTemplateResponse;
 import com.ahmadda.presentation.dto.EventTemplateTitleResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
@@ -41,10 +40,7 @@ public class EventTemplateController {
     @Operation(summary = "템플릿 생성", description = "로그인한 회원이 새 템플릿을 생성합니다.")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "201",
-                    content = @Content(
-                            schema = @Schema(implementation = EventTemplateCreateResponse.class)
-                    )
+                    responseCode = "201"
             ),
             @ApiResponse(
                     responseCode = "404",
@@ -62,16 +58,14 @@ public class EventTemplateController {
             )
     })
     @PostMapping
-    public ResponseEntity<EventTemplateCreateResponse> createTemplate(
+    public ResponseEntity<Void> createTemplate(
             @AuthMember final LoginMember loginMember,
             @RequestBody @Valid final EventTemplateCreateRequest eventTemplateCreateRequest
     ) {
         EventTemplate eventTemplate = eventTemplateService.createTemplate(loginMember, eventTemplateCreateRequest);
 
-        EventTemplateCreateResponse response = EventTemplateCreateResponse.from(eventTemplate);
-
         return ResponseEntity.created(URI.create("/api/templates/" + eventTemplate.getId()))
-                .body(response);
+                .build();
     }
 
     @Operation(summary = "내 템플릿 목록 조회", description = "로그인한 회원이 소유한 모든 템플릿의 제목 목록을 조회합니다.")
