@@ -1,8 +1,9 @@
+import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/shared/components/Button';
 import { Header } from '@/shared/components/Header';
-import { IconButton } from '@/shared/components/IconButton';
+import { Icon } from '@/shared/components/Icon';
 import { PageLayout } from '@/shared/components/PageLayout';
 
 import { EventTabs } from '../components/EventTabs';
@@ -16,7 +17,17 @@ export const MyEventPage = () => {
     <PageLayout
       header={
         <Header
-          left={<IconButton name="logo" size={55} onClick={() => navigate('/event')} />}
+          left={
+            <Icon
+              name="logo"
+              size={55}
+              color="gray900"
+              onClick={() => navigate('/event')}
+              css={css`
+                cursor: pointer;
+              `}
+            />
+          }
           right={
             <Button size="sm" onClick={() => navigate('/event/my')}>
               내 이벤트

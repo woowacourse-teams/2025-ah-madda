@@ -1,9 +1,10 @@
+import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
-import { IconButton } from '@/shared/components/IconButton';
+import { Icon } from '@/shared/components/Icon';
 import { PageLayout } from '@/shared/components/PageLayout';
 import { Text } from '@/shared/components/Text';
 import { colors } from '@/shared/styles/colors';
@@ -16,7 +17,19 @@ export const ErrorPage = () => {
   return (
     <PageLayout
       header={
-        <Header left={<IconButton name="logo" size={55} onClick={() => navigate('/event')} />} />
+        <Header
+          left={
+            <Icon
+              name="logo"
+              size={55}
+              color="gray900"
+              onClick={() => navigate('/event')}
+              css={css`
+                cursor: pointer;
+              `}
+            />
+          }
+        />
       }
     >
       <ErrorContainer>

@@ -9,7 +9,7 @@ import { eventQueryOptions } from '@/api/queries/event';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
-import { IconButton } from '@/shared/components/IconButton';
+import { Icon } from '@/shared/components/Icon';
 import { PageLayout } from '@/shared/components/PageLayout';
 import { Tabs } from '@/shared/components/Tabs';
 
@@ -48,7 +48,17 @@ export const EventManagePage = () => {
     <PageLayout
       header={
         <Header
-          left={<IconButton name="logo" size={55} onClick={() => navigate('/event')} />}
+          left={
+            <Icon
+              name="logo"
+              size={55}
+              color="gray900"
+              onClick={() => navigate('/event')}
+              css={css`
+                cursor: pointer;
+              `}
+            />
+          }
           right={
             <Button size="sm" onClick={() => navigate('/event/my')}>
               내 이벤트

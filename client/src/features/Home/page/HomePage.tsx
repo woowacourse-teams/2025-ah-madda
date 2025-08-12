@@ -1,9 +1,10 @@
+import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 
 import { getGoogleAuthUrl, isAuthenticated } from '@/api/auth';
 import { Button } from '@/shared/components/Button';
 import { Header } from '@/shared/components/Header';
-import { IconButton } from '@/shared/components/IconButton';
+import { Icon } from '@/shared/components/Icon';
 import { PageLayout } from '@/shared/components/PageLayout';
 import { useGoogleAuth } from '@/shared/hooks/useGoogleAuth';
 
@@ -23,7 +24,17 @@ export const HomePage = () => {
     <PageLayout
       header={
         <Header
-          left={<IconButton name="logo" size={55} onClick={() => navigate('/event')} />}
+          left={
+            <Icon
+              name="logo"
+              size={55}
+              color="gray900"
+              onClick={() => navigate('/event')}
+              css={css`
+                cursor: pointer;
+              `}
+            />
+          }
           right={
             isAuthenticated() ? (
               <Button size="sm" onClick={logout}>
