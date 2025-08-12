@@ -106,28 +106,23 @@ class ReminderTest {
         var om1 = organizationMemberRepository.save(OrganizationMember.create("g1", m1, organization));
         var om2 = organizationMemberRepository.save(OrganizationMember.create("g2", m2, organization));
         var recipients = List.of(om1, om2);
-
         var content = "이벤트 알림입니다.";
 
         // when
-        var histories = sut.remind(recipients, event, content);
+        var history = sut.remind(recipients, event, content);
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(histories)
-                    .hasSize(2)
-                    .extracting(ReminderHistory::getEvent)
-                    .containsOnly(event);
-            softly.assertThat(histories)
-                    .extracting(ReminderHistory::getOrganizationMember)
-                    .containsExactlyInAnyOrder(om1, om2);
-            softly.assertThat(histories)
-                    .extracting(ReminderHistory::getContent)
-                    .containsOnly(content);
-            softly.assertThat(histories)
-                    .allSatisfy(history -> softly.assertThat(history.getSentAt())
-                            .isNotNull());
-        });
+            softly.assertThat(history.getEvent())
+                    .isEqualTo(event);
+            softly.assertThat(history.getContent())
+                    .isEqualTo(content);
+            softly.assertThat(history.getSentAt())
+                    .isNotNull();
 
+            softly.assertThat(history.getRecipients())
+                    .extracting(ReminderRecipient::getOrganizationMember)
+                    .containsExactlyInAnyOrder(om1, om2);
+        });
     }
 }

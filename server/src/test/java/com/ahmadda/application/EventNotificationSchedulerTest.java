@@ -12,8 +12,8 @@ import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Reminder;
-import com.ahmadda.domain.ReminderHistory;
 import com.ahmadda.domain.ReminderHistoryRepository;
+import com.ahmadda.domain.ReminderRecipient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -128,22 +128,22 @@ class EventNotificationSchedulerTest {
         sut.notifyRegistrationClosingEvents();
 
         // then
-        var saved = reminderHistoryRepository.findAll();
+        var savedHistories = reminderHistoryRepository.findAll();
         assertSoftly(softly -> {
-            softly.assertThat(saved)
-                    .hasSize(2);
-            softly.assertThat(saved)
-                    .extracting(ReminderHistory::getEvent)
-                    .containsOnly(event);
-            softly.assertThat(saved)
-                    .extracting(ReminderHistory::getOrganizationMember)
+            softly.assertThat(savedHistories)
+                    .hasSize(1);
+
+            var history = savedHistories.get(0);
+            softly.assertThat(history.getEvent())
+                    .isEqualTo(event);
+            softly.assertThat(history.getContent())
+                    .isEqualTo("이벤트 신청 마감이 임박했습니다.");
+            softly.assertThat(history.getSentAt())
+                    .isNotNull();
+
+            softly.assertThat(history.getRecipients())
+                    .extracting(ReminderRecipient::getOrganizationMember)
                     .containsExactlyInAnyOrder(ng1, ng2);
-            softly.assertThat(saved)
-                    .extracting(ReminderHistory::getContent)
-                    .containsOnly(content);
-            softly.assertThat(saved)
-                    .allSatisfy(h -> softly.assertThat(h.getSentAt())
-                            .isNotNull());
         });
     }
 

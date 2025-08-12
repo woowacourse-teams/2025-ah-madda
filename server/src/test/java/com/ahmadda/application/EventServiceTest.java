@@ -18,8 +18,8 @@ import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Question;
 import com.ahmadda.domain.Reminder;
-import com.ahmadda.domain.ReminderHistory;
 import com.ahmadda.domain.ReminderHistoryRepository;
+import com.ahmadda.domain.ReminderRecipient;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
@@ -390,19 +390,19 @@ class EventServiceTest {
         var savedHistories = reminderHistoryRepository.findAll();
         assertSoftly(softly -> {
             softly.assertThat(savedHistories)
-                    .hasSize(2);
-            softly.assertThat(savedHistories)
-                    .extracting(ReminderHistory::getEvent)
-                    .containsOnly(savedEvent);
-            softly.assertThat(savedHistories)
-                    .extracting(ReminderHistory::getOrganizationMember)
+                    .hasSize(1);
+
+            var history = savedHistories.get(0);
+            softly.assertThat(history.getEvent())
+                    .isEqualTo(savedEvent);
+            softly.assertThat(history.getContent())
+                    .isEqualTo("새로운 이벤트가 등록되었습니다.");
+            softly.assertThat(history.getSentAt())
+                    .isNotNull();
+
+            softly.assertThat(history.getRecipients())
+                    .extracting(ReminderRecipient::getOrganizationMember)
                     .containsExactlyInAnyOrder(om1, om2);
-            softly.assertThat(savedHistories)
-                    .extracting(ReminderHistory::getContent)
-                    .containsOnly("새로운 이벤트가 등록되었습니다.");
-            softly.assertThat(savedHistories)
-                    .allSatisfy(h -> softly.assertThat(h.getSentAt())
-                            .isNotNull());
         });
     }
 
@@ -603,7 +603,7 @@ class EventServiceTest {
         var om2 = createOrganizationMember(organization, om2Member);
 
         var now = LocalDateTime.now();
-        var event = eventRepository.save(Event.create(
+        var savedEvent = eventRepository.save(Event.create(
                 "원래 제목",
                 "원래 설명",
                 "원래 장소",
@@ -618,8 +618,8 @@ class EventServiceTest {
                 ),
                 100
         ));
-        var guest1 = Guest.create(event, om1, now.plusDays(1));
-        var guest2 = Guest.create(event, om2, now.plusDays(1));
+        var guest1 = Guest.create(savedEvent, om1, now.plusDays(1));
+        var guest2 = Guest.create(savedEvent, om2, now.plusDays(1));
         guestRepository.save(guest1);
         guestRepository.save(guest2);
 
@@ -635,25 +635,25 @@ class EventServiceTest {
         var loginMember = new LoginMember(organizerMember.getId());
 
         // when
-        sut.updateEvent(event.getId(), loginMember, updateRequest, now);
+        sut.updateEvent(savedEvent.getId(), loginMember, updateRequest, now);
 
         // then
         var savedHistories = reminderHistoryRepository.findAll();
         assertSoftly(softly -> {
             softly.assertThat(savedHistories)
-                    .hasSize(2);
-            softly.assertThat(savedHistories)
-                    .extracting(ReminderHistory::getEvent)
-                    .containsOnly(event);
-            softly.assertThat(savedHistories)
-                    .extracting(ReminderHistory::getOrganizationMember)
+                    .hasSize(1);
+
+            var history = savedHistories.get(0);
+            softly.assertThat(history.getEvent())
+                    .isEqualTo(savedEvent);
+            softly.assertThat(history.getContent())
+                    .isEqualTo("이벤트 정보가 수정되었습니다.");
+            softly.assertThat(history.getSentAt())
+                    .isNotNull();
+
+            softly.assertThat(history.getRecipients())
+                    .extracting(ReminderRecipient::getOrganizationMember)
                     .containsExactlyInAnyOrder(om1, om2);
-            softly.assertThat(savedHistories)
-                    .extracting(ReminderHistory::getContent)
-                    .containsOnly("이벤트 정보가 수정되었습니다.");
-            softly.assertThat(savedHistories)
-                    .allSatisfy(h -> softly.assertThat(h.getSentAt())
-                            .isNotNull());
         });
     }
 

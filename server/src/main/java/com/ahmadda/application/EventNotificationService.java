@@ -1,7 +1,6 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.dto.NonGuestsNotificationRequest;
 import com.ahmadda.application.dto.SelectedOrganizationMembersNotificationRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
@@ -31,21 +30,7 @@ public class EventNotificationService {
     private final EventRepository eventRepository;
     private final MemberRepository memberRepository;
     private final ReminderHistoryRepository reminderHistoryRepository;
-
-    public void notifyNonGuestOrganizationMembers(
-            final Long eventId,
-            final NonGuestsNotificationRequest request,
-            final LoginMember loginMember
-    ) {
-        Event event = getEvent(eventId);
-        validateOrganizer(event, loginMember.memberId());
-        List<OrganizationMember> organizationMembers = event.getOrganization()
-                .getOrganizationMembers();
-
-        List<OrganizationMember> recipients = event.getNonGuestOrganizationMembers(organizationMembers);
-        sendAndRecordReminder(recipients, event, request.content());
-    }
-
+    
     public void notifySelectedOrganizationMembers(
             final Long eventId,
             final SelectedOrganizationMembersNotificationRequest request,
@@ -109,7 +94,7 @@ public class EventNotificationService {
             final Event event,
             final String request
     ) {
-        List<ReminderHistory> reminderHistories = reminder.remind(recipients, event, request);
-        reminderHistoryRepository.saveAll(reminderHistories);
+        ReminderHistory reminderHistory = reminder.remind(recipients, event, request);
+        reminderHistoryRepository.save(reminderHistory);
     }
 }

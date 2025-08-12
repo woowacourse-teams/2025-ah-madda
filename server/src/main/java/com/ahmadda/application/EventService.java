@@ -214,7 +214,7 @@ public class EventService {
             final List<OrganizationMember> recipients,
             final String content
     ) {
-        List<ReminderHistory> reminderHistories = reminder.remind(recipients, event, content);
-        reminderHistoryRepository.saveAll(reminderHistories);
+        ReminderHistory reminderHistory = reminder.remind(recipients, event, content);
+        reminderHistoryRepository.save(reminderHistory);
     }
 }
