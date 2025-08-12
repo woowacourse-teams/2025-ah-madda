@@ -1,23 +1,16 @@
 package com.ahmadda.presentation.dto;
 
-import com.ahmadda.domain.Event;
-
+import com.ahmadda.domain.EventTemplate;
 
 public record EventTemplateResponse(
-        Long eventId,
-        String title,
-        String description,
-        int maxCapacity,
-        String place
+        Long templateId,
+        String description
 ) {
 
-    public static EventTemplateResponse from(final Event event) {
+    public static EventTemplateResponse from(final EventTemplate eventTemplate) {
         return new EventTemplateResponse(
-                event.getId(),
-                event.getTitle(),
-                event.getDescription(),
-                event.getMaxCapacity(),
-                event.getPlace()
+                eventTemplate.getId(),
+                eventTemplate.getDescription()
         );
     }
 }
