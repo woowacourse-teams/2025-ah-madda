@@ -19,7 +19,9 @@ import { useBasicEventForm } from '../hooks/useBasicEventForm';
 import { useQuestionForm } from '../hooks/useQuestionForm';
 import { useTemplateLoader } from '../hooks/useTemplateLoader';
 import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
+import { formatDateForInput, parseInputDate, setTimeToDate } from '../utils/dateUtils';
 
+import { DatePickerModal } from './DatePickerModal';
 import { MaxCapacityModal } from './MaxCapacityModal';
 import { QuestionForm } from './QuestionForm';
 import { TemplateModal } from './TemplateModal';
@@ -49,6 +51,11 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     isOpen: isCapacityModalOpen,
     open: capacityModalOpen,
     close: capacityModalClose,
+  } = useModal();
+  const {
+    isOpen: isDatePickerModalOpen,
+    open: datePickerModalOpen,
+    close: datePickerModalClose,
   } = useModal();
 
   const {
@@ -130,6 +137,23 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     }
   };
 
+  const handleDateRangeSelect = (startDate: Date, endDate: Date) => {
+    const currentStartTime = parseInputDate(basicEventForm.eventStart) || new Date();
+    const currentEndTime = parseInputDate(basicEventForm.eventEnd) || new Date();
+
+    const newStartDate = setTimeToDate(startDate, currentStartTime);
+    const newEndDate = setTimeToDate(endDate, currentEndTime);
+
+    handleValueChange('eventStart', formatDateForInput(newStartDate));
+    handleValueChange('eventEnd', formatDateForInput(newEndDate));
+
+    handleValueChange('registrationEnd', formatDateForInput(newStartDate));
+
+    validateField('eventStart', formatDateForInput(newStartDate));
+    validateField('eventEnd', formatDateForInput(newEndDate));
+    validateField('registrationEnd', formatDateForInput(newStartDate));
+  };
+
   return (
     <Flex>
       <Flex dir="column" gap="20px" padding="60px 0" width="100%">
@@ -183,8 +207,12 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                   handleValueChange('registrationEnd', newValue);
                   validateField('registrationEnd', newValue);
                 }}
+                onFocus={datePickerModalOpen}
                 errorMessage={errors.eventStart}
                 isRequired
+                css={css`
+                  cursor: pointer;
+                `}
               />
               <Input
                 id="eventEnd"
@@ -195,8 +223,12 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 value={basicEventForm.eventEnd}
                 min={basicEventForm.eventStart}
                 onChange={handleChange}
+                onFocus={datePickerModalOpen}
                 errorMessage={errors.eventEnd}
                 isRequired
+                css={css`
+                  cursor: pointer;
+                `}
               />
             </Flex>
 
@@ -209,8 +241,12 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               value={basicEventForm.registrationEnd}
               max={basicEventForm.eventStart}
               onChange={handleChange}
+              onFocus={datePickerModalOpen}
               errorMessage={errors.registrationEnd}
               isRequired
+              css={css`
+                cursor: pointer;
+              `}
             />
 
             <Input
@@ -290,6 +326,14 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         onConfirm={handleTemplateLoad}
         onSelect={handleSelectEvent}
         selectedEventId={selectedEventId}
+      />
+
+      <DatePickerModal
+        isOpen={isDatePickerModalOpen}
+        onClose={datePickerModalClose}
+        onSelect={handleDateRangeSelect}
+        initialStartDate={parseInputDate(basicEventForm.eventStart) || null}
+        initialEndDate={parseInputDate(basicEventForm.eventEnd) || null}
       />
     </Flex>
   );
