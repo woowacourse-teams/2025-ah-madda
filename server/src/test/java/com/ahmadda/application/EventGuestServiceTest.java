@@ -6,7 +6,6 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Answer;
-import com.ahmadda.domain.AnswerRepository;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
@@ -54,10 +53,7 @@ class EventGuestServiceTest {
 
     @Autowired
     private GuestRepository guestRepository;
-
-    @Autowired
-    private AnswerRepository answerRepository;
-
+    
     @Test
     void 이벤트에_참여한_게스트들을_조회한다() {
         // given
@@ -262,12 +258,12 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.participantEvent(
-                                           event.getId(),
-                                           new LoginMember(member2.getId()),
-                                           event.getRegistrationStart(),
-                                           request
-                                   )
+                sut.participantEvent(
+                        event.getId(),
+                        new LoginMember(member2.getId()),
+                        event.getRegistrationStart(),
+                        request
+                )
         )
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessageContaining("필수 질문에 대한 답변이 누락되었습니다");
@@ -291,12 +287,12 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.participantEvent(
-                                           event.getId(),
-                                           new LoginMember(member2.getId()),
-                                           event.getRegistrationStart(),
-                                           request
-                                   )
+                sut.participantEvent(
+                        event.getId(),
+                        new LoginMember(member2.getId()),
+                        event.getRegistrationStart(),
+                        request
+                )
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("존재하지 않는 질문입니다.");

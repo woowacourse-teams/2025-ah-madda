@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Disabled
@@ -34,10 +33,9 @@ class FcmPushNotifierTest {
         var organization = Organization.create("테스트 조직", "설명", "logo.png");
         var organizationMember = OrganizationMember.create("푸시대상", member, organization);
 
-        var token = FcmRegistrationToken.create(
+        var token = FcmRegistrationToken.createNow(
                 member.getId(),
-                "f6L6AzpUV0TkUKEUOmIta8:APA91bH10zajy9WmAqqbfKl0c_9lUuNmggKaw82WDH-C9PqiK-KN2M5XUaL9CiKgl3oq61jRoRTrq7mZqZbqlb7887FLCY6BzctUE5l_25zWKMbbJ6EJ3Lg",
-                LocalDateTime.now()
+                "f6L6AzpUV0TkUKEUOmIta8:APA91bH10zajy9WmAqqbfKl0c_9lUuNmggKaw82WDH-C9PqiK-KN2M5XUaL9CiKgl3oq61jRoRTrq7mZqZbqlb7887FLCY6BzctUE5l_25zWKMbbJ6EJ3Lg"
         );
 
         fcmRegistrationTokenRepository.save(token);
