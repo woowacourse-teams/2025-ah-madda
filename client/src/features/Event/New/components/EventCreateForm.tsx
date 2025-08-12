@@ -137,12 +137,20 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     }
   };
 
-  const handleDateRangeSelect = (startDate: Date, endDate: Date) => {
+  const handleDateRangeSelect = (
+    startDate: Date,
+    endDate: Date,
+    startTime?: Date,
+    endTime?: Date
+  ) => {
     const currentStartTime = parseInputDate(basicEventForm.eventStart) || new Date();
     const currentEndTime = parseInputDate(basicEventForm.eventEnd) || new Date();
 
-    const newStartDate = setTimeToDate(startDate, currentStartTime);
-    const newEndDate = setTimeToDate(endDate, currentEndTime);
+    const finalStartTime = startTime || currentStartTime;
+    const finalEndTime = endTime || currentEndTime;
+
+    const newStartDate = setTimeToDate(startDate, finalStartTime);
+    const newEndDate = setTimeToDate(endDate, finalEndTime);
 
     handleValueChange('eventStart', formatDateForInput(newStartDate));
     handleValueChange('eventEnd', formatDateForInput(newEndDate));
@@ -190,6 +198,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               css={css`
                 @media (max-width: 768px) {
                   flex-direction: column;
+                  gap: 0;
                 }
               `}
             >
@@ -334,6 +343,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         onSelect={handleDateRangeSelect}
         initialStartDate={parseInputDate(basicEventForm.eventStart) || null}
         initialEndDate={parseInputDate(basicEventForm.eventEnd) || null}
+        initialStartTime={parseInputDate(basicEventForm.eventStart) || undefined}
+        initialEndTime={parseInputDate(basicEventForm.eventEnd) || undefined}
       />
     </Flex>
   );
