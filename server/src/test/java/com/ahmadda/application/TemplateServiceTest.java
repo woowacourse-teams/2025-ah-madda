@@ -13,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -52,7 +50,7 @@ class TemplateServiceTest {
     }
 
     @Test
-    void 회원이_존재하지_않으면_템플릿을_찾을_수_없다() {
+    void 회원이_존재하지_않으면_예외가_발생한다() {
         // given
         var invalid = new LoginMember(999_999L);
         var req = new TemplateCreateRequest("title", "description");
@@ -70,22 +68,20 @@ class TemplateServiceTest {
         var loginMember = new LoginMember(me.getId());
         var other = createMember("otherName", "otherEmail");
 
-        templateRepository.saveAll(List.of(
-                Template.create(me, "m1", "d1"),
-                Template.create(me, "m2", "d2"),
-                Template.create(other, "o1", "od1")
-        ));
+        createTemplate(me);
+        createTemplate(me);
+        createTemplate(other);
 
         // when
-        var myList = sut.getTemplates(loginMember);
+        var myTemplate = sut.getTemplates(loginMember);
 
         // then
-        assertThat(myList)
+        assertThat(myTemplate)
                 .hasSize(2);
     }
 
     @Test
-    void 존재하지_않는_회원의_템플릿을_조회할_수_없다() {
+    void 존재하지_않는_회원의_템플릿을_조회하면_예외가_발생한다() {
         // given
         var loginMember = new LoginMember(123_456L);
 
@@ -100,28 +96,28 @@ class TemplateServiceTest {
         // given
         var owner = createMember();
         var loginMember = new LoginMember(owner.getId());
-        var tmpl1 = templateRepository.save(Template.create(owner, "t1", "d1"));
+        var tmpl = createTemplate(owner, "title", "desc");
 
         // when
-        var found = sut.getTemplate(loginMember, tmpl1.getId());
+        var found = sut.getTemplate(loginMember, tmpl.getId());
 
         // then
         assertSoftly(softly -> {
             softly.assertThat(found.getId())
-                    .isEqualTo(tmpl1.getId());
+                    .isEqualTo(tmpl.getId());
             softly.assertThat(found.getTitle())
-                    .isEqualTo("t1");
+                    .isEqualTo("title");
             softly.assertThat(found.getDescription())
-                    .isEqualTo("d1");
+                    .isEqualTo("desc");
         });
     }
 
     @Test
-    void 다른_사람의_템플릿을_조회할_수_없다() {
+    void 다른_사람의_템플릿을_조회하면_예외가_발생한다() {
         // given
         var owner = createMember("owner", "owner@mail.com");
         var other = createMember("other", "other@mail.com");
-        var tmpl = templateRepository.save(Template.create(owner, "t1", "d1"));
+        var tmpl = createTemplate(owner);
         var loginMember = new LoginMember(other.getId());
 
         // when // then
@@ -135,7 +131,7 @@ class TemplateServiceTest {
         // given
         var owner = createMember();
         var loginMember = new LoginMember(owner.getId());
-        var tmpl = templateRepository.save(Template.create(owner, "t1", "d1"));
+        var tmpl = createTemplate(owner);
 
         // when
         sut.deleteTemplate(loginMember, tmpl.getId());
@@ -145,11 +141,11 @@ class TemplateServiceTest {
     }
 
     @Test
-    void 다른_사람의_템플릿을_삭제할_수_없다() {
+    void 다른_사람의_템플릿을_삭제하면_예외가_발생한다() {
         // given
         var owner = createMember("owner", "owner@mail.com");
         var other = createMember("other", "other@mail.com");
-        var myTmpl = templateRepository.save(Template.create(owner, "t1", "d1"));
+        var myTmpl = createTemplate(owner);
         var otherLoginMember = new LoginMember(other.getId());
 
         // when // then
@@ -192,5 +188,13 @@ class TemplateServiceTest {
 
     private Member createMember(String name, String email) {
         return memberRepository.save(Member.create(name, email, "pic"));
+    }
+
+    private Template createTemplate(Member member) {
+        return templateRepository.save(Template.create(member, "title", "desc"));
+    }
+
+    private Template createTemplate(Member member, String title, String description) {
+        return templateRepository.save(Template.create(member, title, description));
     }
 }
