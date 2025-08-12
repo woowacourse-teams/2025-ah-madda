@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 
-import { InputProps } from './Input';
+import { theme } from '@/shared/styles/theme';
 
 export const StyledWrapper = styled.div`
   width: 100%;
@@ -21,7 +21,7 @@ export const StyledRequiredMark = styled.span`
 `;
 
 export const StyledInput = styled.input<{ isError: boolean }>`
-  background-color: #f7f7f8;
+  background-color: ${theme.colors.gray50};
   border-radius: 8px;
   padding: 12px;
   border: none;
@@ -30,7 +30,7 @@ export const StyledInput = styled.input<{ isError: boolean }>`
 
   &:focus {
     outline: none;
-    border: 1px solid ${({ isError }) => (isError ? '#FF5A5A' : '#333')};
+    border: 1px solid ${({ isError }) => (isError ? theme.colors.red300 : theme.colors.gray400)};
   }
 `;
 
@@ -38,5 +38,5 @@ export const StyledHelperText = styled.p<{ isError: boolean }>`
   margin-top: 4px;
   font-size: 12px;
   min-height: 18px;
-  color: ${({ isError }) => (isError ? '#FF5A5A' : '#888')};
+  color: ${({ isError }) => (isError ? theme.colors.red300 : theme.colors.gray400)};
 `;
