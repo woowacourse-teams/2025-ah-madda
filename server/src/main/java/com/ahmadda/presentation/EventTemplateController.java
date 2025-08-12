@@ -70,7 +70,7 @@ public class EventTemplateController {
 
         EventTemplateCreateResponse response = EventTemplateCreateResponse.from(eventTemplate);
 
-        return ResponseEntity.created(URI.create("/api/eventTemplates/" + eventTemplate.getId()))
+        return ResponseEntity.created(URI.create("/api/templates/" + eventTemplate.getId()))
                 .body(response);
     }
 
