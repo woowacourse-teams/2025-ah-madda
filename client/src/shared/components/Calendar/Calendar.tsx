@@ -49,6 +49,10 @@ export const Calendar = ({
       css={css`
         width: 280px;
         padding: 16px;
+
+        @media (max-width: 768px) {
+          width: 100%;
+        }
       `}
     >
       <Flex dir="row" alignItems="center" justifyContent="space-between" margin="0 0 16px 0">
