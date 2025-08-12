@@ -41,6 +41,7 @@ public class Event extends BaseEntity {
     private final List<Guest> guests = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "event_id")
     private final List<Question> questions = new ArrayList<>();
 
     @Id
@@ -236,7 +237,7 @@ public class Event extends BaseEntity {
     public boolean isFull() {
         return guests.size() >= maxCapacity;
     }
-    
+
     private void validateCancelParticipation(final LocalDateTime cancelParticipationTime) {
         if (eventOperationPeriod.willStartWithin(
                 cancelParticipationTime,
