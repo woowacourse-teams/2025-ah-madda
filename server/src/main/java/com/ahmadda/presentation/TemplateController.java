@@ -1,6 +1,5 @@
 package com.ahmadda.presentation;
 
-
 import com.ahmadda.application.TemplateService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.Template;
@@ -23,14 +22,16 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
 import java.util.List;
 
 @Tag(name = "Template", description = "템플릿 관련 API")
 @RestController
-@RequestMapping("/api/templates")
+@RequestMapping("/api/me/templates")
 @RequiredArgsConstructor
 public class TemplateController {
 
@@ -39,7 +40,7 @@ public class TemplateController {
     @Operation(summary = "템플릿 생성", description = "로그인한 회원이 새 템플릿을 생성합니다.")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200",
+                    responseCode = "201",
                     content = @Content(
                             schema = @Schema(implementation = TemplateCreateResponse.class)
                     )
@@ -53,7 +54,7 @@ public class TemplateController {
                                       "title": "Not Found",
                                       "status": 404,
                                       "detail": "존재하지 않는 회원입니다.",
-                                      "instance": "/api/templates"
+                                      "instance": "/api/me/templates"
                                     }
                                     """
                     ))
@@ -62,13 +63,14 @@ public class TemplateController {
     @PostMapping
     public ResponseEntity<TemplateCreateResponse> createTemplate(
             @AuthMember final LoginMember loginMember,
-            final TemplateCreateRequest templateCreateRequest
+            @RequestBody final TemplateCreateRequest templateCreateRequest
     ) {
         Template template = templateService.createTemplate(loginMember, templateCreateRequest);
 
         TemplateCreateResponse response = TemplateCreateResponse.from(template);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.created(URI.create("/api/me/templates/" + template.getId()))
+                .body(response);
     }
 
     @Operation(summary = "내 템플릿 목록 조회", description = "로그인한 회원이 소유한 모든 템플릿의 제목 목록을 조회합니다.")
@@ -91,7 +93,7 @@ public class TemplateController {
                                               "title": "Not Found",
                                               "status": 404,
                                               "detail": "존재하지 않는 회원입니다.",
-                                              "instance": "/api/templates"
+                                              "instance": "/api/me/templates"
                                             }
                                             """
                             ))
@@ -124,7 +126,7 @@ public class TemplateController {
                                               "title": "Forbidden",
                                               "status": 403,
                                               "detail": "본인이 작성한 템플릿이 아닙니다.",
-                                              "instance": "/api/templates/{templateId}"
+                                              "instance": "/api/me/templates/{templateId}"
                                             }
                                             """
                             ))
@@ -140,7 +142,7 @@ public class TemplateController {
                                               "title": "Not Found",
                                               "status": 404,
                                               "detail": "존재하지 않는 회원입니다.",
-                                              "instance": "/api/templates/{templateId}"
+                                              "instance": "/api/me/templates/{templateId}"
                                             }
                                             """
                             ),
@@ -152,7 +154,7 @@ public class TemplateController {
                                               "title": "Not Found",
                                               "status": 404,
                                               "detail": "존재하지 않는 템플릿입니다.",
-                                              "instance": "/api/templates/{templateId}"
+                                              "instance": "/api/me/templates/{templateId}"
                                             }
                                             """
                             )
@@ -185,7 +187,7 @@ public class TemplateController {
                                       "title": "Forbidden",
                                       "status": 403,
                                       "detail": "본인이 작성한 템플릿이 아닙니다.",
-                                      "instance": "/api/templates/{templateId}"
+                                      "instance": "/api/me/templates/{templateId}"
                                     }
                                     """
                     ))
@@ -201,7 +203,7 @@ public class TemplateController {
                                               "title": "Not Found",
                                               "status": 404,
                                               "detail": "존재하지 않는 회원입니다.",
-                                              "instance": "/api/templates/{templateId}"
+                                              "instance": "/api/me/templates/{templateId}"
                                             }
                                             """
                             ),
@@ -213,7 +215,7 @@ public class TemplateController {
                                               "title": "Not Found",
                                               "status": 404,
                                               "detail": "존재하지 않는 템플릿입니다.",
-                                              "instance": "/api/templates/{templateId}"
+                                              "instance": "/api/me/templates/{templateId}"
                                             }
                                             """
                             )
