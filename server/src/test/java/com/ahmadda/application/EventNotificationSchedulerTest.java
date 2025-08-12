@@ -122,8 +122,6 @@ class EventNotificationSchedulerTest {
                 100
         ));
 
-        var content = "이벤트 신청 마감이 임박했습니다.";
-
         // when
         sut.notifyRegistrationClosingEvents();
 
@@ -182,10 +180,120 @@ class EventNotificationSchedulerTest {
         verify(reminder, Mockito.never()).remind(any(), any(), any());
     }
 
+    @ParameterizedTest
+    @MethodSource("eventStartOffsets")
+    void 이벤트_시작_24시간_전_게스트에게_알람을_전송한다(
+            int minutesFrom24hOffset,
+            boolean expectToSend
+    ) {
+        // given
+        var org = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        var host = saveOrganizationMember("주최자", "host@email.com", org);
+
+        var now = LocalDateTime.now();
+        var eventStart = now.plusHours(24)
+                .plusMinutes(minutesFrom24hOffset);
+
+        var event = eventRepository.save(Event.create(
+                "이벤트", "설명", "장소",
+                host, org,
+                EventOperationPeriod.create(
+                        now.minusDays(2),
+                        now.plusMinutes(4),
+                        eventStart,
+                        now.plusDays(2),
+                        now.minusDays(3)
+                ),
+                100
+        ));
+
+        var guest1 = saveOrganizationMember("게스트1", "g1@email.com", org);
+        var guest2 = saveOrganizationMember("게스트2", "g2@email.com", org);
+        saveGuest(event, guest1);
+        saveGuest(event, guest2);
+        saveOrganizationMember("비게스트", "ng@email.com", org);
+
+        // when
+        sut.notifyEventStartIn24Hours();
+
+        // then
+        if (expectToSend) {
+            verify(reminder).remind(List.of(guest1, guest2), event, "내일 이벤트가 시작됩니다. 준비되셨나요?");
+        } else {
+            verify(reminder, Mockito.never()).remind(
+                    Mockito.any(),
+                    Mockito.any(),
+                    Mockito.eq("내일 이벤트가 시작됩니다. 준비되셨나요?")
+            );
+        }
+    }
+
+    @Test
+    void 이벤트_시작_24시간_전_리마인더_호출_후_히스토리가_저장된다() {
+        // given
+        var org = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        var host = saveOrganizationMember("주최자", "host@email.com", org);
+
+        var now = LocalDateTime.now();
+        var eventStart = now.plusHours(24)
+                .plusMinutes(3);
+
+        var event = eventRepository.save(Event.create(
+                "이벤트", "설명", "장소",
+                host, org,
+                EventOperationPeriod.create(
+                        now.minusDays(2),
+                        now.plusMinutes(4),
+                        eventStart,
+                        now.plusDays(2),
+                        now.minusDays(3)
+                ),
+                100
+        ));
+
+        var g1 = saveOrganizationMember("게스트1", "g1@email.com", org);
+        var g2 = saveOrganizationMember("게스트2", "g2@email.com", org);
+        saveGuest(event, g1);
+        saveGuest(event, g2);
+
+        // when
+        sut.notifyEventStartIn24Hours();
+
+        // then
+        var savedHistories = reminderHistoryRepository.findAll();
+        assertSoftly(softly -> {
+            softly.assertThat(savedHistories)
+                    .hasSize(1);
+
+            var history = savedHistories.get(0);
+            softly.assertThat(history.getEvent())
+                    .isEqualTo(event);
+            softly.assertThat(history.getContent())
+                    .isEqualTo("내일 이벤트가 시작됩니다. 준비되셨나요?");
+            softly.assertThat(history.getSentAt())
+                    .isNotNull();
+
+            softly.assertThat(history.getRecipients())
+                    .extracting(ReminderRecipient::getOrganizationMember)
+                    .containsExactlyInAnyOrder(g1, g2);
+        });
+    }
+
     private static Stream<Arguments> registrationEndOffsets() {
         return Stream.of(
+                Arguments.of(1, true),
                 Arguments.of(4, true),
                 Arguments.of(5, true),
+                Arguments.of(6, false),
+                Arguments.of(-1, false)
+        );
+    }
+
+    private static Stream<Arguments> eventStartOffsets() {
+        return Stream.of(
+                Arguments.of(0, false),
+                Arguments.of(1, true),
+                Arguments.of(4, true),
                 Arguments.of(6, false),
                 Arguments.of(-1, false)
         );
