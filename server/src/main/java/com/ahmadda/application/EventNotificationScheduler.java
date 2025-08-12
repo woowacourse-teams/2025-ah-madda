@@ -54,7 +54,7 @@ public class EventNotificationScheduler {
             final List<OrganizationMember> recipients,
             final String content
     ) {
-        List<ReminderHistory> reminderHistories = reminder.remind(recipients, upcomingEvent, content);
-        reminderHistoryRepository.saveAll(reminderHistories);
+        ReminderHistory reminderHistory = reminder.remind(recipients, upcomingEvent, content);
+        reminderHistoryRepository.save(reminderHistory);
     }
 }

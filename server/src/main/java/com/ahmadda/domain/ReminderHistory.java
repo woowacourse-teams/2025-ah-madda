@@ -1,6 +1,7 @@
 package com.ahmadda.domain;
 
 import com.ahmadda.domain.util.Assert;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,11 +10,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -29,56 +33,54 @@ public class ReminderHistory extends BaseEntity {
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_member_id", nullable = false)
-    private OrganizationMember organizationMember;
-
     @Column(nullable = false)
     private String content;
 
     @Column(nullable = false)
     private LocalDateTime sentAt;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "reminder_history_id", nullable = false)
+    private final List<ReminderRecipient> recipients = new ArrayList<>();
+
     private ReminderHistory(
             final Event event,
-            final OrganizationMember organizationMember,
             final String content,
-            final LocalDateTime sentAt
+            final LocalDateTime sentAt,
+            final List<OrganizationMember> organizationMembers
     ) {
         validateEvent(event);
-        validateOrganizationMember(organizationMember);
         validateContent(content);
         validateSentAt(sentAt);
+        validateOrganizationMembers(organizationMembers);
 
         this.event = event;
-        this.organizationMember = organizationMember;
         this.content = content;
         this.sentAt = sentAt;
+        organizationMembers.forEach(organizationMember ->
+                this.recipients.add(ReminderRecipient.create(organizationMember))
+        );
     }
 
     public static ReminderHistory create(
             final Event event,
-            final OrganizationMember organizationMember,
             final String content,
-            final LocalDateTime sentAt
+            final LocalDateTime sentAt,
+            final List<OrganizationMember> organizationMembers
     ) {
-        return new ReminderHistory(event, organizationMember, content, sentAt);
+        return new ReminderHistory(event, content, sentAt, organizationMembers);
     }
 
     public static ReminderHistory createNow(
             final Event event,
-            final OrganizationMember organizationMember,
-            final String content
+            final String content,
+            final List<OrganizationMember> organizationMembers
     ) {
-        return new ReminderHistory(event, organizationMember, content, LocalDateTime.now());
+        return new ReminderHistory(event, content, LocalDateTime.now(), organizationMembers);
     }
 
     private void validateEvent(final Event event) {
         Assert.notNull(event, "리마인더 히스토리의 이벤트가 null일 수 없습니다.");
-    }
-
-    private void validateOrganizationMember(final OrganizationMember organizationMember) {
-        Assert.notNull(organizationMember, "리마인더 히스토리의 조직원이 null일 수 없습니다.");
     }
 
     private void validateContent(final String content) {
@@ -86,6 +88,10 @@ public class ReminderHistory extends BaseEntity {
     }
 
     private void validateSentAt(final LocalDateTime sentAt) {
-        Assert.notNull(sentAt, "리마인더 발송 시각이 null일 수 없습니다.");
+        Assert.notNull(sentAt, "리마인더 히스토리의 리마인더 발송 시각이 null일 수 없습니다.");
+    }
+
+    private void validateOrganizationMembers(final List<OrganizationMember> organizationMembers) {
+        Assert.notNull(organizationMembers, "리마인더 히스토리의 리마인더 수신자 목록이 null일 수 없습니다.");
     }
 }
