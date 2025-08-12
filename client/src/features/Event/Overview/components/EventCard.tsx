@@ -1,17 +1,21 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
+import { Badge } from '@/shared/components/Badge';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { ProgressBar } from '@/shared/components/ProgressBar';
+import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 import { trackClickEventCard } from '@/shared/lib/gaEvents';
 import { theme } from '@/shared/styles/theme';
 
-import { UNLIMITED_CAPACITY } from '../../New/constants/errorMessages';
 import { Event } from '../../types/Event';
+import { badgeText } from '../utils/badgeText';
+import { calculateCapacityStatus } from '../utils/calculateCapacityStatus';
 import { formatDateTime } from '../utils/formatDateTime';
-import { formatTime } from '../utils/formatTime';
+import { removeNewline } from '../utils/removeNewline';
 
 export const EventCard = ({
   eventId,
@@ -27,10 +31,10 @@ export const EventCard = ({
 }: Event) => {
   const navigate = useNavigate();
 
-  const isUnlimited = maxCapacity === UNLIMITED_CAPACITY;
-  const progressValue = isUnlimited ? 1 : Number(currentGuestCount);
-  const progressMax = isUnlimited ? 1 : maxCapacity;
-  const progressColor = isUnlimited ? theme.colors.primary700 : 'black';
+  const { isUnlimited, progressValue, progressMax } = calculateCapacityStatus(
+    maxCapacity,
+    currentGuestCount
+  );
 
   const handleClickCard = () => {
     trackClickEventCard(title);
@@ -40,52 +44,52 @@ export const EventCard = ({
   return (
     <CardWrapper onClick={handleClickCard}>
       <Flex dir="column" gap="8px">
+        <Badge variant={badgeText(registrationEnd).color}>{badgeText(registrationEnd).text}</Badge>
         <Flex justifyContent="space-between" alignItems="center" gap="8px">
-          <Text as="h2" type="Heading" color="#ffffff" weight="semibold">
-            {title.length > 15 ? `${title.slice(0, 12)}...` : title}
+          <Text as="h2" type="Heading" color={theme.colors.gray900} weight="semibold">
+            {title.length > 17 ? `${title.slice(0, 19)}...` : title}
           </Text>
         </Flex>
-        <Text type="Body" color="#99A1AF">
-          {description}
-        </Text>
-        <Flex alignItems="center" gap="4px" height="100%">
-          <Icon name="calendar" size={16} color="white" />
-          <Text type="Label" color="#99A1AF">
-            {`신청 마감 ${formatTime(registrationEnd)} 까지`}
+        <Flex
+          css={css`
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.4;
+            word-break: break-word;
+          `}
+        >
+          <Text type="Body" color={theme.colors.gray700}>
+            {removeNewline(description)}
           </Text>
-        </Flex>
-        <Flex alignItems="center" gap="4px" height="100%">
-          <Icon name="clock" size={16} color="white" />
-          <Text
-            type="Label"
-            color="#99A1AF"
-          >{`이벤트 시간 ${formatDateTime(eventStart, eventEnd)}`}</Text>
         </Flex>
         <Flex alignItems="center" gap="4px" height="100%">
-          <Icon name="location" size={16} color="white" />
+          <Icon name="location" size={16} color="gray" />
           <Text type="Label" color="#99A1AF">
-            {`장소 ${place}`}
+            {place}
           </Text>
         </Flex>
-        <Spacing />
-        <Flex width="100%" justifyContent="space-between" alignItems="center">
-          <Text type="Label" color="#99A1AF">
-            주최자
-          </Text>
-          <Text type="Label" color="#99A1AF">
-            {organizerName}
+        <Flex alignItems="center" gap="4px" height="100%">
+          <Icon name="clock" size={16} color="gray" />
+          <Text type="Label" color={theme.colors.gray500}>
+            {formatDateTime(eventStart, eventEnd)}
           </Text>
         </Flex>
-
-        <Flex width="100%" justifyContent="space-between" alignItems="center">
-          <Text type="Label" color="#99A1AF">
-            참여 현황
-          </Text>
-          <Text type="Label" color="#99A1AF">
-            {isUnlimited ? '무제한' : `${currentGuestCount}/${maxCapacity} 명`}
+        <Flex alignItems="center" gap="4px" height="100%">
+          <Icon name="user" size={16} color="gray" />
+          <Text type="Label" color={theme.colors.gray500}>
+            {organizerName} 주최
           </Text>
         </Flex>
-        <ProgressBar value={progressValue} max={progressMax} color={progressColor} />
+        <Spacing height="2px" />
+        {/* {formatTime(registrationEnd)} */}
+        <Flex justifyContent="space-between" alignItems="center" gap="20px">
+          <ProgressBar value={progressValue} max={progressMax} color={theme.colors.primary500} />
+          <Text type="Label" color="#99A1AF" weight="semibold">
+            {isUnlimited ? '무제한' : `${currentGuestCount}/${maxCapacity}`}
+          </Text>
+        </Flex>
       </Flex>
     </CardWrapper>
   );
@@ -93,29 +97,13 @@ export const EventCard = ({
 
 const CardWrapper = styled.div`
   cursor: pointer;
-  background-color: #232838;
-  box-shadow: rgba(0, 0, 0, 0.3) 0px 4px 12px;
+  background-color: ${theme.colors.white};
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
   padding: 22px;
   border-radius: 12px;
   width: 100%;
 
   &:hover {
-    background-color: rgba(48, 65, 81, 0.95);
+    background-color: ${theme.colors.gray50};
   }
-`;
-
-const Spacing = styled.hr`
-  width: 100%;
-  height: 1px;
-  background-color: rgb(218, 218, 218);
-  border: none;
-  margin: 0;
-`;
-
-const Badge = styled.span<{ isRegistrationOpen: boolean }>`
-  background-color: ${({ isRegistrationOpen }) => (isRegistrationOpen ? '#2563EB' : 'gray')};
-  color: #ffffff;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 12px;
 `;
