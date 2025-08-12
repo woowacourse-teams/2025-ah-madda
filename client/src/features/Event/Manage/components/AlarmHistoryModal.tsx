@@ -6,6 +6,7 @@ import { Badge } from '@/shared/components/Badge';
 import { Flex } from '@/shared/components/Flex';
 import { Modal } from '@/shared/components/Modal';
 import { ModalProps } from '@/shared/components/Modal/Modal';
+import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
@@ -27,10 +28,11 @@ export const AlarmHistoryModal = ({ notifyData, isOpen, onClose }: AlarmHistoryM
       <Text as="h3" type="Heading" weight="bold">
         알림 내역
       </Text>
+      <Spacing height="12px" />
       <HistoryContainer>
         {notifyData.length === 0 ? (
           <Flex height="200px" justifyContent="center" alignItems="center">
-            <Text type="Body" weight="regular" color={theme.colors.gray500}>
+            <Text type="Body" weight="regular">
               알림 내역이 없습니다.
             </Text>
           </Flex>
