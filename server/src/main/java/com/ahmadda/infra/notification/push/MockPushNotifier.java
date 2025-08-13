@@ -23,9 +23,9 @@ public class MockPushNotifier implements PushNotifier {
         pushLogging(recipient, pushNotificationPayload);
     }
 
-    private static void pushLogging(
-            Object recipients,
-            PushNotificationPayload pushNotificationPayload
+    private void pushLogging(
+            final Object recipients,
+            final PushNotificationPayload pushNotificationPayload
     ) {
         log.info(
                 "[Mock Push] To: {} | Title: {} | Body: {} | Event ID: {}",
