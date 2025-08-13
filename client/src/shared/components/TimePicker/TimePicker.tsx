@@ -7,7 +7,6 @@ import {
   generateMinuteOptions,
   createTimeFromHour,
   createTimeFromMinute,
-  formatTimeDisplay,
 } from './utils';
 
 type TimePickerProps = {
@@ -76,10 +75,6 @@ export const TimePicker = ({
           ))}
         </StyledSelect>
       </Flex>
-
-      <Text type="Label" color="gray">
-        선택된 시간: {formatTimeDisplay(currentHour, currentMinute)}
-      </Text>
     </StyledTimePicker>
   );
 };
