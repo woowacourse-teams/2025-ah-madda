@@ -82,7 +82,7 @@ export const EventCard = ({
             참여 현황
           </Text>
           <Text type="Label" color="#99A1AF">
-            {isUnlimited ? '무제한' : `${currentGuestCount}/${maxCapacity} 명`}
+            {isUnlimited ? '제한없음' : `${currentGuestCount}/${maxCapacity} 명`}
           </Text>
         </Flex>
         <ProgressBar value={progressValue} max={progressMax} color={progressColor} />

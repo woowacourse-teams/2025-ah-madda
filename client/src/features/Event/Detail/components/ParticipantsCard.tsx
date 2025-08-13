@@ -27,7 +27,7 @@ export const ParticipantsCard = ({ currentGuestCount, maxCapacity }: Participant
           <Flex justifyContent="space-between">
             <Text type="Body">현재 신청자</Text>
             <Text type="Label">
-              {isUnlimited ? '무제한' : `${currentGuestCount} / ${maxCapacity}명`}
+              {isUnlimited ? '제한없음' : `${currentGuestCount} / ${maxCapacity}명`}
             </Text>
           </Flex>
           <ProgressBar value={progressValue} max={progressMax} color={progressColor} />

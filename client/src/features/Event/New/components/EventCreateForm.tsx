@@ -242,7 +242,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
             label="수용 인원"
             value={
               basicEventForm.maxCapacity === UNLIMITED_CAPACITY
-                ? '무제한'
+                ? '제한없음'
                 : `${basicEventForm.maxCapacity}명`
             }
             readOnly
