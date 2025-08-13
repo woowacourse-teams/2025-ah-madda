@@ -21,10 +21,12 @@ class SlackAlarmTest {
     SlackAlarm slackAlarm;
 
     @Test
-    void 실제_슬랙_리마인드_테스트() {
-        slackAlarm.alarmMemberCreation(MemberCreateAlarmPayload.from(Member.create("asdf",
-                                                                                   "asdf@naver.com",
-                                                                                   "testPicture"
-        )));
+    void 실제_슬랙으로_알람을_전송한다() {
+        slackAlarm.alarmMemberCreation(
+                MemberCreateAlarmPayload.from(Member.create(
+                        "asdf",
+                        "asdf@naver.com",
+                        "testPicture"
+                )));
     }
 }

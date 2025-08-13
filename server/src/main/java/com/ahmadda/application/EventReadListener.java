@@ -28,7 +28,7 @@ public class EventReadListener {
 
     @EventListener
     @Transactional
-    public void onEventReaded(final EventRead eventRead) {
+    public void onEventRead(final EventRead eventRead) {
         Member member = memberRepository.findById(eventRead.loginMember()
                         .memberId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));

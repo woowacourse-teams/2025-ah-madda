@@ -1,0 +1,230 @@
+package com.ahmadda.presentation;
+
+import com.ahmadda.application.EventTemplateService;
+import com.ahmadda.application.dto.LoginMember;
+import com.ahmadda.domain.EventTemplate;
+import com.ahmadda.presentation.dto.EventTemplateCreateRequest;
+import com.ahmadda.presentation.dto.EventTemplateResponse;
+import com.ahmadda.presentation.dto.EventTemplateTitleResponse;
+import com.ahmadda.presentation.resolver.AuthMember;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.net.URI;
+import java.util.List;
+
+@Tag(name = "Template", description = "템플릿 관련 API")
+@RestController
+@RequestMapping("/api/templates")
+@RequiredArgsConstructor
+public class EventTemplateController {
+
+    private final EventTemplateService eventTemplateService;
+
+    @Operation(summary = "템플릿 생성", description = "로그인한 회원이 새 템플릿을 생성합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(examples = @ExampleObject(
+                            value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Not Found",
+                                      "status": 404,
+                                      "detail": "존재하지 않는 회원입니다.",
+                                      "instance": "/api/templates"
+                                    }
+                                    """
+                    ))
+            )
+    })
+    @PostMapping
+    public ResponseEntity<Void> createTemplate(
+            @AuthMember final LoginMember loginMember,
+            @RequestBody @Valid final EventTemplateCreateRequest eventTemplateCreateRequest
+    ) {
+        EventTemplate eventTemplate = eventTemplateService.createTemplate(loginMember, eventTemplateCreateRequest);
+
+        return ResponseEntity.created(URI.create("/api/templates/" + eventTemplate.getId()))
+                .build();
+    }
+
+    @Operation(summary = "내 템플릿 목록 조회", description = "로그인한 회원이 소유한 모든 템플릿의 제목 목록을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            array = @ArraySchema(
+                                    schema = @Schema(implementation = EventTemplateTitleResponse.class)
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "존재하지 않는 회원입니다.",
+                                              "instance": "/api/templates"
+                                            }
+                                            """
+                            ))
+            )
+    })
+    @GetMapping
+    public ResponseEntity<List<EventTemplateTitleResponse>> getMyTemplates(@AuthMember final LoginMember loginMember) {
+        List<EventTemplate> eventTemplates = eventTemplateService.getTemplates(loginMember);
+
+        List<EventTemplateTitleResponse> responses = eventTemplates.stream()
+                .map(EventTemplateTitleResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(responses);
+    }
+
+    @Operation(summary = "내 템플릿 단건 조회", description = "로그인한 회원이 소유한 템플릿을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(schema = @Schema(implementation = EventTemplateResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Forbidden",
+                                              "status": 403,
+                                              "detail": "본인이 작성한 템플릿이 아닙니다.",
+                                              "instance": "/api/templates/{templateId}"
+                                            }
+                                            """
+                            ))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(examples = {
+                            @ExampleObject(
+                                    name = "회원 없음",
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "존재하지 않는 회원입니다.",
+                                              "instance": "/api/templates/{templateId}"
+                                            }
+                                            """
+                            ),
+                            @ExampleObject(
+                                    name = "템플릿 없음",
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "존재하지 않는 템플릿입니다.",
+                                              "instance": "/api/templates/{templateId}"
+                                            }
+                                            """
+                            )
+                    })
+            )
+    })
+    @GetMapping("/{templateId}")
+    public ResponseEntity<EventTemplateResponse> getMyTemplate(
+            @AuthMember final LoginMember loginMember,
+            @PathVariable final Long templateId
+    ) {
+        EventTemplate eventTemplate = eventTemplateService.getTemplate(loginMember, templateId);
+
+        EventTemplateResponse response = EventTemplateResponse.from(eventTemplate);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "템플릿 삭제", description = "로그인한 회원이 소유한 템플릿을 삭제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    content = @Content(examples = @ExampleObject(
+                            value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Forbidden",
+                                      "status": 403,
+                                      "detail": "본인이 작성한 템플릿이 아닙니다.",
+                                      "instance": "/api/templates/{templateId}"
+                                    }
+                                    """
+                    ))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(examples = {
+                            @ExampleObject(
+                                    name = "회원 없음",
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "존재하지 않는 회원입니다.",
+                                              "instance": "/api/templates/{templateId}"
+                                            }
+                                            """
+                            ),
+                            @ExampleObject(
+                                    name = "템플릿 없음",
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "존재하지 않는 템플릿입니다.",
+                                              "instance": "/api/templates/{templateId}"
+                                            }
+                                            """
+                            )
+                    })
+            )
+    })
+    @DeleteMapping("/{templateId}")
+    public ResponseEntity<Void> deleteTemplate(
+            @AuthMember final LoginMember loginMember,
+            @PathVariable final Long templateId
+    ) {
+        eventTemplateService.deleteTemplate(loginMember, templateId);
+
+        return ResponseEntity.noContent()
+                .build();
+    }
+}

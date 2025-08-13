@@ -1,7 +1,6 @@
 package com.ahmadda.learning.notification;
 
 import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.PushNotificationPayload;
@@ -17,9 +16,9 @@ import org.springframework.test.context.TestPropertySource;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Disabled
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @TestPropertySource(properties = "push.mock=false")
-@Disabled
 class FcmPushNotifierTest {
 
     @Autowired
@@ -28,9 +27,6 @@ class FcmPushNotifierTest {
     @Autowired
     private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
 
-    @Autowired
-    private MemberRepository memberRepository;
-
     @Test
     void 실제_FCM으로_푸시를_전송한다() {
         // given
@@ -38,12 +34,9 @@ class FcmPushNotifierTest {
         var organization = Organization.create("테스트 조직", "설명", "logo.png");
         var organizationMember = OrganizationMember.create("푸시대상", member, organization);
 
-        memberRepository.save(member);
-
-        var token = FcmRegistrationToken.create(
+        var token = FcmRegistrationToken.createNow(
                 member.getId(),
-                "d_v82UVaFsZcOUIPWbvYHI:APA91bEZSNYInGcWUg97mmqHNbH9TyUiYQ-uC0cs0F5-Mktw0hCYjw_HutZ644-AMdmV9NSDNgJv1YN1g-0RJFKndPwfd2U_oZxgZ9gdmGghs34QH3_yyXg",
-                LocalDateTime.now()
+                "f6L6AzpUV0TkUKEUOmIta8:APA91bH10zajy9WmAqqbfKl0c_9lUuNmggKaw82WDH-C9PqiK-KN2M5XUaL9CiKgl3oq61jRoRTrq7mZqZbqlb7887FLCY6BzctUE5l_25zWKMbbJ6EJ3Lg"
         );
 
         fcmRegistrationTokenRepository.save(token);

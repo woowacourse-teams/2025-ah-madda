@@ -1,8 +1,6 @@
 package com.ahmadda.application;
 
-import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
@@ -13,10 +11,9 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.PushNotificationPayload;
-import com.ahmadda.domain.PushNotifier;
-import com.ahmadda.infra.notification.push.FcmRegistrationToken;
-import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
+import com.ahmadda.domain.Reminder;
+import com.ahmadda.domain.ReminderHistoryRepository;
+import com.ahmadda.domain.ReminderRecipient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -24,13 +21,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
@@ -56,14 +54,11 @@ class EventNotificationSchedulerTest {
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
 
+    @MockitoSpyBean
+    private Reminder reminder;
+
     @Autowired
-    private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
-
-    @MockitoBean
-    private EmailNotifier emailNotifier;
-
-    @MockitoBean
-    private PushNotifier pushNotifier;
+    private ReminderHistoryRepository reminderHistoryRepository;
 
     @ParameterizedTest
     @MethodSource("registrationEndOffsets")
@@ -94,23 +89,60 @@ class EventNotificationSchedulerTest {
                 100
         ));
 
-        saveFcmRegistrationToken(ng1, "token-ng1");
-        saveFcmRegistrationToken(ng2, "token-ng2");
+        // when
+        sut.notifyRegistrationClosingEvents();
+
+        // then
+        if (expectToSend) {
+            verify(reminder).remind(List.of(ng1, ng2), event, "이벤트 신청 마감이 임박했습니다.");
+        } else {
+            verify(reminder, Mockito.never()).remind(any(), any(), any());
+        }
+    }
+
+    @Test
+    void 등록_마감_임박_이벤트의_리마인더_호출_후_히스토리가_저장된다() {
+        // given
+        var org = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        var host = saveOrganizationMember("주최자", "host@email.com", org);
+        var ng1 = saveOrganizationMember("비게스트1", "ng1@email.com", org);
+        var ng2 = saveOrganizationMember("비게스트2", "ng2@email.com", org);
+
+        var now = LocalDateTime.now();
+        var event = eventRepository.save(Event.create(
+                "이벤트", "설명", "장소",
+                host, org,
+                EventOperationPeriod.create(
+                        now.minusDays(2),
+                        now.plusMinutes(4),
+                        now.plusDays(1),
+                        now.plusDays(2),
+                        now.minusDays(3)
+                ),
+                100
+        ));
 
         // when
         sut.notifyRegistrationClosingEvents();
 
         // then
-        var expectedEmail = EventEmailPayload.of(event, "이벤트 신청 마감이 임박했습니다.");
-        var expectedPush = PushNotificationPayload.of(event, "이벤트 신청 마감이 임박했습니다.");
+        var savedHistories = reminderHistoryRepository.findAll();
+        assertSoftly(softly -> {
+            softly.assertThat(savedHistories)
+                    .hasSize(1);
 
-        if (expectToSend) {
-            verify(emailNotifier).sendEmails(List.of(ng1, ng2), expectedEmail);
-            verify(pushNotifier).sendPushs(List.of(ng1, ng2), expectedPush);
-        } else {
-            verify(emailNotifier, Mockito.never()).sendEmails(any(), any());
-            verify(pushNotifier, Mockito.never()).sendPushs(any(), any());
-        }
+            var history = savedHistories.get(0);
+            softly.assertThat(history.getEvent())
+                    .isEqualTo(event);
+            softly.assertThat(history.getContent())
+                    .isEqualTo("이벤트 신청 마감이 임박했습니다.");
+            softly.assertThat(history.getSentAt())
+                    .isNotNull();
+
+            softly.assertThat(history.getRecipients())
+                    .extracting(ReminderRecipient::getOrganizationMember)
+                    .containsExactlyInAnyOrder(ng1, ng2);
+        });
     }
 
     @Test
@@ -119,8 +151,8 @@ class EventNotificationSchedulerTest {
         var organization = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
         var host = saveOrganizationMember("주최자", "host@email.com", organization);
 
-        var ng1 = saveOrganizationMember("비게스트1", "ng1@email.com", organization);
-        var ng2 = saveOrganizationMember("비게스트2", "ng2@email.com", organization);
+        saveOrganizationMember("비게스트1", "ng1@email.com", organization);
+        saveOrganizationMember("비게스트2", "ng2@email.com", organization);
 
         var now = LocalDateTime.now();
         var registrationEnd = now.plusMinutes(4);
@@ -138,24 +170,130 @@ class EventNotificationSchedulerTest {
                 2
         ));
 
-        createAndSaveGuest(event, saveOrganizationMember("게스트1", "g1@email.com", organization));
-        createAndSaveGuest(event, saveOrganizationMember("게스트2", "g2@email.com", organization));
-
-        saveFcmRegistrationToken(ng1, "token-ng1");
-        saveFcmRegistrationToken(ng2, "token-ng2");
+        saveGuest(event, saveOrganizationMember("게스트1", "g1@email.com", organization));
+        saveGuest(event, saveOrganizationMember("게스트2", "g2@email.com", organization));
 
         // when
         sut.notifyRegistrationClosingEvents();
 
         // then
-        verify(emailNotifier, Mockito.never()).sendEmails(any(), any());
-        verify(pushNotifier, Mockito.never()).sendPushs(any(), any());
+        verify(reminder, Mockito.never()).remind(any(), any(), any());
+    }
+
+    @ParameterizedTest
+    @MethodSource("eventStartOffsets")
+    void 이벤트_시작_24시간_전_게스트에게_알람을_전송한다(
+            int minutesFrom24hOffset,
+            boolean expectToSend
+    ) {
+        // given
+        var org = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        var host = saveOrganizationMember("주최자", "host@email.com", org);
+
+        var now = LocalDateTime.now();
+        var eventStart = now.plusHours(24)
+                .plusMinutes(minutesFrom24hOffset);
+
+        var event = eventRepository.save(Event.create(
+                "이벤트", "설명", "장소",
+                host, org,
+                EventOperationPeriod.create(
+                        now.minusDays(2),
+                        now.plusMinutes(4),
+                        eventStart,
+                        now.plusDays(2),
+                        now.minusDays(3)
+                ),
+                100
+        ));
+
+        var guest1 = saveOrganizationMember("게스트1", "g1@email.com", org);
+        var guest2 = saveOrganizationMember("게스트2", "g2@email.com", org);
+        saveGuest(event, guest1);
+        saveGuest(event, guest2);
+        saveOrganizationMember("비게스트", "ng@email.com", org);
+
+        // when
+        sut.notifyEventStartIn24Hours();
+
+        // then
+        if (expectToSend) {
+            verify(reminder).remind(List.of(guest1, guest2), event, "내일 이벤트가 시작됩니다. 준비되셨나요?");
+        } else {
+            verify(reminder, Mockito.never()).remind(
+                    Mockito.any(),
+                    Mockito.any(),
+                    Mockito.eq("내일 이벤트가 시작됩니다. 준비되셨나요?")
+            );
+        }
+    }
+
+    @Test
+    void 이벤트_시작_24시간_전_리마인더_호출_후_히스토리가_저장된다() {
+        // given
+        var org = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        var host = saveOrganizationMember("주최자", "host@email.com", org);
+
+        var now = LocalDateTime.now();
+        var eventStart = now.plusHours(24)
+                .plusMinutes(3);
+
+        var event = eventRepository.save(Event.create(
+                "이벤트", "설명", "장소",
+                host, org,
+                EventOperationPeriod.create(
+                        now.minusDays(2),
+                        now.plusMinutes(4),
+                        eventStart,
+                        now.plusDays(2),
+                        now.minusDays(3)
+                ),
+                100
+        ));
+
+        var g1 = saveOrganizationMember("게스트1", "g1@email.com", org);
+        var g2 = saveOrganizationMember("게스트2", "g2@email.com", org);
+        saveGuest(event, g1);
+        saveGuest(event, g2);
+
+        // when
+        sut.notifyEventStartIn24Hours();
+
+        // then
+        var savedHistories = reminderHistoryRepository.findAll();
+        assertSoftly(softly -> {
+            softly.assertThat(savedHistories)
+                    .hasSize(1);
+
+            var history = savedHistories.get(0);
+            softly.assertThat(history.getEvent())
+                    .isEqualTo(event);
+            softly.assertThat(history.getContent())
+                    .isEqualTo("내일 이벤트가 시작됩니다. 준비되셨나요?");
+            softly.assertThat(history.getSentAt())
+                    .isNotNull();
+
+            softly.assertThat(history.getRecipients())
+                    .extracting(ReminderRecipient::getOrganizationMember)
+                    .containsExactlyInAnyOrder(g1, g2);
+        });
     }
 
     private static Stream<Arguments> registrationEndOffsets() {
         return Stream.of(
+                Arguments.of(1, true),
                 Arguments.of(4, true),
                 Arguments.of(5, true),
+                Arguments.of(6, false),
+                Arguments.of(-1, false)
+        );
+    }
+
+    private static Stream<Arguments> eventStartOffsets() {
+        return Stream.of(
+                Arguments.of(0, false),
+                Arguments.of(1, true),
+                Arguments.of(4, true),
                 Arguments.of(6, false),
                 Arguments.of(-1, false)
         );
@@ -171,18 +309,7 @@ class EventNotificationSchedulerTest {
         return organizationMemberRepository.save(OrganizationMember.create(nickname, member, organization));
     }
 
-    private void saveFcmRegistrationToken(OrganizationMember organizationMember, String token) {
-        var fcmToken = FcmRegistrationToken.create(
-                organizationMember.getMember()
-                        .getId(),
-                token,
-                LocalDateTime.now()
-        );
-
-        fcmRegistrationTokenRepository.save(fcmToken);
-    }
-
-    private Guest createAndSaveGuest(Event event, OrganizationMember participant) {
+    private Guest saveGuest(Event event, OrganizationMember participant) {
         var guest = Guest.create(event, participant, event.getRegistrationStart());
 
         return guestRepository.save(guest);

@@ -5,9 +5,7 @@ import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
@@ -18,18 +16,17 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.PushNotificationPayload;
-import com.ahmadda.domain.PushNotifier;
 import com.ahmadda.domain.Question;
+import com.ahmadda.domain.Reminder;
+import com.ahmadda.domain.ReminderHistoryRepository;
+import com.ahmadda.domain.ReminderRecipient;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
-import com.ahmadda.infra.notification.push.FcmRegistrationToken;
-import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -64,14 +61,11 @@ class EventServiceTest {
     @Autowired
     private GuestRepository guestRepository;
 
+    @MockitoSpyBean
+    private Reminder reminder;
+
     @Autowired
-    private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
-
-    @MockitoBean
-    private EmailNotifier emailNotifier;
-
-    @MockitoBean
-    private PushNotifier pushNotifier;
+    private ReminderHistoryRepository reminderHistoryRepository;
 
     @Test
     void 이벤트를_생성할_수_있다() {
@@ -331,12 +325,9 @@ class EventServiceTest {
         var om1Member = createMember("m1", "m1@mail.com");
         var om2Member = createMember("m2", "m2@mail.com");
 
-        var organizer = createOrganizationMember(organization, organizerMember);
+        createOrganizationMember(organization, organizerMember);
         var om1 = createOrganizationMember(organization, om1Member);
         var om2 = createOrganizationMember(organization, om2Member);
-
-        savePushToken(om1, "token-ng1");
-        savePushToken(om2, "token-ng2");
 
         var now = LocalDateTime.now();
         var request = new EventCreateRequest(
@@ -360,11 +351,59 @@ class EventServiceTest {
         var savedEvent = sut.createEvent(organization.getId(), loginMember, request, now);
 
         // then
-        var email = EventEmailPayload.of(savedEvent, "새로운 이벤트가 등록되었습니다.");
-        var pushPayload = PushNotificationPayload.of(savedEvent, "새로운 이벤트가 등록되었습니다.");
+        verify(reminder).remind(List.of(om1, om2), savedEvent, "새로운 이벤트가 등록되었습니다.");
+    }
 
-        verify(emailNotifier).sendEmails(List.of(om1, om2), email);
-        verify(pushNotifier).sendPushs(List.of(om1, om2), pushPayload);
+    @Test
+    void 이벤트_생성_후_리마인더_히스토리가_저장된다() {
+        // given
+        var organization = createOrganization();
+
+        var organizerMember = createMember("organizer", "organizer@mail.com");
+        var om1Member = createMember("m1", "m1@mail.com");
+        var om2Member = createMember("m2", "m2@mail.com");
+
+        createOrganizationMember(organization, organizerMember);
+        var om1 = createOrganizationMember(organization, om1Member);
+        var om2 = createOrganizationMember(organization, om2Member);
+
+        var now = LocalDateTime.now();
+        var request = new EventCreateRequest(
+                "UI/UX 이벤트",
+                "UI/UX 이벤트 입니다",
+                "선릉",
+                now.plusDays(4),
+                now.plusDays(5),
+                now.plusDays(6),
+                100,
+                List.of(
+                        new QuestionCreateRequest("1번 질문", true),
+                        new QuestionCreateRequest("2번 질문", false)
+                )
+        );
+        var loginMember = new LoginMember(organizerMember.getId());
+
+        // when
+        var savedEvent = sut.createEvent(organization.getId(), loginMember, request, now);
+
+        // then
+        var savedHistories = reminderHistoryRepository.findAll();
+        assertSoftly(softly -> {
+            softly.assertThat(savedHistories)
+                    .hasSize(1);
+
+            var history = savedHistories.get(0);
+            softly.assertThat(history.getEvent())
+                    .isEqualTo(savedEvent);
+            softly.assertThat(history.getContent())
+                    .isEqualTo("새로운 이벤트가 등록되었습니다.");
+            softly.assertThat(history.getSentAt())
+                    .isNotNull();
+
+            softly.assertThat(history.getRecipients())
+                    .extracting(ReminderRecipient::getOrganizationMember)
+                    .containsExactlyInAnyOrder(om1, om2);
+        });
     }
 
     @Test
@@ -510,9 +549,6 @@ class EventServiceTest {
         var guestOrgMember1 = createOrganizationMember(organization, guestMember1);
         var guestOrgMember2 = createOrganizationMember(organization, guestMember2);
 
-        savePushToken(guestOrgMember1, "token-ng1");
-        savePushToken(guestOrgMember2, "token-ng2");
-
         var now = LocalDateTime.now();
         var event = Event.create(
                 "원래 제목",
@@ -547,14 +583,78 @@ class EventServiceTest {
         var loginMember = new LoginMember(organizerMember.getId());
 
         // when
-        var updatedEvent = sut.updateEvent(event.getId(), loginMember, updateRequest, now);
+        sut.updateEvent(event.getId(), loginMember, updateRequest, now);
 
         // then
-        var email = EventEmailPayload.of(updatedEvent, "이벤트 정보가 수정되었습니다.");
-        var pushPayload = PushNotificationPayload.of(updatedEvent, "이벤트 정보가 수정되었습니다.");
+        verify(reminder).remind(List.of(guestOrgMember1, guestOrgMember2), event, "이벤트 정보가 수정되었습니다.");
+    }
 
-        verify(emailNotifier).sendEmails(List.of(guestOrgMember1, guestOrgMember2), email);
-        verify(pushNotifier).sendPushs(List.of(guestOrgMember1, guestOrgMember2), pushPayload);
+    @Test
+    void 이벤트_수정_후_리마인더_히스토리가_저장된다() {
+        // given
+        var organization = createOrganization();
+
+        var organizerMember = createMember("organizer", "organizer@mail.com");
+        var om1Member = createMember("m1", "m1@mail.com");
+        var om2Member = createMember("m2", "m2@mail.com");
+
+        var organizer = createOrganizationMember(organization, organizerMember);
+        var om1 = createOrganizationMember(organization, om1Member);
+        var om2 = createOrganizationMember(organization, om2Member);
+
+        var now = LocalDateTime.now();
+        var savedEvent = eventRepository.save(Event.create(
+                "원래 제목",
+                "원래 설명",
+                "원래 장소",
+                organizer,
+                organization,
+                EventOperationPeriod.create(
+                        now.plusDays(1),
+                        now.plusDays(2),
+                        now.plusDays(3),
+                        now.plusDays(4),
+                        now.minusDays(1)
+                ),
+                100
+        ));
+        var guest1 = Guest.create(savedEvent, om1, now.plusDays(1));
+        var guest2 = Guest.create(savedEvent, om2, now.plusDays(1));
+        guestRepository.save(guest1);
+        guestRepository.save(guest2);
+
+        var updateRequest = new EventUpdateRequest(
+                "수정된 제목",
+                "수정된 설명",
+                "수정된 장소",
+                now.plusDays(2),
+                now.plusDays(3),
+                now.plusDays(4),
+                200
+        );
+        var loginMember = new LoginMember(organizerMember.getId());
+
+        // when
+        sut.updateEvent(savedEvent.getId(), loginMember, updateRequest, now);
+
+        // then
+        var savedHistories = reminderHistoryRepository.findAll();
+        assertSoftly(softly -> {
+            softly.assertThat(savedHistories)
+                    .hasSize(1);
+
+            var history = savedHistories.get(0);
+            softly.assertThat(history.getEvent())
+                    .isEqualTo(savedEvent);
+            softly.assertThat(history.getContent())
+                    .isEqualTo("이벤트 정보가 수정되었습니다.");
+            softly.assertThat(history.getSentAt())
+                    .isNotNull();
+
+            softly.assertThat(history.getRecipients())
+                    .extracting(ReminderRecipient::getOrganizationMember)
+                    .containsExactlyInAnyOrder(om1, om2);
+        });
     }
 
     @Test
@@ -651,14 +751,5 @@ class EventServiceTest {
         );
 
         return eventRepository.save(event);
-    }
-
-    private void savePushToken(OrganizationMember organizationMember, String token) {
-        var fcmRegistrationToken = FcmRegistrationToken.create(
-                organizationMember.getMember()
-                        .getId(), token, LocalDateTime.now()
-        );
-
-        fcmRegistrationTokenRepository.save(fcmRegistrationToken);
     }
 }
