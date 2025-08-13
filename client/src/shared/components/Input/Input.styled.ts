@@ -1,3 +1,4 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 import { theme } from '@/shared/styles/theme';
@@ -20,7 +21,11 @@ export const StyledRequiredMark = styled.span`
   font-size: 14px;
 `;
 
-export const StyledInput = styled.input<{ isError: boolean }>`
+export const StyledFieldWrapper = styled.div`
+  position: relative;
+`;
+
+export const StyledInput = styled.input<{ isError?: boolean; hasLeftIcon?: boolean }>`
   background-color: ${theme.colors.gray50};
   border-radius: 8px;
   padding: 12px;
@@ -32,6 +37,23 @@ export const StyledInput = styled.input<{ isError: boolean }>`
     outline: none;
     border: 1px solid ${({ isError }) => (isError ? theme.colors.red300 : theme.colors.gray400)};
   }
+
+  ${({ hasLeftIcon }) =>
+    hasLeftIcon &&
+    css`
+      padding-left: 40px;
+    `}
+
+  &::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  ${({ isError, theme }) =>
+    isError &&
+    css`
+      border-color: ${theme.colors.red500};
+    `}
 `;
 
 export const StyledHelperText = styled.p<{ isError: boolean }>`
@@ -39,4 +61,17 @@ export const StyledHelperText = styled.p<{ isError: boolean }>`
   font-size: 12px;
   min-height: 18px;
   color: ${({ isError }) => (isError ? theme.colors.red300 : theme.colors.gray400)};
+`;
+
+export const StyledCalendarButton = styled.button`
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
 `;

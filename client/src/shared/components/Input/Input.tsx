@@ -1,4 +1,6 @@
-import { ComponentProps } from 'react';
+import { ComponentProps, useRef } from 'react';
+
+import { Icon } from '@/shared/components/Icon';
 
 import {
   StyledWrapper,
@@ -6,6 +8,8 @@ import {
   StyledRequiredMark,
   StyledInput,
   StyledHelperText,
+  StyledFieldWrapper,
+  StyledCalendarButton,
 } from './Input.styled';
 
 export type InputProps = {
@@ -49,6 +53,14 @@ export const Input = ({
   ...props
 }: InputProps) => {
   const isError = !!errorMessage;
+  const isDateLike = props.type === 'datetime-local';
+  const inputRef = useRef<HTMLInputElement>(null);
+  const openPicker = () => {
+    if (inputRef.current) {
+      inputRef.current.showPicker?.();
+      inputRef.current.focus();
+    }
+  };
 
   return (
     <StyledWrapper>
@@ -56,7 +68,16 @@ export const Input = ({
         {label}
         {isRequired && <StyledRequiredMark>*</StyledRequiredMark>}
       </StyledLabel>
-      <StyledInput id={id} isError={isError} {...props} />
+
+      <StyledFieldWrapper>
+        {isDateLike && (
+          <StyledCalendarButton type="button" onClick={openPicker} aria-label="날짜 선택">
+            <Icon name="calendar" size={18} />
+          </StyledCalendarButton>
+        )}
+        <StyledInput id={id} ref={inputRef} isError={isError} hasLeftIcon={isDateLike} {...props} />
+      </StyledFieldWrapper>
+
       <StyledHelperText isError={isError}>
         {isError ? (errorMessage ?? ' ') : (helperText ?? ' ')}
       </StyledHelperText>
