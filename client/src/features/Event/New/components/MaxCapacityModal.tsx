@@ -37,7 +37,6 @@ export const MaxCapacityModal = ({ isOpen, initialValue, onClose, onSubmit }: Pr
 
         <Input
           id="maxCapacityInput"
-          label="수용 인원을 입력해주세요."
           type="text"
           autoFocus
           value={maxCapacity}
