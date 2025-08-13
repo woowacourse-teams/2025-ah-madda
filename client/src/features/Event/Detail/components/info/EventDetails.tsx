@@ -52,9 +52,9 @@ export const EventDetails = ({
           `}
         >
           <Text as="h2" type="Heading" weight="semibold">
-            신청 기간
+            마감 시간
           </Text>
-          <Text>{formatKoreanDateTime(registrationEnd)}</Text>
+          <Text>{formatKoreanDateTime(registrationEnd)}까지</Text>
         </Flex>
         <Flex
           dir="column"
