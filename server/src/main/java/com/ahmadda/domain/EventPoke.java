@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class EventPokeHistory extends BaseEntity {
+public class EventPoke extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +40,7 @@ public class EventPokeHistory extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime sentAt;
 
-    private EventPokeHistory(
+    private EventPoke(
             final OrganizationMember sender,
             final OrganizationMember recipient,
             final Event event,
@@ -58,13 +58,13 @@ public class EventPokeHistory extends BaseEntity {
         this.sentAt = sentAt;
     }
 
-    public static EventPokeHistory create(
+    public static EventPoke create(
             final OrganizationMember sendOrganizationMember,
             final OrganizationMember receiveOrganizationMember,
             final Event event,
             final LocalDateTime dateTime
     ) {
-        return new EventPokeHistory(sendOrganizationMember, receiveOrganizationMember, event, dateTime);
+        return new EventPoke(sendOrganizationMember, receiveOrganizationMember, event, dateTime);
     }
 
     private void validateSentAt(final LocalDateTime sentAt) {

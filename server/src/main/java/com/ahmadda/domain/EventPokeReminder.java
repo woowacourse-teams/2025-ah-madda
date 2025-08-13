@@ -43,10 +43,10 @@ public class EventPokeReminder {
             throw new BusinessRuleViolatedException("포키는 30분마다 한 대상에게 최대 10번만 보낼 수 있습니다.");
         }
 
-        EventPokeHistory eventPokeHistory = EventPokeHistory.create(sender, recipient, event, dateTime);
+        EventPoke eventPoke = EventPoke.create(sender, recipient, event, dateTime);
         pushPoke(sender, recipient, event);
 
-        eventPokeRepository.save(eventPokeHistory);
+        eventPokeRepository.save(eventPoke);
     }
 
     private void pushPoke(

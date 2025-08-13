@@ -10,7 +10,6 @@ import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -180,28 +179,7 @@ public class EventNotificationController {
 
     @Operation(summary = "이벤트 참여자 푸시 알림", description = "참여자가 특정 참여자에게 푸시 알림을 보냅니다.")
     @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    content = @Content(
-                            schema = @Schema(implementation = Void.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Bad Request",
-                                              "status": 400,
-                                              "detail": "잘못된 요청입니다.",
-                                              "instance": "/api/events/{eventId}/notify-poke"
-                                            }
-                                            """
-                            )
-                    )
-            ),
+            @ApiResponse(responseCode = "200"),
             @ApiResponse(
                     responseCode = "401",
                     content = @Content(
@@ -219,37 +197,35 @@ public class EventNotificationController {
                     )
             ),
             @ApiResponse(
-                    responseCode = "403",
-                    content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Forbidden",
-                                              "status": 403,
-                                              "detail": "이벤트에 대한 접근 권한이 없습니다.",
-                                              "instance": "/api/events/{eventId}/notify-poke"
-                                            }
-                                            """
-                            )
-                    )
-            ),
-            @ApiResponse(
                     responseCode = "404",
                     content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Not Found",
-                                              "status": 404,
-                                              "detail": "존재하지 않는 이벤트입니다.",
-                                              "instance": "/api/events/{eventId}/notify-poke"
-                                            }
-                                            """
-                            )
+                            examples = {
+                                    @ExampleObject(
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 이벤트입니다.",
+                                                      "instance": "/api/events/{eventId}/notify-poke"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "조직원을 찾는데 실패하였습니다.",
+                                                      "instance": "/api/events/{eventId}/notify-poke"
+                                                    }
+                                                    """
+                                    )
+                            }
                     )
             ),
+
             @ApiResponse(
                     responseCode = "422",
                     content = @Content(

@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
 
-public interface EventPokeRepository extends JpaRepository<EventPokeHistory, Long> {
+public interface EventPokeRepository extends JpaRepository<EventPoke, Long> {
 
     //TODO 성능 매우 나쁨!! 개선 필요
     //TODO. 우선 빠르게 구현후 인덱싱 혹은 메모리 방식으로 전환 논의 필요후
