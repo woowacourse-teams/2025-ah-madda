@@ -32,3 +32,4 @@ aws:
     mock: true
     region: ${aws.local.s3.region}
     bucket: ${aws.local.s3.bucket}
+    folder: ${aws.local.s3.folder}

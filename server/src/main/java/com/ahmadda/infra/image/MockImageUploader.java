@@ -6,7 +6,7 @@ import com.ahmadda.domain.ImageUploader;
 public class MockImageUploader implements ImageUploader {
 
     @Override
-    public String upload(ImageFile file) {
+    public String upload(final ImageFile file) {
         return file.getFileName();
     }
 }

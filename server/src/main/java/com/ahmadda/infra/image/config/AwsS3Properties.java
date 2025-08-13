@@ -13,20 +13,24 @@ public class AwsS3Properties {
     private final String folder;
 
     public AwsS3Properties(final String region, final String bucket, final String folder) {
-        validateProperties(region, bucket);
+        validateProperties(region, bucket, folder);
 
         this.region = region;
         this.bucket = bucket;
-        this.folder = folder == null ? "" : folder;
+        this.folder = folder;
     }
 
-    private void validateProperties(final String region, final String bucket) {
+    private void validateProperties(final String region, final String bucket, final String folder) {
         if (region == null || region.isEmpty()) {
             throw new IllegalArgumentException("region 설정이 비어있습니다.");
         }
 
         if (bucket == null || bucket.isEmpty()) {
             throw new IllegalArgumentException("bucket 설정이 비어있습니다.");
+        }
+
+        if (folder == null || folder.isEmpty()) {
+            throw new IllegalArgumentException("folder 설정이 비어있습니다.");
         }
     }
 }

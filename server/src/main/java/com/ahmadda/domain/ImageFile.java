@@ -19,7 +19,7 @@ public class ImageFile {
     private final long size;
     private final InputStream inputStream;
 
-    private ImageFile(final String fileName, final String contentType, long size, final InputStream inputStream) {
+    private ImageFile(final String fileName, final String contentType, final long size, final InputStream inputStream) {
         validateFileName(fileName);
         validateContentType(contentType);
         validateInputStream(inputStream);
@@ -33,7 +33,7 @@ public class ImageFile {
     public static ImageFile create(
             final String fileName,
             final String contentType,
-            long size,
+            final long size,
             final InputStream inputStream
     ) {
         return new ImageFile(fileName, contentType, size, inputStream);
