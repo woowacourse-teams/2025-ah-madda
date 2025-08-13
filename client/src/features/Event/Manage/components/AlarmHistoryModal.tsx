@@ -1,14 +1,11 @@
 import { css } from '@emotion/react';
-import styled from '@emotion/styled';
 
 import { NotifyHistoryAPIResponse } from '@/api/types/event';
-import { Badge } from '@/shared/components/Badge';
 import { Flex } from '@/shared/components/Flex';
 import { Modal } from '@/shared/components/Modal';
 import { ModalProps } from '@/shared/components/Modal/Modal';
 import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
-import { theme } from '@/shared/styles/theme';
 
 import { HistoryContainer } from '../containers/HistoryContainer';
 
