@@ -21,7 +21,7 @@ import { useTemplateLoader } from '../hooks/useTemplateLoader';
 import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
 import { formatDateForInput, parseInputDate, setTimeToDate } from '../utils/dateUtils';
 
-import { DatePickerModal } from './DatePickerModal';
+import { DatePickerDropdown } from './DatePickerDropdown';
 import { MaxCapacityModal } from './MaxCapacityModal';
 import { QuestionForm } from './QuestionForm';
 import { TemplateModal } from './TemplateModal';
@@ -53,9 +53,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     close: capacityModalClose,
   } = useModal();
   const {
-    isOpen: isDatePickerModalOpen,
-    open: datePickerModalOpen,
-    close: datePickerModalClose,
+    isOpen: isDatePickerDropdownOpen,
+    open: datePickerDropdownOpen,
+    close: datePickerDropdownClose,
   } = useModal();
 
   const {
@@ -193,51 +193,36 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
             />
 
             <Flex
-              dir="row"
-              gap="16px"
               css={css`
-                @media (max-width: 768px) {
-                  flex-direction: column;
-                  gap: 0;
-                }
+                position: relative;
               `}
             >
               <Input
-                id="eventStart"
-                name="eventStart"
-                label="이벤트 시작일"
-                type="datetime-local"
-                min="2025-07-31T14:00"
-                placeholder="2025.07.30 13:00"
-                value={basicEventForm.eventStart}
-                onChange={(e) => {
-                  handleChange(e);
-                  const newValue = e.target.value;
-                  handleValueChange('registrationEnd', newValue);
-                  validateField('registrationEnd', newValue);
-                }}
-                onFocus={datePickerModalOpen}
-                errorMessage={errors.eventStart}
+                id="eventDateRange"
+                name="eventDateRange"
+                label="이벤트 기간"
+                value={
+                  basicEventForm.eventStart && basicEventForm.eventEnd
+                    ? `${basicEventForm.eventStart.replace('T', ' ')} ~ ${basicEventForm.eventEnd.replace('T', ' ')}`
+                    : ''
+                }
+                placeholder="이벤트 시작일과 종료일을 선택해주세요"
+                readOnly
+                onClick={datePickerDropdownOpen}
+                errorMessage={errors.eventStart || errors.eventEnd}
                 isRequired
                 css={css`
                   cursor: pointer;
                 `}
               />
-              <Input
-                id="eventEnd"
-                name="eventEnd"
-                label="이벤트 종료일"
-                type="datetime-local"
-                placeholder="2025.07.30 15:00"
-                value={basicEventForm.eventEnd}
-                min={basicEventForm.eventStart}
-                onChange={handleChange}
-                onFocus={datePickerModalOpen}
-                errorMessage={errors.eventEnd}
-                isRequired
-                css={css`
-                  cursor: pointer;
-                `}
+              <DatePickerDropdown
+                isOpen={isDatePickerDropdownOpen}
+                onClose={datePickerDropdownClose}
+                onSelect={handleDateRangeSelect}
+                initialStartDate={parseInputDate(basicEventForm.eventStart) || null}
+                initialEndDate={parseInputDate(basicEventForm.eventEnd) || null}
+                initialStartTime={parseInputDate(basicEventForm.eventStart) || undefined}
+                initialEndTime={parseInputDate(basicEventForm.eventEnd) || undefined}
               />
             </Flex>
 
@@ -250,7 +235,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               value={basicEventForm.registrationEnd}
               max={basicEventForm.eventStart}
               onChange={handleChange}
-              onFocus={datePickerModalOpen}
+              onClick={datePickerDropdownOpen}
               errorMessage={errors.registrationEnd}
               isRequired
               css={css`
@@ -335,16 +320,6 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         onConfirm={handleTemplateLoad}
         onSelect={handleSelectEvent}
         selectedEventId={selectedEventId}
-      />
-
-      <DatePickerModal
-        isOpen={isDatePickerModalOpen}
-        onClose={datePickerModalClose}
-        onSelect={handleDateRangeSelect}
-        initialStartDate={parseInputDate(basicEventForm.eventStart) || null}
-        initialEndDate={parseInputDate(basicEventForm.eventEnd) || null}
-        initialStartTime={parseInputDate(basicEventForm.eventStart) || undefined}
-        initialEndTime={parseInputDate(basicEventForm.eventEnd) || undefined}
       />
     </Flex>
   );
