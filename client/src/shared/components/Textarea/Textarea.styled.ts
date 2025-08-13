@@ -6,20 +6,6 @@ export const StyledWrapper = styled.div`
   width: 100%;
 `;
 
-export const StyledLabel = styled.label`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 20px;
-  margin-bottom: 8px;
-  font-size: 14px;
-`;
-
-export const StyledRequiredMark = styled.span`
-  color: red;
-  font-size: 14px;
-`;
-
 export const StyledTextarea = styled.textarea<{ isError: boolean }>`
   background-color: #f7f7f8;
   border-radius: 8px;
