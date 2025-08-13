@@ -1,6 +1,7 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.MemberCreateAlarmPayload;
+import com.ahmadda.application.dto.MemberToken;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.infra.alarm.slack.SlackAlarm;
@@ -21,12 +22,15 @@ public class LoginService {
     private final SlackAlarm slackAlarm;
 
     @Transactional
-    public String login(final String code, final String redirectUri) {
+    public MemberToken login(final String code, final String redirectUri) {
         OAuthUserInfoResponse userInfo = googleOAuthProvider.getUserInfo(code, redirectUri);
 
         Member member = findOrCreateMember(userInfo.name(), userInfo.email(), userInfo.picture());
 
-        return jwtProvider.createAccessToken(member.getId());
+        String accessToken = jwtProvider.createAccessToken(member.getId());
+        String refreshToken = jwtProvider.createRefreshToken(member.getId());
+
+        return new MemberToken(accessToken, refreshToken);
     }
 
     private Member findOrCreateMember(final String name, final String email, final String profileImageUrl) {

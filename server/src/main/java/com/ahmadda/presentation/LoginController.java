@@ -1,6 +1,8 @@
 package com.ahmadda.presentation;
 
 import com.ahmadda.application.LoginService;
+import com.ahmadda.application.dto.MemberToken;
+import com.ahmadda.presentation.cookie.CookieProvider;
 import com.ahmadda.presentation.dto.AccessTokenResponse;
 import com.ahmadda.presentation.dto.LoginRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginController {
 
     private final LoginService loginService;
+    private final CookieProvider cookieProvider;
 
     @Operation(summary = "구글 OAuth 로그인", description = "Google OAuth 인가 코드로 로그인을 할 수 있습니다.")
     @ApiResponses(value = {
@@ -54,10 +59,15 @@ public class LoginController {
     })
     @PostMapping("/login")
     public ResponseEntity<AccessTokenResponse> login(@RequestBody final LoginRequest loginRequest) {
-        String authTokens = loginService.login(loginRequest.code(), loginRequest.redirectUri());
+        MemberToken authTokens = loginService.login(loginRequest.code(), loginRequest.redirectUri());
 
-        AccessTokenResponse accessTokenResponse = new AccessTokenResponse(authTokens);
+        AccessTokenResponse accessTokenResponse = new AccessTokenResponse(authTokens.accessToken());
 
-        return ResponseEntity.ok(accessTokenResponse);
+        ResponseCookie refreshTokenCookie = cookieProvider.createRefreshTokenCookie(authTokens.refreshToken());
+
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+                .body(accessTokenResponse);
     }
 }
