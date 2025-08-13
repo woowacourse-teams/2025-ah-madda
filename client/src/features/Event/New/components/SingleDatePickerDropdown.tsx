@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
@@ -8,6 +8,10 @@ import { Calendar } from '@/shared/components/Calendar/Calendar';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 import { TimePicker } from '@/shared/components/TimePicker';
+import { formatTimeDisplay } from '@/shared/components/TimePicker/utils';
+import { useClickOutside } from '@/shared/hooks/useClickOutside';
+
+import { useSingleDatePicker } from '../hooks/useSingleDatePicker';
 
 type SingleDatePickerDropdownProps = {
   isOpen: boolean;
@@ -26,43 +30,23 @@ export const SingleDatePickerDropdown = ({
   initialTime,
 }: SingleDatePickerDropdownProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(initialDate || null);
-  const [selectedTime, setSelectedTime] = useState<Date | undefined>(initialTime);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    };
+  useClickOutside({ ref: dropdownRef, isOpen, onClose });
 
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen, onClose]);
-
-  const handleDateSelect = (date: Date) => {
-    setSelectedDate(date);
-  };
-
-  const handleConfirm = () => {
-    if (selectedDate) {
-      onSelect(selectedDate, selectedTime);
-      onClose();
-    }
-  };
-
-  const handleCancel = () => {
-    setSelectedDate(initialDate || null);
-    setSelectedTime(initialTime);
-    onClose();
-  };
-
-  const isConfirmDisabled = !selectedDate;
+  const {
+    selectedDate,
+    selectedTime,
+    setSelectedTime,
+    handleDateSelect,
+    handleConfirm,
+    handleCancel,
+    isConfirmDisabled,
+  } = useSingleDatePicker({
+    initialDate,
+    initialTime,
+    onSelect,
+    onClose,
+  });
 
   if (!isOpen) return null;
 
@@ -118,7 +102,7 @@ export const SingleDatePickerDropdown = ({
             <Text type="Body" color="#3993FF">
               {selectedDate ? selectedDate.toLocaleDateString('ko-KR') : '날짜 미선택'}
               {selectedTime &&
-                ` ${String(selectedTime.getHours()).padStart(2, '0')}:${String(selectedTime.getMinutes()).padStart(2, '0')}`}
+                ` ${formatTimeDisplay(selectedTime.getHours(), selectedTime.getMinutes())}`}
             </Text>
           </Flex>
         </Flex>
