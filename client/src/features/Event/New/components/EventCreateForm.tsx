@@ -16,6 +16,7 @@ import { trackCreateEvent } from '@/shared/lib/gaEvents';
 import { UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useBasicEventForm } from '../hooks/useBasicEventForm';
+import { useDropdownStates } from '../hooks/useDropdownStates';
 import { useQuestionForm } from '../hooks/useQuestionForm';
 import { useTemplateLoader } from '../hooks/useTemplateLoader';
 import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
@@ -29,7 +30,6 @@ import {
 import { DatePickerDropdown } from './DatePickerDropdown';
 import { MaxCapacityModal } from './MaxCapacityModal';
 import { QuestionForm } from './QuestionForm';
-import { SingleDatePickerDropdown } from './SingleDatePickerDropdown';
 import { TemplateModal } from './TemplateModal';
 
 const ORGANIZATION_ID = 1; // 임시
@@ -48,6 +48,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     queryFn: () => getEventDetailAPI(Number(eventId)),
     enabled: isEdit,
   });
+  const { openDropdown, closeDropdown, isOpen } = useDropdownStates();
   const {
     isOpen: isTemplateModalOpen,
     open: templateModalOpen,
@@ -57,16 +58,6 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     isOpen: isCapacityModalOpen,
     open: capacityModalOpen,
     close: capacityModalClose,
-  } = useModal();
-  const {
-    isOpen: isDatePickerDropdownOpen,
-    open: datePickerDropdownOpen,
-    close: datePickerDropdownClose,
-  } = useModal();
-  const {
-    isOpen: isRegistrationEndDropdownOpen,
-    open: registrationEndDropdownOpen,
-    close: registrationEndDropdownClose,
   } = useModal();
 
   const {
@@ -166,7 +157,6 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     handleValueChange('eventStart', formatDateForInput(newStartDate));
     handleValueChange('eventEnd', formatDateForInput(newEndDate));
 
-    // 이벤트 시작일이 변경되면 신청 종료일도 시작일과 같은 날짜로 자동 설정
     const currentRegistrationEndTime =
       parseInputDate(basicEventForm.registrationEnd) || finalStartTime;
     const newRegistrationEndDate = setTimeToDate(startDate, currentRegistrationEndTime);
@@ -232,7 +222,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 }
                 placeholder="이벤트 시작일과 종료일을 선택해주세요"
                 readOnly
-                onClick={datePickerDropdownOpen}
+                onClick={() => openDropdown('eventDateRange')}
                 errorMessage={errors.eventStart || errors.eventEnd}
                 isRequired
                 css={css`
@@ -240,13 +230,15 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 `}
               />
               <DatePickerDropdown
-                isOpen={isDatePickerDropdownOpen}
-                onClose={datePickerDropdownClose}
+                mode="range"
+                isOpen={isOpen('eventDateRange')}
+                onClose={() => closeDropdown()}
                 onSelect={handleDateRangeSelect}
                 initialStartDate={parseInputDate(basicEventForm.eventStart) || null}
                 initialEndDate={parseInputDate(basicEventForm.eventEnd) || null}
                 initialStartTime={parseInputDate(basicEventForm.eventStart) || undefined}
                 initialEndTime={parseInputDate(basicEventForm.eventEnd) || undefined}
+                title="이벤트 날짜 및 시간 선택"
               />
             </Flex>
 
@@ -266,20 +258,21 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 }
                 placeholder="신청 종료일과 시간을 선택해주세요"
                 readOnly
-                onClick={registrationEndDropdownOpen}
+                onClick={() => openDropdown('registrationEnd')}
                 errorMessage={errors.registrationEnd}
                 isRequired
                 css={css`
                   cursor: pointer;
                 `}
               />
-              <SingleDatePickerDropdown
-                isOpen={isRegistrationEndDropdownOpen}
-                onClose={registrationEndDropdownClose}
+              <DatePickerDropdown
+                mode="single"
+                isOpen={isOpen('registrationEnd')}
+                onClose={() => closeDropdown()}
                 onSelect={handleRegistrationEndSelect}
                 initialDate={parseInputDate(basicEventForm.registrationEnd) || null}
                 initialTime={parseInputDate(basicEventForm.registrationEnd) || undefined}
-                maxDate={parseInputDate(basicEventForm.eventStart) || null}
+                title="신청 종료일 및 시간 선택"
               />
             </Flex>
 
