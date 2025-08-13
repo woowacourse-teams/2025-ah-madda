@@ -24,7 +24,6 @@ export const Basic: Story = {
     id: 'description',
     name: 'description',
     placeholder: '설명을 입력하세요',
-    errorMessage: '설명은 필수 입력 항목입니다.',
     value: '',
     onChange: () => {},
   },
@@ -36,16 +35,6 @@ export const WithHelperText: Story = {
     name: 'bio',
     placeholder: '간단한 자기소개를 작성해주세요',
     helperText: '최대 200자까지 작성 가능합니다.',
-    value: '',
-    onChange: () => {},
-  },
-};
-
-export const Required: Story = {
-  args: {
-    id: 'feedback',
-    name: 'feedback',
-    placeholder: '의견을 입력하세요',
     value: '',
     onChange: () => {},
   },

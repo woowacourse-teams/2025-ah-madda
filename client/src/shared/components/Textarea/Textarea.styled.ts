@@ -38,7 +38,7 @@ export const StyledFooterRow = styled.div`
 
 export const StyledCounterText = styled.span`
   margin-left: auto;
-  font-size: 12px;
+  font-size: 14px;
   color: #99a1af;
   white-space: nowrap;
 `;

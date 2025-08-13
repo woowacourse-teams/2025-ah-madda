@@ -24,7 +24,6 @@ export type TextareaProps = {
 } & ComponentProps<'textarea'>;
 
 export const Textarea = ({
-  id,
   helperText,
   errorMessage,
   showCounter = false,
@@ -42,7 +41,7 @@ export const Textarea = ({
 
   return (
     <StyledWrapper>
-      <StyledTextarea id={id} isError={isError} aria-invalid={isError || undefined} {...props} />
+      <StyledTextarea isError={isError} aria-invalid={isError || undefined} {...props} />
 
       <StyledFooterRow>
         <StyledHelperText isError={isError}>
