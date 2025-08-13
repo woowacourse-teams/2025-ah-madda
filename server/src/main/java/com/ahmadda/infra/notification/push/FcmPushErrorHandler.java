@@ -53,14 +53,4 @@ public class FcmPushErrorHandler {
             fcmRegistrationTokenRepository.deleteAllByRegistrationTokenIn(deletableTokens);
         }
     }
-
-    public void handleFailure(final String registrationToken, final FirebaseMessagingException exception) {
-        MessagingErrorCode errorCode = exception.getMessagingErrorCode();
-
-        if (DELETABLE_ERRORS.contains(errorCode)) {
-            fcmRegistrationTokenRepository.deleteByRegistrationToken(registrationToken);
-        }
-
-        log.error("fcmSinglePushError: {}", exception.getMessage(), exception);
-    }
 }

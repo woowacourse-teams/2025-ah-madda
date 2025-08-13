@@ -23,7 +23,7 @@ class FcmPushErrorHandlerTest {
     private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
 
     @Test
-    void 다수의_요청_실패시_유효하지_않은_토큰이_있으면_제거한다() {
+    void 요청_실패시_유효하지_않은_토큰이_있으면_제거한다() {
         // given
         var tokenValue = "expired-token";
         var saved = fcmRegistrationTokenRepository.save(
@@ -46,26 +46,6 @@ class FcmPushErrorHandlerTest {
         sut.handleFailures(batchResponse, List.of(tokenValue));
 
         // then
-        assertThat(fcmRegistrationTokenRepository.findById(saved.getId())).isEmpty();
-    }
-
-    @Test
-    void 단일_요청_실패시_유효하지_않은_토큰이_있으면_제거한다() {
-        // given
-        var tokenValue = "expired-token";
-        var saved = fcmRegistrationTokenRepository.save(
-                FcmRegistrationToken.create(1L, tokenValue, java.time.LocalDateTime.now())
-        );
-
-        var exception = mock(FirebaseMessagingException.class);
-        when(exception.getMessagingErrorCode()).thenReturn(MessagingErrorCode.UNREGISTERED);
-
-        var sut = new FcmPushErrorHandler(fcmRegistrationTokenRepository);
-
-        // when
-        sut.handleFailure(tokenValue, exception);
-
-        //then
         assertThat(fcmRegistrationTokenRepository.findById(saved.getId())).isEmpty();
     }
 }

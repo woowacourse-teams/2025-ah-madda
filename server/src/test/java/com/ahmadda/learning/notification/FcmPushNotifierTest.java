@@ -59,7 +59,7 @@ class FcmPushNotifierTest {
     }
 
     @Test
-    void 실제_FCM으로_단일_푸시를_전송한다() {
+    void 실제_FCM으로_한명에게_푸시알람을_전송한다() {
         // given
         var member = Member.create("테스트 회원", "amadda.team@gmail.com", "testPicture");
         var organization = Organization.create("테스트 조직", "설명", "logo.png");
