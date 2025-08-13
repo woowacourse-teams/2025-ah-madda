@@ -64,4 +64,18 @@ describe('OverView 페이지 테스트', async () => {
     expect(await screen.findByText('홍길동 주최')).toBeInTheDocument();
     expect(await screen.findByText('5 / 20')).toBeInTheDocument();
   });
+
+  test('이벤트 전체 조회 시 이벤트가 없을 경우 "등록된 이벤트가 없습니다."를 노출시킨다.', async () => {
+    mockFetcher.get.mockImplementation((url: string) => {
+      if (url.includes('organizations/1/events')) {
+        return Promise.resolve([]);
+      }
+
+      return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
+    });
+
+    renderOverViewPage();
+    screen.debug(document.body, Infinity);
+    expect(await screen.findByText('등록된 이벤트가 없습니다.')).toBeInTheDocument();
+  });
 });
