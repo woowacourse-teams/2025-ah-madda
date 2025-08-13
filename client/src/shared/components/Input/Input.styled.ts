@@ -1,7 +1,5 @@
 import styled from '@emotion/styled';
 
-import { InputProps } from './Input';
-
 export const StyledWrapper = styled.div`
   width: 100%;
 `;

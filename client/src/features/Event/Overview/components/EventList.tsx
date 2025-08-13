@@ -12,7 +12,6 @@ import { theme } from '@/shared/styles/theme';
 import { useModal } from '../../../../shared/hooks/useModal';
 import { Event, Organization } from '../../types/Event';
 import { EventContainer } from '../containers/EventContainer';
-import { copyInviteMessage } from '../utils/copyInviteMessage';
 import { groupEventsByDate } from '../utils/groupEventsByDate';
 
 import { ActionButtons } from './ActionButtons';
