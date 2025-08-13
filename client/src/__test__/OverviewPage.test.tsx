@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import { Mocked } from 'vitest';
 
 import { fetcher } from '@/api/fetcher';
 import { OverviewPage } from '@/features/Event/Overview/pages/OverviewPage';
@@ -8,15 +7,15 @@ import { RouterWithQueryClient } from './customRender';
 import { mockHostEvents } from './mocks/event';
 import { mockOrganization } from './mocks/organization';
 
-vi.mock('../api/fetcher', () => ({
+vi.mock('@/api/fetcher', () => ({
   fetcher: {
     get: vi.fn(),
   },
 }));
 
-const mockFetcher = fetcher as Mocked<typeof fetcher>;
+const mockFetcher = vi.mocked(fetcher);
 
-const renderOverViewPage = () => {
+const renderOverviewPage = () => {
   render(
     <RouterWithQueryClient
       initialRoute="/event"
@@ -25,20 +24,23 @@ const renderOverViewPage = () => {
   );
 };
 
-describe('OverView 페이지 테스트', async () => {
+describe('OverView 페이지 테스트', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   test('이벤트 전체 조회 시 조직 정보를 노출시킨다.', async () => {
     mockFetcher.get.mockImplementation((url: string) => {
+      if (url.includes('organizations/1/events')) {
+        return Promise.resolve(mockHostEvents);
+      }
       if (url.includes('organizations/woowacourse')) {
         return Promise.resolve(mockOrganization);
       }
       return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
     });
 
-    renderOverViewPage();
+    renderOverviewPage();
 
     expect(await screen.findByText('테스트 조직')).toBeInTheDocument();
     expect(await screen.findByText('테스트 조직 설명입니다.')).toBeInTheDocument();
@@ -55,7 +57,7 @@ describe('OverView 페이지 테스트', async () => {
       return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
     });
 
-    renderOverViewPage();
+    renderOverviewPage();
 
     expect(await screen.findByText('테스트 이벤트')).toBeInTheDocument();
     expect(await screen.findByText('테스트 이벤트 설명')).toBeInTheDocument();
@@ -69,11 +71,13 @@ describe('OverView 페이지 테스트', async () => {
       if (url.includes('organizations/1/events')) {
         return Promise.resolve([]);
       }
-
+      if (url.includes('organizations/woowacourse')) {
+        return Promise.resolve(mockOrganization);
+      }
       return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
     });
 
-    renderOverViewPage();
+    renderOverviewPage();
 
     expect(await screen.findByText('등록된 이벤트가 없습니다.')).toBeInTheDocument();
   });
