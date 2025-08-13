@@ -7,11 +7,16 @@ import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventNotificationOptOut;
 import com.ahmadda.domain.EventNotificationOptOutRepository;
 import com.ahmadda.domain.EventRepository;
+import com.ahmadda.domain.Guest;
+import com.ahmadda.domain.GuestWithOptOut;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
+import com.ahmadda.domain.OrganizationMemberWithOptOut;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +58,37 @@ public class EventNotificationOptOutService {
                         .orElseThrow(() -> new BusinessFlowViolatedException("수신 거부 설정이 존재하지 않습니다."));
 
         optOutRepository.delete(optOut);
+    }
+
+    public List<GuestWithOptOut> mapGuests(final List<Guest> guests) {
+        return guests.stream()
+                .map(guest -> {
+                    boolean optedOut = optOutRepository.existsByEventAndOrganizationMember(
+                            guest.getEvent(),
+                            guest.getOrganizationMember()
+                    );
+
+                    return GuestWithOptOut.create(guest, optedOut);
+                })
+                .toList();
+    }
+
+    public List<OrganizationMemberWithOptOut> mapOrganizationMembers(
+            final Long eventId,
+            final List<OrganizationMember> members
+    ) {
+        Event event = getEvent(eventId);
+
+        return members.stream()
+                .map(member -> {
+                    boolean optedOut = optOutRepository.existsByEventAndOrganizationMember(
+                            event,
+                            member
+                    );
+
+                    return OrganizationMemberWithOptOut.create(member, optedOut, event);
+                })
+                .toList();
     }
 
     private Event getEvent(final Long eventId) {

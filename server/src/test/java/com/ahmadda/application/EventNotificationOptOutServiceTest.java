@@ -2,10 +2,14 @@ package com.ahmadda.application;
 
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
+import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventNotificationOptOut;
 import com.ahmadda.domain.EventNotificationOptOutRepository;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
+import com.ahmadda.domain.Guest;
+import com.ahmadda.domain.GuestRepository;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
@@ -18,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -45,6 +50,9 @@ class EventNotificationOptOutServiceTest {
     @Autowired
     private OrganizationRepository organizationRepository;
 
+    @Autowired
+    private GuestRepository guestRepository;
+
     @Test
     void 이벤트에_대한_알림_수신_거부를_설정할_수_있다() {
         // given
@@ -68,6 +76,36 @@ class EventNotificationOptOutServiceTest {
                                 .isEqualTo(organizationMember);
                     });
                 });
+    }
+
+    @Test
+    void 이벤트가_없으면_수신거부_설정시_예외가_발생한다() {
+        // given
+        var member = createMember("user", "user@mail.com");
+        var loginMember = new LoginMember(member.getId());
+        var nonExistentEventId = Long.MAX_VALUE;
+
+        // when // then
+        assertThatThrownBy(() -> sut.optOut(nonExistentEventId, loginMember))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 이벤트입니다.");
+    }
+
+    @Test
+    void 조직의_구성원이_아니면_수신거부_설정시_예외가_발생한다() {
+        // given
+        var org = createOrganization();
+        var event = createEvent(
+                createOrganizationMember("닉네임", createMember("user", "user@mail.com"), org),
+                org
+        );
+        var nonExistentMemberId = Long.MAX_VALUE;
+        var loginMember = new LoginMember(nonExistentMemberId);
+
+        // when // then
+        assertThatThrownBy(() -> sut.optOut(event.getId(), loginMember))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("해당 조직의 구성원이 아닙니다.");
     }
 
     @Test
@@ -106,6 +144,36 @@ class EventNotificationOptOutServiceTest {
     }
 
     @Test
+    void 이벤트가_없으면_수신거부_취소시_예외가_발생한다() {
+        // given
+        var member = createMember("user", "user@mail.com");
+        var loginMember = new LoginMember(member.getId());
+        var nonExistentEventId = Long.MAX_VALUE;
+
+        // when // then
+        assertThatThrownBy(() -> sut.cancelOptOut(nonExistentEventId, loginMember))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 이벤트입니다.");
+    }
+
+    @Test
+    void 조직의_구성원이_아니면_수신거부_취소시_예외가_발생한다() {
+        // given
+        var org = createOrganization();
+        var event = createEvent(
+                createOrganizationMember("닉네임", createMember("user", "user@mail.com"), org),
+                org
+        );
+        var nonExistentMemberId = Long.MAX_VALUE;
+        var loginMember = new LoginMember(nonExistentMemberId);
+
+        // when // then
+        assertThatThrownBy(() -> sut.cancelOptOut(event.getId(), loginMember))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("해당 조직의 구성원이 아닙니다.");
+    }
+
+    @Test
     void 수신거부_정보가_없으면_취소시_예외가_발생한다() {
         // given
         var org = createOrganization();
@@ -119,6 +187,112 @@ class EventNotificationOptOutServiceTest {
         assertThatThrownBy(() -> sut.cancelOptOut(event.getId(), loginMember))
                 .isInstanceOf(BusinessFlowViolatedException.class)
                 .hasMessage("수신 거부 설정이 존재하지 않습니다.");
+    }
+
+    @Test
+    void 게스트_목록에_알람_수신_거부_정보를_매핑할_수_있다() {
+        // given
+        var organization = createOrganization();
+        var member1 = createMember("user1", "user1@mail.com");
+        var member2 = createMember("user2", "user2@mail.com");
+        var member3 = createMember("user3", "user3@mail.com");
+
+        var organizer = createOrganizationMember("닉네임1", member1, organization);
+        var orgMember1 = createOrganizationMember("닉네임2", member2, organization);
+        var orgMember2 = createOrganizationMember("닉네임3", member3, organization);
+
+        var event = createEvent(organizer, organization);
+
+        var guest1 = guestRepository.save(Guest.create(
+                event,
+                orgMember1,
+                LocalDateTime.now()
+                        .minusDays(2)
+        ));
+        var guest2 = guestRepository.save(Guest.create(
+                event,
+                orgMember2,
+                LocalDateTime.now()
+                        .minusDays(2)
+        ));
+        eventRepository.save(event);
+
+        optOutRepository.save(EventNotificationOptOut.create(orgMember2, event));
+
+        // when
+        var results = sut.mapGuests(List.of(guest1, guest2));
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(results)
+                    .hasSize(2);
+
+            softly.assertThat(results.get(0)
+                            .getGuest())
+                    .isEqualTo(guest1);
+            softly.assertThat(results.get(0)
+                            .isOptedOut())
+                    .isFalse();
+
+            softly.assertThat(results.get(1)
+                            .getGuest())
+                    .isEqualTo(guest2);
+            softly.assertThat(results.get(1)
+                            .isOptedOut())
+                    .isTrue();
+        });
+    }
+
+    @Test
+    void 조직원_목록에_알람_수신_거부_정보를_매핑할_수_있다() {
+        // given
+        var organization = createOrganization();
+        var member1 = createMember("user1", "user1@mail.com");
+        var member2 = createMember("user2", "user2@mail.com");
+
+        var orgMember1 = createOrganizationMember("닉네임1", member1, organization);
+        var orgMember2 = createOrganizationMember("닉네임2", member2, organization);
+
+        var event = createEvent(orgMember1, organization);
+
+        optOutRepository.save(EventNotificationOptOut.create(orgMember2, event));
+
+        // when
+        var results = sut.mapOrganizationMembers(event.getId(), List.of(orgMember1, orgMember2));
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(results)
+                    .hasSize(2);
+
+            softly.assertThat(results.get(0)
+                            .getOrganizationMember())
+                    .isEqualTo(orgMember1);
+            softly.assertThat(results.get(0)
+                            .isOptedOut())
+                    .isFalse();
+
+            softly.assertThat(results.get(1)
+                            .getOrganizationMember())
+                    .isEqualTo(orgMember2);
+            softly.assertThat(results.get(1)
+                            .isOptedOut())
+                    .isTrue();
+        });
+    }
+
+    @Test
+    void 이벤트가_없으면_조직원_수신거부_정보_매핑시_예외가_발생한다() {
+        // given
+        var member = createMember("user", "user@mail.com");
+        var org = createOrganization();
+        var orgMember = createOrganizationMember("닉네임", member, org);
+        var nonExistentEventId = Long.MAX_VALUE;
+
+        // when // then
+        assertThatThrownBy(() -> sut.mapOrganizationMembers(nonExistentEventId, List.of(orgMember)))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 이벤트입니다.");
     }
 
     private Organization createOrganization() {

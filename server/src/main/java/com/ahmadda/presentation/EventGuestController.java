@@ -1,12 +1,17 @@
 package com.ahmadda.presentation;
 
 import com.ahmadda.application.EventGuestService;
+import com.ahmadda.application.EventNotificationOptOutService;
 import com.ahmadda.application.EventService;
 import com.ahmadda.application.dto.EventParticipateRequest;
 import com.ahmadda.application.dto.GuestAnswerResponse;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.Answer;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.Guest;
+import com.ahmadda.domain.GuestWithOptOut;
+import com.ahmadda.domain.OrganizationMember;
+import com.ahmadda.domain.OrganizationMemberWithOptOut;
 import com.ahmadda.presentation.dto.EventDetailResponse;
 import com.ahmadda.presentation.dto.GuestStatusResponse;
 import com.ahmadda.presentation.dto.GuestWithOptOutResponse;
@@ -42,6 +47,7 @@ public class EventGuestController {
 
     private final EventGuestService eventGuestService;
     private final EventService eventService;
+    private final EventNotificationOptOutService eventNotificationOptOutService;
 
     @Operation(summary = "이벤트 게스트 목록 및 알림 수신 거부 여부 조회", description = "해당 이벤트에 참여한 게스트 목록과, 각 게스트의 알림 수신 거부 여부를 조회합니다.")
     @ApiResponses(value = {
@@ -105,7 +111,12 @@ public class EventGuestController {
             @PathVariable final Long eventId,
             @AuthMember final LoginMember loginMember
     ) {
-        List<GuestWithOptOutResponse> responses = eventGuestService.getGuestsWithOptOut(eventId, loginMember);
+        List<Guest> guestMembers = eventGuestService.getGuests(eventId, loginMember);
+        List<GuestWithOptOut> guestsWithOptOuts = eventNotificationOptOutService.mapGuests(guestMembers);
+
+        List<GuestWithOptOutResponse> responses = guestsWithOptOuts.stream()
+                .map(GuestWithOptOutResponse::from)
+                .toList();
 
         return ResponseEntity.ok(responses);
     }
@@ -172,9 +183,15 @@ public class EventGuestController {
             @PathVariable final Long eventId,
             @AuthMember final LoginMember loginMember
     ) {
-        List<OrganizationMemberWithOptOutResponse> responses =
-                eventGuestService.getNonGuestOrganizationMembersWithOptOut(eventId, loginMember);
+        List<OrganizationMember> nonGuestMembers =
+                eventGuestService.getNonGuestOrganizationMembers(eventId, loginMember);
+        List<OrganizationMemberWithOptOut> nonGuestsWithOptOuts =
+                eventNotificationOptOutService.mapOrganizationMembers(eventId, nonGuestMembers);
 
+        List<OrganizationMemberWithOptOutResponse> responses = nonGuestsWithOptOuts.stream()
+                .map(OrganizationMemberWithOptOutResponse::from)
+                .toList();
+        
         return ResponseEntity.ok(responses);
     }
 

@@ -1,7 +1,6 @@
 package com.ahmadda.presentation.dto;
 
-import com.ahmadda.domain.Guest;
-import com.ahmadda.domain.OrganizationMember;
+import com.ahmadda.domain.GuestWithOptOut;
 
 public record GuestWithOptOutResponse(
         Long guestId,
@@ -10,14 +9,17 @@ public record GuestWithOptOutResponse(
         boolean optedOut
 ) {
 
-    public static GuestWithOptOutResponse from(final Guest guest, final boolean optedOut) {
-        OrganizationMember organizationMember = guest.getOrganizationMember();
-
+    public static GuestWithOptOutResponse from(final GuestWithOptOut guestWithOptOut) {
         return new GuestWithOptOutResponse(
-                guest.getId(),
-                organizationMember.getId(),
-                organizationMember.getNickname(),
-                optedOut
+                guestWithOptOut.getGuest()
+                        .getId(),
+                guestWithOptOut.getGuest()
+                        .getOrganizationMember()
+                        .getId(),
+                guestWithOptOut.getGuest()
+                        .getOrganizationMember()
+                        .getNickname(),
+                guestWithOptOut.isOptedOut()
         );
     }
 }

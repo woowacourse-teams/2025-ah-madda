@@ -1,6 +1,6 @@
 package com.ahmadda.presentation.dto;
 
-import com.ahmadda.domain.OrganizationMember;
+import com.ahmadda.domain.OrganizationMemberWithOptOut;
 
 public record OrganizationMemberWithOptOutResponse(
         Long organizationMemberId,
@@ -8,14 +8,13 @@ public record OrganizationMemberWithOptOutResponse(
         boolean optedOut
 ) {
 
-    public static OrganizationMemberWithOptOutResponse from(
-            final OrganizationMember organizationMember,
-            final boolean optedOut
-    ) {
+    public static OrganizationMemberWithOptOutResponse from(final OrganizationMemberWithOptOut organizationMemberWithOptOut) {
         return new OrganizationMemberWithOptOutResponse(
-                organizationMember.getId(),
-                organizationMember.getNickname(),
-                optedOut
+                organizationMemberWithOptOut.getOrganizationMember()
+                        .getId(),
+                organizationMemberWithOptOut.getOrganizationMember()
+                        .getNickname(),
+                organizationMemberWithOptOut.isOptedOut()
         );
     }
 }
