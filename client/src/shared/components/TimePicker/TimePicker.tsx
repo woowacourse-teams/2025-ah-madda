@@ -1,13 +1,14 @@
+import {
+  createTimeFromHour,
+  createTimeFromMinute,
+  generateHourOptions,
+  generateMinuteOptions,
+} from '@/shared/utils/timePicker';
+
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 
 import { StyledSelect, StyledTimePicker } from './TimePicker.styled';
-import {
-  generateHourOptions,
-  generateMinuteOptions,
-  createTimeFromHour,
-  createTimeFromMinute,
-} from './utils';
 
 type TimePickerProps = {
   selectedTime?: Date;

@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 import { theme } from '@/shared/styles/theme';
@@ -18,48 +17,23 @@ export const DateButton = styled(Button)<DateButtonProps>`
   width: 32px;
   height: 32px;
   transition: all 0.2s ease;
-  background-color: white;
+  background-color: ${({ isToday, isSelected, isInRange }) => {
+    if (isSelected) return theme.colors.primary300;
+    if (isInRange) return theme.colors.primary100;
+    if (isToday) return theme.colors.gray100;
+    return 'white';
+  }};
+  color: ${({ isCurrentMonth, isWeekend, isToday, isSelected, isInRange }) => {
+    if (isSelected) return 'white';
+    if (isInRange) return theme.colors.primary600;
+    if (isToday) return theme.colors.gray900;
+    if (!isCurrentMonth) return theme.colors.gray400;
+    return isWeekend ? theme.colors.red500 : theme.colors.gray900;
+  }};
 
-  ${({ isCurrentMonth }) =>
-    !isCurrentMonth &&
-    css`
-      color: ${theme.colors.gray400};
-    `}
-
-  ${({ isCurrentMonth, isWeekend }) =>
-    isCurrentMonth &&
-    css`
-      color: ${isWeekend ? `${theme.colors.red500}` : `${theme.colors.gray900}`};
-    `}
-  
-  ${({ isToday }) =>
-    isToday &&
-    css`
-      background-color: ${theme.colors.gray100};
-      color: ${theme.colors.gray900};
-    `}
-  
-  
-  ${({ isSelected }) =>
-    isSelected &&
-    css`
-      background-color: ${theme.colors.primary300};
-      color: white;
-    `}
-  
-  ${({ isInRange }) =>
-    isInRange &&
-    css`
-      background-color: ${theme.colors.primary100};
-      color: ${theme.colors.primary600};
-    `}
-  
   &:hover {
-    ${({ isSelected }) =>
-      !isSelected &&
-      css`
-        background-color: ${theme.colors.gray100};
-      `}
+    background-color: ${({ isSelected }) =>
+      isSelected ? theme.colors.primary300 : theme.colors.gray100};
   }
 `;
 
