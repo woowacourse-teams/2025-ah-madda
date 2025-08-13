@@ -141,7 +141,7 @@ public class EventNotificationController {
                                               "title": "Unauthorized",
                                               "status": 401,
                                               "detail": "유효하지 않은 인증 정보 입니다.",
-                                              "instance": "/api/events/{eventId}/notify/history"
+                                              "instance": "/api/events/{eventId}/notification/history"
                                             }
                                             """
                             )
@@ -157,7 +157,7 @@ public class EventNotificationController {
                                               "title": "Forbidden",
                                               "status": 403,
                                               "detail": "리마인더 히스토리는 이벤트의 주최자만 조회할 수 있습니다.",
-                                              "instance": "/api/events/{eventId}/notify/history"
+                                              "instance": "/api/events/{eventId}/notification/history"
                                             }
                                             """
                             )
@@ -175,7 +175,7 @@ public class EventNotificationController {
                                                       "title": "Not Found",
                                                       "status": 404,
                                                       "detail": "존재하지 않는 이벤트입니다.",
-                                                      "instance": "/api/events/{eventId}/notify/history"
+                                                      "instance": "/api/events/{eventId}/notification/history"
                                                     }
                                                     """
                                     ),
@@ -187,7 +187,7 @@ public class EventNotificationController {
                                                       "title": "Not Found",
                                                       "status": 404,
                                                       "detail": "존재하지 않는 조직원 정보입니다.",
-                                                      "instance": "/api/events/{eventId}/notify/history"
+                                                      "instance": "/api/events/{eventId}/notification/history"
                                                     }
                                                     """
                                     )
@@ -195,7 +195,7 @@ public class EventNotificationController {
                     )
             )
     })
-    @GetMapping("/{eventId}/notify/history")
+    @GetMapping("/{eventId}/notification/history")
     public ResponseEntity<List<ReminderHistorySummaryResponse>> getNotifyHistory(
             @PathVariable final Long eventId,
             @AuthMember final LoginMember loginMember
