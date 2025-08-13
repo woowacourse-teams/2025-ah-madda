@@ -2,7 +2,6 @@ package com.ahmadda.application;
 
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
-import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventNotificationOptOutRepository;
 import com.ahmadda.domain.EventOperationPeriod;
@@ -118,7 +117,7 @@ class EventNotificationOptOutServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.cancelOptOut(event.getId(), loginMember))
-                .isInstanceOf(NotFoundException.class)
+                .isInstanceOf(BusinessFlowViolatedException.class)
                 .hasMessage("수신 거부 설정이 존재하지 않습니다.");
     }
 
