@@ -292,23 +292,35 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
           </Flex>
 
           <Flex dir="column" gap="8px">
-            <label htmlFor="maxCapacity">
-              <Text type="Body">인원</Text>
-            </label>
-            <Input
-              id="maxCapacity"
-              name="maxCapacity"
-              value={
-                basicEventForm.maxCapacity === UNLIMITED_CAPACITY
-                  ? '제한없음'
-                  : `${basicEventForm.maxCapacity}명`
-              }
-              readOnly
+            <Button
+              type="button"
               onClick={capacityModalOpen}
+              aria-label="인원 설정"
               css={css`
+                width: 100%;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                gap: 12px;
+                padding: 4px 0;
+                border: 0;
+                background: transparent;
                 cursor: pointer;
+
+                &:hover {
+                  background: transparent !important;
+                }
               `}
-            />
+            >
+              <Text type="Body" weight="bold">
+                인원
+              </Text>
+              <Text as="span" type="Body" color="#4b5563" data-role="value">
+                {basicEventForm.maxCapacity === UNLIMITED_CAPACITY
+                  ? '제한없음 ✎'
+                  : `${basicEventForm.maxCapacity}명 ✎`}
+              </Text>
+            </Button>
 
             <MaxCapacityModal
               isOpen={isCapacityModalOpen}
