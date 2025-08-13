@@ -67,7 +67,6 @@ public class Organization extends BaseEntity {
     }
 
     public List<Event> getActiveEvents(final LocalDateTime currentDateTime) {
-
         return events.stream()
                 .filter((event) -> event.isRegistrationEnd(currentDateTime))
                 .toList();
@@ -87,6 +86,10 @@ public class Organization extends BaseEntity {
         }
 
         return OrganizationMember.create(nickname, member, this);
+    }
+
+    public boolean isExistOrganizationMember(final OrganizationMember otherOrganizationMember) {
+        return organizationMembers.contains(otherOrganizationMember);
     }
 
     private void validateName(final String name) {
