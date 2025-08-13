@@ -7,13 +7,13 @@ export const StyledWrapper = styled.div`
 `;
 
 export const StyledTextarea = styled.textarea<{ isError: boolean }>`
-  background-color: #f7f7f8;
+  background-color: ${theme.colors.gray50};
   border-radius: 8px;
-  padding: 12px;
-  border: none;
+  padding: 16px;
+  border: 1px solid ${theme.colors.gray200};
   font-size: 14px;
   width: 100%;
-  min-height: 96px;
+  min-height: 100px;
   resize: vertical;
   line-height: 1.5;
 
