@@ -75,7 +75,7 @@ describe('OverView 페이지 테스트', async () => {
     });
 
     renderOverViewPage();
-    screen.debug(document.body, Infinity);
+
     expect(await screen.findByText('등록된 이벤트가 없습니다.')).toBeInTheDocument();
   });
 });
