@@ -255,7 +255,6 @@ public class EventNotificationController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
-                                            name = "포키 전송 제한",
                                             value = """
                                                     {
                                                       "type": "about:blank",
@@ -267,7 +266,6 @@ public class EventNotificationController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "주최자 대상 제한",
                                             value = """
                                                     {
                                                       "type": "about:blank",
@@ -279,7 +277,6 @@ public class EventNotificationController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "자기 자신 대상 제한",
                                             value = """
                                                     {
                                                       "type": "about:blank",
@@ -291,7 +288,6 @@ public class EventNotificationController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "조직 참여 필수",
                                             value = """
                                                     {
                                                       "type": "about:blank",
@@ -303,7 +299,6 @@ public class EventNotificationController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "대상 조직 참여 필수",
                                             value = """
                                                     {
                                                       "type": "about:blank",
