@@ -10,6 +10,7 @@ import {
   StatisticsAPIResponse,
   EventTemplateAPIResponse,
   EventTitleAPIResponse,
+  NotifyHistoryAPIResponse,
 } from '../types/event';
 import { NotificationAPIRequest } from '../types/notification';
 
@@ -30,6 +31,7 @@ export const eventQueryKeys = {
   statistic: () => [...eventQueryKeys.all(), 'statistic'],
   titles: () => [...eventQueryKeys.all(), 'titles'],
   template: () => [...eventQueryKeys.all(), 'template'],
+  history: () => [...eventQueryKeys.all(), 'history'],
 };
 
 export const eventQueryOptions = {
@@ -82,6 +84,11 @@ export const eventQueryOptions = {
       queryKey: [...eventQueryKeys.template(), eventId],
       queryFn: () => getEventTemplate(eventId),
     }),
+  history: (eventId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.history(), eventId],
+      queryFn: () => getNotifyHistory(eventId),
+    }),
 };
 
 const getGuests = async (eventId: number) => {
@@ -124,4 +131,8 @@ const getEventTemplate = async (eventId: number) => {
   return await fetcher.get<EventTemplateAPIResponse>(
     `organizations/events/${eventId}/owned/template`
   );
+};
+
+const getNotifyHistory = async (eventId: number) => {
+  return await fetcher.get<NotifyHistoryAPIResponse[]>(`events/${eventId}/notify/history`);
 };
