@@ -14,7 +14,7 @@ import { Textarea } from '@/shared/components/Textarea';
 import { useModal } from '@/shared/hooks/useModal';
 import { trackCreateEvent } from '@/shared/lib/gaEvents';
 
-import { UNLIMITED_CAPACITY } from '../constants/errorMessages';
+import { MAX_LENGTH, UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useBasicEventForm } from '../hooks/useBasicEventForm';
 import { useQuestionForm } from '../hooks/useQuestionForm';
@@ -235,6 +235,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 value={basicEventForm.description}
                 onChange={handleChange}
                 errorMessage={errors.description}
+                showCounter
+                maxLength={MAX_LENGTH.DESCRIPTION}
               />
             </Flex>
 

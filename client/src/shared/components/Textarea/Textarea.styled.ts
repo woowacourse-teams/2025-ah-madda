@@ -29,3 +29,16 @@ export const StyledHelperText = styled.p<{ isError: boolean }>`
   min-height: 18px;
   color: ${({ isError }) => (isError ? theme.colors.red300 : theme.colors.gray400)};
 `;
+
+export const StyledFooterRow = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 6px;
+`;
+
+export const StyledCounterText = styled.span`
+  margin-left: auto;
+  font-size: 12px;
+  color: #99a1af;
+  white-space: nowrap;
+`;
