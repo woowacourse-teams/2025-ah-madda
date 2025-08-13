@@ -89,6 +89,8 @@ const GuestBadge = styled.li`
   padding: 4px 12px;
   border-radius: 8px;
   cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
 `;
 
 const BouncingMessageElement = styled.span`
