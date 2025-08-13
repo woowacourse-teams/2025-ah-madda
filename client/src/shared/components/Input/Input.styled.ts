@@ -75,3 +75,14 @@ export const StyledCalendarButton = styled.button`
   align-items: center;
   cursor: pointer;
 `;
+
+export const StyledFooterRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const StyledCounterText = styled.p`
+  font-size: 14px;
+  color: ${theme.colors.gray400};
+`;

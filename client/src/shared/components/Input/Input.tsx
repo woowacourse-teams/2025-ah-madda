@@ -10,6 +10,8 @@ import {
   StyledHelperText,
   StyledFieldWrapper,
   StyledCalendarButton,
+  StyledCounterText,
+  StyledFooterRow,
 } from './Input.styled';
 
 export type InputProps = {
@@ -42,6 +44,9 @@ export type InputProps = {
    * Message displayed when the input is invalid.
    */
   errorMessage?: string;
+
+  /** Show character counter (uses maxLength) */
+  showCounter?: boolean;
 } & ComponentProps<'input'>;
 
 export const Input = ({
@@ -50,16 +55,25 @@ export const Input = ({
   helperText,
   isRequired = false,
   errorMessage,
+  showCounter = false,
   ...props
 }: InputProps) => {
   const isError = !!errorMessage;
+
   const isDateLike = props.type === 'datetime-local';
+
+  const hasMax = typeof props.maxLength === 'number' && props.maxLength > 0;
+  const shouldShowCounter = showCounter && hasMax && !isDateLike;
+
+  const raw = (props.value ?? props.defaultValue ?? '') as string | number;
+  const currentLength =
+    typeof raw === 'string' ? raw.length : typeof raw === 'number' ? String(raw).length : 0;
+  const displayLength = hasMax ? Math.min(currentLength, props.maxLength as number) : currentLength;
+
   const inputRef = useRef<HTMLInputElement>(null);
   const openPicker = () => {
-    if (inputRef.current) {
-      inputRef.current.showPicker?.();
-      inputRef.current.focus();
-    }
+    inputRef.current?.showPicker?.();
+    inputRef.current?.focus?.();
   };
 
   return (
@@ -78,9 +92,17 @@ export const Input = ({
         <StyledInput id={id} ref={inputRef} isError={isError} hasLeftIcon={isDateLike} {...props} />
       </StyledFieldWrapper>
 
-      <StyledHelperText isError={isError}>
-        {isError ? (errorMessage ?? ' ') : (helperText ?? ' ')}
-      </StyledHelperText>
+      <StyledFooterRow>
+        <StyledHelperText isError={isError}>
+          {isError ? (errorMessage ?? ' ') : (helperText ?? ' ')}
+        </StyledHelperText>
+
+        {shouldShowCounter && (
+          <StyledCounterText>
+            ({displayLength}/{props.maxLength})
+          </StyledCounterText>
+        )}
+      </StyledFooterRow>
     </StyledWrapper>
   );
 };

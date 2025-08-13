@@ -12,7 +12,7 @@ import { Text } from '@/shared/components/Text';
 import { useModal } from '@/shared/hooks/useModal';
 import { trackCreateEvent } from '@/shared/lib/gaEvents';
 
-import { UNLIMITED_CAPACITY } from '../constants/errorMessages';
+import { MAX_LENGTH, UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useBasicEventForm } from '../hooks/useBasicEventForm';
 import { useQuestionForm } from '../hooks/useQuestionForm';
@@ -151,6 +151,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
             onChange={handleChange}
             errorMessage={errors.title}
             isRequired
+            showCounter
+            maxLength={MAX_LENGTH.TITLE}
           />
 
           <Flex
@@ -223,6 +225,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               value={basicEventForm.place}
               onChange={handleChange}
               errorMessage={errors.place}
+              showCounter
+              maxLength={MAX_LENGTH.PLACE}
             />
           </Flex>
 
@@ -234,6 +238,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
             value={basicEventForm.description}
             onChange={handleChange}
             errorMessage={errors.description}
+            showCounter
+            maxLength={MAX_LENGTH.DESCRIPTION}
           />
 
           <Input
