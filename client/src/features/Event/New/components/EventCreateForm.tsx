@@ -19,7 +19,12 @@ import { useBasicEventForm } from '../hooks/useBasicEventForm';
 import { useQuestionForm } from '../hooks/useQuestionForm';
 import { useTemplateLoader } from '../hooks/useTemplateLoader';
 import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
-import { formatDateForInput, parseInputDate, setTimeToDate } from '../utils/dateUtils';
+import {
+  formatDateForInput,
+  formatDateForDisplay,
+  parseInputDate,
+  setTimeToDate,
+} from '../utils/dateUtils';
 
 import { DatePickerDropdown } from './DatePickerDropdown';
 import { MaxCapacityModal } from './MaxCapacityModal';
@@ -222,7 +227,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 label="이벤트 기간"
                 value={
                   basicEventForm.eventStart && basicEventForm.eventEnd
-                    ? `${basicEventForm.eventStart.replace('T', ' ')} ~ ${basicEventForm.eventEnd.replace('T', ' ')}`
+                    ? `${formatDateForDisplay(basicEventForm.eventStart)} ~ ${formatDateForDisplay(basicEventForm.eventEnd)}`
                     : ''
                 }
                 placeholder="이벤트 시작일과 종료일을 선택해주세요"
@@ -256,7 +261,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 label="신청 종료일"
                 value={
                   basicEventForm.registrationEnd
-                    ? basicEventForm.registrationEnd.replace('T', ' ')
+                    ? formatDateForDisplay(basicEventForm.registrationEnd)
                     : ''
                 }
                 placeholder="신청 종료일과 시간을 선택해주세요"
