@@ -117,5 +117,46 @@ describe('EventManagePage 테스트', () => {
         onError: expect.any(Function),
       });
     });
+
+    test('마감 성공 후 신청 마감일이 변경되어 표시되고 버튼이 "마감됨"으로 바뀐다', async () => {
+      setupMockConfirm(true);
+      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+
+      renderEventManagePage();
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            (content) => content.startsWith('신청 마감:') && content.includes('2025.')
+          )
+        ).toBeInTheDocument();
+        expect(screen.getByText('마감하기')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('마감하기'));
+      expect(mockMutate).toHaveBeenCalled();
+
+      const updatedEventDetail = { ...mockEventDetail, registrationEnd: '2000-01-01T00:00:00' };
+      mockFetcher.get.mockImplementation((url: string) => {
+        if (url.includes('organizations/events/123')) {
+          return Promise.resolve(updatedEventDetail);
+        }
+        return Promise.reject(new Error(`API 호출 실패: ${url}`));
+      });
+
+      const [, options] = mockMutate.mock.calls[0] as [number, { onSuccess: () => void }];
+      options.onSuccess();
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            (content) => content.startsWith('신청 마감:') && content.includes('2000.')
+          )
+        ).toBeInTheDocument();
+        expect(screen.getByText('마감됨')).toBeInTheDocument();
+      });
+
+      alertSpy.mockRestore();
+    });
   });
 });
