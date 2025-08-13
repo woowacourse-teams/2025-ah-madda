@@ -4,7 +4,6 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventOperationPeriod;
-import com.ahmadda.domain.EventPokeReminder;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
@@ -12,8 +11,9 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.domain.Poke;
 import com.ahmadda.domain.PushNotifier;
-import com.ahmadda.presentation.dto.NotifyPokeRequest;
+import com.ahmadda.presentation.dto.PokeRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,10 +32,10 @@ import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @Transactional
-class EventPokeServiceTest {
+class PokeServiceTest {
 
     @Autowired
-    private EventPokeService sut;
+    private PokeService sut;
 
     @Autowired
     private EventRepository eventRepository;
@@ -50,7 +50,7 @@ class EventPokeServiceTest {
     private OrganizationRepository organizationRepository;
 
     @Autowired
-    private EventPokeReminder eventPokeReminder;
+    private Poke poke;
 
     @MockitoBean
     private PushNotifier pushNotifier;
@@ -66,7 +66,7 @@ class EventPokeServiceTest {
         var event = createEvent("테스트 이벤트", "이벤트 설명", "테스트 장소", organizer, organization);
 
         var eventId = event.getId();
-        var request = new NotifyPokeRequest(participant.getId());
+        var request = new PokeRequest(participant.getId());
         var loginMember = new LoginMember(organizer.getId());
 
         // when
@@ -86,7 +86,7 @@ class EventPokeServiceTest {
         var participant = createOrganizationMember("참여자", participantMember, organization);
 
         var nonExistentEventId = 999L;
-        var request = new NotifyPokeRequest(participant.getId());
+        var request = new PokeRequest(participant.getId());
         var loginMember = new LoginMember(organizer.getId());
 
         // when // then
@@ -104,13 +104,13 @@ class EventPokeServiceTest {
         var event = createEvent("테스트 이벤트", "이벤트 설명", "테스트 장소", organizer, organization);
 
         var eventId = event.getId();
-        var request = new NotifyPokeRequest(999L); // 존재하지 않는 수신자 ID
+        var request = new PokeRequest(999L); // 존재하지 않는 수신자 ID
         var loginMember = new LoginMember(organizer.getId());
 
         // when // then
         assertThatThrownBy(() -> sut.poke(eventId, request, loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("조직원을 찾는데 실패하였습니다.");
+                .hasMessage("존재하지 않는 조직원입니다.");
     }
 
     @Test
@@ -124,13 +124,13 @@ class EventPokeServiceTest {
         var event = createEvent("테스트 이벤트", "이벤트 설명", "테스트 장소", organizer, organization);
 
         var eventId = event.getId();
-        var request = new NotifyPokeRequest(participant.getId());
+        var request = new PokeRequest(participant.getId());
         var loginMember = new LoginMember(999L);
 
         // when // then
         assertThatThrownBy(() -> sut.poke(eventId, request, loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("조직원을 찾는데 실패하였습니다.");
+                .hasMessage("존재하지 않는 조직원입니다.");
     }
 
     @Test
@@ -148,13 +148,13 @@ class EventPokeServiceTest {
         var otherOrganizationMember = createOrganizationMember("다른 조직원", otherMember, otherOrganization);
 
         var eventId = event.getId();
-        var request = new NotifyPokeRequest(participant.getId());
+        var request = new PokeRequest(participant.getId());
         var loginMember = new LoginMember(otherMember.getId());
 
         // when // then
         assertThatThrownBy(() -> sut.poke(eventId, request, loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("조직원을 찾는데 실패하였습니다.");
+                .hasMessage("존재하지 않는 조직원입니다.");
     }
 
     private Organization createOrganization(String name, String description, String imageUrl) {

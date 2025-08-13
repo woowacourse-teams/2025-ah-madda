@@ -17,10 +17,10 @@ import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Transactional
-class EventPokeReminderTest {
+class PokeTest {
 
     @Autowired
-    private EventPokeReminder sut;
+    private Poke sut;
 
     @Autowired
     private EventRepository eventRepository;
@@ -35,7 +35,7 @@ class EventPokeReminderTest {
     private OrganizationMemberRepository organizationMemberRepository;
 
     @Autowired
-    private EventPokeRepository eventPokeRepository;
+    private PokeHistoryRepository pokeHistoryRepository;
 
     @MockitoBean
     private PushNotifier pushNotifier;
@@ -58,11 +58,11 @@ class EventPokeReminderTest {
         var now = LocalDateTime.now();
 
         for (int i = 0; i < 10; i++) {
-            eventPokeRepository.save(EventPoke.create(sender, recipient, event, now.minusMinutes(i)));
+            pokeHistoryRepository.save(PokeHistory.create(sender, recipient, event, now.minusMinutes(i)));
         }
 
         // when // then
-        assertThatThrownBy(() -> sut.sendPoke(sender, recipient, event, now))
+        assertThatThrownBy(() -> sut.doPoke(sender, recipient, event, now))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage("포키는 30분마다 한 대상에게 최대 10번만 보낼 수 있습니다.");
     }
@@ -85,10 +85,10 @@ class EventPokeReminderTest {
         var now = LocalDateTime.now();
 
         // when
-        sut.sendPoke(sender, recipient, event, now);
+        sut.doPoke(sender, recipient, event, now);
 
         // then
-        var histories = eventPokeRepository.findAll();
+        var histories = pokeHistoryRepository.findAll();
         assertThat(histories).hasSize(1);
         var history = histories.get(0);
         assertThat(history.getSender()).isEqualTo(sender);

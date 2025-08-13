@@ -2,7 +2,7 @@ package com.ahmadda.presentation.dto;
 
 import jakarta.validation.constraints.NotNull;
 
-public record NotifyPokeRequest(
+public record PokeRequest(
         @NotNull
         Long receiptOrganizationMemberId
 ) {
