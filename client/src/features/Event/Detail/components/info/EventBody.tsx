@@ -1,10 +1,8 @@
-import { useState } from 'react';
-
 import { GuestStatusAPIResponse, OrganizerStatusAPIResponse } from '@/api/types/event';
-import { Answer } from '@/api/types/event';
 import { Flex } from '@/shared/components/Flex';
 
 import { EventDetail } from '../../../types/Event';
+import { useAnswers } from '../../hooks/useAnswers';
 import { SubmitButtonCard } from '../SubmitButtonCard';
 
 import { EventDetails } from './EventDetails';
@@ -23,18 +21,7 @@ export const EventBody = ({
   isGuest,
   organizerName,
 }: EventBodyProps) => {
-  const [answers, setAnswers] = useState<Answer[]>(
-    questions.map(({ questionId }) => ({
-      questionId,
-      answerText: '',
-    }))
-  );
-
-  const handleChangeAnswer = (questionId: number, answerText: string) => {
-    setAnswers((prev) =>
-      prev.map((answer) => (answer.questionId === questionId ? { ...answer, answerText } : answer))
-    );
-  };
+  const { answers, handleChangeAnswer, resetAnswers } = useAnswers(questions);
 
   return (
     <Flex dir="column" gap="24px" width="100%">
@@ -56,9 +43,10 @@ export const EventBody = ({
       {!isOrganizer && (
         <SubmitButtonCard
           isGuest={isGuest}
-          registrationEnd={registrationEnd}
           eventId={eventId}
+          registrationEnd={registrationEnd}
           answers={answers}
+          onResetAnswers={resetAnswers}
         />
       )}
     </Flex>
