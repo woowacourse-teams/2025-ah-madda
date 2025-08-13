@@ -38,10 +38,10 @@ public class Poke {
     }
 
     private void validateDuplicateDoPoke(
-            OrganizationMember sender,
-            OrganizationMember recipient,
-            Event event,
-            LocalDateTime sentAt
+            final OrganizationMember sender,
+            final OrganizationMember recipient,
+            final Event event,
+            final LocalDateTime sentAt
     ) {
         LocalDateTime findDuplicateStartTime = sentAt.minus(DUPLICATE_POKE_COUNT_MINUTES);
 
