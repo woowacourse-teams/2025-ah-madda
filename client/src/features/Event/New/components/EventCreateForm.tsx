@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +12,7 @@ import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
+import { useAutoSessionSave } from '@/shared/hooks/useAutoSessionSave';
 import { useModal } from '@/shared/hooks/useModal';
 import { trackCreateEvent } from '@/shared/lib/gaEvents';
 
@@ -67,6 +70,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     deleteQuestion,
     updateQuestion,
     isValid: isQuestionValid,
+    loadQuestions,
   } = useQuestionForm();
 
   const isFormReady = isBasicFormValid && isQuestionValid;
@@ -93,9 +97,27 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     registrationEnd: convertDatetimeLocalToKSTISOString(basicEventForm.registrationEnd),
   });
 
+  const autoSaveKey =
+    isEdit && eventId ? `event-form:draft:edit:${eventId}` : 'event-form:draft:create';
+
+  const { restore, clear } = useAutoSessionSave({
+    key: autoSaveKey,
+    data: { basicEventForm, questions },
+  });
+
+  useEffect(() => {
+    const draft = restore();
+    if (!draft) return;
+
+    if (draft.basicEventForm) loadFormData(draft.basicEventForm);
+    if (draft.questions) loadQuestions(draft.questions);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const submitCreate = (payload: ReturnType<typeof buildPayload>) => {
     addEvent(payload, {
       onSuccess: ({ eventId }) => {
+        clear();
         trackCreateEvent();
         alert('😁 이벤트가 성공적으로 생성되었습니다!');
         navigate(`/event/${eventId}`);
@@ -109,6 +131,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       { eventId, payload },
       {
         onSuccess: () => {
+          clear();
           alert('😁 이벤트가 성공적으로 수정되었습니다!');
           navigate(`/event/${eventId}`);
         },
