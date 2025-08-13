@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
@@ -19,7 +19,6 @@ type SingleDatePickerDropdownProps = {
   onSelect: (date: Date, time?: Date) => void;
   initialDate?: Date | null;
   initialTime?: Date;
-  maxDate?: Date | null;
 };
 
 export const SingleDatePickerDropdown = ({
