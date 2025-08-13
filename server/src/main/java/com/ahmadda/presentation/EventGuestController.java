@@ -7,12 +7,10 @@ import com.ahmadda.application.dto.GuestAnswerResponse;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.Answer;
 import com.ahmadda.domain.Event;
-import com.ahmadda.domain.Guest;
-import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.presentation.dto.EventDetailResponse;
-import com.ahmadda.presentation.dto.GuestResponse;
 import com.ahmadda.presentation.dto.GuestStatusResponse;
-import com.ahmadda.presentation.dto.OrganizationMemberResponse;
+import com.ahmadda.presentation.dto.GuestWithOptOutResponse;
+import com.ahmadda.presentation.dto.OrganizationMemberWithOptOutResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -45,14 +43,12 @@ public class EventGuestController {
     private final EventGuestService eventGuestService;
     private final EventService eventService;
 
-    @Operation(summary = "이벤트 게스트 목록 조회", description = "해당 이벤트에 참여한 게스트 목록을 조회합니다.")
+    @Operation(summary = "이벤트 게스트 목록 및 알림 수신 거부 여부 조회", description = "해당 이벤트에 참여한 게스트 목록과, 각 게스트의 알림 수신 거부 여부를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
                     content = @Content(
-                            schema = @Schema(
-                                    implementation = GuestResponse.class
-                            )
+                            array = @ArraySchema(schema = @Schema(implementation = GuestWithOptOutResponse.class))
                     )
             ),
             @ApiResponse(
@@ -105,27 +101,21 @@ public class EventGuestController {
             )
     })
     @GetMapping("/{eventId}/guests")
-    public ResponseEntity<List<GuestResponse>> getGuests(
+    public ResponseEntity<List<GuestWithOptOutResponse>> getGuests(
             @PathVariable final Long eventId,
             @AuthMember final LoginMember loginMember
     ) {
-        List<Guest> guestMembers = eventGuestService.getGuests(eventId, loginMember);
-
-        List<GuestResponse> responses = guestMembers.stream()
-                .map(GuestResponse::from)
-                .toList();
+        List<GuestWithOptOutResponse> responses = eventGuestService.getGuestsWithOptOut(eventId, loginMember);
 
         return ResponseEntity.ok(responses);
     }
 
-    @Operation(summary = "이벤트 미참여 조직원 목록 조회", description = "해당 이벤트에 아직 참여하지 않은 조직원 목록을 조회합니다.")
+    @Operation(summary = "이벤트 미참여 조직원 목록 및 알림 수신 거부 여부 조회", description = "해당 이벤트에 아직 참여하지 않은 조직원 목록과, 각 조직원의 알림 수신 거부 여부를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
                     content = @Content(
-                            schema = @Schema(
-                                    implementation = OrganizationMemberResponse.class
-                            )
+                            array = @ArraySchema(schema = @Schema(implementation = OrganizationMemberWithOptOutResponse.class))
                     )
             ),
             @ApiResponse(
@@ -178,16 +168,12 @@ public class EventGuestController {
             )
     })
     @GetMapping("/{eventId}/non-guests")
-    public ResponseEntity<List<OrganizationMemberResponse>> getNonGuests(
+    public ResponseEntity<List<OrganizationMemberWithOptOutResponse>> getNonGuests(
             @PathVariable final Long eventId,
             @AuthMember final LoginMember loginMember
     ) {
-        List<OrganizationMember> nonGuestMembers =
-                eventGuestService.getNonGuestOrganizationMembers(eventId, loginMember);
-
-        List<OrganizationMemberResponse> responses = nonGuestMembers.stream()
-                .map(OrganizationMemberResponse::from)
-                .toList();
+        List<OrganizationMemberWithOptOutResponse> responses =
+                eventGuestService.getNonGuestOrganizationMembersWithOptOut(eventId, loginMember);
 
         return ResponseEntity.ok(responses);
     }
