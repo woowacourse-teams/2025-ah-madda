@@ -17,8 +17,8 @@ import { trackCreateEvent } from '@/shared/lib/gaEvents';
 import { UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useBasicEventForm } from '../hooks/useBasicEventForm';
+import { usePastEventLoader } from '../hooks/usePastEventLoader';
 import { useQuestionForm } from '../hooks/useQuestionForm';
-import { useTemplateLoader } from '../hooks/useTemplateLoader';
 import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
 
 import { MaxCapacityModal } from './MaxCapacityModal';
@@ -36,7 +36,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const navigate = useNavigate();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
   const { mutate: updateEvent } = useUpdateEvent();
-  const { mutate: addTemplate } = useAddTemplate();
+  const { mutate: loadPastEvent } = useAddTemplate();
   const { data: eventDetail } = useQuery({
     queryKey: ['event', 'detail', Number(eventId)],
     queryFn: () => getEventDetailAPI(Number(eventId)),
@@ -73,10 +73,10 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
 
   const isFormReady = isBasicFormValid && isQuestionValid;
 
-  const { template, selectedEventId, handleSelectEvent } = useTemplateLoader();
+  const { pastEventList, selectedEventId, handleSelectEvent } = usePastEventLoader();
 
   const handleTemplateLoad = () => {
-    loadFormData(template ?? {});
+    loadFormData(pastEventList ?? {});
   };
 
   const handleError = (error: unknown) => {
@@ -132,8 +132,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     }
   };
 
-  const handleAddTemplate = () => {
-    addTemplate(
+  const handleLoadPastEvent = () => {
+    loadPastEvent(
       {
         title: basicEventForm.title,
         description: basicEventForm.description,
@@ -172,7 +172,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
           <Flex justifyContent="space-between">
             <Text type="Heading">기본 질문</Text>
             <Flex
-              onClick={handleAddTemplate}
+              onClick={handleLoadPastEvent}
               css={css`
                 cursor: pointer;
               `}

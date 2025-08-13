@@ -4,11 +4,11 @@ import { useQuery } from '@tanstack/react-query';
 
 import { eventQueryOptions } from '@/api/queries/event';
 
-export const useTemplateLoader = () => {
+export const usePastEventLoader = () => {
   const [selectedEventId, setSelectedEventId] = useState(0);
 
-  const { data: template } = useQuery({
-    ...eventQueryOptions.template(selectedEventId),
+  const { data: pastEventList } = useQuery({
+    ...eventQueryOptions.pastEventList(selectedEventId),
     enabled: !!selectedEventId,
   });
 
@@ -19,6 +19,6 @@ export const useTemplateLoader = () => {
   return {
     selectedEventId,
     handleSelectEvent,
-    template,
+    pastEventList,
   };
 };

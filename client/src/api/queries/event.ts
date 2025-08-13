@@ -11,6 +11,7 @@ import {
   EventTemplateAPIResponse,
   EventTitleAPIResponse,
   NotifyHistoryAPIResponse,
+  TemplateListAPIResponse,
 } from '../types/event';
 import { NotificationAPIRequest } from '../types/notification';
 
@@ -30,8 +31,9 @@ export const eventQueryKeys = {
   cancel: () => [...eventQueryKeys.all(), 'cancel'],
   statistic: () => [...eventQueryKeys.all(), 'statistic'],
   titles: () => [...eventQueryKeys.all(), 'titles'],
-  template: () => [...eventQueryKeys.all(), 'template'],
+  pastEventList: () => [...eventQueryKeys.all(), 'pastEventList'],
   history: () => [...eventQueryKeys.all(), 'history'],
+  templateList: () => [...eventQueryKeys.all(), 'templateList'],
 };
 
 export const eventQueryOptions = {
@@ -79,15 +81,20 @@ export const eventQueryOptions = {
       queryKey: [...eventQueryKeys.titles(), organizationId],
       queryFn: () => getEventTitles(organizationId),
     }),
-  template: (eventId: number) =>
+  pastEventList: (eventId: number) =>
     queryOptions({
-      queryKey: [...eventQueryKeys.template(), eventId],
-      queryFn: () => getEventTemplate(eventId),
+      queryKey: [...eventQueryKeys.pastEventList(), eventId],
+      queryFn: () => getPastEventList(eventId),
     }),
   history: (eventId: number) =>
     queryOptions({
       queryKey: [...eventQueryKeys.history(), eventId],
       queryFn: () => getNotifyHistory(eventId),
+    }),
+  templateList: () =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.templateList()],
+      queryFn: () => getTemplateList(),
     }),
 };
 
@@ -127,7 +134,7 @@ const getEventTitles = async (organizationId: number) => {
   );
 };
 
-const getEventTemplate = async (eventId: number) => {
+const getPastEventList = async (eventId: number) => {
   return await fetcher.get<EventTemplateAPIResponse>(
     `organizations/events/${eventId}/owned/template`
   );
@@ -135,4 +142,8 @@ const getEventTemplate = async (eventId: number) => {
 
 const getNotifyHistory = async (eventId: number) => {
   return await fetcher.get<NotifyHistoryAPIResponse[]>(`events/${eventId}/notify/history`);
+};
+
+const getTemplateList = async () => {
+  return await fetcher.get<TemplateListAPIResponse[]>(`templates`);
 };
