@@ -1,3 +1,4 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 import { NotifyHistoryAPIResponse } from '@/api/types/event';
@@ -18,7 +19,7 @@ export const HistoryCard = ({ recipientCount, content, sentAt }: NotifyHistoryAP
     >
       <Flex width="100%" justifyContent="space-between" alignItems="center">
         <Text type="Body" weight="semibold">
-          {content}
+          {content.length > 20 ? `${content.slice(0, 20)}...` : content}
         </Text>
         <Badge variant="blue">{recipientCount}명</Badge>
       </Flex>
