@@ -4,8 +4,6 @@ import { Icon } from '@/shared/components/Icon';
 
 import {
   StyledWrapper,
-  StyledLabel,
-  StyledRequiredMark,
   StyledInput,
   StyledHelperText,
   StyledFieldWrapper,
@@ -19,11 +17,6 @@ export type InputProps = {
    * Unique id to link the label and input for accessibility.
    */
   id: string;
-  /**
-   * Label text displayed above the input field.
-   * @type {string}
-   */
-  label: string;
 
   /**
    * Helper text displayed below the input field.
@@ -51,7 +44,6 @@ export type InputProps = {
 
 export const Input = ({
   id,
-  label,
   helperText,
   isRequired = false,
   errorMessage,
@@ -78,18 +70,21 @@ export const Input = ({
 
   return (
     <StyledWrapper>
-      <StyledLabel htmlFor={id}>
-        {label}
-        {isRequired && <StyledRequiredMark>*</StyledRequiredMark>}
-      </StyledLabel>
-
       <StyledFieldWrapper>
         {isDateLike && (
           <StyledCalendarButton type="button" onClick={openPicker} aria-label="날짜 선택">
             <Icon name="calendar" size={18} />
           </StyledCalendarButton>
         )}
-        <StyledInput id={id} ref={inputRef} isError={isError} hasLeftIcon={isDateLike} {...props} />
+        <StyledInput
+          id={id}
+          ref={inputRef}
+          isError={isError}
+          hasLeftIcon={isDateLike}
+          aria-required={isRequired || undefined}
+          aria-invalid={isError || undefined}
+          {...props}
+        />
       </StyledFieldWrapper>
 
       <StyledFooterRow>
