@@ -1,5 +1,6 @@
 package com.ahmadda.infra.login;
 
+import com.ahmadda.infra.login.jwt.JwtProvider;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -22,4 +23,9 @@ public class RefreshToken {
         this.memberId = memberId;
     }
 
+    public static RefreshToken create(final Long memberId, final JwtProvider jwtProvider) {
+        String refreshToken = jwtProvider.createRefreshToken(memberId);
+
+        return new RefreshToken(refreshToken, memberId);
+    }
 }

@@ -38,10 +38,19 @@ public class JwtProvider {
                 .compact();
     }
 
-//    public String createRefreshToken(final Long memberId) {
-//        Instant now = Instant.now();
-//        Instant expire = now.plus(jwtProperties.getAccessExpiration());
-//    }
+    public String createRefreshToken(final Long memberId) {
+        Instant now = Instant.now();
+        Instant expire = now.plus(jwtProperties.getRefreshExpiration());
+
+        Claims claims = JwtMemberPayload.toClaims(memberId);
+
+        return Jwts.builder()
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(expire))
+                .claims(claims)
+                .signWith(jwtProperties.getRefreshSecretKey())
+                .compact();
+    }
 
     public JwtMemberPayload parsePayload(final String token) {
         Claims claims = parseClaims(token);
