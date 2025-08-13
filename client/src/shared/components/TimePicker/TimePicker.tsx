@@ -25,7 +25,7 @@ export const TimePicker = ({
   label = '시간 선택',
   disabled = false,
 }: TimePickerProps) => {
-  const currentHour = selectedTime?.getHours() ?? 9;
+  const currentHour = selectedTime?.getHours() ?? 0;
   const currentMinute = selectedTime?.getMinutes() ?? 0;
 
   const handleHourChange = (hour: number) => {
