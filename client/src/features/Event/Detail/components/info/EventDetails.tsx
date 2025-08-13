@@ -76,7 +76,7 @@ export const EventDetails = ({
         <Flex width="100%" justifyContent="space-between" alignItems="center">
           <ProgressBar value={progressValue} max={progressMax} color={theme.colors.primary500} />
           <Flex width="20%" justifyContent="center" alignItems="flex-end">
-            <Text type="Label" color="#99A1AF" weight="semibold">
+            <Text type="Label" color={theme.colors.gray500} weight="semibold">
               {isUnlimited ? '무제한' : `${currentGuestCount} / ${maxCapacity}`}
             </Text>
           </Flex>

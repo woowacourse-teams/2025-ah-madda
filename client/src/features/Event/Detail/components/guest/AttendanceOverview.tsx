@@ -12,19 +12,17 @@ export const AttendanceOverview = ({ eventId }: { eventId: number }) => {
   });
 
   return (
-    <>
-      <Flex as="section" width="100%" dir="column">
-        <GuestList
-          title={`신청 완료 (${guests.length}명)`}
-          titleColor={theme.colors.primary600}
-          guests={guests}
-        />
-        <GuestList
-          title={`미신청 (${nonGuests.length}명)`}
-          titleColor={theme.colors.red600}
-          guests={nonGuests}
-        />
-      </Flex>
-    </>
+    <Flex as="section" width="100%" dir="column">
+      <GuestList
+        title={`신청 완료 (${guests.length}명)`}
+        titleColor={theme.colors.primary600}
+        guests={guests}
+      />
+      <GuestList
+        title={`미신청 (${nonGuests.length}명)`}
+        titleColor={theme.colors.red600}
+        guests={nonGuests}
+      />
+    </Flex>
   );
 };

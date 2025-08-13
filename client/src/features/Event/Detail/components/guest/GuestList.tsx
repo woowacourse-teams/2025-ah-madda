@@ -22,9 +22,11 @@ export const GuestList = ({ title, titleColor, guests }: GuestListProps) => {
         </Text>
       </Flex>
       <Flex
+        as="ul"
         dir="row"
         gap="8px"
         css={css`
+          list-style: none;
           @media (max-width: 768px) {
             flex-direction: column;
           }
@@ -38,13 +40,13 @@ export const GuestList = ({ title, titleColor, guests }: GuestListProps) => {
   );
 };
 
-const GuestBadge = styled.span`
+const GuestBadge = styled.li`
   width: fit-content;
   background-color: ${theme.colors.gray100};
   color: ${theme.colors.gray600};
   padding: 4px 12px;
   border-radius: 12px;
-  cursor: pointer;
+  cursor: default;
 
   &:hover {
     background-color: ${theme.colors.gray200};

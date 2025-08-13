@@ -25,13 +25,12 @@ export const EventHeader = ({
   registrationEnd,
 }: EventHeaderProps) => {
   const navigate = useNavigate();
+  const status = badgeText(registrationEnd);
 
   return (
     <Flex width="100%" justifyContent="space-between" alignItems="center">
       <Flex dir="column" gap="8px">
-        <Badge
-          variant={badgeText(registrationEnd).color}
-        >{`${badgeText(registrationEnd).text}`}</Badge>
+        <Badge variant={status.color}>{status.text}</Badge>
         <Text as="h1" type="Display" weight="bold">
           {title}
         </Text>
