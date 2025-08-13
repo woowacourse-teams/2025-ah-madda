@@ -74,8 +74,8 @@ export const GuestList = ({ eventId, title, titleColor, guests }: GuestListProps
           css={css`
             left: ${msg.x}px;
             top: ${msg.y}px;
-            --move-x: ${msg.moveX};
-            --move-y: ${msg.moveY};
+            --move-x: ${msg.moveX}px;
+            --move-y: ${msg.moveY}px;
           `}
         >
           {msg.message}
@@ -102,6 +102,7 @@ const BouncingMessageElement = styled.span`
   font-weight: bold;
   color: ${theme.colors.gray900};
   z-index: 1000;
+  pointer-events: none;
   transform: translate(-50%, -50%);
   animation: shootStraight 0.5s ease-out forwards;
 
@@ -116,8 +117,7 @@ const BouncingMessageElement = styled.span`
     }
     100% {
       opacity: 0;
-      transform: translate(calc(-50% + var(--move-x) * 1px), calc(-50% + var(--move-y) * 1px))
-        scale(0.5);
+      transform: translate(calc(-50% + var(--move-x)), calc(-50% + var(--move-y))) scale(0.5);
     }
   }
 `;
