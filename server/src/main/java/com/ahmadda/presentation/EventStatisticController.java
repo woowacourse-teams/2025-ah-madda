@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Tag(name = "이벤트 통계", description = "이벤트 통계 관련 API")
+@Tag(name = "Event Statistic", description = "이벤트 통계 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/events/{eventId}/statistic")
