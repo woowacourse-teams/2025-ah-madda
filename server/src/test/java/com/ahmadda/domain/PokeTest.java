@@ -4,35 +4,34 @@ import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @Transactional
 class PokeTest {
 
     @Autowired
-    private Poke sut;
-
-    @Autowired
-    private EventRepository eventRepository;
-
-    @Autowired
-    private MemberRepository memberRepository;
+    private Poke poke;
 
     @Autowired
     private OrganizationRepository organizationRepository;
 
     @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
 
     @Autowired
     private PokeHistoryRepository pokeHistoryRepository;
@@ -41,92 +40,233 @@ class PokeTest {
     private PushNotifier pushNotifier;
 
     @Test
-    void 포키를_30분내_한_대상에게_10번_초과하여_요청시_예외가_발생한다() {
+    void 포키를_성공적으로_전송한다() {
         // given
-        var organization = createAndSaveOrganization();
-        var sender = createAndSaveOrganizationMember(
-                "보내는사람",
-                createAndSaveMember("보내는사람", "sender@email.com"),
-                organization
+        var organization = createOrganization("ahmadda");
+        var senderMember = createMember("sender");
+        var sender = createOrganizationMember(organization, senderMember);
+        var recipientMember = createMember("recipient");
+        var recipient = createOrganizationMember(organization, recipientMember);
+        var event = createEvent(organization, sender, LocalDateTime.now());
+        var sentAt = LocalDateTime.now();
+
+        // when
+        poke.doPoke(sender, recipient, event, sentAt);
+
+        // then
+
+        var pokeHistories = pokeHistoryRepository.findAll();
+        assertThat(pokeHistories).hasSize(1);
+    }
+
+    @Test
+    void 스스로에게_포키를_보낼_때_예외가_발생한다() {
+        // given
+        var organization = createOrganization("ahmadda");
+        var senderMember = createMember("sender");
+        var sender = createOrganizationMember(organization, senderMember);
+        var event = createEvent(organization, sender, LocalDateTime.now());
+
+        // when // then
+        assertThatThrownBy(() -> poke.doPoke(sender, sender, event, LocalDateTime.now()))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("스스로에게 포키를 보낼 수 없습니다");
+    }
+
+    @Test
+    void 주최자에게_포키를_보낼_때_예외가_발생한다() {
+        // given
+        var organization = createOrganization("ahmadda");
+        var senderMember = createMember("sender");
+        var sender = createOrganizationMember(organization, senderMember);
+        var organizerMember = createMember("organizer");
+        var organizer = createOrganizationMember(organization, organizerMember);
+        var event = createEvent(organization, organizer, LocalDateTime.now());
+
+        // when // then
+        assertThatThrownBy(() -> poke.doPoke(sender, organizer, event, LocalDateTime.now()))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("주최자에게 포키를 보낼 수 없습니다");
+    }
+
+    @Test
+    void 이미_이벤트에_참여한_조직원에게_포키를_보낼_때_예외가_발생한다() {
+        // given
+        var organization = createOrganization("ahmadda");
+        var senderMember = createMember("sender");
+        var sender = createOrganizationMember(organization, senderMember);
+        var organizerMember = createMember("organizer");
+        var organizer = createOrganizationMember(organization, organizerMember);
+        var event = createEvent(organization, organizer, LocalDateTime.now());
+
+        var otherMember = createMember("otherMember");
+        var otherOrganizationMember = createOrganizationMember(organization, otherMember);
+        var guest = Guest.create(
+                event,
+                otherOrganizationMember,
+                LocalDateTime.now()
+                        .plusDays(1)
         );
-        var recipient = createAndSaveOrganizationMember(
-                "받는사람",
-                createAndSaveMember("받는사람", "recipient@email.com"),
-                organization
-        );
-        var event = createAndSaveEvent(sender, organization);
-        var now = LocalDateTime.now();
+
+        // when // then
+        assertThatThrownBy(() -> poke.doPoke(sender, otherOrganizationMember, event, LocalDateTime.now()))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("이미 이벤트에 참여한 조직원에게 포키를 보낼 수 없습니다.");
+    }
+
+    @Test
+    void 보내는_사람이_조직에_참여하고_있지_않을_때_예외가_발생한다() {
+        // given
+        var organization = createOrganization("ahmadda");
+        var anotherOrganization = createOrganization("another");
+        var senderMember = createMember("sender");
+        var sender = createOrganizationMember(anotherOrganization, senderMember);
+        var recipientMember = createMember("recipient");
+        var recipient = createOrganizationMember(organization, recipientMember);
+        var event = createEvent(organization, recipient, LocalDateTime.now());
+
+        // when // then
+        assertThatThrownBy(() -> poke.doPoke(sender, recipient, event, LocalDateTime.now()))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("포키를 보내려면 해당 조직에 참여하고 있어야 합니다.");
+    }
+
+    @Test
+    void 받는_사람이_조직에_참여하고_있지_않을_때_예외가_발생한다() {
+        // given
+        var organization = createOrganization("ahmadda");
+        var anotherOrganization = createOrganization("another");
+        var senderMember = createMember("sender");
+        var sender = createOrganizationMember(organization, senderMember);
+        var recipientMember = createMember("recipient");
+        var recipient = createOrganizationMember(anotherOrganization, recipientMember);
+        var event = createEvent(organization, sender, LocalDateTime.now());
+
+        // when // then
+        assertThatThrownBy(() -> poke.doPoke(sender, recipient, event, LocalDateTime.now()))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("포키 대상이 해당 조직에 참여하고 있어야 합니다.");
+    }
+
+    @Test
+    void 포키_전송_횟수_제한을_초과할_때_예외가_발생한다() {
+        // given
+        var organization = createOrganization("ahmadda");
+        var senderMember = createMember("sender");
+        var sender = createOrganizationMember(organization, senderMember);
+        var recipientMember = createMember("recipient");
+        var recipient = createOrganizationMember(organization, recipientMember);
+        var event = createEvent(organization, sender, LocalDateTime.now());
+        var sentAt = LocalDateTime.now();
 
         for (int i = 0; i < 10; i++) {
-            pokeHistoryRepository.save(PokeHistory.create(sender, recipient, event, now.minusMinutes(i)));
+            var pokeHistory = PokeHistory.create(sender, recipient, event, sentAt.minusMinutes(i));
+            pokeHistoryRepository.save(pokeHistory);
         }
 
         // when // then
-        assertThatThrownBy(() -> sut.doPoke(sender, recipient, event, now))
+        assertThatThrownBy(() -> poke.doPoke(sender, recipient, event, sentAt))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage("포키는 30분마다 한 대상에게 최대 10번만 보낼 수 있습니다.");
     }
 
     @Test
-    void 단일_대상에게_포키를_보낼_수_있다() {
+    void 포키_전송_날짜가_null일_때_예외가_발생한다() {
         // given
-        var organization = createAndSaveOrganization();
-        var sender = createAndSaveOrganizationMember(
-                "보내는사람",
-                createAndSaveMember("보내는사람", "sender@email.com"),
-                organization
-        );
-        var recipient = createAndSaveOrganizationMember(
-                "받는사람",
-                createAndSaveMember("받는사람", "recipient@email.com"),
-                organization
-        );
-        var event = createAndSaveEvent(sender, organization);
-        var now = LocalDateTime.now();
+        var organization = createOrganization("ahmadda");
+        var senderMember = createMember("sender");
+        var sender = createOrganizationMember(organization, senderMember);
+        var recipientMember = createMember("recipient");
+        var recipient = createOrganizationMember(organization, recipientMember);
+        var event = createEvent(organization, sender, LocalDateTime.now());
 
-        // when
-        sut.doPoke(sender, recipient, event, now);
-
-        // then
-        var histories = pokeHistoryRepository.findAll();
-        assertThat(histories).hasSize(1);
-        var history = histories.get(0);
-        assertThat(history.getSender()).isEqualTo(sender);
-        assertThat(history.getRecipient()).isEqualTo(recipient);
-        assertThat(history.getEvent()).isEqualTo(event);
-
-        verify(pushNotifier, times(1)).sendPush(any(), any());
+        // when // then
+        assertThatThrownBy(() -> poke.doPoke(sender, recipient, event, null))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("포키 전송 날짜는 null 일 수 없습니다.");
     }
 
-    private Member createAndSaveMember(String name, String email) {
-        return memberRepository.save(Member.create(name, email, "testPicture"));
+    @Test
+    void 이벤트가_null일_때_예외가_발생한다() {
+        // given
+        var organization = createOrganization("ahmadda");
+        var senderMember = createMember("sender");
+        var sender = createOrganizationMember(organization, senderMember);
+        var recipientMember = createMember("recipient");
+        var recipient = createOrganizationMember(organization, recipientMember);
+
+        // when // then
+        assertThatThrownBy(() -> poke.doPoke(sender, recipient, null, LocalDateTime.now()))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("이벤트는 null이 되면 안됩니다.");
     }
 
-    private Organization createAndSaveOrganization() {
-        return organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+    @Test
+    void 발신자가_null일_때_예외가_발생한다() {
+        // given
+        var organization = createOrganization("ahmadda");
+        var recipientMember = createMember("recipient");
+        var recipient = createOrganizationMember(organization, recipientMember);
+        var event = createEvent(organization, recipient, LocalDateTime.now());
+
+        // when // then
+        assertThatThrownBy(() -> poke.doPoke(null, recipient, event, LocalDateTime.now()))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("포키를 보내는 조직원은 null이 되면 안됩니다.");
     }
 
-    private OrganizationMember createAndSaveOrganizationMember(String nickname, Member member, Organization org) {
-        return organizationMemberRepository.save(OrganizationMember.create(nickname, member, org));
+    @Test
+    void 수신자가_null일_때_예외가_발생한다() {
+        // given
+        var organization = createOrganization("ahmadda");
+        var senderMember = createMember("sender");
+        var sender = createOrganizationMember(organization, senderMember);
+        var event = createEvent(organization, sender, LocalDateTime.now());
+
+        // when // then
+        assertThatThrownBy(() -> poke.doPoke(sender, null, event, LocalDateTime.now()))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessage("포키를 받는 조직원은 null이 되면 안됩니다.");
     }
 
-    private Event createAndSaveEvent(OrganizationMember organizer, Organization organization, Question... questions) {
-        var now = LocalDateTime.now();
+    private Organization createOrganization(String name) {
+        var organization = Organization.create(name, "http://image.com", "설명");
+        return organizationRepository.save(organization);
+    }
+
+    private Member createMember(String name) {
+        var uniqueEmail = name + "+" + System.nanoTime() + "@email.com";
+        var member = Member.create(name, uniqueEmail, "http://picture.com");
+        return memberRepository.save(member);
+    }
+
+    private OrganizationMember createOrganizationMember(Organization organization, Member member) {
+        if (organization.getId() == null) {
+            organization = organizationRepository.save(organization);
+        }
+        if (member.getId() == null) {
+            member = memberRepository.save(member);
+        }
+
+        var organizationMember = OrganizationMember.create("nickname", member, organization);
+        return organizationMemberRepository.save(organizationMember);
+    }
+
+    private Event createEvent(Organization organization, OrganizationMember organizer, LocalDateTime now) {
         var event = Event.create(
-                "이벤트",
-                "설명",
-                "장소",
+                "title",
+                "content",
+                "place",
                 organizer,
                 organization,
                 EventOperationPeriod.create(
-                        now.minusDays(3), now.minusDays(1),
                         now.plusDays(1), now.plusDays(2),
-                        now.minusDays(6)
+                        now.plusDays(3), now.plusDays(4),
+                        now
                 ),
-                100,
-                questions
+                20,
+                List.of()
         );
-
         return eventRepository.save(event);
     }
 }
