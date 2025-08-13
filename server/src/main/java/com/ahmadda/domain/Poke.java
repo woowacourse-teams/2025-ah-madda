@@ -94,7 +94,6 @@ public class Poke {
             final Event event,
             final OrganizationMember receiveOrganizationMember
     ) {
-
         if (event.hasGuest(receiveOrganizationMember)) {
             throw new BusinessRuleViolatedException("이미 이벤트에 참여한 조직원에게 포키를 보낼 수 없습니다.");
         }
