@@ -28,7 +28,6 @@ public class EventNotificationOptOutService {
                 event.getOrganization()
                         .getId(),
                 loginMember.memberId()
-
         );
 
         if (optOutRepository.existsByEventAndOrganizationMember(event, organizationMember)) {
