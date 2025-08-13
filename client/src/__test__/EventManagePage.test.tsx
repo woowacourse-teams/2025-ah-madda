@@ -25,16 +25,20 @@ vi.mock('@/api/fetcher', () => ({
 
 const mockFetcher = fetcher as Mocked<typeof fetcher>;
 
+const mockEventDetailApiResponse = (data: typeof mockEventDetail) => {
+  mockFetcher.get.mockImplementation((url: string) => {
+    if (url.includes('organizations/events/123')) {
+      return Promise.resolve(data);
+    }
+    return Promise.reject(new Error(`API 호출 실패: ${url}`));
+  });
+};
+
 describe('EventManagePage 테스트', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    mockFetcher.get.mockImplementation((url: string) => {
-      if (url.includes('organizations/events/123')) {
-        return Promise.resolve(mockEventDetail);
-      }
-      return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
-    });
+    mockEventDetailApiResponse(mockEventDetail);
   });
 
   const renderEventManagePage = () => {
@@ -137,12 +141,7 @@ describe('EventManagePage 테스트', () => {
       expect(mockMutate).toHaveBeenCalled();
 
       const updatedEventDetail = { ...mockEventDetail, registrationEnd: '2000-01-01T00:00:00' };
-      mockFetcher.get.mockImplementation((url: string) => {
-        if (url.includes('organizations/events/123')) {
-          return Promise.resolve(updatedEventDetail);
-        }
-        return Promise.reject(new Error(`API 호출 실패: ${url}`));
-      });
+      mockEventDetailApiResponse(updatedEventDetail);
 
       const [, options] = mockMutate.mock.calls[0] as [number, { onSuccess: () => void }];
       options.onSuccess();
