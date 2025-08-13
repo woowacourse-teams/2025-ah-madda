@@ -1,10 +1,12 @@
 package com.ahmadda.presentation;
 
 import com.ahmadda.application.LoginService;
+import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.MemberToken;
 import com.ahmadda.presentation.cookie.CookieProvider;
 import com.ahmadda.presentation.dto.AccessTokenResponse;
 import com.ahmadda.presentation.dto.LoginRequest;
+import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -16,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +29,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/members")
 @RequiredArgsConstructor
 public class LoginController {
+
+    private static final String REFRESH_TOKEN_KEY = "refresh_token";
 
     private final LoginService loginService;
     private final CookieProvider cookieProvider;
@@ -63,11 +68,32 @@ public class LoginController {
 
         AccessTokenResponse accessTokenResponse = new AccessTokenResponse(authTokens.accessToken());
 
-        ResponseCookie refreshTokenCookie = cookieProvider.createRefreshTokenCookie(authTokens.refreshToken());
+        ResponseCookie refreshTokenCookie = cookieProvider.createRefreshTokenCookie(
+                REFRESH_TOKEN_KEY,
+                authTokens.refreshToken()
+        );
 
         return ResponseEntity
                 .ok()
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
                 .body(accessTokenResponse);
+    }
+
+//    @PostMapping("/token")
+//    public ResponseEntity<AccessTokenResponse> extendLogin(
+//            @CookieValue(REFRESH_TOKEN_KEY) final String refreshToken,
+//            @RequestHeader(HttpHeaders.AUTHORIZATION) final String accessToken) {
+//
+//    }
+
+    @DeleteMapping("/logout")
+    public ResponseEntity<Void> logout(@AuthMember final LoginMember loginMember) {
+        loginService.logout(loginMember);
+
+        ResponseCookie logoutRefreshCookie = cookieProvider.createLogoutRefreshCookie(REFRESH_TOKEN_KEY);
+
+        return ResponseEntity.noContent()
+                .header(HttpHeaders.SET_COOKIE, logoutRefreshCookie.toString())
+                .build();
     }
 }
