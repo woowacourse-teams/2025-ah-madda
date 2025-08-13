@@ -3,6 +3,7 @@ package com.ahmadda.presentation;
 import com.ahmadda.application.OrganizationService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
+import com.ahmadda.domain.ImageFile;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.presentation.dto.OrganizationCreateResponse;
@@ -25,8 +26,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.net.URI;
 
 @Tag(name = "Organization", description = "조직 관련 API")
@@ -80,9 +84,22 @@ public class OrganizationController {
     })
     @PostMapping
     public ResponseEntity<OrganizationCreateResponse> createOrganization(
-            @RequestBody @Valid final OrganizationCreateRequest organizationCreateRequest
-    ) {
-        Organization organization = organizationService.createOrganization(organizationCreateRequest);
+            @RequestPart("organization") @Valid OrganizationCreateRequest organizationCreateRequest,
+            @RequestPart("thumbnail") MultipartFile multipartFile,
+            @AuthMember LoginMember loginMember
+    ) throws IOException {
+        ImageFile thumnailImageFile = ImageFile.create(
+                multipartFile.getOriginalFilename(),
+                multipartFile.getContentType(),
+                multipartFile.getSize(),
+                multipartFile.getInputStream()
+        );
+        
+        Organization organization = organizationService.createOrganization(
+                organizationCreateRequest,
+                thumnailImageFile,
+                loginMember
+        );
 
         return ResponseEntity.created(URI.create("/api/organizations/" + organization.getId()))
                 .body(new OrganizationCreateResponse(organization.getId()));

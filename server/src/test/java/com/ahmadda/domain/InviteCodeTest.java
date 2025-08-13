@@ -85,7 +85,7 @@ class InviteCodeTest {
     }
 
     private OrganizationMember createOrganizationMember(Member member, Organization organization) {
-        return OrganizationMember.create("nickname", member, organization);
+        return OrganizationMember.create("nickname", member, organization, Role.USER);
     }
 
     private Member createMember() {

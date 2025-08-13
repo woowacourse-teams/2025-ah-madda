@@ -45,7 +45,12 @@ class ReminderTest {
         var organization = organizationRepository.save(Organization.create("우테코", "설명", "img.png"));
         var organizerMember = memberRepository.save(Member.create("주최자", "host@example.com", "pic"));
         var organizer =
-                organizationMemberRepository.save(OrganizationMember.create("host", organizerMember, organization));
+                organizationMemberRepository.save(OrganizationMember.create(
+                        "host",
+                        organizerMember,
+                        organization,
+                        Role.USER
+                ));
 
         var now = LocalDateTime.now();
         var event = eventRepository.save(Event.create(
@@ -60,8 +65,8 @@ class ReminderTest {
 
         var m1 = memberRepository.save(Member.create("게스트1", "g1@example.com", "pic"));
         var m2 = memberRepository.save(Member.create("게스트2", "g2@example.com", "pic"));
-        var om1 = organizationMemberRepository.save(OrganizationMember.create("g1", m1, organization));
-        var om2 = organizationMemberRepository.save(OrganizationMember.create("g2", m2, organization));
+        var om1 = organizationMemberRepository.save(OrganizationMember.create("g1", m1, organization, Role.USER));
+        var om2 = organizationMemberRepository.save(OrganizationMember.create("g2", m2, organization, Role.USER));
         var recipients = List.of(om1, om2);
         var content = "이벤트 알림입니다.";
 
@@ -88,7 +93,12 @@ class ReminderTest {
         var organization = organizationRepository.save(Organization.create("우테코", "설명", "img.png"));
         var organizerMember = memberRepository.save(Member.create("주최자", "host@example.com", "pic"));
         var organizer =
-                organizationMemberRepository.save(OrganizationMember.create("host", organizerMember, organization));
+                organizationMemberRepository.save(OrganizationMember.create(
+                        "host",
+                        organizerMember,
+                        organization,
+                        Role.USER
+                ));
 
         var now = LocalDateTime.now();
         var event = eventRepository.save(Event.create(
@@ -103,8 +113,8 @@ class ReminderTest {
 
         var m1 = memberRepository.save(Member.create("게스트1", "g1@example.com", "pic"));
         var m2 = memberRepository.save(Member.create("게스트2", "g2@example.com", "pic"));
-        var om1 = organizationMemberRepository.save(OrganizationMember.create("g1", m1, organization));
-        var om2 = organizationMemberRepository.save(OrganizationMember.create("g2", m2, organization));
+        var om1 = organizationMemberRepository.save(OrganizationMember.create("g1", m1, organization, Role.USER));
+        var om2 = organizationMemberRepository.save(OrganizationMember.create("g2", m2, organization, Role.USER));
         var recipients = List.of(om1, om2);
 
         var content = "이벤트 알림입니다.";

@@ -20,6 +20,7 @@ import com.ahmadda.domain.Question;
 import com.ahmadda.domain.Reminder;
 import com.ahmadda.domain.ReminderHistory;
 import com.ahmadda.domain.ReminderHistoryRepository;
+import com.ahmadda.domain.Role;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
@@ -728,7 +729,7 @@ class EventServiceTest {
     }
 
     private OrganizationMember createOrganizationMember(Organization organization, Member member) {
-        var organizationMember = OrganizationMember.create("surf", member, organization);
+        var organizationMember = OrganizationMember.create("surf", member, organization, Role.USER);
 
         return organizationMemberRepository.save(organizationMember);
     }

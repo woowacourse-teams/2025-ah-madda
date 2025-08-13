@@ -17,7 +17,7 @@ cors:
 
 notification:
   redirect-url-prefix: http://localhost:5173/event/
-  
+
 mail:
   mock: true
 
@@ -26,3 +26,9 @@ push:
 
 slack:
   mock: true
+
+aws:
+  s3:
+    mock: true
+    region: ${aws.local.s3.region}
+    bucket: ${aws.local.s3.bucket}

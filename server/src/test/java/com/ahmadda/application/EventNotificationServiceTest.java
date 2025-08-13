@@ -19,6 +19,7 @@ import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Reminder;
 import com.ahmadda.domain.ReminderHistory;
 import com.ahmadda.domain.ReminderHistoryRepository;
+import com.ahmadda.domain.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -386,7 +387,7 @@ class EventNotificationServiceTest {
     ) {
         var member = memberRepository.save(Member.create(nickname, email, "testPicture"));
 
-        return organizationMemberRepository.save(OrganizationMember.create(nickname, member, organization));
+        return organizationMemberRepository.save(OrganizationMember.create(nickname, member, organization, Role.USER));
     }
 
     private LoginMember createLoginMember(OrganizationMember organizationMember) {

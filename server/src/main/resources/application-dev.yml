@@ -27,3 +27,9 @@ cors:
 
 notification:
   redirect-url-prefix: http://localhost:5173/event/
+
+aws:
+  s3:
+    region: ${aws.dev.s3.region}
+    bucket: ${aws.dev.s3.bucket}
+    folder: ${aws.dev.s3.folder}

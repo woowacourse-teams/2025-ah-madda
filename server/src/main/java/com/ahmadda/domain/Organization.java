@@ -86,7 +86,7 @@ public class Organization extends BaseEntity {
             throw new BusinessRuleViolatedException("초대코드가 만료되었습니다.");
         }
 
-        return OrganizationMember.create(nickname, member, this);
+        return OrganizationMember.create(nickname, member, this, Role.USER);
     }
 
     private void validateName(final String name) {

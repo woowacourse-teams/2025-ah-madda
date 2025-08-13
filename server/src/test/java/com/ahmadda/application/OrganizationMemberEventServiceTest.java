@@ -13,6 +13,7 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.domain.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -236,7 +237,7 @@ class OrganizationMemberEventServiceTest {
             Member member,
             Organization organization
     ) {
-        var organizationMember = OrganizationMember.create(nickname, member, organization);
+        var organizationMember = OrganizationMember.create(nickname, member, organization, Role.USER);
         return organizationMemberRepository.save(organizationMember);
     }
 
@@ -268,7 +269,7 @@ class OrganizationMemberEventServiceTest {
                 ),
                 maxCapacity
         );
-        
+
         return eventRepository.save(event);
     }
 

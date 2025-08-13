@@ -5,6 +5,8 @@ import com.ahmadda.infra.jwt.exception.InvalidJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -14,6 +16,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@SpringBootTest
 class JwtProviderTest {
 
     private final String secretKey = UUID.randomUUID()
@@ -22,6 +25,21 @@ class JwtProviderTest {
     private final JwtProperties jwtProperties = new JwtProperties(secretKey, expiration);
 
     private final JwtProvider sut = new JwtProvider(jwtProperties);
+
+    @Autowired
+    JwtProvider jwtProvider;
+
+    @Test
+    void aa() {
+        //given
+        String token = jwtProvider.createToken(1L);
+        System.out.println(token);
+
+        //when
+
+        //then
+
+    }
 
     @Test
     void JWT_토큰을_정상적으로_생성_및_검증_할_수_있다() {
