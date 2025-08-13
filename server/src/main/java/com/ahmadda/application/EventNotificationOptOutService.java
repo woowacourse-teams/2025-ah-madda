@@ -36,6 +36,7 @@ public class EventNotificationOptOutService {
         }
 
         EventNotificationOptOut optOut = EventNotificationOptOut.create(organizationMember, event);
+
         return optOutRepository.save(optOut);
     }
 
