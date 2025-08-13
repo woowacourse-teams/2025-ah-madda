@@ -2,34 +2,19 @@ import { Flex } from '../Flex';
 import { Text } from '../Text';
 
 import { StyledSelect, StyledTimePicker } from './TimePicker.styled';
+import {
+  generateHourOptions,
+  generateMinuteOptions,
+  createTimeFromHour,
+  createTimeFromMinute,
+  formatTimeDisplay,
+} from './utils';
 
 type TimePickerProps = {
   selectedTime?: Date;
   onTimeChange?: (time: Date) => void;
   label?: string;
   disabled?: boolean;
-};
-
-const generateHourOptions = () => {
-  const hours = [];
-  for (let i = 0; i < 24; i++) {
-    hours.push({
-      value: i,
-      label: String(i).padStart(2, '0'),
-    });
-  }
-  return hours;
-};
-
-const generateMinuteOptions = () => {
-  const minutes = [];
-  for (let i = 0; i < 60; i += 10) {
-    minutes.push({
-      value: i,
-      label: String(i).padStart(2, '0'),
-    });
-  }
-  return minutes;
 };
 
 const HOUR_OPTIONS = generateHourOptions();
@@ -45,18 +30,12 @@ export const TimePicker = ({
   const currentMinute = selectedTime?.getMinutes() ?? 0;
 
   const handleHourChange = (hour: number) => {
-    const newTime = new Date(selectedTime || new Date());
-    newTime.setHours(hour);
-    newTime.setMinutes(currentMinute);
-    newTime.setSeconds(0);
+    const newTime = createTimeFromHour(selectedTime, hour, currentMinute);
     onTimeChange?.(newTime);
   };
 
   const handleMinuteChange = (minute: number) => {
-    const newTime = new Date(selectedTime || new Date());
-    newTime.setHours(currentHour);
-    newTime.setMinutes(minute);
-    newTime.setSeconds(0);
+    const newTime = createTimeFromMinute(selectedTime, currentHour, minute);
     onTimeChange?.(newTime);
   };
 
@@ -99,7 +78,7 @@ export const TimePicker = ({
       </Flex>
 
       <Text type="Label" color="gray">
-        선택된 시간: {String(currentHour).padStart(2, '0')}:{String(currentMinute).padStart(2, '0')}
+        선택된 시간: {formatTimeDisplay(currentHour, currentMinute)}
       </Text>
     </StyledTimePicker>
   );
