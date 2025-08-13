@@ -61,7 +61,7 @@ export const AlarmSection = ({
               </Text>
             </Flex>
             <Button size="sm" color="tertiary" onClick={open}>
-              알람 내역
+              알림 내역
             </Button>
           </Flex>
           <Flex dir="column">
