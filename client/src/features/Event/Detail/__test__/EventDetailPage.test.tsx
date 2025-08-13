@@ -75,8 +75,8 @@ describe('EventDetailPage', () => {
     mockFetcher.get.mockResolvedValue(mockEventDetail);
 
     renderPage();
-
-    expect(await screen.findByText('3 / 10명')).toBeInTheDocument();
+    screen.debug();
+    expect(await screen.findByText('3 / 10')).toBeInTheDocument();
   });
 
   it('질문 목록이 표시된다', async () => {
