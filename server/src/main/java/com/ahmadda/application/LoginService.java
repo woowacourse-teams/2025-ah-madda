@@ -4,7 +4,7 @@ import com.ahmadda.application.dto.MemberCreateAlarmPayload;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.infra.alarm.slack.SlackAlarm;
-import com.ahmadda.infra.jwt.JwtProvider;
+import com.ahmadda.infra.login.jwt.JwtProvider;
 import com.ahmadda.infra.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.oauth.dto.OAuthUserInfoResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class LoginService {
 
         Member member = findOrCreateMember(userInfo.name(), userInfo.email(), userInfo.picture());
 
-        return jwtProvider.createToken(member.getId());
+        return jwtProvider.createAccessToken(member.getId());
     }
 
     private Member findOrCreateMember(final String name, final String email, final String profileImageUrl) {

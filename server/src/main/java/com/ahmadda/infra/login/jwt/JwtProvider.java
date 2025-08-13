@@ -1,8 +1,8 @@
-package com.ahmadda.infra.jwt;
+package com.ahmadda.infra.login.jwt;
 
-import com.ahmadda.infra.jwt.config.JwtProperties;
-import com.ahmadda.infra.jwt.dto.JwtMemberPayload;
-import com.ahmadda.infra.jwt.exception.InvalidJwtException;
+import com.ahmadda.infra.login.jwt.config.JwtProperties;
+import com.ahmadda.infra.login.jwt.dto.JwtMemberPayload;
+import com.ahmadda.infra.login.jwt.exception.InvalidJwtException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -24,7 +24,7 @@ public class JwtProvider {
 
     private final JwtProperties jwtProperties;
 
-    public String createToken(final Long memberId) {
+    public String createAccessToken(final Long memberId) {
         Instant now = Instant.now();
         Instant expire = now.plus(jwtProperties.getAccessExpiration());
 
@@ -34,9 +34,14 @@ public class JwtProvider {
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expire))
                 .claims(claims)
-                .signWith(jwtProperties.getSecretKey())
+                .signWith(jwtProperties.getAccessSecretKey())
                 .compact();
     }
+
+//    public String createRefreshToken(final Long memberId) {
+//        Instant now = Instant.now();
+//        Instant expire = now.plus(jwtProperties.getAccessExpiration());
+//    }
 
     public JwtMemberPayload parsePayload(final String token) {
         Claims claims = parseClaims(token);
@@ -47,7 +52,7 @@ public class JwtProvider {
     private Claims parseClaims(final String token) {
         try {
             return Jwts.parser()
-                    .verifyWith(jwtProperties.getSecretKey())
+                    .verifyWith(jwtProperties.getAccessSecretKey())
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();

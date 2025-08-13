@@ -5,7 +5,7 @@ import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
-import com.ahmadda.infra.jwt.exception.InvalidJwtException;
+import com.ahmadda.infra.login.jwt.exception.InvalidJwtException;
 import com.ahmadda.infra.notification.push.exception.InvalidFcmRegistrationTokenException;
 import com.ahmadda.infra.oauth.exception.InvalidOauthTokenException;
 import lombok.extern.slf4j.Slf4j;

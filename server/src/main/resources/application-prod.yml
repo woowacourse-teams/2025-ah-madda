@@ -15,8 +15,10 @@ spring:
         static: ap-northeast-2
 
 jwt:
-  secret-key: ${jwt.prod.secret-key}
+  access-secret-key: ${jwt.prod.access-secret-key}
   access-expiration: ${jwt.prod.access-expiration}
+  refresh-secret-key: ${jwt.prod.refresh-secret-key}
+  refresh-expiration: ${jwt.prod.refresh-expiration}
 
 cors:
   allowed-origins:

@@ -7,8 +7,10 @@ spring:
           enabled: true
 
 jwt:
-  secret-key: ${jwt.local.secret-key}
+  access-secret-key: ${jwt.local.access-secret-key}
   access-expiration: ${jwt.local.access-expiration}
+  refresh-secret-key: ${jwt.local.refresh-secret-key}
+  refresh-expiration: ${jwt.local.refresh-expiration}
 
 cors:
   allowed-origins:
@@ -17,7 +19,7 @@ cors:
 
 notification:
   redirect-url-prefix: http://localhost:5173/event/
-  
+
 mail:
   mock: true
 

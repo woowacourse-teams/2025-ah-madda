@@ -1,4 +1,4 @@
-package com.ahmadda.infra.jwt.exception;
+package com.ahmadda.infra.login.jwt.exception;
 
 public class InvalidJwtException extends RuntimeException {
 

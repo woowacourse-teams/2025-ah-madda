@@ -15,8 +15,10 @@ spring:
           enabled: true
 
 jwt:
-  secret-key: ${jwt.dev.secret-key}
+  access-secret-key: ${jwt.dev.access-secret-key}
   access-expiration: ${jwt.dev.access-expiration}
+  refresh-secret-key: ${jwt.dev.refresh-secret-key}
+  refresh-expiration: ${jwt.dev.refresh-expiration}
 
 cors:
   allowed-origins:

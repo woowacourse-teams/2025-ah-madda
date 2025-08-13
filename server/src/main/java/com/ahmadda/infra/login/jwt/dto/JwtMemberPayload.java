@@ -1,4 +1,4 @@
-package com.ahmadda.infra.jwt.dto;
+package com.ahmadda.infra.login.jwt.dto;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -1,7 +1,8 @@
 package com.ahmadda.infra.jwt;
 
-import com.ahmadda.infra.jwt.config.JwtProperties;
-import com.ahmadda.infra.jwt.exception.InvalidJwtException;
+import com.ahmadda.infra.login.jwt.JwtProvider;
+import com.ahmadda.infra.login.jwt.config.JwtProperties;
+import com.ahmadda.infra.login.jwt.exception.InvalidJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.Test;
@@ -16,10 +17,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class JwtProviderTest {
 
-    private final String secretKey = UUID.randomUUID()
+    private final String accessSecretKey = UUID.randomUUID()
             .toString();
+    private final Duration accessExpiration = Duration.ofHours(1);
+    private final String refreshSecretKey = UUID.randomUUID()
+            .toString();
+    private final Duration refreshExpiration = Duration.ofHours(1);
     private final Duration expiration = Duration.ofHours(1);
-    private final JwtProperties jwtProperties = new JwtProperties(secretKey, expiration);
+
+    private final JwtProperties jwtProperties =
+            new JwtProperties(accessSecretKey, accessExpiration, refreshSecretKey, refreshExpiration);
 
     private final JwtProvider sut = new JwtProvider(jwtProperties);
 
@@ -27,7 +34,7 @@ class JwtProviderTest {
     void JWT_토큰을_정상적으로_생성_및_검증_할_수_있다() {
         // given
         var memberId = 1L;
-        var token = sut.createToken(memberId);
+        var token = sut.createAccessToken(memberId);
 
         // when
         var memberPayload = sut.parsePayload(token);
@@ -40,7 +47,7 @@ class JwtProviderTest {
     void 페이로드_변환시_토큰을_정상적으로_파싱한다() {
         // given
         var memberId = 2L;
-        var token = sut.createToken(memberId);
+        var token = sut.createAccessToken(memberId);
 
         // when
         var payload = sut.parsePayload(token);
@@ -55,11 +62,11 @@ class JwtProviderTest {
         var now = Instant.now();
         var token = Jwts.builder()
                 .claims(Jwts.claims()
-                        .add("memberId", 3L)
-                        .issuedAt(Date.from(now.minus(Duration.ofHours(2))))
-                        .expiration(Date.from(now.minus(Duration.ofMinutes(1))))
-                        .build())
-                .signWith(jwtProperties.getSecretKey())
+                                .add("memberId", 3L)
+                                .issuedAt(Date.from(now.minus(Duration.ofHours(2))))
+                                .expiration(Date.from(now.minus(Duration.ofMinutes(1))))
+                                .build())
+                .signWith(jwtProperties.getAccessSecretKey())
                 .compact();
 
         // when // then
@@ -71,14 +78,14 @@ class JwtProviderTest {
     void 페이로드_변환시_잘못된_서명일_경우_예외가_발생한다() {
         // given
         var forgedKey = Keys.hmacShaKeyFor(UUID.randomUUID()
-                .toString()
-                .getBytes());
+                                                   .toString()
+                                                   .getBytes());
 
         var claims = Jwts.claims()
                 .add("memberId", 4L)
                 .issuedAt(Date.from(Instant.now()))
                 .expiration(Date.from(Instant.now()
-                        .plus(expiration)))
+                                              .plus(expiration)))
                 .build();
 
         var token = Jwts.builder()

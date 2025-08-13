@@ -1,14 +1,10 @@
 package com.ahmadda.application;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.infra.jwt.JwtProvider;
+import com.ahmadda.infra.login.jwt.JwtProvider;
 import com.ahmadda.infra.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.oauth.dto.OAuthUserInfoResponse;
 import org.junit.jupiter.api.Test;
@@ -18,6 +14,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Transactional
@@ -55,7 +55,7 @@ class LoginServiceTest {
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
                 .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
 
-        given(jwtProvider.createToken(any(Long.class)))
+        given(jwtProvider.createAccessToken(any(Long.class)))
                 .willReturn(accessToken);
 
         // when
@@ -78,7 +78,7 @@ class LoginServiceTest {
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
                 .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
 
-        given(jwtProvider.createToken(any(Long.class)))
+        given(jwtProvider.createAccessToken(any(Long.class)))
                 .willReturn(accessToken);
 
         Member member = Member.create(name, email, testPicture);
