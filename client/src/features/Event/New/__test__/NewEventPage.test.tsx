@@ -44,7 +44,7 @@ describe('NewEventPage', () => {
     expect(screen.getByLabelText(/이벤트 종료일/)).toBeInTheDocument();
     expect(screen.getByLabelText(/신청 종료일/)).toBeInTheDocument();
     expect(screen.getByLabelText(/장소/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/설명/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/소개글/)).toBeInTheDocument();
     expect(screen.getByText(/사전 질문/)).toBeInTheDocument();
     expect(screen.getByText(/질문 추가/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /이벤트 만들기/ })).toBeInTheDocument();
@@ -55,7 +55,7 @@ describe('NewEventPage', () => {
 
     expect(screen.getByLabelText(/이벤트 이름/)).toHaveValue('');
     expect(screen.getByLabelText(/장소/)).toHaveValue('');
-    expect(screen.getByLabelText(/설명/)).toHaveValue('');
+    expect(screen.getByLabelText(/소개글/)).toHaveValue('');
     expect(screen.getByLabelText(/수용 인원/)).toHaveValue('무제한');
   });
 
