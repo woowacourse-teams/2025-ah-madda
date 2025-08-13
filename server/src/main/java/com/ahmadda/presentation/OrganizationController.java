@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,15 +51,15 @@ public class OrganizationController {
                     )
             ),
             @ApiResponse(
-                    responseCode = "400",
+                    responseCode = "404",
                     content = @Content(
                             examples = @ExampleObject(
                                     value = """
                                             {
                                               "type": "about:blank",
-                                              "title": "Bad Request",
-                                              "status": 400,
-                                              "detail": "이름은 공백이면 안됩니다.",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "존재하지 않는 회원입니다",
                                               "instance": "/api/organizations"
                                             }
                                             """
@@ -68,21 +69,36 @@ public class OrganizationController {
             @ApiResponse(
                     responseCode = "422",
                     content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Unprocessable Entity",
-                                              "status": 422,
-                                              "detail": "이름의 길이는 2자 이상 20자 이하이어야 합니다.",
-                                              "instance": "/api/organizations"
-                                            }
-                                            """
-                            )
+                            examples = {
+                                    @ExampleObject(
+                                            name = "이름의 길이가 맞지 않음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "이름의 길이는 1자 이상 30자 이하이어야 합니다.",
+                                                      "instance": "/api/organizations"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "설명의 길이가 맞지 않음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "설명의 길이는 1자 이상 30자 이하이어야 합니다.",
+                                                      "instance": "/api/organizations"
+                                                    }
+                                                    """
+                                    )
+                            }
                     )
             )
     })
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<OrganizationCreateResponse> createOrganization(
             @RequestPart("organization") @Valid OrganizationCreateRequest organizationCreateRequest,
             @RequestPart("thumbnail") MultipartFile multipartFile,
@@ -94,7 +110,7 @@ public class OrganizationController {
                 multipartFile.getSize(),
                 multipartFile.getInputStream()
         );
-        
+
         Organization organization = organizationService.createOrganization(
                 organizationCreateRequest,
                 thumnailImageFile,
