@@ -24,6 +24,7 @@ import { formatDateForInput, parseInputDate, setTimeToDate } from '../utils/date
 import { DatePickerDropdown } from './DatePickerDropdown';
 import { MaxCapacityModal } from './MaxCapacityModal';
 import { QuestionForm } from './QuestionForm';
+import { SingleDatePickerDropdown } from './SingleDatePickerDropdown';
 import { TemplateModal } from './TemplateModal';
 
 const ORGANIZATION_ID = 1; // 임시
@@ -56,6 +57,11 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     isOpen: isDatePickerDropdownOpen,
     open: datePickerDropdownOpen,
     close: datePickerDropdownClose,
+  } = useModal();
+  const {
+    isOpen: isRegistrationEndDropdownOpen,
+    open: registrationEndDropdownOpen,
+    close: registrationEndDropdownClose,
   } = useModal();
 
   const {
@@ -155,11 +161,24 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     handleValueChange('eventStart', formatDateForInput(newStartDate));
     handleValueChange('eventEnd', formatDateForInput(newEndDate));
 
-    handleValueChange('registrationEnd', formatDateForInput(newStartDate));
+    // 이벤트 시작일이 변경되면 신청 종료일도 시작일과 같은 날짜로 자동 설정
+    const currentRegistrationEndTime =
+      parseInputDate(basicEventForm.registrationEnd) || finalStartTime;
+    const newRegistrationEndDate = setTimeToDate(startDate, currentRegistrationEndTime);
+    handleValueChange('registrationEnd', formatDateForInput(newRegistrationEndDate));
 
     validateField('eventStart', formatDateForInput(newStartDate));
     validateField('eventEnd', formatDateForInput(newEndDate));
-    validateField('registrationEnd', formatDateForInput(newStartDate));
+    validateField('registrationEnd', formatDateForInput(newRegistrationEndDate));
+  };
+
+  const handleRegistrationEndSelect = (date: Date, time?: Date) => {
+    const currentTime = parseInputDate(basicEventForm.registrationEnd) || new Date();
+    const finalTime = time || currentTime;
+    const newDate = setTimeToDate(date, finalTime);
+
+    handleValueChange('registrationEnd', formatDateForInput(newDate));
+    validateField('registrationEnd', formatDateForInput(newDate));
   };
 
   return (
@@ -226,22 +245,38 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               />
             </Flex>
 
-            <Input
-              id="registrationEnd"
-              name="registrationEnd"
-              label="신청 종료일"
-              type="datetime-local"
-              placeholder="2025.07.25 15:00"
-              value={basicEventForm.registrationEnd}
-              max={basicEventForm.eventStart}
-              onChange={handleChange}
-              onClick={datePickerDropdownOpen}
-              errorMessage={errors.registrationEnd}
-              isRequired
+            <Flex
               css={css`
-                cursor: pointer;
+                position: relative;
               `}
-            />
+            >
+              <Input
+                id="registrationEnd"
+                name="registrationEnd"
+                label="신청 종료일"
+                value={
+                  basicEventForm.registrationEnd
+                    ? basicEventForm.registrationEnd.replace('T', ' ')
+                    : ''
+                }
+                placeholder="신청 종료일과 시간을 선택해주세요"
+                readOnly
+                onClick={registrationEndDropdownOpen}
+                errorMessage={errors.registrationEnd}
+                isRequired
+                css={css`
+                  cursor: pointer;
+                `}
+              />
+              <SingleDatePickerDropdown
+                isOpen={isRegistrationEndDropdownOpen}
+                onClose={registrationEndDropdownClose}
+                onSelect={handleRegistrationEndSelect}
+                initialDate={parseInputDate(basicEventForm.registrationEnd) || null}
+                initialTime={parseInputDate(basicEventForm.registrationEnd) || undefined}
+                maxDate={parseInputDate(basicEventForm.eventStart) || null}
+              />
+            </Flex>
 
             <Input
               id="place"
