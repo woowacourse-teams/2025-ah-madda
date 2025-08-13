@@ -12,22 +12,23 @@ import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Poke;
-import com.ahmadda.domain.PushNotifier;
+import com.ahmadda.domain.PokeHistory;
+import com.ahmadda.domain.PokeHistoryRepository;
 import com.ahmadda.presentation.dto.PokeRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
@@ -50,13 +51,30 @@ class PokeServiceTest {
     private OrganizationRepository organizationRepository;
 
     @Autowired
+    private PokeHistoryRepository pokeHistoryRepository;
+
+    @MockitoSpyBean
     private Poke poke;
 
-    @MockitoBean
-    private PushNotifier pushNotifier;
+    @Test
+    void 포키를_할_수_있다() {
+        // given
+        var organization = createOrganization("테스트 조직", "조직 설명", "test-image.png");
+        var member = createMember("테스트 회원", "test@example.com", "test-profile.png");
+        var organizer = createOrganizationMember("주최자", member, organization);
+        var participantMember = createMember("참여자", "participant@example.com", "participant-profile.png");
+        var participant = createOrganizationMember("참여자", participantMember, organization);
+        var event = createEvent("테스트 이벤트", "이벤트 설명", "테스트 장소", organizer, organization);
+
+        // when
+        sut.poke(event.getId(), new PokeRequest(participant.getId()), new LoginMember(member.getId()));
+
+        // then
+        verify(poke).doPoke(eq(organizer), eq(participant), eq(event), any());
+    }
 
     @Test
-    void 포키를_성공적으로_전송한다() {
+    void 포키를_성공적으로_전송하면_이력을_저장한다() {
         // given
         var organization = createOrganization("테스트 조직", "조직 설명", "test-image.png");
         var member = createMember("테스트 회원", "test@example.com", "test-profile.png");
@@ -70,10 +88,20 @@ class PokeServiceTest {
         var loginMember = new LoginMember(organizer.getId());
 
         // when
-        sut.poke(eventId, request, loginMember);
+        PokeHistory result = sut.poke(eventId, request, loginMember);
 
         // then
-        verify(pushNotifier, times(1)).sendPush(eq(participant), any());
+        assertSoftly(softly -> {
+            softly.assertThat(result
+                            .getRecipient())
+                    .isEqualTo(participant);
+            softly.assertThat(result
+                            .getSender())
+                    .isEqualTo(organizer);
+            softly.assertThat(result
+                            .getEvent())
+                    .isEqualTo(event);
+        });
     }
 
     @Test

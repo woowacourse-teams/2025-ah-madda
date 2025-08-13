@@ -22,7 +22,7 @@ public class Poke {
     private final PokeHistoryRepository pokeHistoryRepository;
 
     @Transactional
-    public void doPoke(
+    public PokeHistory doPoke(
             final OrganizationMember sender,
             final OrganizationMember recipient,
             final Event event,
@@ -31,10 +31,9 @@ public class Poke {
         validateDoPoke(sender, recipient, event, sentAt);
         validateDuplicateDoPoke(sender, recipient, event, sentAt);
 
-        PokeHistory pokeHistory = PokeHistory.create(sender, recipient, event, sentAt);
         pushPoke(sender, recipient, event);
 
-        pokeHistoryRepository.save(pokeHistory);
+        return PokeHistory.create(sender, recipient, event, sentAt);
     }
 
     private void validateDuplicateDoPoke(

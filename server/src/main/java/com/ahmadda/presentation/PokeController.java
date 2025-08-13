@@ -51,6 +51,7 @@ public class PokeController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
+                                            name = "이벤트 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
@@ -62,6 +63,7 @@ public class PokeController {
                                                     """
                                     ),
                                     @ExampleObject(
+                                            name = "조직원 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",

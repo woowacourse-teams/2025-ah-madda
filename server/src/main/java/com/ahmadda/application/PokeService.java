@@ -8,6 +8,8 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.Poke;
+import com.ahmadda.domain.PokeHistory;
+import com.ahmadda.domain.PokeHistoryRepository;
 import com.ahmadda.presentation.dto.PokeRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,15 +24,18 @@ public class PokeService {
     private final Poke poke;
     private final EventRepository eventRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
+    private final PokeHistoryRepository pokeHistoryRepository;
 
     @Transactional
-    public void poke(final Long eventId, final PokeRequest notifyPokeRequest, final LoginMember loginMember) {
+    public PokeHistory poke(final Long eventId, final PokeRequest notifyPokeRequest, final LoginMember loginMember) {
         Event event = getEvent(eventId);
         Organization organization = event.getOrganization();
         OrganizationMember sender = getOrganizationMember(loginMember, organization);
         OrganizationMember recipient = getOrganizationMember(notifyPokeRequest.receiptOrganizationMemberId());
 
-        poke.doPoke(sender, recipient, event, LocalDateTime.now());
+        PokeHistory pokeHistory = poke.doPoke(sender, recipient, event, LocalDateTime.now());
+
+        return pokeHistoryRepository.save(pokeHistory);
     }
 
     private OrganizationMember getOrganizationMember(final Long organizationMemberId) {
