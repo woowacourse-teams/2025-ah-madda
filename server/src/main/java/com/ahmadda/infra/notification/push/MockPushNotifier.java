@@ -25,7 +25,7 @@ public class MockPushNotifier implements PushNotifier {
     }
 
     @Override
-    public void sendPush(OrganizationMember recipient, PushNotificationPayload pushNotificationPayload) {
+    public void sendPush(final OrganizationMember recipient, final PushNotificationPayload pushNotificationPayload) {
         log.info(
                 "[Mock Push] To: {} | Title: {} | Body: {} | Event ID: {}",
                 recipient,

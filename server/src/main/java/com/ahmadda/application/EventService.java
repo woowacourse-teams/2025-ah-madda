@@ -14,7 +14,6 @@ import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
-import com.ahmadda.domain.EventStatistic;
 import com.ahmadda.domain.EventStatisticRepository;
 import com.ahmadda.domain.Guest;
 import com.ahmadda.domain.Member;
@@ -224,19 +223,23 @@ public class EventService {
         sendPushNotificationsToRecipients(event, content, recipients);
     }
 
-    private void sendPushNotificationsToRecipients(Event event, String content, List<OrganizationMember> recipients) {
+    private void sendPushNotificationsToRecipients(
+            final Event event,
+            final String content,
+            List<OrganizationMember> recipients
+    ) {
         PushNotificationPayload pushPayload = PushNotificationPayload.of(event, content);
 
         pushNotifier.sendPushs(recipients, pushPayload);
     }
 
-    private void sendEmailsToRecipients(Event event, String content, List<OrganizationMember> recipients) {
+    private void sendEmailsToRecipients(
+            final Event event,
+            final String content,
+            final List<OrganizationMember> recipients
+    ) {
         EventEmailPayload emailPayload = EventEmailPayload.of(event, content);
 
         emailNotifier.sendEmails(recipients, emailPayload);
-    }
-
-    private void createEventStatistic(final Event savedEvent) {
-        eventStatisticRepository.save(EventStatistic.create(savedEvent));
     }
 }

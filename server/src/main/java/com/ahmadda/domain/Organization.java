@@ -89,8 +89,7 @@ public class Organization extends BaseEntity {
     }
 
     public boolean isExistOrganizationMember(final OrganizationMember otherOrganizationMember) {
-        return organizationMembers.stream()
-                .anyMatch((organizationMember) -> organizationMember.equals(otherOrganizationMember));
+        return organizationMembers.contains(otherOrganizationMember);
     }
 
     private void validateName(final String name) {
