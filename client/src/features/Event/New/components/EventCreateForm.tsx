@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import { HttpError } from '@/api/fetcher';
+import { useAddTemplate } from '@/api/mutations/useAddTemplate';
 import { useUpdateEvent } from '@/api/mutations/useUpdateEvent';
 import { getEventDetailAPI } from '@/api/queries/event';
 import { Button } from '@/shared/components/Button';
@@ -35,6 +36,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const navigate = useNavigate();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
   const { mutate: updateEvent } = useUpdateEvent();
+  const { mutate: addTemplate } = useAddTemplate();
   const { data: eventDetail } = useQuery({
     queryKey: ['event', 'detail', Number(eventId)],
     queryFn: () => getEventDetailAPI(Number(eventId)),
@@ -130,6 +132,27 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     }
   };
 
+  const handleAddTemplate = () => {
+    addTemplate(
+      {
+        title: basicEventForm.title,
+        description: basicEventForm.description,
+      },
+      {
+        onSuccess: () => {
+          alert('템플릿이 성공적으로 추가되었습니다!');
+        },
+        onError: () => {
+          if (!basicEventForm.title) {
+            alert('이벤트 이름을 입력해 주세요');
+          } else if (!basicEventForm.description) {
+            alert('이벤트 설명을 입력해 주세요');
+          }
+        },
+      }
+    );
+  };
+
   return (
     <Flex>
       <Flex dir="column" gap="20px" padding="60px 0" width="100%">
@@ -148,6 +171,16 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         <Card>
           <Flex justifyContent="space-between">
             <Text type="Heading">기본 질문</Text>
+            <Flex
+              onClick={handleAddTemplate}
+              css={css`
+                cursor: pointer;
+              `}
+            >
+              <Text type="Label" color="gray">
+                +현재 글 템플릿에 추가
+              </Text>
+            </Flex>
           </Flex>
           <Flex dir="column">
             <Input
