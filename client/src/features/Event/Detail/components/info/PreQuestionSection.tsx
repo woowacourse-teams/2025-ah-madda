@@ -1,7 +1,11 @@
+import { css } from '@emotion/react';
+
+import { Flex } from '@/shared/components/Flex';
+import { Input } from '@/shared/components/Input';
+import { Text } from '@/shared/components/Text';
+import { theme } from '@/shared/styles/theme';
+
 import { Answer } from '../../../../../api/types/event';
-import { Flex } from '../../../../../shared/components/Flex';
-import { Input } from '../../../../../shared/components/Input';
-import { Text } from '../../../../../shared/components/Text';
 import type { EventDetail } from '../../../types/Event';
 import { QuestionContainer } from '../../containers/QuestionContainer';
 
@@ -38,6 +42,9 @@ export const PreQuestionSection = ({
                 placeholder="답변을 입력하세요"
                 value={answers.find((a) => a.questionId === question.questionId)?.answerText ?? ''}
                 onChange={(e) => onChangeAnswer(question.questionId, e.target.value)}
+                css={css`
+                  outline: 1px solid ${theme.colors.gray300};
+                `}
               />
             </Flex>
           ))}
