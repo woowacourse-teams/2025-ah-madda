@@ -224,15 +224,19 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               errorMessage={errors.place}
             />
 
-            <Textarea
-              id="description"
-              name="description"
-              label="설명"
-              placeholder="이벤트에 대한 설명을 입력해 주세요"
-              value={basicEventForm.description}
-              onChange={handleChange}
-              errorMessage={errors.description}
-            />
+            <Flex dir="column" gap="8px">
+              <label htmlFor="title">
+                <Text type="Body">이벤트 이름</Text>
+              </label>
+              <Textarea
+                id="description"
+                name="description"
+                placeholder="이벤트에 대한 설명을 입력해 주세요"
+                value={basicEventForm.description}
+                onChange={handleChange}
+                errorMessage={errors.description}
+              />
+            </Flex>
 
             <Input
               id="maxCapacity"
