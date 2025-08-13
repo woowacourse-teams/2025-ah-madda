@@ -193,28 +193,38 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
             />
           </Flex>
 
-          <Input
-            id="registrationEnd"
-            name="registrationEnd"
-            label="신청 종료일"
-            type="datetime-local"
-            placeholder="2025.07.25 15:00"
-            value={basicEventForm.registrationEnd}
-            max={basicEventForm.eventStart}
-            onChange={handleChange}
-            errorMessage={errors.registrationEnd}
-            isRequired
-          />
+          <Flex
+            dir="row"
+            gap="16px"
+            css={css`
+              @media (max-width: 768px) {
+                flex-direction: column;
+              }
+            `}
+          >
+            <Input
+              id="registrationEnd"
+              name="registrationEnd"
+              label="신청 종료일"
+              type="datetime-local"
+              placeholder="2025.07.25 15:00"
+              value={basicEventForm.registrationEnd}
+              max={basicEventForm.eventStart}
+              onChange={handleChange}
+              errorMessage={errors.registrationEnd}
+              isRequired
+            />
 
-          <Input
-            id="place"
-            name="place"
-            label="장소"
-            placeholder="이벤트 장소를 입력해 주세요"
-            value={basicEventForm.place}
-            onChange={handleChange}
-            errorMessage={errors.place}
-          />
+            <Input
+              id="place"
+              name="place"
+              label="장소"
+              placeholder="이벤트 장소를 입력해 주세요"
+              value={basicEventForm.place}
+              onChange={handleChange}
+              errorMessage={errors.place}
+            />
+          </Flex>
 
           <Input
             id="description"
