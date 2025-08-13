@@ -40,8 +40,8 @@ public class EventPokeService {
 
     private OrganizationMember getOrganizationMember(final LoginMember loginMember, final Organization organization) {
         return organizationMemberRepository.findByOrganizationIdAndMemberId(
-                        loginMember.memberId(),
-                        organization.getId()
+                        organization.getId(),
+                        loginMember.memberId()
                 )
                 .orElseThrow(() -> new NotFoundException("조직원을 찾는데 실패하였습니다."));
     }

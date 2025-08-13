@@ -58,7 +58,7 @@ class EventPokeReminderTest {
         var now = LocalDateTime.now();
 
         for (int i = 0; i < 10; i++) {
-            eventPokeRepository.save(EventPoke.create(sender, recipient, event, now.minusMinutes(i)));
+            eventPokeRepository.save(EventPokeHistory.create(sender, recipient, event, now.minusMinutes(i)));
         }
 
         // when // then
