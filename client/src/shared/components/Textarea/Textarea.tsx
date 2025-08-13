@@ -19,6 +19,12 @@ export type TextareaProps = {
    */
   errorMessage?: string;
 
+  /**
+   * Force invalid UI on/off (e.g., show only on blur/submit).
+   * If omitted, falls back to !!errorMessage.
+   */
+  isInvalid?: boolean;
+
   /** Show character counter (uses maxLength) */
   showCounter?: boolean;
 } & ComponentProps<'textarea'>;
@@ -26,10 +32,11 @@ export type TextareaProps = {
 export const Textarea = ({
   helperText,
   errorMessage,
+  isInvalid,
   showCounter = false,
   ...props
 }: TextareaProps) => {
-  const isError = !!errorMessage;
+  const isError = isInvalid ?? Boolean(errorMessage);
 
   const hasMax = typeof props.maxLength === 'number' && props.maxLength > 0;
   const raw = (props.value ?? props.defaultValue ?? '') as string | number;
