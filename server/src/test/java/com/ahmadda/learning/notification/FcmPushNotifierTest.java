@@ -1,6 +1,7 @@
 package com.ahmadda.learning.notification;
 
 import com.ahmadda.domain.Member;
+import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.PushNotificationPayload;
@@ -26,6 +27,8 @@ class FcmPushNotifierTest {
 
     @Autowired
     private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Test
     void 실제_FCM으로_푸시를_전송한다() {
