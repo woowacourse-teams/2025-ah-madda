@@ -30,9 +30,11 @@ export const QuestionItem = ({
 
   return (
     <>
+      <label htmlFor={`question-${orderIndex}`}>
+        <Text type="Body">{`질문${orderIndex + 1}`}</Text>
+      </label>
       <Input
         id={`question-${orderIndex}`}
-        label={`질문${orderIndex + 1}`}
         placeholder="질문을 입력해주세요."
         value={questionText}
         onChange={handleTextChange}

@@ -141,167 +141,220 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
           </Button>
         </Flex>
 
-        <Flex dir="column">
-          <Input
-            id="title"
-            name="title"
-            label="이벤트 이름"
-            placeholder="이벤트 이름을 입력해주세요"
-            value={basicEventForm.title}
-            onChange={handleChange}
-            errorMessage={errors.title}
-            isRequired
-            showCounter
-            maxLength={MAX_LENGTH.TITLE}
-          />
-
-          <Flex
-            dir="row"
-            gap="16px"
-            css={css`
-              @media (max-width: 768px) {
-                flex-direction: column;
-              }
-            `}
-          >
+        <Flex dir="column" gap="30px">
+          <Flex dir="column" gap="8px">
+            <label htmlFor="title">
+              <Text type="Body">이벤트 이름</Text>
+            </label>
             <Input
-              id="eventStart"
-              name="eventStart"
-              label="이벤트 시작일"
-              type="datetime-local"
-              min="2025-07-31T14:00"
-              placeholder="2025.07.30 13:00"
-              value={basicEventForm.eventStart}
-              onChange={(e) => {
-                handleChange(e);
-                const newValue = e.target.value;
-                handleValueChange('registrationEnd', newValue);
-                validateField('registrationEnd', newValue);
-              }}
-              errorMessage={errors.eventStart}
-              isRequired
-            />
-            <Input
-              id="eventEnd"
-              name="eventEnd"
-              label="이벤트 종료일"
-              type="datetime-local"
-              placeholder="2025.07.30 15:00"
-              value={basicEventForm.eventEnd}
-              min={basicEventForm.eventStart}
+              id="title"
+              name="title"
+              placeholder="이벤트 이름을 입력해주세요"
+              value={basicEventForm.title}
               onChange={handleChange}
-              errorMessage={errors.eventEnd}
+              errorMessage={errors.title}
               isRequired
-            />
-          </Flex>
-
-          <Flex
-            dir="row"
-            gap="16px"
-            css={css`
-              @media (max-width: 768px) {
-                flex-direction: column;
-              }
-            `}
-          >
-            <Input
-              id="registrationEnd"
-              name="registrationEnd"
-              label="신청 종료일"
-              type="datetime-local"
-              placeholder="2025.07.25 15:00"
-              value={basicEventForm.registrationEnd}
-              max={basicEventForm.eventStart}
-              onChange={handleChange}
-              errorMessage={errors.registrationEnd}
-              isRequired
-            />
-
-            <Input
-              id="place"
-              name="place"
-              label="장소"
-              placeholder="이벤트 장소를 입력해 주세요"
-              value={basicEventForm.place}
-              onChange={handleChange}
-              errorMessage={errors.place}
               showCounter
-              maxLength={MAX_LENGTH.PLACE}
+              maxLength={MAX_LENGTH.TITLE}
             />
           </Flex>
 
-          <Input
-            id="description"
-            name="description"
-            label="설명"
-            placeholder="이벤트에 대한 설명을 입력해 주세요"
-            value={basicEventForm.description}
-            onChange={handleChange}
-            errorMessage={errors.description}
-            showCounter
-            maxLength={MAX_LENGTH.DESCRIPTION}
-          />
-
-          <Input
-            id="maxCapacity"
-            name="maxCapacity"
-            label="수용 인원"
-            value={
-              basicEventForm.maxCapacity === UNLIMITED_CAPACITY
-                ? '제한없음'
-                : `${basicEventForm.maxCapacity}명`
-            }
-            readOnly
-            onClick={capacityModalOpen}
+          <Flex
+            gap="16px"
             css={css`
-              cursor: pointer;
-            `}
-          />
-
-          <MaxCapacityModal
-            isOpen={isCapacityModalOpen}
-            initialValue={
-              basicEventForm.maxCapacity === UNLIMITED_CAPACITY ? 10 : basicEventForm.maxCapacity
-            }
-            onClose={capacityModalClose}
-            onSubmit={(value) => {
-              handleValueChange('maxCapacity', value);
-              validateField('maxCapacity', value.toString());
-            }}
-          />
-        </Flex>
-
-        <QuestionForm
-          questions={questions}
-          addQuestion={addQuestion}
-          deleteQuestion={deleteQuestion}
-          updateQuestion={updateQuestion}
-          isEditable={!isEdit}
-        />
-
-        <Flex justifyContent="flex-end">
-          <Button
-            type="submit"
-            color="primary"
-            size="full"
-            disabled={!isFormReady}
-            onClick={handleSubmit}
-            css={css`
-              margin-top: 40px;
+              @media (max-width: 768px) {
+                flex-direction: column;
+                gap: 30px;
+              }
             `}
           >
-            {isEdit ? '이벤트 수정' : '이벤트 만들기'}
-          </Button>
-        </Flex>
-      </Flex>
+            <Flex
+              dir="column"
+              gap="8px"
+              css={css`
+                flex: 1;
+              `}
+            >
+              <label htmlFor="eventStart">
+                <Text type="Body">이벤트 시작일</Text>
+              </label>
+              <Input
+                id="eventStart"
+                name="eventStart"
+                type="datetime-local"
+                min="2025-07-31T14:00"
+                placeholder="2025.07.30 13:00"
+                value={basicEventForm.eventStart}
+                onChange={(e) => {
+                  handleChange(e);
+                  const v = e.target.value;
+                  handleValueChange('registrationEnd', v);
+                  validateField('registrationEnd', v);
+                }}
+                errorMessage={errors.eventStart}
+                isRequired
+              />
+            </Flex>
 
-      <TemplateModal
-        isOpen={isTemplateModalOpen}
-        onClose={templateModalClose}
-        onConfirm={handleTemplateLoad}
-        onSelect={handleSelectEvent}
-        selectedEventId={selectedEventId}
-      />
+            <Flex
+              dir="column"
+              gap="8px"
+              css={css`
+                flex: 1;
+              `}
+            >
+              <label htmlFor="eventEnd">
+                <Text type="Body">이벤트 종료일</Text>
+              </label>
+              <Input
+                id="eventEnd"
+                name="eventEnd"
+                type="datetime-local"
+                placeholder="2025.07.30 15:00"
+                value={basicEventForm.eventEnd}
+                min={basicEventForm.eventStart}
+                onChange={handleChange}
+                errorMessage={errors.eventEnd}
+                isRequired
+              />
+            </Flex>
+          </Flex>
+
+          <Flex
+            gap="16px"
+            css={css`
+              @media (max-width: 768px) {
+                flex-direction: column;
+                gap: 30px;
+              }
+            `}
+          >
+            <Flex
+              dir="column"
+              gap="8px"
+              css={css`
+                flex: 1;
+              `}
+            >
+              <label htmlFor="registrationEnd">
+                <Text type="Body">신청 종료일</Text>
+              </label>
+              <Input
+                id="registrationEnd"
+                name="registrationEnd"
+                type="datetime-local"
+                placeholder="2025.07.25 15:00"
+                value={basicEventForm.registrationEnd}
+                max={basicEventForm.eventStart}
+                onChange={handleChange}
+                errorMessage={errors.registrationEnd}
+                isRequired
+              />
+            </Flex>
+
+            <Flex
+              dir="column"
+              gap="8px"
+              css={css`
+                flex: 1;
+              `}
+            >
+              <label htmlFor="place">
+                <Text type="Body">장소</Text>
+              </label>
+              <Input
+                id="place"
+                name="place"
+                placeholder="이벤트 장소를 입력해 주세요"
+                value={basicEventForm.place}
+                onChange={handleChange}
+                errorMessage={errors.place}
+                showCounter
+                maxLength={MAX_LENGTH.PLACE}
+              />
+            </Flex>
+          </Flex>
+
+          <Flex dir="column" gap="8px">
+            <label htmlFor="description">
+              <Text type="Body">소개글</Text>
+            </label>
+            <Input
+              id="description"
+              name="description"
+              placeholder="이벤트에 대한 설명을 입력해 주세요"
+              value={basicEventForm.description}
+              onChange={handleChange}
+              errorMessage={errors.description}
+              showCounter
+              maxLength={MAX_LENGTH.DESCRIPTION}
+            />
+          </Flex>
+
+          <Flex dir="column" gap="8px">
+            <label htmlFor="maxCapacity">
+              <Text type="Body">인원</Text>
+            </label>
+            <Input
+              id="maxCapacity"
+              name="maxCapacity"
+              value={
+                basicEventForm.maxCapacity === UNLIMITED_CAPACITY
+                  ? '제한없음'
+                  : `${basicEventForm.maxCapacity}명`
+              }
+              readOnly
+              onClick={capacityModalOpen}
+              css={css`
+                cursor: pointer;
+              `}
+            />
+
+            <MaxCapacityModal
+              isOpen={isCapacityModalOpen}
+              initialValue={
+                basicEventForm.maxCapacity === UNLIMITED_CAPACITY ? 10 : basicEventForm.maxCapacity
+              }
+              onClose={capacityModalClose}
+              onSubmit={(value) => {
+                handleValueChange('maxCapacity', value);
+                validateField('maxCapacity', value.toString());
+              }}
+            />
+          </Flex>
+
+          <QuestionForm
+            questions={questions}
+            addQuestion={addQuestion}
+            deleteQuestion={deleteQuestion}
+            updateQuestion={updateQuestion}
+            isEditable={!isEdit}
+          />
+
+          <Flex justifyContent="flex-end">
+            <Button
+              type="submit"
+              color="primary"
+              size="full"
+              disabled={!isFormReady}
+              onClick={handleSubmit}
+              css={css`
+                margin-top: 40px;
+              `}
+            >
+              {isEdit ? '이벤트 수정' : '이벤트 만들기'}
+            </Button>
+          </Flex>
+        </Flex>
+
+        <TemplateModal
+          isOpen={isTemplateModalOpen}
+          onClose={templateModalClose}
+          onConfirm={handleTemplateLoad}
+          onSelect={handleSelectEvent}
+          selectedEventId={selectedEventId}
+        />
+      </Flex>
     </Flex>
   );
 };
