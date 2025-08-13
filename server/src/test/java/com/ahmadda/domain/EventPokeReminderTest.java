@@ -1,19 +1,5 @@
-package com.ahmadda.application;
+package com.ahmadda.domain;
 
-import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventOperationPeriod;
-import com.ahmadda.domain.EventPoke;
-import com.ahmadda.domain.EventPokeReminder;
-import com.ahmadda.domain.EventPokeRepository;
-import com.ahmadda.domain.EventRepository;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberRepository;
-import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.PushNotifier;
-import com.ahmadda.domain.Question;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

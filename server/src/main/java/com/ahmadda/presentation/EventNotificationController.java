@@ -178,7 +178,7 @@ public class EventNotificationController {
                 .build();
     }
 
-    @Operation(summary = "이벤트 참여자 푸시 알림", description = "특정 이벤트 참여자에게 푸시 알림을 보냅니다.")
+    @Operation(summary = "이벤트 참여자 푸시 알림", description = "참여자가 특정 참여자에게 푸시 알림을 보냅니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",

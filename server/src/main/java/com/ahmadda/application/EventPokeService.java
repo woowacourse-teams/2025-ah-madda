@@ -33,7 +33,7 @@ public class EventPokeService {
         eventPokeReminder.sendPoke(sender, recipient, event, LocalDateTime.now());
     }
 
-    private OrganizationMember getOrganizationMember(Long organizationMemberId) {
+    private OrganizationMember getOrganizationMember(final Long organizationMemberId) {
         return organizationMemberRepository.findById(organizationMemberId)
                 .orElseThrow(() -> new NotFoundException("조직원을 찾는데 실패하였습니다."));
     }

@@ -2,7 +2,7 @@ package com.ahmadda.domain;
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 //TODO 디비 방식으로 구현하면 db io에 매우 부하가 클것으로 예상됨
 // 메모리 방식의 부하 고려가능
 // 만약 고려한다면 메모리 부하를 예상하여 분산 필요
-// 삭제 스케줄링 필요
-@Component
+// 만약 메모리방식하지않고 현방식 유지시 삭제 스케줄링 필요할지도 논의
+@Service
 @RequiredArgsConstructor
 public class EventPokeReminder {
 
@@ -45,7 +45,6 @@ public class EventPokeReminder {
 
         EventPoke eventPoke = EventPoke.create(sender, recipient, event, dateTime);
         pushPoke(sender, recipient, event);
-
 
         eventPokeRepository.save(eventPoke);
     }

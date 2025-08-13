@@ -67,7 +67,7 @@ public class EventPoke extends BaseEntity {
         return new EventPoke(sendOrganizationMember, receiveOrganizationMember, event, dateTime);
     }
 
-    private void validateSentAt(LocalDateTime sentAt) {
+    private void validateSentAt(final LocalDateTime sentAt) {
         Assert.notNull(sentAt, "포크 전송 날짜는 null 일 수 없습니다.");
     }
 
