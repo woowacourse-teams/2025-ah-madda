@@ -225,8 +225,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
             />
 
             <Flex dir="column" gap="8px">
-              <label htmlFor="title">
-                <Text type="Body">이벤트 이름</Text>
+              <label htmlFor="description">
+                <Text type="Body">소개글</Text>
               </label>
               <Textarea
                 id="description"
