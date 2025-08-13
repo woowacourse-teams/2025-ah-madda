@@ -1,5 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
-import { wait } from '@testing-library/user-event/dist/cjs/utils/index.js';
+import { render, screen } from '@testing-library/react';
 import { Mocked } from 'vitest';
 
 import { fetcher } from '@/api/fetcher';
