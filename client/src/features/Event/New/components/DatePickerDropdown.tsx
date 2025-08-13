@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
@@ -8,6 +8,9 @@ import { Calendar } from '@/shared/components/Calendar/Calendar';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 import { TimePicker } from '@/shared/components/TimePicker';
+import { useClickOutside } from '@/shared/hooks/useClickOutside';
+
+import { useDatePicker } from '../hooks/useDatePicker';
 
 type DatePickerDropdownProps = {
   isOpen: boolean;
@@ -29,54 +32,29 @@ export const DatePickerDropdown = ({
   initialEndTime,
 }: DatePickerDropdownProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(initialStartDate || null);
-  const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(initialEndDate || null);
-  const [selectedStartTime, setSelectedStartTime] = useState<Date | undefined>(initialStartTime);
-  const [selectedEndTime, setSelectedEndTime] = useState<Date | undefined>(initialEndTime);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    };
+  useClickOutside({ ref: dropdownRef, isOpen, onClose });
 
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen, onClose]);
-
-  const handleDateSelect = (date: Date) => {
-    setSelectedDate(date);
-    setSelectedEndDate(null);
-  };
-
-  const handleDateRangeSelect = (startDate: Date, endDate: Date) => {
-    setSelectedDate(startDate);
-    setSelectedEndDate(endDate);
-  };
-
-  const handleConfirm = () => {
-    if (selectedDate) {
-      const endDate = selectedEndDate || selectedDate;
-      onSelect(selectedDate, endDate, selectedStartTime, selectedEndTime);
-      onClose();
-    }
-  };
-
-  const handleCancel = () => {
-    setSelectedDate(initialStartDate || null);
-    setSelectedEndDate(initialEndDate || null);
-    setSelectedStartTime(initialStartTime);
-    setSelectedEndTime(initialEndTime);
-    onClose();
-  };
-
-  const isConfirmDisabled = !selectedDate;
+  const {
+    selectedDate,
+    selectedEndDate,
+    selectedStartTime,
+    selectedEndTime,
+    setSelectedStartTime,
+    setSelectedEndTime,
+    handleDateSelect,
+    handleDateRangeSelect,
+    handleConfirm,
+    handleCancel,
+    isConfirmDisabled,
+  } = useDatePicker({
+    initialStartDate,
+    initialEndDate,
+    initialStartTime,
+    initialEndTime,
+    onSelect,
+    onClose,
+  });
 
   if (!isOpen) return null;
 
