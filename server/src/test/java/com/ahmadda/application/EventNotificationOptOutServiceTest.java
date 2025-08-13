@@ -136,6 +136,7 @@ class EventNotificationOptOutServiceTest {
 
     private Event createEvent(OrganizationMember organizer, Organization organization) {
         var now = LocalDateTime.now();
+
         return eventRepository.save(Event.create(
                 "이벤트 제목",
                 "설명",

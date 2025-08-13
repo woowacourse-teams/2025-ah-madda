@@ -43,9 +43,9 @@ public class EventNotificationOptOutService {
     public void cancelOptOut(final Long eventId, final LoginMember loginMember) {
         Event event = getEvent(eventId);
         OrganizationMember organizationMember = getOrganizationMember(
-                loginMember.memberId(),
                 event.getOrganization()
-                        .getId()
+                        .getId(),
+                loginMember.memberId()
         );
 
         EventNotificationOptOut optOut =
