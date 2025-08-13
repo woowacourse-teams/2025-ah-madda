@@ -1,3 +1,5 @@
+process.env.TZ = 'Asia/Seoul';
+
 import path from 'path';
 import { defineConfig } from 'vitest/config';
 
