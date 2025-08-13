@@ -29,7 +29,7 @@ export const StyledInput = styled.input<{ isError?: boolean; hasLeftIcon?: boole
   background-color: ${theme.colors.gray50};
   border-radius: 8px;
   padding: 12px;
-  border: none;
+  border: 1px solid ${theme.colors.gray200};
   font-size: 14px;
   width: 100%;
 
