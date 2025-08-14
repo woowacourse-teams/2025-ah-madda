@@ -27,7 +27,7 @@ public class PokeController {
 
     private final PokeService pokeService;
 
-    @Operation(summary = "포키를 보낼 수 있습니다.", description = "포키를 통해 참여자가 특정 참여자에게 푸시 알림을 보낼 수 있습니다.")
+    @Operation(summary = "포키 발송", description = "포키를 통해 참여자가 특정 참여자에게 푸시 알림을 보낼 수 있습니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(

@@ -4,6 +4,8 @@ import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.util.Assert;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 public class GuestWithOptOut {
 
@@ -22,6 +24,23 @@ public class GuestWithOptOut {
 
     public static GuestWithOptOut create(final Guest guest, final boolean optedOut) {
         return new GuestWithOptOut(guest, optedOut);
+    }
+
+    public static GuestWithOptOut createWithOptOutStatus(
+            final Guest guest,
+            final EventNotificationOptOutRepository optOutRepository
+    ) {
+        boolean optedOut =
+                optOutRepository.existsByEventAndOrganizationMember(guest.getEvent(), guest.getOrganizationMember());
+
+        return new GuestWithOptOut(guest, optedOut);
+    }
+
+    public static List<OrganizationMember> extractOptInOrganizationMembers(final List<GuestWithOptOut> guestsWithOptOut) {
+        return guestsWithOptOut.stream()
+                .filter(guestWithOptOut -> !guestWithOptOut.isOptedOut())
+                .map(GuestWithOptOut::getOrganizationMember)
+                .toList();
     }
 
     private void validateGuest(final Guest guest) {

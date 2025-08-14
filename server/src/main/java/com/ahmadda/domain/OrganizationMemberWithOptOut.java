@@ -31,6 +31,16 @@ public class OrganizationMemberWithOptOut {
         return new OrganizationMemberWithOptOut(organizationMember, optedOut, event);
     }
 
+    public static OrganizationMemberWithOptOut createWithOptOutStatus(
+            final OrganizationMember organizationMember,
+            final Event event,
+            final EventNotificationOptOutRepository optOutRepository
+    ) {
+        boolean optedOut = optOutRepository.existsByEventAndOrganizationMember(event, organizationMember);
+
+        return new OrganizationMemberWithOptOut(organizationMember, optedOut, event);
+    }
+    
     private void validateOrganizationMember(final OrganizationMember organizationMember) {
         Assert.notNull(organizationMember, "조직원은 null이 될 수 없습니다.");
     }
