@@ -69,7 +69,9 @@ export const TemplateList = ({ templates, selectedId, onSelectTemplate }: Templa
             >
               <Flex justifyContent="space-between" alignItems="center">
                 <Text type="Body" weight="medium" color={theme.colors.gray900}>
-                  {template.title}
+                  {template.title.length > 21
+                    ? `${template.title.slice(0, 21)}...`
+                    : template.title}
                 </Text>
                 <IconButton
                   name="delete"

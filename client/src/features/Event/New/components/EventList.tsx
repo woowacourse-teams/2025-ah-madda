@@ -51,18 +51,12 @@ export const EventList = ({ events, selectedId, onSelectEvent }: EventListProps)
           return (
             <SelectableCard
               key={event.eventId}
-              onClick={() => onSelectEvent(event.eventId)}
               isSelected={isSelected}
+              onClick={() => onSelectEvent(event.eventId)}
             >
-              <Flex
-                alignItems="center"
-                gap="12px"
-                css={css`
-                  overflow: hidden;
-                `}
-              >
-                <Text as="span" type="Body" weight="medium" color={theme.colors.gray900}>
-                  {event.title}
+              <Flex justifyContent="space-between" alignItems="center">
+                <Text type="Body" weight="medium" color={theme.colors.gray900}>
+                  {event.title.length > 21 ? `${event.title.slice(0, 21)}...` : event.title}
                 </Text>
               </Flex>
             </SelectableCard>
@@ -72,7 +66,7 @@ export const EventList = ({ events, selectedId, onSelectEvent }: EventListProps)
 
       {events?.length === 0 && (
         <Flex alignItems="center" justifyContent="center" padding="40px 0">
-          <Text type="Body" weight="regular">
+          <Text type="Body" weight="regular" color={theme.colors.gray500}>
             사용 가능한 템플릿이 없습니다.
           </Text>
         </Flex>
