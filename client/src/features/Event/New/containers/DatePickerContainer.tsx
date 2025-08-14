@@ -18,7 +18,6 @@ const StyledDatePickerDropdown = styled.div`
   position: absolute;
   top: 100%;
   left: 0;
-  right: 0;
   background: white;
   border: 1px solid ${({ theme }) => theme.colors.gray200};
   border-radius: 8px;
