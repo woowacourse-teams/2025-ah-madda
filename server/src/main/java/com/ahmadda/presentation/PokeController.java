@@ -89,7 +89,7 @@ public class PokeController {
                                                       "type": "about:blank",
                                                       "title": "Unprocessable Entity",
                                                       "status": 422,
-                                                      "detail": "%s님에게 너무 많은 포키를 보냈어요 🫠 %d분 뒤에 찌를 수 있어요!",
+                                                      "detail": "투다님에게 너무 많은 포키를 보냈어요 🫠 30분 뒤에 찌를 수 있어요!",
                                                       "instance": "/api/events/{eventId}/notify-poke"
                                                     }
                                                     """
