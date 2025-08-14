@@ -160,12 +160,14 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
 
     const currentRegistrationEndTime =
       parseInputDate(basicEventForm.registrationEnd) || finalStartTime;
-    const newRegistrationEndDate = setTimeToDate(startDate, currentRegistrationEndTime);
-    handleValueChange('registrationEnd', formatDateForInput(newRegistrationEndDate));
+    const newRegistrationEnd = setTimeToDate(startDate, currentRegistrationEndTime);
+    const finalRegistrationEnd =
+      newRegistrationEnd.getTime() > newStartDate.getTime() ? newStartDate : newRegistrationEnd;
+    handleValueChange('registrationEnd', formatDateForInput(finalRegistrationEnd));
 
     validateField('eventStart', formatDateForInput(newStartDate));
     validateField('eventEnd', formatDateForInput(newEndDate));
-    validateField('registrationEnd', formatDateForInput(newRegistrationEndDate));
+    validateField('registrationEnd', formatDateForInput(finalRegistrationEnd));
   };
 
   const handleRegistrationEndSelect = (date: Date, time?: Date) => {
