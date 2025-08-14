@@ -7,7 +7,7 @@ import { Calendar } from '@/shared/components/Calendar';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 import { TimePicker } from '@/shared/components/TimePicker';
-import { formatTimeDisplay } from '@/shared/components/TimePicker/utils';
+import { formatTimeDisplay } from '@/shared/utils/timePicker';
 
 import { DatePickerContainer } from '../containers/DatePickerContainer';
 import { useSingleDatePicker } from '../hooks/useSingleDatePicker';
