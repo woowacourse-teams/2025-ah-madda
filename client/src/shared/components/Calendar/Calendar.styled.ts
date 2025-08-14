@@ -14,8 +14,8 @@ type DateButtonProps = {
 };
 
 export const DateButton = styled(Button)<DateButtonProps>`
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   transition: all 0.2s ease;
   background-color: ${({ isToday, isSelected, isInRange }) => {
     if (isSelected) return theme.colors.primary300;
