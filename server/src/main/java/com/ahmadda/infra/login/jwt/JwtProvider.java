@@ -65,7 +65,7 @@ public class JwtProvider {
         return JwtMemberPayload.from(claims);
     }
 
-    public boolean isAccessTokenExpired(String accessToken) {
+    public boolean isAccessTokenExpired(final String accessToken) {
         try {
             Jwts.parser()
                     .verifyWith(jwtProperties.getAccessSecretKey())
