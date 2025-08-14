@@ -261,7 +261,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               `}
             >
               <label htmlFor="place">
-                <Text type="Body">장소</Text>
+                <Text type="Body">이벤트 장소</Text>
               </label>
               <Input
                 id="place"
