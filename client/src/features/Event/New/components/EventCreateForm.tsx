@@ -12,6 +12,7 @@ import { Text } from '@/shared/components/Text';
 import { Textarea } from '@/shared/components/Textarea';
 import { useModal } from '@/shared/hooks/useModal';
 import { trackCreateEvent } from '@/shared/lib/gaEvents';
+import { theme } from '@/shared/styles/theme';
 
 import { MAX_LENGTH, UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { useAddEvent } from '../hooks/useAddEvent';
@@ -145,7 +146,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         <Flex dir="column" gap="30px">
           <Flex dir="column" gap="8px">
             <label htmlFor="title">
-              <Text type="Body" weight="medium">
+              <Text type="Heading" weight="medium">
                 이벤트 이름
               </Text>
             </label>
@@ -179,7 +180,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               `}
             >
               <label htmlFor="eventStart">
-                <Text type="Body" weight="medium">
+                <Text type="Heading" weight="medium">
                   이벤트 시작일
                 </Text>
               </label>
@@ -209,7 +210,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               `}
             >
               <label htmlFor="eventEnd">
-                <Text type="Body" weight="medium">
+                <Text type="Heading" weight="medium">
                   이벤트 종료일
                 </Text>
               </label>
@@ -244,7 +245,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               `}
             >
               <label htmlFor="registrationEnd">
-                <Text type="Body" weight="medium">
+                <Text type="Heading" weight="medium">
                   신청 종료일
                 </Text>
               </label>
@@ -269,7 +270,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               `}
             >
               <label htmlFor="place">
-                <Text type="Body" weight="medium">
+                <Text type="Heading" weight="medium">
                   이벤트 장소
                 </Text>
               </label>
@@ -302,7 +303,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 cursor: pointer;
 
                 &:hover {
-                  background: transparent;
+                  background: ${theme.colors.gray100};
                 }
               `}
             >
@@ -330,7 +331,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
           </Flex>
           <Flex dir="column" gap="8px">
             <label htmlFor="description">
-              <Text type="Body" weight="medium">
+              <Text type="Heading" weight="medium">
                 소개글
               </Text>
             </label>

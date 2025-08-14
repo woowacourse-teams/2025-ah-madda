@@ -23,7 +23,7 @@ export const QuestionForm = ({
     <Flex dir="column" gap="16px">
       <Flex justifyContent="space-between" alignItems="center" gap="4px">
         <Flex dir="column" gap="8px">
-          <Text type="Body" weight="medium">
+          <Text type="Heading" weight="medium">
             사전 질문
           </Text>
           <Text type="Label" color={theme.colors.gray600}>
