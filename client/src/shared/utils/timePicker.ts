@@ -3,20 +3,26 @@ export type TimeOption = {
   label: string;
 };
 
-export const generateHourOptions = (): TimeOption[] => {
-  const hours = [];
-  for (let i = 0; i < 24; i++) {
-    hours.push({
-      value: i,
-      label: String(i).padStart(2, '0'),
-    });
-  }
-  return hours;
-};
+export const HOUR_OPTIONS: ReadonlyArray<TimeOption> = Object.freeze(
+  Array.from({ length: 24 }, (_, i) => ({ value: i, label: String(i).padStart(2, '0') }))
+);
 
-export const generateMinuteOptions = (): TimeOption[] => {
+export const MINUTE_OPTIONS_10: ReadonlyArray<TimeOption> = Object.freeze(
+  Array.from({ length: 6 }, (_, i) => {
+    const minute = i * 10;
+    return { value: minute, label: String(minute).padStart(2, '0') };
+  })
+);
+
+export const generateHourOptions = (): TimeOption[] => HOUR_OPTIONS.slice();
+
+export const generateMinuteOptions = (step = 10): TimeOption[] => {
+  if (step === 10) {
+    return MINUTE_OPTIONS_10.slice();
+  }
+
   const minutes = [];
-  for (let i = 0; i < 60; i += 10) {
+  for (let i = 0; i < 60; i += step) {
     minutes.push({
       value: i,
       label: String(i).padStart(2, '0'),
