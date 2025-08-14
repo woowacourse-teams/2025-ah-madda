@@ -10,10 +10,11 @@ import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
+import { Textarea } from '@/shared/components/Textarea';
 import { useModal } from '@/shared/hooks/useModal';
 import { trackCreateEvent } from '@/shared/lib/gaEvents';
 
-import { UNLIMITED_CAPACITY } from '../constants/errorMessages';
+import { MAX_LENGTH, UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useBasicEventForm } from '../hooks/useBasicEventForm';
 import { useQuestionForm } from '../hooks/useQuestionForm';
@@ -223,15 +224,21 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               errorMessage={errors.place}
             />
 
-            <Input
-              id="description"
-              name="description"
-              label="설명"
-              placeholder="이벤트에 대한 설명을 입력해 주세요"
-              value={basicEventForm.description}
-              onChange={handleChange}
-              errorMessage={errors.description}
-            />
+            <Flex dir="column" gap="8px">
+              <label htmlFor="description">
+                <Text type="Body">소개글</Text>
+              </label>
+              <Textarea
+                id="description"
+                name="description"
+                placeholder="이벤트에 대한 설명을 입력해 주세요"
+                value={basicEventForm.description}
+                onChange={handleChange}
+                errorMessage={errors.description}
+                showCounter
+                maxLength={MAX_LENGTH.DESCRIPTION}
+              />
+            </Flex>
 
             <Input
               id="maxCapacity"
