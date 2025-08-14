@@ -275,22 +275,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               />
             </Flex>
           </Flex>
-          <Flex dir="column" gap="8px">
-            <label htmlFor="description">
-              <Text type="Body">소개글</Text>
-            </label>
-            <Textarea
-              id="description"
-              name="description"
-              placeholder="이벤트에 대한 설명을 입력해 주세요"
-              value={basicEventForm.description}
-              onChange={handleChange}
-              errorMessage={errors.description}
-              showCounter
-              maxLength={MAX_LENGTH.DESCRIPTION}
-            />
-          </Flex>
-          <Flex dir="column" gap="8px">
+          <Flex dir="column" gap="8px" margin="10px 0">
             <Button
               type="button"
               onClick={capacityModalOpen}
@@ -331,6 +316,21 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 handleValueChange('maxCapacity', value);
                 validateField('maxCapacity', value.toString());
               }}
+            />
+          </Flex>
+          <Flex dir="column" gap="8px">
+            <label htmlFor="description">
+              <Text type="Body">소개글</Text>
+            </label>
+            <Textarea
+              id="description"
+              name="description"
+              placeholder="이벤트에 대한 설명을 입력해 주세요"
+              value={basicEventForm.description}
+              onChange={handleChange}
+              errorMessage={errors.description}
+              showCounter
+              maxLength={MAX_LENGTH.DESCRIPTION}
             />
           </Flex>
 
