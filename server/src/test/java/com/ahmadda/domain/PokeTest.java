@@ -177,7 +177,7 @@ class PokeTest {
         assertThatThrownBy(() -> sut.doPoke(sender, recipient, event, sentAt))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage(String.format(
-                        "%s님에게 너무 많은 포키를 보냈어요. %d분 뒤에 다시 요청해주세요.",
+                        "%s님에게 너무 많은 포키를 보냈어요 🫠 %d분 뒤에 찌를 수 있어요!",
                         recipient.getNickname(),
                         expectWaitingMinutes
                 ));

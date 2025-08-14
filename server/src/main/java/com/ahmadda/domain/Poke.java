@@ -19,7 +19,7 @@ public class Poke {
 
     private static final int MAX_SENDABLE_COUNT = 10;
     private static final Duration DUPLICATE_POKE_COUNT_MINUTES = Duration.ofMinutes(30L);
-    private static final String POKE_MESSAGE_FORMAT = "%s님에게 포키가 왔습니다!";
+    private static final String POKE_MESSAGE_FORMAT = "%s님에게 포키가 왔습니다! 🎉";
 
     private final PushNotifier pushNotifier;
     private final PokeHistoryRepository pokeHistoryRepository;
@@ -53,7 +53,7 @@ public class Poke {
         if (count >= MAX_SENDABLE_COUNT) {
             long minutes = getRemainMinutesForPoke(findDuplicateStartTime, pokeHistories);
             throw new BusinessRuleViolatedException(String.format(
-                    "%s님에게 너무 많은 포키를 보냈어요. %d분 뒤에 다시 요청해주세요.",
+                    "%s님에게 너무 많은 포키를 보냈어요 🫠 %d분 뒤에 찌를 수 있어요!",
                     recipient.getNickname(),
                     minutes
             ));
