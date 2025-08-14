@@ -1,6 +1,8 @@
 package com.ahmadda.application;
 
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventNotificationOptOut;
+import com.ahmadda.domain.EventNotificationOptOutRepository;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
@@ -54,6 +56,9 @@ class EventNotificationSchedulerTest {
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
 
+    @Autowired
+    private EventNotificationOptOutRepository eventNotificationOptOutRepository;
+
     @MockitoSpyBean
     private Reminder reminder;
 
@@ -62,7 +67,7 @@ class EventNotificationSchedulerTest {
 
     @ParameterizedTest
     @MethodSource("registrationEndOffsets")
-    void 등록_마감_임박_이벤트에_대해_비게스트에게_알람을_전송한다(
+    void 등록_마감_임박_이벤트에_대해_수신_거부하지_않은_비게스트에게만_알람을_전송한다(
             int minutesUntilRegistrationEnds,
             boolean expectToSend
     ) {
@@ -89,12 +94,16 @@ class EventNotificationSchedulerTest {
                 100
         ));
 
+        var ng2OptOut =
+                eventNotificationOptOutRepository.save(EventNotificationOptOut.create(ng2, event));
+        eventNotificationOptOutRepository.save(ng2OptOut);
+
         // when
         sut.notifyRegistrationClosingEvents();
 
         // then
         if (expectToSend) {
-            verify(reminder).remind(List.of(ng1, ng2), event, "이벤트 신청 마감이 임박했습니다.");
+            verify(reminder).remind(List.of(ng1), event, "이벤트 신청 마감이 임박했습니다.");
         } else {
             verify(reminder, Mockito.never()).remind(any(), any(), any());
         }
@@ -182,7 +191,7 @@ class EventNotificationSchedulerTest {
 
     @ParameterizedTest
     @MethodSource("eventStartOffsets")
-    void 이벤트_시작_24시간_전_게스트에게_알람을_전송한다(
+    void 이벤트_시작_24시간_전_수신_거부하지_않은_게스트에게만_알람을_전송한다(
             int minutesFrom24hOffset,
             boolean expectToSend
     ) {
@@ -256,6 +265,10 @@ class EventNotificationSchedulerTest {
         saveGuest(event, g1);
         saveGuest(event, g2);
 
+        var ng2OptOut =
+                eventNotificationOptOutRepository.save(EventNotificationOptOut.create(g2, event));
+        eventNotificationOptOutRepository.save(ng2OptOut);
+
         // when
         sut.notifyEventStartIn24Hours();
 
@@ -275,7 +288,7 @@ class EventNotificationSchedulerTest {
 
             softly.assertThat(history.getRecipients())
                     .extracting(ReminderRecipient::getOrganizationMember)
-                    .containsExactlyInAnyOrder(g1, g2);
+                    .containsExactlyInAnyOrder(g1);
         });
     }
 
