@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { formatKoreanDateTime } from '../utils/formatKoreanDateTime';
+import { formatKoreanDateTime } from '@/features/Event/Detail/utils/formatKoreanDateTime';
 
 describe('formatKoreanDateTime', () => {
   test('오전 시간대를 올바르게 포맷한다', () => {
