@@ -43,18 +43,18 @@ describe('NewEventPage', () => {
     expect(screen.getByLabelText(/이벤트 시작일/)).toBeInTheDocument();
     expect(screen.getByLabelText(/이벤트 종료일/)).toBeInTheDocument();
     expect(screen.getByLabelText(/신청 종료일/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/장소/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/이벤트 장소/)).toBeInTheDocument();
     expect(screen.getByLabelText(/소개글/)).toBeInTheDocument();
     expect(screen.getByText(/사전 질문/)).toBeInTheDocument();
     expect(screen.getByText(/질문 추가/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /이벤트 만들기/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /이벤트 생성하기/ })).toBeInTheDocument();
   });
 
   test('폼이 초기화된 상태로 렌더링된다', () => {
     render(<TestWrapper />);
 
     expect(screen.getByLabelText(/이벤트 이름/)).toHaveValue('');
-    expect(screen.getByLabelText(/장소/)).toHaveValue('');
+    expect(screen.getByLabelText(/이벤트 장소/)).toHaveValue('');
     expect(screen.getByLabelText(/소개글/)).toHaveValue('');
     expect(screen.getByRole('button', { name: /인원/i }));
   });
@@ -90,7 +90,7 @@ describe('NewEventPage', () => {
   test('폼이 유효하지 않으면 제출 버튼이 비활성화된다', () => {
     render(<TestWrapper />);
 
-    const submitButton = screen.getByRole('button', { name: /이벤트 만들기/ });
+    const submitButton = screen.getByRole('button', { name: /이벤트 생성하기/ });
     expect(submitButton).toBeDisabled();
   });
 });
