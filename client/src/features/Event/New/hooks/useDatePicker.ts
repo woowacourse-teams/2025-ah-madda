@@ -48,7 +48,8 @@ export const useDatePicker = ({
     onClose();
   };
 
-  const isConfirmDisabled = !selectedDate;
+  const isConfirmDisabled =
+    !selectedDate || !selectedEndDate || !selectedStartTime || !selectedEndTime;
 
   return {
     selectedDate,
