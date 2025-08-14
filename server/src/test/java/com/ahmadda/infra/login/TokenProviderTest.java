@@ -21,13 +21,13 @@ import static org.mockito.Mockito.when;
 class TokenProviderTest {
 
     @Autowired
+    TokenProvider sut;
+
+    @Autowired
     RefreshTokenRepository refreshTokenRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
-
-    @Autowired
-    TokenProvider sut;
 
     @MockitoBean
     JwtProvider jwtProvider;
