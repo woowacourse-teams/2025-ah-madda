@@ -3,6 +3,7 @@ package com.ahmadda.application;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.SelectedOrganizationMembersNotificationRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
+import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventNotificationOptOutRepository;
@@ -42,9 +43,9 @@ public class EventNotificationService {
         Event event = getEvent(eventId);
         validateOrganizer(event, loginMember.memberId());
 
-        List<OrganizationMember> organizationMembers =
+        List<OrganizationMember> recipients =
                 getOrganizationMemberFromIds(event, request.organizationMemberIds());
-        List<OrganizationMember> recipients = filterOptInOrganizationMembers(organizationMembers, event);
+        validateRecipientsOptIn(recipients, event);
 
         sendAndRecordReminder(recipients, event, request.content());
     }
@@ -95,19 +96,21 @@ public class EventNotificationService {
         }
     }
 
-    private List<OrganizationMember> filterOptInOrganizationMembers(
+    private void validateRecipientsOptIn(
             final List<OrganizationMember> organizationMembers,
             final Event event
     ) {
-        List<OrganizationMemberWithOptOut> organizationMemberWithOptOuts = organizationMembers.stream()
+        boolean hasOptOut = organizationMembers.stream()
                 .map(organizationMember -> OrganizationMemberWithOptOut.createWithOptOutStatus(
                         organizationMember,
                         event,
                         eventNotificationOptOutRepository
                 ))
-                .toList();
+                .anyMatch(OrganizationMemberWithOptOut::isOptedOut);
 
-        return OrganizationMemberWithOptOut.extractOptInOrganizationMembers(organizationMemberWithOptOuts);
+        if (hasOptOut) {
+            throw new BusinessFlowViolatedException("선택된 조직원 중 알림 수신 거부자가 있습니다.");
+        }
     }
 
     private void sendAndRecordReminder(

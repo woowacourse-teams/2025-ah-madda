@@ -1,8 +1,11 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.LoginMember;
+import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventNotificationOptOut;
+import com.ahmadda.domain.EventNotificationOptOutRepository;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Member;
@@ -55,6 +58,9 @@ class PokeServiceTest {
 
     @MockitoSpyBean
     private Poke poke;
+
+    @Autowired
+    private EventNotificationOptOutRepository eventNotificationOptOutRepository;
 
     @Test
     void 포키를_할_수_있다() {
@@ -132,7 +138,7 @@ class PokeServiceTest {
         var event = createEvent("테스트 이벤트", "이벤트 설명", "테스트 장소", organizer, organization);
 
         var eventId = event.getId();
-        var request = new PokeRequest(999L); // 존재하지 않는 수신자 ID
+        var request = new PokeRequest(999L);
         var loginMember = new LoginMember(organizer.getId());
 
         // when // then
@@ -185,18 +191,45 @@ class PokeServiceTest {
                 .hasMessage("존재하지 않는 조직원입니다.");
     }
 
+    @Test
+    void 알림_수신을_거부한_조직원에게_포키_전송시_예외가_발생한다() {
+        // given
+        var organization = createOrganization("테스트 조직", "조직 설명", "test-image.png");
+        var member = createMember("테스트 회원", "test@example.com", "test-profile.png");
+        var organizer = createOrganizationMember("주최자", member, organization);
+        var participantMember = createMember("참여자", "participant@example.com", "participant-profile.png");
+        var participant = createOrganizationMember("참여자", participantMember, organization);
+        var event = createEvent("테스트 이벤트", "이벤트 설명", "테스트 장소", organizer, organization);
+
+        eventNotificationOptOutRepository.save(
+                EventNotificationOptOut.create(participant, event)
+        );
+
+        var eventId = event.getId();
+        var request = new PokeRequest(participant.getId());
+        var loginMember = new LoginMember(member.getId());
+
+        // when // then
+        assertThatThrownBy(() -> sut.poke(eventId, request, loginMember))
+                .isInstanceOf(BusinessFlowViolatedException.class)
+                .hasMessage("알림을 받지 않는 조직원입니다.");
+    }
+
     private Organization createOrganization(String name, String description, String imageUrl) {
         var organization = Organization.create(name, description, imageUrl);
+
         return organizationRepository.save(organization);
     }
 
     private Member createMember(String name, String email, String profileImageUrl) {
         var member = Member.create(name, email, profileImageUrl);
+
         return memberRepository.save(member);
     }
 
     private OrganizationMember createOrganizationMember(String nickname, Member member, Organization organization) {
         var organizationMember = OrganizationMember.create(nickname, member, organization);
+
         return organizationMemberRepository.save(organizationMember);
     }
 
@@ -212,6 +245,7 @@ class PokeServiceTest {
                 now.plusDays(1), now.plusDays(2), now.plusDays(3), now.plusDays(4), now
         );
         var event = Event.create(title, description, place, organizer, organization, period, 100, new ArrayList<>());
+
         return eventRepository.save(event);
     }
 }

@@ -3,6 +3,7 @@ package com.ahmadda.application;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.SelectedOrganizationMembersNotificationRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
+import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventNotificationOptOut;
@@ -60,7 +61,7 @@ class EventNotificationServiceTest {
     private EventNotificationOptOutRepository eventNotificationOptOutRepository;
 
     @Test
-    void 선택된_조직원중_수신_거부_하지_않은_조직원에게_알람을_전송한다() {
+    void 선택된_조직원에게_알람을_전송한다() {
         // given
         var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
         var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
@@ -84,16 +85,13 @@ class EventNotificationServiceTest {
         var om2 = saveOrganizationMember("선택2", "sel2@email.com", organization);
         saveOrganizationMember("비선택", "nsel@email.com", organization);
 
-        var om2OptOut = EventNotificationOptOut.create(om2, event);
-        eventNotificationOptOutRepository.save(om2OptOut);
-
         var request = createSelectedMembersRequest(List.of(om1.getId(), om2.getId()));
 
         // when
         sut.notifySelectedOrganizationMembers(event.getId(), request, createLoginMember(organizer));
 
         // then
-        verify(reminder).remind(List.of(om1), event, request.content());
+        verify(reminder).remind(List.of(om1, om2), event, request.content());
     }
 
     @Test
@@ -235,6 +233,42 @@ class EventNotificationServiceTest {
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 조직원입니다.");
+    }
+
+    @Test
+    void 선택된_조직원중_수신_거부한_조직원이_있으면_예외가_발생한다() {
+        // given
+        var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
+        var now = LocalDateTime.now();
+
+        var event = eventRepository.save(Event.create(
+                "이벤트제목", "설명", "장소",
+                organizer, organization,
+                EventOperationPeriod.create(
+                        now.minusDays(2), now.minusDays(1),
+                        now.plusDays(1), now.plusDays(2),
+                        now.minusDays(3)
+                ),
+                100
+        ));
+
+        var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization);
+        var om2 = saveOrganizationMember("선택2", "sel2@email.com", organization);
+
+        eventNotificationOptOutRepository.save(EventNotificationOptOut.create(om2, event));
+
+        var request = createSelectedMembersRequest(List.of(om1.getId(), om2.getId()));
+
+        // when // then
+        assertThatThrownBy(() -> sut.notifySelectedOrganizationMembers(
+                        event.getId(),
+                        request,
+                        createLoginMember(organizer)
+                )
+        )
+                .isInstanceOf(BusinessFlowViolatedException.class)
+                .hasMessage("선택된 조직원 중 알림 수신 거부자가 있습니다.");
     }
 
     private SelectedOrganizationMembersNotificationRequest createSelectedMembersRequest(List<Long> organizationMemberIds) {
