@@ -1,4 +1,3 @@
-import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { IconButton } from '@/shared/components/IconButton';
 import { Input } from '@/shared/components/Input';
@@ -30,10 +29,12 @@ export const QuestionItem = ({
   };
 
   return (
-    <Card>
+    <>
+      <label htmlFor={`question-${orderIndex}`}>
+        <Text type="Body">{`질문${orderIndex + 1}`}</Text>
+      </label>
       <Input
         id={`question-${orderIndex}`}
-        label={`질문${orderIndex + 1}`}
         placeholder="질문을 입력해주세요."
         value={questionText}
         onChange={handleTextChange}
@@ -54,6 +55,6 @@ export const QuestionItem = ({
         </Flex>
         <IconButton name="delete" color="red" onClick={onDelete} />
       </Flex>
-    </Card>
+    </>
   );
 };

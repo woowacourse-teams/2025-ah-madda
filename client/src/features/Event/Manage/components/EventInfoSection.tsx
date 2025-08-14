@@ -16,7 +16,7 @@ type EventInfoSectionProps = {
 
 export const EventInfoSection = ({ event }: EventInfoSectionProps) => {
   const isUnlimited = event.maxCapacity === UNLIMITED_CAPACITY;
-  const maxNumberOfGuests = isUnlimited ? '무제한' : `${event.maxCapacity}명`;
+  const maxNumberOfGuests = isUnlimited ? '제한없음' : `${event.maxCapacity}명`;
   const progressValue = isUnlimited ? 1 : Number(event.currentGuestCount);
   const progressMax = isUnlimited ? 1 : event.maxCapacity;
   const progressColor = isUnlimited ? theme.colors.primary700 : 'black';

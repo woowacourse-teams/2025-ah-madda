@@ -6,13 +6,13 @@ import { HttpError } from '@/api/fetcher';
 import { useUpdateEvent } from '@/api/mutations/useUpdateEvent';
 import { getEventDetailAPI } from '@/api/queries/event';
 import { Button } from '@/shared/components/Button';
-import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
 import { Textarea } from '@/shared/components/Textarea';
 import { useModal } from '@/shared/hooks/useModal';
 import { trackCreateEvent } from '@/shared/lib/gaEvents';
+import { theme } from '@/shared/styles/theme';
 
 import { MAX_LENGTH, UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { useAddEvent } from '../hooks/useAddEvent';
@@ -181,43 +181,61 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
 
   return (
     <Flex>
-      <Flex dir="column" gap="20px" padding="60px 0" width="100%">
-        <Text type="Title" weight="bold">
-          {isEdit ? '이벤트 수정' : '새 이벤트 만들기'}
-        </Text>
-        <Flex justifyContent="space-between" alignItems="center">
-          <Text type="Body" color="gray">
-            이벤트 정보를 입력해 주세요
+      <Flex dir="column" gap="40px" padding="60px 0" width="100%">
+        <Flex justifyContent="space-between" alignItems="center" padding="40px 0">
+          <Text as="h1" type="Display" weight="bold">
+            {isEdit ? '이벤트 수정' : '이벤트 생성하기'}
           </Text>
           <Button size="sm" onClick={templateModalOpen}>
             템플릿
           </Button>
         </Flex>
 
-        <Card>
-          <Flex justifyContent="space-between">
-            <Text type="Heading">기본 질문</Text>
-          </Flex>
-          <Flex dir="column">
+        <Flex dir="column" gap="30px">
+          <Flex dir="column" gap="8px">
+            <label htmlFor="title">
+              <Text type="Heading" weight="medium">
+                이벤트 이름
+              </Text>
+            </label>
             <Input
               id="title"
               name="title"
-              label="이벤트 이름"
+              placeholder="이벤트 이름을 입력해주세요"
               value={basicEventForm.title}
               onChange={handleChange}
               errorMessage={errors.title}
               isRequired
+              showCounter
+              maxLength={MAX_LENGTH.TITLE}
             />
+          </Flex>
 
+          <Flex
+            gap="16px"
+            css={css`
+              @media (max-width: 768px) {
+                flex-direction: column;
+                gap: 30px;
+              }
+            `}
+          >
             <Flex
+              dir="column"
+              gap="8px"
               css={css`
+                flex: 1;
                 position: relative;
               `}
             >
+              <label htmlFor="eventDateRange">
+                <Text type="Heading" weight="medium">
+                  이벤트 기간
+                </Text>
+              </label>
               <Input
                 id="eventDateRange"
                 name="eventDateRange"
-                label="이벤트 기간"
                 value={
                   basicEventForm.eventStart && basicEventForm.eventEnd
                     ? `${formatDateForDisplay(basicEventForm.eventStart)} ~ ${formatDateForDisplay(basicEventForm.eventEnd)}`
@@ -244,16 +262,33 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 title="이벤트 날짜 및 시간 선택"
               />
             </Flex>
+          </Flex>
 
+          <Flex
+            gap="16px"
+            css={css`
+              @media (max-width: 768px) {
+                flex-direction: column;
+                gap: 30px;
+              }
+            `}
+          >
             <Flex
+              dir="column"
+              gap="8px"
               css={css`
+                flex: 1;
                 position: relative;
               `}
             >
+              <label htmlFor="registrationEnd">
+                <Text type="Heading" weight="medium">
+                  신청 종료일
+                </Text>
+              </label>
               <Input
                 id="registrationEnd"
                 name="registrationEnd"
-                label="신청 종료일"
                 value={
                   basicEventForm.registrationEnd
                     ? formatDateForDisplay(basicEventForm.registrationEnd)
@@ -279,47 +314,61 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               />
             </Flex>
 
-            <Input
-              id="place"
-              name="place"
-              label="장소"
-              placeholder="이벤트 장소를 입력해 주세요"
-              value={basicEventForm.place}
-              onChange={handleChange}
-              errorMessage={errors.place}
-            />
-
-            <Flex dir="column" gap="8px">
-              <label htmlFor="description">
-                <Text type="Body">소개글</Text>
+            <Flex
+              dir="column"
+              gap="8px"
+              css={css`
+                flex: 1;
+              `}
+            >
+              <label htmlFor="place">
+                <Text type="Heading" weight="medium">
+                  이벤트 장소
+                </Text>
               </label>
-              <Textarea
-                id="description"
-                name="description"
-                placeholder="이벤트에 대한 설명을 입력해 주세요"
-                value={basicEventForm.description}
+              <Input
+                id="place"
+                name="place"
+                placeholder="이벤트 장소를 입력해 주세요"
+                value={basicEventForm.place}
                 onChange={handleChange}
-                errorMessage={errors.description}
+                errorMessage={errors.place}
                 showCounter
-                maxLength={MAX_LENGTH.DESCRIPTION}
+                maxLength={MAX_LENGTH.PLACE}
               />
             </Flex>
+          </Flex>
 
-            <Input
-              id="maxCapacity"
-              name="maxCapacity"
-              label="수용 인원"
-              value={
-                basicEventForm.maxCapacity === UNLIMITED_CAPACITY
-                  ? '무제한'
-                  : `${basicEventForm.maxCapacity}명`
-              }
-              readOnly
+          <Flex dir="column" gap="8px" margin="10px 0">
+            <Button
+              type="button"
               onClick={capacityModalOpen}
+              aria-label="인원 설정"
               css={css`
+                width: 100%;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                gap: 12px;
+                padding: 4px 0;
+                border: 0;
+                background: transparent;
                 cursor: pointer;
+
+                &:hover {
+                  background: ${theme.colors.gray100};
+                }
               `}
-            />
+            >
+              <Text type="Body" weight="medium">
+                인원
+              </Text>
+              <Text as="span" type="Body" color="#4b5563" data-role="value">
+                {basicEventForm.maxCapacity === UNLIMITED_CAPACITY
+                  ? '제한없음 ✎'
+                  : `${basicEventForm.maxCapacity}명 ✎`}
+              </Text>
+            </Button>
 
             <MaxCapacityModal
               isOpen={isCapacityModalOpen}
@@ -333,36 +382,56 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               }}
             />
           </Flex>
-        </Card>
 
-        <QuestionForm
-          questions={questions}
-          addQuestion={addQuestion}
-          deleteQuestion={deleteQuestion}
-          updateQuestion={updateQuestion}
-          isEditable={!isEdit}
-        />
+          <Flex dir="column" gap="8px">
+            <label htmlFor="description">
+              <Text type="Heading" weight="medium">
+                소개글
+              </Text>
+            </label>
+            <Textarea
+              id="description"
+              name="description"
+              placeholder="이벤트에 대한 설명을 입력해 주세요"
+              value={basicEventForm.description}
+              onChange={handleChange}
+              errorMessage={errors.description}
+              maxLength={MAX_LENGTH.DESCRIPTION}
+            />
+          </Flex>
 
-        <Flex justifyContent="flex-end">
-          <Button
-            type="submit"
-            color="primary"
-            size="full"
-            disabled={!isFormReady}
-            onClick={handleSubmit}
-          >
-            {isEdit ? '이벤트 수정' : '이벤트 만들기'}
-          </Button>
+          <QuestionForm
+            questions={questions}
+            addQuestion={addQuestion}
+            deleteQuestion={deleteQuestion}
+            updateQuestion={updateQuestion}
+            isEditable={!isEdit}
+          />
+
+          <Flex justifyContent="flex-end">
+            <Button
+              type="submit"
+              color="primary"
+              size="full"
+              disabled={!isFormReady}
+              onClick={handleSubmit}
+              css={css`
+                margin-top: 40px;
+              `}
+            >
+              {isEdit ? '이벤트 수정' : '이벤트 생성하기'}
+            </Button>
+          </Flex>
         </Flex>
-      </Flex>
 
-      <TemplateModal
-        isOpen={isTemplateModalOpen}
-        onClose={templateModalClose}
-        onConfirm={handleTemplateLoad}
-        onSelect={handleSelectEvent}
-        selectedEventId={selectedEventId}
-      />
+        <TemplateModal
+          isOpen={isTemplateModalOpen}
+          onClose={templateModalClose}
+          onConfirm={handleTemplateLoad}
+          onSelect={handleSelectEvent}
+          selectedEventId={selectedEventId}
+        />
+      </Flex>
     </Flex>
   );
 };

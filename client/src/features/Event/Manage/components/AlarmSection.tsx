@@ -67,7 +67,6 @@ export const AlarmSection = ({
           <Flex dir="column">
             <Input
               id="alarm-message"
-              label=""
               placeholder="알람 메시지를 입력하세요..."
               value={content}
               onChange={handleContentChange}
