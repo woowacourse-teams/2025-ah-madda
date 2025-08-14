@@ -79,7 +79,7 @@ vi.mock('../components/QuestionForm', () => ({
   QuestionForm: () => (
     <div>
       <div>사전 질문</div>
-      <button>질문 추가</button>
+      <button type="button">질문 추가</button>
       <div>참가자에게 묻고 싶은 질문을 추가해 보세요.</div>
     </div>
   ),
