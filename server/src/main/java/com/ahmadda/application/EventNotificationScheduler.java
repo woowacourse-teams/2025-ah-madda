@@ -1,9 +1,12 @@
 package com.ahmadda.application;
 
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventNotificationOptOutRepository;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
+import com.ahmadda.domain.GuestWithOptOut;
 import com.ahmadda.domain.OrganizationMember;
+import com.ahmadda.domain.OrganizationMemberWithOptOut;
 import com.ahmadda.domain.Reminder;
 import com.ahmadda.domain.ReminderHistory;
 import com.ahmadda.domain.ReminderHistoryRepository;
@@ -25,6 +28,7 @@ public class EventNotificationScheduler {
     private static final Duration START_REMINDER_LEAD_TIME = Duration.ofHours(24);
 
     private final EventRepository eventRepository;
+    private final EventNotificationOptOutRepository eventNotificationOptOutRepository;
     private final Reminder reminder;
     private final ReminderHistoryRepository reminderHistoryRepository;
 
@@ -41,10 +45,7 @@ public class EventNotificationScheduler {
         upcomingEvents.stream()
                 .filter(event -> !event.isFull()).
                 forEach(upcomingEvent -> {
-                    List<OrganizationMember> recipients = upcomingEvent.getNonGuestOrganizationMembers(
-                            upcomingEvent.getOrganization()
-                                    .getOrganizationMembers()
-                    );
+                    List<OrganizationMember> recipients = getOptInNonGuestOrganizationMembers(upcomingEvent);
                     String content = "이벤트 신청 마감이 임박했습니다.";
 
                     sendAndRecordReminder(upcomingEvent, recipients, content);
@@ -59,18 +60,46 @@ public class EventNotificationScheduler {
         LocalDateTime windowStart = now.plus(START_REMINDER_LEAD_TIME);
         LocalDateTime windowEnd = windowStart.plus(SCHEDULER_SCAN_WINDOW);
 
-        List<Event> eventsStartingSoon =
+        List<Event> startingEvents =
                 eventRepository.findAllByEventOperationPeriodEventPeriodStartBetween(windowStart, windowEnd);
 
-        eventsStartingSoon.forEach(event -> {
-            List<OrganizationMember> recipients = event.getGuests()
-                    .stream()
-                    .map(Guest::getOrganizationMember)
-                    .toList();
+        startingEvents.forEach(startingEvent -> {
+            List<OrganizationMember> recipients = getOptInGuests(startingEvent);
             String content = "내일 이벤트가 시작됩니다. 준비되셨나요?";
 
-            sendAndRecordReminder(event, recipients, content);
+            sendAndRecordReminder(startingEvent, recipients, content);
         });
+    }
+
+    private List<OrganizationMember> getOptInNonGuestOrganizationMembers(final Event event) {
+        List<OrganizationMember> nonGuestOrganizationMembers =
+                event.getNonGuestOrganizationMembers(event.getOrganization()
+                        .getOrganizationMembers());
+
+        return OrganizationMemberWithOptOut.extractOptInOrganizationMembers(
+                nonGuestOrganizationMembers
+                        .stream()
+                        .map(organizationMember -> OrganizationMemberWithOptOut.createWithOptOutStatus(
+                                organizationMember,
+                                event,
+                                eventNotificationOptOutRepository
+                        ))
+                        .toList()
+        );
+    }
+
+    private List<OrganizationMember> getOptInGuests(final Event event) {
+        List<Guest> guests = event.getGuests();
+
+        return GuestWithOptOut.extractOptInOrganizationMembers(
+                guests
+                        .stream()
+                        .map(guest -> GuestWithOptOut.createWithOptOutStatus(
+                                guest,
+                                eventNotificationOptOutRepository
+                        ))
+                        .toList()
+        );
     }
 
     private void sendAndRecordReminder(

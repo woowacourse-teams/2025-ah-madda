@@ -84,8 +84,8 @@ class EventNotificationServiceTest {
         var om2 = saveOrganizationMember("선택2", "sel2@email.com", organization);
         saveOrganizationMember("비선택", "nsel@email.com", organization);
 
-        EventNotificationOptOut optOut = EventNotificationOptOut.create(om2, event);
-        eventNotificationOptOutRepository.save(optOut);
+        var om2OptOut = EventNotificationOptOut.create(om2, event);
+        eventNotificationOptOutRepository.save(om2OptOut);
 
         var request = createSelectedMembersRequest(List.of(om1.getId(), om2.getId()));
 
