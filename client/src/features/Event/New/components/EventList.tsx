@@ -1,10 +1,10 @@
 import { css } from '@emotion/react';
-import styled from '@emotion/styled';
 
-import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
+
+import { SelectableCard } from './SelectableCard';
 
 type Event = {
   eventId: number;
@@ -15,10 +15,6 @@ type EventListProps = {
   events: Event[];
   selectedId: number;
   onSelectEvent: (eventId: number) => void;
-};
-
-type StyledCardProps = {
-  isSelected: boolean;
 };
 
 export const EventList = ({ events, selectedId, onSelectEvent }: EventListProps) => {
@@ -53,7 +49,7 @@ export const EventList = ({ events, selectedId, onSelectEvent }: EventListProps)
           const isSelected = selectedId === event.eventId;
 
           return (
-            <StyledCard
+            <SelectableCard
               key={event.eventId}
               onClick={() => onSelectEvent(event.eventId)}
               isSelected={isSelected}
@@ -69,7 +65,7 @@ export const EventList = ({ events, selectedId, onSelectEvent }: EventListProps)
                   {event.title}
                 </Text>
               </Flex>
-            </StyledCard>
+            </SelectableCard>
           );
         })}
       </Flex>
@@ -84,15 +80,3 @@ export const EventList = ({ events, selectedId, onSelectEvent }: EventListProps)
     </Flex>
   );
 };
-
-const StyledCard = styled(Card)<StyledCardProps>`
-  cursor: pointer;
-  padding: 16px;
-  background-color: ${({ isSelected }) =>
-    isSelected ? theme.colors.primary50 : theme.colors.white};
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  &:hover {
-    background-color: ${theme.colors.primary50};
-  }
-`;
