@@ -135,7 +135,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       <Flex dir="column" gap="40px" padding="60px 0" width="100%">
         <Flex justifyContent="space-between" alignItems="center">
           <Text type="Heading" weight="bold">
-            {isEdit ? '이벤트 수정' : '신규 이벤트 생성하기'}
+            {isEdit ? '이벤트 수정' : '이벤트 생성하기'}
           </Text>
           <Button size="sm" onClick={templateModalOpen}>
             템플릿
@@ -353,7 +353,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 margin-top: 40px;
               `}
             >
-              {isEdit ? '이벤트 수정' : '이벤트 만들기'}
+              {isEdit ? '이벤트 수정' : '이벤트 생성하기'}
             </Button>
           </Flex>
         </Flex>
