@@ -38,8 +38,12 @@ export const generateCalendarDays = (year: number, month: number): Date[] => {
   return days;
 };
 
-export const isSameDay = (date1: Date, date2: Date): boolean => {
-  return date1.toDateString() === date2.toDateString();
+export const isSameDay = (a: Date, b: Date): boolean => {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
 };
 
 export const isToday = (date: Date): boolean => {
