@@ -143,9 +143,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
           alert('템플릿이 성공적으로 추가되었습니다!');
         },
         onError: () => {
-          if (!basicEventForm.title) {
+          if (!basicEventForm.title || basicEventForm.title.trim() === '') {
             alert('이벤트 이름을 입력해 주세요');
-          } else if (!basicEventForm.description) {
+          } else if (!basicEventForm.description || basicEventForm.description.trim() === '') {
             alert('이벤트 설명을 입력해 주세요');
           }
         },
