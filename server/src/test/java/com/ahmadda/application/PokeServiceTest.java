@@ -16,6 +16,7 @@ import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Poke;
 import com.ahmadda.domain.PokeHistory;
+import com.ahmadda.domain.Role;
 import com.ahmadda.presentation.dto.PokeRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,7 @@ class PokeServiceTest {
 
     @Autowired
     private OrganizationRepository organizationRepository;
-    
+
     @MockitoSpyBean
     private Poke poke;
 
@@ -224,7 +225,7 @@ class PokeServiceTest {
     }
 
     private OrganizationMember createOrganizationMember(String nickname, Member member, Organization organization) {
-        var organizationMember = OrganizationMember.create(nickname, member, organization);
+        var organizationMember = OrganizationMember.create(nickname, member, organization, Role.USER);
 
         return organizationMemberRepository.save(organizationMember);
     }

@@ -65,7 +65,7 @@ class FcmPushNotifierTest {
         // given
         var member = Member.create("테스트 회원", "amadda.team@gmail.com", "testPicture");
         var organization = Organization.create("테스트 조직", "설명", "logo.png");
-        var organizationMember = OrganizationMember.create("푸시대상", member, organization);
+        var organizationMember = OrganizationMember.create("푸시대상", member, organization, Role.USER);
 
         memberRepository.save(member);
 
