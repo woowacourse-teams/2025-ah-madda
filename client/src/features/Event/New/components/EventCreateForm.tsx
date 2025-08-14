@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { HttpError } from '@/api/fetcher';
 import { useAddTemplate } from '@/api/mutations/useAddTemplate';
 import { useUpdateEvent } from '@/api/mutations/useUpdateEvent';
-import { getEventDetailAPI, eventQueryOptions } from '@/api/queries/event';
+import { getEventDetailAPI } from '@/api/queries/event';
+import type { EventTemplateAPIResponse, TemplateDetailAPIResponse } from '@/api/types/event';
 import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
@@ -38,9 +37,6 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
   const { mutate: updateEvent } = useUpdateEvent();
   const { mutate: loadPastEvent } = useAddTemplate();
-
-  const [loadTemplateId, setLoadTemplateId] = useState<number | null>(null);
-  const [loadEventId, setLoadEventId] = useState<number | null>(null);
 
   const { data: eventDetail } = useQuery({
     queryKey: ['event', 'detail', Number(eventId)],
@@ -79,43 +75,22 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
 
   const isFormReady = isBasicFormValid && isQuestionValid;
 
-  const handleLoadTemplate = (templateId: number) => {
-    setLoadTemplateId(templateId);
-    setLoadEventId(null);
-  };
-
-  const handleLoadEvent = (eventId: number) => {
-    setLoadEventId(eventId);
-    setLoadTemplateId(null);
-  };
-
-  const { data: templateDetailData } = useQuery({
-    ...eventQueryOptions.templateDetail(loadTemplateId!),
-    enabled: loadTemplateId !== null,
-  });
-
-  const { data: eventTemplateData } = useQuery({
-    ...eventQueryOptions.pastEventList(loadEventId!),
-    enabled: loadEventId !== null,
-  });
-
-  if (templateDetailData && loadTemplateId) {
-    loadFormData({ description: templateDetailData.description });
+  const handleTemplateSelected = (
+    templateDetail: Pick<TemplateDetailAPIResponse, 'description'>
+  ) => {
+    loadFormData({ description: templateDetail.description });
     alert('템플릿이 성공적으로 불러와졌습니다!');
-    setLoadTemplateId(null);
-  }
+  };
 
-  if (eventTemplateData && loadEventId) {
+  const handleEventSelected = (eventData: Omit<EventTemplateAPIResponse, 'eventId'>) => {
     loadFormData({
-      title: eventTemplateData.title,
-      description: eventTemplateData.description,
-      place: eventTemplateData.place,
-      maxCapacity: eventTemplateData.maxCapacity,
+      title: eventData.title,
+      description: eventData.description,
+      place: eventData.place,
+      maxCapacity: eventData.maxCapacity,
     });
     alert('이벤트가 성공적으로 불러와졌습니다!');
-    setLoadEventId(null);
-  }
-
+  };
   const handleError = (error: unknown) => {
     if (error instanceof HttpError) {
       alert(error.data?.detail || '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
@@ -357,8 +332,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       <TemplateModal
         isOpen={isTemplateModalOpen}
         onClose={templateModalClose}
-        onLoadTemplate={handleLoadTemplate}
-        onLoadEvent={handleLoadEvent}
+        onTemplateSelected={handleTemplateSelected}
+        onEventSelected={handleEventSelected}
       />
     </Flex>
   );

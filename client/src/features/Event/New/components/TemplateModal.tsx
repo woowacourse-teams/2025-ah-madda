@@ -1,12 +1,11 @@
 import { useState } from 'react';
 
 import { css } from '@emotion/react';
-import styled from '@emotion/styled';
-import { useSuspenseQueries } from '@tanstack/react-query';
+import { useSuspenseQueries, useQuery } from '@tanstack/react-query';
 
 import { eventQueryOptions } from '@/api/queries/event';
+import type { EventTemplateAPIResponse, TemplateDetailAPIResponse } from '@/api/types/event';
 import { Button } from '@/shared/components/Button';
-import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Modal } from '@/shared/components/Modal';
 import { Spacing } from '@/shared/components/Spacing';
@@ -14,22 +13,21 @@ import { Tabs } from '@/shared/components/Tabs';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
+import { EventList } from './EventList';
+import { TemplateList } from './TemplateList';
+
 type TemplateModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onLoadTemplate: (templateId: number) => void;
-  onLoadEvent: (eventId: number) => void;
-};
-
-type StyledCardProps = {
-  isSelected: boolean;
+  onTemplateSelected: (templateDetail: Pick<TemplateDetailAPIResponse, 'description'>) => void;
+  onEventSelected: (eventData: Omit<EventTemplateAPIResponse, 'eventId'>) => void;
 };
 
 export const TemplateModal = ({
   isOpen,
   onClose,
-  onLoadTemplate,
-  onLoadEvent,
+  onTemplateSelected,
+  onEventSelected,
 }: TemplateModalProps) => {
   const [selectedType, setSelectedType] = useState<'template' | 'event' | null>(null);
   const [selectedId, setSelectedId] = useState(0);
@@ -37,6 +35,16 @@ export const TemplateModal = ({
   // E.TODO organizationId 받아오기
   const [{ data: eventTitles }, { data: templateList }] = useSuspenseQueries({
     queries: [eventQueryOptions.titles(1), eventQueryOptions.templateList()],
+  });
+
+  const { data: selectedTemplateData } = useQuery({
+    ...eventQueryOptions.templateDetail(selectedId),
+    enabled: selectedType === 'template' && selectedId > 0,
+  });
+
+  const { data: selectedEventData } = useQuery({
+    ...eventQueryOptions.pastEventList(selectedId),
+    enabled: selectedType === 'event' && selectedId > 0,
   });
 
   const handleSelectTemplate = (templateId: number) => {
@@ -50,10 +58,15 @@ export const TemplateModal = ({
   };
 
   const handleConfirm = () => {
-    if (selectedType === 'template' && selectedId > 0) {
-      onLoadTemplate(selectedId);
-    } else if (selectedType === 'event' && selectedId > 0) {
-      onLoadEvent(selectedId);
+    if (selectedType === 'template' && selectedTemplateData) {
+      onTemplateSelected({ description: selectedTemplateData.description });
+    } else if (selectedType === 'event' && selectedEventData) {
+      onEventSelected({
+        title: selectedEventData.title,
+        description: selectedEventData.description,
+        place: selectedEventData.place,
+        maxCapacity: Number(selectedEventData.maxCapacity),
+      });
     }
 
     onClose();
@@ -88,97 +101,19 @@ export const TemplateModal = ({
           </Tabs.List>
 
           <Tabs.Content value="my-templates">
-            <Flex dir="column" gap="16px" padding="20px 0">
-              <Text type="Body" weight="regular" color={theme.colors.gray600}>
-                저장된 템플릿이 여기에 표시됩니다.
-              </Text>
-              {templateList?.map((template) => {
-                const isSelected =
-                  selectedType === 'template' && selectedId === template.templateId;
-
-                return (
-                  <StyledCard
-                    key={template.templateId}
-                    isSelected={isSelected}
-                    onClick={() => handleSelectTemplate(template.templateId)}
-                  >
-                    <Text type="Body" weight="medium" color={theme.colors.gray900}>
-                      {template.title}
-                    </Text>
-                  </StyledCard>
-                );
-              })}
-
-              {templateList?.length === 0 && (
-                <Flex alignItems="center" justifyContent="center" padding="40px 0">
-                  <Text type="Body" weight="regular" color={theme.colors.gray500}>
-                    아직 저장된 템플릿이 없습니다.
-                  </Text>
-                </Flex>
-              )}
-            </Flex>
+            <TemplateList
+              templates={templateList || []}
+              selectedId={selectedType === 'template' ? selectedId : 0}
+              onSelectTemplate={handleSelectTemplate}
+            />
           </Tabs.Content>
 
           <Tabs.Content value="my-events">
-            <Flex dir="column" gap="16px" padding="20px 0">
-              <Text type="Body" weight="regular" color={theme.colors.gray600}>
-                이전에 만든 이벤트를 템플릿으로 사용할 수 있습니다.
-              </Text>
-
-              <Flex
-                dir="column"
-                gap="12px"
-                css={css`
-                  max-height: 200px;
-                  overflow-y: auto;
-
-                  &::-webkit-scrollbar {
-                    width: 6px;
-                  }
-
-                  &::-webkit-scrollbar-thumb {
-                    background: ${theme.colors.gray300};
-                    border-radius: 3px;
-
-                    &:hover {
-                      background: ${theme.colors.gray400};
-                    }
-                  }
-                `}
-              >
-                {eventTitles?.map((event) => {
-                  const isSelected = selectedType === 'event' && selectedId === event.eventId;
-
-                  return (
-                    <StyledCard
-                      key={event.eventId}
-                      onClick={() => handleSelectEvent(event.eventId)}
-                      isSelected={isSelected}
-                    >
-                      <Flex
-                        alignItems="center"
-                        gap="12px"
-                        css={css`
-                          overflow: hidden;
-                        `}
-                      >
-                        <Text as="span" type="Body" weight="medium" color={theme.colors.gray900}>
-                          {event.title}
-                        </Text>
-                      </Flex>
-                    </StyledCard>
-                  );
-                })}
-              </Flex>
-
-              {eventTitles?.length === 0 && (
-                <Flex alignItems="center" justifyContent="center" padding="40px 0">
-                  <Text type="Body" weight="regular">
-                    사용 가능한 템플릿이 없습니다.
-                  </Text>
-                </Flex>
-              )}
-            </Flex>
+            <EventList
+              events={eventTitles || []}
+              selectedId={selectedType === 'event' ? selectedId : 0}
+              onSelectEvent={handleSelectEvent}
+            />
           </Tabs.Content>
         </Tabs>
 
@@ -188,7 +123,16 @@ export const TemplateModal = ({
           <Button color="secondary" variant="outline" size="full" onClick={handleClose}>
             취소
           </Button>
-          <Button color="primary" size="full" disabled={selectedId === 0} onClick={handleConfirm}>
+          <Button
+            color="primary"
+            size="full"
+            disabled={
+              selectedId === 0 ||
+              (selectedType === 'template' && !selectedTemplateData) ||
+              (selectedType === 'event' && !selectedEventData)
+            }
+            onClick={handleConfirm}
+          >
             불러오기
           </Button>
         </Flex>
@@ -196,15 +140,3 @@ export const TemplateModal = ({
     </Modal>
   );
 };
-
-const StyledCard = styled(Card)<StyledCardProps>`
-  cursor: pointer;
-  padding: 16px;
-  background-color: ${({ isSelected }) =>
-    isSelected ? theme.colors.primary50 : theme.colors.white};
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  &:hover {
-    background-color: ${theme.colors.primary50};
-  }
-`;
