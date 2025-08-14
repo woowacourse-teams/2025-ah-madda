@@ -74,7 +74,7 @@ public class EventNotificationOptOutController {
             @AuthMember final LoginMember loginMember
     ) {
         optOutService.optOut(eventId, loginMember);
-        
+
         return ResponseEntity.noContent()
                 .build();
     }
@@ -98,12 +98,12 @@ public class EventNotificationOptOutController {
                             """))
             ),
             @ApiResponse(
-                    responseCode = "404",
+                    responseCode = "422",
                     content = @Content(examples = @ExampleObject(value = """
                             {
                               "type": "about:blank",
-                              "title": "Not Found",
-                              "status": 404,
+                              "title": "Unprocessable Entity",
+                              "status": 422,
                               "detail": "수신 거부 설정이 존재하지 않습니다.",
                               "instance": "/api/events/{eventId}/notification/opt-out"
                             }
