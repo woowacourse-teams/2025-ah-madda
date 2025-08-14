@@ -188,9 +188,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 value={basicEventForm.eventStart}
                 onChange={(e) => {
                   handleChange(e);
-                  const v = e.target.value;
-                  handleValueChange('registrationEnd', v);
-                  validateField('registrationEnd', v);
+                  const registrationEndValue = e.target.value;
+                  handleValueChange('registrationEnd', registrationEndValue);
+                  validateField('registrationEnd', registrationEndValue);
                 }}
                 errorMessage={errors.eventStart}
                 isRequired
