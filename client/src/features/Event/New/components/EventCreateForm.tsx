@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { css } from '@emotion/react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -5,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { HttpError } from '@/api/fetcher';
 import { useAddTemplate } from '@/api/mutations/useAddTemplate';
 import { useUpdateEvent } from '@/api/mutations/useUpdateEvent';
-import { getEventDetailAPI, eventQueryOptions } from '@/api/queries/event';
+import { getEventDetailAPI } from '@/api/queries/event';
 import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
@@ -17,7 +19,6 @@ import { trackCreateEvent } from '@/shared/lib/gaEvents';
 import { UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useBasicEventForm } from '../hooks/useBasicEventForm';
-import { usePastEventLoader } from '../hooks/usePastEventLoader';
 import { useQuestionForm } from '../hooks/useQuestionForm';
 import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
 
@@ -34,7 +35,6 @@ type EventCreateFormProps = {
 
 export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
   const { mutate: updateEvent } = useUpdateEvent();
   const { mutate: loadPastEvent } = useAddTemplate();
@@ -74,33 +74,6 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   } = useQuestionForm();
 
   const isFormReady = isBasicFormValid && isQuestionValid;
-
-  const { pastEventList, selectedEventId, handleSelectEvent } = usePastEventLoader();
-
-  const handleTemplateLoad = () => {
-    loadFormData(pastEventList ?? {});
-  };
-
-  const handleTemplateConfirm = async (templateId: number) => {
-    try {
-      const templateData = await queryClient.fetchQuery(
-        eventQueryOptions.templateDetail(templateId)
-      );
-
-      const formData = {
-        description: templateData.description || '',
-      };
-
-      loadFormData(formData);
-    } catch (error) {
-      handleError(error);
-    }
-  };
-
-  const handleEventConfirm = () => {
-    // 기존 이벤트 템플릿 로드 로직
-    handleTemplateLoad();
-  };
 
   const handleError = (error: unknown) => {
     if (error instanceof HttpError) {
@@ -340,14 +313,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         </Flex>
       </Flex>
 
-      <TemplateModal
-        isOpen={isTemplateModalOpen}
-        onClose={templateModalClose}
-        onConfirmTemplate={handleTemplateConfirm}
-        onConfirmEvent={handleEventConfirm}
-        onSelect={handleSelectEvent}
-        selectedEventId={selectedEventId}
-      />
+      <TemplateModal isOpen={isTemplateModalOpen} onClose={templateModalClose} />
     </Flex>
   );
 };
