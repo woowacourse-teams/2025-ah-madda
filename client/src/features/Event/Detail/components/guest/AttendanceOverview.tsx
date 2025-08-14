@@ -14,11 +14,13 @@ export const AttendanceOverview = ({ eventId }: { eventId: number }) => {
   return (
     <Flex as="section" width="100%" dir="column">
       <GuestList
+        eventId={eventId}
         title={`신청 완료 (${guests.length}명)`}
         titleColor={theme.colors.primary600}
         guests={guests}
       />
       <GuestList
+        eventId={eventId}
         title={`미신청 (${nonGuests.length}명)`}
         titleColor={theme.colors.red600}
         guests={nonGuests}
