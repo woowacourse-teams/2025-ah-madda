@@ -8,6 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
+import java.util.List;
 
 //TODO 성능 문제 추후에 고려
 @Service
@@ -44,16 +47,35 @@ public class Poke {
     ) {
         LocalDateTime findDuplicateStartTime = sentAt.minus(DUPLICATE_POKE_COUNT_MINUTES);
 
-        int count = pokeHistoryRepository.countPokeHistoryByEventAndSenderAndRecipientAndSentAtAfter(
+        List<PokeHistory> pokeHistories = getRecentPokeHistories(sender, recipient, event, findDuplicateStartTime);
+
+        int count = pokeHistories.size();
+        if (count >= MAX_SENDABLE_COUNT) {
+            long minutes = getRemainMinutesForPoke(findDuplicateStartTime, pokeHistories);
+            throw new BusinessRuleViolatedException(String.format("대상에게 너무 많은 포키를 보냈어요. %d분 뒤에 다시 요청해주세요.", minutes));
+        }
+    }
+
+    private long getRemainMinutesForPoke(final LocalDateTime currentSentAt, final List<PokeHistory> pokeHistories) {
+        pokeHistories.sort(Comparator.comparing(PokeHistory::getSentAt));
+        LocalDateTime mostOldSentAt = pokeHistories.getFirst()
+                .getSentAt();
+
+        return ChronoUnit.MINUTES.between(currentSentAt, mostOldSentAt);
+    }
+
+    private List<PokeHistory> getRecentPokeHistories(
+            final OrganizationMember sender,
+            final OrganizationMember recipient,
+            final Event event,
+            final LocalDateTime findDuplicateStartTime
+    ) {
+        return pokeHistoryRepository.findAllByEventAndSenderAndRecipientAndSentAtAfter(
                 event,
                 sender,
                 recipient,
                 findDuplicateStartTime
         );
-
-        if (count >= MAX_SENDABLE_COUNT) {
-            throw new BusinessRuleViolatedException("포키는 30분마다 한 대상에게 최대 10번만 보낼 수 있습니다.");
-        }
     }
 
     private void validateDoPoke(

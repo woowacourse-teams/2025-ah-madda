@@ -89,7 +89,7 @@ public class PokeController {
                                                       "type": "about:blank",
                                                       "title": "Unprocessable Entity",
                                                       "status": 422,
-                                                      "detail": "포키는 30분마다 한 대상에게 최대 10번만 보낼 수 있습니다.",
+                                                      "detail": "대상에게 너무 많은 포키를 보냈어요. %d분 뒤에 다시 요청해주세요.",
                                                       "instance": "/api/events/{eventId}/notify-poke"
                                                     }
                                                     """

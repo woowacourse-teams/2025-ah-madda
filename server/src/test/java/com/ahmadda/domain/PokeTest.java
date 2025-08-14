@@ -9,6 +9,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 
@@ -150,7 +151,7 @@ class PokeTest {
     }
 
     @Test
-    void 포키_전송_횟수_제한을_초과할_때_예외가_발생한다() {
+    void 포키_30분내_10번_전송_횟수_제한을_초과할_때_예외가_발생한다() {
         // given
         var organization = createOrganization("ahmadda");
         var senderMember = createMember("sender");
@@ -160,15 +161,22 @@ class PokeTest {
         var event = createEvent(organization, sender, LocalDateTime.now());
         var sentAt = LocalDateTime.now();
 
-        for (int i = 0; i < 10; i++) {
-            var pokeHistory = PokeHistory.create(sender, recipient, event, sentAt.minusMinutes(i));
+        var firstSentAt = sentAt;
+        for (int i = 1; i <= 10; i++) {
+            if (i == 1) {
+                firstSentAt = sentAt.plusMinutes(i);
+            }
+            var pokeHistory = PokeHistory.create(sender, recipient, event, sentAt.plusMinutes(i));
             pokeHistoryRepository.save(pokeHistory);
         }
+
+        var duplicateCheckStart = sentAt.minusMinutes(30);
+        var expectWaitingMinutes = ChronoUnit.MINUTES.between(duplicateCheckStart, firstSentAt);
 
         // when // then
         assertThatThrownBy(() -> sut.doPoke(sender, recipient, event, sentAt))
                 .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("포키는 30분마다 한 대상에게 최대 10번만 보낼 수 있습니다.");
+                .hasMessage(String.format("대상에게 너무 많은 포키를 보냈어요. %d분 뒤에 다시 요청해주세요.", expectWaitingMinutes));
     }
 
     @Test
