@@ -180,16 +180,6 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
             {isEdit ? '이벤트 수정' : '이벤트 생성하기'}
           </Text>
           <Flex gap="8px">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleLoadPastEvent}
-              css={css`
-                font-size: 12px;
-              `}
-            >
-              + 템플릿에 추가
-            </Button>
             <Button size="sm" onClick={templateModalOpen}>
               템플릿
             </Button>
@@ -198,11 +188,23 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
 
         <Flex dir="column" gap="30px">
           <Flex dir="column" gap="8px">
-            <label htmlFor="title">
-              <Text type="Heading" weight="medium">
-                이벤트 이름
-              </Text>
-            </label>
+            <Flex justifyContent="space-between">
+              <label htmlFor="title">
+                <Text type="Heading" weight="medium">
+                  이벤트 이름
+                </Text>
+              </label>
+              <Flex
+                onClick={handleLoadPastEvent}
+                css={css`
+                  cursor: pointer;
+                `}
+              >
+                <Text type="Label" color="gray">
+                  +현재 글 템플릿에 추가
+                </Text>
+              </Flex>
+            </Flex>
             <Input
               id="title"
               name="title"
