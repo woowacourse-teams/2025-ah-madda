@@ -2,8 +2,6 @@ import { css } from '@emotion/react';
 
 import { theme } from '@/shared/styles/theme';
 
-import Ahmadda from '../../../../public/favicon-light.png';
-import Github from '../../../../public/github.png';
 import { Flex } from '../Flex';
 import { Icon } from '../Icon';
 import { Spacing } from '../Spacing';
@@ -24,7 +22,7 @@ export const Footer = () => {
       >
         <Flex dir="column" width="100%" gap="10px">
           <Flex alignItems="center">
-            <img src={Ahmadda} alt="logo" width="30" height="30" />
+            <img src="/favicon-light.png" alt="logo" width="30" height="30" />
             <Icon name="logo" />
           </Flex>
           <Text type="Body" weight="semibold" color={theme.colors.gray600}>
@@ -36,13 +34,19 @@ export const Footer = () => {
           </Text>
         </Flex>
         <Flex justifyContent="center" alignItems="center" gap="8px" height="40px">
-          <StyledLinkButton href="https://pleasant-goat-041.notion.site/24ff55e0580c80c09bcfc5ce5da493f5?source=copy_link">
+          <StyledLinkButton
+            target="_blank"
+            href="https://pleasant-goat-041.notion.site/24ff55e0580c80c09bcfc5ce5da493f5?source=copy_link"
+          >
             <Text type="Body" weight="semibold" color={theme.colors.gray600}>
               팀 소개
             </Text>
           </StyledLinkButton>
-          <StyledLinkButton href="https://github.com/woowacourse-teams/2025-ah-madda">
-            <img src={Github} alt="github" />
+          <StyledLinkButton
+            target="_blank"
+            href="https://github.com/woowacourse-teams/2025-ah-madda"
+          >
+            <img src="/github.png" alt="github" width="30" height="30" />
           </StyledLinkButton>
         </Flex>
       </Flex>
