@@ -9,6 +9,7 @@ import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
+import { Textarea } from '@/shared/components/Textarea';
 import { useModal } from '@/shared/hooks/useModal';
 import { trackCreateEvent } from '@/shared/lib/gaEvents';
 
@@ -274,12 +275,11 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               />
             </Flex>
           </Flex>
-
           <Flex dir="column" gap="8px">
             <label htmlFor="description">
               <Text type="Body">소개글</Text>
             </label>
-            <Input
+            <Textarea
               id="description"
               name="description"
               placeholder="이벤트에 대한 설명을 입력해 주세요"
@@ -290,7 +290,6 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               maxLength={MAX_LENGTH.DESCRIPTION}
             />
           </Flex>
-
           <Flex dir="column" gap="8px">
             <Button
               type="button"
