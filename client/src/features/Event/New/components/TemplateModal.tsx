@@ -34,7 +34,7 @@ export const TemplateModal = ({
   onConfirmTemplate,
 }: TemplateModalProps) => {
   const [selectedType, setSelectedType] = useState<'template' | 'event' | null>(null);
-  const [localSelectedId, setLocalSelectedId] = useState<number>(0);
+  const [selectedId, setSelectedId] = useState(0);
 
   // E.TODO organizationId 받아오기
   const [{ data: eventTitles }, { data: templateList }] = useSuspenseQueries({
@@ -42,30 +42,30 @@ export const TemplateModal = ({
   });
 
   const handleSelectTemplate = (templateId: number) => {
-    setLocalSelectedId(templateId);
+    setSelectedId(templateId);
     setSelectedType('template');
   };
 
   const handleSelectEvent = (eventId: number) => {
-    setLocalSelectedId(eventId);
+    setSelectedId(eventId);
     setSelectedType('event');
   };
 
   const handleConfirm = () => {
-    if (selectedType === 'template' && localSelectedId > 0) {
-      onConfirmTemplate(localSelectedId);
-    } else if (selectedType === 'event' && localSelectedId > 0) {
-      onConfirmEvent(localSelectedId);
+    if (selectedType === 'template' && selectedId > 0) {
+      onConfirmTemplate(selectedId);
+    } else if (selectedType === 'event' && selectedId > 0) {
+      onConfirmEvent(selectedId);
     }
     onClose();
     setSelectedType(null);
-    setLocalSelectedId(0);
+    setSelectedId(0);
   };
 
   const handleClose = () => {
     onClose();
     setSelectedType(null);
-    setLocalSelectedId(0);
+    setSelectedId(0);
   };
 
   return (
@@ -82,7 +82,7 @@ export const TemplateModal = ({
           템플릿 불러오기
         </Text>
 
-        <Tabs defaultValue="my-events">
+        <Tabs defaultValue="my-templates">
           <Tabs.List>
             <Tabs.Trigger value="my-templates">나만의 템플릿</Tabs.Trigger>
             <Tabs.Trigger value="my-events">나의 이벤트</Tabs.Trigger>
@@ -95,7 +95,7 @@ export const TemplateModal = ({
               </Text>
               {templateList?.map((template) => {
                 const isSelected =
-                  selectedType === 'template' && localSelectedId === template.templateId;
+                  selectedType === 'template' && selectedId === template.templateId;
 
                 return (
                   <StyledCard
@@ -148,7 +148,7 @@ export const TemplateModal = ({
                 `}
               >
                 {eventTitles?.map((event) => {
-                  const isSelected = selectedType === 'event' && localSelectedId === event.eventId;
+                  const isSelected = selectedType === 'event' && selectedId === event.eventId;
 
                   return (
                     <StyledCard
@@ -189,12 +189,7 @@ export const TemplateModal = ({
           <Button color="secondary" variant="outline" size="full" onClick={handleClose}>
             취소
           </Button>
-          <Button
-            color="primary"
-            size="full"
-            disabled={localSelectedId === 0}
-            onClick={handleConfirm}
-          >
+          <Button color="primary" size="full" disabled={selectedId === 0} onClick={handleConfirm}>
             불러오기
           </Button>
         </Flex>
