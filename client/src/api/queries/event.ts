@@ -148,7 +148,7 @@ const getPastEventList = async (eventId: number) => {
 };
 
 const getNotifyHistory = async (eventId: number) => {
-  return await fetcher.get<NotifyHistoryAPIResponse[]>(`events/${eventId}/notify/history`);
+  return await fetcher.get<NotifyHistoryAPIResponse[]>(`events/${eventId}/notification/history`);
 };
 
 const getTemplateList = async () => {

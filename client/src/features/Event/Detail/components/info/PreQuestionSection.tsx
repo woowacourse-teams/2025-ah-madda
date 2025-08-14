@@ -38,7 +38,6 @@ export const PreQuestionSection = ({
               </Text>
               <Input
                 id={`question-${question.questionId}`}
-                label=""
                 placeholder="답변을 입력하세요"
                 value={answers.find((a) => a.questionId === question.questionId)?.answerText ?? ''}
                 onChange={(e) => onChangeAnswer(question.questionId, e.target.value)}
