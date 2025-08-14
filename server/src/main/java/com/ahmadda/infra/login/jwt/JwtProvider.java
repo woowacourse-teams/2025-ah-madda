@@ -67,7 +67,11 @@ public class JwtProvider {
 
     public boolean isAccessTokenExpired(String accessToken) {
         try {
-            parseAccessPayload(accessToken);
+            Jwts.parser()
+                    .verifyWith(jwtProperties.getAccessSecretKey())
+                    .build()
+                    .parseSignedClaims(accessToken)
+                    .getPayload();
             return false;
         } catch (ExpiredJwtException e) {
             return true;

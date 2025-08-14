@@ -1,6 +1,5 @@
-package com.ahmadda.infra.jwt;
+package com.ahmadda.infra.login.jwt;
 
-import com.ahmadda.infra.login.jwt.JwtProvider;
 import com.ahmadda.infra.login.jwt.config.JwtProperties;
 import com.ahmadda.infra.login.jwt.exception.InvalidJwtException;
 import io.jsonwebtoken.Jwts;
@@ -114,5 +113,95 @@ class JwtProviderTest {
     void 페이로드_변환시_형식이_잘못된_토큰이면_예외가_발생한다() {
         assertThatThrownBy(() -> sut.parseAccessPayload("this.is.not.jwt"))
                 .isInstanceOf(InvalidJwtException.class);
+    }
+
+    @Test
+    void 리프레시토큰을_정상적으로_생성_할_수_있다() {
+        // given
+        var memberId = 10L;
+        var token = sut.createRefreshToken(memberId);
+
+        // when
+        var payload = sut.parseRefreshPayload(token);
+
+        // then
+        assertThat(payload.getMemberId()).isEqualTo(memberId);
+    }
+
+    @Test
+    void 만료된_리프레시토큰은_예외가_발생한다() {
+        // given
+        var now = Instant.now();
+        var expiredRefreshToken = Jwts.builder()
+                .claims(Jwts.claims()
+                                .add("memberId", 20L)
+                                .issuedAt(Date.from(now.minus(Duration.ofHours(2))))
+                                .expiration(Date.from(now.minus(Duration.ofMinutes(1))))
+                                .build())
+                .signWith(jwtProperties.getRefreshSecretKey())
+                .compact();
+
+        // when // then
+        assertThatThrownBy(() -> sut.parseRefreshPayload(expiredRefreshToken))
+                .isInstanceOf(InvalidJwtException.class);
+    }
+
+    @Test
+    void 잘못된_서명의_리프레시토큰은_예외가_발생한다() {
+        // given
+        var forgedKey = Keys.hmacShaKeyFor(UUID.randomUUID()
+                                                   .toString()
+                                                   .getBytes());
+        var token = Jwts.builder()
+                .claims(Jwts.claims()
+                                .add("memberId", 30L)
+                                .issuedAt(Date.from(Instant.now()))
+                                .expiration(Date.from(Instant.now()
+                                                              .plus(expiration)))
+                                .build())
+                .signWith(forgedKey)
+                .compact();
+
+        // when // then
+        assertThatThrownBy(() -> sut.parseRefreshPayload(token))
+                .isInstanceOf(InvalidJwtException.class);
+    }
+
+    @Test
+    void 액세스토큰_만료_여부를_확인할_수_있다() {
+        // given
+        var now = Instant.now();
+        var expiredAccessToken = Jwts.builder()
+                .claims(Jwts.claims()
+                                .add("memberId", 50L)
+                                .issuedAt(Date.from(now.minus(Duration.ofHours(2))))
+                                .expiration(Date.from(now.minus(Duration.ofMinutes(1))))
+                                .build())
+                .signWith(jwtProperties.getAccessSecretKey())
+                .compact();
+
+        //when // then
+        assertThat(sut.isAccessTokenExpired(expiredAccessToken)).isTrue();
+    }
+
+    @Test
+    void 액세스토큰을_리프레시로_검증시_예외가_발생한다() {
+        // given
+        var accessToken = sut.createAccessToken(60L);
+
+        // when // then
+        assertThatThrownBy(() -> sut.parseRefreshPayload(accessToken))
+                .isInstanceOf(InvalidJwtException.class);
+    }
+
+    @Test
+    void payload를_정상적으로_만들_수_있다() {
+        // given
+        var memberId = 70L;
+        var token = sut.createAccessToken(memberId);
+        var payload = sut.parseAccessPayload(token);
+
+        // when // then
+        assertThat(payload.getMemberId()).isEqualTo(70L);
     }
 }
