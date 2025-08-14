@@ -39,9 +39,8 @@ export const Textarea = ({
   const isError = isInvalid ?? Boolean(errorMessage);
 
   const hasMax = typeof props.maxLength === 'number' && props.maxLength > 0;
-  const raw = (props.value ?? props.defaultValue ?? '') as string | number;
-  const currentLength =
-    typeof raw === 'string' ? raw.length : typeof raw === 'number' ? String(raw).length : 0;
+  const rawValue = props.value ?? props.defaultValue ?? '';
+  const currentLength = String(rawValue).length;
   const displayLength = hasMax ? Math.min(currentLength, props.maxLength as number) : currentLength;
 
   const shouldShowCounter = showCounter && hasMax;
