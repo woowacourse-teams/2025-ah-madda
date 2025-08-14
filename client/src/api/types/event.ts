@@ -54,3 +54,8 @@ export type TemplateListAPIResponse = {
   templateId: number;
   title: string;
 };
+
+export type TemplateDetailAPIResponse = {
+  templateId: number;
+  description: string;
+};

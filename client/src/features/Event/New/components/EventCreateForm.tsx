@@ -1,11 +1,11 @@
 import { css } from '@emotion/react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import { HttpError } from '@/api/fetcher';
 import { useAddTemplate } from '@/api/mutations/useAddTemplate';
 import { useUpdateEvent } from '@/api/mutations/useUpdateEvent';
-import { getEventDetailAPI } from '@/api/queries/event';
+import { getEventDetailAPI, eventQueryOptions } from '@/api/queries/event';
 import { Button } from '@/shared/components/Button';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
@@ -34,6 +34,7 @@ type EventCreateFormProps = {
 
 export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
   const { mutate: updateEvent } = useUpdateEvent();
   const { mutate: loadPastEvent } = useAddTemplate();
@@ -42,6 +43,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     queryFn: () => getEventDetailAPI(Number(eventId)),
     enabled: isEdit,
   });
+
   const {
     isOpen: isTemplateModalOpen,
     open: templateModalOpen,
@@ -77,6 +79,27 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
 
   const handleTemplateLoad = () => {
     loadFormData(pastEventList ?? {});
+  };
+
+  const handleTemplateConfirm = async (templateId: number) => {
+    try {
+      const templateData = await queryClient.fetchQuery(
+        eventQueryOptions.templateDetail(templateId)
+      );
+
+      const formData = {
+        description: templateData.description || '',
+      };
+
+      loadFormData(formData);
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
+  const handleEventConfirm = () => {
+    // 기존 이벤트 템플릿 로드 로직
+    handleTemplateLoad();
   };
 
   const handleError = (error: unknown) => {
@@ -320,7 +343,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       <TemplateModal
         isOpen={isTemplateModalOpen}
         onClose={templateModalClose}
-        onConfirm={handleTemplateLoad}
+        onConfirmTemplate={handleTemplateConfirm}
+        onConfirmEvent={handleEventConfirm}
         onSelect={handleSelectEvent}
         selectedEventId={selectedEventId}
       />

@@ -17,7 +17,8 @@ import { theme } from '@/shared/styles/theme';
 type TemplateModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (eventId: number) => void;
+  onConfirmEvent: (eventId: number) => void;
+  onConfirmTemplate: (templateId: number) => void;
   onSelect: (eventId: number) => void;
   selectedEventId: number;
 };
@@ -29,11 +30,11 @@ type StyledCardProps = {
 export const TemplateModal = ({
   isOpen,
   onClose,
-  onConfirm,
-  onSelect,
-  selectedEventId,
+  onConfirmEvent,
+  onConfirmTemplate,
 }: TemplateModalProps) => {
   const [selectedType, setSelectedType] = useState<'template' | 'event' | null>(null);
+  const [localSelectedId, setLocalSelectedId] = useState<number>(0);
 
   // E.TODO organizationId 받아오기
   const [{ data: eventTitles }, { data: templateList }] = useSuspenseQueries({
@@ -41,25 +42,30 @@ export const TemplateModal = ({
   });
 
   const handleSelectTemplate = (templateId: number) => {
-    onSelect(templateId);
+    setLocalSelectedId(templateId);
     setSelectedType('template');
   };
 
   const handleSelectEvent = (eventId: number) => {
-    onSelect(eventId);
+    setLocalSelectedId(eventId);
     setSelectedType('event');
   };
 
   const handleConfirm = () => {
-    onConfirm(selectedEventId);
+    if (selectedType === 'template' && localSelectedId > 0) {
+      onConfirmTemplate(localSelectedId);
+    } else if (selectedType === 'event' && localSelectedId > 0) {
+      onConfirmEvent(localSelectedId);
+    }
     onClose();
     setSelectedType(null);
+    setLocalSelectedId(0);
   };
 
   const handleClose = () => {
     onClose();
-    onSelect(0);
     setSelectedType(null);
+    setLocalSelectedId(0);
   };
 
   return (
@@ -89,7 +95,7 @@ export const TemplateModal = ({
               </Text>
               {templateList?.map((template) => {
                 const isSelected =
-                  selectedType === 'template' && selectedEventId === template.templateId;
+                  selectedType === 'template' && localSelectedId === template.templateId;
 
                 return (
                   <StyledCard
@@ -142,7 +148,7 @@ export const TemplateModal = ({
                 `}
               >
                 {eventTitles?.map((event) => {
-                  const isSelected = selectedType === 'event' && selectedEventId === event.eventId;
+                  const isSelected = selectedType === 'event' && localSelectedId === event.eventId;
 
                   return (
                     <StyledCard
@@ -186,7 +192,7 @@ export const TemplateModal = ({
           <Button
             color="primary"
             size="full"
-            disabled={selectedEventId === 0}
+            disabled={localSelectedId === 0}
             onClick={handleConfirm}
           >
             불러오기
