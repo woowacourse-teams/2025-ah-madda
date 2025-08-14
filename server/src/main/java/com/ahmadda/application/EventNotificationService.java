@@ -1,16 +1,18 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.dto.NonGuestsNotificationRequest;
 import com.ahmadda.application.dto.SelectedOrganizationMembersNotificationRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
+import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventNotificationOptOutRepository;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
+import com.ahmadda.domain.OrganizationMemberWithOptStatus;
 import com.ahmadda.domain.Reminder;
 import com.ahmadda.domain.ReminderHistory;
 import com.ahmadda.domain.ReminderHistoryRepository;
@@ -30,21 +32,8 @@ public class EventNotificationService {
     private final Reminder reminder;
     private final EventRepository eventRepository;
     private final MemberRepository memberRepository;
+    private final EventNotificationOptOutRepository eventNotificationOptOutRepository;
     private final ReminderHistoryRepository reminderHistoryRepository;
-
-    public void notifyNonGuestOrganizationMembers(
-            final Long eventId,
-            final NonGuestsNotificationRequest request,
-            final LoginMember loginMember
-    ) {
-        Event event = getEvent(eventId);
-        validateOrganizer(event, loginMember.memberId());
-        List<OrganizationMember> organizationMembers = event.getOrganization()
-                .getOrganizationMembers();
-
-        List<OrganizationMember> recipients = event.getNonGuestOrganizationMembers(organizationMembers);
-        sendAndRecordReminder(recipients, event, request.content());
-    }
 
     public void notifySelectedOrganizationMembers(
             final Long eventId,
@@ -54,7 +43,10 @@ public class EventNotificationService {
         Event event = getEvent(eventId);
         validateOrganizer(event, loginMember.memberId());
 
-        List<OrganizationMember> recipients = getEventRecipientsFromIds(event, request.organizationMemberIds());
+        List<OrganizationMember> recipients =
+                getOrganizationMemberFromIds(event, request.organizationMemberIds());
+        validateRecipientsOptIn(recipients, event);
+
         sendAndRecordReminder(recipients, event, request.content());
     }
 
@@ -72,7 +64,7 @@ public class EventNotificationService {
         }
     }
 
-    private List<OrganizationMember> getEventRecipientsFromIds(
+    private List<OrganizationMember> getOrganizationMemberFromIds(
             final Event event,
             final List<Long> organizationMemberIds
     ) {
@@ -104,12 +96,29 @@ public class EventNotificationService {
         }
     }
 
+    private void validateRecipientsOptIn(
+            final List<OrganizationMember> organizationMembers,
+            final Event event
+    ) {
+        boolean hasOptOut = organizationMembers.stream()
+                .map(organizationMember -> OrganizationMemberWithOptStatus.createWithOptOutStatus(
+                        organizationMember,
+                        event,
+                        eventNotificationOptOutRepository
+                ))
+                .anyMatch(OrganizationMemberWithOptStatus::isOptedOut);
+
+        if (hasOptOut) {
+            throw new BusinessFlowViolatedException("선택된 조직원 중 알림 수신 거부자가 존재합니다.");
+        }
+    }
+
     private void sendAndRecordReminder(
             final List<OrganizationMember> recipients,
             final Event event,
             final String request
     ) {
-        List<ReminderHistory> reminderHistories = reminder.remind(recipients, event, request);
-        reminderHistoryRepository.saveAll(reminderHistories);
+        ReminderHistory reminderHistory = reminder.remind(recipients, event, request);
+        reminderHistoryRepository.save(reminderHistory);
     }
 }

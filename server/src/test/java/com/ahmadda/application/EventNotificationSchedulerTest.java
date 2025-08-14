@@ -1,6 +1,8 @@
 package com.ahmadda.application;
 
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventNotificationOptOut;
+import com.ahmadda.domain.EventNotificationOptOutRepository;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
@@ -12,9 +14,9 @@ import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Reminder;
-import com.ahmadda.domain.ReminderHistory;
 import com.ahmadda.domain.ReminderHistoryRepository;
 import com.ahmadda.domain.Role;
+import com.ahmadda.domain.ReminderRecipient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -55,6 +57,9 @@ class EventNotificationSchedulerTest {
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
 
+    @Autowired
+    private EventNotificationOptOutRepository eventNotificationOptOutRepository;
+
     @MockitoSpyBean
     private Reminder reminder;
 
@@ -63,7 +68,7 @@ class EventNotificationSchedulerTest {
 
     @ParameterizedTest
     @MethodSource("registrationEndOffsets")
-    void 등록_마감_임박_이벤트에_대해_비게스트에게_알람을_전송한다(
+    void 등록_마감_임박_이벤트에_대해_수신_거부하지_않은_비게스트에게만_알람을_전송한다(
             int minutesUntilRegistrationEnds,
             boolean expectToSend
     ) {
@@ -90,12 +95,16 @@ class EventNotificationSchedulerTest {
                 100
         ));
 
+        var ng2OptOut =
+                eventNotificationOptOutRepository.save(EventNotificationOptOut.create(ng2, event));
+        eventNotificationOptOutRepository.save(ng2OptOut);
+
         // when
         sut.notifyRegistrationClosingEvents();
 
         // then
         if (expectToSend) {
-            verify(reminder).remind(List.of(ng1, ng2), event, "이벤트 신청 마감이 임박했습니다.");
+            verify(reminder).remind(List.of(ng1), event, "이벤트 신청 마감이 임박했습니다.");
         } else {
             verify(reminder, Mockito.never()).remind(any(), any(), any());
         }
@@ -123,28 +132,26 @@ class EventNotificationSchedulerTest {
                 100
         ));
 
-        var content = "이벤트 신청 마감이 임박했습니다.";
-
         // when
         sut.notifyRegistrationClosingEvents();
 
         // then
-        var saved = reminderHistoryRepository.findAll();
+        var savedHistories = reminderHistoryRepository.findAll();
         assertSoftly(softly -> {
-            softly.assertThat(saved)
-                    .hasSize(2);
-            softly.assertThat(saved)
-                    .extracting(ReminderHistory::getEvent)
-                    .containsOnly(event);
-            softly.assertThat(saved)
-                    .extracting(ReminderHistory::getOrganizationMember)
+            softly.assertThat(savedHistories)
+                    .hasSize(1);
+
+            var history = savedHistories.get(0);
+            softly.assertThat(history.getEvent())
+                    .isEqualTo(event);
+            softly.assertThat(history.getContent())
+                    .isEqualTo("이벤트 신청 마감이 임박했습니다.");
+            softly.assertThat(history.getSentAt())
+                    .isNotNull();
+
+            softly.assertThat(history.getRecipients())
+                    .extracting(ReminderRecipient::getOrganizationMember)
                     .containsExactlyInAnyOrder(ng1, ng2);
-            softly.assertThat(saved)
-                    .extracting(ReminderHistory::getContent)
-                    .containsOnly(content);
-            softly.assertThat(saved)
-                    .allSatisfy(h -> softly.assertThat(h.getSentAt())
-                            .isNotNull());
         });
     }
 
@@ -183,10 +190,124 @@ class EventNotificationSchedulerTest {
         verify(reminder, Mockito.never()).remind(any(), any(), any());
     }
 
+    @ParameterizedTest
+    @MethodSource("eventStartOffsets")
+    void 이벤트_시작_24시간_전_수신_거부하지_않은_게스트에게만_알람을_전송한다(
+            int minutesFrom24hOffset,
+            boolean expectToSend
+    ) {
+        // given
+        var org = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        var host = saveOrganizationMember("주최자", "host@email.com", org);
+
+        var now = LocalDateTime.now();
+        var eventStart = now.plusHours(24)
+                .plusMinutes(minutesFrom24hOffset);
+
+        var event = eventRepository.save(Event.create(
+                "이벤트", "설명", "장소",
+                host, org,
+                EventOperationPeriod.create(
+                        now.minusDays(2),
+                        now.plusMinutes(4),
+                        eventStart,
+                        now.plusDays(2),
+                        now.minusDays(3)
+                ),
+                100
+        ));
+
+        var guest1 = saveOrganizationMember("게스트1", "g1@email.com", org);
+        var guest2 = saveOrganizationMember("게스트2", "g2@email.com", org);
+        saveGuest(event, guest1);
+        saveGuest(event, guest2);
+        saveOrganizationMember("비게스트", "ng@email.com", org);
+
+        // when
+        sut.notifyEventStartIn24Hours();
+
+        // then
+        if (expectToSend) {
+            verify(reminder).remind(List.of(guest1, guest2), event, "내일 이벤트가 시작됩니다. 준비되셨나요?");
+        } else {
+            verify(reminder, Mockito.never()).remind(
+                    Mockito.any(),
+                    Mockito.any(),
+                    Mockito.eq("내일 이벤트가 시작됩니다. 준비되셨나요?")
+            );
+        }
+    }
+
+    @Test
+    void 이벤트_시작_24시간_전_리마인더_호출_후_히스토리가_저장된다() {
+        // given
+        var org = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        var host = saveOrganizationMember("주최자", "host@email.com", org);
+
+        var now = LocalDateTime.now();
+        var eventStart = now.plusHours(24)
+                .plusMinutes(3);
+
+        var event = eventRepository.save(Event.create(
+                "이벤트", "설명", "장소",
+                host, org,
+                EventOperationPeriod.create(
+                        now.minusDays(2),
+                        now.plusMinutes(4),
+                        eventStart,
+                        now.plusDays(2),
+                        now.minusDays(3)
+                ),
+                100
+        ));
+
+        var g1 = saveOrganizationMember("게스트1", "g1@email.com", org);
+        var g2 = saveOrganizationMember("게스트2", "g2@email.com", org);
+        saveGuest(event, g1);
+        saveGuest(event, g2);
+
+        var ng2OptOut =
+                eventNotificationOptOutRepository.save(EventNotificationOptOut.create(g2, event));
+        eventNotificationOptOutRepository.save(ng2OptOut);
+
+        // when
+        sut.notifyEventStartIn24Hours();
+
+        // then
+        var savedHistories = reminderHistoryRepository.findAll();
+        assertSoftly(softly -> {
+            softly.assertThat(savedHistories)
+                    .hasSize(1);
+
+            var history = savedHistories.get(0);
+            softly.assertThat(history.getEvent())
+                    .isEqualTo(event);
+            softly.assertThat(history.getContent())
+                    .isEqualTo("내일 이벤트가 시작됩니다. 준비되셨나요?");
+            softly.assertThat(history.getSentAt())
+                    .isNotNull();
+
+            softly.assertThat(history.getRecipients())
+                    .extracting(ReminderRecipient::getOrganizationMember)
+                    .containsExactlyInAnyOrder(g1);
+        });
+    }
+
     private static Stream<Arguments> registrationEndOffsets() {
         return Stream.of(
+                Arguments.of(1, true),
                 Arguments.of(4, true),
                 Arguments.of(5, true),
+                Arguments.of(6, false),
+                Arguments.of(-1, false)
+        );
+    }
+
+    private static Stream<Arguments> eventStartOffsets() {
+        return Stream.of(
+                Arguments.of(0, false),
+                Arguments.of(1, true),
+                Arguments.of(4, true),
                 Arguments.of(6, false),
                 Arguments.of(-1, false)
         );

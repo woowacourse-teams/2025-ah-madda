@@ -40,6 +40,7 @@ public class Event extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
     private final List<Guest> guests = new ArrayList<>();
 
+    // TODO. FlyWay 도입 이후 JoinColumn 사용 고려
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Question> questions = new ArrayList<>();
 
@@ -168,13 +169,13 @@ public class Event extends BaseEntity {
                 .anyMatch(guest -> guest.isSameOrganizationMember(organizationMember));
     }
 
-    public List<OrganizationMember> getNonGuestOrganizationMembers(final List<OrganizationMember> organizationMembers) {
+    public List<OrganizationMember> getNonGuestOrganizationMembers(final List<OrganizationMember> allOrganizationMembers) {
         Set<OrganizationMember> participants = guests.stream()
                 .map(Guest::getOrganizationMember)
                 .collect(Collectors.toSet());
         participants.add(organizer);
 
-        return organizationMembers.stream()
+        return allOrganizationMembers.stream()
                 .filter(organizationMember -> !participants.contains(organizationMember))
                 .toList();
     }
@@ -236,7 +237,7 @@ public class Event extends BaseEntity {
     public boolean isFull() {
         return guests.size() >= maxCapacity;
     }
-    
+
     private void validateCancelParticipation(final LocalDateTime cancelParticipationTime) {
         if (eventOperationPeriod.willStartWithin(
                 cancelParticipationTime,

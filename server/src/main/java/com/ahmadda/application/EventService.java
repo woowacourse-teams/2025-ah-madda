@@ -10,9 +10,10 @@ import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventNotificationOptOutRepository;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
-import com.ahmadda.domain.Guest;
+import com.ahmadda.domain.GuestWithOptStatus;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
@@ -44,6 +45,7 @@ public class EventService {
     private final OrganizationMemberRepository organizationMemberRepository;
     private final Reminder reminder;
     private final ReminderHistoryRepository reminderHistoryRepository;
+    private final EventNotificationOptOutRepository eventNotificationOptOutRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
@@ -201,10 +203,11 @@ public class EventService {
 
     private void notifyEventUpdated(final Event event) {
         String content = "이벤트 정보가 수정되었습니다.";
-        List<OrganizationMember> recipients = event.getGuests()
+        List<GuestWithOptStatus> guestsWithOptOut = event.getGuests()
                 .stream()
-                .map(Guest::getOrganizationMember)
+                .map(guest -> GuestWithOptStatus.createWithOptOutStatus(guest, eventNotificationOptOutRepository))
                 .toList();
+        List<OrganizationMember> recipients = GuestWithOptStatus.extractOptInOrganizationMembers(guestsWithOptOut);
 
         sendAndRecordReminder(event, recipients, content);
     }
@@ -214,7 +217,7 @@ public class EventService {
             final List<OrganizationMember> recipients,
             final String content
     ) {
-        List<ReminderHistory> reminderHistories = reminder.remind(recipients, event, content);
-        reminderHistoryRepository.saveAll(reminderHistories);
+        ReminderHistory reminderHistory = reminder.remind(recipients, event, content);
+        reminderHistoryRepository.save(reminderHistory);
     }
 }

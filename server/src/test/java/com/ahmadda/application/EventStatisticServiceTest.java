@@ -133,8 +133,8 @@ class EventStatisticServiceTest {
         return eventRepository.save(event);
     }
 
-    private EventStatistic createEventStatistic(Event event) {
+    private void createEventStatistic(Event event) {
         EventStatistic eventStatistic = EventStatistic.create(event);
-        return eventStatisticRepository.save(eventStatistic);
+        eventStatisticRepository.save(eventStatistic);
     }
 }

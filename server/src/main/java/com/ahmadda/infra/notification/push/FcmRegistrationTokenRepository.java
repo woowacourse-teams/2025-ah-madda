@@ -15,6 +15,8 @@ public interface FcmRegistrationTokenRepository extends JpaRepository<FcmRegistr
 
     List<FcmRegistrationToken> findAllByMemberIdIn(final List<Long> memberIds);
 
+    List<FcmRegistrationToken> findAllByMemberId(final Long memberId);
+
     @Transactional
     void deleteAllByRegistrationTokenIn(final List<String> registrationTokens);
 }
