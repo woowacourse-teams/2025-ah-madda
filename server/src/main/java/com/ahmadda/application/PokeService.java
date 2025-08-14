@@ -1,12 +1,15 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.LoginMember;
+import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventNotificationOptOutRepository;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
+import com.ahmadda.domain.OrganizationMemberWithOptStatus;
 import com.ahmadda.domain.Poke;
 import com.ahmadda.domain.PokeHistory;
 import com.ahmadda.domain.PokeHistoryRepository;
@@ -24,6 +27,7 @@ public class PokeService {
     private final Poke poke;
     private final EventRepository eventRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
+    private final EventNotificationOptOutRepository eventNotificationOptOutRepository;
     private final PokeHistoryRepository pokeHistoryRepository;
 
     @Transactional
@@ -32,6 +36,8 @@ public class PokeService {
         Organization organization = event.getOrganization();
         OrganizationMember sender = getOrganizationMember(loginMember, organization);
         OrganizationMember recipient = getOrganizationMember(notifyPokeRequest.receiptOrganizationMemberId());
+
+        validateRecipientOptInStatus(recipient, event);
 
         PokeHistory pokeHistory = poke.doPoke(sender, recipient, event, LocalDateTime.now());
 
@@ -54,5 +60,18 @@ public class PokeService {
     private Event getEvent(final Long eventId) {
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 이벤트입니다."));
+    }
+
+    private void validateRecipientOptInStatus(final OrganizationMember recipient, final Event event) {
+        OrganizationMemberWithOptStatus recipientWithOptOut =
+                OrganizationMemberWithOptStatus.createWithOptOutStatus(
+                        recipient,
+                        event,
+                        eventNotificationOptOutRepository
+                );
+
+        if (recipientWithOptOut.isOptedOut()) {
+            throw new BusinessFlowViolatedException("알림을 받지 않는 조직원입니다.");
+        }
     }
 }

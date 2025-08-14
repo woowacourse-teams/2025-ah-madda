@@ -4,13 +4,15 @@ import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.util.Assert;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
-public class GuestWithOptOut {
+public class GuestWithOptStatus {
 
     private final Guest guest;
     private final boolean optedOut;
 
-    private GuestWithOptOut(final Guest guest, final boolean optedOut) {
+    private GuestWithOptStatus(final Guest guest, final boolean optedOut) {
         validateGuest(guest);
         validateEvent(guest.getEvent());
         validateOrganizationMember(guest.getOrganizationMember());
@@ -20,8 +22,25 @@ public class GuestWithOptOut {
         this.optedOut = optedOut;
     }
 
-    public static GuestWithOptOut create(final Guest guest, final boolean optedOut) {
-        return new GuestWithOptOut(guest, optedOut);
+    public static GuestWithOptStatus create(final Guest guest, final boolean optedOut) {
+        return new GuestWithOptStatus(guest, optedOut);
+    }
+
+    public static GuestWithOptStatus createWithOptOutStatus(
+            final Guest guest,
+            final EventNotificationOptOutRepository optOutRepository
+    ) {
+        boolean optedOut =
+                optOutRepository.existsByEventAndOrganizationMember(guest.getEvent(), guest.getOrganizationMember());
+
+        return new GuestWithOptStatus(guest, optedOut);
+    }
+
+    public static List<OrganizationMember> extractOptInOrganizationMembers(final List<GuestWithOptStatus> guestsWithOptOut) {
+        return guestsWithOptOut.stream()
+                .filter(guestWithOptOut -> !guestWithOptOut.isOptedOut())
+                .map(GuestWithOptStatus::getOrganizationMember)
+                .toList();
     }
 
     private void validateGuest(final Guest guest) {

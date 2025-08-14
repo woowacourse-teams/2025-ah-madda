@@ -6,6 +6,8 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventNotificationOptOut;
+import com.ahmadda.domain.EventNotificationOptOutRepository;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
@@ -66,6 +68,9 @@ class EventServiceTest {
 
     @Autowired
     private ReminderHistoryRepository reminderHistoryRepository;
+
+    @Autowired
+    private EventNotificationOptOutRepository eventNotificationOptOutRepository;
 
     @Test
     void 이벤트를_생성할_수_있다() {
@@ -538,7 +543,7 @@ class EventServiceTest {
     }
 
     @Test
-    void 이벤트_수정_시_게스트들에게_알림을_보낸다() {
+    void 이벤트_수정_시_수신_거부_하지_않은_게스트들에게_알림을_보낸다() {
         // given
         var organization = createOrganization();
         var organizerMember = createMember("organizer", "organizer@email.com");
@@ -570,6 +575,10 @@ class EventServiceTest {
         guestRepository.save(guest1);
         guestRepository.save(guest2);
 
+        eventNotificationOptOutRepository.save(
+                EventNotificationOptOut.create(guestOrgMember2, event)
+        );
+
         var updateRequest = new EventUpdateRequest(
                 "수정된 제목",
                 "수정된 설명",
@@ -586,7 +595,7 @@ class EventServiceTest {
         sut.updateEvent(event.getId(), loginMember, updateRequest, now);
 
         // then
-        verify(reminder).remind(List.of(guestOrgMember1, guestOrgMember2), event, "이벤트 정보가 수정되었습니다.");
+        verify(reminder).remind(List.of(guestOrgMember1), event, "이벤트 정보가 수정되었습니다.");
     }
 
     @Test

@@ -169,13 +169,13 @@ public class Event extends BaseEntity {
                 .anyMatch(guest -> guest.isSameOrganizationMember(organizationMember));
     }
 
-    public List<OrganizationMember> getNonGuestOrganizationMembers(final List<OrganizationMember> organizationMembers) {
+    public List<OrganizationMember> getNonGuestOrganizationMembers(final List<OrganizationMember> allOrganizationMembers) {
         Set<OrganizationMember> participants = guests.stream()
                 .map(Guest::getOrganizationMember)
                 .collect(Collectors.toSet());
         participants.add(organizer);
 
-        return organizationMembers.stream()
+        return allOrganizationMembers.stream()
                 .filter(organizationMember -> !participants.contains(organizationMember))
                 .toList();
     }
