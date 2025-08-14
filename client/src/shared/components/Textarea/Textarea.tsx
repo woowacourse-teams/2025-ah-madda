@@ -1,5 +1,7 @@
 import { ComponentProps } from 'react';
 
+import { computeCounter } from '@/shared/utils/computeCounter';
+
 import {
   StyledWrapper,
   StyledTextarea,
@@ -24,26 +26,16 @@ export type TextareaProps = {
    * If omitted, falls back to !!errorMessage.
    */
   isInvalid?: boolean;
-
-  /** Show character counter (uses maxLength) */
-  showCounter?: boolean;
 } & ComponentProps<'textarea'>;
 
-export const Textarea = ({
-  helperText,
-  errorMessage,
-  isInvalid,
-  showCounter = false,
-  ...props
-}: TextareaProps) => {
+export const Textarea = ({ helperText, errorMessage, isInvalid, ...props }: TextareaProps) => {
   const isError = isInvalid ?? Boolean(errorMessage);
 
-  const hasMax = typeof props.maxLength === 'number' && props.maxLength > 0;
-  const rawValue = props.value ?? props.defaultValue ?? '';
-  const currentLength = String(rawValue).length;
-  const displayLength = hasMax ? Math.min(currentLength, props.maxLength as number) : currentLength;
-
-  const shouldShowCounter = showCounter && hasMax;
+  const { hasMax, displayLength } = computeCounter(
+    props.value,
+    props.defaultValue,
+    props.maxLength
+  );
 
   return (
     <StyledWrapper>
@@ -54,7 +46,7 @@ export const Textarea = ({
           {isError ? (errorMessage ?? ' ') : (helperText ?? ' ')}
         </StyledHelperText>
 
-        {shouldShowCounter && (
+        {hasMax && (
           <StyledCounterText>
             ({displayLength}/{props.maxLength})
           </StyledCounterText>
