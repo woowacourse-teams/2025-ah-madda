@@ -329,7 +329,6 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               value={basicEventForm.description}
               onChange={handleChange}
               errorMessage={errors.description}
-              showCounter
               maxLength={MAX_LENGTH.DESCRIPTION}
             />
           </Flex>

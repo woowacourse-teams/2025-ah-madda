@@ -1,6 +1,7 @@
 import { ComponentProps, useRef } from 'react';
 
 import { Icon } from '@/shared/components/Icon';
+import { computeCounter } from '@/shared/utils/computeCounter';
 
 import {
   StyledWrapper,
@@ -51,16 +52,14 @@ export const Input = ({
   ...props
 }: InputProps) => {
   const isError = !!errorMessage;
-
   const isDateLike = props.type === 'datetime-local';
 
-  const hasMax = typeof props.maxLength === 'number' && props.maxLength > 0;
+  const { hasMax, displayLength } = computeCounter(
+    props.value,
+    props.defaultValue,
+    props.maxLength
+  );
   const shouldShowCounter = showCounter && hasMax && !isDateLike;
-
-  const raw = (props.value ?? props.defaultValue ?? '') as string | number;
-  const currentLength =
-    typeof raw === 'string' ? raw.length : typeof raw === 'number' ? String(raw).length : 0;
-  const displayLength = hasMax ? Math.min(currentLength, props.maxLength as number) : currentLength;
 
   const inputRef = useRef<HTMLInputElement>(null);
   const openPicker = () => {
