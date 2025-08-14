@@ -133,8 +133,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   return (
     <Flex>
       <Flex dir="column" gap="40px" padding="60px 0" width="100%">
-        <Flex justifyContent="space-between" alignItems="center">
-          <Text type="Heading" weight="bold">
+        <Flex justifyContent="space-between" alignItems="center" padding="40px 0">
+          <Text as="h1" type="Display" weight="bold">
             {isEdit ? '이벤트 수정' : '이벤트 생성하기'}
           </Text>
           <Button size="sm" onClick={templateModalOpen}>
@@ -145,7 +145,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         <Flex dir="column" gap="30px">
           <Flex dir="column" gap="8px">
             <label htmlFor="title">
-              <Text type="Body">이벤트 이름</Text>
+              <Text type="Body" weight="medium">
+                이벤트 이름
+              </Text>
             </label>
             <Input
               id="title"
@@ -177,7 +179,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               `}
             >
               <label htmlFor="eventStart">
-                <Text type="Body">이벤트 시작일</Text>
+                <Text type="Body" weight="medium">
+                  이벤트 시작일
+                </Text>
               </label>
               <Input
                 id="eventStart"
@@ -205,7 +209,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               `}
             >
               <label htmlFor="eventEnd">
-                <Text type="Body">이벤트 종료일</Text>
+                <Text type="Body" weight="medium">
+                  이벤트 종료일
+                </Text>
               </label>
               <Input
                 id="eventEnd"
@@ -238,7 +244,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               `}
             >
               <label htmlFor="registrationEnd">
-                <Text type="Body">신청 종료일</Text>
+                <Text type="Body" weight="medium">
+                  신청 종료일
+                </Text>
               </label>
               <Input
                 id="registrationEnd"
@@ -261,7 +269,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               `}
             >
               <label htmlFor="place">
-                <Text type="Body">이벤트 장소</Text>
+                <Text type="Body" weight="medium">
+                  이벤트 장소
+                </Text>
               </label>
               <Input
                 id="place"
@@ -296,7 +306,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 }
               `}
             >
-              <Text type="Body" weight="bold">
+              <Text type="Body" weight="medium">
                 인원
               </Text>
               <Text as="span" type="Body" color="#4b5563" data-role="value">
@@ -320,7 +330,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
           </Flex>
           <Flex dir="column" gap="8px">
             <label htmlFor="description">
-              <Text type="Body">소개글</Text>
+              <Text type="Body" weight="medium">
+                소개글
+              </Text>
             </label>
             <Textarea
               id="description"

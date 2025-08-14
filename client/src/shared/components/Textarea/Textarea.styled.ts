@@ -31,9 +31,9 @@ export const StyledHelperText = styled.p<{ isError: boolean }>`
 `;
 
 export const StyledFooterRow = styled.div`
+  /* padding-top: 8px; */
   display: flex;
   align-items: center;
-  margin-top: 6px;
 `;
 
 export const StyledCounterText = styled.span`

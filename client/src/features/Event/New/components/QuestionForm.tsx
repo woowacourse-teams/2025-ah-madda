@@ -21,9 +21,11 @@ export const QuestionForm = ({
 }: QuestionFormProps) => {
   return (
     <Flex dir="column" gap="16px">
-      <Flex justifyContent="space-between" alignItems="center">
+      <Flex justifyContent="space-between" alignItems="center" gap="4px">
         <Flex dir="column" gap="8px">
-          <Text type="Body">사전 질문</Text>
+          <Text type="Body" weight="medium">
+            사전 질문
+          </Text>
           <Text type="Label" color={theme.colors.gray600}>
             참가자에게 묻고 싶은 질문을 추가해 보세요.
           </Text>
