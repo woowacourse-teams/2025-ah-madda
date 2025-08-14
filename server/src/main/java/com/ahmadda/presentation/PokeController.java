@@ -153,6 +153,18 @@ public class PokeController {
                                                       "instance": "/api/events/{eventId}/notify-poke"
                                                     }
                                                     """
+                                    ),
+                                    @ExampleObject(
+                                            name = "알림 수신 거부",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "알림을 받지 않는 조직원입니다.",
+                                                      "instance": "/api/events/{eventId}/notify-poke"
+                                                    }
+                                                    """
                                     )
                             }
                     )

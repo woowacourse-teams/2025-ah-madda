@@ -105,6 +105,22 @@ public class EventNotificationController {
                             }
                     )
             ),
+            @ApiResponse(
+                    responseCode = "422",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unprocessable Entity",
+                                              "status": 422,
+                                              "detail": "선택된 조직원 중 알림 수신 거부자가 존재합니다.",
+                                              "instance": "/api/events/{eventId}/notify-organization-members"
+                                            }
+                                            """
+                            )
+                    )
+            )
     })
     @PostMapping("/{eventId}/notify-organization-members")
     public ResponseEntity<Void> notifyOrganizationMembers(

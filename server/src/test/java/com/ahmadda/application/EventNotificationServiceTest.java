@@ -268,7 +268,7 @@ class EventNotificationServiceTest {
                 )
         )
                 .isInstanceOf(BusinessFlowViolatedException.class)
-                .hasMessage("선택된 조직원 중 알림 수신 거부자가 있습니다.");
+                .hasMessage("선택된 조직원 중 알림 수신 거부자가 존재합니다.");
     }
 
     private SelectedOrganizationMembersNotificationRequest createSelectedMembersRequest(List<Long> organizationMemberIds) {

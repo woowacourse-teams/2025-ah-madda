@@ -109,7 +109,7 @@ public class EventNotificationService {
                 .anyMatch(OrganizationMemberWithOptOut::isOptedOut);
 
         if (hasOptOut) {
-            throw new BusinessFlowViolatedException("선택된 조직원 중 알림 수신 거부자가 있습니다.");
+            throw new BusinessFlowViolatedException("선택된 조직원 중 알림 수신 거부자가 존재합니다.");
         }
     }
 
