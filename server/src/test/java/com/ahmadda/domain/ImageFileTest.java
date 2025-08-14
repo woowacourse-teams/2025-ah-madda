@@ -52,7 +52,7 @@ class ImageFileTest {
                 ImageFile.create("test.gif", "image/gif", 1024, validInputStream)
         )
                 .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessageContaining("이미지 파일의 확장자는 jpg, jpeg, png중 하나여야 합니다.");
+                .hasMessage("이미지 파일의 확장자는 jpg, jpeg, png중 하나여야 합니다.");
     }
 
     @Test
@@ -62,6 +62,6 @@ class ImageFileTest {
                 ImageFile.create("test.jpg", "text/plain", 1024, validInputStream)
         )
                 .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessageContaining("이미지 켄텐츠 유형이 아닙니다.");
+                .hasMessage("이미지 켄텐츠 유형이 아닙니다.");
     }
 }

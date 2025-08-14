@@ -104,7 +104,7 @@ public class OrganizationController {
             @RequestPart("thumbnail") MultipartFile multipartFile,
             @AuthMember LoginMember loginMember
     ) throws IOException {
-        ImageFile thumnailImageFile = ImageFile.create(
+        ImageFile thumbnailImageFile = ImageFile.create(
                 multipartFile.getOriginalFilename(),
                 multipartFile.getContentType(),
                 multipartFile.getSize(),
@@ -113,7 +113,7 @@ public class OrganizationController {
 
         Organization organization = organizationService.createOrganization(
                 organizationCreateRequest,
-                thumnailImageFile,
+                thumbnailImageFile,
                 loginMember
         );
 

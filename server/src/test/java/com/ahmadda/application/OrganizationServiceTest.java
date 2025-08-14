@@ -75,7 +75,7 @@ class OrganizationServiceTest {
 
     @Test
     void 조직을_생성한다() {
-        // given/
+        // given
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var request = createOrganizationCreateRequest("조직명", "조직 설명", "서프");
         var thumbnailImageFile = ImageFile.create(

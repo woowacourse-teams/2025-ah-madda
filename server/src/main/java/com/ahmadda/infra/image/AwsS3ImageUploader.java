@@ -28,7 +28,7 @@ public class AwsS3ImageUploader implements ImageUploader {
         metadata.setContentType(imageFile.getContentType());
         metadata.setContentLength(imageFile.getSize());
 
-        try (final InputStream inputStream = imageFile.getInputStream()) {
+        try (InputStream inputStream = imageFile.getInputStream()) {
             amazonS3Client.putObject(awsS3Properties.getBucket(), uploadFileName, inputStream, metadata);
         } catch (AmazonServiceException | IOException e) {
             throw new AwsImageUploadException("AWS S3로 이미지 업로드가 실패하였습니다.", e);
@@ -46,8 +46,9 @@ public class AwsS3ImageUploader implements ImageUploader {
 
     private String getUploadImageUrl(final String uploadFileName) {
         return String.format(
-                "https://%s.s3.ap-northeast-2.amazonaws.com/%s",
+                "https://%s.s3.%s.amazonaws.com/%s",
                 awsS3Properties.getBucket(),
+                awsS3Properties.getRegion(),
                 uploadFileName
         );
     }

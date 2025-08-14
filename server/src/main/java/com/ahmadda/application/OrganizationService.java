@@ -42,13 +42,12 @@ public class OrganizationService {
     @Transactional
     public Organization createOrganization(
             final OrganizationCreateRequest organizationCreateRequest,
-            final ImageFile thumnailImageFile,
+            final ImageFile thumbnailImageFile,
             final LoginMember loginMember
     ) {
-
         Member member = getMember(loginMember);
 
-        String uploadImageUrl = imageUploader.upload(thumnailImageFile);
+        String uploadImageUrl = imageUploader.upload(thumbnailImageFile);
         Organization organization = Organization.create(
                 organizationCreateRequest.name(),
                 organizationCreateRequest.description(),
