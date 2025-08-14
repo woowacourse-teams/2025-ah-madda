@@ -2,6 +2,8 @@ import { useState } from 'react';
 
 import type { Meta, StoryObj } from '@storybook/react';
 
+import { formatTimeDisplay } from '@/shared/utils/timePicker';
+
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 
@@ -57,7 +59,7 @@ export const Basic: Story = {
           <Text type="Body" color="primary">
             선택된 시간:
             {selectedTime
-              ? `${String(selectedTime.getHours()).padStart(2, '0')}:${String(selectedTime.getMinutes()).padStart(2, '0')}`
+              ? formatTimeDisplay(selectedTime.getHours(), selectedTime.getMinutes())
               : '없음'}
           </Text>
         </Flex>

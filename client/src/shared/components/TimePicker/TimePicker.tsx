@@ -1,13 +1,14 @@
+import {
+  createTimeFromHour,
+  createTimeFromMinute,
+  generateHourOptions,
+  generateMinuteOptions,
+} from '@/shared/utils/timePicker';
+
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 
 import { StyledSelect, StyledTimePicker } from './TimePicker.styled';
-import {
-  generateHourOptions,
-  generateMinuteOptions,
-  createTimeFromHour,
-  createTimeFromMinute,
-} from './utils';
 
 type TimePickerProps = {
   selectedTime?: Date;
@@ -27,6 +28,8 @@ export const TimePicker = ({
 }: TimePickerProps) => {
   const currentHour = selectedTime?.getHours() ?? 0;
   const currentMinute = selectedTime?.getMinutes() ?? 0;
+
+  const hasTime = selectedTime !== undefined;
 
   const handleHourChange = (hour: number) => {
     const newTime = createTimeFromHour(selectedTime, hour, currentMinute);
@@ -48,10 +51,16 @@ export const TimePicker = ({
 
       <Flex dir="row" gap="8px" alignItems="center">
         <StyledSelect
-          value={currentHour}
+          aria-label="시 선택"
+          value={hasTime ? currentHour : ''}
           onChange={(e) => handleHourChange(Number(e.target.value))}
           disabled={disabled}
         >
+          {!hasTime && (
+            <option value="" disabled>
+              시
+            </option>
+          )}
           {HOUR_OPTIONS.map((hour) => (
             <option key={hour.value} value={hour.value}>
               {hour.label}
@@ -64,10 +73,16 @@ export const TimePicker = ({
         </Text>
 
         <StyledSelect
-          value={currentMinute}
+          aria-label="분 선택"
+          value={hasTime ? currentMinute : ''}
           onChange={(e) => handleMinuteChange(Number(e.target.value))}
           disabled={disabled}
         >
+          {!hasTime && (
+            <option value="" disabled>
+              분
+            </option>
+          )}
           {MINUTE_OPTIONS.map((minute) => (
             <option key={minute.value} value={minute.value}>
               {minute.label}
