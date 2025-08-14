@@ -1,3 +1,5 @@
+import { RefObject } from 'react';
+
 import { css } from '@emotion/react';
 
 import { Button } from '@/shared/components/Button';
@@ -20,6 +22,7 @@ export type RangeDatePickerProps = DatePickerProps & {
   initialStartTime?: Date;
   initialEndTime?: Date;
   title?: string;
+  dropdownRef?: RefObject<HTMLDivElement | null>;
 };
 
 export const RangeDatePicker = ({
@@ -31,7 +34,7 @@ export const RangeDatePicker = ({
   initialEndTime,
   title = '이벤트 날짜 및 시간 선택',
   dropdownRef,
-}: RangeDatePickerProps & { dropdownRef: React.RefObject<HTMLDivElement | null> }) => {
+}: RangeDatePickerProps) => {
   const {
     selectedDate,
     selectedEndDate,

@@ -1,3 +1,5 @@
+import { RefObject } from 'react';
+
 import { css } from '@emotion/react';
 
 import { Button } from '@/shared/components/Button';
@@ -27,7 +29,7 @@ export const SingleDatePicker = ({
   initialTime,
   title = '날짜 및 시간 선택',
   dropdownRef,
-}: SingleDatePickerProps & { dropdownRef: React.RefObject<HTMLDivElement | null> }) => {
+}: SingleDatePickerProps & { dropdownRef: RefObject<HTMLDivElement | null> }) => {
   const {
     selectedDate,
     selectedTime,
