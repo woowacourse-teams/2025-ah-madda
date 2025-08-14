@@ -58,5 +58,7 @@ export const createTimeFromMinute = (
 };
 
 export const formatTimeDisplay = (hour: number, minute: number): string => {
-  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+  const fixedHour = Math.max(0, Math.min(23, hour));
+  const fixedMinute = Math.max(0, Math.min(59, minute));
+  return `${String(fixedHour).padStart(2, '0')}:${String(fixedMinute).padStart(2, '0')}`;
 };
