@@ -1,4 +1,3 @@
-// Date 객체를 datetime-local input에서 사용할 수 있는 형식으로 변환
 export const formatDateForInput = (date: Date): string => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
