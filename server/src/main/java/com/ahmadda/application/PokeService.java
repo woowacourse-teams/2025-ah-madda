@@ -9,7 +9,7 @@ import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
-import com.ahmadda.domain.OrganizationMemberWithOptOut;
+import com.ahmadda.domain.OrganizationMemberWithOptStatus;
 import com.ahmadda.domain.Poke;
 import com.ahmadda.domain.PokeHistory;
 import com.ahmadda.domain.PokeHistoryRepository;
@@ -63,13 +63,13 @@ public class PokeService {
     }
 
     private void validateRecipientOptInStatus(final OrganizationMember recipient, final Event event) {
-        OrganizationMemberWithOptOut recipientWithOptOut =
-                OrganizationMemberWithOptOut.createWithOptOutStatus(
+        OrganizationMemberWithOptStatus recipientWithOptOut =
+                OrganizationMemberWithOptStatus.createWithOptOutStatus(
                         recipient,
                         event,
                         eventNotificationOptOutRepository
                 );
-        
+
         if (recipientWithOptOut.isOptedOut()) {
             throw new BusinessFlowViolatedException("알림을 받지 않는 조직원입니다.");
         }

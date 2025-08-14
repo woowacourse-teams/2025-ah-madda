@@ -7,12 +7,12 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class OrganizationMemberWithOptOut {
+public class OrganizationMemberWithOptStatus {
 
     private final OrganizationMember organizationMember;
     private final boolean optedOut;
 
-    private OrganizationMemberWithOptOut(
+    private OrganizationMemberWithOptStatus(
             final OrganizationMember organizationMember,
             final boolean optedOut,
             final Event event
@@ -25,28 +25,28 @@ public class OrganizationMemberWithOptOut {
         this.optedOut = optedOut;
     }
 
-    public static OrganizationMemberWithOptOut create(
+    public static OrganizationMemberWithOptStatus create(
             final OrganizationMember organizationMember,
             final boolean optedOut,
             final Event event
     ) {
-        return new OrganizationMemberWithOptOut(organizationMember, optedOut, event);
+        return new OrganizationMemberWithOptStatus(organizationMember, optedOut, event);
     }
 
-    public static OrganizationMemberWithOptOut createWithOptOutStatus(
+    public static OrganizationMemberWithOptStatus createWithOptOutStatus(
             final OrganizationMember organizationMember,
             final Event event,
             final EventNotificationOptOutRepository optOutRepository
     ) {
         boolean optedOut = optOutRepository.existsByEventAndOrganizationMember(event, organizationMember);
 
-        return new OrganizationMemberWithOptOut(organizationMember, optedOut, event);
+        return new OrganizationMemberWithOptStatus(organizationMember, optedOut, event);
     }
 
-    public static List<OrganizationMember> extractOptInOrganizationMembers(final List<OrganizationMemberWithOptOut> organizationMembersWithOptOuts) {
+    public static List<OrganizationMember> extractOptInOrganizationMembers(final List<OrganizationMemberWithOptStatus> organizationMembersWithOptOuts) {
         return organizationMembersWithOptOuts.stream()
                 .filter(organizationMemberWithOptOut -> !organizationMemberWithOptOut.isOptedOut())
-                .map(OrganizationMemberWithOptOut::getOrganizationMember)
+                .map(OrganizationMemberWithOptStatus::getOrganizationMember)
                 .toList();
     }
 

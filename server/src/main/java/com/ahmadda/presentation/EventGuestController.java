@@ -9,9 +9,9 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.Answer;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.Guest;
-import com.ahmadda.domain.GuestWithOptOut;
+import com.ahmadda.domain.GuestWithOptStatus;
 import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberWithOptOut;
+import com.ahmadda.domain.OrganizationMemberWithOptStatus;
 import com.ahmadda.presentation.dto.EventDetailResponse;
 import com.ahmadda.presentation.dto.GuestStatusResponse;
 import com.ahmadda.presentation.dto.GuestWithOptOutResponse;
@@ -112,7 +112,7 @@ public class EventGuestController {
             @AuthMember final LoginMember loginMember
     ) {
         List<Guest> guestMembers = eventGuestService.getGuests(eventId, loginMember);
-        List<GuestWithOptOut> guestsWithOptOuts = eventNotificationOptOutService.mapGuests(guestMembers);
+        List<GuestWithOptStatus> guestsWithOptOuts = eventNotificationOptOutService.mapGuests(guestMembers);
 
         List<GuestWithOptOutResponse> responses = guestsWithOptOuts.stream()
                 .map(GuestWithOptOutResponse::from)
@@ -185,13 +185,13 @@ public class EventGuestController {
     ) {
         List<OrganizationMember> nonGuestMembers =
                 eventGuestService.getNonGuestOrganizationMembers(eventId, loginMember);
-        List<OrganizationMemberWithOptOut> nonGuestsWithOptOuts =
+        List<OrganizationMemberWithOptStatus> nonGuestsWithOptOuts =
                 eventNotificationOptOutService.mapOrganizationMembers(eventId, nonGuestMembers);
 
         List<OrganizationMemberWithOptOutResponse> responses = nonGuestsWithOptOuts.stream()
                 .map(OrganizationMemberWithOptOutResponse::from)
                 .toList();
-        
+
         return ResponseEntity.ok(responses);
     }
 

@@ -4,9 +4,9 @@ import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventNotificationOptOutRepository;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Guest;
-import com.ahmadda.domain.GuestWithOptOut;
+import com.ahmadda.domain.GuestWithOptStatus;
 import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberWithOptOut;
+import com.ahmadda.domain.OrganizationMemberWithOptStatus;
 import com.ahmadda.domain.Reminder;
 import com.ahmadda.domain.ReminderHistory;
 import com.ahmadda.domain.ReminderHistoryRepository;
@@ -76,10 +76,10 @@ public class EventNotificationScheduler {
                 event.getNonGuestOrganizationMembers(event.getOrganization()
                         .getOrganizationMembers());
 
-        return OrganizationMemberWithOptOut.extractOptInOrganizationMembers(
+        return OrganizationMemberWithOptStatus.extractOptInOrganizationMembers(
                 nonGuestOrganizationMembers
                         .stream()
-                        .map(organizationMember -> OrganizationMemberWithOptOut.createWithOptOutStatus(
+                        .map(organizationMember -> OrganizationMemberWithOptStatus.createWithOptOutStatus(
                                 organizationMember,
                                 event,
                                 eventNotificationOptOutRepository
@@ -91,10 +91,10 @@ public class EventNotificationScheduler {
     private List<OrganizationMember> getOptInGuests(final Event event) {
         List<Guest> guests = event.getGuests();
 
-        return GuestWithOptOut.extractOptInOrganizationMembers(
+        return GuestWithOptStatus.extractOptInOrganizationMembers(
                 guests
                         .stream()
-                        .map(guest -> GuestWithOptOut.createWithOptOutStatus(
+                        .map(guest -> GuestWithOptStatus.createWithOptOutStatus(
                                 guest,
                                 eventNotificationOptOutRepository
                         ))

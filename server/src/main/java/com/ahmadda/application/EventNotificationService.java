@@ -12,7 +12,7 @@ import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberWithOptOut;
+import com.ahmadda.domain.OrganizationMemberWithOptStatus;
 import com.ahmadda.domain.Reminder;
 import com.ahmadda.domain.ReminderHistory;
 import com.ahmadda.domain.ReminderHistoryRepository;
@@ -101,12 +101,12 @@ public class EventNotificationService {
             final Event event
     ) {
         boolean hasOptOut = organizationMembers.stream()
-                .map(organizationMember -> OrganizationMemberWithOptOut.createWithOptOutStatus(
+                .map(organizationMember -> OrganizationMemberWithOptStatus.createWithOptOutStatus(
                         organizationMember,
                         event,
                         eventNotificationOptOutRepository
                 ))
-                .anyMatch(OrganizationMemberWithOptOut::isOptedOut);
+                .anyMatch(OrganizationMemberWithOptStatus::isOptedOut);
 
         if (hasOptOut) {
             throw new BusinessFlowViolatedException("선택된 조직원 중 알림 수신 거부자가 존재합니다.");
