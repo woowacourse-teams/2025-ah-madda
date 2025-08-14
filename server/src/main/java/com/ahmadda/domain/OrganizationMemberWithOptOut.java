@@ -4,6 +4,8 @@ import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.util.Assert;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 public class OrganizationMemberWithOptOut {
 
@@ -40,7 +42,14 @@ public class OrganizationMemberWithOptOut {
 
         return new OrganizationMemberWithOptOut(organizationMember, optedOut, event);
     }
-    
+
+    public static List<OrganizationMember> extractOptInOrganizationMembers(final List<OrganizationMemberWithOptOut> organizationMembersWithOptOuts) {
+        return organizationMembersWithOptOuts.stream()
+                .filter(organizationMemberWithOptOut -> !organizationMemberWithOptOut.isOptedOut())
+                .map(OrganizationMemberWithOptOut::getOrganizationMember)
+                .toList();
+    }
+
     private void validateOrganizationMember(final OrganizationMember organizationMember) {
         Assert.notNull(organizationMember, "조직원은 null이 될 수 없습니다.");
     }

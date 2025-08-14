@@ -5,6 +5,8 @@ import com.ahmadda.application.dto.SelectedOrganizationMembersNotificationReques
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventNotificationOptOut;
+import com.ahmadda.domain.EventNotificationOptOutRepository;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.Member;
@@ -54,8 +56,11 @@ class EventNotificationServiceTest {
     @Autowired
     private ReminderHistoryRepository reminderHistoryRepository;
 
+    @Autowired
+    private EventNotificationOptOutRepository eventNotificationOptOutRepository;
+
     @Test
-    void 선택된_조직원에게_알람을_전송한다() {
+    void 선택된_조직원중_수신_거부_하지_않은_조직원에게_알람을_전송한다() {
         // given
         var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
         var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
@@ -79,13 +84,16 @@ class EventNotificationServiceTest {
         var om2 = saveOrganizationMember("선택2", "sel2@email.com", organization);
         saveOrganizationMember("비선택", "nsel@email.com", organization);
 
+        EventNotificationOptOut optOut = EventNotificationOptOut.create(om2, event);
+        eventNotificationOptOutRepository.save(optOut);
+
         var request = createSelectedMembersRequest(List.of(om1.getId(), om2.getId()));
 
         // when
         sut.notifySelectedOrganizationMembers(event.getId(), request, createLoginMember(organizer));
 
         // then
-        verify(reminder).remind(List.of(om1, om2), event, request.content());
+        verify(reminder).remind(List.of(om1), event, request.content());
     }
 
     @Test
