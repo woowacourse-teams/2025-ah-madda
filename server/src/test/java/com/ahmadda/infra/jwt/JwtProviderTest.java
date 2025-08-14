@@ -37,7 +37,7 @@ class JwtProviderTest {
         var token = sut.createAccessToken(memberId);
 
         // when
-        var memberPayload = sut.parsePayload(token);
+        var memberPayload = sut.parseAccessPayload(token);
 
         // then
         assertThat(memberPayload.getMemberId()).isEqualTo(memberId);
@@ -50,7 +50,7 @@ class JwtProviderTest {
         var token = sut.createAccessToken(memberId);
 
         // when
-        var payload = sut.parsePayload(token);
+        var payload = sut.parseAccessPayload(token);
 
         // then
         assertThat(payload.getMemberId()).isEqualTo(memberId);
@@ -70,7 +70,7 @@ class JwtProviderTest {
                 .compact();
 
         // when // then
-        assertThatThrownBy(() -> sut.parsePayload(token))
+        assertThatThrownBy(() -> sut.parseAccessPayload(token))
                 .isInstanceOf(InvalidJwtException.class);
     }
 
@@ -94,25 +94,25 @@ class JwtProviderTest {
                 .compact();
 
         // when // then
-        assertThatThrownBy(() -> sut.parsePayload(token))
+        assertThatThrownBy(() -> sut.parseAccessPayload(token))
                 .isInstanceOf(InvalidJwtException.class);
     }
 
     @Test
     void 페이로드_변환시_빈_토큰이면_예외가_발생한다() {
-        assertThatThrownBy(() -> sut.parsePayload(""))
+        assertThatThrownBy(() -> sut.parseAccessPayload(""))
                 .isInstanceOf(InvalidJwtException.class);
     }
 
     @Test
     void 페이로드_변환시_null_토큰이면_예외가_발생한다() {
-        assertThatThrownBy(() -> sut.parsePayload(null))
+        assertThatThrownBy(() -> sut.parseAccessPayload(null))
                 .isInstanceOf(InvalidJwtException.class);
     }
 
     @Test
     void 페이로드_변환시_형식이_잘못된_토큰이면_예외가_발생한다() {
-        assertThatThrownBy(() -> sut.parsePayload("this.is.not.jwt"))
+        assertThatThrownBy(() -> sut.parseAccessPayload("this.is.not.jwt"))
                 .isInstanceOf(InvalidJwtException.class);
     }
 }

@@ -15,14 +15,30 @@ public class TokenProvider {
     private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
 
-    public MemberToken getMemberToken(final Long memberId) {
+    public MemberToken createMemberToken(final Long memberId) {
         String accessToken = jwtProvider.createAccessToken(memberId);
         String refreshToken = jwtProvider.createRefreshToken(memberId);
 
-        RefreshToken refreshTokenEntity = RefreshToken.create(refreshToken, memberId);
-        RefreshToken saveRefreshToken = refreshTokenRepository.save(refreshTokenEntity);
+        String encodedRefreshToken = passwordEncoder.encode(refreshToken);
 
-        return new MemberToken(accessToken, saveRefreshToken.getToken());
+        RefreshToken refreshTokenEntity = RefreshToken.create(encodedRefreshToken, memberId);
+        refreshTokenRepository.save(refreshTokenEntity);
+
+        return new MemberToken(accessToken, refreshToken);
+    }
+
+    public MemberToken renewMemberToken(final String accessToken, final String refreshToken) {
+        validateAccessTokenExpired(accessToken);
+        
+        Long memberId = jwtProvider.parseRefreshPayload(refreshToken)
+                .getMemberId();
+
+        RefreshToken saved = getRefreshToken(memberId);
+        validateRefreshTokenMatches(refreshToken, saved.getToken());
+
+        deleteRefreshToken(memberId);
+
+        return createMemberToken(memberId);
     }
 
     public void deleteRefreshToken(final Long memberId) {
@@ -34,5 +50,17 @@ public class TokenProvider {
     private RefreshToken getRefreshToken(final Long memberId) {
         return refreshTokenRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new InvalidTokenException("토큰을 찾을 수 없습니다."));
+    }
+
+    private void validateAccessTokenExpired(final String accessToken) {
+        if (!jwtProvider.isAccessTokenExpired(accessToken)) {
+            throw new InvalidTokenException("아직 만료되지 않은 액세스 토큰입니다.");
+        }
+    }
+
+    private void validateRefreshTokenMatches(final String refreshToken, final String encodedRefreshToken) {
+        if (!passwordEncoder.matches(refreshToken, encodedRefreshToken)) {
+            throw new InvalidTokenException("리프레시 토큰이 일치하지 않습니다.");
+        }
     }
 }

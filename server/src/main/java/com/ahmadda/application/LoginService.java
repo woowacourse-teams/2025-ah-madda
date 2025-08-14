@@ -29,14 +29,13 @@ public class LoginService {
 
         Member member = findOrCreateMember(userInfo.name(), userInfo.email(), userInfo.picture());
 
-        return tokenProvider.getMemberToken(member.getId());
+        return tokenProvider.createMemberToken(member.getId());
     }
 
-//    public MemberToken renewMemberToken(final String accessToken, final String refreshToken) {
-//        tokenProvider.validateToken(refreshToken);
-//
-//        return tokenProvider.getRenewMemberToken(accessToken, refreshToken);
-//    }
+    @Transactional
+    public MemberToken renewMemberToken(final String accessToken, final String refreshToken) {
+        return tokenProvider.renewMemberToken(accessToken, refreshToken);
+    }
 
     @Transactional
     public void logout(final LoginMember loginMember) {

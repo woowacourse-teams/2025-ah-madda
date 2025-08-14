@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.Date;
+import javax.crypto.SecretKey;
 
 @Slf4j
 @EnableConfigurationProperties(JwtProperties.class)
@@ -52,16 +53,31 @@ public class JwtProvider {
                 .compact();
     }
 
-    public JwtMemberPayload parsePayload(final String token) {
-        Claims claims = parseClaims(token);
+    public JwtMemberPayload parseAccessPayload(final String accessToken) {
+        Claims claims = parseClaims(accessToken, jwtProperties.getAccessSecretKey());
 
         return JwtMemberPayload.from(claims);
     }
 
-    private Claims parseClaims(final String token) {
+    public JwtMemberPayload parseRefreshPayload(final String refreshToken) {
+        Claims claims = parseClaims(refreshToken, jwtProperties.getRefreshSecretKey());
+
+        return JwtMemberPayload.from(claims);
+    }
+
+    public boolean isAccessTokenExpired(String accessToken) {
+        try {
+            parseAccessPayload(accessToken);
+            return false;
+        } catch (ExpiredJwtException e) {
+            return true;
+        }
+    }
+
+    private Claims parseClaims(final String token, final SecretKey secretKey) {
         try {
             return Jwts.parser()
-                    .verifyWith(jwtProperties.getAccessSecretKey())
+                    .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
