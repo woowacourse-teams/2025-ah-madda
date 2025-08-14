@@ -13,7 +13,6 @@ import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Poke;
 import com.ahmadda.domain.PokeHistory;
-import com.ahmadda.domain.PokeHistoryRepository;
 import com.ahmadda.presentation.dto.PokeRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,10 +48,7 @@ class PokeServiceTest {
 
     @Autowired
     private OrganizationRepository organizationRepository;
-
-    @Autowired
-    private PokeHistoryRepository pokeHistoryRepository;
-
+    
     @MockitoSpyBean
     private Poke poke;
 
