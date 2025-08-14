@@ -18,6 +18,7 @@ import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Question;
+import com.ahmadda.domain.Role;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,7 @@ class EventGuestServiceTest {
 
     @Autowired
     private GuestRepository guestRepository;
-    
+
     @Test
     void 이벤트에_참여한_게스트들을_조회한다() {
         // given
@@ -450,7 +451,7 @@ class EventGuestServiceTest {
     }
 
     private OrganizationMember createAndSaveOrganizationMember(String nickname, Member member, Organization org) {
-        return organizationMemberRepository.save(OrganizationMember.create(nickname, member, org));
+        return organizationMemberRepository.save(OrganizationMember.create(nickname, member, org, Role.USER));
     }
 
     private Event createAndSaveEvent(OrganizationMember organizer, Organization organization, Question... questions) {

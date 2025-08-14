@@ -16,6 +16,7 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.domain.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -304,7 +305,7 @@ class EventNotificationOptOutServiceTest {
     }
 
     private OrganizationMember createOrganizationMember(String nickname, Member member, Organization org) {
-        return organizationMemberRepository.save(OrganizationMember.create(nickname, member, org));
+        return organizationMemberRepository.save(OrganizationMember.create(nickname, member, org, Role.USER));
     }
 
     private Event createEvent(OrganizationMember organizer, Organization organization) {

@@ -6,6 +6,8 @@ import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
+import com.ahmadda.domain.ImageFile;
+import com.ahmadda.domain.ImageUploader;
 import com.ahmadda.domain.InviteCode;
 import com.ahmadda.domain.InviteCodeRepository;
 import com.ahmadda.domain.Member;
@@ -14,6 +16,7 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.domain.Role;
 import com.ahmadda.presentation.dto.OrganizationParticipateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,16 +37,29 @@ public class OrganizationService {
     private final OrganizationMemberRepository organizationMemberRepository;
     private final MemberRepository memberRepository;
     private final InviteCodeRepository inviteCodeRepository;
+    private final ImageUploader imageUploader;
 
     @Transactional
-    public Organization createOrganization(final OrganizationCreateRequest organizationCreateRequest) {
+    public Organization createOrganization(
+            final OrganizationCreateRequest organizationCreateRequest,
+            final ImageFile thumbnailImageFile,
+            final LoginMember loginMember
+    ) {
+        Member member = getMember(loginMember);
+
+        String uploadImageUrl = imageUploader.upload(thumbnailImageFile);
         Organization organization = Organization.create(
                 organizationCreateRequest.name(),
                 organizationCreateRequest.description(),
-                organizationCreateRequest.imageUrl()
+                uploadImageUrl
         );
+        organizationRepository.save(organization);
 
-        return organizationRepository.save(organization);
+        OrganizationMember organizationMember =
+                OrganizationMember.create(organizationCreateRequest.nickName(), member, organization, Role.ADMIN);
+        organizationMemberRepository.save(organizationMember);
+
+        return organization;
     }
 
     public Organization getOrganizationById(final Long organizationId) {

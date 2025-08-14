@@ -14,6 +14,7 @@ import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.ReminderHistory;
 import com.ahmadda.domain.ReminderHistoryRepository;
+import com.ahmadda.domain.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -139,7 +140,7 @@ class ReminderHistoryServiceTest {
     }
 
     private OrganizationMember createOrganizationMember(final Organization organization, final Member member) {
-        return organizationMemberRepository.save(OrganizationMember.create("nick", member, organization));
+        return organizationMemberRepository.save(OrganizationMember.create("nick", member, organization, Role.USER));
     }
 
     private Event createEvent(final OrganizationMember organizer, final Organization organization) {

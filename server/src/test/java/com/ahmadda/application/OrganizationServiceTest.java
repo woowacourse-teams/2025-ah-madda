@@ -7,6 +7,7 @@ import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
+import com.ahmadda.domain.ImageFile;
 import com.ahmadda.domain.InviteCode;
 import com.ahmadda.domain.InviteCodeRepository;
 import com.ahmadda.domain.Member;
@@ -15,12 +16,15 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.domain.Role;
 import com.ahmadda.presentation.dto.OrganizationParticipateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -72,23 +76,48 @@ class OrganizationServiceTest {
     @Test
     void 조직을_생성한다() {
         // given
-        var request = createOrganizationCreateRequest("조직명", "조직 설명", "image.png");
+        var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        var request = createOrganizationCreateRequest("조직명", "조직 설명", "서프");
+        var thumbnailImageFile = ImageFile.create(
+                "test.png",
+                "image/png",
+                1000,
+                new InputStream() {
+                    @Override
+                    public int read() throws IOException {
+                        return 0;
+                    }
+                }
+        );
 
         // when
-        sut.createOrganization(request);
+        sut.createOrganization(request, thumbnailImageFile, new LoginMember(member.getId()));
 
         // then
         var organizations = organizationRepository.findAll();
+        var organizationMembes = organizationMemberRepository.findAll();
         assertSoftly(softly -> {
-            var saved = organizations.get(0);
+            var organization = organizations.get(0);
             softly.assertThat(organizations)
                     .hasSize(1);
-            softly.assertThat(saved.getName())
+            softly.assertThat(organization.getName())
                     .isEqualTo("조직명");
-            softly.assertThat(saved.getDescription())
+            softly.assertThat(organization.getDescription())
                     .isEqualTo("조직 설명");
-            softly.assertThat(saved.getImageUrl())
-                    .isEqualTo("image.png");
+            softly.assertThat(organization.getImageUrl())
+                    .isEqualTo("test.png");
+
+            var organizationMember = organizationMembes.getFirst();
+            softly.assertThat(organizationMembes)
+                    .hasSize(1);
+            softly.assertThat(organizationMember.getMember())
+                    .isEqualTo(member);
+            softly.assertThat(organizationMember.getOrganization())
+                    .isEqualTo(organization);
+            softly.assertThat(organizationMember.getNickname())
+                    .isEqualTo("서프");
+            softly.assertThat(organizationMember.getRole())
+                    .isEqualTo(Role.ADMIN);
         });
     }
 
@@ -119,8 +148,10 @@ class OrganizationServiceTest {
         var loginMember = new LoginMember(member.getId());
         var orgA = organizationRepository.save(createOrganization("OrgA", "DescA", "a.png"));
         var orgB = organizationRepository.save(createOrganization("OrgB", "DescB", "b.png"));
-        var orgMemberA = organizationMemberRepository.save(OrganizationMember.create("nickname", member, orgA));
-        var orgMemberB = organizationMemberRepository.save(OrganizationMember.create("nickname", member, orgB));
+        var orgMemberA =
+                organizationMemberRepository.save(OrganizationMember.create("nickname", member, orgA, Role.USER));
+        var orgMemberB =
+                organizationMemberRepository.save(OrganizationMember.create("nickname", member, orgB, Role.USER));
 
         var now = LocalDateTime.now();
         eventRepository.save(createEvent(orgMemberA, orgA, "EventA1", now.plusDays(1), now.plusDays(2)));
@@ -292,9 +323,9 @@ class OrganizationServiceTest {
     private OrganizationCreateRequest createOrganizationCreateRequest(
             String name,
             String description,
-            String imageUrl
+            String nickname
     ) {
-        return new OrganizationCreateRequest(name, description, imageUrl);
+        return new OrganizationCreateRequest(name, description, nickname);
     }
 
     private OrganizationMember createAndSaveOrganizationMember(
@@ -302,7 +333,7 @@ class OrganizationServiceTest {
             Member member,
             Organization organization
     ) {
-        var organizationMember = OrganizationMember.create(nickname, member, organization);
+        var organizationMember = OrganizationMember.create(nickname, member, organization, Role.USER);
         return organizationMemberRepository.save(organizationMember);
     }
 

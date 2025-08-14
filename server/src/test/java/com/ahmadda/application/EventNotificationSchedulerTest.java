@@ -15,6 +15,7 @@ import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Reminder;
 import com.ahmadda.domain.ReminderHistoryRepository;
+import com.ahmadda.domain.Role;
 import com.ahmadda.domain.ReminderRecipient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -319,7 +320,7 @@ class EventNotificationSchedulerTest {
     ) {
         var member = memberRepository.save(Member.create(nickname, email, "testPicture"));
 
-        return organizationMemberRepository.save(OrganizationMember.create(nickname, member, organization));
+        return organizationMemberRepository.save(OrganizationMember.create(nickname, member, organization, Role.USER));
     }
 
     private Guest saveGuest(Event event, OrganizationMember participant) {
