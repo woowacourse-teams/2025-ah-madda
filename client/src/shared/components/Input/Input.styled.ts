@@ -77,7 +77,6 @@ export const StyledCalendarButton = styled.button`
 `;
 
 export const StyledFooterRow = styled.div`
-  padding-top: 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;

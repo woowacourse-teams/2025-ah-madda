@@ -24,7 +24,7 @@ export const NewOrganizationPage = () => {
         />
       }
     >
-      <Flex dir="column" width="100%" margin="0 auto" padding="28px 14px" gap="24px">
+      <Flex dir="column" width="100%" margin="0 auto" padding="28px 20px" gap="24px">
         <OrganizationCreateForm />
       </Flex>
     </PageLayout>
