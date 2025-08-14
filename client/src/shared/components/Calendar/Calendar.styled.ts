@@ -38,7 +38,6 @@ export const DateButton = styled(Button)<DateButtonProps>`
 `;
 
 export const WeekDay = styled(Flex)`
-  display: flex;
   justify-content: center;
 `;
 

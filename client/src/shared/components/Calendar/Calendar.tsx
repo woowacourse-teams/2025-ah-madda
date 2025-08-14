@@ -88,9 +88,9 @@ export const Calendar = ({
       </WeekDayHeader>
 
       <DateContainer>
-        {calendarDays.map((date, index) => (
+        {calendarDays.map((date) => (
           <DateButton
-            key={index}
+            key={date.toISOString()}
             onClick={() => handleDateClick(date)}
             isToday={isToday(date)}
             isSelected={isSelectedDate(date, selectedDate || null, selectedEndDate || null)}
