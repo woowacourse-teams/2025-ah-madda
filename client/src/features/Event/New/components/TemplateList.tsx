@@ -1,7 +1,9 @@
 import styled from '@emotion/styled';
 
+import { useDeleteTemplate } from '@/api/mutations/useDeleteTemplate';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
+import { IconButton } from '@/shared/components/IconButton';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
@@ -21,6 +23,16 @@ type StyledCardProps = {
 };
 
 export const TemplateList = ({ templates, selectedId, onSelectTemplate }: TemplateListProps) => {
+  const { mutate: deleteTemplate } = useDeleteTemplate();
+
+  const handleDeleteTemplate = (templateId: number) => {
+    deleteTemplate(templateId, {
+      onSuccess: () => {
+        alert('템플릿이 삭제되었습니다.');
+      },
+    });
+  };
+
   return (
     <Flex dir="column" gap="16px" padding="20px 0">
       <Text type="Body" weight="regular" color={theme.colors.gray600}>
@@ -35,9 +47,17 @@ export const TemplateList = ({ templates, selectedId, onSelectTemplate }: Templa
             isSelected={isSelected}
             onClick={() => onSelectTemplate(template.templateId)}
           >
-            <Text type="Body" weight="medium" color={theme.colors.gray900}>
-              {template.title}
-            </Text>
+            <Flex justifyContent="space-between" alignItems="center">
+              <Text type="Body" weight="medium" color={theme.colors.gray900}>
+                {template.title}
+              </Text>
+              <IconButton
+                name="delete"
+                size={20}
+                color="gray"
+                onClick={() => handleDeleteTemplate(template.templateId)}
+              />
+            </Flex>
           </StyledCard>
         );
       })}
