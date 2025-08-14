@@ -65,7 +65,7 @@ export const TemplateModal = ({
         title: selectedEventData.title,
         description: selectedEventData.description,
         place: selectedEventData.place,
-        maxCapacity: Number(selectedEventData.maxCapacity),
+        maxCapacity: selectedEventData.maxCapacity,
       });
     }
 

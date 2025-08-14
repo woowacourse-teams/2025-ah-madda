@@ -24,9 +24,17 @@ export const TemplateList = ({ templates, selectedId, onSelectTemplate }: Templa
 
   const handleDeleteTemplate = (e: React.MouseEvent, templateId: number) => {
     e.stopPropagation();
+    if (!confirm('정말 이 템플릿을 삭제하시겠어요?')) return;
     deleteTemplate(templateId, {
       onSuccess: () => {
+        if (selectedId === templateId) {
+          onSelectTemplate(0);
+        }
         alert('템플릿이 삭제되었습니다.');
+      },
+      onError: (error) => {
+        console.error(error);
+        alert('템플릿 삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.');
       },
     });
   };
