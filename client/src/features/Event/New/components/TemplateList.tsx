@@ -22,7 +22,8 @@ type TemplateListProps = {
 export const TemplateList = ({ templates, selectedId, onSelectTemplate }: TemplateListProps) => {
   const { mutate: deleteTemplate } = useDeleteTemplate();
 
-  const handleDeleteTemplate = (templateId: number) => {
+  const handleDeleteTemplate = (e: React.MouseEvent, templateId: number) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
     deleteTemplate(templateId, {
       onSuccess: () => {
         alert('템플릿이 삭제되었습니다.');
@@ -74,7 +75,7 @@ export const TemplateList = ({ templates, selectedId, onSelectTemplate }: Templa
                   name="delete"
                   size={20}
                   color="gray"
-                  onClick={() => handleDeleteTemplate(template.templateId)}
+                  onClick={(e) => handleDeleteTemplate(e, template.templateId)}
                 />
               </Flex>
             </SelectableCard>
