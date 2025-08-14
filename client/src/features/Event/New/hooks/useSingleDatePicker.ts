@@ -33,7 +33,7 @@ export const useSingleDatePicker = ({
     onClose();
   };
 
-  const isConfirmDisabled = !selectedDate;
+  const isConfirmDisabled = !selectedDate || !selectedTime;
 
   return {
     selectedDate,
