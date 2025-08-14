@@ -17,23 +17,26 @@ import { theme } from '@/shared/styles/theme';
 type TemplateModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  onLoadTemplate: (templateId: number) => void;
+  onLoadEvent: (eventId: number) => void;
 };
 
 type StyledCardProps = {
   isSelected: boolean;
 };
 
-export const TemplateModal = ({ isOpen, onClose }: TemplateModalProps) => {
+export const TemplateModal = ({
+  isOpen,
+  onClose,
+  onLoadTemplate,
+  onLoadEvent,
+}: TemplateModalProps) => {
   const [selectedType, setSelectedType] = useState<'template' | 'event' | null>(null);
   const [selectedId, setSelectedId] = useState(0);
 
   // E.TODO organizationId 받아오기
   const [{ data: eventTitles }, { data: templateList }] = useSuspenseQueries({
-    queries: [
-      eventQueryOptions.titles(1),
-      eventQueryOptions.templateList(),
-      // eventQueryOptions.pastEventList(selectedId),
-    ],
+    queries: [eventQueryOptions.titles(1), eventQueryOptions.templateList()],
   });
 
   const handleSelectTemplate = (templateId: number) => {
@@ -48,10 +51,11 @@ export const TemplateModal = ({ isOpen, onClose }: TemplateModalProps) => {
 
   const handleConfirm = () => {
     if (selectedType === 'template' && selectedId > 0) {
-      // onConfirmTemplate(selectedId);
+      onLoadTemplate(selectedId);
     } else if (selectedType === 'event' && selectedId > 0) {
-      // onConfirmEvent(selectedId);
+      onLoadEvent(selectedId);
     }
+
     onClose();
     setSelectedType(null);
     setSelectedId(0);
