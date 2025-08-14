@@ -78,7 +78,12 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const handleTemplateSelected = (
     templateDetail: Pick<TemplateDetailAPIResponse, 'description'>
   ) => {
-    loadFormData({ description: templateDetail.description });
+    loadFormData({
+      title: '',
+      description: templateDetail.description,
+      place: '',
+      maxCapacity: UNLIMITED_CAPACITY,
+    });
     alert('템플릿이 성공적으로 불러와졌습니다!');
   };
 
