@@ -22,7 +22,7 @@ export type HeaderProps = {
 export const Header = ({ left, right, ...props }: HeaderProps) => {
   return (
     <StyledHeader {...props}>
-      <StyledHeaderContent right={right}>
+      <StyledHeaderContent right={!!right}>
         {left}
         {right}
       </StyledHeaderContent>

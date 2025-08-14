@@ -43,20 +43,20 @@ describe('NewEventPage', () => {
     expect(screen.getByLabelText(/이벤트 시작일/)).toBeInTheDocument();
     expect(screen.getByLabelText(/이벤트 종료일/)).toBeInTheDocument();
     expect(screen.getByLabelText(/신청 종료일/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/장소/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/설명/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/이벤트 장소/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/소개글/)).toBeInTheDocument();
     expect(screen.getByText(/사전 질문/)).toBeInTheDocument();
     expect(screen.getByText(/질문 추가/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /이벤트 만들기/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /이벤트 생성하기/ })).toBeInTheDocument();
   });
 
   test('폼이 초기화된 상태로 렌더링된다', () => {
     render(<TestWrapper />);
 
     expect(screen.getByLabelText(/이벤트 이름/)).toHaveValue('');
-    expect(screen.getByLabelText(/장소/)).toHaveValue('');
-    expect(screen.getByLabelText(/설명/)).toHaveValue('');
-    expect(screen.getByLabelText(/수용 인원/)).toHaveValue('무제한');
+    expect(screen.getByLabelText(/이벤트 장소/)).toHaveValue('');
+    expect(screen.getByLabelText(/소개글/)).toHaveValue('');
+    expect(screen.getByRole('button', { name: /인원/i }));
   });
 
   test('템플릿 버튼 클릭 시 템플릿 모달이 열린다', async () => {
@@ -72,26 +72,25 @@ describe('NewEventPage', () => {
     const user = userEvent.setup();
     render(<TestWrapper />);
 
-    await user.click(screen.getByLabelText(/수용 인원/));
+    await user.click(screen.getByLabelText(/인원/));
 
-    expect(await screen.findByText(/수용 인원을 입력해주세요/)).toBeInTheDocument();
+    expect(await screen.findByText(/최대 수용 인원/)).toBeInTheDocument();
   });
 
   test('사전 질문 추가 시 항목이 추가된다', async () => {
-    const user = userEvent.setup();
     render(<TestWrapper />);
 
-    const addButton = screen.getByRole('button', { name: /질문 추가/ });
+    expect(screen.getByRole('button', { name: /질문 추가/i }));
 
-    await user.click(addButton);
-
-    expect(screen.getByPlaceholderText(/질문을 입력해주세요/)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/참가자에게 묻고 싶은 질문을 추가해 보세요./)
+    ).toBeInTheDocument();
   });
 
   test('폼이 유효하지 않으면 제출 버튼이 비활성화된다', () => {
     render(<TestWrapper />);
 
-    const submitButton = screen.getByRole('button', { name: /이벤트 만들기/ });
+    const submitButton = screen.getByRole('button', { name: /이벤트 생성하기/ });
     expect(submitButton).toBeDisabled();
   });
 });

@@ -37,7 +37,6 @@ export const MaxCapacityModal = ({ isOpen, initialValue, onClose, onSubmit }: Pr
 
         <Input
           id="maxCapacityInput"
-          label="수용 인원을 입력해주세요."
           type="text"
           autoFocus
           value={maxCapacity}
@@ -46,7 +45,7 @@ export const MaxCapacityModal = ({ isOpen, initialValue, onClose, onSubmit }: Pr
 
         <Flex justifyContent="space-between" gap="12px">
           <Button onClick={handleUnlimitedCapacity} size="full" variant="outline">
-            무제한
+            제한없음
           </Button>
           <Button onClick={handleLimitedCapacity} size="full" color="secondary">
             설정
