@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { css } from '@emotion/react';
 
 import { Flex } from '../Flex';
+import { Footer } from '../Footer';
 
 type PageLayoutProps = {
   /**
@@ -23,6 +24,7 @@ export const PageLayout = ({ header, children }: PageLayoutProps) => {
       justifyContent="space-between"
       width="100%"
       height="100%"
+      margin="0 auto"
       css={css`
         min-height: 100vh;
       `}
@@ -38,6 +40,7 @@ export const PageLayout = ({ header, children }: PageLayoutProps) => {
       >
         {children}
       </Flex>
+      <Footer />
     </Flex>
   );
 };
