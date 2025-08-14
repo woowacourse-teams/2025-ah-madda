@@ -5,9 +5,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.time.Duration;
 
-@ConfigurationProperties(prefix = "cookie")
+@ConfigurationProperties(prefix = "cookie.refresh-token")
 @Getter
-public class CookieProperties {
+public class RefreshTokenCookieProperties {
 
     private final String path;
     private final String sameSite;
@@ -15,7 +15,7 @@ public class CookieProperties {
     private final boolean httpOnly;
     private final Duration ttl;
 
-    public CookieProperties(String path, String sameSite, boolean secure, boolean httpOnly, Duration ttl) {
+    public RefreshTokenCookieProperties(String path, String sameSite, boolean secure, boolean httpOnly, Duration ttl) {
         validateProperties(path, sameSite, ttl);
 
         this.path = path;

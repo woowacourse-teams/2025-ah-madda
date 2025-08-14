@@ -4,9 +4,8 @@ import com.ahmadda.application.dto.MemberToken;
 import com.ahmadda.infra.login.exception.InvalidTokenException;
 import com.ahmadda.infra.login.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -14,8 +13,8 @@ public class TokenProvider {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProvider jwtProvider;
+    private final PasswordEncoder passwordEncoder;
 
-    @Transactional(propagation = Propagation.MANDATORY)
     public MemberToken getMemberToken(final Long memberId) {
         String accessToken = jwtProvider.createAccessToken(memberId);
         String refreshToken = jwtProvider.createRefreshToken(memberId);
@@ -26,7 +25,6 @@ public class TokenProvider {
         return new MemberToken(accessToken, saveRefreshToken.getToken());
     }
 
-    @Transactional(propagation = Propagation.MANDATORY)
     public void deleteRefreshToken(final Long memberId) {
         RefreshToken refreshToken = getRefreshToken(memberId);
 
