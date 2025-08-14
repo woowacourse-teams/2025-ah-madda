@@ -23,7 +23,7 @@ export const TemplateList = ({ templates, selectedId, onSelectTemplate }: Templa
   const { mutate: deleteTemplate } = useDeleteTemplate();
 
   const handleDeleteTemplate = (e: React.MouseEvent, templateId: number) => {
-    e.stopPropagation(); // 이벤트 버블링 방지
+    e.stopPropagation();
     deleteTemplate(templateId, {
       onSuccess: () => {
         alert('템플릿이 삭제되었습니다.');
