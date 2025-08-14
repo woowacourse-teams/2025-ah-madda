@@ -307,7 +307,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 cursor: pointer;
 
                 &:hover {
-                  background: transparent !important;
+                  background: transparent;
                 }
               `}
             >
