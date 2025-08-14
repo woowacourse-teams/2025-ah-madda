@@ -16,9 +16,25 @@ vi.mock('@/api/fetcher', () => ({
 }));
 const mockFetcher = vi.mocked(fetcher);
 
+const setupMockResponses = ({
+  eventDetail = mockEventDetail,
+  isOrganizer = false,
+  isGuest = false,
+}: {
+  eventDetail?: typeof mockEventDetail;
+  isOrganizer?: boolean;
+  isGuest?: boolean;
+}) => {
+  mockFetcher.get.mockImplementation((url: string) => {
+    if (url.endsWith('/organizer-status')) return Promise.resolve({ isOrganizer });
+    if (url.endsWith('/guest-status')) return Promise.resolve({ isGuest });
+    if (url.includes('organizations/events/123')) return Promise.resolve(eventDetail);
+    return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
+  });
+};
+
 describe('EventDetailPage', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     mockFetcher.get.mockReset();
   });
 
@@ -42,19 +58,11 @@ describe('EventDetailPage', () => {
 
   describe('이벤트 상세 페이지 렌더링 테스트', () => {
     test('기본 정보가 올바르게 렌더링된다', async () => {
-      mockFetcher.get.mockImplementation((url: string) => {
-        if (url.includes('organizations/events/123')) {
-          return Promise.resolve(mockEventDetail);
-        }
-        if (url.includes('organizations/events/123/organizer-status')) {
-          return Promise.resolve({ isOrganizer: false });
-        }
-        if (url.includes('events/123/guest-status')) {
-          return Promise.resolve({ isGuest: false });
-        }
-        return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
+      setupMockResponses({
+        eventDetail: mockEventDetail,
+        isOrganizer: false,
+        isGuest: false,
       });
-
       renderEventDetailPage();
 
       await waitFor(() => {
@@ -67,17 +75,10 @@ describe('EventDetailPage', () => {
     });
 
     test('참가 현황이 표시된다', async () => {
-      mockFetcher.get.mockImplementation((url: string) => {
-        if (url.includes('organizations/events/123')) {
-          return Promise.resolve(mockEventDetail);
-        }
-        if (url.includes('organizations/events/123/organizer-status')) {
-          return Promise.resolve({ isOrganizer: false });
-        }
-        if (url.includes('events/123/guest-status')) {
-          return Promise.resolve({ isGuest: false });
-        }
-        return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
+      setupMockResponses({
+        eventDetail: mockEventDetail,
+        isOrganizer: false,
+        isGuest: false,
       });
 
       renderEventDetailPage();
@@ -88,17 +89,10 @@ describe('EventDetailPage', () => {
     });
 
     test('질문 목록이 표시된다', async () => {
-      mockFetcher.get.mockImplementation((url: string) => {
-        if (url.includes('organizations/events/123')) {
-          return Promise.resolve(mockEventDetail);
-        }
-        if (url.includes('organizations/events/123/organizer-status')) {
-          return Promise.resolve({ isOrganizer: false });
-        }
-        if (url.includes('events/123/guest-status')) {
-          return Promise.resolve({ isGuest: false });
-        }
-        return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
+      setupMockResponses({
+        eventDetail: mockEventDetail,
+        isOrganizer: false,
+        isGuest: false,
       });
 
       renderEventDetailPage();
@@ -110,45 +104,23 @@ describe('EventDetailPage', () => {
   });
 
   describe('이벤트 종료 여부와 신청 여부에 따른 UI 렌더링 표시', () => {
-    test('이벤트 시작 시간이 현재보다 이전이고, 참가신청을 하지 않은 경우 "신청 하기"버튼을 보여준다.', async () => {
-      mockFetcher.get.mockImplementation((url: string) => {
-        if (url.includes('organizations/events/123')) {
-          return Promise.resolve({
-            ...mockEventDetail,
-            registrationEnd: '2099-12-31T23:59:59',
-          });
-        }
-        if (url.includes('organizations/events/123/organizer-status')) {
-          return Promise.resolve({ isOrganizer: false });
-        }
-        if (url.includes('events/123/guest-status')) {
-          return Promise.resolve({ isGuest: false });
-        }
-        return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
+    test('신청 마감이 현재보다 이후이고, 참가 신청을 하지 않은 경우 "신청 하기" 버튼을 보여준다.', async () => {
+      setupMockResponses({
+        eventDetail: { ...mockEventDetail, registrationEnd: '2099-12-31T23:59:59' },
+        isOrganizer: false,
+        isGuest: false,
       });
 
       renderEventDetailPage();
 
-      await waitFor(() => {
-        expect(screen.getByText('신청 하기')).toBeInTheDocument();
-      });
+      expect(await screen.findByRole('button', { name: '신청 하기' })).toBeInTheDocument();
     });
 
     test('이벤트 시작 시간이 현재보다 이전이고, 참가신청을 한 경우 "신청 취소"버튼을 보여준다.', async () => {
-      mockFetcher.get.mockImplementation((url: string) => {
-        if (url.includes('organizations/events/123')) {
-          return Promise.resolve({
-            ...mockEventDetail,
-            registrationEnd: '2099-12-31T23:59:59',
-          });
-        }
-        if (url.includes('organizations/events/123/organizer-status')) {
-          return Promise.resolve({ isOrganizer: false });
-        }
-        if (url.includes('events/123/guest-status')) {
-          return Promise.resolve({ isGuest: true });
-        }
-        return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
+      setupMockResponses({
+        eventDetail: { ...mockEventDetail, registrationEnd: '2099-12-31T23:59:59' },
+        isOrganizer: false,
+        isGuest: true,
       });
 
       renderEventDetailPage();
@@ -159,20 +131,10 @@ describe('EventDetailPage', () => {
     });
 
     test('이벤트가 종료된 후, 참가신청을 하지 않은 경우 "신청 마감"버튼을 보여준다.', async () => {
-      mockFetcher.get.mockImplementation((url: string) => {
-        if (url.includes('organizations/events/123')) {
-          return Promise.resolve({
-            ...mockEventDetail,
-            registrationEnd: '2020-12-31T23:59:59',
-          });
-        }
-        if (url.includes('organizations/events/123/organizer-status')) {
-          return Promise.resolve({ isOrganizer: false });
-        }
-        if (url.includes('events/123/guest-status')) {
-          return Promise.resolve({ isGuest: false });
-        }
-        return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
+      setupMockResponses({
+        eventDetail: { ...mockEventDetail, registrationEnd: '2020-12-31T23:59:59' },
+        isOrganizer: false,
+        isGuest: false,
       });
 
       renderEventDetailPage();
@@ -183,20 +145,10 @@ describe('EventDetailPage', () => {
     });
 
     test('이벤트가 종료된 후, 참가신청을 한 경우 "신청 완료"버튼을 보여준다.', async () => {
-      mockFetcher.get.mockImplementation((url: string) => {
-        if (url.includes('organizations/events/123')) {
-          return Promise.resolve({
-            ...mockEventDetail,
-            registrationEnd: '2020-12-31T23:59:59',
-          });
-        }
-        if (url.includes('organizations/events/123/organizer-status')) {
-          return Promise.resolve({ isOrganizer: true });
-        }
-        if (url.includes('events/123/guest-status')) {
-          return Promise.resolve({ isGuest: true });
-        }
-        return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
+      setupMockResponses({
+        eventDetail: { ...mockEventDetail, registrationEnd: '2020-12-31T23:59:59' },
+        isOrganizer: false,
+        isGuest: true,
       });
 
       renderEventDetailPage();
