@@ -16,6 +16,10 @@ public class TokenProvider {
     private final PasswordEncoder passwordEncoder;
 
     public MemberToken createMemberToken(final Long memberId) {
+        if (hasRefreshToken(memberId)) {
+            deleteRefreshToken(memberId);
+        }
+
         String accessToken = jwtProvider.createAccessToken(memberId);
         String refreshToken = jwtProvider.createRefreshToken(memberId);
 
@@ -29,7 +33,7 @@ public class TokenProvider {
 
     public MemberToken renewMemberToken(final String accessToken, final String refreshToken) {
         validateAccessTokenExpired(accessToken);
-        
+
         Long memberId = jwtProvider.parseRefreshPayload(refreshToken)
                 .getMemberId();
 
@@ -45,6 +49,10 @@ public class TokenProvider {
         RefreshToken refreshToken = getRefreshToken(memberId);
 
         refreshTokenRepository.delete(refreshToken);
+    }
+
+    private boolean hasRefreshToken(final Long memberId) {
+        return refreshTokenRepository.existsByMemberId(memberId);
     }
 
     private RefreshToken getRefreshToken(final Long memberId) {
