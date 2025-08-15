@@ -21,7 +21,7 @@ export const StyledTabsList = styled.div<StyledTabsListProps>`
     bottom: 0;
     left: 0;
     height: 3px;
-    background-color: ${({ theme }) => theme.colors.gray900};
+    background-color: ${({ theme }) => theme.colors.primary600};
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     transform: translateX(calc(${({ activeTabIndex }) => activeTabIndex} * 100%));
@@ -44,13 +44,13 @@ export const StyledTabsTrigger = styled.button`
   color: ${({ theme }) => theme.colors.gray500};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.gray700};
-    background-color: ${({ theme }) => theme.colors.gray100};
+    color: ${({ theme }) => theme.colors.primary600};
+    background-color: rgba(228, 242, 255, 0.8);
   }
 
   &[data-active='true'] {
     background-color: transparent;
-    color: ${({ theme }) => theme.colors.gray900};
+    color: ${({ theme }) => theme.colors.primary600};
     box-shadow: none;
     transform: none;
   }
