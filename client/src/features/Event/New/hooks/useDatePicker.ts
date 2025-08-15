@@ -62,7 +62,36 @@ export const useDatePicker = ({
     setSelectedEndTime(undefined);
   };
 
-  const isConfirmDisabled = !selectedDate || !selectedStartTime || !selectedEndTime;
+  const endDateForCheck = selectedEndDate || selectedDate;
+
+  const isSameDay =
+    !!selectedDate &&
+    !!endDateForCheck &&
+    selectedDate.getFullYear() === endDateForCheck.getFullYear() &&
+    selectedDate.getMonth() === endDateForCheck.getMonth() &&
+    selectedDate.getDate() === endDateForCheck.getDate();
+
+  let isEndBeforeStartOnSameDay = false;
+  if (isSameDay && selectedStartTime && selectedEndTime) {
+    const start = new Date(selectedDate!);
+    start.setHours(
+      selectedStartTime.getHours(),
+      selectedStartTime.getMinutes(),
+      selectedStartTime.getSeconds(),
+      selectedStartTime.getMilliseconds()
+    );
+    const end = new Date(selectedDate!);
+    end.setHours(
+      selectedEndTime.getHours(),
+      selectedEndTime.getMinutes(),
+      selectedEndTime.getSeconds(),
+      selectedEndTime.getMilliseconds()
+    );
+    isEndBeforeStartOnSameDay = end.getTime() < start.getTime();
+  }
+
+  const isConfirmDisabled =
+    !selectedDate || !selectedStartTime || !selectedEndTime || isEndBeforeStartOnSameDay;
 
   return {
     selectedDate,
