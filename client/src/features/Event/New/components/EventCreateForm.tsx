@@ -24,6 +24,7 @@ import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLoca
 
 import { MaxCapacityModal } from './MaxCapacityModal';
 import { QuestionForm } from './QuestionForm';
+import { TemplateDropdown } from './TemplateDropdown';
 import { TemplateModal } from './TemplateModal';
 
 const ORGANIZATION_ID = 1; // 임시
@@ -80,10 +81,10 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     templateDetail: Pick<TemplateDetailAPIResponse, 'description'>
   ) => {
     loadFormData({
-      title: '',
+      title: basicEventForm.title,
       description: templateDetail.description,
-      place: '',
-      maxCapacity: UNLIMITED_CAPACITY,
+      place: basicEventForm.place,
+      maxCapacity: basicEventForm.maxCapacity,
     });
     alert('템플릿이 성공적으로 불러와졌습니다!');
   };
@@ -181,7 +182,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
           </Text>
           <Flex gap="8px">
             <Button size="sm" onClick={templateModalOpen}>
-              템플릿
+              나의 이벤트
             </Button>
           </Flex>
         </Flex>
@@ -387,11 +388,32 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
           </Flex>
 
           <Flex dir="column" gap="8px">
-            <label htmlFor="description">
-              <Text type="Heading" weight="medium">
-                소개글
-              </Text>
-            </label>
+            <Flex
+              justifyContent="space-between"
+              alignItems="flex-start"
+              css={css`
+                @media (max-width: 768px) {
+                  flex-direction: column;
+                  gap: 12px;
+                }
+              `}
+            >
+              <label htmlFor="description">
+                <Text type="Heading" weight="medium">
+                  소개글
+                </Text>
+              </label>
+              <Flex
+                css={css`
+                  width: 320px;
+                  @media (max-width: 768px) {
+                    width: 100%;
+                  }
+                `}
+              >
+                <TemplateDropdown onTemplateSelected={handleTemplateSelected} />
+              </Flex>
+            </Flex>
             <Textarea
               id="description"
               name="description"
@@ -430,7 +452,6 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         <TemplateModal
           isOpen={isTemplateModalOpen}
           onClose={templateModalClose}
-          onTemplateSelected={handleTemplateSelected}
           onEventSelected={handleEventSelected}
         />
       </Flex>
