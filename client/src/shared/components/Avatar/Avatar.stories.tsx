@@ -1,26 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { Avatar } from './Avatar';
-
-const mockProfile = {
-  id: 2,
-  name: '홍길동',
-  email: 'wjddks96@gmail.com',
-  picture: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
-};
-
-const createMockQueryClient = () => {
-  return new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-        staleTime: Infinity,
-        gcTime: Infinity,
-      },
-    },
-  });
-};
 
 const meta = {
   title: 'components/Avatar',
@@ -29,8 +9,19 @@ const meta = {
   parameters: {
     docs: {
       description: {
-        component: 'Avatar component displays user profile images with name on the left side.',
+        component:
+          'Avatar component displays user profile images with name. A reusable component that receives data through props.',
       },
+    },
+  },
+  argTypes: {
+    picture: {
+      control: 'text',
+      description: 'Profile image URL',
+    },
+    name: {
+      control: 'text',
+      description: 'User name',
     },
   },
 } satisfies Meta<typeof Avatar>;
@@ -39,43 +30,36 @@ export default meta;
 type Story = StoryObj<typeof Avatar>;
 
 export const Basic: Story = {
-  decorators: [
-    (Story) => {
-      const queryClient = createMockQueryClient();
-      queryClient.setQueryData(['profile'], mockProfile);
-
-      return (
-        <QueryClientProvider client={queryClient}>
-          <Story />
-        </QueryClientProvider>
-      );
-    },
-  ],
-  render: () => <Avatar />,
+  args: {
+    picture: 'https://ahmadda-dev.s3.ap-northeast-2.amazonaws.com/profile_avatar.png',
+    name: '홍길동',
+  },
 };
 
 export const WithInvalidImage: Story = {
+  args: {
+    picture: 'https://invalid-image-url',
+    name: '홍길동',
+  },
   parameters: {
     docs: {
       description: {
-        story: 'Avatar with invalid image URL that will trigger handleImageError',
+        story: 'When image loading fails with invalid URL, the default Ahmadda image is displayed',
       },
     },
   },
-  decorators: [
-    (Story) => {
-      const queryClient = createMockQueryClient();
-      queryClient.setQueryData(['profile'], {
-        ...mockProfile,
-        picture: 'https://invalid-image-url',
-      });
+};
 
-      return (
-        <QueryClientProvider client={queryClient}>
-          <Story />
-        </QueryClientProvider>
-      );
+export const WithoutImage: Story = {
+  args: {
+    picture: null,
+    name: '홍길동',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'When no image URL is provided, the default Ahmadda image is displayed',
+      },
     },
-  ],
-  render: () => <Avatar />,
+  },
 };
