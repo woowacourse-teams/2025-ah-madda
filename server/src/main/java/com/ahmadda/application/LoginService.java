@@ -24,24 +24,24 @@ public class LoginService {
     private final SlackAlarm slackAlarm;
 
     @Transactional
-    public MemberToken login(final String code, final String redirectUri) {
+    public MemberToken login(final String code, final String redirectUri, final String userAgent) {
         OAuthUserInfoResponse userInfo = googleOAuthProvider.getUserInfo(code, redirectUri);
 
         Member member = findOrCreateMember(userInfo.name(), userInfo.email(), userInfo.picture());
 
-        return tokenProvider.createMemberToken(member.getId());
+        return tokenProvider.createMemberToken(member.getId(), userAgent);
     }
 
     @Transactional
-    public MemberToken renewMemberToken(final String accessToken, final String refreshToken) {
-        return tokenProvider.renewMemberToken(accessToken, refreshToken);
+    public MemberToken renewMemberToken(final String accessToken, final String refreshToken, final String userAgent) {
+        return tokenProvider.renewMemberToken(accessToken, refreshToken, userAgent);
     }
 
     @Transactional
-    public void logout(final LoginMember loginMember) {
+    public void logout(final LoginMember loginMember, final String refreshToken, final String userAgent) {
         Member member = getMember(loginMember);
 
-        tokenProvider.deleteRefreshToken(member.getId());
+        tokenProvider.deleteRefreshToken(member.getId(), refreshToken, userAgent);
     }
 
     private Member findOrCreateMember(final String name, final String email, final String profileImageUrl) {

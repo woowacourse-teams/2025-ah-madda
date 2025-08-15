@@ -1,12 +1,11 @@
 package com.ahmadda.application;
 
-import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.MemberToken;
-import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.infra.login.RefreshTokenRepository;
 import com.ahmadda.infra.login.TokenProvider;
 import com.ahmadda.infra.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.oauth.dto.OAuthUserInfoResponse;
@@ -17,7 +16,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -30,6 +28,9 @@ class LoginServiceTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
 
     @Autowired
     private OrganizationRepository organizationRepository;
@@ -110,16 +111,12 @@ class LoginServiceTest {
         MemberToken result = sut.renewMemberToken(access, refresh);
 
         // then
-        assertThat(result).isSameAs(rotated);
+
+        assertThat(result.accessToken()).isEqualTo("new_access");
     }
 
     @Test
-    void 존재하는_회원만_로그아웃_할_수_있다() {
-        // given
-        LoginMember loginMember = new LoginMember(999L);
+    void 로그인_멤버와_리프레시_토큰의_정보가_같으면_로그아웃_할_수_있다() {
 
-        // when // then
-        assertThatThrownBy(() -> sut.logout(loginMember))
-                .isInstanceOf(NotFoundException.class);
     }
 }

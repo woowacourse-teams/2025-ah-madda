@@ -4,21 +4,31 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
 @Getter
 public class JwtMemberPayload {
 
     private static final String MEMBER_ID_KEY = "memberId";
 
     private final Long memberId;
+    private final LocalDateTime expireAt;
 
-    private JwtMemberPayload(final Long memberId) {
+    private JwtMemberPayload(final Long memberId, final LocalDateTime expireAt) {
         this.memberId = memberId;
+        this.expireAt = expireAt;
     }
 
     public static JwtMemberPayload from(final Claims claims) {
         Long memberId = claims.get(MEMBER_ID_KEY, Long.class);
 
-        return new JwtMemberPayload(memberId);
+        LocalDateTime expiresAt = claims.getExpiration()
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+
+        return new JwtMemberPayload(memberId, expiresAt);
     }
 
     public static Claims toClaims(final Long memberId) {

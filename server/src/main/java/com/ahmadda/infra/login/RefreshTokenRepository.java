@@ -8,5 +8,7 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Stri
 
     Optional<RefreshToken> findByMemberId(final Long memberId);
 
-    boolean existsByMemberId(final Long memberId);
+    void deleteByMemberIdAndDeviceId(final Long memberId, final String deviceId);
+
+    Optional<RefreshToken> findByMemberIdAndDeviceId(final Long memberId, final String deviceId);
 }

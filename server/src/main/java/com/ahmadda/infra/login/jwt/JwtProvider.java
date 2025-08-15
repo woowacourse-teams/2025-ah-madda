@@ -78,6 +78,19 @@ public class JwtProvider {
         }
     }
 
+    public boolean isRefreshTokenExpired(final String refreshToken) {
+        try {
+            Jwts.parser()
+                    .verifyWith(jwtProperties.getRefreshSecretKey())
+                    .build()
+                    .parseSignedClaims(refreshToken)
+                    .getPayload();
+            return false;
+        } catch (ExpiredJwtException e) {
+            return true;
+        }
+    }
+
     private Claims parseClaims(final String token, final SecretKey secretKey) {
         try {
             return Jwts.parser()
