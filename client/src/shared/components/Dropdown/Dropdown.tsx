@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useRef, ReactNode, RefObject } fro
 
 import { Button } from '@/shared/components/Button';
 import { useClickOutside } from '@/shared/hooks/useClickOutside';
+import { useEscapeKey } from '@/shared/hooks/useEscapeKey';
 
 import { StyledDropdownContainer, StyledContentContainer } from './Dropdown.styled';
 
@@ -45,6 +46,7 @@ export const Dropdown = ({ children }: DropdownProps) => {
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   useClickOutside({ ref: dropdownRef, isOpen, onClose: () => setIsOpen(false) });
+  useEscapeKey(() => setIsOpen(false));
 
   const contextValue: DropdownContextValue = {
     isOpen,
