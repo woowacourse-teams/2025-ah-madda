@@ -1,7 +1,6 @@
 import styled from '@emotion/styled';
 
 import { Flex } from '@/shared/components/Flex';
-import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
 
 import { EventCard } from '../../components/EventCard';
@@ -9,32 +8,24 @@ import { Event } from '../../types/Event';
 
 type EventSectionProps = {
   events: Event[];
-  title: string;
-  emptyMessage: string;
+  date: string;
   cardType: 'host' | 'participate';
 };
 
-export const EventSection = ({ events, title, emptyMessage, cardType }: EventSectionProps) => {
+export const EventSection = ({ events, date, cardType }: EventSectionProps) => {
   return (
-    <Flex dir="column" gap="16px">
-      <Flex alignItems="center" gap="8px">
-        <Icon name="calendar" size={21} />
-        <Text as="h2" type="Heading" weight="bold" color="black">
-          {title}
+    <Flex as="section" dir="column" gap="20px" width="100%">
+      <Flex alignItems="center" gap="4px">
+        <Text as="h2" type="Heading" weight="bold">
+          {date}
         </Text>
       </Flex>
 
-      {events.length > 0 ? (
-        <EventCardContainer>
-          {events.map((event) => (
-            <EventCard key={event.eventId} {...event} cardType={cardType} />
-          ))}
-        </EventCardContainer>
-      ) : (
-        <Text type="Body" weight="regular" color="#666">
-          {emptyMessage}
-        </Text>
-      )}
+      <EventCardContainer>
+        {events.map((event) => (
+          <EventCard key={event.eventId} {...event} cardType={cardType} />
+        ))}
+      </EventCardContainer>
     </Flex>
   );
 };
