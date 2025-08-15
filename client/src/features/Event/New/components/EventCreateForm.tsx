@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
@@ -105,13 +105,19 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     data: { basicEventForm, questions },
   });
 
+  const restoredOnceRef = useRef(false);
+
   useEffect(() => {
+    if (restoredOnceRef.current) return;
+
     const draft = restore();
     if (!draft) return;
 
     if (isEdit && !eventDetail) return;
     if (draft.basicEventForm) loadFormData(draft.basicEventForm);
     if (draft.questions) loadQuestions(draft.questions);
+
+    restoredOnceRef.current = true;
   }, [isEdit, eventDetail, restore, loadFormData, loadQuestions]);
 
   const submitCreate = (payload: ReturnType<typeof buildPayload>) => {
