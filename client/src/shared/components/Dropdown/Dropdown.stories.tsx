@@ -33,32 +33,34 @@ export const Default: Story = {
 
     return (
       <Flex dir="column" gap="16px">
-        <Text type="Body">
-          선택된 옵션: <strong>{selectedOption}</strong>
-        </Text>
+        <Text type="Body">선택된 옵션: {selectedOption}</Text>
 
-        <Dropdown>
-          <Dropdown.Trigger>
-            <Flex justifyContent="space-between" alignItems="center" width="100%" padding="8px">
-              <Text type="Body" color={theme.colors.gray700}>
-                {selectedOption}
-              </Text>
-              <Icon name="dropdownDown" size={16} color="gray500" />
-            </Flex>
-          </Dropdown.Trigger>
+        <div style={{ width: '300px' }}>
+          <Dropdown>
+            <Dropdown.Trigger>
+              <Flex justifyContent="space-between" alignItems="center" width="100%" padding="8px">
+                <Text type="Body" color={theme.colors.gray700}>
+                  {selectedOption.length > 25
+                    ? `${selectedOption.slice(0, 25)}...`
+                    : selectedOption}
+                </Text>
+                <Icon name="dropdownDown" size={16} color="gray500" />
+              </Flex>
+            </Dropdown.Trigger>
 
-          <Dropdown.Content>
-            <Dropdown.Item onClick={() => setSelectedOption('옵션 1')}>
-              <Text type="Body">옵션 1</Text>
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => setSelectedOption('옵션 2')}>
-              <Text type="Body">옵션 2</Text>
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => setSelectedOption('옵션 3')}>
-              <Text type="Body">옵션 3</Text>
-            </Dropdown.Item>
-          </Dropdown.Content>
-        </Dropdown>
+            <Dropdown.Content>
+              <Dropdown.Item onClick={() => setSelectedOption('옵션 1')}>
+                <Text type="Body">옵션 1</Text>
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => setSelectedOption('옵션 2')}>
+                <Text type="Body">옵션 2</Text>
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => setSelectedOption('옵션 3')}>
+                <Text type="Body">옵션 3</Text>
+              </Dropdown.Item>
+            </Dropdown.Content>
+          </Dropdown>
+        </div>
       </Flex>
     );
   },

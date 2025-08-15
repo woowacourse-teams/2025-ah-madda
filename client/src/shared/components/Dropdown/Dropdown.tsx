@@ -1,7 +1,5 @@
 import { createContext, useContext, useState, useRef, ReactNode, RefObject } from 'react';
 
-import { css } from '@emotion/react';
-
 import { Button } from '@/shared/components/Button';
 import { useClickOutside } from '@/shared/hooks/useClickOutside';
 
@@ -70,15 +68,7 @@ export const DropdownTrigger = ({ children }: DropdownTriggerProps) => {
   };
 
   return (
-    <Button
-      onClick={handleClick}
-      variant="outline"
-      size="full"
-      css={css`
-        width: 100%;
-        padding: 8px;
-      `}
-    >
+    <Button onClick={handleClick} variant="outline" size="full">
       {children}
     </Button>
   );
@@ -103,15 +93,7 @@ export const DropdownItem = ({ children, disabled, onClick }: DropdownItemProps)
   };
 
   return (
-    <Button
-      onClick={handleClick}
-      disabled={disabled}
-      variant="outline"
-      size="md"
-      css={css`
-        width: 100%;
-      `}
-    >
+    <Button onClick={handleClick} disabled={disabled} variant="outline" size="full">
       {children}
     </Button>
   );
