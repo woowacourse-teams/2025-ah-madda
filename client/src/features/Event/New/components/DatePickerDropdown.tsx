@@ -10,10 +10,6 @@ export type DatePickerProps = {
   onClose: () => void;
 };
 
-export type DatePickerOnSelect =
-  | ((date: Date, time: Date) => void)
-  | ((startDate: Date, endDate: Date, startTime: Date, endTime: Date) => void);
-
 type DatePickerDropdownProps = RangeDatePickerProps | SingleDatePickerProps;
 
 export const DatePickerDropdown = ({
