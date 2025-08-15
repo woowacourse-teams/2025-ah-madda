@@ -7,6 +7,7 @@ import { Calendar } from '@/shared/components/Calendar';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 import { TimePicker } from '@/shared/components/TimePicker';
+import { theme } from '@/shared/styles/theme';
 import { formatTimeDisplay } from '@/shared/utils/timePicker';
 
 import { DatePickerContainer } from '../containers/DatePickerContainer';
@@ -47,7 +48,7 @@ export const SingleDatePicker = ({
 
   return (
     <DatePickerContainer ref={dropdownRef}>
-      <Text type="Heading" weight="bold" color="black">
+      <Text type="Heading" weight="bold" color={theme.colors.gray900}>
         {title}
       </Text>
       <Flex dir="column" gap="20px" padding="20px 0 0 0">
@@ -82,15 +83,15 @@ export const SingleDatePicker = ({
         </Flex>
 
         <Flex dir="column" gap="8px">
-          <Text type="Body" weight="medium" color="gray">
+          <Text type="Body" weight="medium" color={theme.colors.gray500}>
             선택된 날짜 및 시간
           </Text>
 
           <Flex dir="row" gap="8px">
-            <Text type="Body" color="black">
+            <Text type="Body" color={theme.colors.gray900}>
               선택:
             </Text>
-            <Text type="Body" color="#3993FF">
+            <Text type="Body" color={theme.colors.primary500}>
               {selectedDate ? selectedDate.toLocaleDateString('ko-KR') : '날짜 미선택'}
               {selectedTime &&
                 ` ${formatTimeDisplay(selectedTime.getHours(), selectedTime.getMinutes())}`}
