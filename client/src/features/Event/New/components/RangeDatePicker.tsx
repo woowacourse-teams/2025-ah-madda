@@ -7,6 +7,7 @@ import { Calendar } from '@/shared/components/Calendar';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 import { TimePicker } from '@/shared/components/TimePicker';
+import { theme } from '@/shared/styles/theme';
 import { formatTimeDisplay } from '@/shared/utils/timePicker';
 
 import { DatePickerContainer } from '../containers/DatePickerContainer';
@@ -58,7 +59,7 @@ export const RangeDatePicker = ({
 
   return (
     <DatePickerContainer ref={dropdownRef}>
-      <Text type="Heading" weight="bold" color="black">
+      <Text type="Heading" weight="bold" color={theme.colors.gray900}>
         {title}
       </Text>
       <Flex dir="column" gap="20px" padding="20px 0 0 0">
@@ -105,15 +106,15 @@ export const RangeDatePicker = ({
         </Flex>
 
         <Flex dir="column" gap="8px">
-          <Text type="Body" weight="medium" color="gray">
+          <Text type="Body" weight="medium" color={theme.colors.gray500}>
             선택된 날짜 및 시간
           </Text>
 
           <Flex dir="row" gap="8px">
-            <Text type="Body" color="black">
+            <Text type="Body" color={theme.colors.gray900}>
               시작:
             </Text>
-            <Text type="Body" color="#3993FF">
+            <Text type="Body" color={theme.colors.primary500}>
               {selectedDate ? selectedDate.toLocaleDateString('ko-KR') : '날짜 미선택'}
               {selectedStartTime &&
                 ` ${formatTimeDisplay(selectedStartTime.getHours(), selectedStartTime.getMinutes())}`}
@@ -121,10 +122,10 @@ export const RangeDatePicker = ({
           </Flex>
 
           <Flex dir="row" gap="8px">
-            <Text type="Body" color="black">
+            <Text type="Body" color={theme.colors.gray900}>
               종료:
             </Text>
-            <Text type="Body" color="#3993FF">
+            <Text type="Body" color={theme.colors.primary500}>
               {selectedEndDate || selectedDate
                 ? (selectedEndDate || selectedDate)!.toLocaleDateString('ko-KR')
                 : '날짜 미선택'}
