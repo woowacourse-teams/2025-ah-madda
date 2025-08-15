@@ -10,7 +10,7 @@ type UseAutoSessionSaveParams<T> = {
 
 export function useAutoSessionSave<T>({ key, data, delay = 800 }: UseAutoSessionSaveParams<T>) {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastSavedRef = useRef<string>('');
+  const lastSavedRef = useRef('');
 
   const payloadStr = JSON.stringify(data);
 
