@@ -60,15 +60,7 @@ export const Calendar = ({
         <Text as="h3" type="Body" weight="medium" color="black">
           {year}년 {MONTHS[month]}
         </Text>
-        <IconButton
-          name="back"
-          size={16}
-          color="gray"
-          onClick={goToNextMonth}
-          css={css`
-            transform: scaleX(-1);
-          `}
-        />
+        <IconButton name="next" size={16} color="gray" onClick={goToNextMonth} />
       </Flex>
 
       <WeekDayHeader>

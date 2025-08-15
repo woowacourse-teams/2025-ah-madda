@@ -47,73 +47,100 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof Calendar>;
 
-export const Basic: Story = {
+const CalendarComponent = ({ mode }: { mode: 'single' | 'range' }) => {
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
+
+  const handleDateSelect = (date: Date) => {
+    setSelectedDate(date);
+    setSelectedEndDate(null);
+  };
+
+  const handleDateRangeSelect = (startDate: Date, endDate: Date) => {
+    setSelectedDate(startDate);
+    setSelectedEndDate(endDate);
+  };
+
+  return (
+    <Flex dir="column" gap="16px">
+      <Calendar
+        mode={mode}
+        selectedDate={selectedDate}
+        selectedEndDate={selectedEndDate}
+        onSelectDate={handleDateSelect}
+        onSelectDateRange={handleDateRangeSelect}
+      />
+
+      {mode === 'single' ? (
+        <Flex dir="column" gap="8px">
+          <Text type="Body" weight="medium">
+            Selected Date:
+          </Text>
+          <Text type="Body" color="primary">
+            {selectedDate ? selectedDate.toLocaleDateString('ko-KR') : 'None'}
+          </Text>
+        </Flex>
+      ) : (
+        <Flex dir="column" gap="8px">
+          <Text type="Body" weight="medium">
+            Selected Date Range:
+          </Text>
+          <Text type="Body" color="primary">
+            Start: {selectedDate ? selectedDate.toLocaleDateString('ko-KR') : 'None'}
+          </Text>
+          <Text type="Body" color="primary">
+            End:{' '}
+            {selectedEndDate
+              ? selectedEndDate.toLocaleDateString('ko-KR')
+              : selectedDate
+                ? selectedDate.toLocaleDateString('ko-KR')
+                : 'None'}
+          </Text>
+          {selectedDate && !selectedEndDate && (
+            <Text type="Label" color="gray">
+              Click the same date again to set as end date, or select a different date for range
+            </Text>
+          )}
+        </Flex>
+      )}
+    </Flex>
+  );
+};
+
+export const Default: Story = {
   args: {
     mode: 'single',
   },
-  render: (args) => {
-    const BasicComponent = () => {
-      const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-      const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
+  render: (args) => <CalendarComponent mode={args.mode || 'single'} />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Interactive calendar component. Use the controls to switch between single and range selection modes.',
+      },
+    },
+  },
+};
 
-      const handleDateSelect = (date: Date) => {
-        setSelectedDate(date);
-        if (args.mode === 'single') {
-          setSelectedEndDate(null);
-        }
-      };
+export const SingleMode: Story = {
+  render: () => <CalendarComponent mode="single" />,
+  parameters: {
+    docs: {
+      description: {
+        story: 'Single date selection mode. Click a date to select it.',
+      },
+    },
+  },
+};
 
-      const handleDateRangeSelect = (startDate: Date, endDate: Date) => {
-        setSelectedDate(startDate);
-        setSelectedEndDate(endDate);
-      };
-
-      return (
-        <Flex dir="column" gap="16px">
-          <Calendar
-            {...args}
-            selectedDate={selectedDate}
-            selectedEndDate={selectedEndDate}
-            onSelectDate={handleDateSelect}
-            onSelectDateRange={handleDateRangeSelect}
-          />
-
-          {args.mode === 'single' ? (
-            <Flex dir="column" gap="8px">
-              <Text type="Body" weight="medium">
-                선택된 날짜:
-              </Text>
-              <Text type="Body" color="primary">
-                {selectedDate ? selectedDate.toLocaleDateString('ko-KR') : '없음'}
-              </Text>
-            </Flex>
-          ) : (
-            <Flex dir="column" gap="8px">
-              <Text type="Body" weight="medium">
-                선택된 날짜 범위:
-              </Text>
-              <Text type="Body" color="primary">
-                시작일: {selectedDate ? selectedDate.toLocaleDateString('ko-KR') : '없음'}
-              </Text>
-              <Text type="Body" color="primary">
-                종료일:{' '}
-                {selectedEndDate
-                  ? selectedEndDate.toLocaleDateString('ko-KR')
-                  : selectedDate
-                    ? selectedDate.toLocaleDateString('ko-KR')
-                    : '없음'}
-              </Text>
-              {selectedDate && !selectedEndDate && (
-                <Text type="Label" color="gray">
-                  종료일을 선택해주세요
-                </Text>
-              )}
-            </Flex>
-          )}
-        </Flex>
-      );
-    };
-
-    return <BasicComponent />;
+export const RangeMode: Story = {
+  render: () => <CalendarComponent mode="range" />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Range date selection mode. Click a date for start, then click another date for end. Click the same date twice to create a single-day range.',
+      },
+    },
   },
 };

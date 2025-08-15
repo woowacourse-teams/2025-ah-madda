@@ -48,8 +48,10 @@ export const useCalendar = ({
 
     if (!selectedDate) {
       onSelectDate?.(date);
-    } else if (!selectedEndDate || date.getTime() === selectedDate.getTime()) {
-      if (date.getTime() < selectedDate.getTime()) {
+    } else if (!selectedEndDate) {
+      if (date.getTime() === selectedDate.getTime()) {
+        onSelectDateRange?.(selectedDate, date);
+      } else if (date.getTime() < selectedDate.getTime()) {
         onSelectDate?.(date);
       } else {
         onSelectDateRange?.(selectedDate, date);
