@@ -3,7 +3,6 @@ import { createContext, useContext, useState, useRef, ReactNode, RefObject } fro
 import { css } from '@emotion/react';
 
 import { Button } from '@/shared/components/Button';
-import { Flex } from '@/shared/components/Flex';
 import { useClickOutside } from '@/shared/hooks/useClickOutside';
 
 import { DropdownContentContainer } from './Dropdown.styled';
@@ -44,43 +43,34 @@ const useDropdownContext = () => {
 
 export const Dropdown = ({ children }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const triggerRef = useRef<HTMLElement>(null);
+  const dropdownRef = useRef<HTMLElement>(null);
 
-  useClickOutside({ ref: triggerRef, isOpen, onClose: () => setIsOpen(false) });
+  useClickOutside({ ref: dropdownRef, isOpen, onClose: () => setIsOpen(false) });
 
   const contextValue: DropdownContextValue = {
     isOpen,
     setIsOpen,
-    triggerRef,
+    triggerRef: dropdownRef,
   };
 
   return (
     <DropdownContext.Provider value={contextValue}>
-      <Flex
-        css={css`
-          position: relative;
-        `}
-      >
+      <div ref={dropdownRef as RefObject<HTMLDivElement>} style={{ position: 'relative' }}>
         {children}
-      </Flex>
+      </div>
     </DropdownContext.Provider>
   );
 };
 
 export const DropdownTrigger = ({ children }: DropdownTriggerProps) => {
-  const { isOpen, setIsOpen, triggerRef } = useDropdownContext();
+  const { isOpen, setIsOpen } = useDropdownContext();
 
   const handleClick = () => {
     setIsOpen(!isOpen);
   };
 
   return (
-    <Button
-      ref={triggerRef as RefObject<HTMLButtonElement>}
-      onClick={handleClick}
-      variant="outline"
-      size="full"
-    >
+    <Button onClick={handleClick} variant="outline" size="full">
       {children}
     </Button>
   );
@@ -105,7 +95,15 @@ export const DropdownItem = ({ children, disabled, onClick }: DropdownItemProps)
   };
 
   return (
-    <Button onClick={handleClick} disabled={disabled} variant="outline" size="md">
+    <Button
+      onClick={handleClick}
+      disabled={disabled}
+      variant="outline"
+      size="md"
+      css={css`
+        width: 100%;
+      `}
+    >
       {children}
     </Button>
   );
