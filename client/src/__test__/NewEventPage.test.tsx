@@ -3,8 +3,7 @@ import { describe, expect, vi, beforeEach, Mocked } from 'vitest';
 
 import { RouterWithQueryClient } from '@/__test__/customRender';
 import { fetcher } from '@/api/fetcher';
-
-import { NewEventPage } from '../pages/NewEventPage';
+import { NewEventPage } from '@/features/Event/New/pages/NewEventPage';
 
 vi.mock('@/api/fetcher', () => ({
   fetcher: {
@@ -17,7 +16,7 @@ vi.mock('@/shared/lib/gaEvents', () => ({
   trackCreateEvent: vi.fn(),
 }));
 
-vi.mock('../hooks/useAddEvent', () => ({
+vi.mock('@/features/Event/New/hooks/useAddEvent', () => ({
   useAddEvent: () => ({
     mutate: vi.fn(),
   }),
@@ -35,7 +34,7 @@ vi.mock('@/api/mutations/useAddTemplate', () => ({
   }),
 }));
 
-vi.mock('../hooks/useBasicEventForm', () => ({
+vi.mock('@/features/Event/New/hooks/useBasicEventForm', () => ({
   useBasicEventForm: () => ({
     basicEventForm: {
       title: '',
@@ -55,7 +54,7 @@ vi.mock('../hooks/useBasicEventForm', () => ({
   }),
 }));
 
-vi.mock('../hooks/useQuestionForm', () => ({
+vi.mock('@/features/Event/New/hooks/useQuestionForm', () => ({
   useQuestionForm: () => ({
     questions: [],
     addQuestion: vi.fn(),
@@ -65,17 +64,17 @@ vi.mock('../hooks/useQuestionForm', () => ({
   }),
 }));
 
-vi.mock('../components/TemplateModal', () => ({
+vi.mock('@/features/Event/New/components/TemplateModal', () => ({
   TemplateModal: ({ isOpen }: { isOpen: boolean }) =>
     isOpen ? <div data-testid="template-modal">템플릿 불러오기</div> : null,
 }));
 
-vi.mock('../components/MaxCapacityModal', () => ({
+vi.mock('@/features/Event/New/components/MaxCapacityModal', () => ({
   MaxCapacityModal: ({ isOpen }: { isOpen: boolean }) =>
     isOpen ? <div data-testid="capacity-modal">최대 수용 인원</div> : null,
 }));
 
-vi.mock('../components/QuestionForm', () => ({
+vi.mock('@/features/Event/New/components/QuestionForm', () => ({
   QuestionForm: () => (
     <div>
       <div>사전 질문</div>
