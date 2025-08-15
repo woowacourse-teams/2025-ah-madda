@@ -10,6 +10,7 @@ import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
 import { trackLoadTemplate } from '@/shared/lib/gaEvents';
 import { theme } from '@/shared/styles/theme';
+import { truncateText } from '@/shared/utils/text';
 
 type TemplateDropdownProps = {
   onTemplateSelected: (templateDetail: Pick<TemplateDetailAPIResponse, 'description'>) => void;
@@ -54,9 +55,7 @@ export const TemplateDropdown = ({ onTemplateSelected }: TemplateDropdownProps) 
         <Dropdown.Trigger>
           <Flex justifyContent="space-between" alignItems="center" width="100%" padding="8px">
             <Text type="Body" color={theme.colors.gray700}>
-              {selectedTemplate.length > 25
-                ? `${selectedTemplate.slice(0, 25)}...`
-                : selectedTemplate}
+              {truncateText(selectedTemplate)}
             </Text>
             <Icon name="dropdownDown" size={16} color="gray500" />
           </Flex>
@@ -72,9 +71,7 @@ export const TemplateDropdown = ({ onTemplateSelected }: TemplateDropdownProps) 
                 }}
               >
                 <Text type="Body" color={theme.colors.gray800}>
-                  {template.title.length > 25
-                    ? `${template.title.slice(0, 25)}...`
-                    : template.title}
+                  {truncateText(template.title)}
                 </Text>
               </Dropdown.Item>
             ))
