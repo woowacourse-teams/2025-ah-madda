@@ -109,10 +109,10 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     const draft = restore();
     if (!draft) return;
 
+    if (isEdit && !eventDetail) return;
     if (draft.basicEventForm) loadFormData(draft.basicEventForm);
     if (draft.questions) loadQuestions(draft.questions);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isEdit, eventDetail, restore, loadFormData, loadQuestions]);
 
   const submitCreate = (payload: ReturnType<typeof buildPayload>) => {
     addEvent(payload, {
