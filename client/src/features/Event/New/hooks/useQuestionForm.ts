@@ -6,7 +6,8 @@ import { MAX_LENGTH, MAX_QUESTIONS } from '../constants/errorMessages';
 type Action =
   | { type: 'ADD' }
   | { type: 'DELETE'; index: number }
-  | { type: 'UPDATE'; index: number; data: Partial<QuestionRequest> };
+  | { type: 'UPDATE'; index: number; data: Partial<QuestionRequest> }
+  | { type: 'LOAD_ALL'; data: QuestionRequest[] };
 
 const reducer = (state: QuestionRequest[], action: Action): QuestionRequest[] => {
   switch (action.type) {
@@ -27,6 +28,9 @@ const reducer = (state: QuestionRequest[], action: Action): QuestionRequest[] =>
       return state.map((question, currentIndex) =>
         currentIndex === action.index ? { ...question, ...action.data } : question
       );
+    }
+    case 'LOAD_ALL': {
+      return Array.isArray(action.data) ? action.data : [];
     }
     default:
       return state;
@@ -53,6 +57,10 @@ export const useQuestionForm = () => {
     dispatch({ type: 'UPDATE', index, data });
   };
 
+  const loadQuestions = (list: QuestionRequest[]) => {
+    dispatch({ type: 'LOAD_ALL', data: list ?? [] });
+  };
+
   const isValid = useMemo(() => {
     return questions.every((question) => {
       if (!question.questionText.trim()) return false;
@@ -66,6 +74,7 @@ export const useQuestionForm = () => {
     addQuestion,
     deleteQuestion,
     updateQuestion,
+    loadQuestions,
     isValid,
   };
 };
