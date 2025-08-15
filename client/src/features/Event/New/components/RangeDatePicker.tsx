@@ -48,6 +48,7 @@ export const RangeDatePicker = ({
     handleConfirm,
     handleCancel,
     isConfirmDisabled,
+    handleReset,
   } = useDatePicker({
     initialStartDate,
     initialEndDate,
@@ -106,9 +107,14 @@ export const RangeDatePicker = ({
         </Flex>
 
         <Flex dir="column" gap="8px">
-          <Text type="Body" weight="medium" color={theme.colors.gray500}>
-            선택된 날짜 및 시간
-          </Text>
+          <Flex dir="row" justifyContent="space-between" gap="8px">
+            <Text type="Body" weight="medium" color={theme.colors.gray500}>
+              선택된 날짜 및 시간
+            </Text>
+            <Button variant="outline" size="sm" onClick={handleReset}>
+              초기화
+            </Button>
+          </Flex>
 
           <Flex dir="row" gap="8px">
             <Text type="Body" color={theme.colors.gray900}>

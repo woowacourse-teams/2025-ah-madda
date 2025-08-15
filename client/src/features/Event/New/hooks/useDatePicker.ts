@@ -48,6 +48,13 @@ export const useDatePicker = ({
     onClose();
   };
 
+  const handleReset = () => {
+    setSelectedDate(initialStartDate || null);
+    setSelectedEndDate(initialEndDate || null);
+    setSelectedStartTime(initialStartTime);
+    setSelectedEndTime(initialEndTime);
+  };
+
   const isConfirmDisabled = !selectedDate || !selectedStartTime || !selectedEndTime;
 
   return {
@@ -62,5 +69,6 @@ export const useDatePicker = ({
     handleConfirm,
     handleCancel,
     isConfirmDisabled,
+    handleReset,
   };
 };

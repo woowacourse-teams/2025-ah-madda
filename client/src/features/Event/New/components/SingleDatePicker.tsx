@@ -39,6 +39,7 @@ export const SingleDatePicker = ({
     handleConfirm,
     handleCancel,
     isConfirmDisabled,
+    handleReset,
   } = useSingleDatePicker({
     initialDate,
     initialTime,
@@ -51,6 +52,7 @@ export const SingleDatePicker = ({
       <Text type="Heading" weight="bold" color={theme.colors.gray900}>
         {title}
       </Text>
+
       <Flex dir="column" gap="20px" padding="20px 0 0 0">
         <Flex
           dir="row"
@@ -83,9 +85,14 @@ export const SingleDatePicker = ({
         </Flex>
 
         <Flex dir="column" gap="8px">
-          <Text type="Body" weight="medium" color={theme.colors.gray500}>
-            선택된 날짜 및 시간
-          </Text>
+          <Flex dir="row" justifyContent="space-between" gap="8px">
+            <Text type="Body" weight="medium" color={theme.colors.gray500}>
+              선택된 날짜 및 시간
+            </Text>
+            <Button variant="outline" size="sm" onClick={handleReset}>
+              초기화
+            </Button>
+          </Flex>
 
           <Flex dir="row" gap="8px">
             <Text type="Body" color={theme.colors.gray900}>
