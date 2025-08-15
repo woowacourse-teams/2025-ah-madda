@@ -1,8 +1,8 @@
 export const safeSessionStorage = {
   get<T>(key: string): T | null {
     try {
-      const raw = sessionStorage.getItem(key);
-      return raw ? (JSON.parse(raw) as T) : null;
+      const storedString = sessionStorage.getItem(key);
+      return storedString ? (JSON.parse(storedString) as T) : null;
     } catch {
       return null;
     }
