@@ -23,9 +23,9 @@ import { useQuestionForm } from '../hooks/useQuestionForm';
 import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
 
 import { MaxCapacityModal } from './MaxCapacityModal';
+import { MyPastEventModal } from './MyPastEventModal';
 import { QuestionForm } from './QuestionForm';
 import { TemplateDropdown } from './TemplateDropdown';
-import { TemplateModal } from './TemplateModal';
 
 const ORGANIZATION_ID = 1; // 임시
 
@@ -449,7 +449,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
           </Flex>
         </Flex>
 
-        <TemplateModal
+        <MyPastEventModal
           isOpen={isTemplateModalOpen}
           onClose={templateModalClose}
           onEventSelected={handleEventSelected}

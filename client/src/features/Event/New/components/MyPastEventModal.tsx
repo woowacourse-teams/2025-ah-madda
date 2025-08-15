@@ -20,7 +20,7 @@ type TemplateModalProps = {
   onEventSelected: (eventData: Omit<EventTemplateAPIResponse, 'eventId'>) => void;
 };
 
-export const TemplateModal = ({ isOpen, onClose, onEventSelected }: TemplateModalProps) => {
+export const MyPastEventModal = ({ isOpen, onClose, onEventSelected }: TemplateModalProps) => {
   const [selectedId, setSelectedId] = useState(0);
 
   // E.TODO organizationId 받아오기
