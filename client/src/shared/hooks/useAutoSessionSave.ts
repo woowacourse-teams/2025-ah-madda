@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { safeSessionStorage } from '@/shared/utils/safeSessionStorage';
 
@@ -14,11 +14,11 @@ export function useAutoSessionSave<T>({ key, data, delay = 800 }: UseAutoSession
 
   const payloadStr = JSON.stringify(data);
 
-  const saveNow = () => {
+  const saveNow = useCallback(() => {
     if (lastSavedRef.current === payloadStr) return;
     safeSessionStorage.set(key, data);
     lastSavedRef.current = payloadStr;
-  };
+  }, [key, data, payloadStr]);
 
   useEffect(() => {
     if (timer.current) clearTimeout(timer.current);
@@ -26,8 +26,7 @@ export function useAutoSessionSave<T>({ key, data, delay = 800 }: UseAutoSession
     return () => {
       if (timer.current) clearTimeout(timer.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [payloadStr, delay]);
+  }, [saveNow, delay]);
 
   const restore = (): T | null => {
     const raw = safeSessionStorage.get<unknown>(key);
