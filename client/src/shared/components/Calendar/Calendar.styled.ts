@@ -50,5 +50,6 @@ export const WeekDayHeader = styled.div`
 export const DateContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  justify-items: center;
   gap: 1px;
 `;
