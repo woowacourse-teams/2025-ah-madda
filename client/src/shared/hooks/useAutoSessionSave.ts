@@ -29,10 +29,7 @@ export function useAutoSessionSave<T>({ key, data, delay = 800 }: UseAutoSession
   }, [saveNow, delay]);
 
   const restore = (): T | null => {
-    const raw = safeSessionStorage.get<unknown>(key);
-    const value = typeof raw === 'object' && raw !== null && 'data' in raw ? raw.data : raw;
-
-    return value as T;
+    return safeSessionStorage.get<T>(key);
   };
 
   const clear = () => {
