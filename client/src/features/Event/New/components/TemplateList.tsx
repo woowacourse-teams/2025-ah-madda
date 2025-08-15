@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
 
 import { useDeleteTemplate } from '@/api/mutations/useDeleteTemplate';
+import type { TemplateListAPIResponse } from '@/api/types/event';
 import { Flex } from '@/shared/components/Flex';
 import { IconButton } from '@/shared/components/IconButton';
 import { Text } from '@/shared/components/Text';
@@ -8,13 +9,8 @@ import { theme } from '@/shared/styles/theme';
 
 import { SelectableCard } from './SelectableCard';
 
-type Template = {
-  templateId: number;
-  title: string;
-};
-
 type TemplateListProps = {
-  templates: Template[];
+  templates: TemplateListAPIResponse[];
   selectedId: number | null;
   onSelectTemplate: (templateId: number | null) => void;
 };
