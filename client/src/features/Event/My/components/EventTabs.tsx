@@ -2,9 +2,12 @@ import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
 
 import { myQueryOptions } from '@/api/queries/my';
+import { Flex } from '@/shared/components/Flex';
 import { Tabs } from '@/shared/components/Tabs';
+import { Text } from '@/shared/components/Text';
 
-import { UI_LABELS, STATUS_MESSAGES, TAB_VALUES } from '../constants';
+import { groupEventsByDate } from '../../utils/groupEventsByDate';
+import { STATUS_MESSAGES, TAB_VALUES } from '../constants';
 
 import { EventSection } from './EventSection';
 import { EventTabsList } from './EventTabsList';
@@ -18,6 +21,9 @@ export const EventTabs = () => {
   const { data: participateEvents = [] } = useQuery(
     myQueryOptions.event.participateEvents(organizationMemberId)
   );
+
+  const groupedHostEvents = groupEventsByDate(hostEvents);
+  const groupedParticipateEvents = groupEventsByDate(participateEvents);
 
   return (
     <Tabs
@@ -34,12 +40,19 @@ export const EventTabs = () => {
           margin-top: 37.5px;
         `}
       >
-        <EventSection
-          events={hostEvents}
-          title={UI_LABELS.ONGOING_HOST_EVENTS}
-          emptyMessage={STATUS_MESSAGES.NO_HOST_EVENTS}
-          cardType={TAB_VALUES.HOST}
-        />
+        {groupedHostEvents.length === 0 ? (
+          <Flex justifyContent="center" alignItems="center" height="200px">
+            <Text type="Heading" weight="semibold">
+              {STATUS_MESSAGES.NO_HOST_EVENTS}
+            </Text>
+          </Flex>
+        ) : (
+          <Flex dir="column" width="100%" gap="20px">
+            {groupedHostEvents.map(({ label, events }) => (
+              <EventSection key={label} date={label} events={events} cardType={TAB_VALUES.HOST} />
+            ))}
+          </Flex>
+        )}
       </Tabs.Content>
 
       <Tabs.Content
@@ -48,12 +61,24 @@ export const EventTabs = () => {
           margin-top: 37.5px;
         `}
       >
-        <EventSection
-          events={participateEvents}
-          title={UI_LABELS.PARTICIPATING_EVENTS}
-          emptyMessage={STATUS_MESSAGES.NO_PARTICIPATE_EVENTS}
-          cardType={TAB_VALUES.PARTICIPATE}
-        />
+        {groupedParticipateEvents.length === 0 ? (
+          <Flex justifyContent="center" alignItems="center" height="200px">
+            <Text type="Heading" weight="semibold">
+              {STATUS_MESSAGES.NO_PARTICIPATE_EVENTS}
+            </Text>
+          </Flex>
+        ) : (
+          <Flex dir="column" width="100%" gap="20px">
+            {groupedParticipateEvents.map(({ label, events }) => (
+              <EventSection
+                key={label}
+                date={label}
+                events={events}
+                cardType={TAB_VALUES.PARTICIPATE}
+              />
+            ))}
+          </Flex>
+        )}
       </Tabs.Content>
     </Tabs>
   );

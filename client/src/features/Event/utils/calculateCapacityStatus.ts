@@ -1,4 +1,4 @@
-import { UNLIMITED_CAPACITY } from '../../New/constants/errorMessages';
+import { UNLIMITED_CAPACITY } from '../New/constants/errorMessages';
 
 export const calculateCapacityStatus = (maxCapacity: number, currentGuestCount: number) => {
   const isUnlimited = maxCapacity === UNLIMITED_CAPACITY;
