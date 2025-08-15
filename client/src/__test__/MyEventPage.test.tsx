@@ -67,13 +67,13 @@ describe('MyEventPage 테스트', () => {
       await waitFor(() => {
         expect(screen.getByText('테스트 이벤트')).toBeInTheDocument();
         expect(screen.getByText('테스트 이벤트 설명')).toBeInTheDocument();
-        expect(screen.getByText('홍길동')).toBeInTheDocument();
+        expect(screen.getByText('홍길동 주최')).toBeInTheDocument();
       });
 
       await waitFor(() => {
         expect(screen.getByText('두 번째 이벤트')).toBeInTheDocument();
         expect(screen.getByText('두 번째 이벤트 설명')).toBeInTheDocument();
-        expect(screen.getByText('김철수')).toBeInTheDocument();
+        expect(screen.getByText('김철수 주최')).toBeInTheDocument();
       });
     });
 
@@ -96,8 +96,8 @@ describe('MyEventPage 테스트', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText('5/20 명')).toBeInTheDocument();
-        expect(screen.getByText('10/30 명')).toBeInTheDocument();
+        expect(screen.getByText('5 / 20')).toBeInTheDocument();
+        expect(screen.getByText('10 / 30')).toBeInTheDocument();
       });
     });
   });
