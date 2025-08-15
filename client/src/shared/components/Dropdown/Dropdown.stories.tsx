@@ -17,7 +17,7 @@ const meta: Meta<typeof Dropdown> = {
     docs: {
       description: {
         component:
-          '재사용 가능한 드롭다운 컴포넌트입니다. 트리거, 컨텐츠, 아이템으로 구성되어 있습니다.',
+          'A reusable dropdown component consisting of trigger, content, and item elements.',
       },
     },
   },
