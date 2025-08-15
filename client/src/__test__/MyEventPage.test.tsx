@@ -41,7 +41,7 @@ describe('MyEventPage 테스트', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText('내가 주최한 이벤트와 참여한 이벤트를 볼 수 있습니다.')
+          screen.getByText('내가 주최하고, 참여한 이벤트를 확인해보세요.')
         ).toBeInTheDocument();
       });
     });
