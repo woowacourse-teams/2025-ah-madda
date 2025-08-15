@@ -28,8 +28,7 @@ export const TemplateList = ({ templates, selectedId, onSelectTemplate }: Templa
         }
         alert('템플릿이 삭제되었습니다.');
       },
-      onError: (error) => {
-        console.error(error);
+      onError: () => {
         alert('템플릿 삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.');
       },
     });
