@@ -5,7 +5,7 @@ type UseDatePickerProps = {
   initialEndDate?: Date | null;
   initialStartTime?: Date;
   initialEndTime?: Date;
-  onSelect: (startDate: Date, endDate: Date, startTime?: Date, endTime?: Date) => void;
+  onSelect: (startDate: Date, endDate: Date, startTime: Date, endTime: Date) => void;
   onClose: () => void;
 };
 
@@ -56,10 +56,10 @@ export const useDatePicker = ({
   };
 
   const handleReset = () => {
-    setSelectedDate(initialStartDate || null);
-    setSelectedEndDate(initialEndDate || null);
-    setSelectedStartTime(initialStartTime);
-    setSelectedEndTime(initialEndTime);
+    setSelectedDate(null);
+    setSelectedEndDate(null);
+    setSelectedStartTime(undefined);
+    setSelectedEndTime(undefined);
   };
 
   const isConfirmDisabled = !selectedDate || !selectedStartTime || !selectedEndTime;

@@ -17,7 +17,7 @@ import type { DatePickerProps } from './DatePickerDropdown';
 
 export type SingleDatePickerProps = DatePickerProps & {
   mode: 'single';
-  onSelect: (date: Date, time?: Date) => void;
+  onSelect: (date: Date, time: Date) => void;
   initialDate?: Date | null;
   initialTime?: Date;
   title?: string;

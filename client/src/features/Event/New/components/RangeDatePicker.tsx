@@ -17,7 +17,7 @@ import type { DatePickerProps } from './DatePickerDropdown';
 
 export type RangeDatePickerProps = DatePickerProps & {
   mode: 'range';
-  onSelect: (startDate: Date, endDate: Date, startTime?: Date, endTime?: Date) => void;
+  onSelect: (startDate: Date, endDate: Date, startTime: Date, endTime: Date) => void;
   initialStartDate?: Date | null;
   initialEndDate?: Date | null;
   initialStartTime?: Date;

@@ -3,7 +3,7 @@ import { useState } from 'react';
 type UseSingleDatePickerProps = {
   initialDate?: Date | null;
   initialTime?: Date;
-  onSelect: (date: Date, time?: Date) => void;
+  onSelect: (date: Date, time: Date) => void;
   onClose: () => void;
 };
 
@@ -21,7 +21,7 @@ export const useSingleDatePicker = ({
   };
 
   const handleConfirm = () => {
-    if (selectedDate) {
+    if (selectedDate && selectedTime) {
       onSelect(selectedDate, selectedTime);
       onClose();
     }
@@ -36,8 +36,8 @@ export const useSingleDatePicker = ({
   const isConfirmDisabled = !selectedDate || !selectedTime;
 
   const handleReset = () => {
-    setSelectedDate(initialDate || null);
-    setSelectedTime(initialTime);
+    setSelectedDate(null);
+    setSelectedTime(undefined);
   };
 
   return {
