@@ -13,8 +13,8 @@ type EventListItem = {
 
 type EventListProps = {
   events: EventListItem[];
-  selectedId: number;
-  onSelectEvent: (eventId: number) => void;
+  selectedId: number | null;
+  onSelectEvent: (eventId: number | null) => void;
 };
 
 export const EventList = ({ events, selectedId, onSelectEvent }: EventListProps) => {
@@ -46,7 +46,7 @@ export const EventList = ({ events, selectedId, onSelectEvent }: EventListProps)
         `}
       >
         {events.map((event) => {
-          const isSelected = selectedId === event.eventId;
+          const isSelected = selectedId !== null && selectedId === event.eventId;
 
           return (
             <SelectableCard

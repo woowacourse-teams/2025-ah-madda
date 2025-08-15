@@ -21,17 +21,17 @@ type TemplateModalProps = {
 };
 
 export const MyPastEventModal = ({ isOpen, onClose, onEventSelected }: TemplateModalProps) => {
-  const [selectedId, setSelectedId] = useState(0);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   // E.TODO organizationId 받아오기
   const { data: eventTitles } = useQuery(eventQueryOptions.titles(1));
 
   const { data: selectedEventData } = useQuery({
-    ...eventQueryOptions.pastEventList(selectedId),
-    enabled: selectedId > 0,
+    ...eventQueryOptions.pastEventList(selectedId!),
+    enabled: selectedId !== null && selectedId > 0,
   });
 
-  const handleSelectEvent = (eventId: number) => {
+  const handleSelectEvent = (eventId: number | null) => {
     setSelectedId(eventId);
   };
 
@@ -46,12 +46,12 @@ export const MyPastEventModal = ({ isOpen, onClose, onEventSelected }: TemplateM
     }
 
     onClose();
-    setSelectedId(0);
+    setSelectedId(null);
   };
 
   const handleClose = () => {
     onClose();
-    setSelectedId(0);
+    setSelectedId(null);
   };
 
   return (
@@ -83,7 +83,7 @@ export const MyPastEventModal = ({ isOpen, onClose, onEventSelected }: TemplateM
           <Button
             color="primary"
             size="full"
-            disabled={selectedId === 0 || !selectedEventData}
+            disabled={selectedId === null || !selectedEventData}
             onClick={handleConfirm}
           >
             불러오기

@@ -15,8 +15,8 @@ type Template = {
 
 type TemplateListProps = {
   templates: Template[];
-  selectedId: number;
-  onSelectTemplate: (templateId: number) => void;
+  selectedId: number | null;
+  onSelectTemplate: (templateId: number | null) => void;
 };
 
 export const TemplateList = ({ templates, selectedId, onSelectTemplate }: TemplateListProps) => {
@@ -28,7 +28,7 @@ export const TemplateList = ({ templates, selectedId, onSelectTemplate }: Templa
     deleteTemplate(templateId, {
       onSuccess: () => {
         if (selectedId === templateId) {
-          onSelectTemplate(0);
+          onSelectTemplate(null);
         }
         alert('템플릿이 삭제되었습니다.');
       },
@@ -67,7 +67,7 @@ export const TemplateList = ({ templates, selectedId, onSelectTemplate }: Templa
         `}
       >
         {templates?.map((template) => {
-          const isSelected = selectedId === template.templateId;
+          const isSelected = selectedId !== null && selectedId === template.templateId;
 
           return (
             <SelectableCard
