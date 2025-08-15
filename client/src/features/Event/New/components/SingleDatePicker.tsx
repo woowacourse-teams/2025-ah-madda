@@ -65,11 +65,7 @@ export const SingleDatePicker = ({
             }
           `}
         >
-          <Calendar
-            selectedDate={selectedDate || null}
-            onSelectDate={handleDateSelect}
-            mode="single"
-          />
+          <Calendar selectedDate={selectedDate} onSelectDate={handleDateSelect} mode="single" />
 
           <Flex
             dir="column"
