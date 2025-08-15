@@ -83,8 +83,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     loadFormData({
       title: basicEventForm.title,
       description: templateDetail.description,
-      place: basicEventForm.place,
-      maxCapacity: basicEventForm.maxCapacity,
+      place: basicEventForm.place || '',
+      maxCapacity: basicEventForm.maxCapacity || UNLIMITED_CAPACITY,
     });
     alert('템플릿이 성공적으로 불러와졌습니다!');
   };
@@ -93,8 +93,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     loadFormData({
       title: eventData.title,
       description: eventData.description,
-      place: eventData.place,
-      maxCapacity: eventData.maxCapacity,
+      place: eventData.place || '',
+      maxCapacity: eventData.maxCapacity || UNLIMITED_CAPACITY,
     });
     alert('이벤트가 성공적으로 불러와졌습니다!');
   };
