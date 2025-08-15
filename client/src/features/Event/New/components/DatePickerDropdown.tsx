@@ -12,8 +12,13 @@ export type DatePickerProps = {
 
 type DatePickerDropdownProps = RangeDatePickerProps | SingleDatePickerProps;
 
-export const DatePickerDropdown = (props: DatePickerDropdownProps) => {
-  const { isOpen, onClose, mode } = props;
+export const DatePickerDropdown = ({
+  isOpen,
+  onClose,
+  mode,
+  onSelect,
+  ...restProps
+}: DatePickerDropdownProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useClickOutside({ ref: dropdownRef, isOpen, onClose });
@@ -21,8 +26,26 @@ export const DatePickerDropdown = (props: DatePickerDropdownProps) => {
   if (!isOpen) return null;
 
   if (mode === 'range') {
-    return <RangeDatePicker {...props} dropdownRef={dropdownRef} />;
+    return (
+      <RangeDatePicker
+        isOpen={isOpen}
+        onClose={onClose}
+        mode={mode}
+        onSelect={onSelect as RangeDatePickerProps['onSelect']}
+        dropdownRef={dropdownRef}
+        {...(restProps as Omit<RangeDatePickerProps, 'isOpen' | 'onClose' | 'mode' | 'onSelect'>)}
+      />
+    );
   }
 
-  return <SingleDatePicker {...props} dropdownRef={dropdownRef} />;
+  return (
+    <SingleDatePicker
+      isOpen={isOpen}
+      onClose={onClose}
+      mode={mode}
+      onSelect={onSelect as SingleDatePickerProps['onSelect']}
+      dropdownRef={dropdownRef}
+      {...(restProps as Omit<SingleDatePickerProps, 'isOpen' | 'onClose' | 'mode' | 'onSelect'>)}
+    />
+  );
 };
