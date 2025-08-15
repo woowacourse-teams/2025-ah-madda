@@ -6,13 +6,13 @@ import { theme } from '@/shared/styles/theme';
 
 import { SelectableCard } from './SelectableCard';
 
-type Event = {
+type EventListItem = {
   eventId: number;
   title: string;
 };
 
 type EventListProps = {
-  events: Event[];
+  events: EventListItem[];
   selectedId: number;
   onSelectEvent: (eventId: number) => void;
 };
@@ -45,7 +45,7 @@ export const EventList = ({ events, selectedId, onSelectEvent }: EventListProps)
           }
         `}
       >
-        {events?.map((event) => {
+        {events.map((event) => {
           const isSelected = selectedId === event.eventId;
 
           return (
@@ -64,7 +64,7 @@ export const EventList = ({ events, selectedId, onSelectEvent }: EventListProps)
         })}
       </Flex>
 
-      {events?.length === 0 && (
+      {events.length === 0 && (
         <Flex alignItems="center" justifyContent="center" padding="40px 0">
           <Text type="Body" weight="regular" color={theme.colors.gray500}>
             사용 가능한 템플릿이 없습니다.
