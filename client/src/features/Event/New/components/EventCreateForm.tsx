@@ -143,14 +143,15 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const handleDateRangeSelect = (
     startDate: Date,
     endDate: Date,
-    startTime?: Date,
-    endTime?: Date
+    startTime: Date,
+    endTime: Date
   ) => {
-    const currentStartTime = parseInputDate(basicEventForm.eventStart) || new Date();
-    const currentEndTime = parseInputDate(basicEventForm.eventEnd) || new Date();
-
-    const finalStartTime = startTime || currentStartTime;
-    const finalEndTime = endTime || currentEndTime;
+    const finalStartTime = startTime;
+    const finalEndTime = endTime;
+    if (!finalStartTime || !finalEndTime) {
+      alert('시간이 선택되지 않았습니다. 시간을 먼저 선택해 주세요.');
+      return;
+    }
 
     const newStartDate = setTimeToDate(startDate, finalStartTime);
     const newEndDate = setTimeToDate(endDate, finalEndTime);
@@ -170,9 +171,13 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     validateField('registrationEnd', formatDateForInput(finalRegistrationEnd));
   };
 
-  const handleRegistrationEndSelect = (date: Date, time?: Date) => {
-    const currentTime = parseInputDate(basicEventForm.registrationEnd) || new Date();
-    const finalTime = time || currentTime;
+  const handleRegistrationEndSelect = (date: Date, time: Date) => {
+    const finalTime = time;
+    if (!finalTime) {
+      alert('시간이 선택되지 않았습니다. 시간을 먼저 선택해 주세요.');
+      return;
+    }
+
     const newDate = setTimeToDate(date, finalTime);
 
     handleValueChange('registrationEnd', formatDateForInput(newDate));
