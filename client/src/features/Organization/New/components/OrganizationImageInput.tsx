@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { css } from '@emotion/react';
 
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
+import { StyledFooterRow, StyledHelperText } from '@/shared/components/Input/Input.styled';
 import { Text } from '@/shared/components/Text';
 
 type Props = {
@@ -12,54 +13,96 @@ type Props = {
   initialPreviewUrl?: string;
   disabled?: boolean;
   label?: string;
+  errorMessage?: string;
+  helperText?: string;
 };
+
+const ALLOWED = 'image/png,image/jpeg,.png,.jpg,.jpeg';
 
 export const OrganizationImageInput = ({
   onChange,
-  accept = 'image/*',
+  accept = ALLOWED,
   initialPreviewUrl,
   disabled,
+  errorMessage,
+  helperText,
 }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(initialPreviewUrl ?? null);
+  const previewUrlRef = useRef<string | null>(null);
 
-  const openPicker = () => inputRef.current?.click();
+  useEffect(() => {
+    return () => {
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+        previewUrlRef.current = null;
+      }
+    };
+  }, []);
+
+  const resetInputValue = () => {
+    if (inputRef.current) inputRef.current.value = '';
+  };
+
+  const openPicker = () => {
+    resetInputValue();
+    inputRef.current?.click();
+  };
+
   const setFile = (file: File | null) => {
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = null;
+    }
+
     if (!file) {
       setPreview(null);
       onChange(null);
+      resetInputValue();
       return;
     }
+
     const url = URL.createObjectURL(file);
+    previewUrlRef.current = url;
     setPreview(url);
     onChange(file);
+
+    resetInputValue();
   };
+
   const clearFile = () => setFile(null);
+
+  const isError = Boolean(errorMessage);
 
   return (
     <Flex
       dir="column"
-      gap="12px"
+      gap="8px"
       width="100%"
       css={css`
         max-width: 260px;
       `}
+      aria-invalid={isError || undefined}
     >
-      <Flex alignItems="flex-end" gap="8px">
+      <Flex
+        width="255px"
+        height="255px"
+        css={css`
+          position: relative;
+          overflow: visible;
+        `}
+      >
         <Button
-          type="button"
           onClick={openPicker}
           disabled={disabled}
           aria-label="이미지 선택"
           css={css`
             width: 255px;
             height: 255px;
-            aspect-ratio: 1 / 1;
             border: 1px dashed #d4d8e1;
             border-radius: 12px;
             background: #fafbfc;
             padding: 0;
-            margin-bottom: 20px;
             overflow: hidden;
             display: grid;
             place-items: center;
@@ -86,11 +129,32 @@ export const OrganizationImageInput = ({
         </Button>
 
         {preview && (
-          <Button size="sm" type="button" color="secondary" onClick={clearFile} disabled={disabled}>
+          <Button
+            size="sm"
+            type="button"
+            color="secondary"
+            onClick={clearFile}
+            disabled={disabled}
+            css={css`
+              position: absolute;
+              right: -85px;
+              bottom: 0px;
+            `}
+          >
             제거
           </Button>
         )}
       </Flex>
+
+      <Flex dir="column" width="255px">
+        <StyledFooterRow>
+          <StyledHelperText isError={isError}>
+            {isError ? (errorMessage ?? ' ') : (helperText ?? ' ')}
+          </StyledHelperText>
+          <span />
+        </StyledFooterRow>
+      </Flex>
+
       <input
         ref={inputRef}
         type="file"

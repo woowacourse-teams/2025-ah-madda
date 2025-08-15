@@ -6,15 +6,26 @@ import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
-import { Textarea } from '@/shared/components/Textarea';
 
+import { MAX_LENGTH } from '../constants/errorMessages';
+import { useOrganizationForm } from '../hooks/useOrganizationForm';
+
+import { CreatorNicknameModal } from './CreatorNicknameModal';
 import { OrganizationImageInput } from './OrganizationImageInput';
 
 export const OrganizationCreateForm = () => {
-  const [logo, setLogo] = useState<File | null>(null);
+  const [isNickOpen, setNickOpen] = useState(false);
+
+  const { form, errors, isValid, handleChange, handleLogoChange } = useOrganizationForm();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isValid()) return;
+    setNickOpen(true);
+  };
 
   return (
-    <form onSubmit={(e) => e.preventDefault()}>
+    <form onSubmit={handleSubmit}>
       <Flex dir="column" padding="60px 0" gap="40px">
         <Flex padding="40px 0">
           <Text as="h1" type="Display" weight="bold">
@@ -33,7 +44,7 @@ export const OrganizationCreateForm = () => {
             <Text as="label" htmlFor="orgImage" type="Heading" weight="medium">
               조직 이미지
             </Text>
-            <OrganizationImageInput onChange={setLogo} />
+            <OrganizationImageInput onChange={handleLogoChange} errorMessage={errors.logo} />
           </Flex>
 
           <Flex dir="column" gap="12px">
@@ -42,28 +53,54 @@ export const OrganizationCreateForm = () => {
                 조직 이름
               </Text>
             </label>
-            <Input id="orgName" name="orgName" placeholder="조직 이름을 입력해주세요" />
+            <Input
+              id="orgName"
+              name="name"
+              placeholder="조직 이름을 입력해주세요."
+              value={form.name}
+              onChange={handleChange}
+              errorMessage={errors.name}
+              showCounter
+              maxLength={MAX_LENGTH.NAME}
+              isRequired
+            />
           </Flex>
 
           <Flex dir="column" gap="12px">
             <label htmlFor="orgDescription">
               <Text type="Heading" weight="medium">
-                소개글
+                한 줄 소개
               </Text>
             </label>
-            <Textarea
+            <Input
               id="orgDescription"
-              name="orgDescription"
-              placeholder="제목을 입력해주세요."
-              helperText="5자 이상 입력하세요"
+              name="description"
+              placeholder="조직을 소개해주세요."
+              value={form.description}
+              onChange={handleChange}
+              errorMessage={errors.description}
+              showCounter
+              maxLength={MAX_LENGTH.DESCRIPTION}
+              isRequired
             />
           </Flex>
 
-          <Button type="submit" color="primary" size="full">
+          <Button type="submit" color="primary" size="full" disabled={!isValid()}>
             조직 생성하기
           </Button>
         </Flex>
       </Flex>
+
+      <CreatorNicknameModal
+        isOpen={isNickOpen}
+        orgName={form.name || '조직'}
+        name={form.name.trim()}
+        description={form.description.trim()}
+        thumbnail={form.logo}
+        onCancel={() => setNickOpen(false)}
+        onSuccess={() => setNickOpen(false)}
+        onError={(e) => console.error(e)}
+      />
     </form>
   );
 };
