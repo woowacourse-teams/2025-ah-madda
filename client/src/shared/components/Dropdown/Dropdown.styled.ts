@@ -2,7 +2,11 @@ import styled from '@emotion/styled';
 
 import { theme } from '@/shared/styles/theme';
 
-export const DropdownContentContainer = styled.div`
+export const StyledDropdownContainer = styled.div`
+  position: relative;
+`;
+
+export const StyledContentContainer = styled.div`
   position: absolute;
   top: 100%;
   z-index: 1000;

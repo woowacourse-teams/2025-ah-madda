@@ -5,7 +5,7 @@ import { css } from '@emotion/react';
 import { Button } from '@/shared/components/Button';
 import { useClickOutside } from '@/shared/hooks/useClickOutside';
 
-import { DropdownContentContainer } from './Dropdown.styled';
+import { StyledDropdownContainer, StyledContentContainer } from './Dropdown.styled';
 
 type DropdownContextValue = {
   isOpen: boolean;
@@ -55,9 +55,9 @@ export const Dropdown = ({ children }: DropdownProps) => {
 
   return (
     <DropdownContext.Provider value={contextValue}>
-      <div ref={dropdownRef as RefObject<HTMLDivElement>} style={{ position: 'relative' }}>
+      <StyledDropdownContainer ref={dropdownRef as RefObject<HTMLDivElement>}>
         {children}
-      </div>
+      </StyledDropdownContainer>
     </DropdownContext.Provider>
   );
 };
@@ -70,7 +70,15 @@ export const DropdownTrigger = ({ children }: DropdownTriggerProps) => {
   };
 
   return (
-    <Button onClick={handleClick} variant="outline" size="full">
+    <Button
+      onClick={handleClick}
+      variant="outline"
+      size="full"
+      css={css`
+        width: 100%;
+        padding: 8px;
+      `}
+    >
       {children}
     </Button>
   );
@@ -81,7 +89,7 @@ export const DropdownContent = ({ children }: DropdownContentProps) => {
 
   if (!isOpen) return null;
 
-  return <DropdownContentContainer>{children}</DropdownContentContainer>;
+  return <StyledContentContainer>{children}</StyledContentContainer>;
 };
 
 export const DropdownItem = ({ children, disabled, onClick }: DropdownItemProps) => {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useSuspenseQueries } from '@tanstack/react-query';
 
 import { eventQueryOptions } from '@/api/queries/event';
 import type { TemplateDetailAPIResponse } from '@/api/types/event';
@@ -16,8 +16,11 @@ type TemplateDropdownProps = {
 };
 
 export const TemplateDropdown = ({ onTemplateSelected }: TemplateDropdownProps) => {
+  const [selectedTemplate, setSelectedTemplate] = useState('템플릿을 선택하세요');
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
-  const { data: templateList } = useQuery(eventQueryOptions.templateList());
+  const [{ data: templateList }] = useSuspenseQueries({
+    queries: [eventQueryOptions.templateList()],
+  });
 
   const { data: selectedTemplateData } = useQuery({
     ...eventQueryOptions.templateDetail(selectedTemplateId!),
@@ -35,6 +38,9 @@ export const TemplateDropdown = ({ onTemplateSelected }: TemplateDropdownProps) 
   }, [selectedTemplateData, selectedTemplateId, onTemplateSelected]);
 
   const handleTemplateSelect = (templateId: number) => {
+    setSelectedTemplate(
+      templateList.find((template) => template.templateId === templateId)?.title || ''
+    );
     setSelectedTemplateId(templateId);
   };
 
@@ -46,9 +52,11 @@ export const TemplateDropdown = ({ onTemplateSelected }: TemplateDropdownProps) 
 
       <Dropdown>
         <Dropdown.Trigger>
-          <Flex justifyContent="space-between" alignItems="center">
+          <Flex justifyContent="space-between" alignItems="center" width="100%" padding="8px">
             <Text type="Body" color={theme.colors.gray700}>
-              템플릿을 선택하세요
+              {selectedTemplate.length > 25
+                ? `${selectedTemplate.slice(0, 25)}...`
+                : selectedTemplate}
             </Text>
             <Icon name="dropdownDown" size={16} color="gray500" />
           </Flex>
