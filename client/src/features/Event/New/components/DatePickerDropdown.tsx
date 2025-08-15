@@ -35,9 +35,9 @@ export const DatePickerDropdown = ({
         isOpen={isOpen}
         onClose={onClose}
         mode={mode}
-        onSelect={onSelect as RangeDatePickerProps['onSelect']}
+        onSelect={onSelect}
         dropdownRef={dropdownRef}
-        {...(restProps as Omit<RangeDatePickerProps, 'isOpen' | 'onClose' | 'mode' | 'onSelect'>)}
+        {...restProps}
       />
     );
   }
@@ -47,9 +47,9 @@ export const DatePickerDropdown = ({
       isOpen={isOpen}
       onClose={onClose}
       mode={mode}
-      onSelect={onSelect as SingleDatePickerProps['onSelect']}
+      onSelect={onSelect}
       dropdownRef={dropdownRef}
-      {...(restProps as Omit<SingleDatePickerProps, 'isOpen' | 'onClose' | 'mode' | 'onSelect'>)}
+      {...restProps}
     />
   );
 };
