@@ -2,5 +2,5 @@ export type Profile = {
   id: number;
   name: string;
   email: string;
-  picture: string;
+  picture: string | null;
 };
