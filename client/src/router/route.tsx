@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react';
 import { createBrowserRouter } from 'react-router-dom';
 
 import { App } from '@/App';
@@ -19,11 +18,6 @@ export const router = createBrowserRouter(
     {
       path: '/',
       Component: App,
-      errorElement: (
-        <Sentry.ErrorBoundary>
-          <ErrorPage />
-        </Sentry.ErrorBoundary>
-      ),
       children: [
         {
           index: true,
