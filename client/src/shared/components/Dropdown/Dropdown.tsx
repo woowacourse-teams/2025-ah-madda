@@ -8,7 +8,7 @@ import { StyledDropdownContainer, StyledContentContainer } from './Dropdown.styl
 type DropdownContextValue = {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
-  triggerRef: React.RefObject<HTMLElement | null>;
+  triggerRef: RefObject<HTMLButtonElement | null>;
 };
 
 type DropdownProps = {
@@ -41,34 +41,33 @@ const useDropdownContext = () => {
 
 export const Dropdown = ({ children }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useClickOutside({ ref: dropdownRef, isOpen, onClose: () => setIsOpen(false) });
 
   const contextValue: DropdownContextValue = {
     isOpen,
     setIsOpen,
-    triggerRef: dropdownRef,
+    triggerRef,
   };
 
   return (
     <DropdownContext.Provider value={contextValue}>
-      <StyledDropdownContainer ref={dropdownRef as RefObject<HTMLDivElement>}>
-        {children}
-      </StyledDropdownContainer>
+      <StyledDropdownContainer ref={dropdownRef}>{children}</StyledDropdownContainer>
     </DropdownContext.Provider>
   );
 };
 
 export const DropdownTrigger = ({ children }: DropdownTriggerProps) => {
-  const { isOpen, setIsOpen } = useDropdownContext();
+  const { isOpen, setIsOpen, triggerRef } = useDropdownContext();
 
   const handleClick = () => {
     setIsOpen(!isOpen);
   };
 
   return (
-    <Button onClick={handleClick} variant="outline" size="full">
+    <Button ref={triggerRef} onClick={handleClick} variant="outline" size="full">
       {children}
     </Button>
   );
