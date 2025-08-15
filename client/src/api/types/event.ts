@@ -44,3 +44,18 @@ export type NotifyHistoryAPIResponse = {
   content: string;
   sentAt: string;
 };
+
+export type TemplateAPIRequest = {
+  title: string;
+  description: string;
+};
+
+export type TemplateListAPIResponse = {
+  templateId: number;
+  title: string;
+};
+
+export type TemplateDetailAPIResponse = {
+  templateId: number;
+  description: string;
+};
