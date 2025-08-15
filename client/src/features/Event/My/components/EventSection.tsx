@@ -4,9 +4,8 @@ import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
 
+import { EventCard } from '../../components/EventCard';
 import { Event } from '../../types/Event';
-
-import { EventCard } from './EventCard';
 
 type EventSectionProps = {
   events: Event[];
