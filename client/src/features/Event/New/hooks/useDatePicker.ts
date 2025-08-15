@@ -33,11 +33,18 @@ export const useDatePicker = ({
   };
 
   const handleConfirm = () => {
-    if (selectedDate) {
-      const endDate = selectedEndDate || selectedDate;
-      onSelect(selectedDate, endDate, selectedStartTime, selectedEndTime);
-      onClose();
+    if (!selectedDate || !selectedStartTime || !selectedEndTime) return;
+    const endDate = selectedEndDate || selectedDate;
+    if (selectedEndDate && selectedEndDate.getTime() < selectedDate.getTime()) return;
+    if (
+      endDate.toDateString() === selectedDate.toDateString() &&
+      selectedEndTime.getHours() * 60 + selectedEndTime.getMinutes() <
+        selectedStartTime.getHours() * 60 + selectedStartTime.getMinutes()
+    ) {
+      return;
     }
+    onSelect(selectedDate, endDate, selectedStartTime, selectedEndTime);
+    onClose();
   };
 
   const handleCancel = () => {
