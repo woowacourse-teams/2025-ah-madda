@@ -84,6 +84,10 @@ vi.mock('@/features/Event/New/components/QuestionForm', () => ({
   ),
 }));
 
+vi.mock('@/features/Event/New/components/TemplateDropdown', () => ({
+  TemplateDropdown: () => <div data-testid="template-dropdown">Template Dropdown</div>,
+}));
+
 const mockFetcher = fetcher as Mocked<typeof fetcher>;
 
 describe('NewEventPage', () => {
