@@ -1,9 +1,13 @@
+import { useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
 
+import { useEventNotificationToggle } from '@/api/mutations/useEventNotificationOptOut';
 import { Badge } from '@/shared/components/Badge';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
+import { Switch } from '@/shared/components/Switch';
 import { Text } from '@/shared/components/Text';
 
 import { badgeText } from '../../../Overview/utils/badgeText';
@@ -27,6 +31,37 @@ export const EventHeader = ({
   const navigate = useNavigate();
   const status = badgeText(registrationEnd);
 
+  const [receiveNotification, setReceiveNotification] = useState(true);
+  const { optOut, undoOptOut, isLoading } = useEventNotificationToggle(eventId);
+
+  const handleSwitch = (next: boolean) => {
+    if (next === receiveNotification) return;
+
+    setReceiveNotification(next);
+
+    if (!next) {
+      optOut.mutate(undefined, {
+        onSuccess: () => {
+          alert('이벤트 알림 수신을 거부했습니다.');
+        },
+        onError: () => {
+          setReceiveNotification(true);
+          alert('알림 수신 거부 설정에 실패했습니다.');
+        },
+      });
+    } else {
+      undoOptOut.mutate(undefined, {
+        onSuccess: () => {
+          alert('이벤트 알림 수신을 다시 받습니다.');
+        },
+        onError: () => {
+          setReceiveNotification(false);
+          alert('알림 수신 설정에 실패했습니다.');
+        },
+      });
+    }
+  };
+
   return (
     <Flex width="100%" justifyContent="space-between" alignItems="center">
       <Flex dir="column" gap="8px">
@@ -43,7 +78,7 @@ export const EventHeader = ({
           <Text type="Label">{`${formatDateTime(eventStart, eventEnd)}`}</Text>
         </Flex>
       </Flex>
-      {isOrganizer && (
+      {isOrganizer ? (
         <Button
           color="secondary"
           variant="outline"
@@ -51,6 +86,16 @@ export const EventHeader = ({
         >
           수정
         </Button>
+      ) : (
+        <Flex alignItems="center" gap="8px">
+          <Text type="Body">알림 받기</Text>
+          <Switch
+            aria-label="이벤트 알림 수신 설정"
+            checked={receiveNotification}
+            onCheckedChange={handleSwitch}
+            disabled={isLoading}
+          />
+        </Flex>
       )}
     </Flex>
   );
