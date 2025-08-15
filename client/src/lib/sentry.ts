@@ -11,18 +11,13 @@ export const initSentry = () => {
     dsn: SENTRY_DSN,
     environment: process.env.NODE_ENV,
     sendDefaultPii: true,
-    replaysOnErrorSampleRate: 0.1,
-    integrations: [Sentry.replayIntegration({ maskAllText: true, blockAllMedia: true })],
+    replaysOnErrorSampleRate: 1.0,
+    replaysSessionSampleRate: 0.1,
+    integrations: [
+      Sentry.replayIntegration({ maskAllText: true, blockAllMedia: true }),
+      Sentry.browserTracingIntegration(),
+    ],
 
     tracesSampleRate: process.env.NODE_ENV === 'production' ? 1.0 : 0.1,
-
-    initialScope: {
-      tags: {
-        app: 'ah-madda',
-        version: process.env.SENTRY_RELEASE || '1.0.0',
-      },
-    },
   });
 };
-
-export { Sentry };
