@@ -1,3 +1,4 @@
+import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/shared/components/Button';
@@ -14,7 +15,15 @@ export const Info = () => {
       alignItems="center"
       margin="60px 0 30px 0"
       padding="20px 0"
-      gap="10px"
+      gap="16px"
+      width="100%"
+      css={css`
+        @media (max-width: 768px) {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 24px;
+        }
+      `}
     >
       <Flex dir="column" gap="8px">
         <Text as="h1" type="Display" weight="bold" color="gray900">
