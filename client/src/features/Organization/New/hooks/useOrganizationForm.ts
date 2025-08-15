@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { validateOrganizationForm } from '../utils/validateOrganizationForm';
 import { OrgFormFields } from '../utils/validationRules';
@@ -10,10 +10,6 @@ export const useOrganizationForm = (initial?: Partial<OrgFormFields>) => {
     logo: null,
     ...initial,
   });
-
-  useEffect(() => {
-    console.log('form:', form, 'errors:', validateOrganizationForm(form));
-  }, [form]);
 
   const [errors, setErrors] = useState<Partial<Record<keyof OrgFormFields, string>>>({});
 

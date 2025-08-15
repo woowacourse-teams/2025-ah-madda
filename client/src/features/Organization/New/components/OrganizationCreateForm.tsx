@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { css } from '@emotion/react';
+import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
@@ -14,6 +15,7 @@ import { CreatorNicknameModal } from './CreatorNicknameModal';
 import { OrganizationImageInput } from './OrganizationImageInput';
 
 export const OrganizationCreateForm = () => {
+  const navigate = useNavigate();
   const [isNickOpen, setNickOpen] = useState(false);
 
   const { form, errors, isValid, handleChange, handleLogoChange } = useOrganizationForm();
@@ -98,8 +100,11 @@ export const OrganizationCreateForm = () => {
         description={form.description.trim()}
         thumbnail={form.logo}
         onCancel={() => setNickOpen(false)}
-        onSuccess={() => setNickOpen(false)}
-        onError={(e) => console.error(e)}
+        onSuccess={(id) => {
+          setNickOpen(false);
+          // A.TODO: 추후 페이지 이동 예정
+          // navigate(`/organization/${id}`);
+        }}
       />
     </form>
   );

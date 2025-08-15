@@ -23,17 +23,23 @@ export class HttpError extends Error {
   }
 }
 
-const request = async <T>(path: string, method: HttpMethod, body?: object): Promise<T> => {
+const request = async <T>(
+  path: string,
+  method: HttpMethod,
+  body?: object | FormData
+): Promise<T> => {
+  const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
+
   const config: RequestInit = {
     method,
     headers: {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       Authorization: `Bearer ${getLocalStorage(ACCESS_TOKEN_KEY)}`,
     },
   };
 
   if (body) {
-    config.body = JSON.stringify(body);
+    config.body = isFormData ? (body as FormData) : JSON.stringify(body);
   }
 
   const response = await fetch(process.env.API_BASE_URL + path, config);
@@ -48,7 +54,6 @@ const request = async <T>(path: string, method: HttpMethod, body?: object): Prom
         reportApiError(parseError);
         throw parseError;
       }
-
       throw new HttpError(response.status);
     }
   }
@@ -65,8 +70,8 @@ const request = async <T>(path: string, method: HttpMethod, body?: object): Prom
 
 export const fetcher = {
   get: <T>(path: string) => request<T>(path, 'GET'),
-  post: <T>(path: string, body?: object) => request<T>(path, 'POST', body),
-  patch: <T>(path: string, body?: object) => request<T>(path, 'PATCH', body),
-  put: <T>(path: string, body?: object) => request<T>(path, 'PUT', body),
+  post: <T>(path: string, body?: object | FormData) => request<T>(path, 'POST', body), // 👈 타입만 추가
+  patch: <T>(path: string, body?: object | FormData) => request<T>(path, 'PATCH', body), // 👈
+  put: <T>(path: string, body?: object | FormData) => request<T>(path, 'PUT', body), // 👈
   delete: (path: string) => request<void>(path, 'DELETE'),
 };

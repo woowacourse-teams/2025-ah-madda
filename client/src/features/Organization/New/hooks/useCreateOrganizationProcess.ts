@@ -1,11 +1,11 @@
-import { useModal } from '@/shared/hooks/useModal';
+import { useCreateOrganization } from '@/api/mutations/useCreateOrganization';
 
 type Args = {
   name: string;
   description: string;
   thumbnail: File | null;
-  onSuccess?: (orgId?: number) => void;
-  onError?: (err: unknown) => void;
+  onSuccess?: (organizationId: number) => void;
+  onCancel?: () => void;
 };
 
 export const useCreateOrganizationProcess = ({
@@ -13,27 +13,35 @@ export const useCreateOrganizationProcess = ({
   description,
   thumbnail,
   onSuccess,
-  onError,
+  onCancel,
 }: Args) => {
-  const { close } = useModal();
+  const { mutate, isPending } = useCreateOrganization();
 
   const handleCreate = (nickname: string) => {
-    const formData = buildOrganizationFormData({ name, description, nickname, thumbnail });
-    // A.TODO: 조직 생성 API 호출
+    if (!thumbnail) {
+      return;
+    }
 
-    onSuccess?.();
-    close();
+    mutate(
+      {
+        organization: {
+          name: name.trim(),
+          description: description.trim(),
+          nickname: nickname.trim(),
+        },
+        thumbnail,
+      },
+      {
+        onSuccess: ({ organizationId }) => {
+          onSuccess?.(organizationId);
+        },
+      }
+    );
   };
 
-  const handleClose = () => close();
+  const handleClose = () => {
+    onCancel?.();
+  };
 
-  return { handleCreate, handleClose };
+  return { handleCreate, handleClose, isSubmitting: isPending };
 };
-function buildOrganizationFormData(arg0: {
-  name: string;
-  description: string;
-  nickname: string;
-  thumbnail: File | null;
-}) {
-  throw new Error('Function not implemented.');
-}

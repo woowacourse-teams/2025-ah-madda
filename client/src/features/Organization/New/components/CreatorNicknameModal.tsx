@@ -16,8 +16,7 @@ type Props = {
   name: string;
   description: string;
   thumbnail: File | null;
-  onSuccess?: () => void;
-  onError?: (e: unknown) => void;
+  onSuccess?: (id: number) => void;
   onCancel: () => void;
 };
 
@@ -28,24 +27,29 @@ export const CreatorNicknameModal = ({
   description,
   thumbnail,
   onSuccess,
-  onError,
   onCancel,
 }: Props) => {
   const { nickname, handleNicknameChange } = useNickNameForm();
-  const { handleCreate } = useCreateOrganizationProcess({
+  const { handleCreate, handleClose, isSubmitting } = useCreateOrganizationProcess({
     name,
     description,
     thumbnail,
     onSuccess,
-    onError,
+    onCancel,
   });
 
   if (!isOpen) return null;
 
+  const submit = () => {
+    const trimmed = nickname.trim();
+    if (!trimmed || isSubmitting) return;
+    handleCreate(trimmed);
+  };
+
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onCancel}
+      onClose={handleClose}
       css={css`
         width: 380px;
       `}
@@ -65,26 +69,21 @@ export const CreatorNicknameModal = ({
           placeholder="닉네임을 입력하세요"
           value={nickname}
           onChange={handleNicknameChange}
-          maxLength={20}
           showCounter
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && nickname.trim()) {
+            if (e.key === 'Enter') {
               e.preventDefault();
-              handleCreate(nickname.trim());
+              submit();
             }
           }}
         />
       </Flex>
 
       <Flex gap="12px" alignItems="center">
-        <Button variant="outline" size="full" onClick={onCancel}>
+        <Button variant="outline" size="full" onClick={handleClose} disabled={isSubmitting}>
           취소
         </Button>
-        <Button
-          size="full"
-          disabled={!nickname.trim()}
-          onClick={() => handleCreate(nickname.trim())}
-        >
+        <Button size="full" disabled={!nickname.trim() || isSubmitting} onClick={submit}>
           생성하기
         </Button>
       </Flex>
