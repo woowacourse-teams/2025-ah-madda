@@ -12,8 +12,10 @@ spring:
         region: ap-northeast-2
 
 jwt:
-  secret-key: ${jwt.local.secret-key}
+  access-secret-key: ${jwt.local.access-secret-key}
   access-expiration: ${jwt.local.access-expiration}
+  refresh-secret-key: ${jwt.local.refresh-secret-key}
+  refresh-expiration: ${jwt.local.refresh-expiration}
 
 cors:
   allowed-origins:

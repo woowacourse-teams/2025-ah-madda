@@ -1,4 +1,4 @@
-package com.ahmadda.infra.jwt.config;
+package com.ahmadda.infra.login.jwt.config;
 
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
@@ -12,14 +12,22 @@ import javax.crypto.SecretKey;
 @Getter
 public class JwtProperties {
 
-    private final SecretKey secretKey;
+    private final SecretKey accessSecretKey;
+    private final SecretKey refreshSecretKey;
     private final Duration accessExpiration;
+    private final Duration refreshExpiration;
 
-    public JwtProperties(final String secretKey, final Duration accessExpiration) {
-        validateProperties(secretKey, accessExpiration);
+    public JwtProperties(final String accessSecretKey,
+                         final Duration accessExpiration,
+                         final String refreshSecretKey,
+                         final Duration refreshExpiration) {
+        validateProperties(accessSecretKey, accessExpiration);
+        validateProperties(refreshSecretKey, refreshExpiration);
 
-        this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+        this.accessSecretKey = Keys.hmacShaKeyFor(accessSecretKey.getBytes(StandardCharsets.UTF_8));
         this.accessExpiration = accessExpiration;
+        this.refreshSecretKey = Keys.hmacShaKeyFor(refreshSecretKey.getBytes(StandardCharsets.UTF_8));
+        this.refreshExpiration = refreshExpiration;
     }
 
     private void validateProperties(final String secretKey, final Duration accessExpiration) {

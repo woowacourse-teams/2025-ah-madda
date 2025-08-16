@@ -1,8 +1,8 @@
 package com.ahmadda.presentation.resolver;
 
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.infra.jwt.JwtProvider;
-import com.ahmadda.infra.jwt.dto.JwtMemberPayload;
+import com.ahmadda.infra.login.jwt.JwtProvider;
+import com.ahmadda.infra.login.jwt.dto.JwtMemberPayload;
 import com.ahmadda.presentation.exception.InvalidAuthorizationException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +39,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
         String accessToken = extractAccessToken(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
 
-        JwtMemberPayload jwtMemberPayload = jwtProvider.parsePayload(accessToken);
+        JwtMemberPayload jwtMemberPayload = jwtProvider.parseAccessPayload(accessToken);
 
         return new LoginMember(jwtMemberPayload.getMemberId());
     }
