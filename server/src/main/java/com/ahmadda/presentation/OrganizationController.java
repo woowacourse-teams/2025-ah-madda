@@ -294,7 +294,105 @@ public class OrganizationController {
                 ));
     }
 
-    @PatchMapping("/{organizationId}")
+    @Operation(summary = "조직 수정", description = "조직을 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "존재하지 않는 조직",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 조직입니다.",
+                                                      "instance": "/api/organizations/{organizationId}"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "존재하지 않는 조직원",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 조직원입니다.",
+                                                      "instance": "/api/organizations/{organizationId}"
+                                                    }
+                                                    """
+                                    ),
+
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "이름의 길이가 맞지 않음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "이름의 길이는 1자 이상 30자 이하이어야 합니다.",
+                                                      "instance": "/api/organizations/{organizationId}"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "설명의 길이가 맞지 않음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "설명의 길이는 1자 이상 30자 이하이어야 합니다.",
+                                                      "instance": "/api/organizations/{organizationId}"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "조직에 속한 조직원이 아님",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Forbidden",
+                                                      "status": 403,
+                                                      "detail": "조직에 속한 조직원만 수정이 가능합니다.",
+                                                      "instance": "/api/organizations/{organizationId}"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "조직의 관리자가 아님",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Forbidden",
+                                                      "status": 403,
+                                                      "detail": "조직원의 관리자만 조직을 수정 할 수 있습니다.",
+                                                      "instance": "/api/organizations/{organizationId}"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            )
+    })
+    @PatchMapping(value = "/{organizationId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> updateOrganization(
             @RequestPart("organization") @Valid OrganizationUpdateRequest organizationUpdateRequest,
             @Nullable @RequestPart(value = "thumbnail", required = false) MultipartFile multipartFile,
