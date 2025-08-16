@@ -5,6 +5,7 @@ import com.ahmadda.domain.EventEmailPayload;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
+import com.ahmadda.domain.Role;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ class SmtpEmailNotifierTest {
 
         var member = Member.create("주최자", "amadda.team@gmail.com", "testPicture");
         var organization = Organization.create(organizationName, "설명", "logo.png");
-        var organizationMember = OrganizationMember.create(organizerNickname, member, organization);
+        var organizationMember = OrganizationMember.create(organizerNickname, member, organization, Role.USER);
 
         var emailPayload = new EventEmailPayload(
                 new EventEmailPayload.Subject(

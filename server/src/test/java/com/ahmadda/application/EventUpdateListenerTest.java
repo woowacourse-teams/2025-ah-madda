@@ -12,6 +12,7 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.domain.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -90,7 +91,7 @@ class EventUpdateListenerTest {
 
     private Organization createOrganization() {
         var organization = Organization.create("우테코", "우테코입니다.", "image");
-        
+
         return organizationRepository.save(organization);
     }
 
@@ -101,7 +102,7 @@ class EventUpdateListenerTest {
     }
 
     private OrganizationMember createOrganizationMember(Organization organization, Member member) {
-        var organizationMember = OrganizationMember.create("surf", member, organization);
+        var organizationMember = OrganizationMember.create("surf", member, organization, Role.USER);
 
         return organizationMemberRepository.save(organizationMember);
     }

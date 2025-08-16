@@ -23,10 +23,10 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Organization extends BaseEntity {
 
-    private static final int MAX_DESCRIPTION_LENGTH = 2000;
-    private static final int MAX_NAME_LENGTH = 20;
-    private static final int MIN_DESCRIPTION_LENGTH = 2;
-    private static final int MIN_NAME_LENGTH = 2;
+    private static final int MAX_DESCRIPTION_LENGTH = 30;
+    private static final int MAX_NAME_LENGTH = 30;
+    private static final int MIN_DESCRIPTION_LENGTH = 1;
+    private static final int MIN_NAME_LENGTH = 1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -85,7 +85,7 @@ public class Organization extends BaseEntity {
             throw new BusinessRuleViolatedException("초대코드가 만료되었습니다.");
         }
 
-        return OrganizationMember.create(nickname, member, this);
+        return OrganizationMember.create(nickname, member, this, Role.USER);
     }
 
     public boolean isExistOrganizationMember(final OrganizationMember otherOrganizationMember) {

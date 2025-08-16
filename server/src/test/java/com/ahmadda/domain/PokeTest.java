@@ -217,7 +217,7 @@ class PokeTest {
             member = memberRepository.save(member);
         }
 
-        var organizationMember = OrganizationMember.create("nickname", member, organization);
+        var organizationMember = OrganizationMember.create("nickname", member, organization, Role.USER);
         return organizationMemberRepository.save(organizationMember);
     }
 

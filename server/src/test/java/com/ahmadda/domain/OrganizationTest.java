@@ -18,7 +18,7 @@ class OrganizationTest {
     void setUp() {
         sut = Organization.create("테스트 조직", "조직 설명", "image.png");
         var member = Member.create("주최자 회원", "organizer@example.com", "testPicture");
-        organizer = OrganizationMember.create("주최자", member, sut);
+        organizer = OrganizationMember.create("주최자", member, sut, Role.USER);
     }
 
     @Test
@@ -79,7 +79,7 @@ class OrganizationTest {
         //given
         var organization = Organization.create("테스트 조직2", "조직 설명", "image.png");
         var member = Member.create("주최자 회원", "organizer@example.com", "testPicture");
-        var inviter = OrganizationMember.create("test", member, organization);
+        var inviter = OrganizationMember.create("test", member, organization, Role.USER);
         var inviteCode = InviteCode.create("code", organization, inviter, LocalDateTime.now());
 
         //when //then

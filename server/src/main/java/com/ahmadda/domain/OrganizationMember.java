@@ -4,6 +4,8 @@ package com.ahmadda.domain;
 import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -38,14 +40,26 @@ public class OrganizationMember extends BaseEntity {
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
 
-    private OrganizationMember(final String nickname, final Member member, final Organization organization) {
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
+    private OrganizationMember(
+            final String nickname,
+            final Member member,
+            final Organization organization,
+            final Role role
+    ) {
         validateNickname(nickname);
         validateMember(member);
         validateOrganization(organization);
+        validateRole(role);
 
         this.nickname = nickname;
         this.member = member;
         this.organization = organization;
+        this.role = role;
+
         organization.getOrganizationMembers()
                 .add(this);
     }
@@ -53,9 +67,10 @@ public class OrganizationMember extends BaseEntity {
     public static OrganizationMember create(
             final String nickname,
             final Member member,
-            final Organization organization
+            final Organization organization,
+            final Role role
     ) {
-        return new OrganizationMember(nickname, member, organization);
+        return new OrganizationMember(nickname, member, organization, role);
     }
 
     public boolean isBelongTo(final Organization organization) {
@@ -79,5 +94,9 @@ public class OrganizationMember extends BaseEntity {
 
     private void validateOrganization(final Organization organization) {
         Assert.notNull(organization, "조직은 null이 되면 안됩니다.");
+    }
+
+    private void validateRole(final Role role) {
+        Assert.notNull(role, "조직원의 역할은 null이 되면 안됩니다.");
     }
 }
