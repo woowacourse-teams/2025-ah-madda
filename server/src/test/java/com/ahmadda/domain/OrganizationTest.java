@@ -130,7 +130,7 @@ class OrganizationTest {
                 sut.update(user, "새 조직명", "새 설명", "newImage.png")
         )
                 .isInstanceOf(UnauthorizedOperationException.class)
-                .hasMessage("조직원의 관리자만 조직을 수정 할 수 있습니다.");
+                .hasMessage("조직원의 관리자만 조직 정보를 수정할 수 있습니다.");
     }
 
     @Test

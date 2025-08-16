@@ -383,7 +383,7 @@ public class OrganizationController {
                                                       "type": "about:blank",
                                                       "title": "Forbidden",
                                                       "status": 403,
-                                                      "detail": "조직원의 관리자만 조직을 수정 할 수 있습니다.",
+                                                      "detail": "조직원의 관리자만 조직 정보를 수정할 수 있습니다.",
                                                       "instance": "/api/organizations/{organizationId}"
                                                     }
                                                     """

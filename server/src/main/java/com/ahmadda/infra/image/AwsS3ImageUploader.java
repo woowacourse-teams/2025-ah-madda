@@ -11,6 +11,8 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public class AwsS3ImageUploader implements ImageUploader {
     public String upload(final ImageFile imageFile) {
         String uploadFileName = awsS3Properties.getFolder() + generateUniqueName(imageFile);
 
-        try {
+        try (InputStream inputStream = imageFile.getInputStream()) {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(awsS3Properties.getBucket())
                     .key(uploadFileName)
@@ -32,9 +34,9 @@ public class AwsS3ImageUploader implements ImageUploader {
 
             amazonS3Client.putObject(
                     putObjectRequest,
-                    RequestBody.fromInputStream(imageFile.getInputStream(), imageFile.getSize())
+                    RequestBody.fromInputStream(inputStream, imageFile.getSize())
             );
-        } catch (S3Exception e) {
+        } catch (S3Exception | IOException e) {
             throw new AwsImageUploadException("AWS S3로 이미지 업로드가 실패하였습니다.", e);
         }
 

@@ -113,9 +113,9 @@ public class Organization extends BaseEntity {
         if (!updatingOrganizationMember.isBelongTo(this)) {
             throw new UnauthorizedOperationException("조직에 속한 조직원만 수정이 가능합니다.");
         }
-        
+
         if (!updatingOrganizationMember.isAdmin()) {
-            throw new UnauthorizedOperationException("조직원의 관리자만 조직을 수정 할 수 있습니다.");
+            throw new UnauthorizedOperationException("조직원의 관리자만 조직 정보를 수정할 수 있습니다.");
         }
     }
 
@@ -136,7 +136,7 @@ public class Organization extends BaseEntity {
     private void validateDescription(final String description) {
         Assert.notBlank(description, "설명은 공백이면 안됩니다.");
 
-        if (description.length() < 2 || description.length() > 2000) {
+        if (description.length() < MIN_DESCRIPTION_LENGTH || description.length() > MAX_DESCRIPTION_LENGTH) {
             throw new BusinessRuleViolatedException(
                     String.format(
                             "설명의 길이는 %d자 이상 %d자 이하이어야 합니다.",

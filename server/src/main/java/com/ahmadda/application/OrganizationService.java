@@ -58,7 +58,7 @@ public class OrganizationService {
         organizationRepository.save(organization);
 
         OrganizationMember organizationMember =
-                OrganizationMember.create(organizationCreateRequest.nickName(), member, organization, Role.ADMIN);
+                OrganizationMember.create(organizationCreateRequest.nickname(), member, organization, Role.ADMIN);
         organizationMemberRepository.save(organizationMember);
 
         return organization;
