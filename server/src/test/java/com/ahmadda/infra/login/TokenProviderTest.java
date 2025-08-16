@@ -163,14 +163,14 @@ class TokenProviderTest {
     private String createExpiredRefreshToken(Long memberId, String userAgent) {
         var now = Instant.now();
 
-        String token = Jwts.builder()
+        var token = Jwts.builder()
                 .claims(JwtMemberPayload.toClaims(memberId))
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.minus(Duration.ofDays(1)))) // 이미 만료
                 .signWith(jwtProperties.getRefreshSecretKey())
                 .compact();
 
-        LocalDateTime expiredAt = LocalDateTime.now()
+        var expiredAt = LocalDateTime.now()
                 .minusDays(1); // 레포에도 만료로 기록
 
         refreshTokenRepository.save(
