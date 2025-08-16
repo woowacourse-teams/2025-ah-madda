@@ -41,7 +41,7 @@ class TokenProviderTest {
     JwtProperties jwtProperties;
 
     @Test
-    void 액세스와_리프레시_토큰을_생성할_수_잇다() {
+    void 액세스와_리프레시_토큰을_생성할_수_있다() {
         // given
         var memberId = 1L;
         var userAgent = createUserAgent();
