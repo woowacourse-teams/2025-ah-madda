@@ -3,7 +3,7 @@ package com.ahmadda.presentation;
 import com.ahmadda.application.LoginService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.MemberToken;
-import com.ahmadda.presentation.cookie.RefreshTokenCookieProvider;
+import com.ahmadda.presentation.cookie.CookieProvider;
 import com.ahmadda.presentation.dto.AccessTokenResponse;
 import com.ahmadda.presentation.dto.LoginRequest;
 import com.ahmadda.presentation.resolver.AuthMember;
@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginController {
 
     private final LoginService loginService;
-    private final RefreshTokenCookieProvider refreshTokenCookieProvider;
+    private final CookieProvider cookieProvider;
 
     @Operation(summary = "구글 OAuth 로그인", description = "Google OAuth 인가 코드로 로그인을 할 수 있습니다.")
     @ApiResponses(value = {
@@ -69,7 +69,7 @@ public class LoginController {
         MemberToken memberToken = loginService.login(loginRequest.code(), loginRequest.redirectUri(), userAgent);
         AccessTokenResponse accessTokenResponse = new AccessTokenResponse(memberToken.accessToken());
 
-        ResponseCookie refreshTokenCookie = refreshTokenCookieProvider.createRefreshTokenCookie(
+        ResponseCookie refreshTokenCookie = cookieProvider.createRefreshTokenCookie(
                 memberToken.refreshToken()
         );
 
@@ -165,13 +165,13 @@ public class LoginController {
     public ResponseEntity<AccessTokenResponse> extendToken(
             @RequestHeader(HttpHeaders.USER_AGENT) final String userAgent,
             @RequestHeader(HttpHeaders.AUTHORIZATION) final String headerAccessToken,
-            @CookieValue(RefreshTokenCookieProvider.REFRESH_TOKEN_KEY) final String refreshToken
+            @CookieValue(CookieProvider.REFRESH_TOKEN_KEY) final String refreshToken
     ) {
-        String accessToken = refreshTokenCookieProvider.resolveAccessToken(headerAccessToken);
+        String accessToken = cookieProvider.resolveRefreshToken(headerAccessToken);
 
         MemberToken memberToken = loginService.renewMemberToken(accessToken, refreshToken, userAgent);
         ResponseCookie refreshTokenCookie =
-                refreshTokenCookieProvider.createRefreshTokenCookie(memberToken.refreshToken());
+                cookieProvider.createRefreshTokenCookie(memberToken.refreshToken());
         AccessTokenResponse accessTokenResponse = new AccessTokenResponse(memberToken.accessToken());
 
         return ResponseEntity
@@ -241,11 +241,14 @@ public class LoginController {
     public ResponseEntity<Void> logout(
             @AuthMember final LoginMember loginMember,
             @RequestHeader(HttpHeaders.USER_AGENT) final String userAgent,
-            @CookieValue(RefreshTokenCookieProvider.REFRESH_TOKEN_KEY) final String authRefreshToken) {
-        String refreshToken = refreshTokenCookieProvider.resolveAccessToken(authRefreshToken);
+            @CookieValue(CookieProvider.REFRESH_TOKEN_KEY) final String authRefreshToken) {
+        String refreshToken = cookieProvider.resolveRefreshToken(authRefreshToken);
         loginService.logout(loginMember, refreshToken, userAgent);
 
+        ResponseCookie logoutRefreshTokenCookie = cookieProvider.createLogoutRefreshTokenCookie();
+
         return ResponseEntity.noContent()
+                .header(HttpHeaders.SET_COOKIE, logoutRefreshTokenCookie.toString())
                 .build();
     }
 }

@@ -13,11 +13,11 @@ public class JwtMemberPayload {
     private static final String MEMBER_ID_KEY = "memberId";
 
     private final Long memberId;
-    private final LocalDateTime expireAt;
+    private final LocalDateTime expiresAt;
 
-    private JwtMemberPayload(final Long memberId, final LocalDateTime expireAt) {
+    private JwtMemberPayload(final Long memberId, final LocalDateTime expiresAt) {
         this.memberId = memberId;
-        this.expireAt = expireAt;
+        this.expiresAt = expiresAt;
     }
 
     public static JwtMemberPayload from(final Claims claims) {

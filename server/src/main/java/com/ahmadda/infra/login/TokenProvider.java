@@ -23,13 +23,13 @@ public class TokenProvider {
         String refreshToken = jwtProvider.createRefreshToken(memberId);
 
         JwtMemberPayload jwtMemberPayload = jwtProvider.parseRefreshPayload(refreshToken);
-        LocalDateTime expireAt = jwtMemberPayload.getExpireAt();
+        LocalDateTime expiresAt = jwtMemberPayload.getExpiresAt();
 
         String deviceId = HashUtils.sha256(userAgent);
         refreshTokenRepository.deleteByMemberIdAndDeviceId(memberId, deviceId);
 
         RefreshToken refreshTokenEntity =
-                RefreshToken.create(refreshToken, memberId, deviceId, expireAt);
+                RefreshToken.create(refreshToken, memberId, userAgent, expiresAt);
         refreshTokenRepository.save(refreshTokenEntity);
 
         return new MemberToken(accessToken, refreshToken);
@@ -45,8 +45,6 @@ public class TokenProvider {
         RefreshToken savedRefreshToken = getRefreshToken(memberId, deviceId);
 
         validateRefreshTokenMatches(refreshToken, savedRefreshToken.getToken());
-
-        refreshTokenRepository.delete(savedRefreshToken);
 
         return createMemberToken(memberId, userAgent);
     }

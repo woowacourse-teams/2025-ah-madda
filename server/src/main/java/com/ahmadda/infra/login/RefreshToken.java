@@ -45,9 +45,10 @@ public class RefreshToken {
 
     public static RefreshToken create(final String token,
                                       final Long memberId,
-                                      final String deviceId,
+                                      final String userAgent,
                                       final LocalDateTime expiresAt) {
         String encodedToken = HashUtils.sha256(token);
+        String deviceId = HashUtils.sha256(userAgent);
 
         return new RefreshToken(encodedToken, memberId, deviceId, expiresAt);
     }

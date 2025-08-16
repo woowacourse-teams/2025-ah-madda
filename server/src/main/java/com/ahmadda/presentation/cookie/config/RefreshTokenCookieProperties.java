@@ -28,10 +28,10 @@ public class RefreshTokenCookieProperties {
     private void validateProperties(final String path,
                                     final String sameSite,
                                     final Duration ttl) {
-        if (path == null) {
+        if (path == null || path.isBlank()) {
             throw new IllegalArgumentException("쿠키 Path가 비어있습니다.");
         }
-        if (sameSite == null) {
+        if (sameSite == null || sameSite.isBlank()) {
             throw new IllegalArgumentException("쿠키 SameSite가 비어있습니다.");
         }
         if (ttl == null) {

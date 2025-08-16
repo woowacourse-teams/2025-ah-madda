@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @EnableConfigurationProperties(RefreshTokenCookieProperties.class)
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Component
-public class RefreshTokenCookieProvider {
+public class CookieProvider {
 
     public static final String REFRESH_TOKEN_KEY = "refresh_token";
 
@@ -29,12 +29,22 @@ public class RefreshTokenCookieProvider {
                 .build();
     }
 
-    public String resolveAccessToken(final String header) {
+    public String resolveRefreshToken(final String header) {
         if (header != null && header.startsWith(BEARER_TYPE)) {
             return header.substring(BEARER_TYPE.length())
                     .trim();
         }
 
         throw new InvalidAuthorizationException("인증 토큰 정보가 존재하지 않거나 유효하지 않습니다.");
+    }
+
+    public ResponseCookie createLogoutRefreshTokenCookie() {
+        return ResponseCookie.from(REFRESH_TOKEN_KEY, "")
+                .maxAge(0)
+                .sameSite(refreshTokenCookieProperties.getSameSite())
+                .secure(refreshTokenCookieProperties.isSecure())
+                .httpOnly(refreshTokenCookieProperties.isHttpOnly())
+                .path(refreshTokenCookieProperties.getPath())
+                .build();
     }
 }

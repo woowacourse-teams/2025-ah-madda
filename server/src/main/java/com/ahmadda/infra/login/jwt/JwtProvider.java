@@ -75,6 +75,8 @@ public class JwtProvider {
             return false;
         } catch (ExpiredJwtException e) {
             return true;
+        } catch (JwtException e) {
+            throw new InvalidJwtException("인증 토큰을 파싱하는데 실패했습니다.", e);
         }
     }
 
@@ -88,6 +90,8 @@ public class JwtProvider {
             return false;
         } catch (ExpiredJwtException e) {
             return true;
+        } catch (JwtException e) {
+            throw new InvalidJwtException("인증 토큰을 파싱하는데 실패했습니다.", e);
         }
     }
 
