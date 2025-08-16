@@ -103,7 +103,6 @@ export const OrganizationCreateForm = () => {
         onSuccess={(id) => {
           setNickOpen(false);
           // A.TODO: 추후 페이지 이동 예정
-          // navigate(`/organization/${id}`);
         }}
       />
     </form>
