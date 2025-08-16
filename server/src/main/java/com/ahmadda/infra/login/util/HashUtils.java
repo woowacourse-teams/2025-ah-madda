@@ -13,7 +13,7 @@ public final class HashUtils {
     private HashUtils() {
     }
 
-    public static String sha256(String value) {
+    public static String sha256(final String value) {
         if (value == null) {
             throw new IllegalArgumentException("값이 null일 수 없습니다");
         }
