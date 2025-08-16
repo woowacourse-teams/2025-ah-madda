@@ -32,8 +32,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class LoginController {
 
-    private static final String REFRESH_TOKEN_KEY = "refresh_token";
-
     private final LoginService loginService;
     private final RefreshTokenCookieProvider refreshTokenCookieProvider;
 
@@ -68,12 +66,10 @@ public class LoginController {
     public ResponseEntity<AccessTokenResponse> login(
             @RequestHeader(HttpHeaders.USER_AGENT) final String userAgent,
             @RequestBody final LoginRequest loginRequest) {
-
         MemberToken memberToken = loginService.login(loginRequest.code(), loginRequest.redirectUri(), userAgent);
         AccessTokenResponse accessTokenResponse = new AccessTokenResponse(memberToken.accessToken());
 
         ResponseCookie refreshTokenCookie = refreshTokenCookieProvider.createRefreshTokenCookie(
-                REFRESH_TOKEN_KEY,
                 memberToken.refreshToken()
         );
 
@@ -165,18 +161,17 @@ public class LoginController {
                     })
             )
     })
-
-    //토큰 정보가 일치하지 않습니다.
     @PostMapping("/token")
     public ResponseEntity<AccessTokenResponse> extendToken(
             @RequestHeader(HttpHeaders.USER_AGENT) final String userAgent,
-            @CookieValue(REFRESH_TOKEN_KEY) final String refreshToken,
-            @RequestHeader(HttpHeaders.AUTHORIZATION) final String headerAccessToken) {
+            @RequestHeader(HttpHeaders.AUTHORIZATION) final String headerAccessToken,
+            @CookieValue(RefreshTokenCookieProvider.REFRESH_TOKEN_KEY) final String refreshToken
+    ) {
         String accessToken = refreshTokenCookieProvider.resolveAccessToken(headerAccessToken);
 
         MemberToken memberToken = loginService.renewMemberToken(accessToken, refreshToken, userAgent);
         ResponseCookie refreshTokenCookie =
-                refreshTokenCookieProvider.createRefreshTokenCookie(REFRESH_TOKEN_KEY, memberToken.refreshToken());
+                refreshTokenCookieProvider.createRefreshTokenCookie(memberToken.refreshToken());
         AccessTokenResponse accessTokenResponse = new AccessTokenResponse(memberToken.accessToken());
 
         return ResponseEntity
@@ -246,7 +241,7 @@ public class LoginController {
     public ResponseEntity<Void> logout(
             @AuthMember final LoginMember loginMember,
             @RequestHeader(HttpHeaders.USER_AGENT) final String userAgent,
-            @CookieValue(REFRESH_TOKEN_KEY) final String authRefreshToken) {
+            @CookieValue(RefreshTokenCookieProvider.REFRESH_TOKEN_KEY) final String authRefreshToken) {
         String refreshToken = refreshTokenCookieProvider.resolveAccessToken(authRefreshToken);
         loginService.logout(loginMember, refreshToken, userAgent);
 

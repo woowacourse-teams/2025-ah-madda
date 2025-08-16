@@ -2,22 +2,25 @@ package com.ahmadda.presentation.cookie;
 
 import com.ahmadda.presentation.cookie.config.RefreshTokenCookieProperties;
 import com.ahmadda.presentation.exception.InvalidAuthorizationException;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 @EnableConfigurationProperties(RefreshTokenCookieProperties.class)
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Component
 public class RefreshTokenCookieProvider {
+
+    public static final String REFRESH_TOKEN_KEY = "refresh_token";
 
     private static final String BEARER_TYPE = "Bearer ";
 
     private final RefreshTokenCookieProperties refreshTokenCookieProperties;
 
-    public ResponseCookie createRefreshTokenCookie(final String tokenKey, final String refreshToken) {
-        return ResponseCookie.from(tokenKey, refreshToken)
+    public ResponseCookie createRefreshTokenCookie(final String refreshToken) {
+        return ResponseCookie.from(REFRESH_TOKEN_KEY, refreshToken)
                 .maxAge(refreshTokenCookieProperties.getTtl())
                 .sameSite(refreshTokenCookieProperties.getSameSite())
                 .secure(refreshTokenCookieProperties.isSecure())
