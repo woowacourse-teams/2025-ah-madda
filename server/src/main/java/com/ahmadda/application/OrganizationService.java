@@ -135,6 +135,12 @@ public class OrganizationService {
         );
     }
 
+    public List<Organization> getParticipatingOrganizations(LoginMember loginMember) {
+        Member member = getMember(loginMember);
+
+        return organizationRepository.findMemberOrganizations(member);
+    }
+
     private String resolveUpdateImageUrl(final String imageUrl, final ImageFile thumbnailImageFile) {
         String updateImageUrl = imageUrl;
 
