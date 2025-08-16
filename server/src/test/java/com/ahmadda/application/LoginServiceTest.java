@@ -107,7 +107,7 @@ class LoginServiceTest {
     }
 
     @Test
-    void 존재하지_않는_회원을_로그아웃_할_수_없다() {
+    void 존재하지_않는_회원을_로그아웃_하면_예외가_발생한다() {
         // given: 회원 하나 만들어두고
         var name = "홍길동";
         var email = "test@example.com";

@@ -69,12 +69,12 @@ public class LoginController {
     public ResponseEntity<AccessTokenResponse> login(
             @RequestHeader(USER_AGENT_KEY) final String userAgent,
             @RequestBody final LoginRequest loginRequest) {
-        MemberToken authTokens = loginService.login(loginRequest.code(), loginRequest.redirectUri(), userAgent);
-        AccessTokenResponse accessTokenResponse = new AccessTokenResponse(authTokens.accessToken());
+        MemberToken memberToken = loginService.login(loginRequest.code(), loginRequest.redirectUri(), userAgent);
+        AccessTokenResponse accessTokenResponse = new AccessTokenResponse(memberToken.accessToken());
 
         ResponseCookie refreshTokenCookie = refreshTokenCookieProvider.createRefreshTokenCookie(
                 REFRESH_TOKEN_KEY,
-                authTokens.refreshToken()
+                memberToken.refreshToken()
         );
 
         return ResponseEntity
@@ -172,7 +172,7 @@ public class LoginController {
             @RequestHeader(USER_AGENT_KEY) final String userAgent,
             @CookieValue(REFRESH_TOKEN_KEY) final String refreshToken,
             @RequestHeader(HttpHeaders.AUTHORIZATION) final String headerAccessToken) {
-        String accessToken = refreshTokenCookieProvider.extractBearer(headerAccessToken);
+        String accessToken = refreshTokenCookieProvider.resolveAccessToken(headerAccessToken);
 
         MemberToken memberToken = loginService.renewMemberToken(accessToken, refreshToken, userAgent);
         ResponseCookie refreshTokenCookie =
@@ -247,7 +247,7 @@ public class LoginController {
             @AuthMember final LoginMember loginMember,
             @RequestHeader(USER_AGENT_KEY) final String userAgent,
             @CookieValue(REFRESH_TOKEN_KEY) final String authRefreshToken) {
-        String refreshToken = refreshTokenCookieProvider.extractBearer(authRefreshToken);
+        String refreshToken = refreshTokenCookieProvider.resolveAccessToken(authRefreshToken);
         loginService.logout(loginMember, refreshToken, userAgent);
 
         return ResponseEntity.noContent()

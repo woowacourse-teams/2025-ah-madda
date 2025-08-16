@@ -26,7 +26,7 @@ public class RefreshTokenCookieProvider {
                 .build();
     }
 
-    public String extractBearer(final String header) {
+    public String resolveAccessToken(final String header) {
         if (header != null && header.startsWith(BEARER_TYPE)) {
             return header.substring(BEARER_TYPE.length())
                     .trim();

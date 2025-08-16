@@ -51,7 +51,7 @@ class TokenProviderTest {
     }
 
     @Test
-    void 액세스_토큰이_만료되지_않으면_재발급_받을_수_없다() {
+    void 재발급_시_액세스_토큰이_만료되지_않으면_예외가_발생한다() {
         // given
         var memberId = 1L;
         var userAgent = createUserAgent();
@@ -80,7 +80,7 @@ class TokenProviderTest {
     }
 
     @Test
-    void 리프레시_토큰이_만료되었으면_재발급_받을_수_없다() {
+    void 재발급_시_리프레시_토큰이_만료되었으면_예외가_발생한다() {
         // given
         var memberId = 1L;
         var userAgent = createUserAgent();
@@ -95,7 +95,7 @@ class TokenProviderTest {
     }
 
     @Test
-    void 유저_에이전트가_다르면_재발급_할_수_없다() {
+    void 재발급_시_유저_에이전트가_다르면_예외가_발생한다() {
         // given
         var memberId = 1L;
         var userAgent = createUserAgent();
@@ -128,7 +128,7 @@ class TokenProviderTest {
     }
 
     @Test
-    void 액세스_토큰과_리프레시_토큰_주인이_다르면_리프레시_토큰을_제거할_수_없다() {
+    void 액세스_토큰과_리프레시_토큰_주인이_다르면_예외가_발생한다() {
         // given
         var memberId = 1L;
         var otherMemberId = 2L;
