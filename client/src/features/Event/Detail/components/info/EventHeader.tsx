@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
-import { useEventNotificationToggle } from '@/api/mutations/useEventNotificationOptOut';
+import { useEventNotificationToggle } from '@/api/mutations/useEventNotificationToggle';
 import { Badge } from '@/shared/components/Badge';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
