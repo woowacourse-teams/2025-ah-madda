@@ -394,10 +394,10 @@ public class OrganizationController {
     })
     @PatchMapping(value = "/{organizationId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> updateOrganization(
-            @RequestPart("organization") @Valid OrganizationUpdateRequest organizationUpdateRequest,
-            @Nullable @RequestPart(value = "thumbnail", required = false) MultipartFile multipartFile,
+            @RequestPart("organization") @Valid final OrganizationUpdateRequest organizationUpdateRequest,
+            @Nullable @RequestPart(value = "thumbnail", required = false) final MultipartFile multipartFile,
             @PathVariable final Long organizationId,
-            @AuthMember LoginMember loginMember
+            @AuthMember final LoginMember loginMember
     ) throws IOException {
         ImageFile thumbnailImageFile = null;
         if (multipartFile != null) {
