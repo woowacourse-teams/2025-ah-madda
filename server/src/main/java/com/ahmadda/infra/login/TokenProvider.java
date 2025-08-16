@@ -6,7 +6,6 @@ import com.ahmadda.infra.login.jwt.JwtProvider;
 import com.ahmadda.infra.login.jwt.dto.JwtMemberPayload;
 import com.ahmadda.infra.login.util.HashUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -18,7 +17,6 @@ public class TokenProvider {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProvider jwtProvider;
-    private final PasswordEncoder passwordEncoder;
 
     public MemberToken createMemberToken(final Long memberId, final String userAgent) {
         String accessToken = jwtProvider.createAccessToken(memberId);
@@ -30,7 +28,7 @@ public class TokenProvider {
         String deviceId = HashUtils.sha256(userAgent);
         refreshTokenRepository.deleteByMemberIdAndDeviceId(memberId, deviceId);
 
-        String encodedRefreshToken = passwordEncoder.encode(refreshToken);
+        String encodedRefreshToken = HashUtils.sha256(refreshToken);
 
         RefreshToken refreshTokenEntity =
                 RefreshToken.create(encodedRefreshToken, memberId, deviceId, expireAt);
@@ -40,7 +38,7 @@ public class TokenProvider {
     }
 
     public MemberToken renewMemberToken(final String accessToken, final String refreshToken, final String userAgent) {
-        validateAccessTokenExpired(accessToken);
+        validateTokens(accessToken, refreshToken);
 
         JwtMemberPayload jwtMemberPayload = jwtProvider.parseRefreshPayload(refreshToken);
         Long memberId = jwtMemberPayload.getMemberId();
@@ -70,14 +68,27 @@ public class TokenProvider {
     }
 
     private void validateRefreshTokenMatches(final String refreshToken, final String savedRefreshToken) {
-        if (!passwordEncoder.matches(refreshToken, savedRefreshToken)) {
-            throw new InvalidTokenException("리프레시 토큰이 일치하지 않습니다.");
+        String encodedRefreshToken = HashUtils.sha256(refreshToken);
+
+        if (!encodedRefreshToken.equals(savedRefreshToken)) {
+            throw new InvalidTokenException("리프레시 토큰이 유효하지 않습니다.");
         }
     }
 
     private RefreshToken getRefreshToken(final Long memberId, final String deviceId) {
         return refreshTokenRepository.findByMemberIdAndDeviceId(memberId, deviceId)
                 .orElseThrow(() -> new InvalidTokenException("토큰을 찾을 수 없습니다."));
+    }
+
+    private void validateTokens(final String accessToken, final String refreshToken) {
+        validateAccessTokenExpired(accessToken);
+        validateRefreshTokenExpired(refreshToken);
+    }
+
+    private void validateRefreshTokenExpired(final String refreshToken) {
+        if (jwtProvider.isRefreshTokenExpired(refreshToken)) {
+            throw new InvalidTokenException("리프레시 토큰이 만료되었습니다.");
+        }
     }
 
     private void validateAccessTokenExpired(final String accessToken) {

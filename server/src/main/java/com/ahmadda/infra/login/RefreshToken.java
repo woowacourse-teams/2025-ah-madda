@@ -4,13 +4,14 @@ import com.ahmadda.infra.login.exception.InvalidRefreshTokenRegistrationExceptio
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class RefreshToken {
 
@@ -69,10 +70,6 @@ public class RefreshToken {
     private void validateExpiresAt(final LocalDateTime expiresAt) {
         if (expiresAt == null) {
             throw new InvalidRefreshTokenRegistrationException("expiresAt은 null일 수 없습니다.");
-        }
-
-        if (expiresAt.isBefore(LocalDateTime.now())) {
-            throw new InvalidRefreshTokenRegistrationException("expiresAt은 미래여야 합니다.");
         }
     }
 }

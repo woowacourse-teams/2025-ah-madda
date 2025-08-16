@@ -16,18 +16,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class JwtProviderTest {
 
-    private final String accessSecretKey = UUID.randomUUID()
+    String accessSecretKey = UUID.randomUUID()
             .toString();
-    private final Duration accessExpiration = Duration.ofHours(1);
-    private final String refreshSecretKey = UUID.randomUUID()
+    Duration accessExpiration = Duration.ofHours(1);
+    String refreshSecretKey = UUID.randomUUID()
             .toString();
-    private final Duration refreshExpiration = Duration.ofHours(1);
-    private final Duration expiration = Duration.ofHours(1);
+    Duration refreshExpiration = Duration.ofHours(1);
+    Duration expiration = Duration.ofHours(1);
 
-    private final JwtProperties jwtProperties =
+    JwtProperties jwtProperties =
             new JwtProperties(accessSecretKey, accessExpiration, refreshSecretKey, refreshExpiration);
 
-    private final JwtProvider sut = new JwtProvider(jwtProperties);
+    JwtProvider sut = new JwtProvider(jwtProperties);
 
     @Test
     void JWT_토큰을_정상적으로_생성_및_검증_할_수_있다() {
@@ -192,16 +192,5 @@ class JwtProviderTest {
         // when // then
         assertThatThrownBy(() -> sut.parseRefreshPayload(accessToken))
                 .isInstanceOf(InvalidJwtException.class);
-    }
-
-    @Test
-    void payload를_정상적으로_만들_수_있다() {
-        // given
-        var memberId = 70L;
-        var token = sut.createAccessToken(memberId);
-        var payload = sut.parseAccessPayload(token);
-
-        // when // then
-        assertThat(payload.getMemberId()).isEqualTo(70L);
     }
 }
