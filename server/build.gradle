@@ -32,8 +32,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
-    implementation 'org.springframework.security:spring-security-crypto'
-
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-metrics:3.4.0'
     implementation 'ca.pjer:logback-awslogs-appender:1.6.0'
 
