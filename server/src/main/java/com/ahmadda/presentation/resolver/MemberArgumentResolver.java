@@ -3,7 +3,7 @@ package com.ahmadda.presentation.resolver;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.infra.login.jwt.JwtProvider;
 import com.ahmadda.infra.login.jwt.dto.JwtMemberPayload;
-import com.ahmadda.presentation.cookie.CookieProvider;
+import com.ahmadda.presentation.cookie.RefreshTokenCookieProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -19,7 +19,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtProvider jwtProvider;
-    private final CookieProvider cookieProvider;
+    private final RefreshTokenCookieProvider refreshTokenCookieProvider;
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
@@ -36,7 +36,8 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
             final WebDataBinderFactory binderFactory
     ) {
         HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
-        String accessToken = cookieProvider.extractBearer(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
+        String accessToken =
+                refreshTokenCookieProvider.extractBearer(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
 
         JwtMemberPayload jwtMemberPayload = jwtProvider.parseAccessPayload(accessToken);
 

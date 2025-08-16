@@ -3,7 +3,7 @@ package com.ahmadda.presentation;
 import com.ahmadda.application.LoginService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.MemberToken;
-import com.ahmadda.presentation.cookie.CookieProvider;
+import com.ahmadda.presentation.cookie.RefreshTokenCookieProvider;
 import com.ahmadda.presentation.dto.AccessTokenResponse;
 import com.ahmadda.presentation.dto.LoginRequest;
 import com.ahmadda.presentation.resolver.AuthMember;
@@ -36,7 +36,7 @@ public class LoginController {
     private static final String USER_AGENT_KEY = "User-Agent";
 
     private final LoginService loginService;
-    private final CookieProvider cookieProvider;
+    private final RefreshTokenCookieProvider refreshTokenCookieProvider;
 
     @Operation(summary = "구글 OAuth 로그인", description = "Google OAuth 인가 코드로 로그인을 할 수 있습니다.")
     @ApiResponses(value = {
@@ -72,7 +72,7 @@ public class LoginController {
         MemberToken authTokens = loginService.login(loginRequest.code(), loginRequest.redirectUri(), userAgent);
         AccessTokenResponse accessTokenResponse = new AccessTokenResponse(authTokens.accessToken());
 
-        ResponseCookie refreshTokenCookie = cookieProvider.createRefreshTokenCookie(
+        ResponseCookie refreshTokenCookie = refreshTokenCookieProvider.createRefreshTokenCookie(
                 REFRESH_TOKEN_KEY,
                 authTokens.refreshToken()
         );
@@ -172,11 +172,11 @@ public class LoginController {
             @RequestHeader(USER_AGENT_KEY) final String userAgent,
             @CookieValue(REFRESH_TOKEN_KEY) final String refreshToken,
             @RequestHeader(HttpHeaders.AUTHORIZATION) final String headerAccessToken) {
-        String accessToken = cookieProvider.extractBearer(headerAccessToken);
+        String accessToken = refreshTokenCookieProvider.extractBearer(headerAccessToken);
 
         MemberToken memberToken = loginService.renewMemberToken(accessToken, refreshToken, userAgent);
         ResponseCookie refreshTokenCookie =
-                cookieProvider.createRefreshTokenCookie(REFRESH_TOKEN_KEY, memberToken.refreshToken());
+                refreshTokenCookieProvider.createRefreshTokenCookie(REFRESH_TOKEN_KEY, memberToken.refreshToken());
         AccessTokenResponse accessTokenResponse = new AccessTokenResponse(memberToken.accessToken());
 
         return ResponseEntity
@@ -247,12 +247,10 @@ public class LoginController {
             @AuthMember final LoginMember loginMember,
             @RequestHeader(USER_AGENT_KEY) final String userAgent,
             @CookieValue(REFRESH_TOKEN_KEY) final String authRefreshToken) {
-        String refreshToken = cookieProvider.extractBearer(authRefreshToken);
+        String refreshToken = refreshTokenCookieProvider.extractBearer(authRefreshToken);
         loginService.logout(loginMember, refreshToken, userAgent);
-        ResponseCookie logoutRefreshCookie = cookieProvider.createLogoutRefreshCookie(REFRESH_TOKEN_KEY);
 
         return ResponseEntity.noContent()
-                .header(HttpHeaders.SET_COOKIE, logoutRefreshCookie.toString())
                 .build();
     }
 }
