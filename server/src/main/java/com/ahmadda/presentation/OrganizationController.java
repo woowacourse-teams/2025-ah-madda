@@ -13,6 +13,7 @@ import com.ahmadda.presentation.dto.OrganizationParticipateResponse;
 import com.ahmadda.presentation.dto.OrganizationResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -36,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 
 @Tag(name = "Organization", description = "조직 관련 API")
 @RestController
@@ -418,5 +420,59 @@ public class OrganizationController {
 
         return ResponseEntity.ok()
                 .build();
+    }
+
+    @Operation(summary = "내가 참여중인 조직 목록 조회", description = "로그인한 사용자가 참여중인 조직 목록을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            array = @ArraySchema(schema = @Schema(implementation = OrganizationResponse.class))
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/organizations/participated"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "존재하지 않는 회원입니다",
+                                              "instance": "/api/organizations/participated"
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
+    @GetMapping("/participated")
+    public ResponseEntity<List<OrganizationResponse>> getParticipatedOrganizations(
+            @AuthMember final LoginMember loginMember
+    ) {
+        List<Organization> participatingOrganizations = organizationService.getParticipatingOrganizations(loginMember);
+
+        List<OrganizationResponse> organizationResponses = participatingOrganizations.stream()
+                .map(OrganizationResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(organizationResponses);
     }
 }

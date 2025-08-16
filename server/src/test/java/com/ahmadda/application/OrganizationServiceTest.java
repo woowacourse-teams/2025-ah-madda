@@ -57,8 +57,7 @@ class OrganizationServiceTest {
     @Test
     void 조직을_ID로_조회한다() {
         // given
-        var organization = createOrganization("Org", "Desc", "img.png");
-        organizationRepository.save(organization);
+        var organization = createAndSaveOrganization("Org");
 
         // when
         var found = sut.getOrganizationById(organization.getId());
@@ -288,8 +287,7 @@ class OrganizationServiceTest {
     @Test
     void 조직의_관리자는_조직을_수정할_수_있다() {
         //given
-        var organization = createOrganization("Org", "Desc", "img.png");
-        organizationRepository.save(organization);
+        var organization = createAndSaveOrganization("Org");
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var organizationMember = createAndSaveOrganizationMember("surf", member, organization, Role.ADMIN);
         var request = new OrganizationUpdateRequest("새 이름", "새 설명");
@@ -314,8 +312,7 @@ class OrganizationServiceTest {
     @Test
     void 썸네일이_null이어도_조직_수정이_가능하다() {
         //given
-        var organization = createOrganization("Org", "Desc", "img.png");
-        organizationRepository.save(organization);
+        var organization = createAndSaveOrganization("Org");
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var organizationMember = createAndSaveOrganizationMember("surf", member, organization, Role.ADMIN);
         var request = new OrganizationUpdateRequest("새 이름", "새 설명");
@@ -351,8 +348,7 @@ class OrganizationServiceTest {
     @Test
     void 조직원이_없다면_조직을_수정할때_예외가_발생한다() {
         // given
-        var organization = createOrganization("Org", "Desc", "img.png");
-        organizationRepository.save(organization);
+        var organization = createAndSaveOrganization("Org");
         var request = new OrganizationUpdateRequest("새 이름", "새 설명");
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
 
@@ -365,6 +361,45 @@ class OrganizationServiceTest {
         ))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 조직원입니다.");
+    }
+
+    @Test
+    void 사용자가_가입한_조직을_조회할_수_있다() {
+        //given
+        var organization1 = createAndSaveOrganization("우테코");
+        var organization2 = createAndSaveOrganization("아맞다");
+        var organization3 = createAndSaveOrganization("서프의 조직");
+        var organization4 = createAndSaveOrganization("프론트 조직");
+        var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        createAndSaveOrganizationMember("surf", member, organization1, Role.USER);
+        createAndSaveOrganizationMember("surf", member, organization2, Role.ADMIN);
+        createAndSaveOrganizationMember("surf", member, organization3, Role.USER);
+
+        //when
+        var participatingOrganizations =
+                sut.getParticipatingOrganizations(new LoginMember(member.getId()));
+
+        //then
+        assertSoftly(softly -> {
+            softly.assertThat(participatingOrganizations)
+                    .hasSize(3);
+            softly.assertThat(participatingOrganizations)
+                    .extracting("name")
+                    .contains("우테코", "아맞다", "서프의 조직");
+        });
+    }
+
+    @Test
+    void 사용자가_가입한_조직을_조회할때_사용자가_없다면_예외가_발생한다() {
+        //when //then
+        assertThatThrownBy(() -> sut.getParticipatingOrganizations(new LoginMember(999L)))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 회원입니다");
+    }
+
+    private Organization createAndSaveOrganization(String name) {
+        var organization = createOrganization(name, "Desc", "img.png");
+        return organizationRepository.save(organization);
     }
 
     private Organization createOrganization(String name, String description, String imageUrl) {
