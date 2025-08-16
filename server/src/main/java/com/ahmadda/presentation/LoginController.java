@@ -83,6 +83,90 @@ public class LoginController {
                 .body(accessTokenResponse);
     }
 
+    @Operation(
+            summary = "액세스 토큰 재발급",
+            description = "만료된 액세스 토큰과 쿠키의 리프레시 토큰으로 새 토큰을 발급합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            schema = @Schema(implementation = AccessTokenResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(examples = {
+                            @ExampleObject(name = "아직 만료되지 않은 액세스 토큰",
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "아직 만료되지 않은 액세스 토큰입니다.",
+                                              "instance": "/api/members/token"
+                                            }
+                                            """),
+                            @ExampleObject(name = "리프레시 토큰 만료",
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "리프레시 토큰이 만료되었습니다.",
+                                              "instance": "/api/members/token"
+                                            }
+                                            """),
+                            @ExampleObject(name = "리프레시 토큰 불일치(저장값과 다름)",
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "리프레시 토큰이 유효하지 않습니다.",
+                                              "instance": "/api/members/token"
+                                            }
+                                            """),
+                            @ExampleObject(name = "JWT 형식 오류",
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "잘못된 형식의 토큰입니다.",
+                                              "instance": "/api/members/token"
+                                            }
+                                            """),
+                            @ExampleObject(name = "JWT 서명/파싱 오류",
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "인증 토큰을 파싱하는데 실패하였습니다.",
+                                              "instance": "/api/members/token"
+                                            }
+                                            """)
+                    })
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(examples = {
+                            @ExampleObject(name = "저장된 토큰 없음",
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "토큰을 찾을 수 없습니다.",
+                                              "instance": "/api/members/token"
+                                            }
+                                            """)
+                    })
+            )
+    })
+
+    //토큰 정보가 일치하지 않습니다.
     @PostMapping("/token")
     public ResponseEntity<AccessTokenResponse> extendToken(
             @RequestHeader(USER_AGENT_KEY) final String userAgent,
@@ -101,6 +185,63 @@ public class LoginController {
                 .body(accessTokenResponse);
     }
 
+    @Operation(
+            summary = "로그아웃",
+            description = "리프레시 토큰을 무효화하고 쿠키에서 제거합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "No Content"),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(examples = {
+                            @ExampleObject(name = "멤버-토큰 불일치",
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "토큰 정보가 일치하지 않습니다.",
+                                              "instance": "/api/members/logout"
+                                            }
+                                            """),
+                            @ExampleObject(name = "JWT 형식 오류",
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "잘못된 형식의 토큰입니다.",
+                                              "instance": "/api/members/logout"
+                                            }
+                                            """),
+                            @ExampleObject(name = "JWT 파싱 실패",
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "인증 토큰을 파싱하는데 실패하였습니다.",
+                                              "instance": "/api/members/logout"
+                                            }
+                                            """)
+                    })
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(examples = {
+                            @ExampleObject(name = "저장된 토큰 없음",
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "토큰을 찾을 수 없습니다.",
+                                              "instance": "/api/members/logout"
+                                            }
+                                            """)
+                    })
+            )
+    })
     @DeleteMapping("/logout")
     public ResponseEntity<Void> logout(
             @AuthMember final LoginMember loginMember,

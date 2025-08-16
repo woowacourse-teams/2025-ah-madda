@@ -3,7 +3,6 @@ package com.ahmadda.infra.login;
 import com.ahmadda.infra.login.exception.InvalidTokenException;
 import com.ahmadda.infra.login.jwt.config.JwtProperties;
 import com.ahmadda.infra.login.jwt.dto.JwtMemberPayload;
-import com.ahmadda.infra.login.util.HashUtils;
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -175,7 +174,7 @@ class TokenProviderTest {
                 .minusDays(1); // 레포에도 만료로 기록
 
         refreshTokenRepository.save(
-                RefreshToken.create(HashUtils.sha256(token), memberId, userAgent, expiredAt)
+                RefreshToken.create(token, memberId, userAgent, expiredAt)
         );
 
         return token;

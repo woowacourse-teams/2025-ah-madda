@@ -1,6 +1,7 @@
 package com.ahmadda.infra.login;
 
 import com.ahmadda.infra.login.exception.InvalidRefreshTokenRegistrationException;
+import com.ahmadda.infra.login.util.HashUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -46,7 +47,9 @@ public class RefreshToken {
                                       final Long memberId,
                                       final String deviceId,
                                       final LocalDateTime expiresAt) {
-        return new RefreshToken(token, memberId, deviceId, expiresAt);
+        String encodedToken = HashUtils.sha256(token);
+
+        return new RefreshToken(encodedToken, memberId, deviceId, expiresAt);
     }
 
     private void validateRefreshToken(final String refreshToken) {

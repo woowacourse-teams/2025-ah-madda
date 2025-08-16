@@ -28,10 +28,8 @@ public class TokenProvider {
         String deviceId = HashUtils.sha256(userAgent);
         refreshTokenRepository.deleteByMemberIdAndDeviceId(memberId, deviceId);
 
-        String encodedRefreshToken = HashUtils.sha256(refreshToken);
-
         RefreshToken refreshTokenEntity =
-                RefreshToken.create(encodedRefreshToken, memberId, deviceId, expireAt);
+                RefreshToken.create(refreshToken, memberId, deviceId, expireAt);
         refreshTokenRepository.save(refreshTokenEntity);
 
         return new MemberToken(accessToken, refreshToken);
