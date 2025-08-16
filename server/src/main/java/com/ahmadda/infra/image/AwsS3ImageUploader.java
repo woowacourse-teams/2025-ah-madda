@@ -54,7 +54,8 @@ public class AwsS3ImageUploader implements ImageUploader {
         return String.format(
                 "https://%s.s3.%s.amazonaws.com/%s",
                 awsS3Properties.getBucket(),
-                awsS3Properties.getRegion(),
+                amazonS3Client.serviceClientConfiguration()
+                        .region(),
                 uploadFileName
         );
     }

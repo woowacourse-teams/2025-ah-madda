@@ -14,6 +14,11 @@ spring:
         detector:
           enabled: true
 
+  cloud:
+    aws:
+      s3:
+        region: ${aws.prod.s3.region}
+
 jwt:
   secret-key: ${jwt.dev.secret-key}
   access-expiration: ${jwt.dev.access-expiration}
@@ -30,6 +35,5 @@ notification:
 
 aws:
   s3:
-    region: ${aws.dev.s3.region}
     bucket: ${aws.dev.s3.bucket}
     folder: ${aws.dev.s3.folder}

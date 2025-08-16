@@ -2,7 +2,6 @@ package com.ahmadda.learning;
 
 import com.ahmadda.domain.ImageFile;
 import com.ahmadda.infra.image.AwsS3ImageUploader;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +19,7 @@ import java.io.InputStream;
         "aws.s3.folder=${aws.dev.s3.folder}"
 })
 @Transactional
-@Disabled
+//@Disabled
 public class AwsS3ImageUploaderTest {
 
     @Autowired
