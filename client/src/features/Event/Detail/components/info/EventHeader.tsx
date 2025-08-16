@@ -42,21 +42,21 @@ export const EventHeader = ({
     if (!next) {
       optOut.mutate(undefined, {
         onSuccess: () => {
-          alert('이벤트 알림 수신을 거부했습니다.');
+          alert('이벤트 알림을 껐어요. 필요할 땐 언제든 다시 켤 수 있어요.');
         },
         onError: () => {
           setReceiveNotification(true);
-          alert('알림 수신 거부 설정에 실패했습니다.');
+          alert('알림을 끄는 데 문제가 생겼어요.');
         },
       });
     } else {
       undoOptOut.mutate(undefined, {
         onSuccess: () => {
-          alert('이벤트 알림 수신을 다시 받습니다.');
+          alert('이벤트 알림을 다시 받아요.');
         },
         onError: () => {
           setReceiveNotification(false);
-          alert('알림 수신 설정에 실패했습니다.');
+          alert('알림을 켜는 데 문제가 생겼어요.');
         },
       });
     }
