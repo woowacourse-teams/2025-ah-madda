@@ -7,7 +7,6 @@ import {
   CreateOrganizationAPIRequest,
   CreateOrganizationAPIResponse,
 } from '../types/organizations';
-import { toOrganizationFormData } from '../utils/adapters';
 
 export const organizationQueryKeys = {
   all: () => ['organization'],
@@ -61,7 +60,22 @@ export const getOrganizationPreview = (inviteCode: string) => {
 export async function createOrganization(
   body: CreateOrganizationAPIRequest
 ): Promise<CreateOrganizationAPIResponse> {
-  const formData = toOrganizationFormData(body);
+  const formData = new FormData();
+
+  const organization = {
+    name: body.organization.name.trim(),
+    description: body.organization.description.trim(),
+    nickname: body.organization.nickname.trim(),
+  };
+
+  formData.append(
+    'organization',
+    new Blob([JSON.stringify(organization)], { type: 'application/json' })
+  );
+
+  if (body.thumbnail) {
+    formData.append('thumbnail', body.thumbnail);
+  }
 
   return fetcher.post<CreateOrganizationAPIResponse>('organizations', formData);
 }
