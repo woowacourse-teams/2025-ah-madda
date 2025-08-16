@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class HashUtilsTest {
 
     @Test
-    void 육십네자리_이어야_한다() {
+    void 해시_결과는_64자리_이어야_한다() {
         // given
         var token = "token";
 
