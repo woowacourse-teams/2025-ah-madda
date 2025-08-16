@@ -465,7 +465,7 @@ public class OrganizationController {
     })
     @GetMapping("/participated")
     public ResponseEntity<List<OrganizationResponse>> getParticipatedOrganizations(
-            @AuthMember LoginMember loginMember
+            @AuthMember final LoginMember loginMember
     ) {
         List<Organization> participatingOrganizations = organizationService.getParticipatingOrganizations(loginMember);
 

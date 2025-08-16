@@ -27,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -367,17 +366,17 @@ class OrganizationServiceTest {
     @Test
     void 사용자가_가입한_조직을_조회할_수_있다() {
         //given
-        Organization organization1 = createAndSaveOrganization("우테코");
-        Organization organization2 = createAndSaveOrganization("아맞다");
-        Organization organization3 = createAndSaveOrganization("서프의 조직");
-        Organization organization4 = createAndSaveOrganization("프론트 조직");
+        var organization1 = createAndSaveOrganization("우테코");
+        var organization2 = createAndSaveOrganization("아맞다");
+        var organization3 = createAndSaveOrganization("서프의 조직");
+        var organization4 = createAndSaveOrganization("프론트 조직");
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         createAndSaveOrganizationMember("surf", member, organization1, Role.USER);
         createAndSaveOrganizationMember("surf", member, organization2, Role.ADMIN);
         createAndSaveOrganizationMember("surf", member, organization3, Role.USER);
 
         //when
-        List<Organization> participatingOrganizations =
+        var participatingOrganizations =
                 sut.getParticipatingOrganizations(new LoginMember(member.getId()));
 
         //then

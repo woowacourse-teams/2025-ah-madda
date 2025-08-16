@@ -135,7 +135,7 @@ public class OrganizationService {
         );
     }
 
-    public List<Organization> getParticipatingOrganizations(LoginMember loginMember) {
+    public List<Organization> getParticipatingOrganizations(final LoginMember loginMember) {
         Member member = getMember(loginMember);
 
         return organizationRepository.findMemberOrganizations(member);
