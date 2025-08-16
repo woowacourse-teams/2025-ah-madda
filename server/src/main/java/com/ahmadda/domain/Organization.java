@@ -2,6 +2,7 @@ package com.ahmadda.domain;
 
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -90,6 +91,32 @@ public class Organization extends BaseEntity {
 
     public boolean isExistOrganizationMember(final OrganizationMember otherOrganizationMember) {
         return organizationMembers.contains(otherOrganizationMember);
+    }
+
+    public void update(
+            final OrganizationMember updatingOrganizationMember,
+            final String name,
+            final String description,
+            final String imageUrl
+    ) {
+        validateUpdatableBy(updatingOrganizationMember);
+        validateName(name);
+        validateDescription(description);
+        validateImageUrl(imageUrl);
+
+        this.name = name;
+        this.description = description;
+        this.imageUrl = imageUrl;
+    }
+
+    private void validateUpdatableBy(final OrganizationMember updatingOrganizationMember) {
+        if (!updatingOrganizationMember.isBelongTo(this)) {
+            throw new UnauthorizedOperationException("조직에 속한 조직원만 수정이 가능합니다.");
+        }
+        
+        if (!updatingOrganizationMember.isAdmin()) {
+            throw new UnauthorizedOperationException("조직원의 관리자만 조직을 수정 할 수 있습니다.");
+        }
     }
 
     private void validateName(final String name) {

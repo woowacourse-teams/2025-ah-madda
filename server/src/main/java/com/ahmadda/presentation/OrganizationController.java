@@ -3,6 +3,7 @@ package com.ahmadda.presentation;
 import com.ahmadda.application.OrganizationService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
+import com.ahmadda.application.dto.OrganizationUpdateRequest;
 import com.ahmadda.domain.ImageFile;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
@@ -20,9 +21,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -289,5 +292,33 @@ public class OrganizationController {
                         organizationMember.getId(),
                         organizationMember.getNickname()
                 ));
+    }
+
+    @PatchMapping("/{organizationId}")
+    public ResponseEntity<Void> updateOrganization(
+            @RequestPart("organization") @Valid OrganizationUpdateRequest organizationUpdateRequest,
+            @Nullable @RequestPart(value = "thumbnail", required = false) MultipartFile multipartFile,
+            @PathVariable final Long organizationId,
+            @AuthMember LoginMember loginMember
+    ) throws IOException {
+        ImageFile thumbnailImageFile = null;
+        if (multipartFile != null) {
+            thumbnailImageFile = ImageFile.create(
+                    multipartFile.getOriginalFilename(),
+                    multipartFile.getContentType(),
+                    multipartFile.getSize(),
+                    multipartFile.getInputStream()
+            );
+        }
+
+        organizationService.updateOrganization(
+                organizationId,
+                organizationUpdateRequest,
+                thumbnailImageFile,
+                loginMember
+        );
+
+        return ResponseEntity.ok()
+                .build();
     }
 }

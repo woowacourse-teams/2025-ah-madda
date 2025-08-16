@@ -3,12 +3,12 @@ package com.ahmadda.infra.image.config;
 import com.ahmadda.domain.ImageUploader;
 import com.ahmadda.infra.image.AwsS3ImageUploader;
 import com.ahmadda.infra.image.MockImageUploader;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
 
 @Configuration
 @EnableConfigurationProperties(AwsS3Properties.class)
@@ -26,10 +26,9 @@ public class ImageUploaderConfig {
         return new MockImageUploader();
     }
 
-    private AmazonS3 amazonS3Client(final AwsS3Properties awsS3Properties) {
-        return AmazonS3ClientBuilder
-                .standard()
-                .withRegion(awsS3Properties.getRegion())
+    private S3Client amazonS3Client(final AwsS3Properties awsS3Properties) {
+        return S3Client.builder()
+                .region(Region.of(awsS3Properties.getRegion()))
                 .build();
     }
 }
