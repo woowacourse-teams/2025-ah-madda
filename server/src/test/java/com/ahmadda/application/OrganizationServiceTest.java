@@ -293,7 +293,7 @@ class OrganizationServiceTest {
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var organizationMember = createAndSaveOrganizationMember("surf", member, organization, Role.ADMIN);
         var request = new OrganizationUpdateRequest("새 이름", "새 설명");
-        ImageFile imageFile = createImageFile("new.png");
+        var imageFile = createImageFile("new.png");
 
         //when
         sut.updateOrganization(organization.getId(), request, imageFile, new LoginMember(member.getId()));
