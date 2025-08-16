@@ -6,13 +6,13 @@ export const useEventNotificationToggle = (eventId: number) => {
   const optOut = useMutation({
     mutationFn: () => optOutEventNotification(eventId),
   });
-  const undoOptOut = useMutation({
+  const OptIn = useMutation({
     mutationFn: () => optInEventNotification(eventId),
   });
 
   return {
     optOut,
-    undoOptOut,
-    isLoading: optOut.isPending || undoOptOut.isPending,
+    OptIn,
+    isLoading: optOut.isPending || OptIn.isPending,
   };
 };

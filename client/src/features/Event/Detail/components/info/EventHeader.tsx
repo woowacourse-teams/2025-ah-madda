@@ -9,6 +9,7 @@ import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Switch } from '@/shared/components/Switch';
 import { Text } from '@/shared/components/Text';
+import { useToast } from '@/shared/components/Toast/ToastContext';
 
 import { badgeText } from '../../../Overview/utils/badgeText';
 import { formatDateTime } from '../../../Overview/utils/formatDateTime';
@@ -32,7 +33,9 @@ export const EventHeader = ({
   const status = badgeText(registrationEnd);
 
   const [receiveNotification, setReceiveNotification] = useState(true);
-  const { optOut, undoOptOut, isLoading } = useEventNotificationToggle(eventId);
+  const { optOut, OptIn, isLoading } = useEventNotificationToggle(eventId);
+
+  const { success, error } = useToast();
 
   const handleSwitch = (next: boolean) => {
     if (next === receiveNotification) return;
@@ -42,21 +45,21 @@ export const EventHeader = ({
     if (!next) {
       optOut.mutate(undefined, {
         onSuccess: () => {
-          alert('이벤트 알림을 껐어요. 필요할 땐 언제든 다시 켤 수 있어요.');
+          success('이벤트 알림을 껐어요. 필요할 땐 언제든 다시 켤 수 있어요.');
         },
         onError: () => {
           setReceiveNotification(true);
-          alert('알림을 끄는 데 문제가 생겼어요.');
+          error('알림을 끄는 데 문제가 생겼어요.');
         },
       });
     } else {
-      undoOptOut.mutate(undefined, {
+      OptIn.mutate(undefined, {
         onSuccess: () => {
-          alert('이벤트 알림을 다시 받아요.');
+          success('이벤트 알림을 다시 받아요.');
         },
         onError: () => {
           setReceiveNotification(false);
-          alert('알림을 켜는 데 문제가 생겼어요.');
+          error('알림을 켜는 데 문제가 생겼어요.');
         },
       });
     }
