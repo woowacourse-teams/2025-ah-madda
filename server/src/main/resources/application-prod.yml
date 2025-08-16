@@ -49,6 +49,7 @@ management:
       hikaricp.connections.pending: true
       hikaricp.connections.max: true
       hikaricp.connections.timeout: true
+      logback.events: true
   cloudwatch:
     metrics:
       export:

@@ -37,3 +37,25 @@ aws:
   s3:
     bucket: ${aws.dev.s3.bucket}
     folder: ${aws.dev.s3.folder}
+
+management:
+  metrics:
+    enable:
+      system.cpu.usage: true
+      jvm.memory.used: true
+      jvm.memory.max: true
+      http.server.requests: true
+      tomcat.threads: true
+      app.health.status: true
+      executor: true
+      hikaricp.connections.active: true
+      hikaricp.connections.pending: true
+      hikaricp.connections.max: true
+      hikaricp.connections.timeout: true
+      logback.events: true
+  cloudwatch:
+    metrics:
+      export:
+        enabled: true
+        step: 1m
+        namespace: EC2/ahmadda-api
