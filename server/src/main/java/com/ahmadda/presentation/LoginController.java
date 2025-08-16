@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginController {
 
     private static final String REFRESH_TOKEN_KEY = "refresh_token";
-    private static final String USER_AGENT_KEY = "User-Agent";
 
     private final LoginService loginService;
     private final RefreshTokenCookieProvider refreshTokenCookieProvider;
@@ -67,8 +66,9 @@ public class LoginController {
     })
     @PostMapping("/login")
     public ResponseEntity<AccessTokenResponse> login(
-            @RequestHeader(USER_AGENT_KEY) final String userAgent,
+            @RequestHeader(HttpHeaders.USER_AGENT) final String userAgent,
             @RequestBody final LoginRequest loginRequest) {
+
         MemberToken memberToken = loginService.login(loginRequest.code(), loginRequest.redirectUri(), userAgent);
         AccessTokenResponse accessTokenResponse = new AccessTokenResponse(memberToken.accessToken());
 
@@ -169,7 +169,7 @@ public class LoginController {
     //토큰 정보가 일치하지 않습니다.
     @PostMapping("/token")
     public ResponseEntity<AccessTokenResponse> extendToken(
-            @RequestHeader(USER_AGENT_KEY) final String userAgent,
+            @RequestHeader(HttpHeaders.USER_AGENT) final String userAgent,
             @CookieValue(REFRESH_TOKEN_KEY) final String refreshToken,
             @RequestHeader(HttpHeaders.AUTHORIZATION) final String headerAccessToken) {
         String accessToken = refreshTokenCookieProvider.resolveAccessToken(headerAccessToken);
@@ -245,7 +245,7 @@ public class LoginController {
     @DeleteMapping("/logout")
     public ResponseEntity<Void> logout(
             @AuthMember final LoginMember loginMember,
-            @RequestHeader(USER_AGENT_KEY) final String userAgent,
+            @RequestHeader(HttpHeaders.USER_AGENT) final String userAgent,
             @CookieValue(REFRESH_TOKEN_KEY) final String authRefreshToken) {
         String refreshToken = refreshTokenCookieProvider.resolveAccessToken(authRefreshToken);
         loginService.logout(loginMember, refreshToken, userAgent);
