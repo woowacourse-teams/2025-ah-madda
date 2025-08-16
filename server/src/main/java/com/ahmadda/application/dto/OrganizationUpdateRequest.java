@@ -2,13 +2,11 @@ package com.ahmadda.application.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record OrganizationCreateRequest(
+public record OrganizationUpdateRequest(
         @NotBlank
         String name,
         @NotBlank
-        String description,
-        @NotBlank
-        String nickname
+        String description
 ) {
 
 }

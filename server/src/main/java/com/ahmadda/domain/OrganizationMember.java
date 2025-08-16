@@ -84,6 +84,10 @@ public class OrganizationMember extends BaseEntity {
                 .toList();
     }
 
+    public boolean isAdmin() {
+        return this.role == Role.ADMIN;
+    }
+
     private void validateNickname(final String nickname) {
         Assert.notBlank(nickname, "닉네임은 공백이면 안됩니다.");
     }

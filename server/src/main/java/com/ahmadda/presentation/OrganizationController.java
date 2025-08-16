@@ -3,6 +3,7 @@ package com.ahmadda.presentation;
 import com.ahmadda.application.OrganizationService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
+import com.ahmadda.application.dto.OrganizationUpdateRequest;
 import com.ahmadda.domain.ImageFile;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
@@ -20,9 +21,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -289,5 +292,131 @@ public class OrganizationController {
                         organizationMember.getId(),
                         organizationMember.getNickname()
                 ));
+    }
+
+    @Operation(summary = "조직 수정", description = "조직을 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "존재하지 않는 조직",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 조직입니다.",
+                                                      "instance": "/api/organizations/{organizationId}"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "존재하지 않는 조직원",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 조직원입니다.",
+                                                      "instance": "/api/organizations/{organizationId}"
+                                                    }
+                                                    """
+                                    ),
+
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "이름의 길이가 맞지 않음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "이름의 길이는 1자 이상 30자 이하이어야 합니다.",
+                                                      "instance": "/api/organizations/{organizationId}"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "설명의 길이가 맞지 않음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "설명의 길이는 1자 이상 30자 이하이어야 합니다.",
+                                                      "instance": "/api/organizations/{organizationId}"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "조직에 속한 조직원이 아님",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Forbidden",
+                                                      "status": 403,
+                                                      "detail": "조직에 속한 조직원만 수정이 가능합니다.",
+                                                      "instance": "/api/organizations/{organizationId}"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "조직의 관리자가 아님",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Forbidden",
+                                                      "status": 403,
+                                                      "detail": "조직원의 관리자만 조직 정보를 수정할 수 있습니다.",
+                                                      "instance": "/api/organizations/{organizationId}"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            )
+    })
+    @PatchMapping(value = "/{organizationId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> updateOrganization(
+            @RequestPart("organization") @Valid final OrganizationUpdateRequest organizationUpdateRequest,
+            @Nullable @RequestPart(value = "thumbnail", required = false) final MultipartFile multipartFile,
+            @PathVariable final Long organizationId,
+            @AuthMember final LoginMember loginMember
+    ) throws IOException {
+        ImageFile thumbnailImageFile = null;
+        if (multipartFile != null) {
+            thumbnailImageFile = ImageFile.create(
+                    multipartFile.getOriginalFilename(),
+                    multipartFile.getContentType(),
+                    multipartFile.getSize(),
+                    multipartFile.getInputStream()
+            );
+        }
+
+        organizationService.updateOrganization(
+                organizationId,
+                organizationUpdateRequest,
+                thumbnailImageFile,
+                loginMember
+        );
+
+        return ResponseEntity.ok()
+                .build();
     }
 }

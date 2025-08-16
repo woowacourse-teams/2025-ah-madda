@@ -6,6 +6,11 @@ spring:
         detector:
           enabled: true
 
+  cloud:
+    aws:
+      s3:
+        region: ap-northeast-2
+
 jwt:
   secret-key: ${jwt.local.secret-key}
   access-expiration: ${jwt.local.access-expiration}
@@ -30,6 +35,5 @@ slack:
 aws:
   s3:
     mock: true
-    region: ${aws.local.s3.region}
     bucket: ${aws.local.s3.bucket}
     folder: ${aws.local.s3.folder}

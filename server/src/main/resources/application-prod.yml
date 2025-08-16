@@ -11,6 +11,8 @@ spring:
 
   cloud:
     aws:
+      s3:
+        region: ${aws.prod.s3.region}
       region:
         static: ap-northeast-2
 
@@ -30,7 +32,6 @@ notification:
 
 aws:
   s3:
-    region: ${aws.prod.s3.region}
     bucket: ${aws.prod.s3.bucket}
     folder: ${aws.prod.s3.folder}
 
