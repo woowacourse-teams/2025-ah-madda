@@ -30,6 +30,6 @@ slack:
 aws:
   s3:
     mock: true
-    region: ${aws.local.s3.region}
+    region: ap-northeast-2
     bucket: ${aws.local.s3.bucket}
     folder: ${aws.local.s3.folder}
