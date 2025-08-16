@@ -12,6 +12,7 @@ type ToastState = {
   variant: ToastVariant;
   duration: number;
   isVisible: boolean;
+  id: number;
 };
 
 const ToastContext = createContext<ToastContextType | null>(null);
@@ -28,6 +29,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
     variant: 'success',
     duration: 3000,
     isVisible: false,
+    id: 0,
   });
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -49,9 +51,18 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
     variant?: ToastVariant;
     duration?: number;
   }) => {
-    closeToast();
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
 
-    setToastState({ message, variant, duration, isVisible: true });
+    setToastState((prev) => ({
+      message,
+      variant,
+      duration,
+      isVisible: true,
+      id: prev.id + 1,
+    }));
 
     timerRef.current = setTimeout(() => {
       closeToast();
@@ -70,6 +81,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
       {children}
       {toastState.isVisible && (
         <Toast
+          key={toastState.id}
           message={toastState.message}
           variant={toastState.variant}
           duration={toastState.duration}

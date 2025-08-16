@@ -5,6 +5,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach, Mocked } from 'vitest';
 
 import { fetcher } from '@/api/fetcher';
+import { ToastProvider } from '@/shared/components/Toast/ToastContext';
 import { theme } from '@/shared/styles/theme';
 
 import { EventDetailPage } from '../pages/EventDetailPage';
@@ -50,11 +51,13 @@ describe('EventDetailPage', () => {
     return render(
       <QueryClientProvider client={client}>
         <ThemeProvider theme={theme}>
-          <MemoryRouter initialEntries={['/event/123']}>
-            <Routes>
-              <Route path="/event/:eventId" element={<EventDetailPage />} />
-            </Routes>
-          </MemoryRouter>
+          <ToastProvider>
+            <MemoryRouter initialEntries={['/event/123']}>
+              <Routes>
+                <Route path="/event/:eventId" element={<EventDetailPage />} />
+              </Routes>
+            </MemoryRouter>
+          </ToastProvider>
         </ThemeProvider>
       </QueryClientProvider>
     );
