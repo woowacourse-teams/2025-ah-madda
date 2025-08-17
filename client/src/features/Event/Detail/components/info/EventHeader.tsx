@@ -33,7 +33,7 @@ export const EventHeader = ({
   const status = badgeText(registrationEnd);
 
   const [receiveNotification, setReceiveNotification] = useState(true);
-  const { optOut, OptIn, isLoading } = useEventNotificationToggle(eventId);
+  const { optOut, optIn, isLoading } = useEventNotificationToggle(eventId);
 
   const { success, error } = useToast();
 
@@ -53,7 +53,7 @@ export const EventHeader = ({
         },
       });
     } else {
-      OptIn.mutate(undefined, {
+      optIn.mutate(undefined, {
         onSuccess: () => {
           success('이벤트 알림을 다시 받아요.');
         },
