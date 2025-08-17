@@ -101,7 +101,7 @@ const SingleDatePickerContent = ({
   return (
     <DatePickerContainer ref={dropdownRef}>
       <Text type="Heading" weight="bold" color={theme.colors.gray900}>
-        이벤트 날짜 및 시간 선택
+        신청 마감 날짜 및 시간 선택
       </Text>
 
       <Flex dir="column" gap="16px" padding="16px 0 0 0">
@@ -190,7 +190,7 @@ const RangeDatePickerContent = ({
   return (
     <DatePickerContainer ref={dropdownRef}>
       <Text type="Heading" weight="bold" color={theme.colors.gray900}>
-        신청 날짜 및 시간 선택
+        이벤트 날짜 및 시간 선택
       </Text>
 
       <Flex dir="column" gap="16px" padding="16px 0 0 0">
