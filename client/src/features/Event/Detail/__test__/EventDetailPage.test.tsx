@@ -1,12 +1,10 @@
-import { ThemeProvider } from '@emotion/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Suspense } from 'react';
+
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach, Mocked } from 'vitest';
 
+import { RouterWithQueryClient } from '@/__test__/customRender';
 import { fetcher } from '@/api/fetcher';
-import { ToastProvider } from '@/shared/components/Toast/ToastContext';
-import { theme } from '@/shared/styles/theme';
 
 import { EventDetailPage } from '../pages/EventDetailPage';
 
@@ -14,13 +12,7 @@ vi.mock('@/api/fetcher', () => ({
   fetcher: { get: vi.fn() },
 }));
 
-const createClient = () =>
-  new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false },
-    },
-  });
+const mockFetcher = fetcher as Mocked<typeof fetcher>;
 
 const mockEventDetail = {
   eventId: 123,
@@ -39,32 +31,49 @@ const mockEventDetail = {
   ],
 };
 
-const mockFetcher = fetcher as Mocked<typeof fetcher>;
+const mockEventDetailApis = ({
+  detail = mockEventDetail,
+  isOrganizer = false,
+  isGuest = false,
+}: {
+  detail?: typeof mockEventDetail;
+  isOrganizer?: boolean;
+  isGuest?: boolean;
+} = {}) => {
+  mockFetcher.get.mockImplementation((url: string) => {
+    if (url === `organizations/events/123`) return Promise.resolve(detail);
+    if (url === `organizations/events/123/organizer-status`)
+      return Promise.resolve({ isOrganizer });
+    if (url === `events/123/guest-status`) return Promise.resolve({ isGuest });
+
+    return Promise.reject(new Error(`Unhandled GET: ${url}`));
+  });
+};
 
 describe('EventDetailPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  const renderPage = () => {
-    const client = createClient();
-    return render(
-      <QueryClientProvider client={client}>
-        <ThemeProvider theme={theme}>
-          <ToastProvider>
-            <MemoryRouter initialEntries={['/event/123']}>
-              <Routes>
-                <Route path="/event/:eventId" element={<EventDetailPage />} />
-              </Routes>
-            </MemoryRouter>
-          </ToastProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
+  const renderPage = () =>
+    render(
+      <RouterWithQueryClient
+        initialRoute="/event/123"
+        routes={[
+          {
+            path: '/event/:eventId',
+            element: (
+              <Suspense fallback={null}>
+                <EventDetailPage />
+              </Suspense>
+            ),
+          },
+        ]}
+      />
     );
-  };
 
   it('기본 정보가 올바르게 렌더링된다', async () => {
-    mockFetcher.get.mockResolvedValue(mockEventDetail);
+    mockEventDetailApis();
 
     renderPage();
 
@@ -75,15 +84,15 @@ describe('EventDetailPage', () => {
   });
 
   it('참가 현황이 표시된다', async () => {
-    mockFetcher.get.mockResolvedValue(mockEventDetail);
+    mockEventDetailApis();
 
     renderPage();
-    screen.debug();
+
     expect(await screen.findByText('3 / 10')).toBeInTheDocument();
   });
 
   it('질문 목록이 표시된다', async () => {
-    mockFetcher.get.mockResolvedValue(mockEventDetail);
+    mockEventDetailApis();
 
     renderPage();
 
