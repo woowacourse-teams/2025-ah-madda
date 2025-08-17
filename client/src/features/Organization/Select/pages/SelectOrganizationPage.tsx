@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { css } from '@emotion/react';
-import { useQuery } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import { organizationQueryOptions } from '@/api/queries/organization';
@@ -19,6 +19,7 @@ type OrgCardModel = {
   name: string;
   imageUrl: string;
   description: string;
+  isAdmin: boolean;
 };
 
 const CARD_W = 120;
@@ -40,20 +41,26 @@ export const OrganizationSelectPage = () => {
     isError,
   } = useQuery(organizationQueryOptions.participated());
 
-  const handleCreateClick = () => navigate('/organization/new');
-  const handleJoin = (orgId: number) => navigate(`/event?organizationId=${orgId}`);
+  const baseOrgs: OrgCardModel[] = (participatedOrgs || []).map((org) => ({
+    organizationId: org.organizationId,
+    name: org.name,
+    description: org.description,
+    imageUrl: org.imageUrl,
+    isAdmin: false,
+  }));
 
-  const orgs: OrgCardModel[] = (participatedOrgs || []).map((o) => ({
-    organizationId: o.organizationId,
-    name: o.name,
-    description: o.description,
-    imageUrl: o.imageUrl,
+  const profileQueries = useQueries({
+    queries: baseOrgs.map((org) => organizationQueryOptions.profile(org.organizationId)),
+  });
+
+  const orgs: OrgCardModel[] = baseOrgs.map((org, idx) => ({
+    ...org,
+    isAdmin: profileQueries[idx]?.data?.isAdmin ?? org.isAdmin,
   }));
 
   const [visibleCount, setVisibleCount] = useState<number>(() =>
     typeof window !== 'undefined' ? getVisibleCount(window.innerWidth) : 4
   );
-
   useEffect(() => {
     const onResize = () => setVisibleCount(getVisibleCount(window.innerWidth));
     window.addEventListener('resize', onResize, { passive: true });
@@ -61,8 +68,11 @@ export const OrganizationSelectPage = () => {
   }, []);
 
   const maxRowWidth = () => CARD_W * visibleCount + GAP * Math.max(visibleCount - 1, 0);
-
   const justify = orgs.length <= visibleCount ? 'center' : 'flex-start';
+
+  const handleCreateClick = () => navigate('/organization/new');
+  const handleJoin = (orgId: number) => navigate(`/event?organizationId=${orgId}`);
+  const handleEdit = (orgId: number) => navigate(`/organization/edit/${orgId}`);
 
   return (
     <PageLayout
@@ -138,7 +148,6 @@ export const OrganizationSelectPage = () => {
                   max-width: ${maxRowWidth()}px;
                   overflow-x: auto;
                   flex-wrap: nowrap;
-
                   &::-webkit-scrollbar {
                     height: 8px;
                   }
@@ -151,7 +160,12 @@ export const OrganizationSelectPage = () => {
               >
                 {orgs.map((org) => (
                   <Flex key={org.organizationId}>
-                    <OrgCard org={org} onJoin={() => handleJoin(org.organizationId)} />
+                    <OrgCard
+                      org={org}
+                      onJoin={() => handleJoin(org.organizationId)}
+                      isAdmin={org.isAdmin}
+                      onEdit={() => handleEdit(org.organizationId)}
+                    />
                   </Flex>
                 ))}
               </Flex>

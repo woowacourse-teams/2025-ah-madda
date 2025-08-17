@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
 
+import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
@@ -14,9 +15,11 @@ export type Org = {
 export type OrgCardProps = {
   org: Org;
   onJoin: () => void;
+  isAdmin: boolean;
+  onEdit?: () => void;
 };
 
-export const OrgCard = ({ org, onJoin }: OrgCardProps) => (
+export const OrgCard = ({ org, onJoin, isAdmin, onEdit }: OrgCardProps) => (
   <Flex
     dir="column"
     alignItems="center"
@@ -84,5 +87,21 @@ export const OrgCard = ({ org, onJoin }: OrgCardProps) => (
     >
       {org.name}
     </Text>
+
+    {isAdmin && onEdit && (
+      <Button
+        color="secondary"
+        size="sm"
+        onClick={(e) => {
+          e.stopPropagation();
+          onEdit();
+        }}
+        css={css`
+          margin-top: 4px;
+        `}
+      >
+        수정
+      </Button>
+    )}
   </Flex>
 );

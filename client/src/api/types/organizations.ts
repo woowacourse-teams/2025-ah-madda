@@ -14,3 +14,9 @@ export type ParticipatedOrganizationAPIResponse = {
   description: string;
   imageUrl: string;
 };
+
+export type OrganizationProfileAPIResponse = {
+  organizationMemberId: number;
+  nickname: string;
+  isAdmin: boolean;
+};
