@@ -1,18 +1,15 @@
-import { ReactNode, forwardRef } from 'react';
+import { ReactNode, RefObject } from 'react';
 
 import styled from '@emotion/styled';
 
 type DatePickerContainerProps = {
   children: ReactNode;
+  ref?: RefObject<HTMLDivElement | null>;
 };
 
-export const DatePickerContainer = forwardRef<HTMLDivElement, DatePickerContainerProps>(
-  ({ children }, ref) => {
-    return <StyledDatePickerDropdown ref={ref}>{children}</StyledDatePickerDropdown>;
-  }
-);
-
-DatePickerContainer.displayName = 'DatePickerContainer';
+export const DatePickerContainer = ({ children, ref }: DatePickerContainerProps) => {
+  return <StyledDatePickerDropdown ref={ref}>{children}</StyledDatePickerDropdown>;
+};
 
 const StyledDatePickerDropdown = styled.div`
   position: absolute;

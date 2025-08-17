@@ -21,6 +21,7 @@ export type SingleDatePickerProps = DatePickerProps & {
   initialDate?: Date | null;
   initialTime?: Date;
   title?: string;
+  dropdownRef?: RefObject<HTMLDivElement | null>;
 };
 
 export const SingleDatePicker = ({
@@ -30,7 +31,7 @@ export const SingleDatePicker = ({
   initialTime,
   title = '날짜 및 시간 선택',
   dropdownRef,
-}: SingleDatePickerProps & { dropdownRef: RefObject<HTMLDivElement | null> }) => {
+}: SingleDatePickerProps) => {
   const {
     selectedDate,
     selectedTime,
