@@ -14,7 +14,7 @@ type EventSectionProps = {
 
 export const EventSection = ({ events, date, cardType }: EventSectionProps) => {
   return (
-    <Flex as="section" dir="column" gap="20px" width="100%">
+    <Flex as="section" dir="column" gap="20px" width="100%" margin="0 0 20px 0">
       <Flex alignItems="center" gap="4px">
         <Text as="h2" type="Heading" weight="bold">
           {date}
