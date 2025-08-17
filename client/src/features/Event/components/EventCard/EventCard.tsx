@@ -12,10 +12,16 @@ import { trackClickEventCard } from '@/shared/lib/gaEvents';
 import { theme } from '@/shared/styles/theme';
 
 import { Event } from '../../types/Event';
-import { badgeText } from '../utils/badgeText';
-import { calculateCapacityStatus } from '../utils/calculateCapacityStatus';
-import { formatDateTime } from '../utils/formatDateTime';
-import { normalizeWhitespace } from '../utils/normalizeWhitespace';
+import { badgeText } from '../../utils/badgeText';
+import { calculateCapacityStatus } from '../../utils/calculateCapacityStatus';
+import { formatDateTime } from '../../utils/formatDateTime';
+import { normalizeWhitespace } from '../../utils/normalizeWhitespace';
+
+export type EventCardType = 'default' | 'host' | 'participate';
+
+export type EventCardProps = Event & {
+  cardType?: EventCardType;
+};
 
 export const EventCard = ({
   eventId,
@@ -28,7 +34,8 @@ export const EventCard = ({
   organizerName,
   currentGuestCount,
   maxCapacity,
-}: Event) => {
+  cardType = 'default',
+}: EventCardProps) => {
   const navigate = useNavigate();
 
   const { isUnlimited, progressValue, progressMax } = calculateCapacityStatus(
@@ -38,7 +45,12 @@ export const EventCard = ({
 
   const handleClickCard = () => {
     trackClickEventCard(title);
-    navigate(`/event/${eventId}`);
+
+    if (cardType === 'host') {
+      navigate(`/event/manage/${eventId}`);
+    } else {
+      navigate(`/event/${eventId}`);
+    }
   };
 
   return (

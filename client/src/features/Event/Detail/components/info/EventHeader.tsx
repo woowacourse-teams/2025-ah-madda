@@ -6,9 +6,9 @@ import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
 
-import { badgeText } from '../../../Overview/utils/badgeText';
-import { formatDateTime } from '../../../Overview/utils/formatDateTime';
 import type { EventDetail } from '../../../types/Event';
+import { badgeText } from '../../../utils/badgeText';
+import { formatDateTime } from '../../../utils/formatDateTime';
 
 type EventHeaderProps = { eventId: number; isOrganizer: boolean } & Pick<
   EventDetail,
