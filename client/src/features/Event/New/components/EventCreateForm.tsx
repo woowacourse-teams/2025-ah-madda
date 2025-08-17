@@ -198,11 +198,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
 
         <Flex dir="column" gap="30px">
           <Flex dir="column" gap="8px">
-            <label htmlFor="title">
-              <Text type="Heading" weight="medium">
-                이벤트 이름
-              </Text>
-            </label>
+            <Text as="label" type="Heading" weight="medium" htmlFor="title">
+              이벤트 이름
+            </Text>
             <Input
               id="title"
               name="title"
@@ -233,11 +231,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 position: relative;
               `}
             >
-              <label htmlFor="eventDateRange">
-                <Text type="Heading" weight="medium">
-                  이벤트 기간
-                </Text>
-              </label>
+              <Text as="label" type="Heading" weight="medium" htmlFor="eventDateRange">
+                이벤트 기간
+              </Text>
               <Input
                 id="eventDateRange"
                 name="eventDateRange"
@@ -286,11 +282,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 position: relative;
               `}
             >
-              <label htmlFor="registrationEnd">
-                <Text type="Heading" weight="medium">
-                  신청 종료일
-                </Text>
-              </label>
+              <Text as="label" type="Heading" weight="medium" htmlFor="registrationEnd">
+                신청 종료일
+              </Text>
               <Input
                 id="registrationEnd"
                 name="registrationEnd"
@@ -326,11 +320,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 flex: 1;
               `}
             >
-              <label htmlFor="place">
-                <Text type="Heading" weight="medium">
-                  이벤트 장소
-                </Text>
-              </label>
+              <Text as="label" type="Heading" weight="medium" htmlFor="place">
+                이벤트 장소
+              </Text>
               <Input
                 id="place"
                 name="place"
@@ -389,11 +381,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
           </Flex>
 
           <Flex dir="column" gap="8px">
-            <label htmlFor="description">
-              <Text type="Heading" weight="medium">
-                소개글
-              </Text>
-            </label>
+            <Text as="label" type="Heading" weight="medium" htmlFor="description">
+              소개글
+            </Text>
             <Textarea
               id="description"
               name="description"
