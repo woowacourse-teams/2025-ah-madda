@@ -104,7 +104,7 @@ describe('EventDetailPage', () => {
   });
 
   describe('이벤트 종료 여부와 신청 여부에 따른 UI 렌더링 표시', () => {
-    test('신청 마감이 현재보다 이후이고, 참가 신청을 하지 않은 경우 "신청 하기" 버튼을 보여준다.', async () => {
+    test('신청 마감이 지나지 않았고 참가 신청을 하지 않았다면, "신청하기" 버튼을 보여준다.', async () => {
       setupMockResponses({
         eventDetail: { ...mockEventDetail, registrationEnd: '2099-12-31T23:59:59' },
         isOrganizer: false,
@@ -116,7 +116,7 @@ describe('EventDetailPage', () => {
       expect(await screen.findByRole('button', { name: '신청 하기' })).toBeInTheDocument();
     });
 
-    test('이벤트 시작 시간이 현재보다 이전이고, 참가신청을 한 경우 "신청 취소"버튼을 보여준다.', async () => {
+    test('이벤트가 시작되었고 참가 신청을 했다면, "신청 취소" 버튼을 보여준다.', async () => {
       setupMockResponses({
         eventDetail: { ...mockEventDetail, registrationEnd: '2099-12-31T23:59:59' },
         isOrganizer: false,
@@ -130,7 +130,7 @@ describe('EventDetailPage', () => {
       });
     });
 
-    test('이벤트가 종료된 후, 참가신청을 하지 않은 경우 "신청 마감"버튼을 보여준다.', async () => {
+    test('참가 이력이 없고 이벤트가 종료되면, "신청 마감" 버튼이 표시된다.', async () => {
       setupMockResponses({
         eventDetail: { ...mockEventDetail, registrationEnd: '2020-12-31T23:59:59' },
         isOrganizer: false,
@@ -144,7 +144,7 @@ describe('EventDetailPage', () => {
       });
     });
 
-    test('이벤트가 종료된 후, 참가신청을 한 경우 "신청 완료"버튼을 보여준다.', async () => {
+    test('참가 이력이 있고 이벤트가 종료되면, "신청 완료" 버튼이 표시된다.', async () => {
       setupMockResponses({
         eventDetail: { ...mockEventDetail, registrationEnd: '2020-12-31T23:59:59' },
         isOrganizer: false,
