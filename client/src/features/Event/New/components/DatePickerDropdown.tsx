@@ -167,7 +167,7 @@ const RangeDatePickerContent = ({
   dropdownRef,
 }: RangeDatePickerDropdownProps & { dropdownRef: RefObject<HTMLDivElement | null> }) => {
   const {
-    selectedDate,
+    selectedStartDate,
     selectedEndDate,
     selectedStartTime,
     selectedEndTime,
@@ -206,7 +206,7 @@ const RangeDatePickerContent = ({
           `}
         >
           <Calendar
-            selectedDate={selectedDate || null}
+            selectedDate={selectedStartDate || null}
             selectedEndDate={selectedEndDate || null}
             onSelectDate={handleDateSelect}
             onSelectDateRange={handleDateRangeSelect}

@@ -21,7 +21,7 @@ export const useDateSelection = ({ mode, ...props }: UseDateSelectionProps) => {
   const singleProps = props as Omit<SingleDateSelectionProps, 'mode'>;
   const rangeProps = props as Omit<RangeDateSelectionProps, 'mode'>;
 
-  const [selectedDate, setSelectedDate] = useState<Date | null>(
+  const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(
     isSingle ? singleProps.initialDate || null : rangeProps.initialStartDate || null
   );
 
@@ -30,7 +30,7 @@ export const useDateSelection = ({ mode, ...props }: UseDateSelectionProps) => {
   );
 
   const handleDateSelect = (date: Date) => {
-    setSelectedDate(date);
+    setSelectedStartDate(date);
     if (!isSingle) {
       setSelectedEndDate(null);
     }
@@ -39,12 +39,12 @@ export const useDateSelection = ({ mode, ...props }: UseDateSelectionProps) => {
   const handleDateRangeSelect = isSingle
     ? undefined
     : (startDate: Date, endDate: Date) => {
-        setSelectedDate(startDate);
+        setSelectedStartDate(startDate);
         setSelectedEndDate(endDate);
       };
 
   const resetDates = () => {
-    setSelectedDate(null);
+    setSelectedStartDate(null);
     if (!isSingle) {
       setSelectedEndDate(null);
     }
@@ -52,24 +52,24 @@ export const useDateSelection = ({ mode, ...props }: UseDateSelectionProps) => {
 
   const restoreInitialDates = () => {
     if (isSingle) {
-      setSelectedDate(singleProps.initialDate || null);
+      setSelectedStartDate(singleProps.initialDate || null);
     } else {
-      setSelectedDate(rangeProps.initialStartDate || null);
+      setSelectedStartDate(rangeProps.initialStartDate || null);
       setSelectedEndDate(rangeProps.initialEndDate || null);
     }
   };
 
   const isDateValid = () => {
     if (isSingle) {
-      return !!selectedDate;
+      return !!selectedStartDate;
     }
 
-    if (!selectedDate) return false;
-    return selectedEndDate ? selectedEndDate.getTime() >= selectedDate.getTime() : true;
+    if (!selectedStartDate) return false;
+    return selectedEndDate ? selectedEndDate.getTime() >= selectedStartDate.getTime() : true;
   };
 
   return {
-    selectedDate,
+    selectedStartDate,
     selectedEndDate,
     mode,
     handleDateSelect,

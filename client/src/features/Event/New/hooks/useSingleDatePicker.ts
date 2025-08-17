@@ -27,8 +27,8 @@ export const useSingleDatePicker = ({
   });
 
   const handleConfirm = () => {
-    if (dateSelection.selectedDate && timeSelection.selectedTime) {
-      onSelect(dateSelection.selectedDate, timeSelection.selectedTime);
+    if (dateSelection.selectedStartDate && timeSelection.selectedTime) {
+      onSelect(dateSelection.selectedStartDate, timeSelection.selectedTime);
       onClose();
     }
   };
@@ -47,7 +47,7 @@ export const useSingleDatePicker = ({
   const isConfirmDisabled = !dateSelection.isDateValid() || !timeSelection.isTimeValid();
 
   return {
-    selectedDate: dateSelection.selectedDate,
+    selectedDate: dateSelection.selectedStartDate,
     handleDateSelect: dateSelection.handleDateSelect,
 
     selectedTime: timeSelection.selectedTime,

@@ -33,18 +33,18 @@ export const useRangeDatePicker = ({
   });
 
   const handleConfirm = () => {
-    const { selectedDate, selectedEndDate } = dateSelection;
+    const { selectedStartDate, selectedEndDate } = dateSelection;
     const { selectedStartTime, selectedEndTime } = timeSelection;
 
-    if (!selectedDate || !selectedStartTime || !selectedEndTime) return;
+    if (!selectedStartDate || !selectedStartTime || !selectedEndTime) return;
 
-    const endDate = selectedEndDate || selectedDate;
-    if (selectedEndDate && selectedEndDate.getTime() < selectedDate.getTime()) return;
+    const endDate = selectedEndDate || selectedStartDate;
+    if (selectedEndDate && selectedEndDate.getTime() < selectedStartDate.getTime()) return;
 
-    const isSameDay = endDate.toDateString() === selectedDate.toDateString();
+    const isSameDay = endDate.toDateString() === selectedStartDate.toDateString();
     if (!timeSelection.isTimeValid(isSameDay)) return;
 
-    onSelect(selectedDate, endDate, selectedStartTime, selectedEndTime);
+    onSelect(selectedStartDate, endDate, selectedStartTime, selectedEndTime);
     onClose();
   };
 
@@ -63,16 +63,16 @@ export const useRangeDatePicker = ({
     if (!dateSelection.isDateValid()) return true;
 
     const isSameDay =
-      dateSelection.selectedDate && dateSelection.selectedEndDate
-        ? dateSelection.selectedDate.toDateString() ===
-          (dateSelection.selectedEndDate || dateSelection.selectedDate).toDateString()
+      dateSelection.selectedStartDate && dateSelection.selectedEndDate
+        ? dateSelection.selectedStartDate.toDateString() ===
+          (dateSelection.selectedEndDate || dateSelection.selectedStartDate).toDateString()
         : false;
 
     return !timeSelection.isTimeValid(isSameDay);
   })();
 
   return {
-    selectedDate: dateSelection.selectedDate,
+    selectedStartDate: dateSelection.selectedStartDate,
     selectedEndDate: dateSelection.selectedEndDate,
     handleDateSelect: dateSelection.handleDateSelect,
     handleDateRangeSelect: dateSelection.handleDateRangeSelect,
