@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
 
+import type { StatisticsAPIResponse } from '@/api/types/event';
 import type { Profile } from '@/api/types/profile';
 import { Avatar } from '@/shared/components/Avatar';
 import { Flex } from '@/shared/components/Flex';
@@ -11,12 +12,15 @@ import { formatDateTime } from '../../My/utils/date';
 import { UNLIMITED_CAPACITY } from '../../New/constants/errorMessages';
 import type { Event } from '../../types/Event';
 
+import { Statistics } from './Statistics';
+
 type EventInfoSectionProps = {
   event: Event;
   profile?: Profile;
+  statistics?: StatisticsAPIResponse[];
 };
 
-export const EventInfoSection = ({ event, profile }: EventInfoSectionProps) => {
+export const EventInfoSection = ({ event, profile, statistics }: EventInfoSectionProps) => {
   const isUnlimited = event.maxCapacity === UNLIMITED_CAPACITY;
   const maxNumberOfGuests = isUnlimited ? '제한없음' : `${event.maxCapacity}명`;
   const progressValue = isUnlimited ? 1 : Number(event.currentGuestCount);
@@ -64,13 +68,7 @@ export const EventInfoSection = ({ event, profile }: EventInfoSectionProps) => {
         </Flex>
       </Flex>
 
-      <Flex
-        dir="column"
-        gap="12px"
-        css={css`
-          flex: 1;
-        `}
-      >
+      <Flex dir="column" gap="12px">
         <Text type="Heading" weight="bold" color={theme.colors.gray800}>
           참여 현황
         </Text>
@@ -98,6 +96,8 @@ export const EventInfoSection = ({ event, profile }: EventInfoSectionProps) => {
           </Flex>
         </Flex>
       </Flex>
+
+      <Statistics statistics={statistics ?? []} />
     </Flex>
   );
 };

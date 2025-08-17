@@ -8,25 +8,19 @@ import { useCheckableGuests } from '../hooks/useCheckableGuests';
 
 import { AlarmSection } from './AlarmSection';
 import { GuestViewSection } from './GuestViewSection';
-import { Statistics } from './Statistics';
 
 export const GuestManageSection = () => {
   const { eventId: eventIdParam } = useParams();
   const eventId = Number(eventIdParam);
 
-  const [
-    { data: guests = [] },
-    { data: nonGuests = [] },
-    { data: statisticsData = [] },
-    { data: notifyData = [] },
-  ] = useSuspenseQueries({
-    queries: [
-      eventQueryOptions.guests(eventId),
-      eventQueryOptions.nonGuests(eventId),
-      eventQueryOptions.statistic(eventId),
-      eventQueryOptions.history(eventId),
-    ],
-  });
+  const [{ data: guests = [] }, { data: nonGuests = [] }, { data: notifyData = [] }] =
+    useSuspenseQueries({
+      queries: [
+        eventQueryOptions.guests(eventId),
+        eventQueryOptions.nonGuests(eventId),
+        eventQueryOptions.history(eventId),
+      ],
+    });
 
   const {
     guestData,
@@ -53,7 +47,6 @@ export const GuestManageSection = () => {
 
   return (
     <Flex as="section" dir="column" gap="24px" width="100%" margin="0 auto" padding="20px 0">
-      <Statistics statistics={statisticsData} />
       <AlarmSection
         notifyData={notifyData}
         organizationMemberIds={selectedMemberIds}

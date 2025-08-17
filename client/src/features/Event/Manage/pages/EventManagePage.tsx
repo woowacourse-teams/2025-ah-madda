@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useSuspenseQueries } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { HttpError } from '@/api/fetcher';
@@ -19,6 +19,7 @@ import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
 import { formatDateTime } from '../../My/utils/date';
+import { badgeText } from '../../Overview/utils/badgeText';
 import { EventInfoSection } from '../components/EventInfoSection';
 import { GuestManageSection } from '../components/GuestManageSection';
 import { EventManageContainer } from '../containers/EventManageContainer';
@@ -28,7 +29,10 @@ export const EventManagePage = () => {
   const { eventId: eventIdParam } = useParams();
   const eventId = Number(eventIdParam);
   const { data: event, refetch } = useQuery(eventQueryOptions.detail(eventId));
-  const { data: profile } = useQuery(profileQueryOptions.profile());
+
+  const [{ data: profile }, { data: statistics = [] }] = useSuspenseQueries({
+    queries: [profileQueryOptions.profile(), eventQueryOptions.statistic(eventId)],
+  });
   const { mutate: closeEventRegistration } = useCloseEventRegistration();
 
   const isClosed = event?.registrationEnd ? new Date(event.registrationEnd) < new Date() : false;
@@ -76,29 +80,22 @@ export const EventManagePage = () => {
       <EventManageContainer>
         <Spacing height="56px" />
         <Flex dir="column" gap="12px">
-          <Badge variant="blue">모집중</Badge>
-          <Text
-            type="Heading"
-            weight="bold"
-            color={theme.colors.gray800}
-            css={css`
-              font-size: 28px;
-              line-height: 1.358;
-              letter-spacing: -0.66px;
-            `}
-          >
+          <Badge variant={badgeText(event.registrationEnd).color}>
+            {badgeText(event.registrationEnd).text}
+          </Badge>
+          <Text type="Title" weight="bold" color={theme.colors.gray900}>
             {event.title}
           </Text>
 
-          <Flex dir="column">
+          <Flex dir="column" gap="4px">
             <Flex dir="row" gap="4px" alignItems="center">
-              <Icon name="location" size={16} />
+              <Icon name="location" size={16} color="gray500" />
               <Text type="Label" weight="medium" color={theme.colors.gray500}>
                 {event.place}
               </Text>
             </Flex>
             <Flex dir="row" gap="4px" alignItems="center">
-              <Icon name="calendar" size={16} />
+              <Icon name="calendar" size={16} color="gray500" />
               <Text type="Label" weight="medium" color={theme.colors.gray500}>
                 {formatDateTime(event.eventStart)} ~ {formatDateTime(event.eventEnd)}
               </Text>
@@ -121,7 +118,7 @@ export const EventManagePage = () => {
           </Tabs.List>
 
           <Tabs.Content value="detail">
-            <EventInfoSection event={event} profile={profile} />
+            <EventInfoSection event={event} profile={profile} statistics={statistics} />
           </Tabs.Content>
 
           <Tabs.Content value="applications">
