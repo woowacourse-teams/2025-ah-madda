@@ -1,8 +1,9 @@
-import { Card } from '@/shared/components/Card';
+import { css } from '@emotion/react';
+
+import type { Profile } from '@/api/types/profile';
+import { Avatar } from '@/shared/components/Avatar';
 import { Flex } from '@/shared/components/Flex';
-import { Icon } from '@/shared/components/Icon';
 import { ProgressBar } from '@/shared/components/ProgressBar';
-import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
@@ -12,81 +13,91 @@ import type { Event } from '../../types/Event';
 
 type EventInfoSectionProps = {
   event: Event;
+  profile?: Profile;
 };
 
-export const EventInfoSection = ({ event }: EventInfoSectionProps) => {
+export const EventInfoSection = ({ event, profile }: EventInfoSectionProps) => {
   const isUnlimited = event.maxCapacity === UNLIMITED_CAPACITY;
   const maxNumberOfGuests = isUnlimited ? '제한없음' : `${event.maxCapacity}명`;
   const progressValue = isUnlimited ? 1 : Number(event.currentGuestCount);
   const progressMax = isUnlimited ? 1 : event.maxCapacity;
-  const progressColor = isUnlimited ? theme.colors.primary700 : 'black';
+  const progressColor = isUnlimited ? theme.colors.primary700 : theme.colors.primary500;
 
   return (
-    <Flex as="section" dir="column" gap="24px" width="100%" margin="0 auto" padding="20px 0">
-      <Card>
-        <Flex dir="column" gap="16px">
-          <Flex alignItems="center" gap="8px">
-            <Icon name="calendar" size={14} />
-            <Flex dir="row" width="100%" justifyContent="space-between" alignItems="center">
-              <Text type="Body" weight="regular" color="#4A5565">
-                이벤트 정보
-              </Text>
-            </Flex>
-          </Flex>
+    <Flex as="section" dir="column" gap="40px" width="100%" padding="40px 0">
+      <Flex dir="column" gap="12px">
+        <Text type="Heading" weight="bold" color={theme.colors.gray800}>
+          이벤트 소개
+        </Text>
+        <Text type="Body" weight="medium" color={theme.colors.gray800}>
+          {event.description}
+        </Text>
+      </Flex>
 
-          <Text type="Body" weight="semibold" color="#0A0A0A">
-            {event.title}
+      <Flex dir="row" gap="80px" alignItems="flex-start">
+        <Flex
+          dir="column"
+          gap="12px"
+          css={css`
+            flex: 1;
+          `}
+        >
+          <Text type="Heading" weight="bold" color={theme.colors.gray800}>
+            신청기간
           </Text>
-
-          <Text type="Label" weight="regular" color="#4A5565">
-            {event.description}
+          <Text type="Label" weight="medium" color={theme.colors.gray800}>
+            {formatDateTime(event.registrationEnd)} 까지
           </Text>
+        </Flex>
 
-          <Flex alignItems="center" gap="8px">
-            <Icon name="user" size={14} />
-            <Text type="Label" weight="regular" color="#4A5565">
-              {`주최자: ${event.organizerName}`}
+        <Flex
+          dir="column"
+          gap="12px"
+          css={css`
+            flex: 1;
+          `}
+        >
+          <Text type="Heading" weight="bold" color={theme.colors.gray800}>
+            주최자
+          </Text>
+          <Avatar picture={profile?.picture ?? ''} name={profile?.name ?? ''} />
+        </Flex>
+      </Flex>
+
+      <Flex
+        dir="column"
+        gap="12px"
+        css={css`
+          flex: 1;
+        `}
+      >
+        <Text type="Heading" weight="bold" color={theme.colors.gray800}>
+          참여 현황
+        </Text>
+        <Flex dir="row" gap="12px" alignItems="center" width="100%">
+          <ProgressBar
+            value={progressValue}
+            max={progressMax}
+            color={progressColor}
+            backgroundColor={theme.colors.gray100}
+          />
+          <Flex
+            dir="row"
+            gap="2px"
+            alignItems="center"
+            css={css`
+              flex-shrink: 0;
+            `}
+          >
+            <Text type="Body" weight="medium" color={theme.colors.gray600}>
+              {event.currentGuestCount}
             </Text>
-          </Flex>
-
-          <Flex alignItems="center" gap="8px">
-            <Icon name="location" size={14} />
-            <Text type="Label" weight="regular" color="#4A5565">
-              {event.place}
+            <Text type="Body" weight="medium" color={theme.colors.gray400}>
+              /{maxNumberOfGuests}
             </Text>
-          </Flex>
-
-          <Flex alignItems="center" gap="8px">
-            <Icon name="calendar" size={14} />
-            <Text type="Label" weight="regular" color="#4A5565">
-              {`신청 마감: ${formatDateTime(event.registrationEnd ?? '')}`}
-            </Text>
-          </Flex>
-
-          <Flex alignItems="center" gap="8px">
-            <Icon name="clock" size={14} />
-            <Text type="Label" weight="regular" color="#4A5565">
-              {`이벤트 일시: ${formatDateTime(event.eventStart ?? '')} ~ ${formatDateTime(event.eventEnd ?? '')}`}
-            </Text>
-          </Flex>
-          <Spacing height="1px" color="#ECEEF2" />
-
-          <Flex dir="column" gap="12px">
-            <Flex justifyContent="space-between" alignItems="center">
-              <Flex alignItems="center" gap="8px">
-                <Icon name="user" size={14} />
-                <Text type="Label" weight="regular" color="#4A5565">
-                  참가 현황
-                </Text>
-              </Flex>
-              <Text type="Label" weight="regular" color="#4A5565">
-                {`${event.currentGuestCount}/${maxNumberOfGuests}`}
-              </Text>
-            </Flex>
-            <ProgressBar value={progressValue} max={progressMax} color={progressColor} />
           </Flex>
         </Flex>
-      </Card>
+      </Flex>
     </Flex>
   );
 };
