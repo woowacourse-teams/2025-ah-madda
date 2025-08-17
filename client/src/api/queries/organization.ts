@@ -45,7 +45,6 @@ export const organizationQueryOptions = {
     queryOptions({
       queryKey: organizationQueryKeys.participated(),
       queryFn: getParticipatedOrganizations,
-      staleTime: 60_000,
     }),
 };
 
