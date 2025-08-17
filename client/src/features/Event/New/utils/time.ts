@@ -1,4 +1,4 @@
-import { type TimeValue } from '../types/time';
+import type { TimeValue } from '../types/time';
 
 export const timeValueFromDate = (date: Date | null | undefined): TimeValue => {
   if (!date) return null;

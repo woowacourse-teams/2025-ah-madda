@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { type TimeValue } from '../types/time';
+import type { TimeValue } from '../types/time';
 import { compareTimeValues } from '../utils/time';
 
 export type TimeSelectionMode = 'single' | 'range';

@@ -1,4 +1,4 @@
-import { type TimeValue } from '../types/time';
+import type { TimeValue } from '../types/time';
 
 import { useDateSelection } from './useDateSelection';
 import { useTimeSelection } from './useTimeSelection';

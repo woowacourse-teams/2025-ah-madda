@@ -20,7 +20,7 @@ import { useBasicEventForm } from '../hooks/useBasicEventForm';
 import { useDropdownStates } from '../hooks/useDropdownStates';
 import { useQuestionForm } from '../hooks/useQuestionForm';
 import { useTemplateLoader } from '../hooks/useTemplateLoader';
-import { type TimeValue } from '../types/time';
+import type { TimeValue } from '../types/time';
 import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
 import {
   formatDateForInput,
