@@ -93,7 +93,8 @@ public class LoginController {
             @ApiResponse(
                     responseCode = "401",
                     content = @Content(examples = {
-                            @ExampleObject(name = "아직 만료되지 않은 액세스 토큰",
+                            @ExampleObject(
+                                    name = "아직 만료되지 않은 액세스 토큰",
                                     value = """
                                             {
                                               "type": "about:blank",
@@ -103,7 +104,8 @@ public class LoginController {
                                               "instance": "/api/members/token"
                                             }
                                             """),
-                            @ExampleObject(name = "리프레시 토큰 만료",
+                            @ExampleObject(
+                                    name = "리프레시 토큰 만료",
                                     value = """
                                             {
                                               "type": "about:blank",
@@ -113,7 +115,8 @@ public class LoginController {
                                               "instance": "/api/members/token"
                                             }
                                             """),
-                            @ExampleObject(name = "리프레시 토큰 불일치(저장값과 다름)",
+                            @ExampleObject(
+                                    name = "리프레시 토큰 불일치(저장값과 다름)",
                                     value = """
                                             {
                                               "type": "about:blank",
@@ -123,7 +126,8 @@ public class LoginController {
                                               "instance": "/api/members/token"
                                             }
                                             """),
-                            @ExampleObject(name = "JWT 형식 오류",
+                            @ExampleObject(
+                                    name = "JWT 형식 오류",
                                     value = """
                                             {
                                               "type": "about:blank",
@@ -133,7 +137,8 @@ public class LoginController {
                                               "instance": "/api/members/token"
                                             }
                                             """),
-                            @ExampleObject(name = "JWT 서명/파싱 오류",
+                            @ExampleObject(
+                                    name = "JWT 서명/파싱 오류",
                                     value = """
                                             {
                                               "type": "about:blank",
@@ -148,7 +153,8 @@ public class LoginController {
             @ApiResponse(
                     responseCode = "404",
                     content = @Content(examples = {
-                            @ExampleObject(name = "저장된 토큰 없음",
+                            @ExampleObject(
+                                    name = "저장된 토큰 없음",
                                     value = """
                                             {
                                               "type": "about:blank",
@@ -167,7 +173,7 @@ public class LoginController {
             @RequestHeader(HttpHeaders.AUTHORIZATION) final String headerAccessToken,
             @CookieValue(CookieProvider.REFRESH_TOKEN_KEY) final String refreshToken
     ) {
-        String accessToken = cookieProvider.resolveRefreshToken(headerAccessToken);
+        String accessToken = cookieProvider.extractAccessToken(headerAccessToken);
 
         MemberToken memberToken = loginService.renewMemberToken(accessToken, refreshToken, userAgent);
         ResponseCookie refreshTokenCookie =
@@ -189,7 +195,8 @@ public class LoginController {
             @ApiResponse(
                     responseCode = "401",
                     content = @Content(examples = {
-                            @ExampleObject(name = "멤버-토큰 불일치",
+                            @ExampleObject(
+                                    name = "멤버-토큰 불일치",
                                     value = """
                                             {
                                               "type": "about:blank",
@@ -199,7 +206,8 @@ public class LoginController {
                                               "instance": "/api/members/logout"
                                             }
                                             """),
-                            @ExampleObject(name = "JWT 형식 오류",
+                            @ExampleObject(
+                                    name = "JWT 형식 오류",
                                     value = """
                                             {
                                               "type": "about:blank",
@@ -209,7 +217,8 @@ public class LoginController {
                                               "instance": "/api/members/logout"
                                             }
                                             """),
-                            @ExampleObject(name = "JWT 파싱 실패",
+                            @ExampleObject(
+                                    name = "JWT 파싱 실패",
                                     value = """
                                             {
                                               "type": "about:blank",
@@ -224,7 +233,8 @@ public class LoginController {
             @ApiResponse(
                     responseCode = "404",
                     content = @Content(examples = {
-                            @ExampleObject(name = "저장된 토큰 없음",
+                            @ExampleObject(
+                                    name = "저장된 토큰 없음",
                                     value = """
                                             {
                                               "type": "about:blank",
@@ -241,8 +251,7 @@ public class LoginController {
     public ResponseEntity<Void> logout(
             @AuthMember final LoginMember loginMember,
             @RequestHeader(HttpHeaders.USER_AGENT) final String userAgent,
-            @CookieValue(CookieProvider.REFRESH_TOKEN_KEY) final String authRefreshToken) {
-        String refreshToken = cookieProvider.resolveRefreshToken(authRefreshToken);
+            @CookieValue(CookieProvider.REFRESH_TOKEN_KEY) final String refreshToken) {
         loginService.logout(loginMember, refreshToken, userAgent);
 
         ResponseCookie logoutRefreshTokenCookie = cookieProvider.createLogoutRefreshTokenCookie();

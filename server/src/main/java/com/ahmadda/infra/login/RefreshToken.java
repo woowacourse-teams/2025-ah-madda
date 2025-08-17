@@ -4,6 +4,8 @@ import com.ahmadda.infra.login.exception.InvalidRefreshTokenRegistrationExceptio
 import com.ahmadda.infra.login.util.HashUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -17,6 +19,10 @@ import java.time.LocalDateTime;
 public class RefreshToken {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true)
     private String token;
 
     @Column(nullable = false)
@@ -67,7 +73,7 @@ public class RefreshToken {
 
     private void validateDeviceId(final String deviceId) {
         if (deviceId == null || deviceId.isBlank()) {
-            throw new InvalidRefreshTokenRegistrationException("기기 식별자는 null일 수 없습니다.");
+            throw new InvalidRefreshTokenRegistrationException("기기 식별자는 공백일 수 없습니다.");
         }
     }
 

@@ -29,12 +29,11 @@ public class CookieProvider {
                 .build();
     }
 
-    public String resolveRefreshToken(final String header) {
+    public String extractAccessToken(final String header) {
         if (header != null && header.startsWith(BEARER_TYPE)) {
             return header.substring(BEARER_TYPE.length())
                     .trim();
         }
-
         throw new InvalidAuthorizationException("인증 토큰 정보가 존재하지 않거나 유효하지 않습니다.");
     }
 
