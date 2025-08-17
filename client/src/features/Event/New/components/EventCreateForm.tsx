@@ -20,13 +20,15 @@ import { useBasicEventForm } from '../hooks/useBasicEventForm';
 import { useDropdownStates } from '../hooks/useDropdownStates';
 import { useQuestionForm } from '../hooks/useQuestionForm';
 import { useTemplateLoader } from '../hooks/useTemplateLoader';
+import { type TimeValue } from '../types/time';
 import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
 import {
   formatDateForInput,
   formatDateForDisplay,
   parseInputDate,
   applyTimeToDate,
-} from '../utils/dateUtils';
+} from '../utils/date';
+import { timeValueToDate, timeValueFromDate } from '../utils/time';
 
 import { DatePickerDropdown } from './DatePickerDropdown';
 import { MaxCapacityModal } from './MaxCapacityModal';
@@ -143,46 +145,51 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const handleDateRangeSelect = (
     startDate: Date,
     endDate: Date,
-    startTime: Date,
-    endTime: Date
+    startTime: TimeValue,
+    endTime: TimeValue
   ) => {
-    const finalStartTime = startTime;
-    const finalEndTime = endTime;
-    if (!finalStartTime || !finalEndTime) {
+    if (!startTime || !endTime) {
       alert('시간이 선택되지 않았습니다. 시간을 먼저 선택해 주세요.');
       return;
     }
 
-    const newStartDate = applyTimeToDate(startDate, finalStartTime);
-    console.log('newStartDate', newStartDate);
-    const newEndDate = applyTimeToDate(endDate, finalEndTime);
+    const finalStartTime = timeValueToDate(startTime, startDate);
+    const finalEndTime = timeValueToDate(endTime, endDate);
 
-    handleValueChange('eventStart', formatDateForInput(newStartDate));
-    handleValueChange('eventEnd', formatDateForInput(newEndDate));
+    if (!finalStartTime || !finalEndTime) {
+      alert('시간 처리 중 오류가 발생했습니다.');
+      return;
+    }
+
+    handleValueChange('eventStart', formatDateForInput(finalStartTime));
+    handleValueChange('eventEnd', formatDateForInput(finalEndTime));
 
     const currentRegistrationEndTime =
       parseInputDate(basicEventForm.registrationEnd) || finalStartTime;
     const newRegistrationEnd = applyTimeToDate(startDate, currentRegistrationEndTime);
     const finalRegistrationEnd =
-      newRegistrationEnd.getTime() > newStartDate.getTime() ? newStartDate : newRegistrationEnd;
+      newRegistrationEnd.getTime() > finalStartTime.getTime() ? finalStartTime : newRegistrationEnd;
     handleValueChange('registrationEnd', formatDateForInput(finalRegistrationEnd));
 
-    validateField('eventStart', formatDateForInput(newStartDate));
-    validateField('eventEnd', formatDateForInput(newEndDate));
+    validateField('eventStart', formatDateForInput(finalStartTime));
+    validateField('eventEnd', formatDateForInput(finalEndTime));
     validateField('registrationEnd', formatDateForInput(finalRegistrationEnd));
   };
 
-  const handleRegistrationEndSelect = (date: Date, time: Date) => {
-    const finalTime = time;
-    if (!finalTime) {
+  const handleRegistrationEndSelect = (date: Date, time: TimeValue) => {
+    if (!time) {
       alert('시간이 선택되지 않았습니다. 시간을 먼저 선택해 주세요.');
       return;
     }
 
-    const newDate = applyTimeToDate(date, finalTime);
+    const finalTime = timeValueToDate(time, date);
+    if (!finalTime) {
+      alert('시간 처리 중 오류가 발생했습니다.');
+      return;
+    }
 
-    handleValueChange('registrationEnd', formatDateForInput(newDate));
-    validateField('registrationEnd', formatDateForInput(newDate));
+    handleValueChange('registrationEnd', formatDateForInput(finalTime));
+    validateField('registrationEnd', formatDateForInput(finalTime));
   };
 
   return (
@@ -259,9 +266,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 onSelect={handleDateRangeSelect}
                 initialStartDate={parseInputDate(basicEventForm.eventStart) || null}
                 initialEndDate={parseInputDate(basicEventForm.eventEnd) || null}
-                initialStartTime={parseInputDate(basicEventForm.eventStart) || undefined}
-                initialEndTime={parseInputDate(basicEventForm.eventEnd) || undefined}
-                title="이벤트 날짜 및 시간 선택"
+                initialStartTime={timeValueFromDate(parseInputDate(basicEventForm.eventStart))}
+                initialEndTime={timeValueFromDate(parseInputDate(basicEventForm.eventEnd))}
               />
             </Flex>
           </Flex>
@@ -309,8 +315,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 onClose={() => closeDropdown()}
                 onSelect={handleRegistrationEndSelect}
                 initialDate={parseInputDate(basicEventForm.registrationEnd) || null}
-                initialTime={parseInputDate(basicEventForm.registrationEnd) || undefined}
-                title="신청 종료일 및 시간 선택"
+                initialTime={timeValueFromDate(parseInputDate(basicEventForm.registrationEnd))}
               />
             </Flex>
 

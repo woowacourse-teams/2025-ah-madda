@@ -1,53 +1,61 @@
-import { useState } from 'react';
+import { type TimeValue } from '../types/time';
 
-type UseSingleDatePickerProps = {
-  initialDate?: Date | null;
-  initialTime?: Date;
-  onSelect: (date: Date, time: Date) => void;
+import { useDateSelection } from './useDateSelection';
+import { useTimeSelection } from './useTimeSelection';
+
+export type UseSingleDatePickerProps = {
   onClose: () => void;
+  onSelect: (date: Date, time: TimeValue) => void;
+  initialDate?: Date | null;
+  initialTime?: TimeValue;
 };
 
 export const useSingleDatePicker = ({
+  onClose,
+  onSelect,
   initialDate,
   initialTime,
-  onSelect,
-  onClose,
 }: UseSingleDatePickerProps) => {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(initialDate || null);
-  const [selectedTime, setSelectedTime] = useState<Date | undefined>(initialTime);
+  const dateSelection = useDateSelection({
+    mode: 'single',
+    initialDate,
+  });
 
-  const handleDateSelect = (date: Date) => {
-    setSelectedDate(date);
-  };
+  const timeSelection = useTimeSelection({
+    mode: 'single',
+    initialTime,
+  });
 
   const handleConfirm = () => {
-    if (selectedDate && selectedTime) {
-      onSelect(selectedDate, selectedTime);
+    if (dateSelection.selectedDate && timeSelection.selectedTime) {
+      onSelect(dateSelection.selectedDate, timeSelection.selectedTime);
       onClose();
     }
   };
 
   const handleCancel = () => {
-    setSelectedDate(initialDate || null);
-    setSelectedTime(initialTime);
+    dateSelection.restoreInitialDates();
+    timeSelection.restoreInitialTimes();
     onClose();
   };
 
-  const isConfirmDisabled = !selectedDate || !selectedTime;
-
   const handleReset = () => {
-    setSelectedDate(null);
-    setSelectedTime(undefined);
+    dateSelection.resetDates();
+    timeSelection.resetTimes();
   };
 
+  const isConfirmDisabled = !dateSelection.isDateValid() || !timeSelection.isTimeValid();
+
   return {
-    selectedDate,
-    selectedTime,
-    setSelectedTime,
-    handleDateSelect,
+    selectedDate: dateSelection.selectedDate,
+    handleDateSelect: dateSelection.handleDateSelect,
+
+    selectedTime: timeSelection.selectedTime,
+    setSelectedTime: timeSelection.setSelectedTime,
+
     handleConfirm,
     handleCancel,
-    isConfirmDisabled,
     handleReset,
+    isConfirmDisabled,
   };
 };
