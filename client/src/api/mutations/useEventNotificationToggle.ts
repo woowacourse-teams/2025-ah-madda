@@ -1,13 +1,13 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { optOutEventNotification, optInEventNotification } from '../queries/notification';
+import { fetcher } from '../fetcher';
 
 export const useEventNotificationToggle = (eventId: number) => {
   const optOut = useMutation({
-    mutationFn: () => optOutEventNotification(eventId),
+    mutationFn: () => fetcher.post<void>(`events/${eventId}/notification/opt-out`),
   });
   const optIn = useMutation({
-    mutationFn: () => optInEventNotification(eventId),
+    mutationFn: () => fetcher.delete(`events/${eventId}/notification/opt-out`),
   });
 
   return {
