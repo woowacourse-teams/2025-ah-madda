@@ -264,8 +264,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 isOpen={isOpen('eventDateRange')}
                 onClose={() => closeDropdown()}
                 onSelect={handleDateRangeSelect}
-                initialStartDate={parseInputDate(basicEventForm.eventStart) || null}
-                initialEndDate={parseInputDate(basicEventForm.eventEnd) || null}
+                initialStartDate={parseInputDate(basicEventForm.eventStart)}
+                initialEndDate={parseInputDate(basicEventForm.eventEnd)}
                 initialStartTime={timeValueFromDate(parseInputDate(basicEventForm.eventStart))}
                 initialEndTime={timeValueFromDate(parseInputDate(basicEventForm.eventEnd))}
               />
