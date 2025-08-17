@@ -39,11 +39,6 @@ export const useSingleDatePicker = ({
     onClose();
   };
 
-  const handleReset = () => {
-    dateSelection.resetDates();
-    timeSelection.resetTimes();
-  };
-
   const isConfirmDisabled = !dateSelection.isDateValid() || !timeSelection.isTimeValid();
 
   return {
@@ -55,7 +50,6 @@ export const useSingleDatePicker = ({
 
     handleConfirm,
     handleCancel,
-    handleReset,
     isConfirmDisabled,
   };
 };

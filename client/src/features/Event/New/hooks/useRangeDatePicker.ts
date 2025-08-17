@@ -54,11 +54,6 @@ export const useRangeDatePicker = ({
     onClose();
   };
 
-  const handleReset = () => {
-    dateSelection.resetDates();
-    timeSelection.resetTimes();
-  };
-
   const isConfirmDisabled = (() => {
     if (!dateSelection.isDateValid()) return true;
 
@@ -84,7 +79,6 @@ export const useRangeDatePicker = ({
 
     handleConfirm,
     handleCancel,
-    handleReset,
     isConfirmDisabled,
   };
 };
