@@ -46,11 +46,7 @@ export const TemplateDropdown = ({ onTemplateSelected }: TemplateDropdownProps) 
   };
 
   return (
-    <Flex dir="column" gap="8px">
-      <Text type="Body" color={theme.colors.gray600}>
-        작성했던 템플릿을 불러와 바로 수정할 수 있어요.
-      </Text>
-
+    <Flex dir="column" gap="8px" width="100%">
       <Dropdown>
         <Dropdown.Trigger>
           <Flex justifyContent="space-between" alignItems="center" width="100%" padding="8px">
