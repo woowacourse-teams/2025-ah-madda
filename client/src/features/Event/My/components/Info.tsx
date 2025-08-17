@@ -29,7 +29,7 @@ export const Info = () => {
         <Text as="h1" type="Display" weight="bold" color="gray900">
           내 이벤트
         </Text>
-        <Text as="h2" type="Body" weight="medium" color="gray900">
+        <Text as="h2" type="Body" weight="medium" color="gray700">
           내가 주최하고, 참여한 이벤트를 확인해보세요.
         </Text>
       </Flex>
