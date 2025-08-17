@@ -258,6 +258,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 onClear={() => {
                   handleValueChange('eventStart', '');
                   handleValueChange('eventEnd', '');
+                  validateField('eventStart', '');
+                  validateField('eventEnd', '');
                 }}
                 css={css`
                   cursor: pointer;
@@ -309,7 +311,10 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 onClick={() => openDropdown('registrationEnd')}
                 errorMessage={errors.registrationEnd}
                 isRequired
-                onClear={() => handleValueChange('registrationEnd', '')}
+                onClear={() => {
+                  handleValueChange('registrationEnd', '');
+                  validateField('registrationEnd', '');
+                }}
                 css={css`
                   cursor: pointer;
                 `}
