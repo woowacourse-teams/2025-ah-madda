@@ -1,6 +1,9 @@
 import { ComponentProps, useRef } from 'react';
 
+import { css } from '@emotion/react';
+
 import { Icon } from '@/shared/components/Icon';
+import { IconButton } from '@/shared/components/IconButton';
 import { computeCounter } from '@/shared/utils/computeCounter';
 
 import {
@@ -41,6 +44,12 @@ export type InputProps = {
 
   /** Show character counter (uses maxLength) */
   showCounter?: boolean;
+
+  /**
+   * Callback function when clear button is clicked.
+   * When provided, a clear button will be shown on the right side of the input.
+   */
+  onClear?: () => void;
 } & ComponentProps<'input'>;
 
 export const Input = ({
@@ -49,6 +58,7 @@ export const Input = ({
   isRequired = false,
   errorMessage,
   showCounter = false,
+  onClear,
   ...props
 }: InputProps) => {
   const isError = !!errorMessage;
@@ -80,10 +90,29 @@ export const Input = ({
           ref={inputRef}
           isError={isError}
           hasLeftIcon={isDateLike}
+          hasRightIcon={!!onClear}
           aria-required={isRequired || undefined}
           aria-invalid={isError || undefined}
           {...props}
         />
+        {onClear && (
+          <IconButton
+            name="close"
+            size={14}
+            color="gray500"
+            onClick={onClear}
+            aria-label="초기화"
+            css={css`
+              position: absolute;
+              right: 12px;
+              top: 50%;
+              transform: translateY(-50%);
+              border: 0;
+              background: transparent;
+              padding: 0;
+            `}
+          />
+        )}
       </StyledFieldWrapper>
 
       <StyledFooterRow>

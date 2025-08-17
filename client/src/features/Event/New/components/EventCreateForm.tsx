@@ -255,6 +255,10 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 onClick={() => openDropdown('eventDateRange')}
                 errorMessage={errors.eventStart || errors.eventEnd}
                 isRequired
+                onClear={() => {
+                  handleValueChange('eventStart', '');
+                  handleValueChange('eventEnd', '');
+                }}
                 css={css`
                   cursor: pointer;
                 `}
@@ -305,6 +309,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 onClick={() => openDropdown('registrationEnd')}
                 errorMessage={errors.registrationEnd}
                 isRequired
+                onClear={() => handleValueChange('registrationEnd', '')}
                 css={css`
                   cursor: pointer;
                 `}
