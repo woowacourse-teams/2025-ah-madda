@@ -86,7 +86,6 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       place: basicEventForm.place || '',
       maxCapacity: basicEventForm.maxCapacity || UNLIMITED_CAPACITY,
     });
-    alert('템플릿이 성공적으로 불러와졌습니다!');
   };
 
   const handleEventSelected = (eventData: Omit<EventTemplateAPIResponse, 'eventId'>) => {
@@ -96,7 +95,6 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       place: eventData.place || '',
       maxCapacity: eventData.maxCapacity || UNLIMITED_CAPACITY,
     });
-    alert('이벤트가 성공적으로 불러와졌습니다!');
   };
 
   const handleError = (error: unknown) => {
@@ -398,20 +396,28 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 }
               `}
             >
-              <label htmlFor="description">
-                <Text type="Heading" weight="medium">
-                  소개글
-                </Text>
-              </label>
               <Flex
-                css={css`
-                  width: 320px;
-                  @media (max-width: 768px) {
-                    width: 100%;
-                  }
-                `}
+                dir="row"
+                justifyContent="space-between"
+                alignItems="center"
+                width="100%"
+                gap="8px"
               >
-                <TemplateDropdown onTemplateSelected={handleTemplateSelected} />
+                <label htmlFor="description">
+                  <Text type="Heading" weight="medium">
+                    소개글
+                  </Text>
+                </label>
+                <Flex
+                  css={css`
+                    width: 320px;
+                    @media (max-width: 768px) {
+                      width: 100%;
+                    }
+                  `}
+                >
+                  <TemplateDropdown onTemplateSelected={handleTemplateSelected} />
+                </Flex>
               </Flex>
             </Flex>
             <Textarea

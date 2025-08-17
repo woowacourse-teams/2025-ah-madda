@@ -8,15 +8,14 @@ import type { EventTemplateAPIResponse } from '@/api/types/event';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Modal } from '@/shared/components/Modal';
+import { ModalProps } from '@/shared/components/Modal/Modal';
 import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
 import { EventList } from './EventList';
 
-type TemplateModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
+type TemplateModalProps = Pick<ModalProps, 'isOpen' | 'onClose'> & {
   onEventSelected: (eventData: Omit<EventTemplateAPIResponse, 'eventId'>) => void;
 };
 
