@@ -69,6 +69,7 @@ export const Input = ({
     props.defaultValue,
     props.maxLength
   );
+  const hasContent = displayLength > 0;
   const shouldShowCounter = showCounter && hasMax && !isDateLike;
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -95,7 +96,7 @@ export const Input = ({
           aria-invalid={isError || undefined}
           {...props}
         />
-        {onClear && (
+        {onClear && hasContent && (
           <IconButton
             name="close"
             size={14}
