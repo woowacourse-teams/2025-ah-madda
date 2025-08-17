@@ -6,7 +6,15 @@ import { Text } from '../Text';
 import { StyledAvatarImage } from './Avatar.styled';
 
 type AvatarProps = {
+  /**
+   * The profile picture URL or null if no picture is available.
+   * @type {string | null}
+   */
   picture: string | null;
+  /**
+   * The display name for the avatar.
+   * @type {string}
+   */
   name: string;
 };
 
