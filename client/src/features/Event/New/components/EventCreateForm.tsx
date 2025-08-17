@@ -25,7 +25,7 @@ import {
   formatDateForInput,
   formatDateForDisplay,
   parseInputDate,
-  setTimeToDate,
+  applyTimeToDate,
 } from '../utils/dateUtils';
 
 import { DatePickerDropdown } from './DatePickerDropdown';
@@ -153,15 +153,16 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       return;
     }
 
-    const newStartDate = setTimeToDate(startDate, finalStartTime);
-    const newEndDate = setTimeToDate(endDate, finalEndTime);
+    const newStartDate = applyTimeToDate(startDate, finalStartTime);
+    console.log('newStartDate', newStartDate);
+    const newEndDate = applyTimeToDate(endDate, finalEndTime);
 
     handleValueChange('eventStart', formatDateForInput(newStartDate));
     handleValueChange('eventEnd', formatDateForInput(newEndDate));
 
     const currentRegistrationEndTime =
       parseInputDate(basicEventForm.registrationEnd) || finalStartTime;
-    const newRegistrationEnd = setTimeToDate(startDate, currentRegistrationEndTime);
+    const newRegistrationEnd = applyTimeToDate(startDate, currentRegistrationEndTime);
     const finalRegistrationEnd =
       newRegistrationEnd.getTime() > newStartDate.getTime() ? newStartDate : newRegistrationEnd;
     handleValueChange('registrationEnd', formatDateForInput(finalRegistrationEnd));
@@ -178,7 +179,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       return;
     }
 
-    const newDate = setTimeToDate(date, finalTime);
+    const newDate = applyTimeToDate(date, finalTime);
 
     handleValueChange('registrationEnd', formatDateForInput(newDate));
     validateField('registrationEnd', formatDateForInput(newDate));

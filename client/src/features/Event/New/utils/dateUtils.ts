@@ -20,7 +20,7 @@ export const parseInputDate = (datetimeLocal: string): Date | null => {
   return new Date(year, month - 1, day, hour, minute);
 };
 
-export const setTimeToDate = (targetDate: Date, timeSource: Date): Date => {
+export const applyTimeToDate = (targetDate: Date, timeSource: Date): Date => {
   return new Date(
     targetDate.getFullYear(),
     targetDate.getMonth(),
