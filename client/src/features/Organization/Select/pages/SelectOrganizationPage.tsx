@@ -1,6 +1,10 @@
+import { useEffect, useState } from 'react';
+
 import { css } from '@emotion/react';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
+import { organizationQueryOptions } from '@/api/queries/organization';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
@@ -10,24 +14,55 @@ import { Text } from '@/shared/components/Text';
 
 import { OrgCard } from '../components/OrgCard';
 
-type Org = {
+type OrgCardModel = {
   organizationId: number;
   name: string;
-  thumbnailUrl: string;
+  imageUrl: string;
   description: string;
 };
 
-const organizations: Org[] = [
-  { organizationId: 1, name: '조직1', thumbnailUrl: '/icon-512x512.png', description: '설명' },
-  { organizationId: 2, name: '조직2', thumbnailUrl: '/icon-512x512.png', description: '설명' },
-  { organizationId: 3, name: '조직3', thumbnailUrl: '/icon-512x512.png', description: '설명' },
-  { organizationId: 4, name: '조직4', thumbnailUrl: '/icon-512x512.png', description: '설명' },
-];
+const CARD_W = 120;
+const GAP = 80;
+
+function getVisibleCount(width: number) {
+  if (width >= 1024) return 4;
+  if (width >= 768) return 3;
+  if (width >= 480) return 2;
+  return 1;
+}
 
 export const OrganizationSelectPage = () => {
   const navigate = useNavigate();
-  const handleCreateClick = () => navigate('/organizations/new');
-  const handleJoin = () => navigate('/event'); // A.TODO: 확정 시 교체
+
+  const {
+    data: participatedOrgs = [],
+    isLoading,
+    isError,
+  } = useQuery(organizationQueryOptions.participated());
+
+  const handleCreateClick = () => navigate('/organization/new');
+  const handleJoin = (orgId: number) => navigate(`/event?organizationId=${orgId}`);
+
+  const orgs: OrgCardModel[] = (participatedOrgs || []).map((o) => ({
+    organizationId: o.organizationId,
+    name: o.name,
+    description: o.description,
+    imageUrl: o.imageUrl,
+  }));
+
+  const [visibleCount, setVisibleCount] = useState<number>(() =>
+    typeof window !== 'undefined' ? getVisibleCount(window.innerWidth) : 4
+  );
+
+  useEffect(() => {
+    const onResize = () => setVisibleCount(getVisibleCount(window.innerWidth));
+    window.addEventListener('resize', onResize, { passive: true });
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  const maxRowWidth = () => CARD_W * visibleCount + GAP * Math.max(visibleCount - 1, 0);
+
+  const justify = orgs.length <= visibleCount ? 'center' : 'flex-start';
 
   return (
     <PageLayout
@@ -84,17 +119,51 @@ export const OrganizationSelectPage = () => {
           </Text>
         </Flex>
 
-        <Flex
-          justifyContent="center"
-          gap="80px"
-          css={css`
-            flex-wrap: wrap;
-          `}
-        >
-          {organizations.map((org) => (
-            <OrgCard key={org.organizationId} org={org} onJoin={handleJoin} />
-          ))}
-        </Flex>
+        {isLoading && <Text type="Body">불러오는 중...</Text>}
+        {isError && (
+          <Text type="Body" color="red">
+            조직 목록을 불러오지 못했어요.
+          </Text>
+        )}
+
+        {!isLoading && !isError && (
+          <>
+            <Flex width="100%" justifyContent="center">
+              <Flex
+                dir="row"
+                margin="0 auto"
+                padding="8px 4px"
+                gap={`${GAP}px`}
+                css={css`
+                  max-width: ${maxRowWidth()}px;
+                  overflow-x: auto;
+                  flex-wrap: nowrap;
+
+                  &::-webkit-scrollbar {
+                    height: 8px;
+                  }
+                  &::-webkit-scrollbar-thumb {
+                    border-radius: 8px;
+                    background: #d1d5db;
+                  }
+                `}
+                justifyContent={justify}
+              >
+                {orgs.map((org) => (
+                  <Flex key={org.organizationId}>
+                    <OrgCard org={org} onJoin={() => handleJoin(org.organizationId)} />
+                  </Flex>
+                ))}
+              </Flex>
+            </Flex>
+
+            {orgs.length === 0 && (
+              <Text type="Body" color="#6b7280">
+                아직 소속된 조직이 없어요. 새로운 조직을 만들어보세요!
+              </Text>
+            )}
+          </>
+        )}
       </Flex>
     </PageLayout>
   );

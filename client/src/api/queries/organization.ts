@@ -3,12 +3,14 @@ import { queryOptions } from '@tanstack/react-query';
 import { Event, Organization } from '@/features/Event/types/Event';
 
 import { fetcher } from '../fetcher';
+import { ParticipatedOrganizationAPIResponse } from '../types/organizations';
 
 export const organizationQueryKeys = {
   all: () => ['organization'],
   event: () => [...organizationQueryKeys.all(), 'event'],
   profile: () => [...organizationQueryKeys.all(), 'profile'],
   preview: () => [...organizationQueryKeys.all(), 'preview'],
+  participated: () => [...organizationQueryKeys.all(), 'participated'],
 };
 export const organizationQueryOptions = {
   // S.TODO : 추후 수정 ':organizationId' : number
@@ -35,6 +37,13 @@ export const organizationQueryOptions = {
       queryKey: [...organizationQueryKeys.all(), 'preview', inviteCode],
       queryFn: () => getOrganizationPreview(inviteCode),
     }),
+
+  participated: () =>
+    queryOptions({
+      queryKey: organizationQueryKeys.participated(),
+      queryFn: getParticipatedOrganizations,
+      staleTime: 60_000,
+    }),
 };
 
 const getAllEventAPI = ({ organizationId }: { organizationId: number }) => {
@@ -51,4 +60,8 @@ const getOrganizationProfile = ({ organizationId }: { organizationId: number }) 
 
 export const getOrganizationPreview = (inviteCode: string) => {
   return fetcher.get<Organization>(`organizations/preview?inviteCode=${inviteCode}`);
+};
+
+export const getParticipatedOrganizations = () => {
+  return fetcher.get<ParticipatedOrganizationAPIResponse[]>(`organizations/participated`);
 };

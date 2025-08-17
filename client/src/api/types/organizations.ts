@@ -7,3 +7,10 @@ export type OrganizationParticipateAPIRequest = {
   nickname: string;
   inviteCode: string;
 };
+
+export type ParticipatedOrganizationAPIResponse = {
+  organizationId: number;
+  name: string;
+  description: string;
+  imageUrl: string;
+};
