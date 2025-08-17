@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+
 import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +12,7 @@ import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
 import { Textarea } from '@/shared/components/Textarea';
+import { useAutoSessionSave } from '@/shared/hooks/useAutoSessionSave';
 import { useModal } from '@/shared/hooks/useModal';
 import { trackCreateEvent } from '@/shared/lib/gaEvents';
 import { theme } from '@/shared/styles/theme';
@@ -68,6 +71,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     deleteQuestion,
     updateQuestion,
     isValid: isQuestionValid,
+    loadQuestions,
   } = useQuestionForm();
 
   const isFormReady = isBasicFormValid && isQuestionValid;
@@ -94,9 +98,33 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     registrationEnd: convertDatetimeLocalToKSTISOString(basicEventForm.registrationEnd),
   });
 
+  const autoSaveKey =
+    isEdit && eventId ? `event-form:draft:edit:${eventId}` : 'event-form:draft:create';
+
+  const { restore, clear } = useAutoSessionSave({
+    key: autoSaveKey,
+    data: { basicEventForm, questions },
+  });
+
+  const restoredOnceRef = useRef(false);
+
+  useEffect(() => {
+    if (restoredOnceRef.current) return;
+
+    const draft = restore();
+    if (!draft) return;
+
+    if (isEdit && !eventDetail) return;
+    if (draft.basicEventForm) loadFormData(draft.basicEventForm);
+    if (draft.questions) loadQuestions(draft.questions);
+
+    restoredOnceRef.current = true;
+  }, [isEdit, eventDetail, restore, loadFormData, loadQuestions]);
+
   const submitCreate = (payload: ReturnType<typeof buildPayload>) => {
     addEvent(payload, {
       onSuccess: ({ eventId }) => {
+        clear();
         trackCreateEvent();
         alert('😁 이벤트가 성공적으로 생성되었습니다!');
         navigate(`/event/${eventId}`);
@@ -110,6 +138,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       { eventId, payload },
       {
         onSuccess: () => {
+          clear();
           alert('😁 이벤트가 성공적으로 수정되었습니다!');
           navigate(`/event/${eventId}`);
         },

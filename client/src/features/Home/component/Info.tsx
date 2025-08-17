@@ -98,11 +98,17 @@ export const Info = () => {
             <PointIcon src={Point} alt="Point" className="point3" />
           </Flex>
         </Flex>
-        <Button size="full" onClick={handelGuideOpenClick}>
-          이벤트 보러가기
+        <Button
+          color="secondary"
+          size="full"
+          css={css`
+            cursor: default;
+          `}
+        >
+          🚧 점검중이에요! 🚧
         </Button>
       </Flex>
-      <GuideModal isOpen={isOpen} onClose={close} onEnter={handleEnterClick} />
+      {/* <GuideModal isOpen={isOpen} onClose={close} onEnter={handleEnterClick} /> */}
     </>
   );
 };
