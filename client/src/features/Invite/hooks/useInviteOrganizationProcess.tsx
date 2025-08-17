@@ -44,7 +44,7 @@ export const useInviteOrganizationProcess = () => {
         onSuccess: () => {
           alert('조직 참가가 완료되었습니다!');
           close();
-          navigate('/event');
+          navigate(`/event?organizationId=${organizationData?.organizationId}`);
         },
         onError: (error) => {
           alert(`${error.message}`);

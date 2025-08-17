@@ -36,7 +36,13 @@ export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationPr
             }
           `}
         >
-          <Img src={Woowa} />
+          <Img
+            src={imageUrl || Woowa}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = Woowa;
+            }}
+          />
           <Flex dir="column" gap="8px">
             <Text type="Display" weight="bold">
               {name}
