@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { SyntheticEvent } from 'react';
 
 import { Flex } from '../Flex';
 import { Text } from '../Text';
@@ -21,18 +21,14 @@ type AvatarProps = {
 const DEFAULT_AVATAR_URL = 'https://ahmadda-dev.s3.ap-northeast-2.amazonaws.com/profile_avatar.png';
 
 export const Avatar = ({ picture, name }: AvatarProps) => {
-  const [currentSrc, setCurrentSrc] = useState(picture || DEFAULT_AVATAR_URL);
-
-  const handleImageError = () => {
-    if (currentSrc !== DEFAULT_AVATAR_URL) {
-      setCurrentSrc(DEFAULT_AVATAR_URL);
-    }
+  const handleImageError = (e: SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = DEFAULT_AVATAR_URL;
   };
 
   return (
     <Flex dir="row" gap="12px" alignItems="center">
       <StyledAvatarImage
-        src={currentSrc}
+        src={picture ?? DEFAULT_AVATAR_URL}
         alt="프로필 이미지"
         onError={handleImageError}
         width="40px"
