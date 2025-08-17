@@ -19,10 +19,16 @@ const StyledDatePickerDropdown = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.gray200};
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  padding: 20px;
+  z-index: 1;
+  padding: 16px;
   margin-top: 4px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  max-height: 80vh;
+
+  @media (max-width: 768px) {
+    padding: 12px;
+    max-height: 70vh;
+  }
 `;

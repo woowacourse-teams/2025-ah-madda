@@ -48,14 +48,15 @@ export const Calendar = ({
     <Card
       css={css`
         width: 280px;
-        padding: 16px;
+        padding: 12px;
 
         @media (max-width: 768px) {
           width: 100%;
+          padding: 8px;
         }
       `}
     >
-      <Flex dir="row" alignItems="center" justifyContent="space-between" margin="0 0 16px 0">
+      <Flex dir="row" alignItems="center" justifyContent="space-between" margin="0 0 12px 0">
         <IconButton name="back" size={16} color="gray" onClick={goToPreviousMonth} />
         <Text as="h3" type="Body" weight="medium" color="black">
           {year}년 {MONTHS[month]}

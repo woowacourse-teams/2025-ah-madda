@@ -91,7 +91,6 @@ const SingleDatePickerContent = ({
     handleConfirm,
     handleCancel,
     isConfirmDisabled,
-    handleReset,
   } = useSingleDatePicker({
     onClose,
     onSelect,
@@ -105,7 +104,7 @@ const SingleDatePickerContent = ({
         이벤트 날짜 및 시간 선택
       </Text>
 
-      <Flex dir="column" gap="20px" padding="20px 0 0 0">
+      <Flex dir="column" gap="16px" padding="16px 0 0 0">
         <Flex
           dir="row"
           css={css`
@@ -114,6 +113,7 @@ const SingleDatePickerContent = ({
             @media (max-width: 768px) {
               flex-direction: column;
               align-items: center;
+              gap: 16px;
             }
           `}
         >
@@ -141,14 +141,6 @@ const SingleDatePickerContent = ({
                 )
               }
             />
-          </Flex>
-        </Flex>
-
-        <Flex dir="column" gap="8px">
-          <Flex dir="row" justifyContent="space-between" gap="8px">
-            <Button variant="outline" size="sm" onClick={handleReset}>
-              초기화
-            </Button>
           </Flex>
         </Flex>
 
@@ -186,7 +178,6 @@ const RangeDatePickerContent = ({
     handleConfirm,
     handleCancel,
     isConfirmDisabled,
-    handleReset,
   } = useRangeDatePicker({
     onClose,
     onSelect,
@@ -202,7 +193,7 @@ const RangeDatePickerContent = ({
         신청 날짜 및 시간 선택
       </Text>
 
-      <Flex dir="column" gap="20px" padding="20px 0 0 0">
+      <Flex dir="column" gap="16px" padding="16px 0 0 0">
         <Flex
           dir="row"
           css={css`
@@ -249,14 +240,6 @@ const RangeDatePickerContent = ({
                 )
               }
             />
-          </Flex>
-        </Flex>
-
-        <Flex dir="column" gap="8px">
-          <Flex dir="row" justifyContent="space-between" gap="8px">
-            <Button variant="outline" size="sm" onClick={handleReset}>
-              초기화
-            </Button>
           </Flex>
         </Flex>
 

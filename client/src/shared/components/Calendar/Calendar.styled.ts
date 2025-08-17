@@ -44,7 +44,7 @@ export const WeekDay = styled(Flex)`
 export const WeekDayHeader = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
 `;
 
 export const DateContainer = styled.div`
