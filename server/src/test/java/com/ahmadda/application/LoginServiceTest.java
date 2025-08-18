@@ -10,10 +10,10 @@ import com.ahmadda.infra.login.RefreshTokenRepository;
 import com.ahmadda.infra.login.exception.InvalidTokenException;
 import com.ahmadda.infra.login.jwt.config.JwtProperties;
 import com.ahmadda.infra.login.jwt.dto.JwtMemberPayload;
+import com.ahmadda.infra.login.util.HashUtils;
 import com.ahmadda.infra.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.oauth.dto.OAuthUserInfoResponse;
 import io.jsonwebtoken.Jwts;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
@@ -134,17 +135,24 @@ class LoginServiceTest {
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
                 .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
 
-        var oldToken = sut.login(code, redirectUri, userAgent);
+        var member = Member.create(name, email, testPicture);
+        memberRepository.save(member);
+
+        sut.login(code, redirectUri, userAgent);
+
+        var deviceId = HashUtils.sha256(userAgent);
+        var oldSavedToken = refreshTokenRepository.findByMemberIdAndDeviceId(member.getId(), deviceId)
+                .get();
 
         // when
-        var newLoginToken = sut.login(code, redirectUri, userAgent);
+        sut.login(code, redirectUri, userAgent);
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(newLoginToken.refreshToken())
-                    .isNotEqualTo(oldToken.refreshToken());
-            softly.assertThat(newLoginToken.accessToken())
-                    .isNotEqualTo(oldToken.accessToken());
+            var newSavedToken = refreshTokenRepository.findByMemberIdAndDeviceId(member.getId(), deviceId)
+                    .get();
+            softly.assertThat(oldSavedToken.getId())
+                    .isNotEqualTo(newSavedToken.getId());
             softly.assertThat(refreshTokenRepository.findAll())
                     .hasSize(1);
         });
@@ -160,6 +168,7 @@ class LoginServiceTest {
 
         var redirectUri = "redirectUri";
         var testPicture = "testPicture";
+        var deviceId = HashUtils.sha256(userAgent);
 
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
                 .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
@@ -167,20 +176,23 @@ class LoginServiceTest {
         var member = Member.create(name, email, testPicture);
         memberRepository.save(member);
 
-        var oldToken = sut.login(code, redirectUri, userAgent);
+        sut.login(code, redirectUri, userAgent);
         var expiredAccessToken = createExpiredAccessToken(member.getId());
 
         var loginTokens = sut.login(code, redirectUri, userAgent);
 
+        var oldSavedToken = refreshTokenRepository.findByMemberIdAndDeviceId(member.getId(), deviceId)
+                .get();
+
         // when
-        var newLoginToken = sut.renewMemberToken(expiredAccessToken, loginTokens.refreshToken(), userAgent);
+        sut.renewMemberToken(expiredAccessToken, loginTokens.refreshToken(), userAgent);
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(newLoginToken.refreshToken())
-                    .isNotEqualTo(oldToken.refreshToken());
-            softly.assertThat(newLoginToken.accessToken())
-                    .isNotEqualTo(oldToken.accessToken());
+            var newSavedToken = refreshTokenRepository.findByMemberIdAndDeviceId(member.getId(), deviceId)
+                    .get();
+            softly.assertThat(oldSavedToken.getId())
+                    .isNotEqualTo(newSavedToken.getId());
             softly.assertThat(refreshTokenRepository.findAll())
                     .hasSize(1);
         });
@@ -206,10 +218,10 @@ class LoginServiceTest {
         var loginTokens = sut.login(code, redirectUri, userAgent);
 
         // when // then
-        Assertions.assertThatThrownBy(() -> sut.renewMemberToken(loginTokens.accessToken(),
-                                                                 loginTokens.refreshToken(),
-                                                                 userAgent
-                ))
+        assertThatThrownBy(() -> sut.renewMemberToken(loginTokens.accessToken(),
+                                                      loginTokens.refreshToken(),
+                                                      userAgent
+        ))
                 .isInstanceOf(InvalidTokenException.class)
                 .hasMessage("엑세스 토큰이 만료되지 않았습니다.");
     }
@@ -227,7 +239,7 @@ class LoginServiceTest {
         var invalidLoginMember = new LoginMember(999L);
 
         // when // then
-        Assertions.assertThatThrownBy(() -> sut.logout(invalidLoginMember, refresh, userAgent))
+        assertThatThrownBy(() -> sut.logout(invalidLoginMember, refresh, userAgent))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 회원입니다");
     }
@@ -256,7 +268,7 @@ class LoginServiceTest {
         sut.logout(loginMember, newLoginToken.refreshToken(), userAgent);
 
         // then
-        Assertions.assertThat(refreshTokenRepository.findAll())
+        assertThat(refreshTokenRepository.findAll())
                 .hasSize(0);
     }
 
@@ -268,15 +280,10 @@ class LoginServiceTest {
     private String createExpiredAccessToken(Long memberId) {
         var now = Instant.now();
 
-        var uuid = UUID.randomUUID()
-                .toString();
-
-        var claims = JwtMemberPayload.toClaims(memberId, uuid);
+        var claims = JwtMemberPayload.toClaims(memberId);
 
         return Jwts.builder()
                 .claims(claims)
-                .id(UUID.randomUUID()
-                            .toString())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.minus(Duration.ofDays(1))))
                 .signWith(jwtProperties.getAccessSecretKey())

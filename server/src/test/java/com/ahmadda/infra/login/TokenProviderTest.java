@@ -5,7 +5,6 @@ import com.ahmadda.infra.login.jwt.JwtProvider;
 import com.ahmadda.infra.login.jwt.config.JwtProperties;
 import com.ahmadda.infra.login.jwt.dto.JwtMemberPayload;
 import io.jsonwebtoken.Jwts;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -15,6 +14,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class TokenProviderTest {
 
@@ -38,7 +38,7 @@ class TokenProviderTest {
         var memberId = 1L;
 
         // when // then
-        Assertions.assertDoesNotThrow(() -> sut.createMemberToken(memberId));
+        assertDoesNotThrow(() -> sut.createMemberToken(memberId));
     }
 
     @Test
@@ -84,9 +84,9 @@ class TokenProviderTest {
                 .plusDays(1);
         var savedRefreshToken = RefreshToken.create(memberToken.refreshToken(), memberId, userAgent, expiresAt);
         // when // then
-        Assertions.assertDoesNotThrow(() -> sut.validateDeleteRefreshToken(memberId,
-                                                                           memberToken.refreshToken(),
-                                                                           savedRefreshToken.getToken()
+        assertDoesNotThrow(() -> sut.validateDeleteRefreshToken(memberId,
+                                                                memberToken.refreshToken(),
+                                                                savedRefreshToken.getToken()
         ));
     }
 
@@ -113,10 +113,8 @@ class TokenProviderTest {
 
     private String createExpiredAccessToken(Long memberId) {
         var now = Instant.now();
-        var uuid = UUID.randomUUID()
-                .toString();
 
-        var claims = JwtMemberPayload.toClaims(memberId, uuid);
+        var claims = JwtMemberPayload.toClaims(memberId);
 
         return Jwts.builder()
                 .issuedAt(Date.from(now))
@@ -129,11 +127,8 @@ class TokenProviderTest {
     private String createExpiredRefreshToken(Long memberId) {
         var now = Instant.now();
 
-        var uuid = UUID.randomUUID()
-                .toString();
-
         return Jwts.builder()
-                .claims(JwtMemberPayload.toClaims(memberId, uuid))
+                .claims(JwtMemberPayload.toClaims(memberId))
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.minus(Duration.ofDays(1))))
                 .signWith(jwtProperties.getRefreshSecretKey())
