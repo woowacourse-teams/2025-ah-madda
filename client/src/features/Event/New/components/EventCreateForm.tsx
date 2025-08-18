@@ -38,7 +38,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const navigate = useNavigate();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
   const { mutate: updateEvent } = useUpdateEvent();
-  const { mutate: loadPastEvent } = useAddTemplate();
+  const { mutate: addTemplate } = useAddTemplate();
 
   const { data: eventDetail } = useQuery({
     queryKey: ['event', 'detail', Number(eventId)],
@@ -150,10 +150,12 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     }
   };
 
-  const handleLoadPastEvent = () => {
-    loadPastEvent(
+  const handleAddTemplate = () => {
+    const title = basicEventForm.description.split('\n')[0].trim();
+
+    addTemplate(
       {
-        title: basicEventForm.title,
+        title: title,
         description: basicEventForm.description,
       },
       {
@@ -161,9 +163,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
           alert('템플릿이 성공적으로 추가되었습니다!');
         },
         onError: () => {
-          if (!basicEventForm.title || basicEventForm.title.trim() === '') {
-            alert('이벤트 이름을 입력해 주세요');
-          } else if (!basicEventForm.description || basicEventForm.description.trim() === '') {
+          if (!basicEventForm.description || basicEventForm.description.trim() === '') {
             alert('이벤트 설명을 입력해 주세요');
           }
         },
@@ -194,7 +194,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 </Text>
               </label>
               <Flex
-                onClick={handleLoadPastEvent}
+                onClick={handleAddTemplate}
                 css={css`
                   cursor: pointer;
                 `}
