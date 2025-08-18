@@ -60,6 +60,21 @@ public class EventNotificationOptOutService {
         optOutRepository.delete(optOut);
     }
 
+    public OrganizationMemberWithOptStatus getMemberWithOptStatus(final Long eventId, final LoginMember loginMember) {
+        Event event = getEvent(eventId);
+        OrganizationMember organizationMember = getOrganizationMember(
+                event.getOrganization()
+                        .getId(),
+                loginMember.memberId()
+        );
+
+        return OrganizationMemberWithOptStatus.createWithOptOutStatus(
+                organizationMember,
+                event,
+                optOutRepository
+        );
+    }
+
     public List<GuestWithOptStatus> mapGuests(final List<Guest> guests) {
         return guests.stream()
                 .map(guest -> {
@@ -98,6 +113,6 @@ public class EventNotificationOptOutService {
 
     private OrganizationMember getOrganizationMember(final Long organizationId, final Long memberId) {
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
-                .orElseThrow(() -> new NotFoundException("해당 조직의 구성원이 아닙니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직원입니다."));
     }
 }
