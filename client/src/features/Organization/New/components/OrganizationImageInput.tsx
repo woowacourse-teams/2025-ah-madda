@@ -67,14 +67,7 @@ export const OrganizationImageInput = ({
       `}
       aria-invalid={isError || undefined}
     >
-      <Flex
-        width="255px"
-        height="255px"
-        css={css`
-          position: relative;
-          overflow: visible;
-        `}
-      >
+      <Flex width="255px" dir="column" gap="8px">
         <Button
           onClick={openPicker}
           disabled={disabled}
@@ -112,20 +105,17 @@ export const OrganizationImageInput = ({
         </Button>
 
         {preview && (
-          <Button
-            size="sm"
-            type="button"
-            color="secondary"
-            onClick={clearFile}
-            disabled={disabled}
-            css={css`
-              position: absolute;
-              right: -85px;
-              bottom: 0px;
-            `}
-          >
-            제거
-          </Button>
+          <Flex justifyContent="flex-end">
+            <Button
+              size="sm"
+              type="button"
+              color="secondary"
+              onClick={clearFile}
+              disabled={disabled}
+            >
+              제거
+            </Button>
+          </Flex>
         )}
       </Flex>
 
