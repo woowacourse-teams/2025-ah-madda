@@ -107,7 +107,6 @@ public class JwtProvider {
         } catch (ExpiredJwtException e) {
             throw new InvalidJwtException("만료기한이 지난 토큰입니다.", e);
         } catch (JwtException | IllegalArgumentException e) {
-            log.error("jwtError : {} ", e.getMessage(), e);
             throw new InvalidJwtException("인증 토큰을 파싱하는데 실패하였습니다.", e);
         }
     }
