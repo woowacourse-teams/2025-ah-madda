@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
+import { Input } from '@/shared/components/Input';
 import { StyledFooterRow, StyledHelperText } from '@/shared/components/Input/Input.styled';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
@@ -128,12 +130,15 @@ export const OrganizationImageInput = ({
         </StyledFooterRow>
       </Flex>
 
-      <input
+      <Input
+        id="orgImage"
         ref={inputRef}
         type="file"
         accept={accept}
-        style={{ display: 'none' }}
         onChange={(e) => handleImageSelection(e.target.files?.[0] ?? null)}
+        css={css`
+          display: none;
+        `}
       />
     </Flex>
   );
