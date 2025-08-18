@@ -3,10 +3,6 @@ import { queryOptions } from '@tanstack/react-query';
 import { Event, Organization } from '@/features/Event/types/Event';
 
 import { fetcher } from '../fetcher';
-import {
-  CreateOrganizationAPIRequest,
-  CreateOrganizationAPIResponse,
-} from '../types/organizations';
 
 export const organizationQueryKeys = {
   all: () => ['organization'],
@@ -56,26 +52,3 @@ const getOrganizationProfile = ({ organizationId }: { organizationId: number }) 
 export const getOrganizationPreview = (inviteCode: string) => {
   return fetcher.get<Organization>(`organizations/preview?inviteCode=${inviteCode}`);
 };
-
-export async function createOrganization(
-  body: CreateOrganizationAPIRequest
-): Promise<CreateOrganizationAPIResponse> {
-  const formData = new FormData();
-
-  const organization = {
-    name: body.organization.name.trim(),
-    description: body.organization.description.trim(),
-    nickname: body.organization.nickname.trim(),
-  };
-
-  formData.append(
-    'organization',
-    new Blob([JSON.stringify(organization)], { type: 'application/json' })
-  );
-
-  if (body.thumbnail) {
-    formData.append('thumbnail', body.thumbnail);
-  }
-
-  return fetcher.post<CreateOrganizationAPIResponse>('organizations', formData);
-}
