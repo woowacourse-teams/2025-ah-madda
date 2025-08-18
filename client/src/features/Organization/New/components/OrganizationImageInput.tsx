@@ -29,16 +29,12 @@ export const OrganizationImageInput = ({
 }: OrganizationImageInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(initialPreviewUrl ?? null);
-  const previewUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
     return () => {
-      if (previewUrlRef.current) {
-        URL.revokeObjectURL(previewUrlRef.current);
-        previewUrlRef.current = null;
-      }
+      if (preview?.startsWith('blob:')) URL.revokeObjectURL(preview);
     };
-  }, []);
+  }, [preview]);
 
   const resetInputValue = () => {
     if (inputRef.current) inputRef.current.value = '';
@@ -50,23 +46,9 @@ export const OrganizationImageInput = ({
   };
 
   const setFile = (file: File | null) => {
-    if (previewUrlRef.current) {
-      URL.revokeObjectURL(previewUrlRef.current);
-      previewUrlRef.current = null;
-    }
-
-    if (!file) {
-      setPreview(null);
-      onChange(null);
-      resetInputValue();
-      return;
-    }
-
-    const url = URL.createObjectURL(file);
-    previewUrlRef.current = url;
-    setPreview(url);
+    const next = file ? URL.createObjectURL(file) : null;
+    setPreview(next);
     onChange(file);
-
     resetInputValue();
   };
 
