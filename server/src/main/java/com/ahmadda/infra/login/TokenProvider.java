@@ -24,13 +24,13 @@ public class TokenProvider {
         return new MemberToken(accessToken, refreshToken);
     }
 
-    public LocalDateTime parseRefreshTokenExpiresAt(String refreshToken) {
+    public LocalDateTime parseRefreshTokenExpiresAt(final String refreshToken) {
         JwtMemberPayload jwtMemberPayload = jwtProvider.parseRefreshPayload(refreshToken);
 
         return jwtMemberPayload.getExpiresAt();
     }
 
-    public Long parseRefreshTokenMemberId(String refreshToken) {
+    public Long parseRefreshTokenMemberId(final String refreshToken) {
         JwtMemberPayload jwtMemberPayload = jwtProvider.parseRefreshPayload(refreshToken);
 
         return jwtMemberPayload.getMemberId();
@@ -38,26 +38,26 @@ public class TokenProvider {
 
     public MemberToken refreshMemberToken(final String accessToken,
                                           final String refreshToken,
-                                          final RefreshToken savedRefreshToken) {
+                                          final String savedRefreshToken) {
         validateTokens(accessToken, refreshToken);
 
         JwtMemberPayload jwtMemberPayload = jwtProvider.parseRefreshPayload(refreshToken);
         Long memberId = jwtMemberPayload.getMemberId();
 
-        validateRefreshTokenMatches(refreshToken, savedRefreshToken.getToken());
+        validateRefreshTokenMatches(refreshToken, savedRefreshToken);
 
         return createMemberToken(memberId);
     }
 
     public void validateDeleteRefreshToken(final Long memberId,
                                            final String refreshToken,
-                                           final RefreshToken savedRefreshToken) {
+                                           final String savedRefreshToken) {
         JwtMemberPayload payload = jwtProvider.parseRefreshPayload(refreshToken);
         if (!Objects.equals(memberId, payload.getMemberId())) {
             throw new InvalidTokenException("토큰 정보가 일치하지 않습니다.");
         }
 
-        validateRefreshTokenMatches(refreshToken, savedRefreshToken.getToken());
+        validateRefreshTokenMatches(refreshToken, savedRefreshToken);
     }
 
     private void validateRefreshTokenMatches(final String refreshToken, final String savedRefreshToken) {

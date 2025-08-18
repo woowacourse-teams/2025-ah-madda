@@ -38,8 +38,7 @@ public class LoginService {
 
         MemberToken memberToken = tokenProvider.createMemberToken(member.getId());
 
-        deleteExistRefreshToken(member.getId(), userAgent);
-        saveRefreshToken(memberToken.refreshToken(), member.getId(), userAgent);
+        rotateRefreshToken(memberToken.refreshToken(), member.getId(), userAgent);
 
         return memberToken;
     }
@@ -50,10 +49,9 @@ public class LoginService {
 
         RefreshToken savedRefreshToken = getRefreshToken(memberId, userAgent);
         MemberToken refreshedMemberToken =
-                tokenProvider.refreshMemberToken(accessToken, refreshToken, savedRefreshToken);
+                tokenProvider.refreshMemberToken(accessToken, refreshToken, savedRefreshToken.getToken());
 
-        deleteExistRefreshToken(memberId, userAgent);
-        saveRefreshToken(refreshedMemberToken.refreshToken(), memberId, userAgent);
+        rotateRefreshToken(refreshedMemberToken.refreshToken(), memberId, userAgent);
 
         return refreshedMemberToken;
     }
@@ -63,7 +61,7 @@ public class LoginService {
         Member member = getMember(loginMember);
         RefreshToken savedRefreshToken = getRefreshToken(member.getId(), userAgent);
 
-        tokenProvider.validateDeleteRefreshToken(member.getId(), refreshToken, savedRefreshToken);
+        tokenProvider.validateDeleteRefreshToken(member.getId(), refreshToken, savedRefreshToken.getToken());
 
         refreshTokenRepository.delete(savedRefreshToken);
     }

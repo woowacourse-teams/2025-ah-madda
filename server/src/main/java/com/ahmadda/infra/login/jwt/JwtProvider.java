@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
 import javax.crypto.SecretKey;
 
 @Slf4j
@@ -32,9 +33,11 @@ public class JwtProvider {
         Claims claims = JwtMemberPayload.toClaims(memberId);
 
         return Jwts.builder()
+                .claims(claims)
+                .id(UUID.randomUUID()
+                            .toString())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expire))
-                .claims(claims)
                 .signWith(jwtProperties.getAccessSecretKey())
                 .compact();
     }
@@ -46,9 +49,11 @@ public class JwtProvider {
         Claims claims = JwtMemberPayload.toClaims(memberId);
 
         return Jwts.builder()
+                .claims(claims)
+                .id(UUID.randomUUID()
+                            .toString())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expire))
-                .claims(claims)
                 .signWith(jwtProperties.getRefreshSecretKey())
                 .compact();
     }

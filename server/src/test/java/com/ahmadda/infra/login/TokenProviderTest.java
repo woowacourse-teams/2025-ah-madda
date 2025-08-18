@@ -1,14 +1,12 @@
 package com.ahmadda.infra.login;
 
 import com.ahmadda.infra.login.exception.InvalidTokenException;
+import com.ahmadda.infra.login.jwt.JwtProvider;
 import com.ahmadda.infra.login.jwt.config.JwtProperties;
 import com.ahmadda.infra.login.jwt.dto.JwtMemberPayload;
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -16,67 +14,48 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.NONE,
-        properties = {
-                "jwt.access-secret-key=0123456789abcdef0123456789abcdef",
-                "jwt.refresh-secret-key=abcdef0123456789abcdef0123456789",
-                "jwt.access-expiration=10d",
-                "jwt.refresh-expiration=10d"
-        }
-)
-@Transactional
 class TokenProviderTest {
 
-    @Autowired
-    TokenProvider sut;
+    String accessSecretKey = UUID.randomUUID()
+            .toString();
+    Duration accessExpiration = Duration.ofHours(1);
+    String refreshSecretKey = UUID.randomUUID()
+            .toString();
+    Duration refreshExpiration = Duration.ofHours(1);
 
-    @Autowired
-    RefreshTokenRepository refreshTokenRepository;
+    JwtProperties jwtProperties =
+            new JwtProperties(accessSecretKey, accessExpiration, refreshSecretKey, refreshExpiration);
 
-    @Autowired
-    JwtProperties jwtProperties;
+    JwtProvider jwtProvider = new JwtProvider(jwtProperties);
+
+    TokenProvider sut = new TokenProvider(jwtProvider);
 
     @Test
     void 액세스와_리프레시_토큰을_생성할_수_있다() {
         // given
         var memberId = 1L;
-        var userAgent = createUserAgent();
 
         // when // then
-        Assertions.assertDoesNotThrow(() -> sut.createMemberToken(memberId, userAgent));
+        Assertions.assertDoesNotThrow(() -> sut.createMemberToken(memberId));
     }
 
     @Test
     void 재발급_시_액세스_토큰이_만료되지_않으면_예외가_발생한다() {
         // given
         var memberId = 1L;
-        var userAgent = createUserAgent();
-        var memberToken = sut.createMemberToken(memberId, userAgent);
+
+        var savedToken = sut.createMemberToken(memberId);
+        var memberToken = sut.createMemberToken(memberId);
 
         // when // then
-        assertThatThrownBy(() -> sut.renewMemberToken(memberToken.accessToken(), memberToken.refreshToken(), userAgent))
-                .isInstanceOf(InvalidTokenException.class)
-                .hasMessage("아직 만료되지 않은 액세스 토큰입니다.");
-    }
-
-    @Test
-    void 액세스_토큰이_만료되었으면_재발급_받을_수_있다() {
-        // given
-        var memberId = 1L;
-        var userAgent = createUserAgent();
-        var memberToken = sut.createMemberToken(memberId, userAgent);
-
-        var expiredAccessToken = createExpiredAccessToken(memberId);
-
-        // when // then
-        Assertions.assertDoesNotThrow(() -> sut.renewMemberToken(expiredAccessToken,
-                                                                 memberToken.refreshToken(),
-                                                                 userAgent
-        ));
+        assertThatThrownBy(() -> sut.refreshMemberToken(memberToken.accessToken(),
+                                                        memberToken.refreshToken(),
+                                                        savedToken.refreshToken()
+                           )
+        ).isInstanceOf(InvalidTokenException.class)
+                .hasMessage("엑세스 토큰이 만료되지 않았습니다.");
     }
 
     @Test
@@ -89,42 +68,26 @@ class TokenProviderTest {
         var expiredRefreshToken = createExpiredRefreshToken(memberId, userAgent);
 
         // when // then
-        assertThatThrownBy(() -> sut.renewMemberToken(expiredAccessToken, expiredRefreshToken, userAgent))
+        assertThatThrownBy(() -> sut.refreshMemberToken(expiredAccessToken, expiredRefreshToken, userAgent))
                 .isInstanceOf(InvalidTokenException.class)
                 .hasMessage("리프레시 토큰이 만료되었습니다.");
-    }
-
-    @Test
-    void 재발급_시_유저_에이전트가_다르면_예외가_발생한다() {
-        // given
-        var memberId = 1L;
-        var userAgent = createUserAgent();
-        var otherUserAgent = createUserAgent();
-        var memberToken = sut.createMemberToken(memberId, userAgent);
-
-        var expiredAccessToken = createExpiredAccessToken(memberId);
-
-        // when // then
-        assertThatThrownBy(() -> sut.renewMemberToken(expiredAccessToken,
-                                                      memberToken.refreshToken(),
-                                                      otherUserAgent
-        ))
-                .isInstanceOf(InvalidTokenException.class)
-                .hasMessage("토큰을 찾을 수 없습니다.");
     }
 
     @Test
     void 리프레시_토큰이_유효하면_토큰을_지울_수_있다() {
         // given
         var memberId = 1L;
+        var memberToken = sut.createMemberToken(memberId);
+
         var userAgent = createUserAgent();
-        var memberToken = sut.createMemberToken(memberId, userAgent);
-
-        // when
-        sut.deleteRefreshToken(memberId, memberToken.refreshToken(), userAgent);
-
-        // then
-        assertThat(refreshTokenRepository.findAll()).hasSize(0);
+        var expiresAt = LocalDateTime.now()
+                .plusDays(1);
+        var savedRefreshToken = RefreshToken.create(memberToken.refreshToken(), memberId, userAgent, expiresAt);
+        // when // then
+        Assertions.assertDoesNotThrow(() -> sut.validateDeleteRefreshToken(memberId,
+                                                                           memberToken.refreshToken(),
+                                                                           savedRefreshToken.getToken()
+        ));
     }
 
     @Test
@@ -135,10 +98,10 @@ class TokenProviderTest {
 
         var userAgent = createUserAgent();
 
-        var memberToken = sut.createMemberToken(memberId, userAgent);
+        var memberToken = sut.createMemberToken(memberId);
 
         // when // then
-        assertThatThrownBy(() -> sut.deleteRefreshToken(otherMemberId, memberToken.refreshToken(), userAgent))
+        assertThatThrownBy(() -> sut.validateDeleteRefreshToken(otherMemberId, memberToken.refreshToken(), userAgent))
                 .isInstanceOf(InvalidTokenException.class)
                 .hasMessage("토큰 정보가 일치하지 않습니다.");
     }
@@ -163,20 +126,11 @@ class TokenProviderTest {
     private String createExpiredRefreshToken(Long memberId, String userAgent) {
         var now = Instant.now();
 
-        var token = Jwts.builder()
+        return Jwts.builder()
                 .claims(JwtMemberPayload.toClaims(memberId))
                 .issuedAt(Date.from(now))
-                .expiration(Date.from(now.minus(Duration.ofDays(1)))) // 이미 만료
+                .expiration(Date.from(now.minus(Duration.ofDays(1))))
                 .signWith(jwtProperties.getRefreshSecretKey())
                 .compact();
-
-        var expiredAt = LocalDateTime.now()
-                .minusDays(1); // 레포에도 만료로 기록
-
-        refreshTokenRepository.save(
-                RefreshToken.create(token, memberId, userAgent, expiredAt)
-        );
-
-        return token;
     }
 }

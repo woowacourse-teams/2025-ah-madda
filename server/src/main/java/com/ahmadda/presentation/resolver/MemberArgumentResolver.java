@@ -18,8 +18,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @RequiredArgsConstructor
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private static final String BEARER_TYPE = "Bearer ";
-
     private final JwtProvider jwtProvider;
     private final CookieProvider cookieProvider;
 
