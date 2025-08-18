@@ -7,7 +7,7 @@ import { Flex } from '@/shared/components/Flex';
 import { StyledFooterRow, StyledHelperText } from '@/shared/components/Input/Input.styled';
 import { Text } from '@/shared/components/Text';
 
-type Props = {
+type OrganizationImageInputProps = {
   onChange: (file: File | null) => void;
   accept?: string;
   initialPreviewUrl?: string;
@@ -26,7 +26,7 @@ export const OrganizationImageInput = ({
   disabled,
   errorMessage,
   helperText,
-}: Props) => {
+}: OrganizationImageInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(initialPreviewUrl ?? null);
   const previewUrlRef = useRef<string | null>(null);
