@@ -16,7 +16,7 @@ spring:
         detector:
           enabled: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
 
   cloud:
     aws:

@@ -3,6 +3,8 @@ spring:
     enabled: false
 
   jpa:
+    hibernate:
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
