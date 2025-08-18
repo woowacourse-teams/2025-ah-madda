@@ -100,7 +100,7 @@ public class LoginController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "아직 만료되지 않은 액세스 토큰입니다.",
+                                              "detail": "엑세스 토큰이 만료되지 않았습니다.",
                                               "instance": "/api/members/token"
                                             }
                                             """),
