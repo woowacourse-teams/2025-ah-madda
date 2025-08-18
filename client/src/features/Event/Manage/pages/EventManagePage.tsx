@@ -19,7 +19,7 @@ import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
 import { formatDateTime } from '../../My/utils/date';
-import { badgeText } from '../../Overview/utils/badgeText';
+import { badgeText } from '../../utils/badgeText';
 import { EventInfoSection } from '../components/EventInfoSection';
 import { GuestManageSection } from '../components/GuestManageSection';
 import { EventManageContainer } from '../containers/EventManageContainer';

@@ -30,7 +30,6 @@ export const mockEventDetail = {
   title: '테스트 이벤트',
   description: '테스트 이벤트 설명',
   organizerName: '홍길동',
-  registrationStart: '2025-01-01T00:00:00',
   registrationEnd: '2025-12-31T23:59:59',
   eventStart: '2025-01-15T10:00:00',
   eventEnd: '2025-01-15T12:00:00',
