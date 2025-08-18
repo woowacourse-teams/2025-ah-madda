@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "esnext",
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+
+    "jsx": "react-jsx",
+    "jsxImportSource": "@emotion/react",
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "types": ["vitest/globals"]
+  },
+  "include": ["src", "global.d.ts", ".storybook/*"],
+  "exclude": ["node_modules", "dist"]
+}

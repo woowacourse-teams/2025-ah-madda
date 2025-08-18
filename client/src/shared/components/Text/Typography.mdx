@@ -1,0 +1,43 @@
+import { Meta, Typeset } from '@storybook/addon-docs/blocks';
+
+<Meta title="foundations/Typography" />
+
+export const typography = {
+  type: {
+    primary: '"Pretendard',
+  },
+  weight: {
+    regular: '400',
+    medium: '500',
+    semibold: '600',
+    bold: '700',
+  },
+  size: {
+    Display: 36,
+    Heading: 28,
+    Title: 20,
+    Body: 16,
+    Label: 14,
+  },
+};
+
+export const SampleText = '아맞다! 팀 이벤트 또 놓쳤다고? 미리 알려드릴게요. 😎';
+
+# Typography
+
+**Font:** Pretendard
+
+**Weights:** 400(regular), 500(medium), semibold(600), 700(bold)
+
+<Typeset
+  fontSizes={[
+    Number(typography.size.Display),
+    Number(typography.size.Heading),
+    Number(typography.size.Title),
+    Number(typography.size.Body),
+    Number(typography.size.Label),
+  ]}
+  fontWeight={typography.weight.semibold}
+  sampleText={SampleText}
+  fontFamily={typography.type.primary}
+/>
