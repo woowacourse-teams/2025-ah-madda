@@ -6,6 +6,7 @@ import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { StyledFooterRow, StyledHelperText } from '@/shared/components/Input/Input.styled';
 import { Text } from '@/shared/components/Text';
+import { theme } from '@/shared/styles/theme';
 
 type OrganizationImageInputProps = {
   onChange: (file: File | null) => void;
@@ -81,16 +82,16 @@ export const OrganizationImageInput = ({
           css={css`
             width: 255px;
             height: 255px;
-            border: 1px dashed #d4d8e1;
+            border: 1px dashed ${theme.colors.gray200};
             border-radius: 12px;
-            background: #fafbfc;
+            background: ${theme.colors.gray50};
             padding: 0;
             overflow: hidden;
             display: grid;
             place-items: center;
 
             &:hover {
-              background: #f2f4f8;
+              background: ${theme.colors.gray100};
             }
 
             img {
