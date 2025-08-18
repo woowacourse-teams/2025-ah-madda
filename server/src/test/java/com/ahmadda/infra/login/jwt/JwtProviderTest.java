@@ -70,7 +70,8 @@ class JwtProviderTest {
 
         // when // then
         assertThatThrownBy(() -> sut.parseAccessPayload(token))
-                .isInstanceOf(InvalidJwtException.class);
+                .isInstanceOf(InvalidJwtException.class)
+                .hasMessage("만료기한이 지난 토큰입니다.");
     }
 
     @Test
@@ -94,25 +95,29 @@ class JwtProviderTest {
 
         // when // then
         assertThatThrownBy(() -> sut.parseAccessPayload(token))
-                .isInstanceOf(InvalidJwtException.class);
+                .isInstanceOf(InvalidJwtException.class)
+                .hasMessage("인증 토큰을 파싱하는데 실패하였습니다.");
     }
 
     @Test
     void 페이로드_변환시_빈_토큰이면_예외가_발생한다() {
         assertThatThrownBy(() -> sut.parseAccessPayload(""))
-                .isInstanceOf(InvalidJwtException.class);
+                .isInstanceOf(InvalidJwtException.class)
+                .hasMessage("인증 토큰을 파싱하는데 실패하였습니다.");
     }
 
     @Test
     void 페이로드_변환시_null_토큰이면_예외가_발생한다() {
         assertThatThrownBy(() -> sut.parseAccessPayload(null))
-                .isInstanceOf(InvalidJwtException.class);
+                .isInstanceOf(InvalidJwtException.class)
+                .hasMessage("인증 토큰을 파싱하는데 실패하였습니다.");
     }
 
     @Test
     void 페이로드_변환시_형식이_잘못된_토큰이면_예외가_발생한다() {
         assertThatThrownBy(() -> sut.parseAccessPayload("this.is.not.jwt"))
-                .isInstanceOf(InvalidJwtException.class);
+                .isInstanceOf(InvalidJwtException.class)
+                .hasMessage("잘못된 형식의 토큰입니다.");
     }
 
     @Test
@@ -143,7 +148,8 @@ class JwtProviderTest {
 
         // when // then
         assertThatThrownBy(() -> sut.parseRefreshPayload(expiredRefreshToken))
-                .isInstanceOf(InvalidJwtException.class);
+                .isInstanceOf(InvalidJwtException.class)
+                .hasMessage("만료기한이 지난 토큰입니다.");
     }
 
     @Test
@@ -164,7 +170,8 @@ class JwtProviderTest {
 
         // when // then
         assertThatThrownBy(() -> sut.parseRefreshPayload(token))
-                .isInstanceOf(InvalidJwtException.class);
+                .isInstanceOf(InvalidJwtException.class)
+                .hasMessage("인증 토큰을 파싱하는데 실패하였습니다.");
     }
 
     @Test
@@ -191,6 +198,7 @@ class JwtProviderTest {
 
         // when // then
         assertThatThrownBy(() -> sut.parseRefreshPayload(accessToken))
-                .isInstanceOf(InvalidJwtException.class);
+                .isInstanceOf(InvalidJwtException.class)
+                .hasMessage("인증 토큰을 파싱하는데 실패하였습니다.");
     }
 }
