@@ -72,6 +72,6 @@ export const fetcher = {
   get: <T>(path: string) => request<T>(path, 'GET'),
   post: <T>(path: string, body?: object | FormData) => request<T>(path, 'POST', body),
   patch: <T>(path: string, body?: object | FormData) => request<T>(path, 'PATCH', body),
-  put: <T>(path: string, body?: object | FormData) => request<T>(path, 'PUT', body),
+  put: <T>(path: string, body?: object) => request<T>(path, 'PUT', body),
   delete: (path: string) => request<void>(path, 'DELETE'),
 };
