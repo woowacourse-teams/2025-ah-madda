@@ -6,13 +6,13 @@ export type OrgFormFields = {
   logo: File | null;
 };
 
-type ValidationRule<TForm> = {
+type ValidationRule = {
   label: string;
   required?: boolean;
   maxLength?: number;
 };
 
-export const ORG_VALIDATION_RULES: Record<keyof OrgFormFields, ValidationRule<OrgFormFields>> = {
+export const ORG_VALIDATION_RULES: Record<keyof OrgFormFields, ValidationRule> = {
   name: {
     label: '조직 이름',
     required: true,
