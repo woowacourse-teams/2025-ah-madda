@@ -17,11 +17,11 @@ type Props = {
   helperText?: string;
 };
 
-const ALLOWED = 'image/png,image/jpeg,.png,.jpg,.jpeg';
+const ALLOWED_IMAGE_TYPE = 'image/png,image/jpeg,.png,.jpg,.jpeg';
 
 export const OrganizationImageInput = ({
   onChange,
-  accept = ALLOWED,
+  accept = ALLOWED_IMAGE_TYPE,
   initialPreviewUrl,
   disabled,
   errorMessage,
