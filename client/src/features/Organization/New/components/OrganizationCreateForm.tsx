@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,6 +5,7 @@ import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
+import { useModal } from '@/shared/hooks/useModal';
 
 import { MAX_LENGTH } from '../constants/errorMessages';
 import { useOrganizationForm } from '../hooks/useOrganizationForm';
@@ -16,14 +15,14 @@ import { OrganizationImageInput } from './OrganizationImageInput';
 
 export const OrganizationCreateForm = () => {
   const navigate = useNavigate();
-  const [isNickOpen, setNickOpen] = useState(false);
+  const { isOpen, open, close } = useModal();
 
   const { form, errors, isValid, handleChange, handleLogoChange } = useOrganizationForm();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isValid()) return;
-    setNickOpen(true);
+    open();
   };
 
   return (
@@ -94,14 +93,14 @@ export const OrganizationCreateForm = () => {
       </Flex>
 
       <CreatorNicknameModal
-        isOpen={isNickOpen}
+        isOpen={isOpen}
         orgName={form.name || '조직'}
         name={form.name.trim()}
         description={form.description.trim()}
         thumbnail={form.logo}
-        onCancel={() => setNickOpen(false)}
+        onCancel={close}
         onSuccess={(id) => {
-          setNickOpen(false);
+          close();
           navigate(`/event?organizationId=${id}`);
         }}
       />
