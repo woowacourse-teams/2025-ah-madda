@@ -40,7 +40,7 @@ export const CreatorNicknameModal = ({
 
   if (!isOpen) return null;
 
-  const submit = () => {
+  const handleSubmit = () => {
     const trimmed = nickname.trim();
     if (!trimmed || isSubmitting) return;
     handleCreate(trimmed);
@@ -73,7 +73,7 @@ export const CreatorNicknameModal = ({
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();
-              submit();
+              handleSubmit();
             }
           }}
         />
@@ -83,7 +83,7 @@ export const CreatorNicknameModal = ({
         <Button variant="outline" size="full" onClick={handleClose} disabled={isSubmitting}>
           취소
         </Button>
-        <Button size="full" disabled={!nickname.trim() || isSubmitting} onClick={submit}>
+        <Button size="full" disabled={!nickname.trim() || isSubmitting} onClick={handleSubmit}>
           생성하기
         </Button>
       </Flex>
