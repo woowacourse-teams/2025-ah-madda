@@ -11,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 @Service
 @RequiredArgsConstructor
 public class FcmRegistrationTokenService {
@@ -33,10 +31,9 @@ public class FcmRegistrationTokenService {
                     Member member = memberRepository.findById(loginMember.memberId())
                             .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
 
-                    FcmRegistrationToken registrationToken = FcmRegistrationToken.create(
+                    FcmRegistrationToken registrationToken = FcmRegistrationToken.createNow(
                             member.getId(),
-                            request.registrationToken(),
-                            LocalDateTime.now()
+                            request.registrationToken()
                     );
 
                     return fcmRegistrationTokenRepository.save(registrationToken);

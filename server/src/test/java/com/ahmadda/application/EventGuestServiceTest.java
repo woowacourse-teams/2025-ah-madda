@@ -6,7 +6,6 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Answer;
-import com.ahmadda.domain.AnswerRepository;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
@@ -19,6 +18,7 @@ import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Question;
+import com.ahmadda.domain.Role;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,9 +54,6 @@ class EventGuestServiceTest {
 
     @Autowired
     private GuestRepository guestRepository;
-
-    @Autowired
-    private AnswerRepository answerRepository;
 
     @Test
     void 이벤트에_참여한_게스트들을_조회한다() {
@@ -262,12 +259,12 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.participantEvent(
-                                           event.getId(),
-                                           new LoginMember(member2.getId()),
-                                           event.getRegistrationStart(),
-                                           request
-                                   )
+                sut.participantEvent(
+                        event.getId(),
+                        new LoginMember(member2.getId()),
+                        event.getRegistrationStart(),
+                        request
+                )
         )
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessageContaining("필수 질문에 대한 답변이 누락되었습니다");
@@ -291,12 +288,12 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.participantEvent(
-                                           event.getId(),
-                                           new LoginMember(member2.getId()),
-                                           event.getRegistrationStart(),
-                                           request
-                                   )
+                sut.participantEvent(
+                        event.getId(),
+                        new LoginMember(member2.getId()),
+                        event.getRegistrationStart(),
+                        request
+                )
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("존재하지 않는 질문입니다.");
@@ -454,7 +451,7 @@ class EventGuestServiceTest {
     }
 
     private OrganizationMember createAndSaveOrganizationMember(String nickname, Member member, Organization org) {
-        return organizationMemberRepository.save(OrganizationMember.create(nickname, member, org));
+        return organizationMemberRepository.save(OrganizationMember.create(nickname, member, org, Role.USER));
     }
 
     private Event createAndSaveEvent(OrganizationMember organizer, Organization organization, Question... questions) {

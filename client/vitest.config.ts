@@ -1,3 +1,5 @@
+process.env.TZ = 'Asia/Seoul';
+
 import path from 'path';
 import { defineConfig } from 'vitest/config';
 
@@ -11,7 +13,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/setupTest.ts'],
-    include: ['src/__test__/*.test.ts?(x)'],
+    include: ['src/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     exclude: [
       '**/node_modules/**',
       '**/dist/**',

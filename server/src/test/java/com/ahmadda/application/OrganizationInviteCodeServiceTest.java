@@ -11,6 +11,7 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.domain.Role;
 import com.ahmadda.infra.generator.RandomCodeGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -194,7 +195,7 @@ class OrganizationInviteCodeServiceTest {
             Member member,
             Organization organization
     ) {
-        var organizationMember = OrganizationMember.create(nickname, member, organization);
+        var organizationMember = OrganizationMember.create(nickname, member, organization, Role.USER);
         return organizationMemberRepository.save(organizationMember);
     }
 

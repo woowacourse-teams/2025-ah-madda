@@ -13,6 +13,7 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.domain.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -105,7 +106,7 @@ class EventStatisticServiceTest {
     }
 
     private OrganizationMember createOrganizationMember(Organization organization, Member member) {
-        OrganizationMember organizationMember = OrganizationMember.create("테스트닉네임", member, organization);
+        OrganizationMember organizationMember = OrganizationMember.create("테스트닉네임", member, organization, Role.USER);
         return organizationMemberRepository.save(organizationMember);
     }
 
@@ -128,11 +129,12 @@ class EventStatisticServiceTest {
                 operationPeriod,
                 30
         );
+
         return eventRepository.save(event);
     }
 
-    private EventStatistic createEventStatistic(Event event) {
+    private void createEventStatistic(Event event) {
         EventStatistic eventStatistic = EventStatistic.create(event);
-        return eventStatisticRepository.save(eventStatistic);
+        eventStatisticRepository.save(eventStatistic);
     }
 }

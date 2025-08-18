@@ -12,6 +12,7 @@ type GuestListProps = {
   guests: Guest[] | NonGuest[];
   onGuestChecked: (organizationMemberId: number) => void;
   onAllGuestChecked: VoidFunction;
+  onGuestClick?: (guest: Guest | NonGuest) => void;
 };
 
 export const GuestList = ({
@@ -20,6 +21,7 @@ export const GuestList = ({
   guests,
   onGuestChecked,
   onAllGuestChecked,
+  onGuestClick,
 }: GuestListProps) => {
   const isAllChecked = guests.length > 0 && guests.every((guest) => guest.isChecked);
 
@@ -36,7 +38,12 @@ export const GuestList = ({
 
       <Flex dir="column" gap="12px">
         {guests.map((guest, index) => (
-          <GuestItem key={index} guest={guest} onGuestChecked={onGuestChecked} />
+          <GuestItem
+            key={index}
+            guest={guest}
+            onGuestChecked={onGuestChecked}
+            onGuestClick={onGuestClick}
+          />
         ))}
       </Flex>
     </Flex>

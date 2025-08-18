@@ -38,3 +38,9 @@ export type EventTemplateAPIResponse = Pick<
 > & {
   eventId: number;
 };
+
+export type NotifyHistoryAPIResponse = {
+  recipientCount: number;
+  content: string;
+  sentAt: string;
+};

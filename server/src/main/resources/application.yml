@@ -15,6 +15,7 @@ spring:
       - security/jwt.yml
       - security/db.yml
       - security/slack.yml
+      - security/aws.yml
 
   application:
     name: ah-madda

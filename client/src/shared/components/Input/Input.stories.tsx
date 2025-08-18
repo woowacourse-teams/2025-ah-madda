@@ -22,7 +22,6 @@ type Story = StoryObj<typeof Input>;
 export const Basic: Story = {
   args: {
     id: 'email',
-    label: '이메일',
     name: 'email',
     placeholder: '이메일을 입력하세요',
     errorMessage: '이메일 형식이 올바르지 않아요',
@@ -34,7 +33,6 @@ export const Basic: Story = {
 export const WithHelperText: Story = {
   args: {
     id: 'password',
-    label: '비밀번호',
     name: 'password',
     placeholder: '8자 이상 입력해주세요',
     helperText: '대소문자, 숫자, 특수문자를 포함해주세요',
@@ -47,7 +45,6 @@ export const WithHelperText: Story = {
 export const Required: Story = {
   args: {
     id: 'name',
-    label: '이름',
     name: 'name',
     isRequired: true,
     placeholder: '이름을 입력하세요',

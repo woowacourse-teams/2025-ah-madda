@@ -360,12 +360,12 @@ class EventTest {
         var organization = Organization.create("우아한 테크코스", "woowahan-tech-course", "우아한 테크코스 6기");
         var member = Member.create("박미참여", "not.participant.park@woowahan.com", "testPicture");
         var organizationMember =
-                OrganizationMember.create("참여안한_조직원", member, organization);
+                OrganizationMember.create("참여안한_조직원", member, organization, Role.USER);
 
 
         var member2 = Member.create("김참가", "participant.kim@woowahan.com", "testPicture");
         var organizationMember2 =
-                OrganizationMember.create("실제_참가자", member2, organization);
+                OrganizationMember.create("실제_참가자", member2, organization, Role.USER);
 
         var sut = createEvent(organizationMember, organization);
         var participate = Guest.create(sut, organizationMember2, sut.getRegistrationStart());
@@ -381,12 +381,12 @@ class EventTest {
         var organization = Organization.create("우아한 테크코스", "woowahan-tech-course", "우아한 테크코스 6기");
         var member = Member.create("박찬양", "creator.chanyang@woowahan.com", "testPicture");
         var organizationMember =
-                OrganizationMember.create("이벤트_개설자_닉네임", member, organization);
+                OrganizationMember.create("이벤트_개설자_닉네임", member, organization, Role.USER);
 
 
         var member2 = Member.create("김참가", "participant.kim@woowahan.com", "testPicture");
         var organizationMember2 =
-                OrganizationMember.create("참가자A_닉네임", member2, organization);
+                OrganizationMember.create("참가자A_닉네임", member2, organization, Role.USER);
 
         var sut = createEvent(organizationMember, organization);
         var participate = Guest.create(sut, organizationMember2, sut.getRegistrationStart());
@@ -394,11 +394,11 @@ class EventTest {
         //when // then
         assertSoftly(softly -> {
             softly.assertThat(sut.getGuests()
-                                      .size())
+                            .size())
                     .isEqualTo(1L);
             sut.cancelParticipation(organizationMember2, LocalDateTime.now());
             softly.assertThat(sut.getGuests()
-                                      .size())
+                            .size())
                     .isEqualTo(0L);
         });
     }
@@ -582,7 +582,7 @@ class EventTest {
             Member member,
             Organization organization
     ) {
-        return OrganizationMember.create(nickname, member, organization);
+        return OrganizationMember.create(nickname, member, organization, Role.USER);
     }
 
     private Event createEvent(String title, EventOperationPeriod eventOperationPeriod) {
@@ -600,7 +600,7 @@ class EventTest {
     }
 
     private OrganizationMember createOrganizationMember(Member member, Organization organization) {
-        return OrganizationMember.create("nickname", member, organization);
+        return OrganizationMember.create("nickname", member, organization, Role.USER);
     }
 
     private Member createMember() {

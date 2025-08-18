@@ -8,6 +8,7 @@ type SubmitBUttonCardProps = {
   eventId: number;
   registrationEnd: string;
   answers: Answer[];
+  onResetAnswers: VoidFunction;
 } & GuestStatusAPIResponse;
 
 export const SubmitButtonCard = ({
@@ -15,6 +16,7 @@ export const SubmitButtonCard = ({
   answers,
   registrationEnd,
   isGuest,
+  onResetAnswers,
 }: SubmitBUttonCardProps) => {
   const now = new Date();
   const isBeforeDeadline = now <= new Date(registrationEnd);
@@ -25,6 +27,7 @@ export const SubmitButtonCard = ({
   const handleParticipantClick = () => {
     participantMutate(answers, {
       onSuccess: () => {
+        onResetAnswers();
         alert('✅ 참가 신청이 완료되었습니다.');
       },
       onError: () => {
@@ -33,7 +36,7 @@ export const SubmitButtonCard = ({
     });
   };
 
-  const handelCancelParticipateClick = () => {
+  const handleCancelParticipateClick = () => {
     cancelParticipateMutate(undefined, {
       onSuccess: () => {
         alert('✅ 참가 신청이 취소되었습니다.');
@@ -50,7 +53,7 @@ export const SubmitButtonCard = ({
         size="full"
         color={!isGuest || isBeforeDeadline ? 'primary' : 'tertiary'}
         disabled={!isBeforeDeadline}
-        onClick={isGuest ? handelCancelParticipateClick : handleParticipantClick}
+        onClick={isGuest ? handleCancelParticipateClick : handleParticipantClick}
       >
         {isBeforeDeadline
           ? isGuest

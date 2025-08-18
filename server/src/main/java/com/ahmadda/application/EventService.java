@@ -9,24 +9,21 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.EmailNotifier;
 import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventEmailPayload;
+import com.ahmadda.domain.EventNotificationOptOutRepository;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
-import com.ahmadda.domain.EventStatistic;
-import com.ahmadda.domain.EventStatisticRepository;
-import com.ahmadda.domain.Guest;
+import com.ahmadda.domain.GuestWithOptStatus;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.PushNotificationPayload;
-import com.ahmadda.domain.PushNotifier;
 import com.ahmadda.domain.Question;
-import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
+import com.ahmadda.domain.Reminder;
+import com.ahmadda.domain.ReminderHistory;
+import com.ahmadda.domain.ReminderHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -46,10 +43,9 @@ public class EventService {
     private final EventRepository eventRepository;
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
-    private final EmailNotifier emailNotifier;
-    private final PushNotifier pushNotifier;
-    private final FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
-    private final EventStatisticRepository eventStatisticRepository;
+    private final Reminder reminder;
+    private final ReminderHistoryRepository reminderHistoryRepository;
+    private final EventNotificationOptOutRepository eventNotificationOptOutRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
@@ -103,7 +99,7 @@ public class EventService {
 
         validateOrganizationAccess(organization.getId(), loginMember.memberId());
 
-        eventPublisher.publishEvent(EventRead.from(event));
+        eventPublisher.publishEvent(EventRead.from(event, loginMember));
 
         return event;
     }
@@ -202,41 +198,26 @@ public class EventService {
         List<OrganizationMember> recipients =
                 event.getNonGuestOrganizationMembers(organization.getOrganizationMembers());
 
-        notifyEventChange(event, content, recipients);
+        sendAndRecordReminder(event, recipients, content);
     }
 
     private void notifyEventUpdated(final Event event) {
         String content = "이벤트 정보가 수정되었습니다.";
-        List<OrganizationMember> recipients = event.getGuests()
+        List<GuestWithOptStatus> guestsWithOptOut = event.getGuests()
                 .stream()
-                .map(Guest::getOrganizationMember)
+                .map(guest -> GuestWithOptStatus.createWithOptOutStatus(guest, eventNotificationOptOutRepository))
                 .toList();
+        List<OrganizationMember> recipients = GuestWithOptStatus.extractOptInOrganizationMembers(guestsWithOptOut);
 
-        notifyEventChange(event, content, recipients);
+        sendAndRecordReminder(event, recipients, content);
     }
 
-    private void notifyEventChange(
+    private void sendAndRecordReminder(
             final Event event,
-            final String content,
-            final List<OrganizationMember> recipients
+            final List<OrganizationMember> recipients,
+            final String content
     ) {
-        sendEmailsToRecipients(event, content, recipients);
-        sendPushNotificationsToRecipients(event, content, recipients);
-    }
-
-    private void sendPushNotificationsToRecipients(Event event, String content, List<OrganizationMember> recipients) {
-        PushNotificationPayload pushPayload = PushNotificationPayload.of(event, content);
-
-        pushNotifier.sendPushs(recipients, pushPayload);
-    }
-
-    private void sendEmailsToRecipients(Event event, String content, List<OrganizationMember> recipients) {
-        EventEmailPayload emailPayload = EventEmailPayload.of(event, content);
-
-        emailNotifier.sendEmails(recipients, emailPayload);
-    }
-
-    private void createEventStatistic(final Event savedEvent) {
-        eventStatisticRepository.save(EventStatistic.create(savedEvent));
+        ReminderHistory reminderHistory = reminder.remind(recipients, event, content);
+        reminderHistoryRepository.save(reminderHistory);
     }
 }

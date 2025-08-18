@@ -6,9 +6,10 @@ spring:
         detector:
           enabled: true
 
-logging:
-  level:
-    org.hibernate.orm.jdbc.bind: trace
+  cloud:
+    aws:
+      s3:
+        region: ap-northeast-2
 
 jwt:
   secret-key: ${jwt.local.secret-key}
@@ -21,7 +22,7 @@ cors:
 
 notification:
   redirect-url-prefix: http://localhost:5173/event/
-  
+
 mail:
   mock: true
 
@@ -30,3 +31,9 @@ push:
 
 slack:
   mock: true
+
+aws:
+  s3:
+    mock: true
+    bucket: ${aws.local.s3.bucket}
+    folder: ${aws.local.s3.folder}
