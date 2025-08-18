@@ -31,7 +31,7 @@ jobs:
           TAG=$(curl -s -H "Authorization: Bearer $TOKEN" \
             "https://hub.docker.com/v2/repositories/amadda/ahmadda_server/tags?page_size=2&ordering=last_updated" \
             | jq -r '.results[1].name')
-
+          echo "롤백 태그: $TAG"
           echo "rollback_tag=$TAG" >> $GITHUB_OUTPUT
 
   # rollback:
