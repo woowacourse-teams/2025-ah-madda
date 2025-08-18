@@ -44,6 +44,14 @@ export const Calendar = ({
       onSelectDateRange,
     });
 
+  const isDisabled = (date: Date) => {
+    const today = new Date();
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const dateStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    return dateStart < todayStart;
+  };
+
   return (
     <Card
       css={css`
@@ -90,6 +98,7 @@ export const Calendar = ({
             isInRange={isInDateRange(date, selectedDate || null, selectedEndDate || null)}
             isCurrentMonth={isCurrentMonth(date, month)}
             isWeekend={isWeekend(date)}
+            disabled={isDisabled(date)}
           >
             {date.getDate()}
           </DateButton>
