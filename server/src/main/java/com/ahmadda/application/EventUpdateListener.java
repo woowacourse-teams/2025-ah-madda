@@ -2,6 +2,8 @@ package com.ahmadda.application;
 
 import com.ahmadda.application.dto.EventUpdated;
 import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.domain.Event;
+import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.EventStatistic;
 import com.ahmadda.domain.EventStatisticRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,13 +19,21 @@ import org.springframework.transaction.annotation.Transactional;
 public class EventUpdateListener {
 
     private final EventStatisticRepository eventStatisticRepository;
+    private final EventRepository eventRepository;
 
     @EventListener
     @Transactional
     public void onEventUpdated(final EventUpdated eventUpdated) {
-        EventStatistic eventStatistic = eventStatisticRepository.findByEventId(eventUpdated.eventId())
-                .orElseThrow(() -> new NotFoundException("해당되는 이벤트의 조회수를 가져오는데 실패하였습니다."));
+        eventStatisticRepository.findByEventId(eventUpdated.eventId())
+                .ifPresentOrElse(
+                        EventStatistic::updateEventViewMatricUntilEventEnd,
+                        () -> {
+                            Event event = eventRepository.findById(eventUpdated.eventId())
+                                    .orElseThrow((() -> new NotFoundException("존재하지 않는 이벤트입니다")));
+                            EventStatistic eventStatistic = EventStatistic.create(event);
 
-        eventStatistic.updateEventViewMatricUntilEventEnd();
+                            eventStatisticRepository.save(eventStatistic);
+                        }
+                );
     }
 }

@@ -61,7 +61,7 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, LocalDate.MAX)
-                           .size())
+                .size())
                 .isEqualTo(eventDuration);
     }
 
@@ -124,7 +124,7 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, endLocalDate)
-                           .size())
+                .size())
                 .isEqualTo(eventDuration);
     }
 
@@ -144,8 +144,8 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, beforeEventEndDatetime)
-                           .getLast()
-                           .getViewDate())
+                .getLast()
+                .getViewDate())
                 .isEqualTo(beforeEventEndDatetime);
     }
 
@@ -173,12 +173,12 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, LocalDate.MAX)
-                           .size())
+                .size())
                 .isEqualTo(eventDuration);
     }
 
     @Test
-    void 오늘_날짜의_조회수를_증가시킬_수_있다() {
+    void 주최자는_조회해도_조회수가_오르지_않는다() {
         //given
         var organization = createOrganization("우테코1");
         var organizationMember = createOrganizationMember(createMember("서프", "surf@gmail.com"), organization);
@@ -191,12 +191,41 @@ class EventStatisticTest {
         var sut = EventStatistic.create(event);
 
         //when
-        sut.increaseViewCount(startDatetime);
+        sut.increaseViewCount(
+                startDatetime,
+                organizationMember.getMember()
+        );
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, startDatetime)
-                           .getFirst()
-                           .getViewCount()).isEqualTo(1L);
+                .getFirst()
+                .getViewCount()).isEqualTo(0L);
+    }
+
+    @Test
+    void 오늘_날짜의_조회수를_증가시킬_수_있다() {
+        //given
+        var organization = createOrganization("우테코1");
+        var organizationMember = createOrganizationMember(createMember("서프", "surf@gmail.com"), organization);
+        var organizationMember2 = createOrganizationMember(createMember("투다", "praisebak@gmail.com"), organization);
+        var event = createEvent(organizationMember, organization);
+
+        var startDatetime = event.getEventOperationPeriod()
+                .getRegistrationPeriod()
+                .start()
+                .toLocalDate();
+        var sut = EventStatistic.create(event);
+
+        //when
+        sut.increaseViewCount(
+                startDatetime,
+                organizationMember2.getMember()
+        );
+
+        //then
+        assertThat(sut.findEventViewMetrics(organizationMember, startDatetime)
+                .getFirst()
+                .getViewCount()).isEqualTo(1L);
     }
 
     @Test
@@ -213,18 +242,21 @@ class EventStatisticTest {
         var sut = EventStatistic.create(event);
 
         //when
-        sut.increaseViewCount(LocalDate.MAX);
+        sut.increaseViewCount(
+                LocalDate.MAX,
+                organizationMember.getMember()
+        );
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, startDatetime)
-                           .stream()
-                           .map(EventViewMetric::getViewCount)
-                           .toList())
+                .stream()
+                .map(EventViewMetric::getViewCount)
+                .toList())
                 .contains(0, 0);
     }
 
     private OrganizationMember createOrganizationMember(Member member, Organization organization) {
-        return OrganizationMember.create("nickname", member, organization);
+        return OrganizationMember.create("nickname", member, organization, Role.USER);
     }
 
     private Member createMember(String name, String email) {

@@ -11,6 +11,8 @@ spring:
 
   cloud:
     aws:
+      s3:
+        region: ${aws.prod.s3.region}
       region:
         static: ap-northeast-2
 
@@ -28,6 +30,11 @@ cors:
 notification:
   redirect-url-prefix: https://ahmadda.com/event/
 
+aws:
+  s3:
+    bucket: ${aws.prod.s3.bucket}
+    folder: ${aws.prod.s3.folder}
+
 management:
   metrics:
     enable:
@@ -42,6 +49,7 @@ management:
       hikaricp.connections.pending: true
       hikaricp.connections.max: true
       hikaricp.connections.timeout: true
+      logback.events: true
   cloudwatch:
     metrics:
       export:

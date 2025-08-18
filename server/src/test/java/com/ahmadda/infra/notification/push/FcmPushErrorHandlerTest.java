@@ -23,11 +23,11 @@ class FcmPushErrorHandlerTest {
     private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
 
     @Test
-    void 유효하지_않은_토큰이_있으면_제거한다() {
+    void 요청_실패시_유효하지_않은_토큰이_있으면_제거한다() {
         // given
         var tokenValue = "expired-token";
         var saved = fcmRegistrationTokenRepository.save(
-                FcmRegistrationToken.create(1L, tokenValue, java.time.LocalDateTime.now())
+                FcmRegistrationToken.createNow(1L, tokenValue)
         );
 
         var exception = mock(FirebaseMessagingException.class);

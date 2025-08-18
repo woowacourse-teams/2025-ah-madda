@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-
 <included>
     <appender name="console-appender" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>[%highlight(%level)][%d{MM-dd HH:mm:ss}][%magenta(%X{request_id:-startup})][%highlight(%replace(%logger{20}){'\\w\\.', ''})] %msg %n</pattern>
-        </layout>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[%highlight(%level)][%d{MM-dd HH:mm:ss}][%magenta(%X{request_id:-startup})][%highlight(%replace(%logger{20}){'\\w\\.', ''})] %msg%n%ex</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
     </appender>
 </included>

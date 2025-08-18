@@ -2,6 +2,7 @@ package com.ahmadda.domain;
 
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,10 +24,10 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Organization extends BaseEntity {
 
-    private static final int MAX_DESCRIPTION_LENGTH = 2000;
-    private static final int MAX_NAME_LENGTH = 20;
-    private static final int MIN_DESCRIPTION_LENGTH = 2;
-    private static final int MIN_NAME_LENGTH = 2;
+    private static final int MAX_DESCRIPTION_LENGTH = 30;
+    private static final int MAX_NAME_LENGTH = 30;
+    private static final int MIN_DESCRIPTION_LENGTH = 1;
+    private static final int MIN_NAME_LENGTH = 1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,7 +68,6 @@ public class Organization extends BaseEntity {
     }
 
     public List<Event> getActiveEvents(final LocalDateTime currentDateTime) {
-
         return events.stream()
                 .filter((event) -> event.isRegistrationEnd(currentDateTime))
                 .toList();
@@ -86,7 +86,37 @@ public class Organization extends BaseEntity {
             throw new BusinessRuleViolatedException("초대코드가 만료되었습니다.");
         }
 
-        return OrganizationMember.create(nickname, member, this);
+        return OrganizationMember.create(nickname, member, this, Role.USER);
+    }
+
+    public boolean isExistOrganizationMember(final OrganizationMember otherOrganizationMember) {
+        return organizationMembers.contains(otherOrganizationMember);
+    }
+
+    public void update(
+            final OrganizationMember updatingOrganizationMember,
+            final String name,
+            final String description,
+            final String imageUrl
+    ) {
+        validateUpdatableBy(updatingOrganizationMember);
+        validateName(name);
+        validateDescription(description);
+        validateImageUrl(imageUrl);
+
+        this.name = name;
+        this.description = description;
+        this.imageUrl = imageUrl;
+    }
+
+    private void validateUpdatableBy(final OrganizationMember updatingOrganizationMember) {
+        if (!updatingOrganizationMember.isBelongTo(this)) {
+            throw new UnauthorizedOperationException("조직에 속한 조직원만 수정이 가능합니다.");
+        }
+
+        if (!updatingOrganizationMember.isAdmin()) {
+            throw new UnauthorizedOperationException("조직원의 관리자만 조직 정보를 수정할 수 있습니다.");
+        }
     }
 
     private void validateName(final String name) {
@@ -106,7 +136,7 @@ public class Organization extends BaseEntity {
     private void validateDescription(final String description) {
         Assert.notBlank(description, "설명은 공백이면 안됩니다.");
 
-        if (description.length() < 2 || description.length() > 2000) {
+        if (description.length() < MIN_DESCRIPTION_LENGTH || description.length() > MAX_DESCRIPTION_LENGTH) {
             throw new BusinessRuleViolatedException(
                     String.format(
                             "설명의 길이는 %d자 이상 %d자 이하이어야 합니다.",

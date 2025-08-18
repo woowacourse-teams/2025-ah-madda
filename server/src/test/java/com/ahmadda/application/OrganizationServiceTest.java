@@ -2,11 +2,13 @@ package com.ahmadda.application;
 
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
+import com.ahmadda.application.dto.OrganizationUpdateRequest;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
+import com.ahmadda.domain.ImageFile;
 import com.ahmadda.domain.InviteCode;
 import com.ahmadda.domain.InviteCodeRepository;
 import com.ahmadda.domain.Member;
@@ -15,12 +17,15 @@ import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.domain.Role;
 import com.ahmadda.presentation.dto.OrganizationParticipateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,8 +57,7 @@ class OrganizationServiceTest {
     @Test
     void 조직을_ID로_조회한다() {
         // given
-        var organization = createOrganization("Org", "Desc", "img.png");
-        organizationRepository.save(organization);
+        var organization = createAndSaveOrganization("Org");
 
         // when
         var found = sut.getOrganizationById(organization.getId());
@@ -72,23 +76,38 @@ class OrganizationServiceTest {
     @Test
     void 조직을_생성한다() {
         // given
-        var request = createOrganizationCreateRequest("조직명", "조직 설명", "image.png");
+        var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        var request = createOrganizationCreateRequest("조직명", "조직 설명", "서프");
+        var thumbnailImageFile = createImageFile("test.png");
 
         // when
-        sut.createOrganization(request);
+        sut.createOrganization(request, thumbnailImageFile, new LoginMember(member.getId()));
 
         // then
         var organizations = organizationRepository.findAll();
+        var organizationMembes = organizationMemberRepository.findAll();
         assertSoftly(softly -> {
-            var saved = organizations.get(0);
+            var organization = organizations.get(0);
             softly.assertThat(organizations)
                     .hasSize(1);
-            softly.assertThat(saved.getName())
+            softly.assertThat(organization.getName())
                     .isEqualTo("조직명");
-            softly.assertThat(saved.getDescription())
+            softly.assertThat(organization.getDescription())
                     .isEqualTo("조직 설명");
-            softly.assertThat(saved.getImageUrl())
-                    .isEqualTo("image.png");
+            softly.assertThat(organization.getImageUrl())
+                    .isEqualTo("test.png");
+
+            var organizationMember = organizationMembes.getFirst();
+            softly.assertThat(organizationMembes)
+                    .hasSize(1);
+            softly.assertThat(organizationMember.getMember())
+                    .isEqualTo(member);
+            softly.assertThat(organizationMember.getOrganization())
+                    .isEqualTo(organization);
+            softly.assertThat(organizationMember.getNickname())
+                    .isEqualTo("서프");
+            softly.assertThat(organizationMember.getRole())
+                    .isEqualTo(Role.ADMIN);
         });
     }
 
@@ -119,8 +138,10 @@ class OrganizationServiceTest {
         var loginMember = new LoginMember(member.getId());
         var orgA = organizationRepository.save(createOrganization("OrgA", "DescA", "a.png"));
         var orgB = organizationRepository.save(createOrganization("OrgB", "DescB", "b.png"));
-        var orgMemberA = organizationMemberRepository.save(OrganizationMember.create("nickname", member, orgA));
-        var orgMemberB = organizationMemberRepository.save(OrganizationMember.create("nickname", member, orgB));
+        var orgMemberA =
+                organizationMemberRepository.save(OrganizationMember.create("nickname", member, orgA, Role.USER));
+        var orgMemberB =
+                organizationMemberRepository.save(OrganizationMember.create("nickname", member, orgB, Role.USER));
 
         var now = LocalDateTime.now();
         eventRepository.save(createEvent(orgMemberA, orgA, "EventA1", now.plusDays(1), now.plusDays(2)));
@@ -156,7 +177,7 @@ class OrganizationServiceTest {
         var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        var inviter = createAndSaveOrganizationMember("surf", member2, organization);
+        var inviter = createAndSaveOrganizationMember("surf", member2, organization, Role.USER);
         var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(member1.getId());
@@ -177,8 +198,8 @@ class OrganizationServiceTest {
         var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        var organizationMember = createAndSaveOrganizationMember("surf", member1, organization);
-        var inviter = createAndSaveOrganizationMember("tuda", member2, organization);
+        var organizationMember = createAndSaveOrganizationMember("surf", member1, organization, Role.USER);
+        var inviter = createAndSaveOrganizationMember("tuda", member2, organization, Role.USER);
         var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(member1.getId());
@@ -196,7 +217,7 @@ class OrganizationServiceTest {
         var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        var inviter = createAndSaveOrganizationMember("surf", member2, organization);
+        var inviter = createAndSaveOrganizationMember("surf", member2, organization, Role.USER);
         var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(member1.getId());
@@ -213,7 +234,7 @@ class OrganizationServiceTest {
         // given
         var member = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        var inviter = createAndSaveOrganizationMember("surf", member, organization);
+        var inviter = createAndSaveOrganizationMember("surf", member, organization, Role.USER);
         var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(999L);
@@ -255,11 +276,130 @@ class OrganizationServiceTest {
         Organization woowacourse =
                 Organization.create(OrganizationService.WOOWACOURSE_NAME, "우아한테크코스입니당딩동", "imageUrl");
         organizationRepository.save(woowacourse);
+
         // when
         var getWoowacourse = sut.alwaysGetWoowacourse();
 
         // then
         assertThat(getWoowacourse.getName()).isEqualTo(OrganizationService.WOOWACOURSE_NAME);
+    }
+
+    @Test
+    void 조직의_관리자는_조직을_수정할_수_있다() {
+        //given
+        var organization = createAndSaveOrganization("Org");
+        var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        var organizationMember = createAndSaveOrganizationMember("surf", member, organization, Role.ADMIN);
+        var request = new OrganizationUpdateRequest("새 이름", "새 설명");
+        var imageFile = createImageFile("new.png");
+
+        //when
+        sut.updateOrganization(organization.getId(), request, imageFile, new LoginMember(member.getId()));
+
+        //then
+        assertSoftly(softly -> {
+            var updateOrganization = organizationRepository.findById(organization.getId())
+                    .orElseThrow();
+            softly.assertThat(updateOrganization.getName())
+                    .isEqualTo("새 이름");
+            softly.assertThat(updateOrganization.getDescription())
+                    .isEqualTo("새 설명");
+            softly.assertThat(updateOrganization.getImageUrl())
+                    .isEqualTo("new.png");
+        });
+    }
+
+    @Test
+    void 썸네일이_null이어도_조직_수정이_가능하다() {
+        //given
+        var organization = createAndSaveOrganization("Org");
+        var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        var organizationMember = createAndSaveOrganizationMember("surf", member, organization, Role.ADMIN);
+        var request = new OrganizationUpdateRequest("새 이름", "새 설명");
+
+        //when
+        sut.updateOrganization(organization.getId(), request, null, new LoginMember(member.getId()));
+
+        //then
+        assertSoftly(softly -> {
+            var updateOrganization = organizationRepository.findById(organization.getId())
+                    .orElseThrow();
+            softly.assertThat(updateOrganization.getName())
+                    .isEqualTo("새 이름");
+            softly.assertThat(updateOrganization.getDescription())
+                    .isEqualTo("새 설명");
+            softly.assertThat(updateOrganization.getImageUrl())
+                    .isEqualTo("img.png");
+        });
+    }
+
+    @Test
+    void 조직이_없다면_조직을_수정할때_예외가_발생한다() {
+        // given
+        var request = new OrganizationUpdateRequest("새 이름", "새 설명");
+        var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+
+        // when // then
+        assertThatThrownBy(() -> sut.updateOrganization(999L, request, null, new LoginMember(member.getId())))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 조직입니다.");
+    }
+
+    @Test
+    void 조직원이_없다면_조직을_수정할때_예외가_발생한다() {
+        // given
+        var organization = createAndSaveOrganization("Org");
+        var request = new OrganizationUpdateRequest("새 이름", "새 설명");
+        var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+
+        // when // then
+        assertThatThrownBy(() -> sut.updateOrganization(
+                organization.getId(),
+                request,
+                null,
+                new LoginMember(member.getId())
+        ))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 조직원입니다.");
+    }
+
+    @Test
+    void 사용자가_가입한_조직을_조회할_수_있다() {
+        //given
+        var organization1 = createAndSaveOrganization("우테코");
+        var organization2 = createAndSaveOrganization("아맞다");
+        var organization3 = createAndSaveOrganization("서프의 조직");
+        var organization4 = createAndSaveOrganization("프론트 조직");
+        var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        createAndSaveOrganizationMember("surf", member, organization1, Role.USER);
+        createAndSaveOrganizationMember("surf", member, organization2, Role.ADMIN);
+        createAndSaveOrganizationMember("surf", member, organization3, Role.USER);
+
+        //when
+        var participatingOrganizations =
+                sut.getParticipatingOrganizations(new LoginMember(member.getId()));
+
+        //then
+        assertSoftly(softly -> {
+            softly.assertThat(participatingOrganizations)
+                    .hasSize(3);
+            softly.assertThat(participatingOrganizations)
+                    .extracting("name")
+                    .contains("우테코", "아맞다", "서프의 조직");
+        });
+    }
+
+    @Test
+    void 사용자가_가입한_조직을_조회할때_사용자가_없다면_예외가_발생한다() {
+        //when //then
+        assertThatThrownBy(() -> sut.getParticipatingOrganizations(new LoginMember(999L)))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 회원입니다");
+    }
+
+    private Organization createAndSaveOrganization(String name) {
+        var organization = createOrganization(name, "Desc", "img.png");
+        return organizationRepository.save(organization);
     }
 
     private Organization createOrganization(String name, String description, String imageUrl) {
@@ -292,17 +432,18 @@ class OrganizationServiceTest {
     private OrganizationCreateRequest createOrganizationCreateRequest(
             String name,
             String description,
-            String imageUrl
+            String nickname
     ) {
-        return new OrganizationCreateRequest(name, description, imageUrl);
+        return new OrganizationCreateRequest(name, description, nickname);
     }
 
     private OrganizationMember createAndSaveOrganizationMember(
             String nickname,
             Member member,
-            Organization organization
+            Organization organization,
+            Role role
     ) {
-        var organizationMember = OrganizationMember.create(nickname, member, organization);
+        var organizationMember = OrganizationMember.create(nickname, member, organization, role);
         return organizationMemberRepository.save(organizationMember);
     }
 
@@ -314,5 +455,19 @@ class OrganizationServiceTest {
     ) {
         InviteCode prevInviteCode = InviteCode.create(code, organization, organizationMember, now);
         return inviteCodeRepository.save(prevInviteCode);
+    }
+
+    private ImageFile createImageFile(String fileName) {
+        return ImageFile.create(
+                fileName,
+                "image/png",
+                1000,
+                new InputStream() {
+                    @Override
+                    public int read() throws IOException {
+                        return 0;
+                    }
+                }
+        );
     }
 }

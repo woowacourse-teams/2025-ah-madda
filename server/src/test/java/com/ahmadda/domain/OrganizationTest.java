@@ -1,6 +1,7 @@
 package com.ahmadda.domain;
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +19,7 @@ class OrganizationTest {
     void setUp() {
         sut = Organization.create("테스트 조직", "조직 설명", "image.png");
         var member = Member.create("주최자 회원", "organizer@example.com", "testPicture");
-        organizer = OrganizationMember.create("주최자", member, sut);
+        organizer = OrganizationMember.create("주최자", member, sut, Role.USER);
     }
 
     @Test
@@ -79,7 +80,7 @@ class OrganizationTest {
         //given
         var organization = Organization.create("테스트 조직2", "조직 설명", "image.png");
         var member = Member.create("주최자 회원", "organizer@example.com", "testPicture");
-        var inviter = OrganizationMember.create("test", member, organization);
+        var inviter = OrganizationMember.create("test", member, organization, Role.USER);
         var inviteCode = InviteCode.create("code", organization, inviter, LocalDateTime.now());
 
         //when //then
@@ -98,6 +99,52 @@ class OrganizationTest {
         assertThatThrownBy(() -> sut.participate(member, "surf", inviteCode, LocalDateTime.now()))
                 .isInstanceOf(BusinessRuleViolatedException.class)
                 .hasMessage("초대코드가 만료되었습니다.");
+    }
+
+    @Test
+    void 관리자가_조직정보를_수정할_수_있다() {
+        // given
+        var admin = OrganizationMember.create("관리자", organizer.getMember(), sut, Role.ADMIN);
+
+        // when
+        sut.update(admin, "새 조직명", "새 설명", "newImage.png");
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(sut.getName())
+                    .isEqualTo("새 조직명");
+            softly.assertThat(sut.getDescription())
+                    .isEqualTo("새 설명");
+            softly.assertThat(sut.getImageUrl())
+                    .isEqualTo("newImage.png");
+        });
+    }
+
+    @Test
+    void 관리자가_아니면_조직정보를_수정한다면_예외가_발생한다() {
+        // given
+        var user = OrganizationMember.create("일반회원", organizer.getMember(), sut, Role.USER);
+
+        // when // then
+        assertThatThrownBy(() ->
+                sut.update(user, "새 조직명", "새 설명", "newImage.png")
+        )
+                .isInstanceOf(UnauthorizedOperationException.class)
+                .hasMessage("조직원의 관리자만 조직 정보를 수정할 수 있습니다.");
+    }
+
+    @Test
+    void 다른_조직의_관리자가_조직정보를_수정다면_예외가_발생한다() {
+        // given
+        var otherOrganization = Organization.create("테스트 조직", "조직 설명", "image.png");
+        var organizationMember = OrganizationMember.create("일반회원", organizer.getMember(), otherOrganization, Role.USER);
+
+        // when // then
+        assertThatThrownBy(() ->
+                sut.update(organizationMember, "새 조직명", "새 설명", "newImage.png")
+        )
+                .isInstanceOf(UnauthorizedOperationException.class)
+                .hasMessage("조직에 속한 조직원만 수정이 가능합니다.");
     }
 
     private Event createEventForTest(

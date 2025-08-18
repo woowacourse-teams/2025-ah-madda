@@ -2,9 +2,11 @@ package com.ahmadda.application.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record NonGuestsNotificationRequest(
+public record OrganizationUpdateRequest(
         @NotBlank
-        String content
+        String name,
+        @NotBlank
+        String description
 ) {
 
 }
