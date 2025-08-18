@@ -1,10 +1,11 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
+import { Avatar } from '@/shared/components/Avatar';
 import { CheckBox } from '@/shared/components/CheckBox';
 import { Flex } from '@/shared/components/Flex';
-import { Text } from '@/shared/components/Text';
+import { theme } from '@/shared/styles/theme';
 
-import { GUEST_STYLES } from '../constants';
 import { Guest, NonGuest } from '../types';
 
 type GuestItemProps = {
@@ -31,52 +32,53 @@ export const GuestItem = ({ guest, onGuestChecked, onGuestClick }: GuestItemProp
   };
 
   return (
-    <Flex width="100%" gap="8px" alignItems="center" padding="0 0 0 20px">
-      <Flex width="30px">
+    <GuestItemContainer variant={variant} clickable={isGuest} onClick={handleGuestClick}>
+      <Flex gap="18px" alignItems="center" width="100%">
         <CheckBox
           checked={guest.isChecked}
-          onClick={() => onGuestChecked(guest.organizationMemberId)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onGuestChecked(guest.organizationMemberId);
+          }}
+        />
+        <Avatar
+          picture={null}
+          name={guest.nickname}
+          css={css`
+            gap: 12px;
+          `}
         />
       </Flex>
-      <StyledGuestItemContainer
-        variant={variant}
-        alignItems="center"
-        padding="12px"
-        onClick={handleGuestClick}
-        clickable={isGuest}
-      >
-        <Text type="Label" weight="regular" color={GUEST_STYLES.common.nameTextColor}>
-          {guest.nickname}
-        </Text>
-      </StyledGuestItemContainer>
-    </Flex>
+    </GuestItemContainer>
   );
 };
 
-const getContainerStyles = (variant: GuestItemVariant) => {
-  if (variant === 'completed') {
-    return `
-      background-color: #F0FDF4;
-    `;
-  }
-
-  return `
-    background-color: #F9FAFB;
-  `;
-};
-
-export const StyledGuestItemContainer = styled(Flex)<GuestItemContainerProps>`
-  width: 100%;
+const GuestItemContainer = styled.div<GuestItemContainerProps>`
+  display: flex;
+  align-items: center;
+  padding: 12px 24px;
   border-radius: 8px;
-  ${({ variant }) => getContainerStyles(variant)}
+  width: 100%;
+  transition: all 0.2s ease;
+
+  ${({ variant }) => {
+    if (variant === 'completed') {
+      return `
+        background-color: ${theme.colors.gray50};
+      `;
+    }
+    return `
+      background-color: ${theme.colors.white};
+    `;
+  }}
+
   ${({ clickable }) =>
     clickable &&
     `
     cursor: pointer;
-    transition: all 0.2s ease;
     
     &:hover {
-      background-color: #DCFCE7;
+      background-color: ${theme.colors.gray100};
       transform: translateY(-1px);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }

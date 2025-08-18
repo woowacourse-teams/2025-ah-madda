@@ -38,7 +38,17 @@ export const EventInfoSection = ({ event, profile, statistics }: EventInfoSectio
         </Text>
       </Flex>
 
-      <Flex dir="row" gap="80px" alignItems="flex-start">
+      <Flex
+        dir="row"
+        gap="80px"
+        alignItems="flex-start"
+        css={css`
+          @media (max-width: 768px) {
+            flex-direction: column;
+            gap: 40px;
+          }
+        `}
+      >
         <Flex
           dir="column"
           gap="12px"

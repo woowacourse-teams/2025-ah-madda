@@ -56,90 +56,90 @@ export const EventManagePage = () => {
   if (!event) return null;
 
   return (
-    <PageLayout
-      header={
-        <Header
-          left={
-            <Icon
-              name="logo"
-              size={55}
-              onClick={() => navigate('/event')}
-              css={css`
-                cursor: pointer;
-              `}
-            />
-          }
-          right={
-            <Button size="sm" onClick={() => navigate('/event/my')}>
-              내 이벤트
-            </Button>
-          }
-        />
-      }
-    >
-      <EventManageContainer>
-        <Spacing height="56px" />
-        <Flex dir="column" gap="12px">
-          <Badge variant={badgeText(event.registrationEnd).color}>
-            {badgeText(event.registrationEnd).text}
-          </Badge>
-          <Text type="Title" weight="bold" color={theme.colors.gray900}>
-            {event.title}
-          </Text>
+    <>
+      <PageLayout
+        header={
+          <Header
+            left={
+              <Icon
+                name="logo"
+                size={55}
+                onClick={() => navigate('/event')}
+                css={css`
+                  cursor: pointer;
+                `}
+              />
+            }
+            right={
+              <Button size="sm" onClick={() => navigate('/event/my')}>
+                내 이벤트
+              </Button>
+            }
+          />
+        }
+      >
+        <EventManageContainer>
+          <Spacing height="56px" />
+          <Flex dir="column" gap="12px">
+            <Badge variant={badgeText(event.registrationEnd).color}>
+              {badgeText(event.registrationEnd).text}
+            </Badge>
+            <Text type="Title" weight="bold" color={theme.colors.gray900}>
+              {event.title}
+            </Text>
 
-          <Flex dir="column" gap="4px">
-            <Flex dir="row" gap="4px" alignItems="center">
-              <Icon name="location" size={16} color="gray500" />
-              <Text type="Label" weight="medium" color={theme.colors.gray500}>
-                {event.place}
-              </Text>
-            </Flex>
-            <Flex dir="row" gap="4px" alignItems="center">
-              <Icon name="calendar" size={16} color="gray500" />
-              <Text type="Label" weight="medium" color={theme.colors.gray500}>
-                {formatDateTime(event.eventStart)} ~ {formatDateTime(event.eventEnd)}
-              </Text>
+            <Flex dir="column" gap="4px">
+              <Flex dir="row" gap="4px" alignItems="center">
+                <Icon name="location" size={16} color="gray500" />
+                <Text type="Label" weight="medium" color={theme.colors.gray500}>
+                  {event.place}
+                </Text>
+              </Flex>
+              <Flex dir="row" gap="4px" alignItems="center">
+                <Icon name="calendar" size={16} color="gray500" />
+                <Text type="Label" weight="medium" color={theme.colors.gray500}>
+                  {formatDateTime(event.eventStart)} ~ {formatDateTime(event.eventEnd)}
+                </Text>
+              </Flex>
             </Flex>
           </Flex>
-        </Flex>
-        <Spacing height="80px" />
+          <Spacing height="80px" />
 
-        <Tabs defaultValue="detail">
-          <Tabs.List
-            css={css`
-              width: 40%;
-              @media (max-width: 768px) {
-                width: 100%;
-              }
-            `}
-          >
-            <Tabs.Trigger value="detail">이벤트 정보</Tabs.Trigger>
-            <Tabs.Trigger value="applications">참여 현황</Tabs.Trigger>
-          </Tabs.List>
+          <Tabs defaultValue="detail">
+            <Tabs.List
+              css={css`
+                width: 40%;
+                @media (max-width: 768px) {
+                  width: 100%;
+                }
+              `}
+            >
+              <Tabs.Trigger value="detail">이벤트 정보</Tabs.Trigger>
+              <Tabs.Trigger value="applications">참여 현황</Tabs.Trigger>
+            </Tabs.List>
 
-          <Tabs.Content value="detail">
-            <EventInfoSection event={event} profile={profile} statistics={statistics} />
-          </Tabs.Content>
+            <Tabs.Content value="detail">
+              <EventInfoSection event={event} profile={profile} statistics={statistics} />
+            </Tabs.Content>
 
-          <Tabs.Content value="applications">
-            <GuestManageSection />
-          </Tabs.Content>
-        </Tabs>
-
-        <ButtonWrapper justifyContent="center">
-          {/* E.TODO 마감됨 버튼이 너무커서 겹치는 이슈 -> footer 구현 후 해결 여부 확인 */}
-          {isClosed ? (
-            <Button size="full" color="tertiary" variant="solid" disabled>
-              마감됨
-            </Button>
-          ) : (
-            <Button size="full" color="tertiary" variant="solid" onClick={handleButtonClick}>
-              마감하기
-            </Button>
-          )}
-        </ButtonWrapper>
-      </EventManageContainer>
-    </PageLayout>
+            <Tabs.Content value="applications">
+              <GuestManageSection />
+            </Tabs.Content>
+          </Tabs>
+        </EventManageContainer>
+      </PageLayout>
+      <ButtonWrapper justifyContent="center">
+        {isClosed ? (
+          <Button size="full" color="tertiary" variant="solid" disabled>
+            마감됨
+          </Button>
+        ) : (
+          <Button size="full" color="tertiary" variant="solid" onClick={handleButtonClick}>
+            마감하기
+          </Button>
+        )}
+      </ButtonWrapper>
+    </>
   );
 };
 
