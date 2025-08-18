@@ -51,7 +51,7 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     implementation 'org.flywaydb:flyway-core'
-    implementation 'org.flywaydb:flyway-mysql'
+    runtimeOnly 'org.flywaydb:flyway-mysql'
 }
 
 tasks.named('test') {
