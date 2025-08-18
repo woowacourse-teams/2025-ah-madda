@@ -10,7 +10,7 @@ import { Text } from '@/shared/components/Text';
 
 import { useCreateOrganizationProcess } from '../hooks/useCreateOrganizationProcess';
 
-type Props = {
+type CreatorNicknameModalProps = {
   isOpen: boolean;
   orgName: string;
   name: string;
@@ -28,7 +28,7 @@ export const CreatorNicknameModal = ({
   thumbnail,
   onSuccess,
   onCancel,
-}: Props) => {
+}: CreatorNicknameModalProps) => {
   const { nickname, handleNicknameChange } = useNickNameForm();
   const { handleCreate, handleClose, isSubmitting } = useCreateOrganizationProcess({
     name,
