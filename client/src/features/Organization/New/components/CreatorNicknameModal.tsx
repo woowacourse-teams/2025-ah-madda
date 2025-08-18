@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 import { css } from '@emotion/react';
 
 import { OrganizationInfo } from '@/features/Invite/component/OrganizationInfo';
@@ -38,6 +40,17 @@ export const CreatorNicknameModal = ({
     onCancel,
   });
 
+  const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    if (!thumbnail) {
+      setPreviewUrl(undefined);
+      return;
+    }
+    const url = URL.createObjectURL(thumbnail);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [thumbnail]);
+
   if (!isOpen) return null;
 
   const handleSubmit = () => {
@@ -61,7 +74,7 @@ export const CreatorNicknameModal = ({
       </Flex>
 
       <Flex dir="column" alignItems="center">
-        <OrganizationInfo name={orgName} />
+        <OrganizationInfo name={orgName} imageUrl={previewUrl} />
         <Input
           autoFocus
           id="nickname"
