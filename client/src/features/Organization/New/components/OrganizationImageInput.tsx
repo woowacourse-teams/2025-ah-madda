@@ -45,14 +45,14 @@ export const OrganizationImageInput = ({
     inputRef.current?.click();
   };
 
-  const setFile = (file: File | null) => {
+  const handleImageSelection = (file: File | null) => {
     const next = file ? URL.createObjectURL(file) : null;
     setPreview(next);
     onChange(file);
     resetInputValue();
   };
 
-  const clearFile = () => setFile(null);
+  const clearFile = () => handleImageSelection(null);
 
   const isError = Boolean(errorMessage);
 
@@ -142,7 +142,7 @@ export const OrganizationImageInput = ({
         type="file"
         accept={accept}
         style={{ display: 'none' }}
-        onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+        onChange={(e) => handleImageSelection(e.target.files?.[0] ?? null)}
       />
     </Flex>
   );
