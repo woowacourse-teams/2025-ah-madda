@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 
+import { isAuthenticated } from '@/api/auth';
 import { fetcher } from '@/api/fetcher';
 
 import { requestFCMPermission, setupForegroundMessage } from './firebase';
@@ -17,7 +18,7 @@ export const useInitializeFCM = () => {
         await navigator.serviceWorker.register('/firebase-messaging-sw.js');
         const token = await requestFCMPermission();
 
-        if (!token) return;
+        if (!token || !isAuthenticated()) return;
 
         await registerFCMToken(token);
         setupForegroundMessage();

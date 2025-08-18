@@ -1,7 +1,6 @@
 import { useState, useMemo } from 'react';
 
 import { BasicEventFormFields, CreateEventAPIRequest } from '../../types/Event';
-import { UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { FIELD_CONFIG } from '../constants/formFieldConfig';
 import { validateEventForm } from '../utils/validateEventForm';
 
@@ -13,7 +12,7 @@ export const useBasicEventForm = (initialData?: Partial<CreateEventAPIRequest>) 
     registrationEnd: '',
     place: '',
     description: '',
-    maxCapacity: UNLIMITED_CAPACITY,
+    maxCapacity: 10,
     ...initialData,
   });
 
@@ -29,11 +28,7 @@ export const useBasicEventForm = (initialData?: Partial<CreateEventAPIRequest>) 
   const validateField = (key: keyof BasicEventFormFields, value: string | number) => {
     const updated = { ...basicEventForm, [key]: value };
     const validation = validateEventForm(updated);
-
-    setErrors((prev) => ({
-      ...prev,
-      [key]: validation[key] || '',
-    }));
+    setErrors(validation);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -62,10 +57,12 @@ export const useBasicEventForm = (initialData?: Partial<CreateEventAPIRequest>) 
   }, [basicEventForm, errors]);
 
   const loadFormData = (data: Partial<CreateEventAPIRequest>) => {
-    setBasicEventForm((prev) => ({
-      ...prev,
-      ...data,
-    }));
+    setBasicEventForm((prev) => {
+      const merged = { ...prev, ...data } as BasicEventFormFields;
+      const validation = validateEventForm(merged);
+      setErrors(validation);
+      return merged;
+    });
   };
 
   return {

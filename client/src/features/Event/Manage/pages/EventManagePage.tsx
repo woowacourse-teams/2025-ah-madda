@@ -9,7 +9,7 @@ import { eventQueryOptions } from '@/api/queries/event';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
-import { IconButton } from '@/shared/components/IconButton';
+import { Icon } from '@/shared/components/Icon';
 import { PageLayout } from '@/shared/components/PageLayout';
 import { Tabs } from '@/shared/components/Tabs';
 
@@ -48,7 +48,16 @@ export const EventManagePage = () => {
     <PageLayout
       header={
         <Header
-          left={<IconButton name="logo" size={55} onClick={() => navigate('/event')} />}
+          left={
+            <Icon
+              name="logo"
+              size={55}
+              onClick={() => navigate('/event')}
+              css={css`
+                cursor: pointer;
+              `}
+            />
+          }
           right={
             <Button size="sm" onClick={() => navigate('/event/my')}>
               내 이벤트
@@ -81,12 +90,13 @@ export const EventManagePage = () => {
         </Tabs>
 
         <ButtonWrapper justifyContent="center">
+          {/* E.TODO 마감됨 버튼이 너무커서 겹치는 이슈 -> footer 구현 후 해결 여부 확인 */}
           {isClosed ? (
-            <Button size="sm" color="tertiary" variant="solid" disabled>
+            <Button size="full" color="tertiary" variant="solid" disabled>
               마감됨
             </Button>
           ) : (
-            <Button size="sm" color="tertiary" variant="solid" onClick={handleButtonClick}>
+            <Button size="full" color="tertiary" variant="solid" onClick={handleButtonClick}>
               마감하기
             </Button>
           )}

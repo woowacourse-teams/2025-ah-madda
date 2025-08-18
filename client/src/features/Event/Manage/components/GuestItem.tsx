@@ -10,13 +10,25 @@ import { Guest, NonGuest } from '../types';
 type GuestItemProps = {
   onGuestChecked: (organizationMemberId: number) => void;
   guest: Guest | NonGuest;
+  onGuestClick?: (guest: Guest | NonGuest) => void;
 };
 
 type GuestItemVariant = 'completed' | 'pending';
 
-export const GuestItem = ({ guest, onGuestChecked }: GuestItemProps) => {
+type GuestItemContainerProps = {
+  variant: GuestItemVariant;
+  clickable?: boolean;
+};
+
+export const GuestItem = ({ guest, onGuestChecked, onGuestClick }: GuestItemProps) => {
   const isGuest = 'guestId' in guest;
   const variant = isGuest ? 'completed' : 'pending';
+
+  const handleGuestClick = () => {
+    if (onGuestClick && isGuest) {
+      onGuestClick(guest);
+    }
+  };
 
   return (
     <Flex width="100%" gap="8px" alignItems="center" padding="0 0 0 20px">
@@ -26,7 +38,13 @@ export const GuestItem = ({ guest, onGuestChecked }: GuestItemProps) => {
           onClick={() => onGuestChecked(guest.organizationMemberId)}
         />
       </Flex>
-      <StyledGuestItemContainer variant={variant} alignItems="center" padding="12px">
+      <StyledGuestItemContainer
+        variant={variant}
+        alignItems="center"
+        padding="12px"
+        onClick={handleGuestClick}
+        clickable={isGuest}
+      >
         <Text type="Label" weight="regular" color={GUEST_STYLES.common.nameTextColor}>
           {guest.nickname}
         </Text>
@@ -35,13 +53,8 @@ export const GuestItem = ({ guest, onGuestChecked }: GuestItemProps) => {
   );
 };
 
-type GuestItemContainerProps = {
-  variant: GuestItemVariant;
-};
-
 const getContainerStyles = (variant: GuestItemVariant) => {
   if (variant === 'completed') {
-    //E.TODO: 추후 클릭 시 모달 로직이 추가되면, 호버 효과(색상) 추가
     return `
       background-color: #F0FDF4;
     `;
@@ -52,9 +65,20 @@ const getContainerStyles = (variant: GuestItemVariant) => {
   `;
 };
 
-//E.TODO: 추후 클릭 시 모달 로직이 추가되면, cursor: pointer; 추가
 export const StyledGuestItemContainer = styled(Flex)<GuestItemContainerProps>`
   width: 100%;
   border-radius: 8px;
   ${({ variant }) => getContainerStyles(variant)}
+  ${({ clickable }) =>
+    clickable &&
+    `
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background-color: #DCFCE7;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    `}
 `;

@@ -30,15 +30,11 @@ export const TemplateModal = ({
   onSelect,
   selectedEventId,
 }: TemplateModalProps) => {
-  //E.TODO organizationId 받아오기
+  // E.TODO organizationId 받아오기
   const { data: eventTitles } = useQuery(eventQueryOptions.titles(1));
 
   const handleConfirm = () => {
     onConfirm(selectedEventId);
-    onClose();
-  };
-
-  const handleClose = () => {
     onClose();
   };
 
@@ -117,7 +113,7 @@ export const TemplateModal = ({
         <Spacing height="1px" />
 
         <Flex gap="12px" justifyContent="center">
-          <Button color="secondary" variant="outline" size="full" onClick={handleClose}>
+          <Button color="secondary" variant="outline" size="full" onClick={onClose}>
             취소
           </Button>
           <Button

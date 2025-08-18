@@ -18,7 +18,7 @@ export const StyledHeaderContent = styled.div<Pick<HeaderProps, 'right'>>`
   justify-content: ${({ right }) => (right ? 'space-between' : 'flex-start')};
   align-items: center;
   height: 100%;
-  max-width: 1160px;
+  max-width: 1140px;
   margin: 0 auto;
   width: 100%;
   padding: 0 20px;

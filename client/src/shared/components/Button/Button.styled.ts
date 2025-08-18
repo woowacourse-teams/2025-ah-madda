@@ -81,10 +81,9 @@ const variantStyles = {
     background-color: ${theme.colors.white};
 
     &:hover {
-      background-color: white;
+      background-color: ${theme.colors.white};
       color: ${theme.colors.gray600};
       border: 1.5px solid ${theme.colors.gray400};
-      opacity: 0.8;
     }
 
     &:disabled {

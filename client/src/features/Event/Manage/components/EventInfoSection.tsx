@@ -4,8 +4,10 @@ import { Icon } from '@/shared/components/Icon';
 import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
+import { theme } from '@/shared/styles/theme';
 
 import { formatDateTime } from '../../My/utils/date';
+import { UNLIMITED_CAPACITY } from '../../New/constants/errorMessages';
 import type { Event } from '../../types/Event';
 
 type EventInfoSectionProps = {
@@ -13,6 +15,12 @@ type EventInfoSectionProps = {
 };
 
 export const EventInfoSection = ({ event }: EventInfoSectionProps) => {
+  const isUnlimited = event.maxCapacity === UNLIMITED_CAPACITY;
+  const maxNumberOfGuests = isUnlimited ? '제한없음' : `${event.maxCapacity}명`;
+  const progressValue = isUnlimited ? 1 : Number(event.currentGuestCount);
+  const progressMax = isUnlimited ? 1 : event.maxCapacity;
+  const progressColor = isUnlimited ? theme.colors.primary700 : 'black';
+
   return (
     <Flex as="section" dir="column" gap="24px" width="100%" margin="0 auto" padding="20px 0">
       <Card>
@@ -72,10 +80,10 @@ export const EventInfoSection = ({ event }: EventInfoSectionProps) => {
                 </Text>
               </Flex>
               <Text type="Label" weight="regular" color="#4A5565">
-                {`${event.currentGuestCount}/${event.maxCapacity}명`}
+                {`${event.currentGuestCount}/${maxNumberOfGuests}`}
               </Text>
             </Flex>
-            <ProgressBar value={event.currentGuestCount} max={event.maxCapacity} color="#0A0A0A" />
+            <ProgressBar value={progressValue} max={progressMax} color={progressColor} />
           </Flex>
         </Flex>
       </Card>

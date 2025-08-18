@@ -35,7 +35,6 @@ export const InviteModal = () => {
         <Input
           autoFocus
           id="nickname"
-          label=""
           type="text"
           min={10}
           placeholder="닉네임을 입력하세요"
