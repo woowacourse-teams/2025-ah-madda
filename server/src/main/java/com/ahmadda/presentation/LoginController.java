@@ -6,6 +6,7 @@ import com.ahmadda.application.dto.MemberToken;
 import com.ahmadda.presentation.cookie.CookieProvider;
 import com.ahmadda.presentation.dto.AccessTokenResponse;
 import com.ahmadda.presentation.dto.LoginRequest;
+import com.ahmadda.presentation.header.HeaderProvider;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -34,6 +35,7 @@ public class LoginController {
 
     private final LoginService loginService;
     private final CookieProvider cookieProvider;
+    private final HeaderProvider headerProvider;
 
     @Operation(summary = "구글 OAuth 로그인", description = "Google OAuth 인가 코드로 로그인을 할 수 있습니다.")
     @ApiResponses(value = {
@@ -173,7 +175,7 @@ public class LoginController {
             @RequestHeader(HttpHeaders.AUTHORIZATION) final String headerAccessToken,
             @CookieValue(CookieProvider.REFRESH_TOKEN_KEY) final String refreshToken
     ) {
-        String accessToken = cookieProvider.extractAccessToken(headerAccessToken);
+        String accessToken = headerProvider.extractAccessToken(headerAccessToken);
 
         MemberToken memberToken = loginService.renewMemberToken(accessToken, refreshToken, userAgent);
         ResponseCookie refreshTokenCookie =
