@@ -267,7 +267,11 @@ class LoginServiceTest {
 
     private String createExpiredAccessToken(Long memberId) {
         var now = Instant.now();
-        var claims = JwtMemberPayload.toClaims(memberId);
+
+        var uuid = UUID.randomUUID()
+                .toString();
+
+        var claims = JwtMemberPayload.toClaims(memberId, uuid);
 
         return Jwts.builder()
                 .claims(claims)

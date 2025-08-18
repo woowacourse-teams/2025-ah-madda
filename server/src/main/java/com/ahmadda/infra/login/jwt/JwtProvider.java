@@ -30,12 +30,13 @@ public class JwtProvider {
         Instant now = Instant.now();
         Instant expire = now.plus(jwtProperties.getAccessExpiration());
 
-        Claims claims = JwtMemberPayload.toClaims(memberId);
+        String uuid = UUID.randomUUID()
+                .toString();
+
+        Claims claims = JwtMemberPayload.toClaims(memberId, uuid);
 
         return Jwts.builder()
                 .claims(claims)
-                .id(UUID.randomUUID()
-                            .toString())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expire))
                 .signWith(jwtProperties.getAccessSecretKey())
@@ -46,12 +47,13 @@ public class JwtProvider {
         Instant now = Instant.now();
         Instant expire = now.plus(jwtProperties.getRefreshExpiration());
 
-        Claims claims = JwtMemberPayload.toClaims(memberId);
+        String uuid = UUID.randomUUID()
+                .toString();
+
+        Claims claims = JwtMemberPayload.toClaims(memberId, uuid);
 
         return Jwts.builder()
                 .claims(claims)
-                .id(UUID.randomUUID()
-                            .toString())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expire))
                 .signWith(jwtProperties.getRefreshSecretKey())

@@ -65,7 +65,7 @@ class TokenProviderTest {
         var userAgent = createUserAgent();
 
         var expiredAccessToken = createExpiredAccessToken(memberId);
-        var expiredRefreshToken = createExpiredRefreshToken(memberId, userAgent);
+        var expiredRefreshToken = createExpiredRefreshToken(memberId);
 
         // when // then
         assertThatThrownBy(() -> sut.refreshMemberToken(expiredAccessToken, expiredRefreshToken, userAgent))
@@ -113,7 +113,10 @@ class TokenProviderTest {
 
     private String createExpiredAccessToken(Long memberId) {
         var now = Instant.now();
-        var claims = JwtMemberPayload.toClaims(memberId);
+        var uuid = UUID.randomUUID()
+                .toString();
+
+        var claims = JwtMemberPayload.toClaims(memberId, uuid);
 
         return Jwts.builder()
                 .issuedAt(Date.from(now))
@@ -123,11 +126,14 @@ class TokenProviderTest {
                 .compact();
     }
 
-    private String createExpiredRefreshToken(Long memberId, String userAgent) {
+    private String createExpiredRefreshToken(Long memberId) {
         var now = Instant.now();
 
+        var uuid = UUID.randomUUID()
+                .toString();
+
         return Jwts.builder()
-                .claims(JwtMemberPayload.toClaims(memberId))
+                .claims(JwtMemberPayload.toClaims(memberId, uuid))
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.minus(Duration.ofDays(1))))
                 .signWith(jwtProperties.getRefreshSecretKey())

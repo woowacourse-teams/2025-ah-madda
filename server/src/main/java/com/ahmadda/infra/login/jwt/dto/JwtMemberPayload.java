@@ -11,6 +11,7 @@ import java.time.ZoneId;
 public class JwtMemberPayload {
 
     private static final String MEMBER_ID_KEY = "memberId";
+    private static final String RANDOM_KEY = "random";
 
     private final Long memberId;
     private final LocalDateTime expiresAt;
@@ -31,9 +32,10 @@ public class JwtMemberPayload {
         return new JwtMemberPayload(memberId, expiresAt);
     }
 
-    public static Claims toClaims(final Long memberId) {
+    public static Claims toClaims(final Long memberId, final String uuid) {
         return Jwts.claims()
                 .add(MEMBER_ID_KEY, memberId)
+                .add(RANDOM_KEY, uuid)
                 .build();
     }
 }
