@@ -10,13 +10,11 @@ name: Prod Rollback On Manual
 
 on:
   pull_request:
-    paths:
-      - 'server/**'
     types:
       - opened
       - synchronize
       - reopened
-      
+
 jobs:
   setup:
     runs-on: ubuntu-latest
