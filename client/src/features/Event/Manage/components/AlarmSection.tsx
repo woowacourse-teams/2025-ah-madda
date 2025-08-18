@@ -90,7 +90,6 @@ export const AlarmSection = ({
               value={content}
               onChange={handleContentChange}
             />
-            \
             <Button
               size="full"
               color="primary"
