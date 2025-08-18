@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -32,8 +32,12 @@ export const EventHeader = ({
   const navigate = useNavigate();
   const status = badgeText(registrationEnd);
 
-  const [receiveNotification, setReceiveNotification] = useState(true);
-  const { optOut, optIn, isLoading } = useEventNotificationToggle(eventId);
+  const { optOut, optIn, isLoading, data } = useEventNotificationToggle(eventId);
+  const [receiveNotification, setReceiveNotification] = useState(() => !data.optedOut);
+
+  useEffect(() => {
+    setReceiveNotification(!data.optedOut);
+  }, [data.optedOut, eventId]);
 
   const { success, error } = useToast();
 

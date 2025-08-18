@@ -18,6 +18,8 @@ type CreateEventAPIResponse = {
   eventId: number;
 };
 
+type NotificationOptOutState = { optedOut: boolean };
+
 export const eventQueryKeys = {
   all: () => ['event'],
   detail: () => [...eventQueryKeys.all(), 'detail'],
@@ -32,6 +34,7 @@ export const eventQueryKeys = {
   titles: () => [...eventQueryKeys.all(), 'titles'],
   template: () => [...eventQueryKeys.all(), 'template'],
   history: () => [...eventQueryKeys.all(), 'history'],
+  notificationOptOutState: () => [...eventQueryKeys.all(), 'notificationOptOutState'],
 };
 
 export const eventQueryOptions = {
@@ -89,6 +92,11 @@ export const eventQueryOptions = {
       queryKey: [...eventQueryKeys.history(), eventId],
       queryFn: () => getNotifyHistory(eventId),
     }),
+  notificationOptOutState: (eventId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.notificationOptOutState(), eventId],
+      queryFn: () => getNotificationOptOutState(eventId),
+    }),
 };
 
 const getGuests = async (eventId: number) => {
@@ -135,4 +143,8 @@ const getEventTemplate = async (eventId: number) => {
 
 const getNotifyHistory = async (eventId: number) => {
   return await fetcher.get<NotifyHistoryAPIResponse[]>(`events/${eventId}/notification/history`);
+};
+
+const getNotificationOptOutState = async (eventId: number) => {
+  return await fetcher.get<NotificationOptOutState>(`events/${eventId}/notification/opt-out`);
 };
