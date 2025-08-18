@@ -35,7 +35,6 @@ public class LoginService {
         OAuthUserInfoResponse userInfo = googleOAuthProvider.getUserInfo(code, redirectUri);
 
         Member member = findOrCreateMember(userInfo.name(), userInfo.email(), userInfo.picture());
-
         MemberToken memberToken = tokenProvider.createMemberToken(member.getId());
 
         rotateRefreshToken(memberToken.refreshToken(), member.getId(), userAgent);
@@ -61,7 +60,7 @@ public class LoginService {
         Member member = getMember(loginMember);
         RefreshToken savedRefreshToken = getRefreshToken(member.getId(), userAgent);
 
-        tokenProvider.validateDeleteRefreshToken(member.getId(), refreshToken, savedRefreshToken.getToken());
+        tokenProvider.validateRefreshTokenMatch(member.getId(), refreshToken, savedRefreshToken.getToken());
 
         refreshTokenRepository.delete(savedRefreshToken);
     }

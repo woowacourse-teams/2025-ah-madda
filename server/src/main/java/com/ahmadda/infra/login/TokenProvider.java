@@ -49,9 +49,9 @@ public class TokenProvider {
         return createMemberToken(memberId);
     }
 
-    public void validateDeleteRefreshToken(final Long memberId,
-                                           final String refreshToken,
-                                           final String savedRefreshToken) {
+    public void validateRefreshTokenMatch(final Long memberId,
+                                          final String refreshToken,
+                                          final String savedRefreshToken) {
         JwtMemberPayload payload = jwtProvider.parseRefreshPayload(refreshToken);
         if (!Objects.equals(memberId, payload.getMemberId())) {
             throw new InvalidTokenException("토큰 정보가 일치하지 않습니다.");

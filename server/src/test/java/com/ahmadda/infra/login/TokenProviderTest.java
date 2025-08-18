@@ -84,9 +84,9 @@ class TokenProviderTest {
                 .plusDays(1);
         var savedRefreshToken = RefreshToken.create(memberToken.refreshToken(), memberId, userAgent, expiresAt);
         // when // then
-        assertDoesNotThrow(() -> sut.validateDeleteRefreshToken(memberId,
-                                                                memberToken.refreshToken(),
-                                                                savedRefreshToken.getToken()
+        assertDoesNotThrow(() -> sut.validateRefreshTokenMatch(memberId,
+                                                               memberToken.refreshToken(),
+                                                               savedRefreshToken.getToken()
         ));
     }
 
@@ -101,7 +101,7 @@ class TokenProviderTest {
         var memberToken = sut.createMemberToken(memberId);
 
         // when // then
-        assertThatThrownBy(() -> sut.validateDeleteRefreshToken(otherMemberId, memberToken.refreshToken(), userAgent))
+        assertThatThrownBy(() -> sut.validateRefreshTokenMatch(otherMemberId, memberToken.refreshToken(), userAgent))
                 .isInstanceOf(InvalidTokenException.class)
                 .hasMessage("토큰 정보가 일치하지 않습니다.");
     }
