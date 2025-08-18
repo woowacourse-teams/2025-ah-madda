@@ -13,8 +13,7 @@ import org.springframework.stereotype.Component;
 public class CookieProvider {
 
     public static final String REFRESH_TOKEN_KEY = "refresh_token";
-
-
+    
     private final RefreshTokenCookieProperties refreshTokenCookieProperties;
 
     public ResponseCookie createRefreshTokenCookie(final String refreshToken) {

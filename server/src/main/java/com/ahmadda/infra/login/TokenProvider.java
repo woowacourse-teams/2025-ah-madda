@@ -48,10 +48,10 @@ public class TokenProvider {
         return createMemberToken(memberId);
     }
 
-    public void validateRefreshTokenMatch(final Long memberId,
-                                          final String refreshToken,
-                                          final String savedRefreshToken) {
-        Long refreshTokenMemberId = parseRefreshTokenMemberId(savedRefreshToken);
+    public void validateRefreshTokenMatch(final String refreshToken,
+                                          final String savedRefreshToken,
+                                          final Long memberId) {
+        Long refreshTokenMemberId = parseRefreshTokenMemberId(refreshToken);
         if (!Objects.equals(memberId, refreshTokenMemberId)) {
             throw new InvalidTokenException("토큰 정보가 일치하지 않습니다.");
         }

@@ -10,7 +10,6 @@ import com.ahmadda.infra.alarm.slack.SlackAlarm;
 import com.ahmadda.infra.login.RefreshToken;
 import com.ahmadda.infra.login.RefreshTokenRepository;
 import com.ahmadda.infra.login.TokenProvider;
-import com.ahmadda.infra.login.exception.InvalidTokenException;
 import com.ahmadda.infra.login.util.HashUtils;
 import com.ahmadda.infra.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.oauth.dto.OAuthUserInfoResponse;
@@ -60,7 +59,7 @@ public class LoginService {
         Member member = getMember(loginMember);
         RefreshToken savedRefreshToken = getRefreshToken(member.getId(), userAgent);
 
-        tokenProvider.validateRefreshTokenMatch(member.getId(), refreshToken, savedRefreshToken.getToken());
+        tokenProvider.validateRefreshTokenMatch(refreshToken, savedRefreshToken.getToken(), member.getId());
 
         refreshTokenRepository.delete(savedRefreshToken);
     }
@@ -85,7 +84,7 @@ public class LoginService {
         String deviceId = HashUtils.sha256(userAgent);
 
         return refreshTokenRepository.findByMemberIdAndDeviceId(memberId, deviceId)
-                .orElseThrow(() -> new InvalidTokenException("토큰을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("토큰을 찾을 수 없습니다."));
     }
 
     private void rotateRefreshToken(final String refreshToken, final Long memberId, final String userAgent) {
