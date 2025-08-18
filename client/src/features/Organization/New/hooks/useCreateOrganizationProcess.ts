@@ -1,6 +1,6 @@
 import { useCreateOrganization } from '@/api/mutations/useCreateOrganization';
 
-type Args = {
+type CreateOrganizationProcessArgs = {
   name: string;
   description: string;
   thumbnail: File | null;
@@ -14,7 +14,7 @@ export const useCreateOrganizationProcess = ({
   thumbnail,
   onSuccess,
   onCancel,
-}: Args) => {
+}: CreateOrganizationProcessArgs) => {
   const { mutate, isPending } = useCreateOrganization();
 
   const handleCreate = (nickname: string) => {
