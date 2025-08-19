@@ -22,6 +22,7 @@ public class PokeHistory extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "poke_history_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

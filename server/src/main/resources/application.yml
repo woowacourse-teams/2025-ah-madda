@@ -16,6 +16,7 @@ spring:
       - security/db.yml
       - security/slack.yml
       - security/aws.yml
+      - security/cookie.yml
 
   application:
     name: ah-madda
