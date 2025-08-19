@@ -7,13 +7,13 @@ type NotificationButtonProps = {
 export const NotificationButton = ({ onClose }: NotificationButtonProps) => {
   const { permission, handleNotificationClick } = useNotification();
 
-  const handleNotifyClick = () => {
-    handleNotificationClick();
+  const handleNotifyClick = async () => {
+    await handleNotificationClick();
     onClose();
   };
   return (
     <Button size="full" onClick={handleNotifyClick}>
-      {permission === 'granted' ? '알림 허용' : '알림 받기'}
+      {permission === 'granted' ? '알림 허용됨' : '알림 받기'}
     </Button>
   );
 };
