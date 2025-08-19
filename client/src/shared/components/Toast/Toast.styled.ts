@@ -1,6 +1,8 @@
 import { keyframes, css } from '@emotion/react';
 import styled from '@emotion/styled';
 
+import { Flex } from '../Flex';
+
 export const StyledToastLayout = styled.div`
   position: fixed;
   top: 25px;
@@ -9,32 +11,17 @@ export const StyledToastLayout = styled.div`
   z-index: 1000;
 `;
 
-export const StyledToastContainer = styled.div`
+export const StyledToastContainer = styled(Flex)`
   position: relative;
   border-radius: 12px;
   background: #fff;
-  padding: 20px 35px 20px 20px;
+  padding: 15px;
   margin: 0;
-  box-shadow: 0 6px 20px -5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 20px -5px rgba(0, 0, 0, 0.3);
   overflow: hidden;
   transform: translateX(0%);
   transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.35);
   min-width: 280px;
-`;
-
-export const StyledToastCloseButton = styled.button`
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  padding: 5px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  opacity: 0.7;
-
-  &:hover {
-    opacity: 1;
-  }
 `;
 
 const progressKeyframes = keyframes`
