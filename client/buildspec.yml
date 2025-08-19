@@ -6,7 +6,7 @@ phases:
       - cd client
       - npm install -g pnpm
       - pnpm install
-      
+
   pre_build:
     commands:
       - echo "=== Auto Version Update from Commit Message ==="
@@ -14,7 +14,7 @@ phases:
         # 최신 커밋 메시지에서 버전 추출
         COMMIT_MSG=$(git log -1 --pretty=%B)
         echo "Latest commit message: $COMMIT_MSG"
-        
+
         # [RELEASE] v0.3.0 패턴에서 버전 추출
         if [[ "$COMMIT_MSG" =~ \[RELEASE\]\ v([0-9]+\.[0-9]+\.[0-9]+) ]]; then
           VERSION="${BASH_REMATCH[1]}"
@@ -23,7 +23,7 @@ phases:
           echo "ℹ️ No release version in commit message, using current version"
           exit 0
         fi
-        
+
         # package.json 버전 업데이트
         CURRENT_VERSION=$(node -p "require('./package.json').version")
         if [ "$CURRENT_VERSION" != "$VERSION" ]; then
@@ -33,7 +33,7 @@ phases:
         else
           echo "✅ Version already up to date: $CURRENT_VERSION"
         fi
-        
+
   build:
     commands:
       - echo "Building with version: $(node -p "require('./package.json').version")"
