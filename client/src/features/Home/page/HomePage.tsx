@@ -27,7 +27,7 @@ export const HomePage = () => {
   };
 
   useEffect(() => {
-    if (isPWA() && isIOS()) {
+    if (isPWA() && isIOS() && Notification.permission !== 'granted') {
       open();
     }
   }, [open]);

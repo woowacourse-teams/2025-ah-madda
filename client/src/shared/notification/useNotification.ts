@@ -31,10 +31,6 @@ export const useNotification = () => {
 
     if (supported) {
       setPermission(Notification.permission);
-
-      if ('Notification' in window) {
-        setPermission(Notification.permission);
-      }
     }
   }, []);
 
