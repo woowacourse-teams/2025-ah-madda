@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -8,26 +8,33 @@ import { useParticipateOrganization } from '@/api/mutations/useParticipateOrgani
 import { organizationQueryOptions } from '@/api/queries/organization';
 import { useModal } from '@/shared/hooks/useModal';
 
+import { useToast } from '../../../shared/components/Toast/ToastContext';
+
 export const useInviteOrganizationProcess = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { success, error } = useToast();
   const { close } = useModal();
 
   const inviteCode = searchParams.get('code');
 
-  useEffect(() => {
+  const validateAndRedirect = useCallback(() => {
     if (!inviteCode) {
-      alert('유효하지 않은 초대 링크입니다.');
+      error('유효하지 않은 초대 링크입니다.', { duration: 3000 });
       navigate('/');
       return;
     }
 
     if (!isAuthenticated()) {
-      alert('로그인이 필요한 서비스입니다.');
+      error('로그인이 필요한 서비스입니다.', { duration: 3000 });
       navigate('/');
       return;
     }
-  }, [inviteCode, navigate]);
+  }, [inviteCode, error, navigate]);
+
+  useEffect(() => {
+    validateAndRedirect();
+  }, [validateAndRedirect]);
 
   const { data: organizationData } = useQuery({
     ...organizationQueryOptions.preview(inviteCode!),
@@ -42,12 +49,12 @@ export const useInviteOrganizationProcess = () => {
       { nickname, inviteCode: inviteCode ?? '' },
       {
         onSuccess: () => {
-          alert('조직 참가가 완료되었습니다!');
+          success('조직 참가가 완료되었습니다!');
           close();
           navigate('/event');
         },
-        onError: (error) => {
-          alert(`${error.message}`);
+        onError: (err) => {
+          error(err.message, { duration: 3000 });
           navigate('/');
         },
       }
