@@ -11,6 +11,9 @@ on:
 
 jobs:
   setup:
+    if: |
+      startsWith(github.event.head_commit.message, 'hotfix') ||
+      github.event_name == 'release'
     runs-on: ubuntu-22.04-arm
 
     outputs:
