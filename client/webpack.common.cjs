@@ -1,8 +1,8 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
-const Dotenv = require('dotenv-webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
 
 module.exports = {
   entry: './src/main.tsx',
@@ -31,6 +31,11 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       VERSION: JSON.stringify('1.0.0'),
+    }),
+    sentryWebpackPlugin({
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      org: 'ahmadda',
+      project: 'ahmadda',
     }),
   ],
 
