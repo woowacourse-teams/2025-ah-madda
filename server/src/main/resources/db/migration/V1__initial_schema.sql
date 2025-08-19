@@ -16,7 +16,7 @@ create table member
     email             varchar(255) not null,
     name              varchar(255) not null,
     profile_image_url varchar(255) not null,
-    constraint UKmbmcqelty0fbrvxp1q58dn57t
+    constraint UK_member__email
         unique (email)
 );
 
@@ -29,7 +29,7 @@ create table event_template
     description       varchar(255) not null,
     title             varchar(255) not null,
     member_id         bigint       not null,
-    constraint FK2nyntxlhdqsw00ym24suf201k
+    constraint FK_event_template__member__member_id
         foreign key (member_id) references member (member_id)
 );
 
@@ -54,9 +54,9 @@ create table organization_member
     member_id              bigint                 not null,
     organization_id        bigint                 not null,
     role                   enum ('ADMIN', 'USER') not null,
-    constraint FKjbkui69kscehhayjq4bgpfatm
+    constraint FK_org_member__member__member_id
         foreign key (member_id) references member (member_id),
-    constraint FKkta3960iv2gi5rtadvyyp046g
+    constraint FK_org_member__org__org_id
         foreign key (organization_id) references organization (organization_id)
 );
 
@@ -76,10 +76,10 @@ create table event
     title              varchar(255) not null,
     organization_id    bigint       not null,
     organizer_id       bigint       not null,
-    constraint FKii1bg3kyi7mnsa2qdhqo4rt4e
-        foreign key (organizer_id) references organization_member (organization_member_id),
-    constraint FKkarqc3c84scr3r5ncv5stqbk2
-        foreign key (organization_id) references organization (organization_id)
+    constraint FK_event__org__org_id
+        foreign key (organization_id) references organization (organization_id),
+    constraint FK_event__org_member__organizer_id
+        foreign key (organizer_id) references organization_member (organization_member_id)
 );
 
 create table event_notification_opt_out
@@ -90,9 +90,9 @@ create table event_notification_opt_out
     updated_at                    datetime(6) null,
     event_id                      bigint      not null,
     organization_member_id        bigint      not null,
-    constraint FK9n779sgx8kyxw5n54o2iiv3wk
+    constraint FK_event_notification_opt_out__event__event_id
         foreign key (event_id) references event (event_id),
-    constraint FKacgox0oodfi5khgr61xbf9prl
+    constraint FK_event_notification_opt_out__org_member__org_member_id
         foreign key (organization_member_id) references organization_member (organization_member_id)
 );
 
@@ -103,9 +103,9 @@ create table event_statistic
     created_at         datetime(6) null,
     updated_at         datetime(6) null,
     event_id           bigint      not null,
-    constraint UKilsp4cm6nlvbu9iycpity8ggr
+    constraint UK_event_statistic__event_id
         unique (event_id),
-    constraint FKkpjuadinndq7hefu96qhatdm6
+    constraint FK_event_statistic__event__event_id
         foreign key (event_id) references event (event_id)
 );
 
@@ -118,7 +118,7 @@ create table event_view_metric
     view_count           int         not null,
     view_date            date        not null,
     event_statistic_id   bigint      not null,
-    constraint FK13a3mi63066y755ahrn0yqovi
+    constraint FK_event_view_metric__event_statistic__event_statistic_id
         foreign key (event_statistic_id) references event_statistic (event_statistic_id)
 );
 
@@ -130,10 +130,10 @@ create table guest
     updated_at     datetime(6) null,
     event_id       bigint      not null,
     participant_id bigint      not null,
-    constraint FKg64g944loti79u0es4r9gbbug
-        foreign key (participant_id) references organization_member (organization_member_id),
-    constraint FKplwm15gu4q6tj4g4ox6wkf1li
-        foreign key (event_id) references event (event_id)
+    constraint FK_guest__event__event_id
+        foreign key (event_id) references event (event_id),
+    constraint FK_guest__org_member__participant_id
+        foreign key (participant_id) references organization_member (organization_member_id)
 );
 
 create table invite_code
@@ -146,17 +146,17 @@ create table invite_code
     expires_at      datetime(6)  not null,
     inviter_id      bigint       not null,
     organization_id bigint       not null,
-    constraint UK3ja1mxf58p6paxfcpycpblnw9
+    constraint UK_invite_code__code
         unique (code),
-    constraint FK41beg3ae7antlly33qcy4yq80
-        foreign key (inviter_id) references organization_member (organization_member_id),
-    constraint FKjmhv96uefmfnavwj9syrhvqks
-        foreign key (organization_id) references organization (organization_id)
+    constraint FK_invite_code__org__org_id
+        foreign key (organization_id) references organization (organization_id),
+    constraint FK_invite_code__org_member__inviter_id
+        foreign key (inviter_id) references organization_member (organization_member_id)
 );
 
 create table poke_history
 (
-    id           bigint auto_increment
+    poke_history_id           bigint auto_increment
         primary key,
     created_at   datetime(6) null,
     updated_at   datetime(6) null,
@@ -164,12 +164,12 @@ create table poke_history
     event_id     bigint      not null,
     recipient_id bigint      not null,
     sender_id    bigint      not null,
-    constraint FK288ixvd99w0ejrw7n2k4195sa
-        foreign key (sender_id) references organization_member (organization_member_id),
-    constraint FK3ggc3y9vkqk6uovaeaf65htwc
+    constraint FK_poke_history__event__event_id
+        foreign key (event_id) references event (event_id),
+    constraint FK_poke_history__org_member__recipient_id
         foreign key (recipient_id) references organization_member (organization_member_id),
-    constraint FKai1a607ofdo3u2sqkyoca2kov
-        foreign key (event_id) references event (event_id)
+    constraint FK_poke_history__org_member__sender_id
+        foreign key (sender_id) references organization_member (organization_member_id)
 );
 
 create table question
@@ -192,22 +192,22 @@ create table answer
     answer_text varchar(255) not null,
     guest_id    bigint       not null,
     question_id bigint       not null,
-    constraint FK8frr4bcabmmeyyu60qt7iiblo
-        foreign key (question_id) references question (question_id),
-    constraint FKlgsn4bvrvhl1xs9iw9fcghgdp
-        foreign key (guest_id) references guest (guest_id)
+    constraint FK_answer__guest__guest_id
+        foreign key (guest_id) references guest (guest_id),
+    constraint FK_answer__question__question_id
+        foreign key (question_id) references question (question_id)
 );
 
 create table event_questions
 (
     event_event_id        bigint not null,
     questions_question_id bigint not null,
-    constraint UK2owmcun4n0seoad4g8a0i0i8q
+    constraint UK_event_questions__questions_question_id
         unique (questions_question_id),
-    constraint FKamfavdgoctv1guhw2tket7eht
-        foreign key (questions_question_id) references question (question_id),
-    constraint FKpnhlelf441atvygpctnd19128
-        foreign key (event_event_id) references event (event_id)
+    constraint FK_event_questions__event__event_event_id
+        foreign key (event_event_id) references event (event_id),
+    constraint FK_event_questions__question__question_id
+        foreign key (questions_question_id) references question (question_id)
 );
 
 create table reminder_history
@@ -219,7 +219,7 @@ create table reminder_history
     content             varchar(255) not null,
     sent_at             datetime(6)  not null,
     event_id            bigint       not null,
-    constraint FK7vahkq7bx3evaplx5bpouv12b
+    constraint FK_reminder_history__event__event_id
         foreign key (event_id) references event (event_id)
 );
 
@@ -231,8 +231,9 @@ create table reminder_recipient
     updated_at             datetime(6) null,
     organization_member_id bigint      not null,
     reminder_history_id    bigint      not null,
-    constraint FKerx7p9tj98v0aedt3k9rpi8qs
+    constraint FK_reminder_recipient__org_member__org_member_id
         foreign key (organization_member_id) references organization_member (organization_member_id),
-    constraint FKnu6pfe5oet9mdj15pkywvmjjt
+    constraint FK_reminder_recipient__reminder_history__reminder_history_id
         foreign key (reminder_history_id) references reminder_history (reminder_history_id)
 );
+
