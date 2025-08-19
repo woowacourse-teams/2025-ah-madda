@@ -14,13 +14,18 @@ export const AlarmModal = ({ isOpen, onClose }: ModalProps) => {
         width: 350px;
       `}
     >
-      <Flex width="100%" dir="column" justifyContent="center" alignItems="center">
-        <Flex width="100%" dir="column" alignItems="center" gap="16px" margin="20px 0 0 0">
-          <Text type="Heading" weight="semibold">
-            알림을 허용하시겠습니까?
-          </Text>
-          <NotificationButton onClose={onClose} />
-        </Flex>
+      <Flex
+        width="100%"
+        dir="column"
+        justifyContent="center"
+        alignItems="center"
+        gap="16px"
+        margin="20px 0 0 0"
+      >
+        <Text type="Heading" weight="semibold">
+          알림을 허용하시겠습니까?
+        </Text>
+        <NotificationButton onClose={onClose} />
       </Flex>
     </Modal>
   );
