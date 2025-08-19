@@ -33,6 +33,7 @@ cors:
     - http://127.0.0.1:5173
     - https://ahmadda.com
     - https://dev.ahmadda.com
+    - https://staging.ahmadda.com
 
 notification:
   redirect-url-prefix: http://localhost:5173/event/
