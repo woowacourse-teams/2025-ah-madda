@@ -17,7 +17,7 @@ import java.util.UUID;
 @Slf4j
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class MDCFilter implements Filter {
+public class HttpTraceLoggingFilter implements Filter {
 
     private static final String TRACE_ID = "trace_id";
 
