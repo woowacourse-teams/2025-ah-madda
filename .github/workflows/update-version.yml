@@ -3,7 +3,7 @@ name: Update Package Version
 on:
   push:
     branches:
-      - chore/*
+      - release/*
   workflow_dispatch:
 
 jobs:
