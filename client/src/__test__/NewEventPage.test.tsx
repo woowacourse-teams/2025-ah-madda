@@ -5,6 +5,14 @@ import { RouterWithQueryClient } from '@/__test__/customRender';
 import { fetcher } from '@/api/fetcher';
 import { NewEventPage } from '@/features/Event/New/pages/NewEventPage';
 
+vi.mock('@tanstack/react-query', async () => {
+  const actual = await vi.importActual('@tanstack/react-query');
+  return {
+    ...actual,
+    useSuspenseQueries: vi.fn(() => [{ data: [] }, { data: [] }, { data: [] }]),
+  };
+});
+
 vi.mock('@/api/fetcher', () => ({
   fetcher: {
     post: vi.fn(),
@@ -134,8 +142,7 @@ describe('NewEventPage', () => {
         expect(screen.getByLabelText(/이벤트 이름/)).toBeInTheDocument();
       });
 
-      expect(screen.getByLabelText(/이벤트 시작일/)).toBeInTheDocument();
-      expect(screen.getByLabelText(/이벤트 종료일/)).toBeInTheDocument();
+      expect(screen.getByLabelText(/이벤트 기간/)).toBeInTheDocument();
       expect(screen.getByLabelText(/신청 종료일/)).toBeInTheDocument();
       expect(screen.getByLabelText(/이벤트 장소/)).toBeInTheDocument();
       expect(screen.getByLabelText(/소개글/)).toBeInTheDocument();
