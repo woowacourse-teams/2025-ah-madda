@@ -14,8 +14,8 @@ import { PageLayout } from '@/shared/components/PageLayout';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
+import { OrganizationWithRole } from '../../types/Organization';
 import { OrgCard } from '../components/OrgCard';
-import { OrganizationWithRole } from '../types/Organization';
 
 const CARD_W = 120;
 const GAP = 80;

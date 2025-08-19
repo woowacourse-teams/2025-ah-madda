@@ -1,7 +1,7 @@
 import { queryOptions } from '@tanstack/react-query';
 
 import { Event } from '@/features/Event/types/Event';
-import { Organization } from '@/features/Organization/Select/types/Organization';
+import { Organization } from '@/features/Organization/types/Organization';
 
 import { fetcher } from '../fetcher';
 import { OrganizationProfileAPIResponse } from '../types/organizations';
