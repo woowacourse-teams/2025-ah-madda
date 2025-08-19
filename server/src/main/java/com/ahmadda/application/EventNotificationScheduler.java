@@ -25,7 +25,8 @@ public class EventNotificationScheduler {
 
     // TODO. 추후 5분이라는 시간을 보장하도록 구현
     private static final Duration SCHEDULER_SCAN_WINDOW = Duration.ofMinutes(5);
-    private static final Duration START_REMINDER_LEAD_TIME = Duration.ofHours(24);
+    private static final Duration REGISTRATION_CLOSING_REMINDER_LEAD_TIME = Duration.ofMinutes(30);
+    private static final Duration EVENT_START_REMINDER_LEAD_TIME = Duration.ofHours(24);
 
     private final EventRepository eventRepository;
     private final EventNotificationOptOutRepository eventNotificationOptOutRepository;
@@ -35,8 +36,9 @@ public class EventNotificationScheduler {
     // TODO. 추후 중복 알람을 방지하도록 구현
     @Scheduled(fixedRate = 180_000)
     @Transactional
-    public void notifyRegistrationClosingEvents() {
-        LocalDateTime windowStart = LocalDateTime.now();
+    public void notifyRegistrationClosingIn30Minutes() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime windowStart = now.plus(REGISTRATION_CLOSING_REMINDER_LEAD_TIME);
         LocalDateTime windowEnd = windowStart.plus(SCHEDULER_SCAN_WINDOW);
 
         List<Event> upcomingEvents =
@@ -57,7 +59,7 @@ public class EventNotificationScheduler {
     @Transactional
     public void notifyEventStartIn24Hours() {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime windowStart = now.plus(START_REMINDER_LEAD_TIME);
+        LocalDateTime windowStart = now.plus(EVENT_START_REMINDER_LEAD_TIME);
         LocalDateTime windowEnd = windowStart.plus(SCHEDULER_SCAN_WINDOW);
 
         List<Event> startingEvents =
