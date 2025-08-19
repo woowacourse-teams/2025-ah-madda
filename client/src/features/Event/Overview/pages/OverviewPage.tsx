@@ -41,14 +41,14 @@ export const OverviewPage = () => {
             <Icon
               name="logo"
               size={55}
-              onClick={goMyEvents}
+              onClick={goHome}
               css={css`
                 cursor: pointer;
               `}
             />
           }
           right={
-            <Button size="sm" onClick={goHome}>
+            <Button size="sm" onClick={goMyEvents}>
               내 이벤트
             </Button>
           }
