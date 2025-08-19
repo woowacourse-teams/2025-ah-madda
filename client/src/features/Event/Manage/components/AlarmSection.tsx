@@ -9,6 +9,7 @@ import { Icon } from '@/shared/components/Icon';
 import { Input } from '@/shared/components/Input';
 import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
+import { useToast } from '@/shared/components/Toast/ToastContext';
 import { trackSendAlarm } from '@/shared/lib/gaEvents';
 
 import { useModal } from '../../../../shared/hooks/useModal';
@@ -31,10 +32,15 @@ export const AlarmSection = ({
   const { eventId: eventIdParam } = useParams();
   const { mutate: postAlarm, isPending } = useAddAlarm({ eventId: Number(eventIdParam) });
   const { isOpen, open, close } = useModal();
+  const { error } = useToast();
 
   const handleSendAlarm = () => {
-    trackSendAlarm(selectedGuestCount);
+    if (content.length > 20) {
+      error('20자 이내로 입력해주세요.');
+      return;
+    }
 
+    trackSendAlarm(selectedGuestCount);
     postAlarm(
       { organizationMemberIds, content },
       {
