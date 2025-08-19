@@ -20,12 +20,17 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 class TokenProviderTest {
 
     static JwtProperties jwtProperties;
-    static JwtProvider sut;
+
+    static JwtProvider jwtProvider;
+
+    static TokenProvider sut;
 
     @BeforeAll
     static void setUpAll() {
-        String accessSecretKey = "test-access-secret";   // 고정값 권장 (재현성)
-        String refreshSecretKey = "test-refresh-secret";
+        String accessSecretKey = UUID.randomUUID()
+                .toString();
+        String refreshSecretKey = UUID.randomUUID()
+                .toString();
         Duration accessExpiration = Duration.ofHours(1);
         Duration refreshExpiration = Duration.ofHours(1);
 
@@ -33,7 +38,8 @@ class TokenProviderTest {
                 accessSecretKey, accessExpiration,
                 refreshSecretKey, refreshExpiration
         );
-        sut = new JwtProvider(jwtProperties);
+        jwtProvider = new JwtProvider(jwtProperties);
+        sut = new TokenProvider(jwtProvider);
     }
 
     @Test

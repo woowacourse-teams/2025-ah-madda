@@ -22,8 +22,10 @@ class JwtProviderTest {
 
     @BeforeAll
     static void setUpAll() {
-        String accessSecretKey = "test-access-secret";   // 고정값 권장 (재현성)
-        String refreshSecretKey = "test-refresh-secret";
+        String accessSecretKey = UUID.randomUUID()
+                .toString();
+        String refreshSecretKey = UUID.randomUUID()
+                .toString();
         Duration accessExpiration = Duration.ofHours(1);
         Duration refreshExpiration = Duration.ofHours(1);
 
