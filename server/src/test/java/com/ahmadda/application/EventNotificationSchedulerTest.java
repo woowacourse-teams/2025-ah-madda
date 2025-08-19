@@ -66,7 +66,7 @@ class EventNotificationSchedulerTest {
 
     @ParameterizedTest
     @MethodSource("registrationEndOffsets")
-    void 등록_마감_임박_이벤트에_대해_수신_거부하지_않은_비게스트에게만_알람을_전송한다(
+    void 등록_마감_30분_전_수신_거부하지_않은_비게스트에게만_알람을_전송한다(
             int minutesUntilRegistrationEnds,
             boolean expectToSend
     ) {
@@ -78,7 +78,8 @@ class EventNotificationSchedulerTest {
 
         var now = LocalDateTime.now();
 
-        var registrationEnd = now.plusMinutes(minutesUntilRegistrationEnds);
+        var registrationEnd = now.plusMinutes(30)
+                .plusMinutes(minutesUntilRegistrationEnds);
 
         var event = eventRepository.save(Event.create(
                 "이벤트", "설명", "장소",
@@ -109,7 +110,7 @@ class EventNotificationSchedulerTest {
     }
 
     @Test
-    void 등록_마감_임박_이벤트의_리마인더_호출_후_히스토리가_저장된다() {
+    void 등록_마감_30분_전_리마인더_호출_후_히스토리가_저장된다() {
         // given
         var org = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
         var host = saveOrganizationMember("주최자", "host@email.com", org);
@@ -122,7 +123,7 @@ class EventNotificationSchedulerTest {
                 host, org,
                 EventOperationPeriod.create(
                         now.minusDays(2),
-                        now.plusMinutes(4),
+                        now.plusMinutes(34),
                         now.plusDays(1),
                         now.plusDays(2),
                         now.minusDays(3)
