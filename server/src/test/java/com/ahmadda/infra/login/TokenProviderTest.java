@@ -5,6 +5,7 @@ import com.ahmadda.infra.login.jwt.JwtProvider;
 import com.ahmadda.infra.login.jwt.config.JwtProperties;
 import com.ahmadda.infra.login.jwt.dto.JwtMemberPayload;
 import io.jsonwebtoken.Jwts;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -18,19 +19,22 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class TokenProviderTest {
 
-    String accessSecretKey = UUID.randomUUID()
-            .toString();
-    Duration accessExpiration = Duration.ofHours(1);
-    String refreshSecretKey = UUID.randomUUID()
-            .toString();
-    Duration refreshExpiration = Duration.ofHours(1);
+    static JwtProperties jwtProperties;
+    static JwtProvider sut;
 
-    JwtProperties jwtProperties =
-            new JwtProperties(accessSecretKey, accessExpiration, refreshSecretKey, refreshExpiration);
+    @BeforeAll
+    static void setUpAll() {
+        String accessSecretKey = "test-access-secret";   // 고정값 권장 (재현성)
+        String refreshSecretKey = "test-refresh-secret";
+        Duration accessExpiration = Duration.ofHours(1);
+        Duration refreshExpiration = Duration.ofHours(1);
 
-    JwtProvider jwtProvider = new JwtProvider(jwtProperties);
-
-    TokenProvider sut = new TokenProvider(jwtProvider);
+        jwtProperties = new JwtProperties(
+                accessSecretKey, accessExpiration,
+                refreshSecretKey, refreshExpiration
+        );
+        sut = new JwtProvider(jwtProperties);
+    }
 
     @Test
     void 액세스와_리프레시_토큰을_생성할_수_있다() {

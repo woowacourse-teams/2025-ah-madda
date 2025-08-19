@@ -1,6 +1,6 @@
 package com.ahmadda.infra.login;
 
-import com.ahmadda.infra.login.exception.InvalidRefreshTokenRegistrationException;
+import com.ahmadda.infra.login.exception.InvalidRefreshTokenException;
 import com.ahmadda.infra.login.util.HashUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -61,25 +61,25 @@ public class RefreshToken {
 
     private void validateRefreshToken(final String refreshToken) {
         if (refreshToken == null || refreshToken.isBlank()) {
-            throw new InvalidRefreshTokenRegistrationException("토큰은 공백일 수 없습니다.");
+            throw new InvalidRefreshTokenException("토큰은 공백일 수 없습니다.");
         }
     }
 
     private void validateMemberId(final Long memberId) {
         if (memberId == null) {
-            throw new InvalidRefreshTokenRegistrationException("멤버 식별자는 null일 수 없습니다.");
+            throw new InvalidRefreshTokenException("멤버 식별자는 null일 수 없습니다.");
         }
     }
 
     private void validateDeviceId(final String deviceId) {
         if (deviceId == null || deviceId.isBlank()) {
-            throw new InvalidRefreshTokenRegistrationException("기기 식별자는 공백일 수 없습니다.");
+            throw new InvalidRefreshTokenException("기기 식별자는 공백일 수 없습니다.");
         }
     }
 
     private void validateExpiresAt(final LocalDateTime expiresAt) {
         if (expiresAt == null) {
-            throw new InvalidRefreshTokenRegistrationException("만료 시간은 null일 수 없습니다.");
+            throw new InvalidRefreshTokenException("만료 시간은 null일 수 없습니다.");
         }
     }
 }

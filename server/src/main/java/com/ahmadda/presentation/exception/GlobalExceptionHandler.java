@@ -5,7 +5,7 @@ import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
-import com.ahmadda.infra.login.exception.InvalidRefreshTokenRegistrationException;
+import com.ahmadda.infra.login.exception.InvalidRefreshTokenException;
 import com.ahmadda.infra.login.exception.InvalidTokenException;
 import com.ahmadda.infra.login.jwt.exception.InvalidJwtException;
 import com.ahmadda.infra.notification.push.exception.InvalidFcmRegistrationTokenException;
@@ -73,7 +73,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.FORBIDDEN, request);
     }
 
-    @ExceptionHandler({InvalidFcmRegistrationTokenException.class, InvalidRefreshTokenRegistrationException.class})
+    @ExceptionHandler({InvalidFcmRegistrationTokenException.class, InvalidRefreshTokenException.class})
     public ResponseEntity<Object> handleBadRequest(final Exception ex, final WebRequest request) {
         ProblemDetail body =
                 super.createProblemDetail(ex, HttpStatus.BAD_REQUEST, ex.getMessage(), null, null, request);

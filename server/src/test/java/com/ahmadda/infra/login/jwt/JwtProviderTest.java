@@ -4,6 +4,7 @@ import com.ahmadda.infra.login.jwt.config.JwtProperties;
 import com.ahmadda.infra.login.jwt.exception.InvalidJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -16,18 +17,22 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class JwtProviderTest {
 
-    String accessSecretKey = UUID.randomUUID()
-            .toString();
-    Duration accessExpiration = Duration.ofHours(1);
-    String refreshSecretKey = UUID.randomUUID()
-            .toString();
-    Duration refreshExpiration = Duration.ofHours(1);
-    Duration expiration = Duration.ofHours(1);
+    static JwtProperties jwtProperties;
+    static JwtProvider sut;
 
-    JwtProperties jwtProperties =
-            new JwtProperties(accessSecretKey, accessExpiration, refreshSecretKey, refreshExpiration);
+    @BeforeAll
+    static void setUpAll() {
+        String accessSecretKey = "test-access-secret";   // 고정값 권장 (재현성)
+        String refreshSecretKey = "test-refresh-secret";
+        Duration accessExpiration = Duration.ofHours(1);
+        Duration refreshExpiration = Duration.ofHours(1);
 
-    JwtProvider sut = new JwtProvider(jwtProperties);
+        jwtProperties = new JwtProperties(
+                accessSecretKey, accessExpiration,
+                refreshSecretKey, refreshExpiration
+        );
+        sut = new JwtProvider(jwtProperties);
+    }
 
     @Test
     void JWT_토큰을_정상적으로_생성_및_검증_할_수_있다() {
@@ -80,6 +85,8 @@ class JwtProviderTest {
         var forgedKey = Keys.hmacShaKeyFor(UUID.randomUUID()
                                                    .toString()
                                                    .getBytes());
+
+        var expiration = Duration.ofHours(1);
 
         var claims = Jwts.claims()
                 .add("memberId", 4L)
@@ -158,6 +165,8 @@ class JwtProviderTest {
         var forgedKey = Keys.hmacShaKeyFor(UUID.randomUUID()
                                                    .toString()
                                                    .getBytes());
+        var expiration = Duration.ofHours(1);
+
         var token = Jwts.builder()
                 .claims(Jwts.claims()
                                 .add("memberId", 30L)
