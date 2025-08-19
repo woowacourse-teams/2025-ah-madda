@@ -30,7 +30,7 @@ export const GuestItemContainer = ({
 const StyledGuestItemContainer = styled.div<StyledGuestItemContainerProps>`
   display: flex;
   align-items: center;
-  padding: 12px 24px;
+  padding: 0px 12px;
   border-radius: 8px;
   width: 100%;
   transition: all 0.2s ease;
