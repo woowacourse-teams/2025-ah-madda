@@ -5,15 +5,10 @@ import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
-export type Org = {
-  organizationId: number;
-  name: string;
-  imageUrl: string;
-  description: string;
-};
+import { Organization } from '../types/Organization';
 
 export type OrgCardProps = {
-  org: Org;
+  org: Organization;
   onJoin: () => void;
   isAdmin: boolean;
   onEdit?: () => void;

@@ -14,14 +14,7 @@ import { PageLayout } from '@/shared/components/PageLayout';
 import { Text } from '@/shared/components/Text';
 
 import { OrgCard } from '../components/OrgCard';
-
-type OrgCardModel = {
-  organizationId: number;
-  name: string;
-  imageUrl: string;
-  description: string;
-  isAdmin: boolean;
-};
+import { OrganizationWithRole } from '../types/Organization';
 
 const CARD_W = 120;
 const GAP = 80;
@@ -70,7 +63,7 @@ const OrganizationSelectBody = () => {
 
   const { data: participatedOrgs } = useSuspenseQuery(organizationQueryOptions.participated());
 
-  const baseOrgs: OrgCardModel[] = participatedOrgs.map((org) => ({
+  const baseOrgs: OrganizationWithRole[] = participatedOrgs.map((org) => ({
     organizationId: org.organizationId,
     name: org.name,
     description: org.description,
@@ -82,7 +75,7 @@ const OrganizationSelectBody = () => {
     queries: baseOrgs.map((org) => organizationQueryOptions.profile(org.organizationId)),
   });
 
-  const orgs: OrgCardModel[] = baseOrgs.map((org, idx) => ({
+  const orgs: OrganizationWithRole[] = baseOrgs.map((org, idx) => ({
     ...org,
     isAdmin: profileQueries[idx]?.data?.isAdmin ?? org.isAdmin,
   }));
