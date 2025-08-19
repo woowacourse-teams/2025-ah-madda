@@ -1,0 +1,53 @@
+name: Update Package Version
+
+on:
+  push:
+    branches:
+      - fe/dev
+  workflow_dispatch:
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Get latest git tag
+        id: get_tag
+        run: |
+          LATEST_TAG=$(git tag --sort=-version:refname | head -1)
+          if [ -z "$LATEST_TAG" ]; then
+            echo "No tags found"
+            exit 1
+          fi
+          VERSION=${LATEST_TAG#v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Latest tag: $LATEST_TAG, Version: $VERSION"
+
+      - name: Update package.json version
+        run: |
+          cd client
+          current_version=$(node -p "require('./package.json').version")
+          new_version="${{ steps.get_tag.outputs.version }}"
+          
+          if [ "$current_version" != "$new_version" ]; then
+            echo "Updating version from $current_version to $new_version"
+            sed -i "s/\"version\": \"$current_version\"/\"version\": \"$new_version\"/" package.json
+            
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git add package.json
+            git commit -m "chore: update package.json version to $new_version"
+            git push
+          else
+            echo "Version is already up to date: $current_version"
+          fi
