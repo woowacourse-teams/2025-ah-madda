@@ -16,8 +16,8 @@ import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Reminder;
 import com.ahmadda.domain.ReminderHistoryRepository;
-import com.ahmadda.domain.Role;
 import com.ahmadda.domain.ReminderRecipient;
+import com.ahmadda.domain.Role;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -98,7 +98,7 @@ class EventNotificationSchedulerTest {
         eventNotificationOptOutRepository.save(ng2OptOut);
 
         // when
-        sut.notifyRegistrationClosingEvents();
+        sut.notifyRegistrationClosingIn30Minutes();
 
         // then
         if (expectToSend) {
@@ -131,7 +131,7 @@ class EventNotificationSchedulerTest {
         ));
 
         // when
-        sut.notifyRegistrationClosingEvents();
+        sut.notifyRegistrationClosingIn30Minutes();
 
         // then
         var savedHistories = reminderHistoryRepository.findAll();
@@ -182,7 +182,7 @@ class EventNotificationSchedulerTest {
         saveGuest(event, saveOrganizationMember("게스트2", "g2@email.com", organization));
 
         // when
-        sut.notifyRegistrationClosingEvents();
+        sut.notifyRegistrationClosingIn30Minutes();
 
         // then
         verify(reminder, Mockito.never()).remind(any(), any(), any());
