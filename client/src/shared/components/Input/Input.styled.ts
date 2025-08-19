@@ -25,7 +25,11 @@ export const StyledFieldWrapper = styled.div`
   position: relative;
 `;
 
-export const StyledInput = styled.input<{ isError?: boolean; hasLeftIcon?: boolean }>`
+export const StyledInput = styled.input<{
+  isError?: boolean;
+  hasLeftIcon?: boolean;
+  hasRightIcon?: boolean;
+}>`
   background-color: ${theme.colors.gray50};
   border-radius: 8px;
   padding: 12px;
@@ -42,6 +46,12 @@ export const StyledInput = styled.input<{ isError?: boolean; hasLeftIcon?: boole
     hasLeftIcon &&
     css`
       padding-left: 40px;
+    `}
+
+  ${({ hasRightIcon }) =>
+    hasRightIcon &&
+    css`
+      padding-right: 40px;
     `}
 
   &::-webkit-calendar-picker-indicator {
