@@ -13,12 +13,12 @@ phases:
       - COMMIT_MSG=$(git log -1 --pretty=%B)
       - echo "Latest commit message: $COMMIT_MSG"
       - if [[ "$COMMIT_MSG" =~ \[RELEASE\]\ v([0-9]+\.[0-9]+\.[0-9]+) ]]; then VERSION="${BASH_REMATCH[1]}"; echo "✅ Release version detected: $VERSION"; else echo "ℹ️ No release version in commit message, using current version"; exit 0; fi
-      - CURRENT_VERSION=$(node -p "require('./package.json').version")
-      - if [ "$CURRENT_VERSION" != "$VERSION" ]; then echo "🔄 Updating version: $CURRENT_VERSION → $VERSION"; sed -i "s/\"version\": \"$CURRENT_VERSION\"/\"version\": \"$VERSION\"/" package.json; echo "✅ Version updated to $VERSION"; else echo "✅ Version already up to date: $CURRENT_VERSION"; fi
+      - 'CURRENT_VERSION=$(node -p "require(\"./package.json\").version")'
+      - 'if [ "$CURRENT_VERSION" != "$VERSION" ]; then echo "🔄 Updating version: $CURRENT_VERSION → $VERSION"; sed -i "s/\"version\": \"$CURRENT_VERSION\"/\"version\": \"$VERSION\"/" package.json; echo "✅ Version updated to $VERSION"; else echo "✅ Version already up to date: $CURRENT_VERSION"; fi'
 
   build:
     commands:
-      - echo "Building with version: $(node -p "require('./package.json').version")"
+      - 'echo "Building with version: $(node -p "require(\"./package.json\").version")"'
       - pnpm run build
 
 artifacts:
