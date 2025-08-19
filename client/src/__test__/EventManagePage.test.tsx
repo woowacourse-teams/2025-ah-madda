@@ -85,7 +85,7 @@ describe('EventManagePage 테스트', () => {
   describe('이벤트 마감 기능 테스트', () => {
     test('이벤트 마감 버튼이 렌더링된다', async () => {
       renderEventManagePage();
-      screen.debug();
+
       await waitFor(() => {
         expect(screen.getByText('마감하기')).toBeInTheDocument();
       });
