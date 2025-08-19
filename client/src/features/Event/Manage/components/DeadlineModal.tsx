@@ -20,7 +20,7 @@ export const DeadlineModal = ({ isOpen, onClose, onDeadlineChange }: DeadlineMod
     >
       <Flex dir="column" gap="10px">
         <Text type="Heading" weight="bold">
-          마감일 설정
+          이벤트 마감
         </Text>
 
         <Text type="Body" weight="medium">
