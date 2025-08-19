@@ -9,8 +9,8 @@ import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
 import { formatDateTime } from '../../My/utils/date';
-import { UNLIMITED_CAPACITY } from '../../New/constants/errorMessages';
 import type { Event } from '../../types/Event';
+import { getEventCapacityInfo } from '../utils/eventCapacity';
 
 import { Statistics } from './Statistics';
 
@@ -21,11 +21,7 @@ type EventInfoSectionProps = {
 };
 
 export const EventInfoSection = ({ event, profile, statistics }: EventInfoSectionProps) => {
-  const isUnlimited = event.maxCapacity === UNLIMITED_CAPACITY;
-  const maxNumberOfGuests = isUnlimited ? '제한없음' : `${event.maxCapacity}명`;
-  const progressValue = isUnlimited ? 1 : Number(event.currentGuestCount);
-  const progressMax = isUnlimited ? 1 : event.maxCapacity;
-  const progressColor = isUnlimited ? theme.colors.primary700 : theme.colors.primary500;
+  const capacityInfo = getEventCapacityInfo(event.maxCapacity, event.currentGuestCount);
 
   return (
     <Flex as="section" dir="column" gap="40px" width="100%" padding="40px 0">
@@ -84,9 +80,9 @@ export const EventInfoSection = ({ event, profile, statistics }: EventInfoSectio
         </Text>
         <Flex dir="row" gap="12px" alignItems="center" width="100%">
           <ProgressBar
-            value={progressValue}
-            max={progressMax}
-            color={progressColor}
+            value={capacityInfo.progressValue}
+            max={capacityInfo.progressMax}
+            color={capacityInfo.progressColor}
             backgroundColor={theme.colors.gray100}
           />
           <Flex
@@ -101,7 +97,7 @@ export const EventInfoSection = ({ event, profile, statistics }: EventInfoSectio
               {event.currentGuestCount}
             </Text>
             <Text type="Body" weight="medium" color={theme.colors.gray400}>
-              /{maxNumberOfGuests}
+              /{capacityInfo.maxNumberOfGuests}
             </Text>
           </Flex>
         </Flex>
