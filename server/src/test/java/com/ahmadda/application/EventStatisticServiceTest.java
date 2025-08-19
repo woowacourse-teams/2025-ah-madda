@@ -1,5 +1,6 @@
 package com.ahmadda.application;
 
+import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
@@ -16,16 +17,12 @@ import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest(webEnvironment = WebEnvironment.NONE)
-@Transactional
+@IntegrationTest
 class EventStatisticServiceTest {
 
     @Autowired
