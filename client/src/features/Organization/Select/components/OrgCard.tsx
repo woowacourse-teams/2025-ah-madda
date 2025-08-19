@@ -1,4 +1,5 @@
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
@@ -15,39 +16,14 @@ export type OrgCardProps = {
 };
 
 export const OrgCard = ({ org, onJoin, isAdmin, onEdit }: OrgCardProps) => (
-  <Flex
+  <StyledCardContainer
     dir="column"
     alignItems="center"
     role="button"
     aria-label={`${org.name} 참여하기`}
     onClick={onJoin}
-    css={css`
-      cursor: pointer;
-      width: 120px;
-    `}
   >
-    <Flex
-      width="120px"
-      height="120px"
-      justifyContent="center"
-      alignItems="center"
-      css={css`
-        border: 2px solid ${theme.colors.gray100};
-        overflow: hidden;
-        position: relative;
-
-        &:hover .overlay {
-          opacity: 1;
-        }
-
-        img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          display: block;
-        }
-      `}
-    >
+    <StyledImageWrapper justifyContent="center" alignItems="center">
       <img
         src={org.imageUrl}
         alt={org.name}
@@ -56,23 +32,8 @@ export const OrgCard = ({ org, onJoin, isAdmin, onEdit }: OrgCardProps) => (
         }}
       />
 
-      <Flex
-        className="overlay"
-        justifyContent="center"
-        alignItems="center"
-        css={css`
-          position: absolute;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.44);
-          color: ${theme.colors.white};
-          font-weight: 700;
-          opacity: 0;
-          transition: opacity 0.18s ease-in-out;
-        `}
-      >
-        참여하기
-      </Flex>
-    </Flex>
+      <StyledOverlay data-overlay>참여하기</StyledOverlay>
+    </StyledImageWrapper>
 
     <Text
       css={css`
@@ -98,5 +59,42 @@ export const OrgCard = ({ org, onJoin, isAdmin, onEdit }: OrgCardProps) => (
         수정
       </Button>
     )}
-  </Flex>
+  </StyledCardContainer>
 );
+
+const StyledCardContainer = styled(Flex)`
+  cursor: pointer;
+  width: 120px;
+`;
+
+const StyledImageWrapper = styled(Flex)`
+  width: 120px;
+  height: 120px;
+  border: 2px solid ${theme.colors.gray100};
+  overflow: hidden;
+  position: relative;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  &:hover [data-overlay] {
+    opacity: 1;
+  }
+`;
+
+const StyledOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.44);
+  color: ${theme.colors.white};
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.18s ease-in-out;
+`;
