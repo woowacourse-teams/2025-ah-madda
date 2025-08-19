@@ -40,8 +40,7 @@ describe('NewEventPage', () => {
     render(<TestWrapper />);
 
     expect(screen.getByLabelText(/이벤트 이름/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/이벤트 시작일/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/이벤트 종료일/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/이벤트 기간/)).toBeInTheDocument();
     expect(screen.getByLabelText(/신청 종료일/)).toBeInTheDocument();
     expect(screen.getByLabelText(/이벤트 장소/)).toBeInTheDocument();
     expect(screen.getByLabelText(/소개글/)).toBeInTheDocument();

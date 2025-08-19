@@ -37,7 +37,6 @@ export const MyEventPage = () => {
     >
       <MyEventContainer>
         <Info />
-
         <EventTabs />
       </MyEventContainer>
     </PageLayout>

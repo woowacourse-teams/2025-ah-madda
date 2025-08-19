@@ -11,12 +11,12 @@ import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
 import { useModal } from '../../../../shared/hooks/useModal';
-import { Event } from '../../types/Event';
+import { EventCard } from '../../components/EventCard';
+import { Event, Organization } from '../../types/Event';
+import { groupEventsByDate } from '../../utils/groupEventsByDate';
 import { EventContainer } from '../containers/EventContainer';
-import { groupEventsByDate } from '../utils/groupEventsByDate';
 
 import { ActionButtons } from './ActionButtons';
-import { EventCard } from './EventCard';
 import { EventSection } from './EventSection';
 import { InviteCodeModal } from './InviteCodeModal';
 
@@ -74,7 +74,7 @@ export const EventList = ({ organizationId, events }: EventListProps) => {
               <EventSection key={label} title={label}>
                 <EventGrid>
                   {events.map((event, index) => (
-                    <EventCard key={index} {...event} />
+                    <EventCard key={index} {...event} cardType="default" />
                   ))}
                 </EventGrid>
               </EventSection>
