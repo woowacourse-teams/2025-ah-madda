@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense } from 'react';
 
 import { css } from '@emotion/react';
 import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
@@ -20,12 +20,10 @@ import { OrganizationWithRole } from '../types/Organization';
 const CARD_W = 120;
 const GAP = 80;
 
-function getVisibleCount(width: number) {
-  if (width >= 1024) return 4;
-  if (width >= 768) return 3;
-  if (width >= 480) return 2;
-  return 1;
-}
+const MAX_W_4 = CARD_W * 4 + GAP * 3;
+const MAX_W_3 = CARD_W * 3 + GAP * 2;
+const MAX_W_2 = CARD_W * 2 + GAP * 1;
+const MAX_W_1 = CARD_W * 1 + GAP * 0;
 
 export const OrganizationSelectPage = () => {
   const navigate = useNavigate();
@@ -81,18 +79,6 @@ const OrganizationSelectBody = () => {
     isAdmin: profileQueries[idx]?.data?.isAdmin ?? org.isAdmin,
   }));
 
-  const [visibleCount, setVisibleCount] = useState<number>(() =>
-    typeof window !== 'undefined' ? getVisibleCount(window.innerWidth) : 4
-  );
-  useEffect(() => {
-    const onResize = () => setVisibleCount(getVisibleCount(window.innerWidth));
-    window.addEventListener('resize', onResize, { passive: true });
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
-
-  const maxRowWidth = () => CARD_W * visibleCount + GAP * Math.max(visibleCount - 1, 0);
-  const justify = orgs.length <= visibleCount ? 'center' : 'flex-start';
-
   const handleJoin = (orgId: number) => navigate(`/event?organizationId=${orgId}`);
   const handleEdit = (orgId: number) => navigate(`/organization/edit/${orgId}`);
 
@@ -137,18 +123,30 @@ const OrganizationSelectBody = () => {
           padding="8px 4px"
           gap={`${GAP}px`}
           css={css`
-            max-width: ${maxRowWidth()}px;
+            width: fit-content;
+
+            max-width: ${MAX_W_4}px;
+            @media (max-width: 1024px) {
+              max-width: ${MAX_W_3}px;
+            }
+            @media (max-width: 768px) {
+              max-width: ${MAX_W_2}px;
+            }
+            @media (max-width: 480px) {
+              max-width: ${MAX_W_1}px;
+            }
+
             overflow-x: auto;
             flex-wrap: nowrap;
+
             &::-webkit-scrollbar {
               height: 8px;
             }
             &::-webkit-scrollbar-thumb {
               border-radius: 8px;
-              background: ${theme.colors.gray200};
+              background: ${theme.colors.gray300};
             }
           `}
-          justifyContent={justify}
         >
           {orgs.map((org) => (
             <Flex key={org.organizationId}>
