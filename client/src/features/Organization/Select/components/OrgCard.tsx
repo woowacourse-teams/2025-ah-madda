@@ -64,7 +64,7 @@ export const OrgCard = ({ org, onJoin, isAdmin, onEdit }: OrgCardProps) => (
           position: absolute;
           inset: 0;
           background: rgba(0, 0, 0, 0.44);
-          color: #fff;
+          color: ${theme.colors.white};
           font-weight: 700;
           opacity: 0;
           transition: opacity 0.18s ease-in-out;
