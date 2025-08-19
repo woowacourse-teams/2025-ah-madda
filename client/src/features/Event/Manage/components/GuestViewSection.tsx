@@ -6,7 +6,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
 import { myQueryOptions } from '@/api/queries/my';
-import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 import { useModal } from '@/shared/hooks/useModal';
@@ -59,85 +58,80 @@ export const GuestViewSection = ({
 
   return (
     <>
-      <Card>
-        <Flex as="section" dir="column" gap="20px">
-          <Text type="Heading" weight="bold" color={theme.colors.gray800}>
-            게스트 조회
-          </Text>
+      <Flex as="section" dir="column" gap="20px" padding="30px">
+        <Text type="Heading" weight="bold" color={theme.colors.gray800}>
+          게스트 조회
+        </Text>
 
-          <Flex
-            padding="6px"
-            gap="8px"
-            css={css`
-              background-color: ${theme.colors.gray100};
-              border-radius: 12px;
-            `}
-          >
-            <TabButton isActive={activeTab === 'guests'} onClick={() => setActiveTab('guests')}>
-              <Text
-                type="Body"
-                weight="bold"
-                color={activeTab === 'guests' ? theme.colors.gray800 : theme.colors.gray400}
-              >
-                신청
-              </Text>
-              <TabBadge isActive={activeTab === 'guests'}>
-                <Text
-                  type="Label"
-                  weight="medium"
-                  color={activeTab === 'guests' ? theme.colors.white : theme.colors.gray100}
-                >
-                  {guests.length}
-                </Text>
-              </TabBadge>
-            </TabButton>
-
-            <TabButton
-              isActive={activeTab === 'nonGuests'}
-              onClick={() => setActiveTab('nonGuests')}
+        <Flex
+          padding="6px"
+          gap="8px"
+          css={css`
+            background-color: ${theme.colors.gray100};
+            border-radius: 12px;
+          `}
+        >
+          <TabButton isActive={activeTab === 'guests'} onClick={() => setActiveTab('guests')}>
+            <Text
+              type="Body"
+              weight="bold"
+              color={activeTab === 'guests' ? theme.colors.gray800 : theme.colors.gray400}
             >
+              신청
+            </Text>
+            <TabBadge isActive={activeTab === 'guests'}>
               <Text
-                type="Body"
-                weight="bold"
-                color={activeTab === 'nonGuests' ? theme.colors.gray800 : theme.colors.gray400}
+                type="Label"
+                weight="medium"
+                color={activeTab === 'guests' ? theme.colors.white : theme.colors.gray100}
               >
-                미신청
+                {guests.length}
               </Text>
-              <TabBadge isActive={activeTab === 'nonGuests'}>
-                <Text
-                  type="Label"
-                  weight="medium"
-                  color={activeTab === 'nonGuests' ? theme.colors.white : theme.colors.gray100}
-                >
-                  {nonGuests.length}
-                </Text>
-              </TabBadge>
-            </TabButton>
-          </Flex>
+            </TabBadge>
+          </TabButton>
 
-          {activeTab === 'guests' && (
-            <GuestList
-              title={`신청 완료 (${guests.length}명)`}
-              titleColor={theme.colors.primary600}
-              guests={guests}
-              onGuestChecked={onGuestChecked}
-              onAllGuestChecked={onAllChecked}
-              onGuestClick={handleGuestClick}
-            />
-          )}
-
-          {activeTab === 'nonGuests' && (
-            <GuestList
-              title={`미신청 (${nonGuests.length}명)`}
-              titleColor={theme.colors.gray700}
-              guests={nonGuests}
-              onGuestChecked={onNonGuestChecked}
-              onAllGuestChecked={onNonGuestAllChecked}
-              onGuestClick={handleGuestClick}
-            />
-          )}
+          <TabButton isActive={activeTab === 'nonGuests'} onClick={() => setActiveTab('nonGuests')}>
+            <Text
+              type="Body"
+              weight="bold"
+              color={activeTab === 'nonGuests' ? theme.colors.gray800 : theme.colors.gray400}
+            >
+              미신청
+            </Text>
+            <TabBadge isActive={activeTab === 'nonGuests'}>
+              <Text
+                type="Label"
+                weight="medium"
+                color={activeTab === 'nonGuests' ? theme.colors.white : theme.colors.gray100}
+              >
+                {nonGuests.length}
+              </Text>
+            </TabBadge>
+          </TabButton>
         </Flex>
-      </Card>
+
+        {activeTab === 'guests' && (
+          <GuestList
+            title={`신청 완료 (${guests.length}명)`}
+            titleColor={theme.colors.primary600}
+            guests={guests}
+            onGuestChecked={onGuestChecked}
+            onAllGuestChecked={onAllChecked}
+            onGuestClick={handleGuestClick}
+          />
+        )}
+
+        {activeTab === 'nonGuests' && (
+          <GuestList
+            title={`미신청 (${nonGuests.length}명)`}
+            titleColor={theme.colors.gray700}
+            guests={nonGuests}
+            onGuestChecked={onNonGuestChecked}
+            onAllGuestChecked={onNonGuestAllChecked}
+            onGuestClick={handleGuestClick}
+          />
+        )}
+      </Flex>
 
       <GuestAnswerModal
         isOpen={isOpen}
