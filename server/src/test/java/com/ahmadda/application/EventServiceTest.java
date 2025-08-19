@@ -1,5 +1,6 @@
 package com.ahmadda.application;
 
+import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.LoginMember;
@@ -27,10 +28,7 @@ import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -42,8 +40,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.verify;
 
-@SpringBootTest(webEnvironment = WebEnvironment.NONE)
-@Transactional
+@IntegrationTest
 class EventServiceTest {
 
     @Autowired
@@ -224,7 +221,7 @@ class EventServiceTest {
                 )
         );
 
-        var loginMember = new LoginMember(organizationMember.getId());
+        var loginMember = new LoginMember(member.getId());
         var savedEvent = sut.createEvent(organization.getId(), loginMember, request, now);
 
         //when
@@ -316,7 +313,7 @@ class EventServiceTest {
         // when // then
         assertDoesNotThrow(() -> sut.closeEventRegistration(
                 event.getId(),
-                orgMember.getId(),
+                member.getId(),
                 now.plusDays(1)
                         .plusHours(6)
         ));
