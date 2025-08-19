@@ -12,6 +12,7 @@ import { Header } from '@/shared/components/Header';
 import { Icon } from '@/shared/components/Icon';
 import { PageLayout } from '@/shared/components/PageLayout';
 import { Text } from '@/shared/components/Text';
+import { theme } from '@/shared/styles/theme';
 
 import { OrgCard } from '../components/OrgCard';
 import { OrganizationWithRole } from '../types/Organization';
@@ -144,7 +145,7 @@ const OrganizationSelectBody = () => {
             }
             &::-webkit-scrollbar-thumb {
               border-radius: 8px;
-              background: #d1d5db;
+              background: ${theme.colors.gray200};
             }
           `}
           justifyContent={justify}
