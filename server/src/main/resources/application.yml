@@ -43,14 +43,6 @@ oauth:
     connect-timeout: 3000
     read-timeout: 5000
 
-cookie:
-  refresh-token:
-    path: ${cookie.refresh-token.path}
-    same-site: ${cookie.refresh-token.same-site}
-    secure: ${cookie.refresh-token.secure}
-    http-only: ${cookie.refresh-token.http-only}
-    ttl: ${cookie.refresh-token.ttl}
-
 springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
