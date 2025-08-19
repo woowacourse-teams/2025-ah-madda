@@ -49,15 +49,14 @@ export const GuestList = ({ eventId, title, titleColor, guests }: GuestListProps
         <Flex
           as="ul"
           dir="row"
+          alignItems="flex-start"
           gap="8px"
           css={css`
+            flex-wrap: wrap;
             list-style: none;
-            @media (max-width: 768px) {
-              flex-direction: column;
-            }
           `}
         >
-          {guests.map((guest) => (
+          {[...guests, ...guests, ...guests].map((guest) => (
             <GuestBadge
               key={guest.organizationMemberId}
               onClick={(e) => handlePokeAlarm(guest.organizationMemberId, e)}
@@ -86,7 +85,10 @@ export const GuestList = ({ eventId, title, titleColor, guests }: GuestListProps
 };
 
 const GuestBadge = styled.li`
+  display: inline-block;
+  align-items: center;
   width: fit-content;
+  height: fit-content;
   background-color: ${theme.colors.gray100};
   color: ${theme.colors.gray600};
   padding: 4px 12px;
