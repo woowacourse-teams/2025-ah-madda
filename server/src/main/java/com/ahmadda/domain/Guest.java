@@ -17,6 +17,8 @@ import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,6 +29,8 @@ import java.util.Set;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE guest SET deleted_at = CURRENT_TIMESTAMP WHERE guest_id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class Guest extends BaseEntity {
 
     @Id

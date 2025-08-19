@@ -15,12 +15,16 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE organization_member SET deleted_at = CURRENT_TIMESTAMP WHERE organization_member_id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class OrganizationMember extends BaseEntity {
 
     @Id

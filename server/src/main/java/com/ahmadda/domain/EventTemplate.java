@@ -12,10 +12,14 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE event_template SET deleted_at = CURRENT_TIMESTAMP WHERE event_template_id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class EventTemplate extends BaseEntity {
 
     @Id
