@@ -86,7 +86,7 @@ export const AlarmSection = ({
           <Flex dir="column" alignItems="center">
             <Input
               id="alarm-message"
-              placeholder="알람 메시지를 입력해주세요..."
+              placeholder="알람 메시지를 입력해주세요"
               value={content}
               onChange={handleContentChange}
             />
@@ -95,9 +95,6 @@ export const AlarmSection = ({
               color="primary"
               disabled={!content || organizationMemberIds.length === 0 || isPending}
               onClick={handleSendAlarm}
-              css={css`
-                max-width: 456px;
-              `}
             >
               {isPending ? '전송 중...' : '보내기'}
             </Button>
