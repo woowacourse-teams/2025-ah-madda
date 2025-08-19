@@ -5,6 +5,8 @@ import { Chart } from './chart';
 import { Clock } from './clock';
 import { Close } from './close';
 import { Delete } from './delete';
+import { DropdownDown } from './dropdownDown';
+import { DropdownUp } from './dropdownUp';
 import { Location } from './location';
 import { Logo } from './logo';
 import { Next } from './next';
@@ -25,6 +27,8 @@ export const Icons = {
   plus: Plus,
   share: Share,
   user: User,
+  dropdownDown: DropdownDown,
+  dropdownUp: DropdownUp,
   next: Next,
 };
 

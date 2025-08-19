@@ -23,3 +23,11 @@ export const trackCreateEvent = () => {
     label: '이벤트 생성',
   });
 };
+
+export const trackLoadTemplate = (templateId: number) => {
+  event({
+    action: 'load_template',
+    category: 'engagement',
+    label: `템플릿 ${templateId} 불러오기`,
+  });
+};
