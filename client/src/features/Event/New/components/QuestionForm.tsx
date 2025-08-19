@@ -8,7 +8,7 @@ import { getErrorMessage } from '../utils/getErrorMessage';
 
 import { QuestionItem } from './QuestionItem';
 
-type QuestionFormProps = Omit<ReturnType<typeof useQuestionForm>, 'isValid'> & {
+type QuestionFormProps = Omit<ReturnType<typeof useQuestionForm>, 'isValid' | 'loadQuestions'> & {
   isEditable?: boolean;
 };
 

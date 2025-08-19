@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { css } from '@emotion/react';
 
 import { Flex } from '../Flex';
+import { Footer } from '../Footer';
 
 type PageLayoutProps = {
   /**
@@ -38,6 +39,7 @@ export const PageLayout = ({ header, children }: PageLayoutProps) => {
       >
         {children}
       </Flex>
+      <Footer />
     </Flex>
   );
 };

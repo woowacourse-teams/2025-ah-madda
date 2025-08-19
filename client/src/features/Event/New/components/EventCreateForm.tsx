@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+
 import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +14,7 @@ import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
 import { Textarea } from '@/shared/components/Textarea';
+import { useAutoSessionSave } from '@/shared/hooks/useAutoSessionSave';
 import { useModal } from '@/shared/hooks/useModal';
 import { trackCreateEvent } from '@/shared/lib/gaEvents';
 import { theme } from '@/shared/styles/theme';
@@ -19,9 +22,19 @@ import { theme } from '@/shared/styles/theme';
 import { MAX_LENGTH, UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useBasicEventForm } from '../hooks/useBasicEventForm';
+import { useDropdownStates } from '../hooks/useDropdownStates';
 import { useQuestionForm } from '../hooks/useQuestionForm';
+import type { TimeValue } from '../types/time';
 import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
+import {
+  formatDateForInput,
+  formatDateForDisplay,
+  parseInputDate,
+  applyTimeToDate,
+} from '../utils/date';
+import { timeValueToDate, timeValueFromDate } from '../utils/time';
 
+import { DatePickerDropdown } from './DatePickerDropdown';
 import { MaxCapacityModal } from './MaxCapacityModal';
 import { MyPastEventModal } from './MyPastEventModal';
 import { QuestionForm } from './QuestionForm';
@@ -45,7 +58,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     queryFn: () => getEventDetailAPI(Number(eventId)),
     enabled: isEdit,
   });
-
+  const { openDropdown, closeDropdown, isOpen } = useDropdownStates();
   const {
     isOpen: isTemplateModalOpen,
     open: templateModalOpen,
@@ -73,6 +86,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     deleteQuestion,
     updateQuestion,
     isValid: isQuestionValid,
+    loadQuestions,
   } = useQuestionForm();
 
   const isFormReady = isBasicFormValid && isQuestionValid;
@@ -113,9 +127,33 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     registrationEnd: convertDatetimeLocalToKSTISOString(basicEventForm.registrationEnd),
   });
 
+  const autoSaveKey =
+    isEdit && eventId ? `event-form:draft:edit:${eventId}` : 'event-form:draft:create';
+
+  const { restore, clear } = useAutoSessionSave({
+    key: autoSaveKey,
+    data: { basicEventForm, questions },
+  });
+
+  const restoredOnceRef = useRef(false);
+
+  useEffect(() => {
+    if (restoredOnceRef.current) return;
+
+    const draft = restore();
+    if (!draft) return;
+
+    if (isEdit && !eventDetail) return;
+    if (draft.basicEventForm) loadFormData(draft.basicEventForm);
+    if (draft.questions) loadQuestions(draft.questions);
+
+    restoredOnceRef.current = true;
+  }, [isEdit, eventDetail, restore, loadFormData, loadQuestions]);
+
   const submitCreate = (payload: ReturnType<typeof buildPayload>) => {
     addEvent(payload, {
       onSuccess: ({ eventId }) => {
+        clear();
         trackCreateEvent();
         alert('😁 이벤트가 성공적으로 생성되었습니다!');
         navigate(`/event/${eventId}`);
@@ -129,6 +167,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       { eventId, payload },
       {
         onSuccess: () => {
+          clear();
           alert('😁 이벤트가 성공적으로 수정되었습니다!');
           navigate(`/event/${eventId}`);
         },
@@ -171,6 +210,56 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     );
   };
 
+  const handleDateRangeSelect = (
+    startDate: Date,
+    endDate: Date,
+    startTime: TimeValue,
+    endTime: TimeValue
+  ) => {
+    if (!startTime || !endTime) {
+      alert('시간이 선택되지 않았습니다. 시간을 먼저 선택해 주세요.');
+      return;
+    }
+
+    const finalStartTime = timeValueToDate(startTime, startDate);
+    const finalEndTime = timeValueToDate(endTime, endDate);
+
+    if (!finalStartTime || !finalEndTime) {
+      alert('시간 처리 중 오류가 발생했습니다.');
+      return;
+    }
+
+    handleValueChange('eventStart', formatDateForInput(finalStartTime));
+    handleValueChange('eventEnd', formatDateForInput(finalEndTime));
+
+    const currentRegistrationEndTime =
+      parseInputDate(basicEventForm.registrationEnd) || finalStartTime;
+    const newRegistrationEnd = applyTimeToDate(startDate, currentRegistrationEndTime);
+    const finalRegistrationEnd =
+      newRegistrationEnd.getTime() > finalStartTime.getTime() ? finalStartTime : newRegistrationEnd;
+    handleValueChange('registrationEnd', formatDateForInput(finalRegistrationEnd));
+
+    validateField('eventStart', formatDateForInput(finalStartTime));
+    validateField('eventEnd', formatDateForInput(finalEndTime));
+    validateField('registrationEnd', formatDateForInput(finalRegistrationEnd));
+  };
+
+  const handleRegistrationEndSelect = (date: Date, time: TimeValue) => {
+    if (!time) {
+      alert('시간이 선택되지 않았습니다. 시간을 먼저 선택해 주세요.');
+      return;
+    }
+
+    const finalTime = timeValueToDate(time, date);
+    if (!finalTime) {
+      alert('시간 처리 중 오류가 발생했습니다.');
+      return;
+    }
+
+    handleValueChange('registrationEnd', formatDateForInput(finalTime));
+    validateField('registrationEnd', formatDateForInput(finalTime));
+  };
+
   return (
     <Flex>
       <Flex dir="column" gap="40px" padding="60px 0" width="100%">
@@ -188,11 +277,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         <Flex dir="column" gap="30px">
           <Flex dir="column" gap="8px">
             <Flex justifyContent="space-between">
-              <label htmlFor="title">
-                <Text type="Heading" weight="medium">
-                  이벤트 이름
-                </Text>
-              </label>
+              <Text as="label" htmlFor="title" type="Heading" weight="medium">
+                이벤트 이름
+              </Text>
               <Flex
                 onClick={handleAddTemplate}
                 css={css`
@@ -231,53 +318,44 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               gap="8px"
               css={css`
                 flex: 1;
+                position: relative;
               `}
             >
-              <label htmlFor="eventStart">
-                <Text type="Heading" weight="medium">
-                  이벤트 시작일
-                </Text>
-              </label>
+              <Text as="label" type="Heading" weight="medium" htmlFor="eventDateRange">
+                이벤트 기간
+              </Text>
               <Input
-                id="eventStart"
-                name="eventStart"
-                type="datetime-local"
-                min="2025-07-31T14:00"
-                placeholder="2025.07.30 13:00"
-                value={basicEventForm.eventStart}
-                onChange={(e) => {
-                  handleChange(e);
-                  const registrationEndValue = e.target.value;
-                  handleValueChange('registrationEnd', registrationEndValue);
-                  validateField('registrationEnd', registrationEndValue);
+                id="eventDateRange"
+                name="eventDateRange"
+                value={
+                  basicEventForm.eventStart && basicEventForm.eventEnd
+                    ? `${formatDateForDisplay(basicEventForm.eventStart)} ~ ${formatDateForDisplay(basicEventForm.eventEnd)}`
+                    : ''
+                }
+                placeholder="이벤트 시작일과 종료일을 선택해주세요"
+                readOnly
+                onClick={() => openDropdown('eventDateRange')}
+                errorMessage={errors.eventStart || errors.eventEnd}
+                isRequired
+                onClear={() => {
+                  handleValueChange('eventStart', '');
+                  handleValueChange('eventEnd', '');
+                  validateField('eventStart', '');
+                  validateField('eventEnd', '');
                 }}
-                errorMessage={errors.eventStart}
-                isRequired
+                css={css`
+                  cursor: pointer;
+                `}
               />
-            </Flex>
-
-            <Flex
-              dir="column"
-              gap="8px"
-              css={css`
-                flex: 1;
-              `}
-            >
-              <label htmlFor="eventEnd">
-                <Text type="Heading" weight="medium">
-                  이벤트 종료일
-                </Text>
-              </label>
-              <Input
-                id="eventEnd"
-                name="eventEnd"
-                type="datetime-local"
-                placeholder="2025.07.30 15:00"
-                value={basicEventForm.eventEnd}
-                min={basicEventForm.eventStart}
-                onChange={handleChange}
-                errorMessage={errors.eventEnd}
-                isRequired
+              <DatePickerDropdown
+                mode="range"
+                isOpen={isOpen('eventDateRange')}
+                onClose={() => closeDropdown()}
+                onSelect={handleDateRangeSelect}
+                initialStartDate={parseInputDate(basicEventForm.eventStart)}
+                initialEndDate={parseInputDate(basicEventForm.eventEnd)}
+                initialStartTime={timeValueFromDate(parseInputDate(basicEventForm.eventStart))}
+                initialEndTime={timeValueFromDate(parseInputDate(basicEventForm.eventEnd))}
               />
             </Flex>
           </Flex>
@@ -296,23 +374,40 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               gap="8px"
               css={css`
                 flex: 1;
+                position: relative;
               `}
             >
-              <label htmlFor="registrationEnd">
-                <Text type="Heading" weight="medium">
-                  신청 종료일
-                </Text>
-              </label>
+              <Text as="label" type="Heading" weight="medium" htmlFor="registrationEnd">
+                신청 종료일
+              </Text>
               <Input
                 id="registrationEnd"
                 name="registrationEnd"
-                type="datetime-local"
-                placeholder="2025.07.25 15:00"
-                value={basicEventForm.registrationEnd}
-                max={basicEventForm.eventStart}
-                onChange={handleChange}
+                value={
+                  basicEventForm.registrationEnd
+                    ? formatDateForDisplay(basicEventForm.registrationEnd)
+                    : ''
+                }
+                placeholder="신청 종료일과 시간을 선택해주세요"
+                readOnly
+                onClick={() => openDropdown('registrationEnd')}
                 errorMessage={errors.registrationEnd}
                 isRequired
+                onClear={() => {
+                  handleValueChange('registrationEnd', '');
+                  validateField('registrationEnd', '');
+                }}
+                css={css`
+                  cursor: pointer;
+                `}
+              />
+              <DatePickerDropdown
+                mode="single"
+                isOpen={isOpen('registrationEnd')}
+                onClose={() => closeDropdown()}
+                onSelect={handleRegistrationEndSelect}
+                initialDate={parseInputDate(basicEventForm.registrationEnd) || null}
+                initialTime={timeValueFromDate(parseInputDate(basicEventForm.registrationEnd))}
               />
             </Flex>
 
@@ -323,11 +418,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 flex: 1;
               `}
             >
-              <label htmlFor="place">
-                <Text type="Heading" weight="medium">
-                  이벤트 장소
-                </Text>
-              </label>
+              <Text as="label" type="Heading" weight="medium" htmlFor="place">
+                이벤트 장소
+              </Text>
               <Input
                 id="place"
                 name="place"
@@ -403,11 +496,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 width="100%"
                 gap="8px"
               >
-                <label htmlFor="description">
-                  <Text type="Heading" weight="medium">
-                    소개글
-                  </Text>
-                </label>
+                <Text as="label" htmlFor="description" type="Heading" weight="medium">
+                  소개글
+                </Text>
                 <Flex
                   css={css`
                     width: 320px;

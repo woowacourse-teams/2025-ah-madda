@@ -9,6 +9,7 @@ import { DropdownDown } from './dropdownDown';
 import { DropdownUp } from './dropdownUp';
 import { Location } from './location';
 import { Logo } from './logo';
+import { Next } from './next';
 import { Plus } from './plus';
 import { Share } from './share';
 import { User } from './user';
@@ -28,6 +29,7 @@ export const Icons = {
   user: User,
   dropdownDown: DropdownDown,
   dropdownUp: DropdownUp,
+  next: Next,
 };
 
 export type IconName = keyof typeof Icons;
