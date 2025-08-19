@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useRef, useCallback } from 'react';
+import { createContext, useContext, useState, useRef, useCallback, useMemo } from 'react';
 
 import { Toast, ToastVariant } from './Toast';
 
@@ -78,8 +78,10 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
     [openToast]
   );
 
+  const value = useMemo(() => ({ success, error }), [success, error]);
+
   return (
-    <ToastContext.Provider value={{ success, error }}>
+    <ToastContext.Provider value={value}>
       {children}
       {toastState.isVisible && (
         <Toast
