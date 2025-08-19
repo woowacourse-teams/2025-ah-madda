@@ -168,6 +168,9 @@ importers:
       style-loader:
         specifier: ^4.0.0
         version: 4.0.0(webpack@5.101.0)
+      terser-webpack-plugin:
+        specifier: ^5.3.14
+        version: 5.3.14(@swc/core@1.13.3)(esbuild@0.25.8)(webpack@5.101.0)
       ts-loader:
         specifier: ^9.5.2
         version: 9.5.2(typescript@5.9.2)(webpack@5.101.0)
