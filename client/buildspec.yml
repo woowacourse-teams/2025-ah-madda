@@ -10,10 +10,9 @@ phases:
   pre_build:
     commands:
       - echo "=== Auto Version Update from Commit Message ==="
+      - COMMIT_MSG=$(git log -1 --pretty=%B)
+      - echo "Latest commit message: $COMMIT_MSG"
       - |
-        COMMIT_MSG=$(git log -1 --pretty=%B)
-        echo "Latest commit message: $COMMIT_MSG"
-
         if [[ "$COMMIT_MSG" =~ \[RELEASE\]\ v([0-9]+\.[0-9]+\.[0-9]+) ]]; then
           VERSION="${BASH_REMATCH[1]}"
           echo "✅ Release version detected: $VERSION"
@@ -21,7 +20,7 @@ phases:
           echo "ℹ️ No release version in commit message, using current version"
           exit 0
         fi
-
+      - |
         CURRENT_VERSION=$(node -p "require('./package.json').version")
         if [ "$CURRENT_VERSION" != "$VERSION" ]; then
           echo "🔄 Updating version: $CURRENT_VERSION → $VERSION"
