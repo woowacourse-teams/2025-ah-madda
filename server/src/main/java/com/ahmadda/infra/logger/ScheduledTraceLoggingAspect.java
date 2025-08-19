@@ -30,7 +30,7 @@ public class ScheduledTraceLoggingAspect {
     }
 
     private String generateTraceId() {
-        return UUID.randomUUID()
+        return "scheduled-" + UUID.randomUUID()
                 .toString()
                 .substring(0, 8);
     }

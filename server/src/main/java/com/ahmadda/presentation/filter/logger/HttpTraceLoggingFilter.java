@@ -33,7 +33,7 @@ public class HttpTraceLoggingFilter implements Filter {
     }
 
     private String generateTraceId() {
-        return UUID.randomUUID()
+        return "http-" + UUID.randomUUID()
                 .toString()
                 .substring(0, 8);
     }
