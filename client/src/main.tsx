@@ -11,7 +11,7 @@ import { router } from './router/route';
 import { theme } from './shared/styles/theme';
 
 initSentry();
-
+// 파이프라인 주석 푸쉬!!
 const GA_ID = process.env.GOOGLE_ANALYTICS_ID;
 
 if (GA_ID) {
