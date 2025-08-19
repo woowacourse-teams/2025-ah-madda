@@ -42,6 +42,7 @@ public class EventNotificationService {
     ) {
         Event event = getEvent(eventId);
         validateOrganizer(event, loginMember.memberId());
+        validateContentLength(request.content());
 
         List<OrganizationMember> recipients =
                 getOrganizationMemberFromIds(event, request.organizationMemberIds());
@@ -61,6 +62,12 @@ public class EventNotificationService {
 
         if (!event.isOrganizer(member)) {
             throw new AccessDeniedException("이벤트 주최자가 아닙니다.");
+        }
+    }
+
+    private void validateContentLength(final String content) {
+        if (content.length() > 20) {
+            throw new BusinessFlowViolatedException("알림 메시지는 20자 이하여야 합니다.");
         }
     }
 

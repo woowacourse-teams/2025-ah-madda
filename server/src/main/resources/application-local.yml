@@ -1,10 +1,23 @@
 spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ahmadda?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ahmadda
+    password: 1234
+
   jpa:
     show-sql: true
     properties:
       hibernate:
         detector:
           enabled: true
+    hibernate:
+      ddl-auto: validate
+
+  cloud:
+    aws:
+      s3:
+        region: ap-northeast-2
 
 jwt:
   access-secret-key: ${jwt.local.access-secret-key}
@@ -32,6 +45,5 @@ slack:
 aws:
   s3:
     mock: true
-    region: ${aws.local.s3.region}
     bucket: ${aws.local.s3.bucket}
     folder: ${aws.local.s3.folder}

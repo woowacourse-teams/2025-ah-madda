@@ -2,6 +2,7 @@ package com.ahmadda.application;
 
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
+import com.ahmadda.application.dto.OrganizationUpdateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
@@ -19,6 +20,7 @@ import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Role;
 import com.ahmadda.presentation.dto.OrganizationParticipateRequest;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,7 +58,7 @@ public class OrganizationService {
         organizationRepository.save(organization);
 
         OrganizationMember organizationMember =
-                OrganizationMember.create(organizationCreateRequest.nickName(), member, organization, Role.ADMIN);
+                OrganizationMember.create(organizationCreateRequest.nickname(), member, organization, Role.ADMIN);
         organizationMemberRepository.save(organizationMember);
 
         return organization;
@@ -113,6 +115,42 @@ public class OrganizationService {
         return organizationMemberRepository.save(organizationMember);
     }
 
+    @Transactional
+    public void updateOrganization(
+            final Long organizationId,
+            final OrganizationUpdateRequest organizationUpdateRequest,
+            @Nullable final ImageFile thumbnailImageFile,
+            final LoginMember loginMember
+    ) {
+        Organization organization = getOrganization(organizationId);
+        OrganizationMember updatingOrganizationMember = getOrganizationMember(organizationId, loginMember);
+
+        String updateImageUrl = resolveUpdateImageUrl(organization.getImageUrl(), thumbnailImageFile);
+
+        organization.update(
+                updatingOrganizationMember,
+                organizationUpdateRequest.name(),
+                organizationUpdateRequest.description(),
+                updateImageUrl
+        );
+    }
+
+    public List<Organization> getParticipatingOrganizations(final LoginMember loginMember) {
+        Member member = getMember(loginMember);
+
+        return organizationRepository.findMemberOrganizations(member);
+    }
+
+    private String resolveUpdateImageUrl(final String imageUrl, final ImageFile thumbnailImageFile) {
+        String updateImageUrl = imageUrl;
+
+        if (thumbnailImageFile != null) {
+            updateImageUrl = imageUploader.upload(thumbnailImageFile);
+        }
+
+        return updateImageUrl;
+    }
+
     private void validateAlreadyParticipationMember(final Long organizationId, final LoginMember loginMember) {
         if (organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId())) {
             throw new BusinessFlowViolatedException("이미 참여한 조직입니다.");
@@ -132,5 +170,10 @@ public class OrganizationService {
     private Organization getOrganization(final Long organizationId) {
         return organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 조직입니다."));
+    }
+
+    private OrganizationMember getOrganizationMember(final Long organizationId, final LoginMember loginMember) {
+        return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, loginMember.memberId())
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직원입니다."));
     }
 }

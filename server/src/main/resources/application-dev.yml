@@ -5,14 +5,23 @@ spring:
     username: ${db.dev.username}
     password: ${db.dev.password}
 
+  flyway:
+    baseline-on-migrate: true
+    baseline-version: 1
+
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         detector:
           enabled: true
+
+  cloud:
+    aws:
+      s3:
+        region: ${aws.prod.s3.region}
 
 jwt:
   access-secret-key: ${jwt.dev.access-secret-key}
@@ -32,6 +41,27 @@ notification:
 
 aws:
   s3:
-    region: ${aws.dev.s3.region}
     bucket: ${aws.dev.s3.bucket}
     folder: ${aws.dev.s3.folder}
+
+management:
+  metrics:
+    enable:
+      system.cpu.usage: true
+      jvm.memory.used: true
+      jvm.memory.max: true
+      http.server.requests: true
+      tomcat.threads: true
+      app.health.status: true
+      executor: true
+      hikaricp.connections.active: true
+      hikaricp.connections.pending: true
+      hikaricp.connections.max: true
+      hikaricp.connections.timeout: true
+      logback.events: true
+  cloudwatch:
+    metrics:
+      export:
+        enabled: true
+        step: 1m
+        namespace: EC2/ahmadda-api

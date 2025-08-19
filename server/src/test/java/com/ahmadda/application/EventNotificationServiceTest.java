@@ -1,5 +1,6 @@
 package com.ahmadda.application;
 
+import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.SelectedOrganizationMembersNotificationRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
@@ -18,13 +19,11 @@ import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Reminder;
 import com.ahmadda.domain.ReminderHistoryRepository;
-import com.ahmadda.domain.Role;
 import com.ahmadda.domain.ReminderRecipient;
+import com.ahmadda.domain.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,8 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.Mockito.verify;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@Transactional
+@IntegrationTest
 class EventNotificationServiceTest {
 
     @Autowired
@@ -195,6 +193,49 @@ class EventNotificationServiceTest {
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessage("이벤트 주최자가 아닙니다.");
     }
+
+    @Test
+    void 알림_내용이_20자를_초과하면_예외가_발생한다() {
+        // given
+        var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
+        var now = LocalDateTime.now();
+
+        var event = eventRepository.save(Event.create(
+                "이벤트제목",
+                "설명",
+                "장소",
+                organizer,
+                organization,
+                EventOperationPeriod.create(
+                        now.minusDays(2), now.minusDays(1),
+                        now.plusDays(1), now.plusDays(2),
+                        now.minusDays(3)
+                ),
+                100
+        ));
+
+        var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization);
+        var om2 = saveOrganizationMember("선택2", "sel2@email.com", organization);
+
+        var overLengthContent = "이 메시지는 20자를 초과합니다. 예외를 발생시켜야 합니다.";
+        var request = new SelectedOrganizationMembersNotificationRequest(
+                List.of(om1.getId(), om2.getId()),
+                overLengthContent
+        );
+
+        // when // then
+        assertThatThrownBy(() ->
+                sut.notifySelectedOrganizationMembers(
+                        event.getId(),
+                        request,
+                        createLoginMember(organizer)
+                )
+        )
+                .isInstanceOf(BusinessFlowViolatedException.class)
+                .hasMessage("알림 메시지는 20자 이하여야 합니다.");
+    }
+
 
     @Test
     void 요청에_존재하지_않는_조직원_ID가_포함되면_예외가_발생한다() {

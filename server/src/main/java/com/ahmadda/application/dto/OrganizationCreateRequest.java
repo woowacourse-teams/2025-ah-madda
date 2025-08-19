@@ -8,7 +8,7 @@ public record OrganizationCreateRequest(
         @NotBlank
         String description,
         @NotBlank
-        String nickName
+        String nickname
 ) {
 
 }

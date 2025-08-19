@@ -5,12 +5,18 @@ spring:
     username: ${db.prod.username}
     password: ${db.prod.password}
 
+  flyway:
+    baseline-on-migrate: true
+    baseline-version: 1
+
   jpa:
     hibernate:
-      ddl-auto: update  # TODO. 추후 v1.0.0에서 validate로 변경
+      ddl-auto: validate
 
   cloud:
     aws:
+      s3:
+        region: ${aws.prod.s3.region}
       region:
         static: ap-northeast-2
 
@@ -32,7 +38,6 @@ notification:
 
 aws:
   s3:
-    region: ${aws.prod.s3.region}
     bucket: ${aws.prod.s3.bucket}
     folder: ${aws.prod.s3.folder}
 
@@ -50,6 +55,7 @@ management:
       hikaricp.connections.pending: true
       hikaricp.connections.max: true
       hikaricp.connections.timeout: true
+      logback.events: true
   cloudwatch:
     metrics:
       export:

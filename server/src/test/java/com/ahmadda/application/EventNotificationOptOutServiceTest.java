@@ -1,5 +1,6 @@
 package com.ahmadda.application;
 
+import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
@@ -19,8 +20,6 @@ import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,8 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@Transactional
+@IntegrationTest
 class EventNotificationOptOutServiceTest {
 
     @Autowired
@@ -106,7 +104,7 @@ class EventNotificationOptOutServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.optOut(event.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("해당 조직의 구성원이 아닙니다.");
+                .hasMessage("존재하지 않는 조직원입니다.");
     }
 
     @Test
@@ -171,7 +169,7 @@ class EventNotificationOptOutServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.cancelOptOut(event.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("해당 조직의 구성원이 아닙니다.");
+                .hasMessage("존재하지 않는 조직원입니다.");
     }
 
     @Test
@@ -188,6 +186,60 @@ class EventNotificationOptOutServiceTest {
         assertThatThrownBy(() -> sut.cancelOptOut(event.getId(), loginMember))
                 .isInstanceOf(BusinessFlowViolatedException.class)
                 .hasMessage("수신 거부 설정이 존재하지 않습니다.");
+    }
+
+    @Test
+    void 특정_이벤트에_대한_수신_거부_여부_정보를_조회할_수_있다() {
+        // given
+        var organization = createOrganization();
+
+        var organizer = createOrganizationMember("주최자", createMember("host", "host@mail.com"), organization);
+        var member = createMember("user", "user@mail.com");
+        var orgMember = createOrganizationMember("닉네임", member, organization);
+
+        var event = createEvent(organizer, organization);
+        var loginMember = new LoginMember(member.getId());
+
+        optOutRepository.save(EventNotificationOptOut.create(orgMember, event));
+
+        // when
+        var result = sut.getMemberWithOptStatus(event.getId(), loginMember);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(result.getOrganizationMember())
+                    .isEqualTo(orgMember);
+            softly.assertThat(result.isOptedOut())
+                    .isTrue();
+        });
+    }
+
+    @Test
+    void 수신_거부_여부_정보를_조회시_존재하지_않는_이벤트이면_예외가_발생한다() {
+        // given
+        var member = createMember("user", "user@mail.com");
+        var loginMember = new LoginMember(member.getId());
+
+        // when // then
+        assertThatThrownBy(() -> sut.getMemberWithOptStatus(Long.MAX_VALUE, loginMember))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 이벤트입니다.");
+    }
+
+    @Test
+    void 수신_거부_여부_정보를_조회시_조직의_구성원이_아니면_예외가_발생한다() {
+        // given
+        var org = createOrganization();
+        var event = createEvent(
+                createOrganizationMember("닉네임", createMember("user", "user@mail.com"), org),
+                org
+        );
+        var loginMember = new LoginMember(Long.MAX_VALUE);
+
+        // when // then
+        assertThatThrownBy(() -> sut.getMemberWithOptStatus(event.getId(), loginMember))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 조직원입니다.");
     }
 
     @Test
