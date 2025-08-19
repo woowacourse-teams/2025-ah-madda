@@ -6,8 +6,8 @@
   "scripts": {
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "test": "vitest",
-    "dev": "NODE_ENV=development webpack serve --mode development",
-    "build": "NODE_ENV=production webpack --mode production",
+    "dev": "webpack serve --config webpack.dev.cjs",
+    "build": "webpack --config webpack.prod.cjs",
     "type-check": "tsc --noEmit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
@@ -84,7 +84,8 @@
     "vitest": "^3.2.4",
     "webpack": "^5.100.0",
     "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^5.2.2"
+    "webpack-dev-server": "^5.2.2",
+    "webpack-merge": "^6.0.1"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
