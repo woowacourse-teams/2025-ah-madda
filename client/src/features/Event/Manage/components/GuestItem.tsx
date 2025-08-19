@@ -26,10 +26,7 @@ export const GuestItem = ({ guest, onGuestChecked, onGuestClick }: GuestItemProp
       <Flex gap="18px" alignItems="center" width="100%">
         <CheckBox
           checked={guest.isChecked}
-          onClick={(e) => {
-            e.stopPropagation();
-            onGuestChecked(guest.organizationMemberId);
-          }}
+          onChange={() => onGuestChecked(guest.organizationMemberId)}
         />
         <Avatar picture={null} name={guest.nickname} />
       </Flex>
