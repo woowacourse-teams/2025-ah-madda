@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
-import Woowa from '@/assets/icon/wowaw.png';
+import DefaultImage from '@/assets/icon/ahmadda.webp';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 
@@ -9,7 +9,6 @@ import { Organization } from '../../types/Event';
 
 type OrganizationProps = Omit<Organization, 'organizationId'>;
 
-// S.TODO : 추후 imageUrl 적용
 export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationProps) => {
   return (
     <Flex
@@ -37,10 +36,11 @@ export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationPr
           `}
         >
           <Img
-            src={imageUrl || Woowa}
+            src={imageUrl || DefaultImage}
+            alt={imageUrl ? `${name} 썸네일` : '기본 조직 이미지'}
             onError={(e) => {
               e.currentTarget.onerror = null;
-              e.currentTarget.src = Woowa;
+              e.currentTarget.src = DefaultImage;
             }}
           />
           <Flex dir="column" gap="8px">
