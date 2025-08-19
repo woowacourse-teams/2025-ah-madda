@@ -84,9 +84,21 @@ export const EventManagePage = () => {
             <Badge variant={badgeText(event.registrationEnd).color}>
               {badgeText(event.registrationEnd).text}
             </Badge>
-            <Text type="Title" weight="bold" color={theme.colors.gray900}>
-              {event.title}
-            </Text>
+            <Flex dir="row" justifyContent="space-between">
+              <Text type="Title" weight="bold" color={theme.colors.gray900}>
+                {event.title}
+              </Text>
+
+              {isClosed ? (
+                <Button size="sm" color="tertiary" variant="solid" disabled>
+                  마감됨
+                </Button>
+              ) : (
+                <Button size="sm" color="tertiary" variant="solid" onClick={handleButtonClick}>
+                  마감하기
+                </Button>
+              )}
+            </Flex>
 
             <Flex dir="column" gap="4px">
               <Flex dir="row" gap="4px" alignItems="center">
@@ -128,8 +140,8 @@ export const EventManagePage = () => {
           </Tabs>
         </EventManageContainer>
       </PageLayout>
-      <ButtonWrapper justifyContent="center">
-        {isClosed ? (
+      {/* <ButtonWrapper justifyContent="center"> */}
+      {/* {isClosed ? (
           <Button size="full" color="tertiary" variant="solid" disabled>
             마감됨
           </Button>
@@ -137,28 +149,28 @@ export const EventManagePage = () => {
           <Button size="full" color="tertiary" variant="solid" onClick={handleButtonClick}>
             마감하기
           </Button>
-        )}
-      </ButtonWrapper>
+        )} */}
+      {/* </ButtonWrapper> */}
     </>
   );
 };
 
-const ButtonWrapper = styled(Flex)`
-  display: flex;
-  position: fixed;
-  bottom: 0px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  width: 100%;
-  max-width: 1072px;
-  padding: 20px 0;
+// const ButtonWrapper = styled(Flex)`
+//   display: flex;
+//   position: fixed;
+//   bottom: 0px;
+//   left: 50%;
+//   transform: translateX(-50%);
+//   z-index: 1000;
+//   width: 100%;
+//   max-width: 1072px;
+//   padding: 20px 0;
 
-  > button {
-    width: 100%;
-  }
+//   > button {
+//     width: 100%;
+//   }
 
-  @media (max-width: 768px) {
-    padding: 20px 20px;
-  }
-`;
+//   @media (max-width: 768px) {
+//     padding: 20px 20px;
+//   }
+// `;
