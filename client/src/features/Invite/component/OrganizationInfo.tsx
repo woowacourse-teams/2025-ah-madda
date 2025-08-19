@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 
 import Woowa from '@/assets/icon/wowaw.png';
-import { Organization } from '@/features/Event/types/Event';
+import { Organization } from '@/features/Organization/types/Organization';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
