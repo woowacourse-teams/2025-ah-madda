@@ -19,20 +19,20 @@ import java.util.UUID;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class MDCFilter implements Filter {
 
-    private static final String REQUEST_ID = "request_id";
+    private static final String TRACE_ID = "trace_id";
 
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
             throws IOException, ServletException {
         try {
-            MDC.put(REQUEST_ID, generateRequestId());
+            MDC.put(TRACE_ID, generateTraceId());
             chain.doFilter(request, response);
         } finally {
             MDC.clear();
         }
     }
 
-    private String generateRequestId() {
+    private String generateTraceId() {
         return UUID.randomUUID()
                 .toString()
                 .substring(0, 8);
