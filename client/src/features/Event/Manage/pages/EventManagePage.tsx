@@ -12,7 +12,10 @@ import { Header } from '@/shared/components/Header';
 import { Icon } from '@/shared/components/Icon';
 import { PageLayout } from '@/shared/components/PageLayout';
 import { Tabs } from '@/shared/components/Tabs';
+import { useToast } from '@/shared/components/Toast/ToastContext';
+import { useModal } from '@/shared/hooks/useModal';
 
+import { DeadlineModal } from '../components/DeadlineModal';
 import { EventInfoSection } from '../components/EventInfoSection';
 import { GuestManageSection } from '../components/GuestManageSection';
 import { EventManageContainer } from '../containers/EventManageContainer';
@@ -21,88 +24,92 @@ export const EventManagePage = () => {
   const navigate = useNavigate();
   const { eventId: eventIdParam } = useParams();
   const eventId = Number(eventIdParam);
+  const { success, error } = useToast();
+  const { isOpen, open, close } = useModal();
   const { data: event, refetch } = useQuery(eventQueryOptions.detail(eventId));
   const { mutate: closeEventRegistration } = useCloseEventRegistration();
 
   const isClosed = event?.registrationEnd ? new Date(event.registrationEnd) < new Date() : false;
 
-  const handleButtonClick = () => {
-    if (confirm('이벤트를 마감하시겠습니까?')) {
-      closeEventRegistration(eventId, {
-        onSuccess: () => {
-          alert('이벤트가 마감되었습니다.');
-          refetch();
-        },
-        onError: (error) => {
-          if (error instanceof HttpError) {
-            alert(error.message);
-          }
-        },
-      });
-    }
+  const handleDeadlineChangeClick = () => {
+    closeEventRegistration(eventId, {
+      onSuccess: () => {
+        success('이벤트가 마감되었습니다.');
+        refetch();
+        close();
+      },
+      onError: (err) => {
+        if (err instanceof HttpError) {
+          error(err.message);
+        }
+      },
+    });
   };
 
   if (!event) return null;
 
   return (
-    <PageLayout
-      header={
-        <Header
-          left={
-            <Icon
-              name="logo"
-              size={55}
-              onClick={() => navigate('/event')}
+    <>
+      <PageLayout
+        header={
+          <Header
+            left={
+              <Icon
+                name="logo"
+                size={55}
+                onClick={() => navigate('/event')}
+                css={css`
+                  cursor: pointer;
+                `}
+              />
+            }
+            right={
+              <Button size="sm" onClick={() => navigate('/event/my')}>
+                내 이벤트
+              </Button>
+            }
+          />
+        }
+      >
+        <EventManageContainer>
+          <Tabs defaultValue="detail">
+            <Tabs.List
               css={css`
-                cursor: pointer;
+                width: 40%;
+                @media (max-width: 768px) {
+                  width: 100%;
+                }
               `}
-            />
-          }
-          right={
-            <Button size="sm" onClick={() => navigate('/event/my')}>
-              내 이벤트
-            </Button>
-          }
-        />
-      }
-    >
-      <EventManageContainer>
-        <Tabs defaultValue="detail">
-          <Tabs.List
-            css={css`
-              width: 40%;
-              @media (max-width: 768px) {
-                width: 100%;
-              }
-            `}
-          >
-            <Tabs.Trigger value="detail">이벤트 정보</Tabs.Trigger>
-            <Tabs.Trigger value="applications">신청 현황</Tabs.Trigger>
-          </Tabs.List>
+            >
+              <Tabs.Trigger value="detail">이벤트 정보</Tabs.Trigger>
+              <Tabs.Trigger value="applications">신청 현황</Tabs.Trigger>
+            </Tabs.List>
 
-          <Tabs.Content value="detail">
-            <EventInfoSection event={event} />
-          </Tabs.Content>
+            <Tabs.Content value="detail">
+              <EventInfoSection event={event} />
+            </Tabs.Content>
 
-          <Tabs.Content value="applications">
-            <GuestManageSection />
-          </Tabs.Content>
-        </Tabs>
+            <Tabs.Content value="applications">
+              <GuestManageSection />
+            </Tabs.Content>
+          </Tabs>
 
-        <ButtonWrapper justifyContent="center">
-          {/* E.TODO 마감됨 버튼이 너무커서 겹치는 이슈 -> footer 구현 후 해결 여부 확인 */}
-          {isClosed ? (
-            <Button size="full" color="tertiary" variant="solid" disabled>
-              마감됨
-            </Button>
-          ) : (
-            <Button size="full" color="tertiary" variant="solid" onClick={handleButtonClick}>
-              마감하기
-            </Button>
-          )}
-        </ButtonWrapper>
-      </EventManageContainer>
-    </PageLayout>
+          <ButtonWrapper justifyContent="center">
+            {/* E.TODO 마감됨 버튼이 너무커서 겹치는 이슈 -> footer 구현 후 해결 여부 확인 */}
+            {isClosed ? (
+              <Button size="full" color="tertiary" variant="solid" disabled>
+                마감됨
+              </Button>
+            ) : (
+              <Button size="full" color="tertiary" variant="solid" onClick={open}>
+                마감하기
+              </Button>
+            )}
+          </ButtonWrapper>
+        </EventManageContainer>
+      </PageLayout>
+      <DeadlineModal isOpen={isOpen} onClose={close} onDeadlineChange={handleDeadlineChangeClick} />
+    </>
   );
 };
 
