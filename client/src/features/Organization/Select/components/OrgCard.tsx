@@ -32,7 +32,11 @@ export const OrgCard = ({ org, onJoin, isAdmin, onEdit }: OrgCardProps) => (
         }}
       />
 
-      <StyledOverlay data-overlay>참여하기</StyledOverlay>
+      <StyledOverlay data-overlay>
+        <Text color="white" weight="semibold">
+          참여하기
+        </Text>
+      </StyledOverlay>
     </StyledImageWrapper>
 
     <Text
@@ -93,8 +97,6 @@ const StyledOverlay = styled.div`
   justify-content: center;
   align-items: center;
   background: rgba(0, 0, 0, 0.44);
-  color: ${theme.colors.white};
-  font-weight: 700;
   opacity: 0;
   transition: opacity 0.18s ease-in-out;
 `;
