@@ -3,8 +3,8 @@ import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Modal } from '@/shared/components/Modal';
 import { Text } from '@/shared/components/Text';
+import { useToast } from '@/shared/components/Toast/ToastContext';
 
-import { useToast } from '../../../../shared/components/Toast/ToastContext';
 import { UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { useMaxCapacity } from '../hooks/useMaxCapacity';
 

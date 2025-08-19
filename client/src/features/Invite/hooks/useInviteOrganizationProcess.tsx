@@ -6,9 +6,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { isAuthenticated } from '@/api/auth';
 import { useParticipateOrganization } from '@/api/mutations/useParticipateOrganization';
 import { organizationQueryOptions } from '@/api/queries/organization';
+import { useToast } from '@/shared/components/Toast/ToastContext';
 import { useModal } from '@/shared/hooks/useModal';
-
-import { useToast } from '../../../shared/components/Toast/ToastContext';
 
 export const useInviteOrganizationProcess = () => {
   const navigate = useNavigate();
@@ -21,13 +20,13 @@ export const useInviteOrganizationProcess = () => {
   const validateAndRedirect = useCallback(() => {
     if (!inviteCode) {
       error('유효하지 않은 초대 링크입니다.', { duration: 3000 });
-      navigate('/');
+      navigate('/', { replace: true });
       return;
     }
 
     if (!isAuthenticated()) {
       error('로그인이 필요한 서비스입니다.', { duration: 3000 });
-      navigate('/');
+      navigate('/', { replace: true });
       return;
     }
   }, [inviteCode, error, navigate]);
