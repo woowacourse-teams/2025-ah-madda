@@ -2,7 +2,7 @@
 <included>
     <appender name="console-appender" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>[%highlight(%level)][%d{MM-dd HH:mm:ss}][%magenta(%X{trace_id:-startup})][%highlight(%replace(%logger{20}){'\\w\\.', ''})] %msg%n%ex</pattern>
+            <pattern>[%highlight(%level)][%d{MM-dd HH:mm:ss}][%magenta(%X{trace_id:-UNTRACKED})][%highlight(%replace(%logger{20}){'\\w\\.', ''})] %msg%n%ex</pattern>
             <charset>UTF-8</charset>
         </encoder>
     </appender>
