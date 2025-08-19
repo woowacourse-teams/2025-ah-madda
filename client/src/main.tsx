@@ -13,7 +13,6 @@ import { router } from './router/route';
 import { theme } from './shared/styles/theme';
 
 // Version information for developer tools
-// 주석추가
 const APP_VERSION = packageJson.version;
 const APP_BUILD_TIME = new Date().toISOString();
 
