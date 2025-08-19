@@ -12,7 +12,7 @@ import { theme } from '@/shared/styles/theme';
 
 import { useModal } from '../../../../shared/hooks/useModal';
 import { EventCard } from '../../components/EventCard';
-import { Event, Organization } from '../../types/Event';
+import { Event } from '../../types/Event';
 import { groupEventsByDate } from '../../utils/groupEventsByDate';
 import { EventContainer } from '../containers/EventContainer';
 
