@@ -2,10 +2,9 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 import DefaultImage from '@/assets/icon/ahmadda.webp';
+import { Organization } from '@/features/Organization/Select/types/Organization';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
-
-import { Organization } from '../../types/Event';
 
 type OrganizationProps = Omit<Organization, 'organizationId'>;
 
