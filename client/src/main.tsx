@@ -5,10 +5,26 @@ import ReactDOM from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 
 import './reset.css';
+import packageJson from '../package.json';
+
 import { ClientQueryProvider } from './api/ClientQueryProvider';
 import { initSentry } from './lib/sentry';
 import { router } from './router/route';
 import { theme } from './shared/styles/theme';
+
+// Version information for developer tools
+
+const APP_VERSION = packageJson.version;
+const APP_BUILD_TIME = new Date().toISOString();
+
+// Console logging for version info
+console.info(`🚀 AhMadda v${APP_VERSION} loaded successfully!`);
+console.info(`📅 Build time: ${APP_BUILD_TIME}`);
+console.info(`🏷️ Git tag: v${APP_VERSION}`);
+
+// Global variables for easy access in developer tools
+(window as any).APP_VERSION = APP_VERSION;
+(window as any).APP_BUILD_TIME = APP_BUILD_TIME;
 
 initSentry();
 

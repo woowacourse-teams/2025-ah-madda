@@ -3,7 +3,7 @@ name: Update Package Version
 on:
   push:
     branches:
-      - release/*
+      - release*
   workflow_dispatch:
 
 jobs:
@@ -16,10 +16,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/pnpm-setup-node
 
       - name: Get latest git tag
         id: get_tag
@@ -43,8 +41,8 @@ jobs:
             echo "Updating version from $current_version to $new_version"
             sed -i "s/\"version\": \"$current_version\"/\"version\": \"$new_version\"/" package.json
             
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
+            git config --local user.email "wjddks96@naver.com"
+            git config --local user.name "ExceptAnyone"
             git add package.json
             git commit -m "chore: update package.json version to $new_version"
             git push
