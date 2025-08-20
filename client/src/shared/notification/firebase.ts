@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 
@@ -22,17 +23,20 @@ export const requestFCMPermission = async () => {
         vapidKey: process.env.FCM_VAPID_KEY,
       });
     }
-    // TODO : 권한 거부 시 처리 로직 추가
+
     if (permission === 'denied') {
-      return alert('알림 권한이 거부되었습니다.');
+      alert('알림 권한이 거부되었습니다.');
+      return null;
     }
 
     if (permission === 'default') {
-      return alert('권한 선택을 하지 않았습니다.');
+      // S.TODO : 권한 선택으로 유도할지
+      alert('권한 선택을 하지 않았습니다.');
+      return null;
     }
   } catch (error) {
     // TODO : FCM 토큰 획득 실패 시 처리 로직 추가
-    console.error('FCM 토큰 획득 실패:', error);
+    Sentry.captureException(error);
     return null;
   }
 };
