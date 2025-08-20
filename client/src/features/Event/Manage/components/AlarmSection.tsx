@@ -89,10 +89,12 @@ export const AlarmSection = ({
             </Button>
           </Flex>
           <Spacing height="28px" />
-          <Flex dir="column" alignItems="center">
+          <Flex dir="column" alignItems="center" gap="8px">
             <Input
+              showCounter
               id="alarm-message"
               placeholder="알람 메시지를 입력해주세요"
+              maxLength={20}
               value={content}
               onChange={handleContentChange}
             />
