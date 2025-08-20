@@ -5,6 +5,7 @@ import { useParticipateEvent } from '@/api/mutations/useParticipateEvent';
 import { Answer, GuestStatusAPIResponse } from '@/api/types/event';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
+import { useToast } from '@/shared/components/Toast/ToastContext';
 
 import { getEventButtonState } from '../utils/getSubmitButtonState';
 
@@ -24,23 +25,25 @@ export const SubmitButtonCard = ({
   onResetAnswers,
   isRequiredAnswerComplete,
 }: SubmitBUttonCardProps) => {
+
+  const { success, error } = useToast();
+  const { mutate: participantMutate } = useParticipateEvent(eventId);
+  const { mutate: cancelParticipateMutate } = useCancelParticipation(eventId);
+  
   const buttonState = getEventButtonState({
     registrationEnd,
     isGuest,
     isRequiredAnswerComplete,
   });
 
-  const { mutate: participantMutate } = useParticipateEvent(eventId);
-  const { mutate: cancelParticipateMutate } = useCancelParticipation(eventId);
-
   const handleParticipantClick = () => {
     participantMutate(answers, {
       onSuccess: () => {
         onResetAnswers();
-        alert('✅ 참가 신청이 완료되었습니다.');
+        success('✅ 참가 신청이 완료되었습니다.');
       },
       onError: () => {
-        alert('❌ 신청에 실패했어요.');
+        error('❌ 신청에 실패했어요.');
       },
     });
   };
@@ -48,10 +51,10 @@ export const SubmitButtonCard = ({
   const handleCancelParticipateClick = () => {
     cancelParticipateMutate(undefined, {
       onSuccess: () => {
-        alert('✅ 참가 신청이 취소되었습니다.');
+        success('✅ 참가 신청이 취소되었습니다.');
       },
-      onError: (error) => {
-        alert(`${error.message}`);
+      onError: (err) => {
+        error(`${err.message}`);
       },
     });
   };
