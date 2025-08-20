@@ -56,7 +56,7 @@ export const GuestList = ({ eventId, title, titleColor, guests }: GuestListProps
             list-style: none;
           `}
         >
-          {[...guests, ...guests, ...guests].map((guest) => (
+          {guests.map((guest) => (
             <GuestBadge
               key={guest.organizationMemberId}
               onClick={(e) => handlePokeAlarm(guest.organizationMemberId, e)}
