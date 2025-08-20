@@ -9,24 +9,24 @@ import { theme } from '@/shared/styles/theme';
 import { Organization } from '../../types/Organization';
 
 export type OrgCardProps = {
-  org: Organization;
+  organization: Organization;
   onJoin: () => void;
   isAdmin: boolean;
   onEdit?: () => void;
 };
 
-export const OrgCard = ({ org, onJoin, isAdmin, onEdit }: OrgCardProps) => (
+export const OrgCard = ({ organization, onJoin, isAdmin, onEdit }: OrgCardProps) => (
   <StyledCardContainer
     dir="column"
     alignItems="center"
     role="button"
-    aria-label={`${org.name} 참여하기`}
+    aria-label={`${organization.name} 참여하기`}
     onClick={onJoin}
   >
     <StyledImageWrapper justifyContent="center" alignItems="center">
       <img
-        src={org.imageUrl}
-        alt={org.name}
+        src={organization.imageUrl}
+        alt={organization.name}
         onError={(e) => {
           e.currentTarget.src = '/icon-512x512.png';
         }}
@@ -45,7 +45,7 @@ export const OrgCard = ({ org, onJoin, isAdmin, onEdit }: OrgCardProps) => (
         text-align: center;
       `}
     >
-      {org.name}
+      {organization.name}
     </Text>
 
     {isAdmin && onEdit && (

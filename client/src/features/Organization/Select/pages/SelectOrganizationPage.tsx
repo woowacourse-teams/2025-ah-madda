@@ -151,7 +151,7 @@ const OrganizationSelectBody = () => {
           {orgs.map((org) => (
             <Flex key={org.organizationId}>
               <OrgCard
-                org={org}
+                organization={org}
                 onJoin={() => handleJoin(org.organizationId)}
                 isAdmin={org.isAdmin}
                 onEdit={() => handleEdit(org.organizationId)}
