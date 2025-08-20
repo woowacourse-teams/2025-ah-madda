@@ -14,6 +14,7 @@ import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
 import { Textarea } from '@/shared/components/Textarea';
+import { useToast } from '@/shared/components/Toast/ToastContext';
 import { useAutoSessionSave } from '@/shared/hooks/useAutoSessionSave';
 import { useModal } from '@/shared/hooks/useModal';
 import { trackCreateEvent } from '@/shared/lib/gaEvents';
@@ -49,6 +50,7 @@ type EventCreateFormProps = {
 
 export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const navigate = useNavigate();
+  const { success, error } = useToast();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
   const { mutate: updateEvent } = useUpdateEvent();
   const { mutate: addTemplate } = useAddTemplate();
@@ -111,12 +113,12 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     });
   };
 
-  const handleError = (error: unknown) => {
-    if (error instanceof HttpError) {
-      alert(error.data?.detail || '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+  const handleError = (err: unknown) => {
+    if (err instanceof HttpError) {
+      error(err.data?.detail || '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
       return;
     }
-    alert('네트워크 연결을 확인해주세요.');
+    error('네트워크 연결을 확인해주세요.');
   };
 
   const buildPayload = () => ({
@@ -155,7 +157,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       onSuccess: ({ eventId }) => {
         clear();
         trackCreateEvent();
-        alert('😁 이벤트가 성공적으로 생성되었습니다!');
+        success('😁 이벤트가 성공적으로 생성되었습니다!');
         navigate(`/event/${eventId}`);
       },
       onError: handleError,
@@ -168,7 +170,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       {
         onSuccess: () => {
           clear();
-          alert('😁 이벤트가 성공적으로 수정되었습니다!');
+          success('😁 이벤트가 성공적으로 수정되었습니다!');
           navigate(`/event/${eventId}`);
         },
         onError: handleError,
@@ -199,11 +201,11 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       },
       {
         onSuccess: () => {
-          alert('템플릿이 성공적으로 추가되었습니다!');
+          success('템플릿이 성공적으로 추가되었습니다!');
         },
         onError: () => {
           if (!basicEventForm.description || basicEventForm.description.trim() === '') {
-            alert('이벤트 설명을 입력해 주세요');
+            error('이벤트 설명을 입력해 주세요');
           }
         },
       }
@@ -217,7 +219,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     endTime: TimeValue
   ) => {
     if (!startTime || !endTime) {
-      alert('시간이 선택되지 않았습니다. 시간을 먼저 선택해 주세요.');
+      error('시간이 선택되지 않았습니다. 시간을 먼저 선택해 주세요.');
       return;
     }
 
@@ -225,7 +227,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     const finalEndTime = timeValueToDate(endTime, endDate);
 
     if (!finalStartTime || !finalEndTime) {
-      alert('시간 처리 중 오류가 발생했습니다.');
+      error('시간 처리 중 오류가 발생했습니다.');
       return;
     }
 
@@ -246,13 +248,13 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
 
   const handleRegistrationEndSelect = (date: Date, time: TimeValue) => {
     if (!time) {
-      alert('시간이 선택되지 않았습니다. 시간을 먼저 선택해 주세요.');
+      error('시간이 선택되지 않았습니다. 시간을 먼저 선택해 주세요.');
       return;
     }
 
     const finalTime = timeValueToDate(time, date);
     if (!finalTime) {
-      alert('시간 처리 중 오류가 발생했습니다.');
+      error('시간 처리 중 오류가 발생했습니다.');
       return;
     }
 

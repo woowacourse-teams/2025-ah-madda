@@ -13,9 +13,12 @@ import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
 import { useModal } from '@/shared/hooks/useModal';
 
+import { useToast } from '../../../shared/components/Toast/ToastContext';
+
 import { GuideModal } from './GuideModal';
 
 export const Info = () => {
+  const { error } = useToast();
   const { isOpen, open, close } = useModal();
   const navigate = useNavigate();
 
@@ -27,7 +30,9 @@ export const Info = () => {
 
   const handelGuideOpenClick = () => {
     if (!isAuthenticated()) {
-      alert('로그인이 필요한 서비스입니다. 먼저 로그인해 주세요.');
+      error(`로그인이 필요한 서비스입니다.\n먼저 로그인해 주세요.`, {
+        duration: 3000,
+      });
       return;
     }
     open();

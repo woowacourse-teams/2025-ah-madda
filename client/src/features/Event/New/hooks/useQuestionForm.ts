@@ -1,5 +1,7 @@
 import { useReducer, useMemo } from 'react';
 
+import { useToast } from '@/shared/components/Toast/ToastContext';
+
 import { QuestionRequest } from '../../types/Event';
 import { MAX_LENGTH, MAX_QUESTIONS } from '../constants/errorMessages';
 
@@ -38,12 +40,13 @@ const reducer = (state: QuestionRequest[], action: Action): QuestionRequest[] =>
 };
 
 export const useQuestionForm = () => {
+  const { error } = useToast();
   const [questions, dispatch] = useReducer(reducer, []);
   const canAddQuestion = questions.length < MAX_QUESTIONS;
 
   const addQuestion = () => {
     if (!canAddQuestion) {
-      alert('질문은 최대 5개까지 추가 가능합니다.');
+      error('질문은 최대 5개까지 추가 가능합니다.');
       return;
     }
     dispatch({ type: 'ADD' });

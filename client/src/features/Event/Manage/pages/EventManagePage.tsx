@@ -15,10 +15,13 @@ import { PageLayout } from '@/shared/components/PageLayout';
 import { Spacing } from '@/shared/components/Spacing';
 import { Tabs } from '@/shared/components/Tabs';
 import { Text } from '@/shared/components/Text';
+import { useToast } from '@/shared/components/Toast/ToastContext';
+import { useModal } from '@/shared/hooks/useModal';
 import { theme } from '@/shared/styles/theme';
 
 import { formatDateTime } from '../../My/utils/date';
 import { badgeText } from '../../utils/badgeText';
+import { DeadlineModal } from '../components/DeadlineModal';
 import { EventInfoSection } from '../components/EventInfoSection';
 import { GuestManageSection } from '../components/GuestManageSection';
 import { EventManageContainer } from '../containers/EventManageContainer';
@@ -27,6 +30,8 @@ export const EventManagePage = () => {
   const navigate = useNavigate();
   const { eventId: eventIdParam } = useParams();
   const eventId = Number(eventIdParam);
+  const { success, error } = useToast();
+  const { isOpen, open, close } = useModal();
   const { data: event, refetch } = useQuery(eventQueryOptions.detail(eventId));
 
   const [{ data: profile }, { data: statistics = [] }] = useSuspenseQueries({
@@ -36,20 +41,19 @@ export const EventManagePage = () => {
 
   const isClosed = event?.registrationEnd ? new Date(event.registrationEnd) < new Date() : false;
 
-  const handleButtonClick = () => {
-    if (confirm('이벤트를 마감하시겠습니까?')) {
-      closeEventRegistration(eventId, {
-        onSuccess: () => {
-          alert('이벤트가 마감되었습니다.');
-          refetch();
-        },
-        onError: (error) => {
-          if (error instanceof HttpError) {
-            alert(error.message);
-          }
-        },
-      });
-    }
+  const handleDeadlineChangeClick = () => {
+    closeEventRegistration(eventId, {
+      onSuccess: () => {
+        success('이벤트가 마감되었습니다.');
+        refetch();
+        close();
+      },
+      onError: (err) => {
+        if (err instanceof HttpError) {
+          error(err.message);
+        }
+      },
+    });
   };
 
   if (!event) return null;
@@ -93,7 +97,7 @@ export const EventManagePage = () => {
                   마감됨
                 </Button>
               ) : (
-                <Button size="sm" color="tertiary" variant="solid" onClick={handleButtonClick}>
+                <Button size="sm" color="tertiary" variant="solid" onClick={open}>
                   마감하기
                 </Button>
               )}
@@ -139,6 +143,7 @@ export const EventManagePage = () => {
           </Tabs>
         </EventManageContainer>
       </PageLayout>
+      <DeadlineModal isOpen={isOpen} onClose={close} onDeadlineChange={handleDeadlineChangeClick} />
     </>
   );
 };

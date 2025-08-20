@@ -5,6 +5,7 @@ import { HttpError } from '@/api/fetcher';
 import { usePoke } from '@/api/mutations/usePoke';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
+import { useToast } from '@/shared/components/Toast/ToastContext';
 import { theme } from '@/shared/styles/theme';
 
 import { Guest, NonGuest } from '../../../Manage/types';
@@ -18,6 +19,7 @@ type GuestListProps = {
 };
 
 export const GuestList = ({ eventId, title, titleColor, guests }: GuestListProps) => {
+  const { error } = useToast();
   const { mutate: pokeMutate } = usePoke(eventId);
   const { bouncingMessages, addBouncingMessage } = useBouncingMessages();
 
@@ -29,9 +31,9 @@ export const GuestList = ({ eventId, title, titleColor, guests }: GuestListProps
         onSuccess: () => {
           addBouncingMessage(event);
         },
-        onError: (error) => {
-          if (error instanceof HttpError) {
-            alert(error.message);
+        onError: (err) => {
+          if (err instanceof HttpError) {
+            error(err.message);
           }
         },
       }
