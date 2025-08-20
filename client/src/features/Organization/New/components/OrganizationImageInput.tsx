@@ -144,7 +144,7 @@ const StyledImgUpload = styled(Button)`
 `;
 
 const StyledImgBox = styled.div`
-  position: relative; /* absolute 기준 */
+  position: relative;
   width: 255px;
   height: 255px;
 `;
