@@ -8,6 +8,7 @@ import com.ahmadda.application.dto.EventUpdated;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
+import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventNotificationOptOutRepository;
@@ -30,6 +31,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -38,6 +40,9 @@ import java.util.stream.IntStream;
 @Service
 @RequiredArgsConstructor
 public class EventService {
+
+    private static final int REMINDER_LIMIT_DURATION_MINUTES = 30;
+    private static final int MAX_REMINDER_COUNT_IN_DURATION = 10;
 
     private final MemberRepository memberRepository;
     private final EventRepository eventRepository;
@@ -69,6 +74,7 @@ public class EventService {
                 eventCreateRequest.maxCapacity(),
                 createQuestions(eventCreateRequest.questions())
         );
+        validateReminderLimit(event);
 
         Event savedEvent = eventRepository.save(event);
         notifyEventCreated(savedEvent, organization);
@@ -113,6 +119,7 @@ public class EventService {
     ) {
         Event event = getEvent(eventId);
         Member member = getMember(loginMember.memberId());
+        validateReminderLimit(event);
 
         EventOperationPeriod updatedOperationPeriod = EventOperationPeriod.create(
                 event.getRegistrationStart(),
@@ -129,7 +136,7 @@ public class EventService {
                 updatedOperationPeriod,
                 eventUpdateRequest.maxCapacity()
         );
-
+        
         notifyEventUpdated(event);
 
         eventPublisher.publishEvent(EventUpdated.from(event));
@@ -191,6 +198,53 @@ public class EventService {
                     return Question.create(request.questionText(), request.isRequired(), i);
                 })
                 .toList();
+    }
+
+    private void validateReminderLimit(final Event event) {
+        LocalDateTime now = LocalDateTime.now();
+        Long organizerId = event.getOrganizer()
+                .getId();
+        LocalDateTime threshold = now.minusMinutes(REMINDER_LIMIT_DURATION_MINUTES);
+
+        List<ReminderHistory> recentReminderHistories = getRecentReminderHistories(organizerId, threshold);
+
+        if (recentReminderHistories.size() >= MAX_REMINDER_COUNT_IN_DURATION) {
+            LocalDateTime oldestReminderTime = recentReminderHistories
+                    .get(MAX_REMINDER_COUNT_IN_DURATION - 1)
+                    .getCreatedAt();
+
+            long minutesUntilAvailable = calculateRemainingMinutes(now, oldestReminderTime);
+
+            throw new BusinessFlowViolatedException(
+                    String.format(
+                            "리마인더는 %d분 내 최대 %d회까지만 발송할 수 있습니다. 약 %d분 후 다시 시도해주세요.",
+                            REMINDER_LIMIT_DURATION_MINUTES,
+                            MAX_REMINDER_COUNT_IN_DURATION,
+                            minutesUntilAvailable
+                    )
+            );
+        }
+    }
+
+    private List<ReminderHistory> getRecentReminderHistories(final Long organizerId, final LocalDateTime threshold) {
+        return reminderHistoryRepository
+                .findTop10ByEventOrganizerIdAndCreatedAtAfterOrderByCreatedAtDesc(organizerId, threshold);
+    }
+
+    /**
+     * 남은 대기 시간을 분 단위로 계산한다.
+     * <p>
+     * 사유: Duration의 toMinutes()는 내림 처리되므로,
+     * 예외 메시지에 "0분"으로 표시되는 오차를 방지하기 위해 초 단위로 계산 후 올림 처리한다.
+     *
+     * @param now                현재 시각
+     * @param oldestReminderTime 제한 기준이 되는 리마인더의 시각
+     * @return 제한 해제까지 남은 시간 (분 단위, 올림 처리)
+     */
+    private long calculateRemainingMinutes(final LocalDateTime now, final LocalDateTime oldestReminderTime) {
+        Duration remaining = Duration.between(now, oldestReminderTime.plusMinutes(REMINDER_LIMIT_DURATION_MINUTES));
+
+        return Math.max(0, (remaining.getSeconds() + 59) / 60);
     }
 
     private void notifyEventCreated(final Event event, final Organization organization) {
