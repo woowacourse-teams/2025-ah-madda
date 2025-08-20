@@ -67,6 +67,7 @@ export const eventQueryOptions = {
     queryOptions({
       queryKey: [...eventQueryKeys.guestStatus(), eventId],
       queryFn: () => getGuestStatus(eventId),
+      retry: false,
     }),
   cancel: (eventId: number) =>
     queryOptions({
