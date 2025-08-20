@@ -38,7 +38,6 @@ cors:
   allowed-origins:
     - http://localhost:5173
     - http://127.0.0.1:5173
-    - http://local.ahmadda.com:5173
 
 notification:
   redirect-url-prefix: http://localhost:5173/event/
