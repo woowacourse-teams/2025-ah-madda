@@ -6,7 +6,7 @@ import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
-import { Organization } from '../../types/Organization';
+import type { Organization } from '../../types/Organization';
 
 export type OrgCardProps = {
   organization: Organization;

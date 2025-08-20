@@ -14,7 +14,7 @@ import { PageLayout } from '@/shared/components/PageLayout';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
-import { OrganizationWithRole } from '../../types/Organization';
+import type { OrganizationWithRole } from '../../types/Organization';
 import { OrgCard } from '../components/OrgCard';
 
 const CARD_W = 120;
