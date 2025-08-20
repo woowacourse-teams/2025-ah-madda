@@ -14,7 +14,7 @@ type CreatorNicknameModalProps = {
   previewUrl?: string;
   isSubmitting?: boolean;
   onConfirm: (nickname: string) => void;
-  onCancel: () => void;
+  onClose: () => void;
 };
 
 export const CreatorNicknameModal = ({
@@ -23,7 +23,7 @@ export const CreatorNicknameModal = ({
   previewUrl,
   isSubmitting,
   onConfirm,
-  onCancel,
+  onClose,
 }: CreatorNicknameModalProps) => {
   const { nickname, handleNicknameChange } = useNickNameForm();
 
@@ -32,7 +32,7 @@ export const CreatorNicknameModal = ({
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onCancel}
+      onClose={onClose}
       css={css`
         width: 380px;
       `}
@@ -63,7 +63,7 @@ export const CreatorNicknameModal = ({
       </Flex>
 
       <Flex gap="12px" alignItems="center">
-        <Button variant="outline" size="full" onClick={onCancel} disabled={isSubmitting}>
+        <Button variant="outline" size="full" onClick={onClose} disabled={isSubmitting}>
           취소
         </Button>
         <Button size="full" disabled={!nickname.trim() || isSubmitting} onClick={submit}>

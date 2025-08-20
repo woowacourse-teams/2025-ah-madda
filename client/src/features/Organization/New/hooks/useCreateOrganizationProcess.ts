@@ -5,7 +5,7 @@ type CreateOrganizationProcessArgs = {
   description: string;
   thumbnail: File | null;
   onSuccess?: (organizationId: number) => void;
-  onCancel?: () => void;
+  onClose?: () => void;
 };
 
 export const useCreateOrganizationProcess = ({
@@ -13,7 +13,7 @@ export const useCreateOrganizationProcess = ({
   description,
   thumbnail,
   onSuccess,
-  onCancel,
+  onClose,
 }: CreateOrganizationProcessArgs) => {
   const { mutate, isPending } = useCreateOrganization();
 
@@ -40,7 +40,7 @@ export const useCreateOrganizationProcess = ({
   };
 
   const handleClose = () => {
-    onCancel?.();
+    onClose?.();
   };
 
   return { handleCreate, handleClose, isSubmitting: isPending };

@@ -62,7 +62,7 @@ export const OrganizationCreateForm = () => {
       close();
       navigate(`/event?organizationId=${id}`);
     },
-    onCancel: close,
+    onClose: close,
   });
 
   const handleConfirmNickname = (nickname: string) => {
@@ -143,7 +143,7 @@ export const OrganizationCreateForm = () => {
         orgName={form.name || '조직'}
         previewUrl={previewUrl}
         isSubmitting={isSubmitting}
-        onCancel={close}
+        onClose={close}
         onConfirm={handleConfirmNickname}
       />
     </form>
