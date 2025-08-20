@@ -8,7 +8,7 @@
         </filter>
 
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>[%level][%d{MM-dd HH:mm:ss}][%X{request_id:-startup}][%replace(%logger{20}){'\\w\\.', ''}] %msg%n%ex</pattern>
+            <pattern>[%level][%d{MM-dd HH:mm:ss}][%X{trace_id:-UNTRACKED}][%replace(%logger{20}){'\\w\\.', ''}] %msg%n%ex</pattern>
         </layout>
 
         <logGroupName>/aws/ec2/ahmadda-prod-server</logGroupName>
