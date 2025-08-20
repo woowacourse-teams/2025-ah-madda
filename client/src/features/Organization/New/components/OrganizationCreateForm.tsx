@@ -10,6 +10,7 @@ import { Text } from '@/shared/components/Text';
 import { useModal } from '@/shared/hooks/useModal';
 
 import { MAX_LENGTH } from '../constants/validationRules';
+import { useCreateOrganizationProcess } from '../hooks/useCreateOrganizationProcess';
 import { useOrganizationForm } from '../hooks/useOrganizationForm';
 
 import { CreatorNicknameModal } from './CreatorNicknameModal';
@@ -51,6 +52,23 @@ export const OrganizationCreateForm = () => {
     e.preventDefault();
     if (!isValid()) return;
     open();
+  };
+
+  const { handleCreate, isSubmitting } = useCreateOrganizationProcess({
+    name: form.name.trim(),
+    description: form.description.trim(),
+    thumbnail: form.logo,
+    onSuccess: (id) => {
+      close();
+      navigate(`/event?organizationId=${id}`);
+    },
+    onCancel: close,
+  });
+
+  const handleConfirmNickname = (nickname: string) => {
+    const trimmed = nickname.trim();
+    if (!trimmed || isSubmitting) return;
+    handleCreate(trimmed);
   };
 
   return (
@@ -123,15 +141,10 @@ export const OrganizationCreateForm = () => {
       <CreatorNicknameModal
         isOpen={isOpen}
         orgName={form.name || '조직'}
-        name={form.name.trim()}
-        description={form.description.trim()}
-        thumbnail={form.logo}
         previewUrl={previewUrl}
+        isSubmitting={isSubmitting}
         onCancel={close}
-        onSuccess={(id) => {
-          close();
-          navigate(`/event?organizationId=${id}`);
-        }}
+        onConfirm={handleConfirmNickname}
       />
     </form>
   );

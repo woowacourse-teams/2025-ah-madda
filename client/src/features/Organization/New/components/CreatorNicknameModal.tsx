@@ -8,48 +8,31 @@ import { Input } from '@/shared/components/Input';
 import { Modal } from '@/shared/components/Modal';
 import { Text } from '@/shared/components/Text';
 
-import { useCreateOrganizationProcess } from '../hooks/useCreateOrganizationProcess';
-
 type CreatorNicknameModalProps = {
   isOpen: boolean;
   orgName: string;
-  name: string;
-  description: string;
   previewUrl?: string;
-  thumbnail: File | null;
-  onSuccess?: (id: number) => void;
+  isSubmitting?: boolean;
+  onConfirm: (nickname: string) => void;
   onCancel: () => void;
 };
 
 export const CreatorNicknameModal = ({
   isOpen,
   orgName,
-  name,
-  description,
-  thumbnail,
   previewUrl,
-  onSuccess,
+  isSubmitting,
+  onConfirm,
   onCancel,
 }: CreatorNicknameModalProps) => {
   const { nickname, handleNicknameChange } = useNickNameForm();
-  const { handleCreate, handleClose, isSubmitting } = useCreateOrganizationProcess({
-    name,
-    description,
-    thumbnail,
-    onSuccess,
-    onCancel,
-  });
 
-  const handleSubmit = () => {
-    const trimmed = nickname.trim();
-    if (!trimmed || isSubmitting) return;
-    handleCreate(trimmed);
-  };
+  const submit = () => onConfirm(nickname);
 
   return (
     <Modal
       isOpen={isOpen}
-      onClose={handleClose}
+      onClose={onCancel}
       css={css`
         width: 380px;
       `}
@@ -73,17 +56,17 @@ export const CreatorNicknameModal = ({
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();
-              handleSubmit();
+              submit();
             }
           }}
         />
       </Flex>
 
       <Flex gap="12px" alignItems="center">
-        <Button variant="outline" size="full" onClick={handleClose} disabled={isSubmitting}>
+        <Button variant="outline" size="full" onClick={onCancel} disabled={isSubmitting}>
           취소
         </Button>
-        <Button size="full" disabled={!nickname.trim() || isSubmitting} onClick={handleSubmit}>
+        <Button size="full" disabled={!nickname.trim() || isSubmitting} onClick={submit}>
           생성하기
         </Button>
       </Flex>
