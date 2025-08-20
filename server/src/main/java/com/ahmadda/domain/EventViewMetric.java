@@ -8,12 +8,16 @@ import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE event_view_metric SET deleted_at = CURRENT_TIMESTAMP WHERE event_view_metric_id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class EventViewMetric extends BaseEntity {
 
     @Id

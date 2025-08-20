@@ -12,12 +12,16 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE poke_history SET deleted_at = CURRENT_TIMESTAMP WHERE poke_history_id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class PokeHistory extends BaseEntity {
 
     @Id

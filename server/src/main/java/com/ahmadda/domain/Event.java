@@ -19,6 +19,8 @@ import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
@@ -31,6 +33,8 @@ import java.util.stream.Collectors;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE event SET deleted_at = CURRENT_TIMESTAMP WHERE event_id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class Event extends BaseEntity {
 
     private static final int MIN_CAPACITY = 1;

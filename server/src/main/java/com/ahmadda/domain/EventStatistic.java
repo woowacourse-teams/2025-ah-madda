@@ -15,6 +15,8 @@ import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,6 +27,8 @@ import java.util.Set;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE event_statistic SET deleted_at = CURRENT_TIMESTAMP WHERE event_statistic_id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class EventStatistic extends BaseEntity {
 
     @Id
