@@ -22,14 +22,14 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
-            final HttpServletRequest request, final HttpServletResponse response,
-            final FilterChain filterChain
-    )
-            throws ServletException, IOException {
+            final HttpServletRequest request,
+            final HttpServletResponse response,
+            final FilterChain chain
+    ) throws ServletException, IOException {
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
 
-        filterChain.doFilter(requestWrapper, responseWrapper);
+        chain.doFilter(requestWrapper, responseWrapper);
 
         log.info(
                 "[Request] {} {}, \n 요청 바디: {}", request.getMethod(), request.getRequestURI(),
