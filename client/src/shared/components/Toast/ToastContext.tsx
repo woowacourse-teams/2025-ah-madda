@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo } from 'react';
 
 import { Toast, ToastVariant } from './Toast';
 
@@ -32,45 +32,57 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
     id: 0,
   });
 
-  const closeToast = () => {
+  const closeToast = useCallback(() => {
     setToastState((prev) => ({ ...prev, isVisible: false }));
-  };
+  }, []);
 
-  const openToast = ({
-    message,
-    variant = 'success',
-    duration = 3000,
-  }: {
-    message: string;
-    variant?: ToastVariant;
-    duration?: number;
-  }) => {
-    setToastState((prev) => {
-      const nextId = prev.id + 1;
+  const openToast = useCallback(
+    ({
+      message,
+      variant = 'success',
+      duration = 3000,
+    }: {
+      message: string;
+      variant?: ToastVariant;
+      duration?: number;
+    }) => {
+      setToastState((prev) => {
+        const nextId = prev.id + 1;
 
-      window.setTimeout(() => {
-        setToastState((cur) => (cur.id === nextId ? { ...cur, isVisible: false } : cur));
-      }, duration);
+        window.setTimeout(() => {
+          setToastState((cur) => (cur.id === nextId ? { ...cur, isVisible: false } : cur));
+        }, duration);
 
-      return {
-        message,
-        variant,
-        duration,
-        isVisible: true,
-        id: nextId,
-      };
-    });
-  };
+        return {
+          message,
+          variant,
+          duration,
+          isVisible: true,
+          id: nextId,
+        };
+      });
+    },
+    []
+  );
 
-  const success = (message: string, options?: { duration?: number }) => {
-    openToast({ message, variant: 'success', duration: options?.duration });
-  };
-  const error = (message: string, options?: { duration?: number }) => {
-    openToast({ message, variant: 'error', duration: options?.duration });
-  };
+  const success = useCallback(
+    (message: string, options?: { duration?: number }) => {
+      openToast({ message, variant: 'success', duration: options?.duration });
+    },
+    [openToast]
+  );
+
+  const error = useCallback(
+    (message: string, options?: { duration?: number }) => {
+      openToast({ message, variant: 'error', duration: options?.duration });
+    },
+    [openToast]
+  );
+
+  const value = useMemo(() => ({ success, error }), [success, error]);
 
   return (
-    <ToastContext.Provider value={{ success, error }}>
+    <ToastContext.Provider value={value}>
       {children}
       {toastState.isVisible && (
         <Toast

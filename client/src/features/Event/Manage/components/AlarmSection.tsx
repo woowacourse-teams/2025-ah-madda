@@ -9,6 +9,7 @@ import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
+import { useToast } from '@/shared/components/Toast/ToastContext';
 import { trackSendAlarm } from '@/shared/lib/gaEvents';
 import { theme } from '@/shared/styles/theme';
 
@@ -32,19 +33,24 @@ export const AlarmSection = ({
   const { eventId: eventIdParam } = useParams();
   const { mutate: postAlarm, isPending } = useAddAlarm({ eventId: Number(eventIdParam) });
   const { isOpen, open, close } = useModal();
+  const { success, error } = useToast();
 
   const handleSendAlarm = () => {
-    trackSendAlarm(selectedGuestCount);
+    if (content.length > 20) {
+      error('20자 이내로 입력해주세요.');
+      return;
+    }
 
+    trackSendAlarm(selectedGuestCount);
     postAlarm(
       { organizationMemberIds, content },
       {
         onSuccess: () => {
           resetContent();
-          return alert('알람이 성공적으로 전송되었습니다.');
+          success('알람이 성공적으로 전송되었습니다.');
         },
-        onError: (error) => {
-          return alert(`알람 전송에 실패했습니다. ${error.message}`);
+        onError: (err) => {
+          error(err.message);
         },
       }
     );
@@ -83,10 +89,12 @@ export const AlarmSection = ({
             </Button>
           </Flex>
           <Spacing height="28px" />
-          <Flex dir="column" alignItems="center">
+          <Flex dir="column" alignItems="center" gap="8px">
             <Input
+              showCounter
               id="alarm-message"
               placeholder="알람 메시지를 입력해주세요"
+              maxLength={20}
               value={content}
               onChange={handleContentChange}
             />
