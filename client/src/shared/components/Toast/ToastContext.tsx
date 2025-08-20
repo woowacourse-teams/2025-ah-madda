@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useRef } from 'react';
+import { createContext, useContext, useState } from 'react';
 
 import { Toast, ToastVariant } from './Toast';
 
@@ -32,14 +32,8 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
     id: 0,
   });
 
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const closeToast = () => {
     setToastState((prev) => ({ ...prev, isVisible: false }));
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
   };
 
   const openToast = ({
@@ -51,22 +45,21 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
     variant?: ToastVariant;
     duration?: number;
   }) => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
+    setToastState((prev) => {
+      const nextId = prev.id + 1;
 
-    setToastState((prev) => ({
-      message,
-      variant,
-      duration,
-      isVisible: true,
-      id: prev.id + 1,
-    }));
+      window.setTimeout(() => {
+        setToastState((cur) => (cur.id === nextId ? { ...cur, isVisible: false } : cur));
+      }, duration);
 
-    timerRef.current = setTimeout(() => {
-      closeToast();
-    }, duration);
+      return {
+        message,
+        variant,
+        duration,
+        isVisible: true,
+        id: nextId,
+      };
+    });
   };
 
   const success = (message: string, options?: { duration?: number }) => {
