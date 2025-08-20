@@ -26,6 +26,8 @@ export const useNotification = () => {
 
           if (permissionResult === 'granted') {
             try {
+              await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+
               const token = await getToken(messaging, {
                 vapidKey: process.env.FCM_VAPID_KEY,
               });

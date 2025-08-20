@@ -9,7 +9,7 @@ import { Header } from '@/shared/components/Header';
 import { Icon } from '@/shared/components/Icon';
 import { PageLayout } from '@/shared/components/PageLayout';
 import { useGoogleAuth } from '@/shared/hooks/useGoogleAuth';
-import { isIOS, isPWA, isSafari } from '@/shared/utils/device';
+import { isIOS, isPWA } from '@/shared/utils/device';
 
 import { useModal } from '../../../shared/hooks/useModal';
 import { AlarmModal } from '../components/AlarmModal';
