@@ -7,7 +7,7 @@ export const useOrganizationForm = (initial?: Partial<OrgFormFields>) => {
   const [form, setForm] = useState<OrgFormFields>({
     name: '',
     description: '',
-    logo: null,
+    thumbnail: null,
     ...initial,
   });
 
@@ -28,12 +28,13 @@ export const useOrganizationForm = (initial?: Partial<OrgFormFields>) => {
   };
 
   const handleLogoChange = (file: File | null) => {
-    setField('logo', file);
+    setField('thumbnail', file);
   };
 
   const isValid = () => {
     const hasNoErrors = Object.values(errors).every((v) => !v);
-    const filled = !!form.logo && form.name.trim().length > 0 && form.description.trim().length > 0;
+    const filled =
+      !!form.thumbnail && form.name.trim().length > 0 && form.description.trim().length > 0;
     return hasNoErrors && filled;
   };
 

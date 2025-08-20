@@ -57,7 +57,7 @@ export const OrganizationCreateForm = () => {
   const { handleCreate, isSubmitting } = useCreateOrganizationProcess({
     name: form.name.trim(),
     description: form.description.trim(),
-    thumbnail: form.logo,
+    thumbnail: form.thumbnail,
     onSuccess: (id) => {
       close();
       navigate(`/event?organizationId=${id}`);
@@ -91,7 +91,7 @@ export const OrganizationCreateForm = () => {
             <Text as="label" htmlFor="orgImage" type="Heading" weight="medium">
               조직 이미지
             </Text>
-            <OrganizationImageInput onChange={handleLogoSelect} errorMessage={errors.logo} />
+            <OrganizationImageInput onChange={handleLogoSelect} errorMessage={errors.thumbnail} />
           </Flex>
 
           <Flex dir="column" gap="12px">

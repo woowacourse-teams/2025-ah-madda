@@ -3,7 +3,7 @@ import { MAX_LENGTH } from '../constants/validationRules';
 export type OrgFormFields = {
   name: string;
   description: string;
-  logo: File | null;
+  thumbnail: File | null;
 };
 
 type ValidationRule = {
@@ -23,7 +23,7 @@ export const ORG_VALIDATION_RULES: Record<keyof OrgFormFields, ValidationRule> =
     required: true,
     maxLength: MAX_LENGTH.DESCRIPTION,
   },
-  logo: {
+  thumbnail: {
     label: '조직 이미지',
     required: true,
   },
