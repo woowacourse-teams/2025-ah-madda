@@ -35,7 +35,6 @@ export const AlarmSection = ({
   const { isOpen, open, close } = useModal();
   const { success, error } = useToast();
 
-
   const handleSendAlarm = () => {
     if (content.length > 20) {
       error('20자 이내로 입력해주세요.');

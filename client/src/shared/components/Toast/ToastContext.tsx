@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useRef, useCallback, useMemo } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo } from 'react';
 
 import { Toast, ToastVariant } from './Toast';
 
@@ -12,6 +12,7 @@ type ToastState = {
   variant: ToastVariant;
   duration: number;
   isVisible: boolean;
+  id: number;
 };
 
 const ToastContext = createContext<ToastContextType | null>(null);
@@ -28,16 +29,11 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
     variant: 'success',
     duration: 3000,
     isVisible: false,
+    id: 0,
   });
-
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const closeToast = useCallback(() => {
     setToastState((prev) => ({ ...prev, isVisible: false }));
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
   }, []);
 
   const openToast = useCallback(
@@ -50,18 +46,23 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
       variant?: ToastVariant;
       duration?: number;
     }) => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
+      setToastState((prev) => {
+        const nextId = prev.id + 1;
 
-      setToastState({ message, variant, duration, isVisible: true });
+        window.setTimeout(() => {
+          setToastState((cur) => (cur.id === nextId ? { ...cur, isVisible: false } : cur));
+        }, duration);
 
-      timerRef.current = setTimeout(() => {
-        closeToast();
-      }, duration);
+        return {
+          message,
+          variant,
+          duration,
+          isVisible: true,
+          id: nextId,
+        };
+      });
     },
-    [closeToast]
+    []
   );
 
   const success = useCallback(
@@ -85,6 +86,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
       {children}
       {toastState.isVisible && (
         <Toast
+          key={toastState.id}
           message={toastState.message}
           variant={toastState.variant}
           duration={toastState.duration}

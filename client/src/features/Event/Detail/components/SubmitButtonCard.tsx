@@ -25,11 +25,10 @@ export const SubmitButtonCard = ({
   onResetAnswers,
   isRequiredAnswerComplete,
 }: SubmitBUttonCardProps) => {
-
   const { success, error } = useToast();
   const { mutate: participantMutate } = useParticipateEvent(eventId);
   const { mutate: cancelParticipateMutate } = useCancelParticipation(eventId);
-  
+
   const buttonState = getEventButtonState({
     registrationEnd,
     isGuest,
