@@ -21,12 +21,6 @@ export const useInviteOrganizationProcess = () => {
       navigate('/');
       return;
     }
-
-    if (!isAuthenticated()) {
-      alert('로그인이 필요한 서비스입니다.');
-      navigate('/');
-      return;
-    }
   }, [inviteCode, navigate]);
 
   const { data: organizationData } = useQuery({
@@ -63,5 +57,6 @@ export const useInviteOrganizationProcess = () => {
     organizationData,
     handleJoin,
     handleClose,
+    inviteCode,
   };
 };
