@@ -79,21 +79,18 @@ public class EventNotificationService {
 
     private void validateReminderLimit(final Event event) {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime threshold = now.minusMinutes(REMINDER_LIMIT_DURATION_MINUTES);
         Long organizerId = event.getOrganizer()
                 .getId();
+        LocalDateTime threshold = now.minusMinutes(REMINDER_LIMIT_DURATION_MINUTES);
 
-        List<ReminderHistory> recentReminders = reminderHistoryRepository
-                .findTop10ByEventOrganizerIdAndCreatedAtAfterOrderByCreatedAtDesc(organizerId, threshold);
+        List<ReminderHistory> recentReminderHistories = getRecentReminderHistories(organizerId, threshold);
 
-        if (recentReminders.size() >= MAX_REMINDER_COUNT_IN_DURATION) {
-            LocalDateTime oldestReminderTime = recentReminders
+        if (recentReminderHistories.size() >= MAX_REMINDER_COUNT_IN_DURATION) {
+            LocalDateTime oldestReminderTime = recentReminderHistories
                     .get(MAX_REMINDER_COUNT_IN_DURATION - 1)
                     .getCreatedAt();
 
-            long minutesUntilAvailable = Duration
-                    .between(now, oldestReminderTime.plusMinutes(REMINDER_LIMIT_DURATION_MINUTES))
-                    .toMinutes();
+            long minutesUntilAvailable = calculateRemainingMinutes(now, oldestReminderTime);
 
             throw new BusinessFlowViolatedException(
                     String.format(
@@ -104,6 +101,27 @@ public class EventNotificationService {
                     )
             );
         }
+    }
+
+    private List<ReminderHistory> getRecentReminderHistories(final Long organizerId, final LocalDateTime threshold) {
+        return reminderHistoryRepository
+                .findTop10ByEventOrganizerIdAndCreatedAtAfterOrderByCreatedAtDesc(organizerId, threshold);
+    }
+
+    /**
+     * 남은 대기 시간을 분 단위로 계산한다.
+     * <p>
+     * 사유: Duration의 toMinutes()는 내림 처리되므로,
+     * 예외 메시지에 "0분"으로 표시되는 오차를 방지하기 위해 초 단위로 계산 후 올림 처리한다.
+     *
+     * @param now                현재 시각
+     * @param oldestReminderTime 제한 기준이 되는 리마인더의 시각
+     * @return 제한 해제까지 남은 시간 (분 단위, 올림 처리)
+     */
+    private long calculateRemainingMinutes(final LocalDateTime now, final LocalDateTime oldestReminderTime) {
+        Duration remaining = Duration.between(now, oldestReminderTime.plusMinutes(REMINDER_LIMIT_DURATION_MINUTES));
+
+        return Math.max(0, (remaining.getSeconds() + 59) / 60);
     }
 
     private List<OrganizationMember> getOrganizationMemberFromIds(
