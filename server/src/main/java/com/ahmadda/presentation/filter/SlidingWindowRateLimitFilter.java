@@ -60,7 +60,7 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
         Deque<Long> timestamps = requestLogs.computeIfAbsent(memberId, id -> new ConcurrentLinkedDeque<>());
 
         if (isRateLimited(timestamps, now)) {
-            respondTooManyRequests(request, response);
+            respondTooManyRequests(request, response, timestamps, now);
             return;
         }
 
@@ -84,17 +84,33 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
 
     private void respondTooManyRequests(
             final HttpServletRequest request,
-            final HttpServletResponse response
+            final HttpServletResponse response,
+            final Deque<Long> timestamps,
+            final long now
     ) throws IOException {
+        long retryAfterSeconds = calculateRetryAfterSeconds(timestamps, now);
+
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.TOO_MANY_REQUESTS);
         problemDetail.setTitle("Too Many Requests");
-        problemDetail.setDetail("요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.");
+        problemDetail.setDetail("요청이 너무 많습니다. 약 " + retryAfterSeconds + "초 후 다시 시도해 주세요.");
         problemDetail.setInstance(URI.create(request.getRequestURI()));
 
+        response.setHeader(HttpHeaders.RETRY_AFTER, String.valueOf(retryAfterSeconds));
         response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
         response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
         response.getWriter()
                 .write(objectMapper.writeValueAsString(problemDetail));
+    }
+
+    private long calculateRetryAfterSeconds(final Deque<Long> timestamps, final long now) {
+        synchronized (timestamps) {
+            if (timestamps.isEmpty()) {
+                return 1;
+            }
+            long oldest = timestamps.peekFirst();
+            long retryMillis = (oldest + WINDOW_MILLIS) - now;
+            return Math.max(1, (retryMillis + 999) / 1000);
+        }
     }
 
     private Long extractMemberIdSafely(final String authorizationHeader) {
