@@ -109,7 +109,7 @@ export const OrganizationCreateForm = () => {
         },
         {
           onSuccess: () => {
-            navigate('/organization/select');
+            navigate(`/event?organizationId=${organizationId}`);
           },
         }
       );
