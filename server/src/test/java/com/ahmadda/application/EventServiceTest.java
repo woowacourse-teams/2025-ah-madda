@@ -5,6 +5,7 @@ import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
+import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventNotificationOptOut;
@@ -21,9 +22,10 @@ import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Question;
 import com.ahmadda.domain.Reminder;
+import com.ahmadda.domain.ReminderHistory;
 import com.ahmadda.domain.ReminderHistoryRepository;
-import com.ahmadda.domain.Role;
 import com.ahmadda.domain.ReminderRecipient;
+import com.ahmadda.domain.Role;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
@@ -195,6 +197,51 @@ class EventServiceTest {
         assertThatThrownBy(() -> sut.createEvent(organization1.getId(), loginMember, eventCreateRequest, now))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("조직원을 찾을 수 없습니다.");
+    }
+
+    @Test
+    void 이벤트_생성시_30분_내_리마인더_10회_초과하면_예외가_발생한다() {
+        // given
+        var organization = createOrganization();
+        var member = createMember("organizer", "organizer@mail.com");
+        var organizer = createOrganizationMember(organization, member);
+        var now = LocalDateTime.now();
+
+        var request = new EventCreateRequest(
+                "제한 테스트 이벤트",
+                "제한 테스트 설명",
+                "장소",
+                now.plusDays(4),
+                now.plusDays(5),
+                now.plusDays(6),
+                100,
+                new ArrayList<>()
+        );
+        var loginMember = new LoginMember(member.getId());
+
+        var existingEvent = eventRepository.save(Event.create(
+                "기존 이벤트", "설명", "장소",
+                organizer, organization,
+                EventOperationPeriod.create(
+                        now.plusDays(1), now.plusDays(2),
+                        now.plusDays(3), now.plusDays(4),
+                        now.minusDays(1)
+                ),
+                100
+        ));
+
+        for (int i = 0; i < 10; i++) {
+            reminderHistoryRepository.save(
+                    ReminderHistory.createNow(existingEvent, "테스트 알림", List.of(organizer))
+            );
+        }
+
+        // when // then
+        assertThatThrownBy(() ->
+                sut.createEvent(organization.getId(), loginMember, request, now)
+        )
+                .isInstanceOf(BusinessFlowViolatedException.class)
+                .hasMessageStartingWith("리마인더는 30분 내 최대 10회까지만 발송할 수 있습니다.");
     }
 
     @Test
@@ -538,6 +585,51 @@ class EventServiceTest {
         assertThatThrownBy(() -> sut.updateEvent(event.getId(), loginMember, updateRequest, now))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 회원입니다.");
+    }
+
+    @Test
+    void 이벤트_수정시_30분_내_리마인더_10회_초과하면_예외가_발생한다() {
+        // given
+        var organization = createOrganization();
+        var member = createMember("organizer", "organizer@mail.com");
+        var organizer = createOrganizationMember(organization, member);
+        var now = LocalDateTime.now();
+
+        var event = eventRepository.save(Event.create(
+                "수정 대상 이벤트", "설명", "장소",
+                organizer, organization,
+                EventOperationPeriod.create(
+                        now.plusDays(1), now.plusDays(2),
+                        now.plusDays(3), now.plusDays(4),
+                        now
+                ),
+                100
+        ));
+
+        for (int i = 0; i < 10; i++) {
+            reminderHistoryRepository.save(
+                    ReminderHistory.createNow(event, "테스트 알림", List.of(organizer))
+            );
+        }
+
+        var updateRequest = new EventUpdateRequest(
+                "수정된 제목",
+                "수정된 설명",
+                "수정된 장소",
+                now.plusDays(5),
+                now.plusDays(6),
+                now.plusDays(7),
+                200
+        );
+
+        var loginMember = new LoginMember(member.getId());
+
+        // when // then
+        assertThatThrownBy(() ->
+                sut.updateEvent(event.getId(), loginMember, updateRequest, now)
+        )
+                .isInstanceOf(BusinessFlowViolatedException.class)
+                .hasMessageStartingWith("리마인더는 30분 내 최대 10회까지만 발송할 수 있습니다.");
     }
 
     @Test

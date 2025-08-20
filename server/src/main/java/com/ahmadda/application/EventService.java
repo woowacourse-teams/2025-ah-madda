@@ -8,6 +8,7 @@ import com.ahmadda.application.dto.EventUpdated;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
+import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.Event;
 import com.ahmadda.domain.EventNotificationOptOutRepository;
@@ -30,6 +31,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -38,6 +40,9 @@ import java.util.stream.IntStream;
 @Service
 @RequiredArgsConstructor
 public class EventService {
+
+    private static final int REMINDER_LIMIT_DURATION_MINUTES = 30;
+    private static final int MAX_REMINDER_COUNT_IN_DURATION = 10;
 
     private final MemberRepository memberRepository;
     private final EventRepository eventRepository;
@@ -71,6 +76,7 @@ public class EventService {
         );
 
         Event savedEvent = eventRepository.save(event);
+        validateReminderLimit(savedEvent);
         notifyEventCreated(savedEvent, organization);
 
         eventPublisher.publishEvent(EventCreated.from(savedEvent.getId()));
@@ -129,7 +135,7 @@ public class EventService {
                 updatedOperationPeriod,
                 eventUpdateRequest.maxCapacity()
         );
-
+        validateReminderLimit(event);
         notifyEventUpdated(event);
 
         eventPublisher.publishEvent(EventUpdated.from(event));
@@ -191,6 +197,35 @@ public class EventService {
                     return Question.create(request.questionText(), request.isRequired(), i);
                 })
                 .toList();
+    }
+
+    private void validateReminderLimit(final Event event) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime threshold = now.minusMinutes(REMINDER_LIMIT_DURATION_MINUTES);
+        Long organizerId = event.getOrganizer()
+                .getId();
+
+        List<ReminderHistory> recentReminders = reminderHistoryRepository
+                .findTop10ByEventOrganizerIdAndCreatedAtAfterOrderByCreatedAtDesc(organizerId, threshold);
+
+        if (recentReminders.size() >= MAX_REMINDER_COUNT_IN_DURATION) {
+            LocalDateTime oldestReminderTime = recentReminders
+                    .get(MAX_REMINDER_COUNT_IN_DURATION - 1)
+                    .getCreatedAt();
+
+            long minutesUntilAvailable = Duration
+                    .between(now, oldestReminderTime.plusMinutes(REMINDER_LIMIT_DURATION_MINUTES))
+                    .toMinutes();
+
+            throw new BusinessFlowViolatedException(
+                    String.format(
+                            "리마인더는 %d분 내 최대 %d회까지만 발송할 수 있습니다. 약 %d분 후 다시 시도해주세요.",
+                            REMINDER_LIMIT_DURATION_MINUTES,
+                            MAX_REMINDER_COUNT_IN_DURATION,
+                            minutesUntilAvailable
+                    )
+            );
+        }
     }
 
     private void notifyEventCreated(final Event event, final Organization organization) {
