@@ -35,9 +35,14 @@ export const AlarmSection = ({
   const { isOpen, open, close } = useModal();
   const { success, error } = useToast();
 
-  const handleSendAlarm = () => {
-    trackSendAlarm(selectedGuestCount);
 
+  const handleSendAlarm = () => {
+    if (content.length > 20) {
+      error('20자 이내로 입력해주세요.');
+      return;
+    }
+
+    trackSendAlarm(selectedGuestCount);
     postAlarm(
       { organizationMemberIds, content },
       {
@@ -85,10 +90,12 @@ export const AlarmSection = ({
             </Button>
           </Flex>
           <Spacing height="28px" />
-          <Flex dir="column" alignItems="center">
+          <Flex dir="column" alignItems="center" gap="8px">
             <Input
+              showCounter
               id="alarm-message"
               placeholder="알람 메시지를 입력해주세요"
+              maxLength={20}
               value={content}
               onChange={handleContentChange}
             />
