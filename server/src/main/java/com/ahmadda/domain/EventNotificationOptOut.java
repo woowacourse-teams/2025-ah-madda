@@ -12,10 +12,14 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE event_notification_opt_out SET deleted_at = CURRENT_TIMESTAMP WHERE event_notification_opt_out_id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class EventNotificationOptOut extends BaseEntity {
 
     @Id

@@ -13,12 +13,16 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE invite_code SET deleted_at = CURRENT_TIMESTAMP WHERE invite_code_id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class InviteCode extends BaseEntity {
 
     private static final int DEFAULT_EXPIRE_DAYS = 7;
