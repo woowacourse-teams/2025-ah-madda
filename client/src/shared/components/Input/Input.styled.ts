@@ -12,7 +12,6 @@ export const StyledLabel = styled.label`
   align-items: center;
   gap: 4px;
   margin-top: 20px;
-  margin-bottom: 8px;
   font-size: 14px;
 `;
 
@@ -87,7 +86,7 @@ export const StyledCalendarButton = styled.button`
 `;
 
 export const StyledFooterRow = styled.div`
-  padding-top: 8px;
+  margin-top: 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;

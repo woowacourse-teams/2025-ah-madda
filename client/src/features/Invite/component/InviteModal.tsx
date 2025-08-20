@@ -75,7 +75,7 @@ export const InviteModal = () => {
         </>
       ) : (
         <Flex dir="column" gap="24px" alignItems="center">
-          <Text type="Title" weight="medium" color={theme.colors.gray900}>
+          <Text type="Heading" weight="medium" color={theme.colors.gray900}>
             로그인이 필요한 서비스입니다.
           </Text>
           <Button size="full" onClick={handleGoogleLogin}>

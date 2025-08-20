@@ -28,6 +28,7 @@ const setupMockResponses = ({
   mockFetcher.get.mockImplementation((url: string) => {
     if (url.endsWith('/organizer-status')) return Promise.resolve({ isOrganizer });
     if (url.endsWith('/guest-status')) return Promise.resolve({ isGuest });
+    if (url.endsWith('/notification/opt-out')) return Promise.resolve({ optedOut: false });
     if (url.includes('organizations/events/123')) return Promise.resolve(eventDetail);
     return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
   });
