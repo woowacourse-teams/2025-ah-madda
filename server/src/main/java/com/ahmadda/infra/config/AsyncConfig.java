@@ -19,13 +19,13 @@ public class AsyncConfig implements AsyncConfigurer {
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setThreadNamePrefix("async-");
-        executor.setTaskDecorator(new AsyncMDCTaskDecorator());
+        executor.setTaskDecorator(new AsyncTraceLoggingDecorator());
         executor.initialize();
 
         return executor;
     }
 
-    private static class AsyncMDCTaskDecorator implements TaskDecorator {
+    private static class AsyncTraceLoggingDecorator implements TaskDecorator {
 
         @Override
         public Runnable decorate(final Runnable runnable) {
