@@ -4,6 +4,7 @@ import { getLocalStorage } from '@/shared/utils/localStorage';
 import { tokenErrorHandler } from '@/shared/utils/tokenErrorHandler';
 
 type HttpMethod = 'GET' | 'POST' | 'DELETE' | 'PATCH' | 'PUT';
+type BuiltInit = Pick<RequestInit, 'headers' | 'body'>;
 
 export type HttpErrorResponse = {
   type: string;
@@ -22,26 +23,39 @@ export class HttpError extends Error {
     this.name = 'HttpError';
   }
 }
+const serializeBody = (body?: object | FormData): BuiltInit => {
+  if (!body) return {};
+  if (typeof FormData !== 'undefined' && body instanceof FormData) {
+    return { body };
+  }
+  return {
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  };
+};
+
+const withAuthHeader = (headers?: HeadersInit): HeadersInit => {
+  return {
+    Authorization: `Bearer ${getLocalStorage(ACCESS_TOKEN_KEY)}`,
+    ...(headers ?? {}),
+  };
+};
+
+const buildRequestInit = (method: HttpMethod, body?: object | FormData): RequestInit => {
+  const { headers, body: serialized } = serializeBody(body);
+  return {
+    method,
+    headers: withAuthHeader(headers),
+    body: serialized,
+  };
+};
 
 const request = async <T>(
   path: string,
   method: HttpMethod,
   body?: object | FormData
 ): Promise<T> => {
-  const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
-
-  const config: RequestInit = {
-    method,
-    headers: {
-      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
-      Authorization: `Bearer ${getLocalStorage(ACCESS_TOKEN_KEY)}`,
-    },
-  };
-
-  if (body) {
-    config.body = isFormData ? (body as FormData) : JSON.stringify(body);
-  }
-
+  const config = buildRequestInit(method, body);
   const response = await fetch(process.env.API_BASE_URL + path, config);
 
   if (!response.ok) {
