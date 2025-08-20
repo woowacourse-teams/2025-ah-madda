@@ -23,7 +23,7 @@ const GAP = 80;
 const MAX_W_4 = CARD_W * 4 + GAP * 3;
 const MAX_W_3 = CARD_W * 3 + GAP * 2;
 const MAX_W_2 = CARD_W * 2 + GAP * 1;
-const MAX_W_1 = CARD_W * 1 + GAP * 0;
+const MOBILE_ROW_HEIGHT = 168;
 
 export const OrganizationSelectPage = () => {
   const navigate = useNavigate();
@@ -132,19 +132,33 @@ const OrganizationSelectBody = () => {
             @media (max-width: 768px) {
               max-width: ${MAX_W_2}px;
             }
+
+            @media (min-width: 481px) {
+              overflow-x: auto;
+              flex-wrap: nowrap;
+
+              &::-webkit-scrollbar {
+                height: 8px;
+              }
+              &::-webkit-scrollbar-thumb {
+                border-radius: 8px;
+                background: ${theme.colors.gray300};
+              }
+            }
+
             @media (max-width: 480px) {
-              max-width: ${MAX_W_1}px;
-            }
+              display: grid;
+              grid-template-columns: repeat(2, ${CARD_W}px);
+              justify-content: center;
+              column-gap: 20px;
+              row-gap: 16px;
 
-            overflow-x: auto;
-            flex-wrap: nowrap;
-
-            &::-webkit-scrollbar {
-              height: 8px;
-            }
-            &::-webkit-scrollbar-thumb {
-              border-radius: 8px;
-              background: ${theme.colors.gray300};
+              width: 100%;
+              max-width: 100%;
+              overflow-x: hidden;
+              overflow-y: auto;
+              max-height: ${MOBILE_ROW_HEIGHT}px;
+              padding-right: 8px;
             }
           `}
         >
