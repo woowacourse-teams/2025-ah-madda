@@ -50,10 +50,3 @@ export type QuestionRequest = {
   isRequired: boolean;
   orderIndex: number;
 };
-
-export type Organization = {
-  organizationId: number;
-  name: string;
-  description: string;
-  imageUrl: string;
-};
