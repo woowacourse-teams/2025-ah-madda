@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 
+import * as Sentry from '@sentry/react';
+
 import { isAuthenticated } from '@/api/auth';
 
 import { requestFCMPermission } from './firebase';
@@ -22,7 +24,7 @@ export const useNotification = () => {
       alert('알림 설정이 완료되었습니다.');
       setPermission('granted');
     } catch (error) {
-      console.error('알림 설정 실패:', error);
+      Sentry.captureException(error);
       alert('알림 설정에 실패했습니다.');
     }
   };

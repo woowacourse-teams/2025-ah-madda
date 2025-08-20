@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 
+import * as Sentry from '@sentry/react';
+
 import { isAuthenticated } from '@/api/auth';
 import { fetcher } from '@/api/fetcher';
 
@@ -26,7 +28,7 @@ export const useInitializeFCM = () => {
         setupForegroundMessage();
       } catch (error) {
         // TODO : FCM 초기화 실패 시 처리 로직 추가
-        console.error('FCM 초기화 실패:', error);
+        Sentry.captureException(error);
       }
     };
 

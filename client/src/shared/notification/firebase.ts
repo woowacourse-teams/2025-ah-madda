@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 
@@ -35,7 +36,7 @@ export const requestFCMPermission = async () => {
     }
   } catch (error) {
     // TODO : FCM 토큰 획득 실패 시 처리 로직 추가
-    console.error('FCM 토큰 획득 실패:', error);
+    Sentry.captureException(error);
     return null;
   }
 };
