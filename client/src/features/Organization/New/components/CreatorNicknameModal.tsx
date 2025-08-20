@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react';
-
 import { css } from '@emotion/react';
 
 import { OrganizationInfo } from '@/features/Invite/component/OrganizationInfo';
@@ -17,6 +15,7 @@ type CreatorNicknameModalProps = {
   orgName: string;
   name: string;
   description: string;
+  previewUrl?: string;
   thumbnail: File | null;
   onSuccess?: (id: number) => void;
   onCancel: () => void;
@@ -28,6 +27,7 @@ export const CreatorNicknameModal = ({
   name,
   description,
   thumbnail,
+  previewUrl,
   onSuccess,
   onCancel,
 }: CreatorNicknameModalProps) => {
@@ -39,17 +39,6 @@ export const CreatorNicknameModal = ({
     onSuccess,
     onCancel,
   });
-
-  const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
-  useEffect(() => {
-    if (!thumbnail) {
-      setPreviewUrl(undefined);
-      return;
-    }
-    const url = URL.createObjectURL(thumbnail);
-    setPreviewUrl(url);
-    return () => URL.revokeObjectURL(url);
-  }, [thumbnail]);
 
   if (!isOpen) return null;
 

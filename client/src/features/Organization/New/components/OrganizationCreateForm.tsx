@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from 'react';
+
 import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,6 +20,32 @@ export const OrganizationCreateForm = () => {
   const { isOpen, open, close } = useModal();
 
   const { form, errors, isValid, handleChange, handleLogoChange } = useOrganizationForm();
+
+  const [previewUrl, setPreviewUrl] = useState<string | undefined>();
+  const objectUrlRef = useRef<string | undefined>(undefined);
+
+  const handleLogoSelect = (file: File | null) => {
+    handleLogoChange(file);
+
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = undefined;
+    }
+
+    if (file) {
+      const next = URL.createObjectURL(file);
+      objectUrlRef.current = next;
+      setPreviewUrl(next);
+    } else {
+      setPreviewUrl(undefined);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
+    };
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +73,7 @@ export const OrganizationCreateForm = () => {
             <Text as="label" htmlFor="orgImage" type="Heading" weight="medium">
               조직 이미지
             </Text>
-            <OrganizationImageInput onChange={handleLogoChange} errorMessage={errors.logo} />
+            <OrganizationImageInput onChange={handleLogoSelect} errorMessage={errors.logo} />
           </Flex>
 
           <Flex dir="column" gap="12px">
@@ -98,6 +126,7 @@ export const OrganizationCreateForm = () => {
         name={form.name.trim()}
         description={form.description.trim()}
         thumbnail={form.logo}
+        previewUrl={previewUrl}
         onCancel={close}
         onSuccess={(id) => {
           close();
