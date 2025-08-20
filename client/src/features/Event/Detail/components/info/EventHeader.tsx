@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react';
-
 import { useNavigate } from 'react-router-dom';
 
 import { useEventNotificationToggle } from '@/api/mutations/useEventNotificationToggle';
@@ -33,40 +31,18 @@ export const EventHeader = ({
   const status = badgeText(registrationEnd);
 
   const { optOut, optIn, isLoading, data } = useEventNotificationToggle(eventId);
-  const [receiveNotification, setReceiveNotification] = useState(() => !data.optedOut);
+  const { error } = useToast();
 
-  useEffect(() => {
-    setReceiveNotification(!data.optedOut);
-  }, [data.optedOut, eventId]);
-
-  const { success, error } = useToast();
+  const checked = !data.optedOut;
 
   const handleSwitch = (next: boolean) => {
-    if (next === receiveNotification) return;
+    if (next === checked) return;
 
-    setReceiveNotification(next);
-
-    if (!next) {
-      optOut.mutate(undefined, {
-        onSuccess: () => {
-          success('이벤트 알림을 껐어요. 필요할 땐 언제든 다시 켤 수 있어요.');
-        },
-        onError: () => {
-          setReceiveNotification(true);
-          error('알림을 끄는 데 문제가 생겼어요.');
-        },
-      });
-    } else {
-      optIn.mutate(undefined, {
-        onSuccess: () => {
-          success('이벤트 알림을 다시 받아요.');
-        },
-        onError: () => {
-          setReceiveNotification(false);
-          error('알림을 켜는 데 문제가 생겼어요.');
-        },
-      });
-    }
+    (next ? optIn : optOut).mutate(undefined, {
+      onError: () => {
+        error(next ? '알림을 켜는 데 문제가 생겼어요.' : '알림을 끄는 데 문제가 생겼어요.');
+      },
+    });
   };
 
   return (
@@ -98,7 +74,7 @@ export const EventHeader = ({
           <Text type="Body">알림 받기</Text>
           <Switch
             aria-label="이벤트 알림 수신 설정"
-            checked={receiveNotification}
+            checked={checked}
             onCheckedChange={handleSwitch}
             disabled={isLoading}
           />

@@ -18,7 +18,7 @@ type CreateEventAPIResponse = {
   eventId: number;
 };
 
-type NotificationOptOutState = { optedOut: boolean };
+export type NotificationOptOutState = { optedOut: boolean };
 
 export const eventQueryKeys = {
   all: () => ['event'],
