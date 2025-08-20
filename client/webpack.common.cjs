@@ -31,6 +31,15 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       VERSION: JSON.stringify('1.0.0'),
+      __DEV__: JSON.stringify(process.env.NODE_ENV !== 'production'),
+    }),
+    new Dotenv({
+      path: path.resolve(
+        __dirname,
+        process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development'
+      ),
+      safe: true,
+      systemvars: true,
     }),
     sentryWebpackPlugin({
       authToken: process.env.SENTRY_AUTH_TOKEN,
