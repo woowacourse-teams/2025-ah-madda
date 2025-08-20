@@ -74,9 +74,9 @@ public class EventService {
                 eventCreateRequest.maxCapacity(),
                 createQuestions(eventCreateRequest.questions())
         );
+        validateReminderLimit(event);
 
         Event savedEvent = eventRepository.save(event);
-        validateReminderLimit(savedEvent);
         notifyEventCreated(savedEvent, organization);
 
         eventPublisher.publishEvent(EventCreated.from(savedEvent.getId()));
@@ -119,6 +119,7 @@ public class EventService {
     ) {
         Event event = getEvent(eventId);
         Member member = getMember(loginMember.memberId());
+        validateReminderLimit(event);
 
         EventOperationPeriod updatedOperationPeriod = EventOperationPeriod.create(
                 event.getRegistrationStart(),
@@ -135,7 +136,7 @@ public class EventService {
                 updatedOperationPeriod,
                 eventUpdateRequest.maxCapacity()
         );
-        validateReminderLimit(event);
+        
         notifyEventUpdated(event);
 
         eventPublisher.publishEvent(EventUpdated.from(event));
