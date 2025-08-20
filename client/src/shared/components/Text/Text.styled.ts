@@ -44,7 +44,7 @@ const fontWeights = {
   `,
 };
 
-export const StyledText = styled.p<TextProps<TextElementType>>`
+export const StyledText = styled.span<TextProps<TextElementType>>`
   white-space: pre-wrap;
   line-height: 140%;
   margin: 0;

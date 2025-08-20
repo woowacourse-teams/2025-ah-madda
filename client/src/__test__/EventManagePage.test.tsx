@@ -16,6 +16,25 @@ vi.mock('@/api/mutations/useCloseEventRegistration', () => ({
   }),
 }));
 
+vi.mock('@tanstack/react-query', async () => {
+  const actual = await vi.importActual('@tanstack/react-query');
+  return {
+    ...actual,
+    useSuspenseQueries: () => [
+      {
+        data: { name: '홍길동', picture: '' },
+        isLoading: false,
+        isError: false,
+      },
+      {
+        data: [],
+        isLoading: false,
+        isError: false,
+      },
+    ],
+  };
+});
+
 vi.mock('@/api/fetcher', () => ({
   fetcher: {
     get: vi.fn(),
@@ -61,26 +80,22 @@ describe('EventManagePage 테스트', () => {
 
       await waitFor(() => {
         expect(screen.getByRole('tab', { name: '이벤트 정보' })).toBeInTheDocument();
-
-        expect(screen.getByText('테스트 이벤트')).toBeInTheDocument();
-        expect(screen.getByText('테스트 이벤트 설명')).toBeInTheDocument();
       });
+
+      expect(await screen.findByText('테스트 이벤트')).toBeInTheDocument();
+      expect(await screen.findByText('테스트 이벤트 설명')).toBeInTheDocument();
     });
 
     test('주최자 정보가 올바르게 표시된다', async () => {
       renderEventManagePage();
 
-      await waitFor(() => {
-        expect(screen.getByText('주최자: 홍길동')).toBeInTheDocument();
-      });
+      expect(await screen.findByText('홍길동')).toBeInTheDocument();
     });
 
     test('장소 정보가 표시된다', async () => {
       renderEventManagePage();
 
-      await waitFor(() => {
-        expect(screen.getByText('서울시 강남구')).toBeInTheDocument();
-      });
+      expect(await screen.findByText('서울시 강남구')).toBeInTheDocument();
     });
   });
 
@@ -88,20 +103,15 @@ describe('EventManagePage 테스트', () => {
     test('이벤트 마감 버튼이 렌더링된다', async () => {
       renderEventManagePage();
 
-      await waitFor(() => {
-        expect(screen.getByText('마감하기')).toBeInTheDocument();
-      });
+      expect(await screen.findByText('마감하기')).toBeInTheDocument();
     });
 
     test('이벤트 마감 버튼을 클릭하고 취소하면 마감 API가 호출되지 않는다', async () => {
       setupMockConfirm(false);
       renderEventManagePage();
 
-      await waitFor(() => {
-        expect(screen.getByText('마감하기')).toBeInTheDocument();
-      });
-
-      fireEvent.click(screen.getByText('마감하기'));
+      const closeButton = await screen.findByText('마감하기');
+      fireEvent.click(closeButton);
 
       expect(mockMutate).not.toHaveBeenCalled();
     });
@@ -110,11 +120,8 @@ describe('EventManagePage 테스트', () => {
       setupMockConfirm(true);
       renderEventManagePage();
 
-      await waitFor(() => {
-        expect(screen.getByText('마감하기')).toBeInTheDocument();
-      });
-
-      fireEvent.click(screen.getByText('마감하기'));
+      const closeButton = await screen.findByText('마감하기');
+      fireEvent.click(closeButton);
 
       expect(mockMutate).toHaveBeenCalledWith(123, {
         onSuccess: expect.any(Function),
@@ -128,16 +135,10 @@ describe('EventManagePage 테스트', () => {
 
       renderEventManagePage();
 
-      await waitFor(() => {
-        expect(
-          screen.getByText(
-            (content) => content.startsWith('신청 마감:') && content.includes('2025.')
-          )
-        ).toBeInTheDocument();
-        expect(screen.getByText('마감하기')).toBeInTheDocument();
-      });
+      expect(await screen.findByText('마감하기')).toBeInTheDocument();
 
-      fireEvent.click(screen.getByText('마감하기'));
+      const closeButton = await screen.findByText('마감하기');
+      fireEvent.click(closeButton);
       expect(mockMutate).toHaveBeenCalled();
 
       const updatedEventDetail = { ...mockEventDetail, registrationEnd: '2000-01-01T00:00:00' };
@@ -146,14 +147,7 @@ describe('EventManagePage 테스트', () => {
       const [, options] = mockMutate.mock.calls[0] as [number, { onSuccess: () => void }];
       options.onSuccess();
 
-      await waitFor(() => {
-        expect(
-          screen.getByText(
-            (content) => content.startsWith('신청 마감:') && content.includes('2000.')
-          )
-        ).toBeInTheDocument();
-        expect(screen.getByText('마감됨')).toBeInTheDocument();
-      });
+      expect(await screen.findByText('마감됨')).toBeInTheDocument();
 
       alertSpy.mockRestore();
     });

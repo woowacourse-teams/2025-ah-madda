@@ -9,9 +9,9 @@ import { Switch } from '@/shared/components/Switch';
 import { Text } from '@/shared/components/Text';
 import { useToast } from '@/shared/components/Toast/ToastContext';
 
-import { badgeText } from '../../../Overview/utils/badgeText';
-import { formatDateTime } from '../../../Overview/utils/formatDateTime';
 import type { EventDetail } from '../../../types/Event';
+import { badgeText } from '../../../utils/badgeText';
+import { formatDateTime } from '../../../utils/formatDateTime';
 
 type EventHeaderProps = { eventId: number; isOrganizer: boolean } & Pick<
   EventDetail,

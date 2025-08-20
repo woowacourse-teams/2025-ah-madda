@@ -6,13 +6,17 @@ export const StyledTimePicker = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: 12px;
-  padding: 16px;
+  gap: 8px;
+  padding: 12px;
+
+  @media (max-width: 768px) {
+    gap: 6px;
+    padding: 8px;
+  }
 `;
 
 export const StyledSelect = styled.select`
-  width: 100%;
-  padding: 8px 12px;
+  padding: 8px 32px 8px 12px;
   border: 1px solid ${theme.colors.gray300};
   border-radius: 4px;
   background-color: ${theme.colors.white};

@@ -47,6 +47,7 @@ module.exports = {
         process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development'
       ),
       safe: true,
+      systemvars: true,
     }),
     sentryWebpackPlugin({
       authToken: process.env.SENTRY_AUTH_TOKEN,

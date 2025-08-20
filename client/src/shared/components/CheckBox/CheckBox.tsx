@@ -11,10 +11,14 @@ export type CheckBoxProps = {
    * @default 'md'
    */
   size?: 'sm' | 'md' | 'lg';
-} & ComponentProps<'svg'>;
+  /**
+   * Handler for checkbox state change.
+   */
+  onChange?: () => void;
+} & Omit<ComponentProps<'svg'>, 'onChange'>;
 
 // S.TODO : 전체 디자인 수정하면서, 색상 3D84FF로 변경
-export const CheckBox = ({ checked = false, size = 'md', ...props }: CheckBoxProps) => {
+export const CheckBox = ({ checked = false, size = 'md', onChange, ...props }: CheckBoxProps) => {
   const sizes = {
     sm: '20',
     md: '24',
@@ -27,6 +31,7 @@ export const CheckBox = ({ checked = false, size = 'md', ...props }: CheckBoxPro
       fill="none"
       stroke="#B5B6B7"
       xmlns="http://www.w3.org/2000/svg"
+      onClick={onChange}
       {...props}
     >
       <path
