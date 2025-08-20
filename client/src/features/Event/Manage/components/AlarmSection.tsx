@@ -33,7 +33,8 @@ export const AlarmSection = ({
   const { eventId: eventIdParam } = useParams();
   const { mutate: postAlarm, isPending } = useAddAlarm({ eventId: Number(eventIdParam) });
   const { isOpen, open, close } = useModal();
-  const { error } = useToast();
+  const { success, error } = useToast();
+
 
   const handleSendAlarm = () => {
     if (content.length > 20) {
@@ -47,10 +48,10 @@ export const AlarmSection = ({
       {
         onSuccess: () => {
           resetContent();
-          return alert('알람이 성공적으로 전송되었습니다.');
+          success('알람이 성공적으로 전송되었습니다.');
         },
-        onError: (error) => {
-          return alert(`알람 전송에 실패했습니다. ${error.message}`);
+        onError: (err) => {
+          error(err.message);
         },
       }
     );

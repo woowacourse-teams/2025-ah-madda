@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, vi, beforeEach, Mocked } from 'vitest';
 
@@ -110,8 +108,12 @@ describe('EventManagePage 테스트', () => {
       setupMockConfirm(false);
       renderEventManagePage();
 
-      const closeButton = await screen.findByText('마감하기');
-      fireEvent.click(closeButton);
+      await waitFor(() => {
+        expect(screen.getByText('마감하기')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('마감하기'));
+      fireEvent.click(screen.getByText('아니요'));
 
       expect(mockMutate).not.toHaveBeenCalled();
     });
@@ -120,8 +122,12 @@ describe('EventManagePage 테스트', () => {
       setupMockConfirm(true);
       renderEventManagePage();
 
-      const closeButton = await screen.findByText('마감하기');
-      fireEvent.click(closeButton);
+      await waitFor(() => {
+        expect(screen.getByText('마감하기')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('마감하기'));
+      fireEvent.click(screen.getByText('네'));
 
       expect(mockMutate).toHaveBeenCalledWith(123, {
         onSuccess: expect.any(Function),
@@ -131,14 +137,15 @@ describe('EventManagePage 테스트', () => {
 
     test('마감 성공 후 신청 마감일이 변경되어 표시되고 버튼이 "마감됨"으로 바뀐다', async () => {
       setupMockConfirm(true);
-      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
 
       renderEventManagePage();
 
-      expect(await screen.findByText('마감하기')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('마감하기')).toBeInTheDocument();
+      });
 
-      const closeButton = await screen.findByText('마감하기');
-      fireEvent.click(closeButton);
+      fireEvent.click(screen.getByText('마감하기'));
+      fireEvent.click(screen.getByText('네'));
       expect(mockMutate).toHaveBeenCalled();
 
       const updatedEventDetail = { ...mockEventDetail, registrationEnd: '2000-01-01T00:00:00' };
@@ -147,9 +154,9 @@ describe('EventManagePage 테스트', () => {
       const [, options] = mockMutate.mock.calls[0] as [number, { onSuccess: () => void }];
       options.onSuccess();
 
-      expect(await screen.findByText('마감됨')).toBeInTheDocument();
-
-      alertSpy.mockRestore();
+      await waitFor(() => {
+        expect(screen.getByText('마감됨')).toBeInTheDocument();
+      });
     });
   });
 });

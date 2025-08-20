@@ -1,16 +1,12 @@
 import { createPortal } from 'react-dom';
 
 import { Flex } from '@/shared/components/Flex';
-import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
-import {
-  StyledToastLayout,
-  StyledToastContainer,
-  StyledToastCloseButton,
-  StyledToastProgressBar,
-} from './Toast.styled';
+import { IconButton } from '../IconButton';
+
+import { StyledToastLayout, StyledToastContainer, StyledToastProgressBar } from './Toast.styled';
 
 export type ToastVariant = 'success' | 'error';
 
@@ -48,15 +44,13 @@ export const Toast = ({ message, duration = 3000, onClose, variant = 'success' }
   const toastContent = (
     <StyledToastLayout>
       <StyledToastContainer>
-        <Flex dir="column" alignItems="flex-start">
+        <Flex dir="row" width="100%" justifyContent="space-between" alignItems="center">
           <Text type="Body" color="#666">
             {message}
           </Text>
-        </Flex>
 
-        <StyledToastCloseButton onClick={onClose} aria-label="close">
-          <Icon name="close" size={16} />
-        </StyledToastCloseButton>
+          <IconButton onClick={onClose} aria-label="close" name="close" size={16} />
+        </Flex>
 
         <StyledToastProgressBar color={variantColor} duration={duration} />
       </StyledToastContainer>
