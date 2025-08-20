@@ -40,8 +40,6 @@ export const CreatorNicknameModal = ({
     onCancel,
   });
 
-  if (!isOpen) return null;
-
   const handleSubmit = () => {
     const trimmed = nickname.trim();
     if (!trimmed || isSubmitting) return;
