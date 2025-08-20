@@ -43,7 +43,7 @@ export const CreatorNicknameModal = ({
         </Text>
       </Flex>
 
-      <Flex dir="column" alignItems="center">
+      <Flex dir="column" alignItems="center" gap="14px">
         <OrganizationInfo name={orgName} imageUrl={previewUrl} />
         <Input
           autoFocus

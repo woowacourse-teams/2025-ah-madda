@@ -12,7 +12,6 @@ export const StyledLabel = styled.label`
   align-items: center;
   gap: 4px;
   margin-top: 20px;
-  margin-bottom: 8px;
   font-size: 14px;
 `;
 

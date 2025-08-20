@@ -70,29 +70,32 @@ export const OrganizationImageInput = ({
       aria-invalid={isError || undefined}
     >
       <Flex width="255px" dir="column" gap="8px">
-        <StyledImgUpload onClick={openPicker} disabled={disabled} aria-label="이미지 선택">
-          {preview ? (
-            <StyledPreviewImage src={preview} alt="선택한 이미지 미리보기" />
-          ) : (
-            <Text type="Label" color="gray">
-              이미지 선택
-            </Text>
-          )}
-        </StyledImgUpload>
+        <StyledImgBox>
+          <StyledImgUpload onClick={openPicker} disabled={disabled} aria-label="이미지 선택">
+            {preview ? (
+              <StyledPreviewImage src={preview} alt="선택한 이미지 미리보기" />
+            ) : (
+              <Text type="Label" color="gray">
+                이미지 선택
+              </Text>
+            )}
+          </StyledImgUpload>
 
-        {preview && (
-          <Flex justifyContent="flex-end">
-            <Button
+          {preview && (
+            <StyledRemoveButton
               size="sm"
               type="button"
               color="secondary"
-              onClick={clearFile}
+              onClick={(e) => {
+                e.stopPropagation();
+                clearFile();
+              }}
               disabled={disabled}
             >
               제거
-            </Button>
-          </Flex>
-        )}
+            </StyledRemoveButton>
+          )}
+        </StyledImgBox>
       </Flex>
 
       <Flex dir="column" width="255px">
@@ -138,4 +141,17 @@ const StyledImgUpload = styled(Button)`
   &:hover {
     background: ${theme.colors.gray100};
   }
+`;
+
+const StyledImgBox = styled.div`
+  position: relative; /* absolute 기준 */
+  width: 255px;
+  height: 255px;
+`;
+
+const StyledRemoveButton = styled(Button)`
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 1;
 `;
