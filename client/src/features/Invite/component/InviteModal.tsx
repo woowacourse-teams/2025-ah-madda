@@ -8,6 +8,7 @@ import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Modal } from '@/shared/components/Modal';
 import { Text } from '@/shared/components/Text';
+import { theme } from '@/shared/styles/theme';
 import { removeLocalStorage, setLocalStorage } from '@/shared/utils/localStorage';
 
 import { useInviteOrganizationProcess } from '../hooks/useInviteOrganizationProcess';
@@ -41,6 +42,7 @@ export const InviteModal = () => {
       css={css`
         width: 380px;
       `}
+      showCloseButton={false}
     >
       {isAuthenticated() ? (
         <>
@@ -72,8 +74,10 @@ export const InviteModal = () => {
           </Flex>
         </>
       ) : (
-        <Flex>
-          <Text>로그인이 필요한 서비스입니다.</Text>
+        <Flex dir="column" gap="24px" alignItems="center">
+          <Text type="Title" weight="medium" color={theme.colors.gray900}>
+            로그인이 필요한 서비스입니다.
+          </Text>
           <Button size="full" onClick={handleGoogleLogin}>
             로그인
           </Button>
