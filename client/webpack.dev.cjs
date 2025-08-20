@@ -1,6 +1,5 @@
 const { merge } = require('webpack-merge');
 const path = require('path');
-const Dotenv = require('dotenv-webpack');
 const common = require('./webpack.common.cjs');
 
 module.exports = merge(common, {
@@ -9,13 +8,6 @@ module.exports = merge(common, {
   output: {
     filename: '[name].js',
   },
-  plugins: [
-    new Dotenv({
-      path: path.resolve(__dirname, '.env.development'),
-      safe: false,
-      systemvars: true,
-    }),
-  ],
   devServer: {
     static: {
       directory: path.join(__dirname, 'public'),

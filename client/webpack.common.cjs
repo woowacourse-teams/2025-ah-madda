@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
+const Dotenv = require('dotenv-webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
 
@@ -31,6 +32,15 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       VERSION: JSON.stringify('1.0.0'),
+      __DEV__: JSON.stringify(process.env.NODE_ENV !== 'production'),
+    }),
+    new Dotenv({
+      path: path.resolve(
+        __dirname,
+        process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development'
+      ),
+      safe: true,
+      systemvars: true,
     }),
     sentryWebpackPlugin({
       authToken: process.env.SENTRY_AUTH_TOKEN,
