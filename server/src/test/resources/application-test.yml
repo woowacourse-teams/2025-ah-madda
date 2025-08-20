@@ -6,10 +6,6 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
-    properties:
-      hibernate:
-        detector:
-          enabled: true
 
   cloud:
     aws:

@@ -3,6 +3,9 @@
     <springProfile name="local">
         <include resource="logger/logback-spring-local.xml"/>
     </springProfile>
+    <springProfile name="test">
+        <include resource="logger/logback-spring-local.xml"/>
+    </springProfile>
     <springProfile name="dev">
         <include resource="logger/logback-spring-dev.xml"/>
     </springProfile>
