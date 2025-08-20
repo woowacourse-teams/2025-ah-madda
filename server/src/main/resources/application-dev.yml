@@ -32,6 +32,7 @@ jwt:
 cookie:
   refresh-token:
     path: ${cookie.dev.refresh-token.path}
+    domain: ${cookie.dev.refresh-token.domain}
     same-site: ${cookie.dev.refresh-token.same-site}
     secure: ${cookie.dev.refresh-token.secure}
     http-only: ${cookie.dev.refresh-token.http-only}
