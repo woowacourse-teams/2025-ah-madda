@@ -13,3 +13,14 @@ export type OrganizationProfileAPIResponse = {
   nickname: string;
   isAdmin: boolean;
 };
+
+export type CreateOrganizationAPIRequest = {
+  organization: {
+    name: string;
+    description: string;
+    nickname: string;
+  };
+  thumbnail: File;
+};
+
+export type CreateOrganizationAPIResponse = { organizationId: number };

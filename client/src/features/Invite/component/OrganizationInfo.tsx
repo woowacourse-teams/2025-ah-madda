@@ -1,14 +1,19 @@
 import styled from '@emotion/styled';
 
-import Woowa from '@/assets/icon/wowaw.png';
-import { Organization } from '@/features/Organization/types/Organization';
+import DefaultImage from '@/assets/icon/ahmadda.webp';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
-export const OrganizationInfo = ({ name }: Pick<Organization, 'name'>) => {
+type OrganizationInfoProps = {
+  name: string;
+  imageUrl?: string | null;
+};
+
+export const OrganizationInfo = ({ name, imageUrl }: OrganizationInfoProps) => {
+  const src = imageUrl ?? DefaultImage;
   return (
     <>
-      <Img src={Woowa} alt={name} />
+      <Img src={src} alt={name} />
       <Text type="Body" weight="regular" color="#666">
         <Text as="span" type="Body" weight="bold" color={theme.colors.primary700}>
           {name}

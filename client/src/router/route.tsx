@@ -9,6 +9,7 @@ import { NewEventPage } from '@/features/Event/New/pages/NewEventPage';
 import { OverviewPage } from '@/features/Event/Overview/pages/OverviewPage';
 import { HomePage } from '@/features/Home/page/HomePage';
 import { InvitePage } from '@/features/Invite/page/InvitePage';
+import { NewOrganizationPage } from '@/features/Organization/New/pages/NewOrganizationPage';
 import { OrganizationSelectPage } from '@/features/Organization/Select/pages/SelectOrganizationPage';
 
 import { AuthCallback } from './AuthCallback';
@@ -45,7 +46,7 @@ export const router = createBrowserRouter(
               Component: NewEventPage,
             },
             {
-              path: '/event/edit/:eventId',
+              path: 'edit/:eventId',
               Component: NewEventPage,
             },
             {
@@ -65,7 +66,10 @@ export const router = createBrowserRouter(
         {
           path: '/organization',
           Component: ProtectRoute,
-          children: [{ path: 'select', Component: OrganizationSelectPage }],
+          children: [
+            { path: 'select', Component: OrganizationSelectPage },
+            { path: 'new', Component: NewOrganizationPage },
+          ],
         },
         {
           path: '*',
