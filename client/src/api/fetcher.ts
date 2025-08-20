@@ -1,5 +1,6 @@
+import * as Sentry from '@sentry/react';
+
 import { ACCESS_TOKEN_KEY } from '@/shared/constants';
-import { reportApiError } from '@/shared/utils/apiErrorHandler';
 import { getLocalStorage } from '@/shared/utils/localStorage';
 import { tokenErrorHandler } from '@/shared/utils/tokenErrorHandler';
 
@@ -65,7 +66,7 @@ const request = async <T>(
       throw new HttpError(response.status, responseText);
     } catch (parseError) {
       if (parseError instanceof HttpError) {
-        reportApiError(parseError);
+        Sentry.captureException(parseError);
         throw parseError;
       }
       throw new HttpError(response.status);

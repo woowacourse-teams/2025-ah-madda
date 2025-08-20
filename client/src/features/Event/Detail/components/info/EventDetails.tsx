@@ -5,8 +5,8 @@ import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
-import { calculateCapacityStatus } from '../../../Overview/utils/calculateCapacityStatus';
 import { EventDetail } from '../../../types/Event';
+import { calculateCapacityStatus } from '../../../utils/calculateCapacityStatus';
 import { formatKoreanDateTime } from '../../utils/formatKoreanDateTime';
 
 type EventDetailProps = Pick<

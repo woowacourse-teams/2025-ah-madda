@@ -11,12 +11,16 @@ import {
   EventTemplateAPIResponse,
   EventTitleAPIResponse,
   NotifyHistoryAPIResponse,
+  TemplateListAPIResponse,
+  TemplateDetailAPIResponse,
 } from '../types/event';
 import { NotificationAPIRequest } from '../types/notification';
 
 type CreateEventAPIResponse = {
   eventId: number;
 };
+
+export type NotificationOptOutState = { optedOut: boolean };
 
 export const eventQueryKeys = {
   all: () => ['event'],
@@ -30,8 +34,11 @@ export const eventQueryKeys = {
   cancel: () => [...eventQueryKeys.all(), 'cancel'],
   statistic: () => [...eventQueryKeys.all(), 'statistic'],
   titles: () => [...eventQueryKeys.all(), 'titles'],
-  template: () => [...eventQueryKeys.all(), 'template'],
+  pastEventList: () => [...eventQueryKeys.all(), 'pastEventList'],
   history: () => [...eventQueryKeys.all(), 'history'],
+  notificationOptOutState: () => [...eventQueryKeys.all(), 'notificationOptOutState'],
+  templateList: () => [...eventQueryKeys.all(), 'templateList'],
+  templateDetail: () => [...eventQueryKeys.all(), 'templateDetail'],
 };
 
 export const eventQueryOptions = {
@@ -79,15 +86,30 @@ export const eventQueryOptions = {
       queryKey: [...eventQueryKeys.titles(), organizationId],
       queryFn: () => getEventTitles(organizationId),
     }),
-  template: (eventId: number) =>
+  pastEventList: (eventId: number) =>
     queryOptions({
-      queryKey: [...eventQueryKeys.template(), eventId],
-      queryFn: () => getEventTemplate(eventId),
+      queryKey: [...eventQueryKeys.pastEventList(), eventId],
+      queryFn: () => getPastEventList(eventId),
     }),
   history: (eventId: number) =>
     queryOptions({
       queryKey: [...eventQueryKeys.history(), eventId],
       queryFn: () => getNotifyHistory(eventId),
+    }),
+  notificationOptOutState: (eventId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.notificationOptOutState(), eventId],
+      queryFn: () => getNotificationOptOutState(eventId),
+    }),
+  templateList: () =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.templateList()],
+      queryFn: () => getTemplateList(),
+    }),
+  templateDetail: (templateId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.templateDetail(), templateId],
+      queryFn: () => getTemplateDetail(templateId),
     }),
 };
 
@@ -127,7 +149,7 @@ const getEventTitles = async (organizationId: number) => {
   );
 };
 
-const getEventTemplate = async (eventId: number) => {
+const getPastEventList = async (eventId: number) => {
   return await fetcher.get<EventTemplateAPIResponse>(
     `organizations/events/${eventId}/owned/template`
   );
@@ -135,4 +157,16 @@ const getEventTemplate = async (eventId: number) => {
 
 const getNotifyHistory = async (eventId: number) => {
   return await fetcher.get<NotifyHistoryAPIResponse[]>(`events/${eventId}/notification/history`);
+};
+
+const getNotificationOptOutState = async (eventId: number) => {
+  return await fetcher.get<NotificationOptOutState>(`events/${eventId}/notification/opt-out`);
+};
+
+const getTemplateList = async () => {
+  return await fetcher.get<TemplateListAPIResponse[]>(`templates`);
+};
+
+const getTemplateDetail = async (templateId: number) => {
+  return await fetcher.get<TemplateDetailAPIResponse>(`templates/${templateId}`);
 };

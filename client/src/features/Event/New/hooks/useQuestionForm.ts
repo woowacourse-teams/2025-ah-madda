@@ -1,12 +1,15 @@
 import { useReducer, useMemo } from 'react';
 
+import { useToast } from '@/shared/components/Toast/ToastContext';
+
 import { QuestionRequest } from '../../types/Event';
 import { MAX_LENGTH, MAX_QUESTIONS } from '../constants/errorMessages';
 
 type Action =
   | { type: 'ADD' }
   | { type: 'DELETE'; index: number }
-  | { type: 'UPDATE'; index: number; data: Partial<QuestionRequest> };
+  | { type: 'UPDATE'; index: number; data: Partial<QuestionRequest> }
+  | { type: 'LOAD_ALL'; data: QuestionRequest[] };
 
 const reducer = (state: QuestionRequest[], action: Action): QuestionRequest[] => {
   switch (action.type) {
@@ -28,18 +31,22 @@ const reducer = (state: QuestionRequest[], action: Action): QuestionRequest[] =>
         currentIndex === action.index ? { ...question, ...action.data } : question
       );
     }
+    case 'LOAD_ALL': {
+      return Array.isArray(action.data) ? action.data : [];
+    }
     default:
       return state;
   }
 };
 
 export const useQuestionForm = () => {
+  const { error } = useToast();
   const [questions, dispatch] = useReducer(reducer, []);
   const canAddQuestion = questions.length < MAX_QUESTIONS;
 
   const addQuestion = () => {
     if (!canAddQuestion) {
-      alert('질문은 최대 5개까지 추가 가능합니다.');
+      error('질문은 최대 5개까지 추가 가능합니다.');
       return;
     }
     dispatch({ type: 'ADD' });
@@ -51,6 +58,10 @@ export const useQuestionForm = () => {
 
   const updateQuestion = (index: number, data: Partial<QuestionRequest>) => {
     dispatch({ type: 'UPDATE', index, data });
+  };
+
+  const loadQuestions = (list: QuestionRequest[]) => {
+    dispatch({ type: 'LOAD_ALL', data: list ?? [] });
   };
 
   const isValid = useMemo(() => {
@@ -66,6 +77,7 @@ export const useQuestionForm = () => {
     addQuestion,
     deleteQuestion,
     updateQuestion,
+    loadQuestions,
     isValid,
   };
 };

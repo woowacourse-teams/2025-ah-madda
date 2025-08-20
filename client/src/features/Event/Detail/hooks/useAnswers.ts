@@ -22,9 +22,20 @@ export const useAnswers = (questions: Question[]) => {
     setAnswers((prev) => prev.map((answer) => ({ ...answer, answerText: '' })));
   };
 
+  const isRequiredAnswerComplete = () => {
+    const requiredQuestions = questions.filter((question) => question.isRequired);
+
+    const isComplete = requiredQuestions.every((question) => {
+      const answer = answers.find((answer) => answer.questionId === question.questionId);
+      return answer && answer.answerText.trim() !== '';
+    });
+    return isComplete;
+  };
+
   return {
     answers,
     handleChangeAnswer,
     resetAnswers,
+    isRequiredAnswerComplete,
   };
 };
