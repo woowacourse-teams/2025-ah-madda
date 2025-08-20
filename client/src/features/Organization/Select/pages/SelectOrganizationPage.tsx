@@ -97,13 +97,12 @@ const OrganizationSelectBody = () => {
       <Flex
         dir="column"
         alignItems="center"
+        width="100%"
         gap="4px"
+        margin="0 auto"
         css={css`
-          width: 100%;
           @media (max-width: 720px) {
             width: 312px;
-            margin-left: auto;
-            margin-right: auto;
           }
         `}
       >
