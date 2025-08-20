@@ -42,6 +42,10 @@ export const useInviteOrganizationProcess = () => {
         },
         onError: (error) => {
           alert(`${error.message}`);
+          if (error.message === '이미 참여한 조직입니다.') {
+            navigate('/event');
+            return;
+          }
           navigate('/');
         },
       }

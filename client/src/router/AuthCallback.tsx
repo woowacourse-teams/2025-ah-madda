@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { getAuthCodeFromUrl } from '@/api/auth';
 import { useGoogleLoginMutation } from '@/api/authQueries';
-import { getLocalStorage } from '@/shared/utils/localStorage';
+import { getLocalStorage, removeLocalStorage } from '@/shared/utils/localStorage';
 
 export const AuthCallback = () => {
   const code = getAuthCodeFromUrl();
@@ -19,7 +19,13 @@ export const AuthCallback = () => {
         if (inviteCode) {
           navigate(`/invite?code=${inviteCode}`);
         } else {
-          navigate('/');
+          const redirectAfterLogin = getLocalStorage('redirectAfterLogin');
+          if (redirectAfterLogin) {
+            removeLocalStorage('redirectAfterLogin');
+            navigate(redirectAfterLogin);
+          } else {
+            navigate('/');
+          }
         }
       },
     });
