@@ -13,26 +13,22 @@ export const useOrganizationForm = (initial?: Partial<OrgFormFields>) => {
 
   const [errors, setErrors] = useState<Partial<Record<keyof OrgFormFields, string>>>({});
 
-  const handleValueChange = <K extends keyof OrgFormFields>(key: K, value: OrgFormFields[K]) => {
-    setForm((prev) => ({ ...prev, [key]: value }) as OrgFormFields);
-  };
-
-  const validateField = <K extends keyof OrgFormFields>(key: K, value: OrgFormFields[K]) => {
-    const updated = { ...form, [key]: value } as OrgFormFields;
-    const validation = validateOrganizationForm(updated);
-    setErrors((prev) => ({ ...prev, [key]: validation[key] || '' }));
+  const setField = <K extends keyof OrgFormFields>(key: K, value: OrgFormFields[K]) => {
+    setForm((prev) => {
+      const next = { ...prev, [key]: value } as OrgFormFields;
+      const validation = validateOrganizationForm(next);
+      setErrors((prevErr) => ({ ...prevErr, [key]: validation[key] || '' }));
+      return next;
+    });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    const key = name as keyof OrgFormFields;
-    handleValueChange(key, value as OrgFormFields[typeof key]);
-    validateField(key, value as OrgFormFields[typeof key]);
+    setField(name as keyof OrgFormFields, value as any);
   };
 
   const handleLogoChange = (file: File | null) => {
-    handleValueChange('logo', file);
-    validateField('logo', file);
+    setField('logo', file);
   };
 
   const isValid = () => {
@@ -47,7 +43,5 @@ export const useOrganizationForm = (initial?: Partial<OrgFormFields>) => {
     isValid,
     handleChange,
     handleLogoChange,
-    handleValueChange,
-    validateField,
   };
 };
