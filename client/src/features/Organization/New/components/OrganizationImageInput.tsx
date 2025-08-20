@@ -70,25 +70,7 @@ export const OrganizationImageInput = ({
       aria-invalid={isError || undefined}
     >
       <Flex width="255px" dir="column" gap="8px">
-        <Button
-          onClick={openPicker}
-          disabled={disabled}
-          aria-label="이미지 선택"
-          css={css`
-            width: 255px;
-            height: 255px;
-            border: 1px dashed ${theme.colors.gray200};
-            border-radius: 12px;
-            background: ${theme.colors.gray50};
-            padding: 0;
-            overflow: hidden;
-            place-items: center;
-
-            &:hover {
-              background: ${theme.colors.gray100};
-            }
-          `}
-        >
+        <StyledImgUpload onClick={openPicker} disabled={disabled} aria-label="이미지 선택">
           {preview ? (
             <StyledPreviewImage src={preview} alt="선택한 이미지 미리보기" />
           ) : (
@@ -96,7 +78,7 @@ export const OrganizationImageInput = ({
               이미지 선택
             </Text>
           )}
-        </Button>
+        </StyledImgUpload>
 
         {preview && (
           <Flex justifyContent="flex-end">
@@ -141,4 +123,19 @@ const StyledPreviewImage = styled.img`
   height: 100%;
   object-fit: cover;
   display: block;
+`;
+
+const StyledImgUpload = styled(Button)`
+  width: 255px;
+  height: 255px;
+  border: 1px dashed ${theme.colors.gray200};
+  border-radius: 12px;
+  background: ${theme.colors.gray50};
+  padding: 0;
+  overflow: hidden;
+  place-items: center;
+
+  &:hover {
+    background: ${theme.colors.gray100};
+  }
 `;
