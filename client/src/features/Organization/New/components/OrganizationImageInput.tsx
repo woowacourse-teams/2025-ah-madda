@@ -87,17 +87,10 @@ export const OrganizationImageInput = ({
             &:hover {
               background: ${theme.colors.gray100};
             }
-
-            img {
-              width: 100%;
-              height: 100%;
-              object-fit: cover;
-              display: block;
-            }
           `}
         >
           {preview ? (
-            <img src={preview} alt="선택한 이미지 미리보기" />
+            <StyledPreviewImage src={preview} alt="선택한 이미지 미리보기" />
           ) : (
             <Text type="Label" color="gray">
               이미지 선택
@@ -142,3 +135,10 @@ export const OrganizationImageInput = ({
     </Flex>
   );
 };
+
+const StyledPreviewImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+`;
