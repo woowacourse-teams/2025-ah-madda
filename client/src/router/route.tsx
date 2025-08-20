@@ -65,7 +65,10 @@ export const router = createBrowserRouter(
         {
           path: 'organization',
           Component: ProtectRoute,
-          children: [{ path: 'new', Component: NewOrganizationPage }],
+          children: [
+            { path: 'new', Component: NewOrganizationPage },
+            { path: 'edit/:organizationId', Component: NewOrganizationPage },
+          ],
         },
         {
           path: '*',

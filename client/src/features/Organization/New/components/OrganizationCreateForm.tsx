@@ -1,8 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { css } from '@emotion/react';
-import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { useNavigate, useParams } from 'react-router-dom';
 
+import {
+  getOrganizationDetailAPI,
+  useUpdateOrganization,
+} from '@/api/mutations/useUpdateOrganization';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
@@ -18,43 +23,62 @@ import { OrganizationImageInput } from './OrganizationImageInput';
 
 export const OrganizationCreateForm = () => {
   const navigate = useNavigate();
+  const { organizationId: paramId } = useParams();
+  const organizationId = paramId ? Number(paramId) : undefined;
+  const isEdit = !!organizationId;
+
   const { isOpen, open, close } = useModal();
 
-  const { form, errors, isValid, handleChange, handleLogoChange } = useOrganizationForm();
-
-  const [previewUrl, setPreviewUrl] = useState<string | undefined>();
+  const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
   const objectUrlRef = useRef<string | undefined>(undefined);
 
-  const handleLogoSelect = (file: File | null) => {
-    handleLogoChange(file);
+  const { data: org } = useQuery({
+    queryKey: ['organization', 'detail', organizationId],
+    queryFn: () => getOrganizationDetailAPI(Number(organizationId)),
+    enabled: isEdit && !!organizationId,
+  });
 
+  const { form, errors, isValid, handleChange, handleLogoChange, loadFormData } =
+    useOrganizationForm(undefined, { requireThumbnail: !isEdit });
+
+  const initOrgForm = useCallback(() => {
+    if (!isEdit || !org) return;
+    loadFormData({ name: org.name, description: org.description });
+    setPreviewUrl(org.imageUrl ?? undefined);
+  }, [isEdit, org, loadFormData]);
+
+  useEffect(() => {
+    initOrgForm();
+  }, [initOrgForm]);
+
+  const onSelectLogo = (file: File | null) => {
     if (objectUrlRef.current) {
       URL.revokeObjectURL(objectUrlRef.current);
       objectUrlRef.current = undefined;
     }
 
     if (file) {
-      const next = URL.createObjectURL(file);
-      objectUrlRef.current = next;
-      setPreviewUrl(next);
+      const url = URL.createObjectURL(file);
+      objectUrlRef.current = url;
+      setPreviewUrl(url);
     } else {
-      setPreviewUrl(undefined);
+      setPreviewUrl(isEdit ? (org?.imageUrl ?? undefined) : undefined);
     }
+
+    handleLogoChange(file);
   };
 
   useEffect(() => {
     return () => {
-      if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+      }
     };
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isValid()) return;
-    open();
-  };
+  const { mutate: patchOrganization, isPending: isPatching } = useUpdateOrganization();
 
-  const { handleCreate, isSubmitting } = useCreateOrganizationProcess({
+  const { handleCreate, isSubmitting: isCreating } = useCreateOrganizationProcess({
     name: form.name.trim(),
     description: form.description.trim(),
     thumbnail: form.thumbnail,
@@ -65,6 +89,36 @@ export const OrganizationCreateForm = () => {
     onClose: close,
   });
 
+  const isSubmitting = isEdit ? isPatching : isCreating;
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isValid()) return;
+
+    if (isEdit && organizationId) {
+      patchOrganization(
+        {
+          organizationId,
+          payload: {
+            organization: {
+              name: form.name.trim(),
+              description: form.description.trim(),
+            },
+            thumbnail: form.thumbnail ?? null,
+          },
+        },
+        {
+          onSuccess: () => {
+            navigate('/organization/select');
+          },
+        }
+      );
+      return;
+    }
+
+    open();
+  };
+
   const handleConfirmNickname = (nickname: string) => {
     const trimmed = nickname.trim();
     if (!trimmed || isSubmitting) return;
@@ -72,11 +126,11 @@ export const OrganizationCreateForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={onSubmit}>
       <Flex dir="column" padding="60px 0" gap="40px">
         <Flex padding="40px 0">
           <Text as="h1" type="Display" weight="bold">
-            조직 생성하기
+            {isEdit ? '조직 수정하기' : '조직 생성하기'}
           </Text>
         </Flex>
 
@@ -91,7 +145,11 @@ export const OrganizationCreateForm = () => {
             <Text as="label" htmlFor="orgImage" type="Heading" weight="medium">
               조직 이미지
             </Text>
-            <OrganizationImageInput onChange={handleLogoSelect} errorMessage={errors.thumbnail} />
+            <OrganizationImageInput
+              onChange={onSelectLogo}
+              errorMessage={errors.thumbnail}
+              initialPreviewUrl={org?.imageUrl ?? undefined}
+            />
           </Flex>
 
           <Flex dir="column" gap="12px">
@@ -132,20 +190,22 @@ export const OrganizationCreateForm = () => {
             />
           </Flex>
 
-          <Button type="submit" color="primary" size="full" disabled={!isValid()}>
-            조직 생성하기
+          <Button type="submit" color="primary" size="full" disabled={!isValid() || isSubmitting}>
+            {isEdit ? '조직 수정하기' : '조직 생성하기'}
           </Button>
         </Flex>
       </Flex>
 
-      <CreatorNicknameModal
-        isOpen={isOpen}
-        orgName={form.name || '조직'}
-        previewUrl={previewUrl}
-        isSubmitting={isSubmitting}
-        onClose={close}
-        onConfirm={handleConfirmNickname}
-      />
+      {!isEdit && (
+        <CreatorNicknameModal
+          isOpen={isOpen}
+          orgName={form.name || '조직'}
+          previewUrl={previewUrl}
+          isSubmitting={isSubmitting}
+          onClose={close}
+          onConfirm={handleConfirmNickname}
+        />
+      )}
     </form>
   );
 };

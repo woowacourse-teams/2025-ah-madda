@@ -1,9 +1,16 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { validateOrganizationForm } from '../utils/validateOrganizationForm';
 import { OrgFormFields } from '../utils/validationRules';
 
-export const useOrganizationForm = (initial?: Partial<OrgFormFields>) => {
+type Options = { requireThumbnail?: boolean };
+
+export const useOrganizationForm = (
+  initial?: Partial<OrgFormFields>,
+  options: Options = { requireThumbnail: true }
+) => {
+  const { requireThumbnail = true } = options;
+
   const [form, setForm] = useState<OrgFormFields>({
     name: '',
     description: '',
@@ -16,7 +23,7 @@ export const useOrganizationForm = (initial?: Partial<OrgFormFields>) => {
   const setField = <K extends keyof OrgFormFields>(key: K, value: OrgFormFields[K]) => {
     setForm((prev) => {
       const next = { ...prev, [key]: value } as OrgFormFields;
-      const validation = validateOrganizationForm(next);
+      const validation = validateOrganizationForm(next, { requireThumbnail });
       setErrors((prevErr) => ({ ...prevErr, [key]: validation[key] || '' }));
       return next;
     });
@@ -31,11 +38,16 @@ export const useOrganizationForm = (initial?: Partial<OrgFormFields>) => {
     setField('thumbnail', file);
   };
 
+  const loadFormData = useCallback((data: Partial<OrgFormFields>) => {
+    setForm((prev) => ({ ...prev, ...data }));
+  }, []);
+
   const isValid = () => {
     const hasNoErrors = Object.values(errors).every((v) => !v);
-    const filled =
-      !!form.thumbnail && form.name.trim().length > 0 && form.description.trim().length > 0;
-    return hasNoErrors && filled;
+    const filledName = form.name.trim().length > 0;
+    const filledDesc = form.description.trim().length > 0;
+    const filledThumb = requireThumbnail ? !!form.thumbnail : true;
+    return hasNoErrors && filledName && filledDesc && filledThumb;
   };
 
   return {
@@ -44,5 +56,6 @@ export const useOrganizationForm = (initial?: Partial<OrgFormFields>) => {
     isValid,
     handleChange,
     handleLogoChange,
+    loadFormData,
   };
 };

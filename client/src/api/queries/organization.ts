@@ -41,7 +41,7 @@ const getAllEventAPI = ({ organizationId }: { organizationId: number }) => {
   return fetcher.get<Event[]>(`organizations/${organizationId}/events`);
 };
 
-const getOrganization = ({ organizationId }: { organizationId: string }) => {
+export const getOrganization = ({ organizationId }: { organizationId: string }) => {
   return fetcher.get<Organization>(`organizations/${organizationId}`);
 };
 
