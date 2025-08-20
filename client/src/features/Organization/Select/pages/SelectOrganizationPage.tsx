@@ -60,9 +60,9 @@ export const OrganizationSelectPage = () => {
 const OrganizationSelectBody = () => {
   const navigate = useNavigate();
 
-  const { data: participatedOrgs } = useSuspenseQuery(organizationQueryOptions.participated());
+  const { data: joinedOrgs } = useSuspenseQuery(organizationQueryOptions.joined());
 
-  const baseOrgs: OrganizationWithRole[] = participatedOrgs.map((org) => ({
+  const baseOrgs: OrganizationWithRole[] = joinedOrgs.map((org) => ({
     organizationId: org.organizationId,
     name: org.name,
     description: org.description,

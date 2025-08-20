@@ -11,7 +11,7 @@ export const organizationQueryKeys = {
   event: () => [...organizationQueryKeys.all(), 'event'],
   profile: () => [...organizationQueryKeys.all(), 'profile'],
   preview: () => [...organizationQueryKeys.all(), 'preview'],
-  participated: () => [...organizationQueryKeys.all(), 'participated'],
+  joined: () => [...organizationQueryKeys.all(), 'participated'],
 };
 export const organizationQueryOptions = {
   // S.TODO : 추후 수정 ':organizationId' : number
@@ -39,9 +39,9 @@ export const organizationQueryOptions = {
       queryFn: () => getOrganizationPreview(inviteCode),
     }),
 
-  participated: () =>
+  joined: () =>
     queryOptions({
-      queryKey: organizationQueryKeys.participated(),
+      queryKey: organizationQueryKeys.joined(),
       queryFn: getParticipatedOrganizations,
     }),
 };
