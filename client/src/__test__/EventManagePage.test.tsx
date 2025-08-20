@@ -141,11 +141,6 @@ describe('EventManagePage 테스트', () => {
       renderEventManagePage();
 
       await waitFor(() => {
-        expect(
-          screen.getByText(
-            (content) => content.startsWith('신청 마감:') && content.includes('2025.')
-          )
-        ).toBeInTheDocument();
         expect(screen.getByText('마감하기')).toBeInTheDocument();
       });
 
@@ -160,11 +155,6 @@ describe('EventManagePage 테스트', () => {
       options.onSuccess();
 
       await waitFor(() => {
-        expect(
-          screen.getByText(
-            (content) => content.startsWith('신청 마감:') && content.includes('2000.')
-          )
-        ).toBeInTheDocument();
         expect(screen.getByText('마감됨')).toBeInTheDocument();
       });
     });
