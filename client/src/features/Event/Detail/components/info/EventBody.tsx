@@ -21,7 +21,8 @@ export const EventBody = ({
   isGuest,
   organizerName,
 }: EventBodyProps) => {
-  const { answers, handleChangeAnswer, resetAnswers } = useAnswers(questions);
+  const { answers, handleChangeAnswer, resetAnswers, isRequiredAnswerComplete } =
+    useAnswers(questions);
 
   return (
     <Flex dir="column" gap="24px" width="100%">
@@ -32,7 +33,6 @@ export const EventBody = ({
         maxCapacity={maxCapacity}
         registrationEnd={registrationEnd}
       />
-
       {questions.length > 0 && (
         <PreQuestionSection
           questions={questions}
@@ -47,6 +47,7 @@ export const EventBody = ({
           registrationEnd={registrationEnd}
           answers={answers}
           onResetAnswers={resetAnswers}
+          isRequiredAnswerComplete={isRequiredAnswerComplete()}
         />
       )}
     </Flex>

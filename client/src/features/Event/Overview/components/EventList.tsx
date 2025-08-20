@@ -8,6 +8,7 @@ import { Organization } from '@/features/Organization/types/Organization';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
+import { useToast } from '@/shared/components/Toast/ToastContext';
 import { theme } from '@/shared/styles/theme';
 
 import { useModal } from '../../../../shared/hooks/useModal';
@@ -25,6 +26,7 @@ type EventListProps = {
 } & Pick<Organization, 'organizationId'>;
 
 export const EventList = ({ organizationId, events }: EventListProps) => {
+  const { error } = useToast();
   const [inviteCode, setInviteCode] = useState('');
   const groupedEvents = groupEventsByDate(events);
   const { isOpen, open, close } = useModal();
@@ -38,7 +40,7 @@ export const EventList = ({ organizationId, events }: EventListProps) => {
       setInviteCode(inviteUrl);
       open();
     } catch {
-      alert('초대 코드 생성에 실패했습니다.');
+      error('초대 코드 생성에 실패했습니다.');
     }
   };
 

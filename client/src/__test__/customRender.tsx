@@ -4,6 +4,8 @@ import { ThemeProvider } from '@emotion/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
+import { ToastProvider } from '@/shared/components/Toast/ToastContext';
+
 import { theme } from '../shared/styles/theme';
 
 import { createTestQueryClient } from './createTestQueryClient';
@@ -31,11 +33,14 @@ export const RouterWithQueryClient = ({
     <ThemeProvider theme={theme}>
       <QueryClientProviderWrapper queryClient={queryClient}>
         <MemoryRouter initialEntries={[initialRoute]}>
-          <Routes>
-            {routes.map((route, index) => (
-              <Route key={index} path={route.path} element={route.element} />
-            ))}
-          </Routes>
+          <ToastProvider>
+            ev
+            <Routes>
+              {routes.map((route, index) => (
+                <Route key={index} path={route.path} element={route.element} />
+              ))}
+            </Routes>
+          </ToastProvider>
         </MemoryRouter>
       </QueryClientProviderWrapper>
     </ThemeProvider>

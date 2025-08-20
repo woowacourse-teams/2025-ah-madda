@@ -29,7 +29,7 @@ export const GuestList = ({
     <Flex dir="column" gap="16px">
       <Flex alignItems="center" gap="8px">
         {guests.length > 0 && (
-          <CheckBox checked={isAllChecked} size="md" onClick={onAllGuestChecked} />
+          <CheckBox checked={isAllChecked} size="md" onChange={onAllGuestChecked} />
         )}
         <Text type="Label" weight="medium" color={titleColor}>
           {title}
