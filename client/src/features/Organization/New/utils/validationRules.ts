@@ -1,4 +1,4 @@
-import { MAX_LENGTH } from '../constants/errorMessages';
+import { MAX_LENGTH } from '../constants/validationRules';
 
 export type OrgFormFields = {
   name: string;

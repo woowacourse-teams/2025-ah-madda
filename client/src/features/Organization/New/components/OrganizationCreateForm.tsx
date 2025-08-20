@@ -9,7 +9,7 @@ import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
 import { useModal } from '@/shared/hooks/useModal';
 
-import { MAX_LENGTH } from '../constants/errorMessages';
+import { MAX_LENGTH } from '../constants/validationRules';
 import { useOrganizationForm } from '../hooks/useOrganizationForm';
 
 import { CreatorNicknameModal } from './CreatorNicknameModal';
