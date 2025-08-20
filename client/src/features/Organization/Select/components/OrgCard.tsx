@@ -24,7 +24,7 @@ export const OrgCard = ({ organization, onJoin, isAdmin, onEdit }: OrgCardProps)
     onClick={onJoin}
   >
     <StyledImageWrapper justifyContent="center" alignItems="center">
-      <img
+      <StyledImg
         src={organization.imageUrl}
         alt={organization.name}
         onError={(e) => {
@@ -78,13 +78,6 @@ const StyledImageWrapper = styled(Flex)`
   overflow: hidden;
   position: relative;
 
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
   &:hover [data-overlay] {
     opacity: 1;
   }
@@ -99,4 +92,11 @@ const StyledOverlay = styled.div`
   background: rgba(0, 0, 0, 0.44);
   opacity: 0;
   transition: opacity 0.18s ease-in-out;
+`;
+
+const StyledImg = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 `;
