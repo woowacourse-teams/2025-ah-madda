@@ -4,6 +4,8 @@ import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -204,6 +206,27 @@ class GuestTest {
 
         var answers = Map.of(
                 question2, "답변2"
+        );
+
+        // when // then
+        assertThatThrownBy(() -> guest.submitAnswers(answers))
+                .isInstanceOf(BusinessRuleViolatedException.class)
+                .hasMessageContaining("필수 질문에 대한 답변이 누락되었습니다");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", " "})
+    void 필수_질문에_대한_답변이_빈_문자열값_이라면_예외가_발생한다(String answer) {
+        // given
+        var now = LocalDateTime.now();
+
+        var question = Question.create("필수 질문1", true, 0);
+        var event = createEvent("이벤트", participant, now, question);
+
+        var guest = Guest.create(event, otherParticipant, now);
+
+        var answers = Map.of(
+                question, answer
         );
 
         // when // then

@@ -5,7 +5,9 @@ import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
-import com.ahmadda.infra.jwt.exception.InvalidJwtException;
+import com.ahmadda.infra.login.exception.InvalidRefreshTokenException;
+import com.ahmadda.infra.login.exception.InvalidTokenException;
+import com.ahmadda.infra.login.jwt.exception.InvalidJwtException;
 import com.ahmadda.infra.notification.push.exception.InvalidFcmRegistrationTokenException;
 import com.ahmadda.infra.oauth.exception.InvalidOauthTokenException;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +58,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
-    @ExceptionHandler({InvalidJwtException.class, InvalidOauthTokenException.class, InvalidAuthorizationException.class})
+    @ExceptionHandler({InvalidJwtException.class, InvalidOauthTokenException.class, InvalidAuthorizationException.class, InvalidTokenException.class})
     public ResponseEntity<Object> handleUnauthorized(final Exception ex, final WebRequest request) {
         ProblemDetail body =
                 super.createProblemDetail(ex, HttpStatus.UNAUTHORIZED, ex.getMessage(), null, null, request);
@@ -71,7 +73,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.FORBIDDEN, request);
     }
 
-    @ExceptionHandler(InvalidFcmRegistrationTokenException.class)
+    @ExceptionHandler({InvalidFcmRegistrationTokenException.class, InvalidRefreshTokenException.class})
     public ResponseEntity<Object> handleBadRequest(final Exception ex, final WebRequest request) {
         ProblemDetail body =
                 super.createProblemDetail(ex, HttpStatus.BAD_REQUEST, ex.getMessage(), null, null, request);

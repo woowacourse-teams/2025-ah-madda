@@ -1,5 +1,6 @@
 package com.ahmadda.application;
 
+import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
@@ -20,10 +21,7 @@ import com.ahmadda.domain.Role;
 import com.ahmadda.presentation.dto.PokeRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,8 +32,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
-@SpringBootTest(webEnvironment = WebEnvironment.NONE)
-@Transactional
+@IntegrationTest
 class PokeServiceTest {
 
     @Autowired
@@ -88,7 +85,7 @@ class PokeServiceTest {
 
         var eventId = event.getId();
         var request = new PokeRequest(participant.getId());
-        var loginMember = new LoginMember(organizer.getId());
+        var loginMember = new LoginMember(member.getId());
 
         // when
         PokeHistory result = sut.poke(eventId, request, loginMember);

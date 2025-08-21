@@ -1,0 +1,88 @@
+name: BE Prod Deploy On Hotfix
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'server/**'
+
+permissions: write-all
+
+jobs:
+  setup:
+    if: startsWith(github.event.head_commit.message, 'hotfix')
+    runs-on: ubuntu-22.04-arm
+
+    outputs:
+      image-tag: ${{ steps.calc.outputs.version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+          token: ${{ secrets.BE_SUBMODULE_TOKEN }}
+
+      - name: Fetch latest be- tag
+        id: latest
+        run: |
+          git fetch --tags
+
+          latest_be_tag=$(git tag -l 'be-*' | sort -V | tail -n 1)
+
+          base=$(echo "$latest_be_tag" | sed 's/^be-//')
+          head=$(echo "$base" | cut -d'.' -f1 | sed 's/v//')
+          yearweek=$(echo "$base" | cut -d'.' -f2)
+          last_build=$(echo "$base" | cut -d'.' -f3)
+
+          echo "head=$head" >> $GITHUB_OUTPUT
+          echo "yearweek=$yearweek" >> $GITHUB_OUTPUT
+          echo "last_build=$last_build" >> $GITHUB_OUTPUT
+
+      - name: Calculate next build version
+        id: calc
+        run: |
+          next_build=$(( ${{ steps.latest.outputs.last_build }} + 1 ))
+          version="be-v${{ steps.latest.outputs.head }}.${{ steps.latest.outputs.yearweek }}.${next_build}"
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "Using version: $version"
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Run tests
+        working-directory: ./server
+        run: |
+          chmod +x ./gradlew
+          ./gradlew test
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.PROD_DOCKERHUB_DEPLOY_USERNAME }}
+          password: ${{ secrets.PROD_DOCKERHUB_DEPLOY_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          file: ./server/Dockerfile
+          push: true
+          tags: amadda/ahmadda_server:${{ steps.calc.outputs.version }}
+
+      - name: Create and push Git tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          tag="${{ steps.calc.outputs.version }}"
+          git tag "$tag"
+          git push origin "$tag"

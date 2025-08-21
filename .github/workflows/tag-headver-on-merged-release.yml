@@ -1,0 +1,52 @@
+name: Tag HeadVer on Merged Release
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+permissions: write-all
+
+jobs:
+  tag-headver:
+    if: >
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'release/v')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract head version from branch name
+        id: head
+        run: |
+          head_branch="${{ github.event.pull_request.head.ref }}"
+          head_version="${head_branch##release/v}"
+          echo "head=$head_version" >> $GITHUB_OUTPUT
+
+      - name: Calculate yearweek (ISO-8601)
+        id: yearweek
+        run: |
+          year=$(date -u +%y)
+          week=$(date -u +%V)
+          yearweek="${year}$(printf '%02d' $week)"
+          echo "yearweek=$yearweek" >> $GITHUB_OUTPUT
+
+      - name: Create and push HeadVer tag
+        run: |
+          head=${{ steps.head.outputs.head }}
+          yearweek=${{ steps.yearweek.outputs.yearweek }}
+
+          tag="v${head}.${yearweek}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git tag "$tag"
+          git push origin "$tag"
+
+          echo "Tagged: $tag"

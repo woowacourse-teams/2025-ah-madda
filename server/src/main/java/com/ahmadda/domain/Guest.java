@@ -17,6 +17,8 @@ import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,6 +29,8 @@ import java.util.Set;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE guest SET deleted_at = CURRENT_TIMESTAMP WHERE guest_id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class Guest extends BaseEntity {
 
     @Id
@@ -69,16 +73,17 @@ public class Guest extends BaseEntity {
     }
 
     public void submitAnswers(final Map<Question, String> questionAnswers) {
-        validateRequiredQuestions(questionAnswers.keySet());
+        validateRequiredQuestions(questionAnswers);
 
         addAnswers(questionAnswers);
     }
 
-    private void validateRequiredQuestions(final Set<Question> answeredQuestions) {
+    private void validateRequiredQuestions(final Map<Question, String> questionAnswers) {
         Set<Question> requiredQuestions = event.getRequiredQuestions();
 
         for (Question required : requiredQuestions) {
-            if (!answeredQuestions.contains(required)) {
+            String answer = questionAnswers.get(required);
+            if (answer == null || answer.isBlank()) {
                 throw new BusinessRuleViolatedException("필수 질문에 대한 답변이 누락되었습니다.");
             }
         }
