@@ -20,8 +20,6 @@ import { EventDetailContainer } from '../containers/EventDetailContainer';
 export const EventDetailPage = () => {
   const navigate = useNavigate();
   const { eventId, organizationId } = useParams();
-  console.log('organizationId', organizationId);
-  console.log('eventId', eventId);
   const [
     { data: event },
     { data: guestStatus, isError: guestStatusError, error: guestStatusErrorData },
