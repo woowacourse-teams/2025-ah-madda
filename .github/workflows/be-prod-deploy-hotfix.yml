@@ -30,22 +30,37 @@ jobs:
         run: |
           git fetch --tags
 
-          latest_be_tag=$(git tag -l 'be-*' | sort -V | tail -n 1)
+          latest_be_tag=$(git tag -l 'be-v*.*.*.*' | sort -V | tail -n 1)
 
-          base=$(echo "$latest_be_tag" | sed 's/^be-//')
-          head=$(echo "$base" | cut -d'.' -f1 | sed 's/v//')
+          base=$(echo "$latest_be_tag" | sed 's/^be-v//')
+          head=$(echo "$base" | cut -d'.' -f1)
           yearweek=$(echo "$base" | cut -d'.' -f2)
-          last_build=$(echo "$base" | cut -d'.' -f3)
+          common_build=$(echo "$base" | cut -d'.' -f3)
 
           echo "head=$head" >> $GITHUB_OUTPUT
           echo "yearweek=$yearweek" >> $GITHUB_OUTPUT
-          echo "last_build=$last_build" >> $GITHUB_OUTPUT
+          echo "common_build=$common_build" >> $GITHUB_OUTPUT
 
-      - name: Calculate next build version
+      - name: Calculate next BE build version
         id: calc
         run: |
-          next_build=$(( ${{ steps.latest.outputs.last_build }} + 1 ))
-          version="be-v${{ steps.latest.outputs.head }}.${{ steps.latest.outputs.yearweek }}.${next_build}"
+          git fetch --tags
+
+          head="${{ steps.latest.outputs.head }}"
+          yearweek="${{ steps.latest.outputs.yearweek }}"
+          common="${{ steps.latest.outputs.common_build }}"
+
+          prefix="be-v${head}.${yearweek}.${common}"
+
+          matching_tags=$(git tag -l "${prefix}.*")
+          if [[ -z "$matching_tags" ]]; then
+            next_be_build=1
+          else
+            last_be_build=$(echo "$matching_tags" | awk -F. '{print $4}' | sort -n | tail -n 1)
+            next_be_build=$((last_be_build + 1))
+          fi
+
+          version="${prefix}.${next_be_build}"
           echo "version=$version" >> $GITHUB_OUTPUT
           echo "Using version: $version"
 
