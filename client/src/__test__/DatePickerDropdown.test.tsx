@@ -1,11 +1,11 @@
-import { ThemeProvider } from '@emotion/react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 
 import { DatePickerDropdown } from '@/features/Event/New/components/DatePickerDropdown';
 import { useRangeDatePicker } from '@/features/Event/New/hooks/useRangeDatePicker';
 import { useSingleDatePicker } from '@/features/Event/New/hooks/useSingleDatePicker';
-import { theme } from '@/shared/styles/theme';
+
+import { ThemeProviderWrapper } from './customRender';
 
 vi.mock('@/shared/hooks/useClickOutside', () => ({
   useClickOutside: vi.fn(),
@@ -21,10 +21,6 @@ vi.mock('@/features/Event/New/hooks/useRangeDatePicker', () => ({
 
 const mockUseSingleDatePicker = vi.mocked(useSingleDatePicker);
 const mockUseRangeDatePicker = vi.mocked(useRangeDatePicker);
-
-const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-  <ThemeProvider theme={theme}>{children}</ThemeProvider>
-);
 
 const mockSingleDatePickerReturn = {
   selectedDate: new Date('2024-01-15'),
@@ -61,14 +57,14 @@ describe('DatePickerDropdown', () => {
   describe('isOpen이 false일 때', () => {
     test('아무것도 렌더링하지 않아야 한다', () => {
       const { container } = render(
-        <TestWrapper>
+        <ThemeProviderWrapper>
           <DatePickerDropdown
             mode="single"
             isOpen={false}
             onClose={mockOnClose}
             onSelect={mockOnSelect}
           />
-        </TestWrapper>
+        </ThemeProviderWrapper>
       );
 
       expect(container.firstChild).toBeNull();
@@ -82,7 +78,7 @@ describe('DatePickerDropdown', () => {
 
     test('mode가 single이고 isOpen이 true일 때 단일 날짜 캘린더가 렌더링되어야 한다', () => {
       render(
-        <TestWrapper>
+        <ThemeProviderWrapper>
           <DatePickerDropdown
             mode="single"
             isOpen={true}
@@ -90,7 +86,7 @@ describe('DatePickerDropdown', () => {
             onSelect={mockOnSelect}
             title="Test Title"
           />
-        </TestWrapper>
+        </ThemeProviderWrapper>
       );
 
       expect(screen.getByText('신청 마감 날짜 및 시간 선택')).toBeInTheDocument();
@@ -100,14 +96,14 @@ describe('DatePickerDropdown', () => {
 
     test('취소 버튼 클릭 시 handleCancel을 호출해야 한다', () => {
       render(
-        <TestWrapper>
+        <ThemeProviderWrapper>
           <DatePickerDropdown
             mode="single"
             isOpen={true}
             onClose={mockOnClose}
             onSelect={mockOnSelect}
           />
-        </TestWrapper>
+        </ThemeProviderWrapper>
       );
 
       const cancelButton = screen.getByText('취소');
@@ -118,14 +114,14 @@ describe('DatePickerDropdown', () => {
 
     test('확인 버튼 클릭 시 handleConfirm을 호출해야 한다', () => {
       render(
-        <TestWrapper>
+        <ThemeProviderWrapper>
           <DatePickerDropdown
             mode="single"
             isOpen={true}
             onClose={mockOnClose}
             onSelect={mockOnSelect}
           />
-        </TestWrapper>
+        </ThemeProviderWrapper>
       );
 
       const confirmButton = screen.getByText('확인');
@@ -141,14 +137,14 @@ describe('DatePickerDropdown', () => {
       });
 
       render(
-        <TestWrapper>
+        <ThemeProviderWrapper>
           <DatePickerDropdown
             mode="single"
             isOpen={true}
             onClose={mockOnClose}
             onSelect={mockOnSelect}
           />
-        </TestWrapper>
+        </ThemeProviderWrapper>
       );
 
       const confirmButton = screen.getByText('확인');
@@ -163,14 +159,14 @@ describe('DatePickerDropdown', () => {
 
     test('mode가 range이고 isOpen이 true일 때 범위 날짜 캘린더가 렌더링되어야 한다', () => {
       render(
-        <TestWrapper>
+        <ThemeProviderWrapper>
           <DatePickerDropdown
             mode="range"
             isOpen={true}
             onClose={mockOnClose}
             onSelect={mockOnSelect}
           />
-        </TestWrapper>
+        </ThemeProviderWrapper>
       );
 
       expect(screen.getByText('이벤트 날짜 및 시간 선택')).toBeInTheDocument();
@@ -182,14 +178,14 @@ describe('DatePickerDropdown', () => {
 
     test('취소 버튼 클릭 시 handleCancel을 호출해야 한다', () => {
       render(
-        <TestWrapper>
+        <ThemeProviderWrapper>
           <DatePickerDropdown
             mode="range"
             isOpen={true}
             onClose={mockOnClose}
             onSelect={mockOnSelect}
           />
-        </TestWrapper>
+        </ThemeProviderWrapper>
       );
 
       const cancelButton = screen.getByText('취소');
@@ -200,14 +196,14 @@ describe('DatePickerDropdown', () => {
 
     test('확인 버튼 클릭 시 handleConfirm을 호출해야 한다', () => {
       render(
-        <TestWrapper>
+        <ThemeProviderWrapper>
           <DatePickerDropdown
             mode="range"
             isOpen={true}
             onClose={mockOnClose}
             onSelect={mockOnSelect}
           />
-        </TestWrapper>
+        </ThemeProviderWrapper>
       );
 
       const confirmButton = screen.getByText('확인');
@@ -223,14 +219,14 @@ describe('DatePickerDropdown', () => {
       });
 
       render(
-        <TestWrapper>
+        <ThemeProviderWrapper>
           <DatePickerDropdown
             mode="range"
             isOpen={true}
             onClose={mockOnClose}
             onSelect={mockOnSelect}
           />
-        </TestWrapper>
+        </ThemeProviderWrapper>
       );
 
       const confirmButton = screen.getByText('확인');
