@@ -1,7 +1,8 @@
 import { css } from '@emotion/react';
-import { useSuspenseQueries } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { HttpError } from '@/api/fetcher';
 import { eventQueryOptions } from '@/api/queries/event';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
@@ -19,13 +20,25 @@ import { EventDetailContainer } from '../containers/EventDetailContainer';
 export const EventDetailPage = () => {
   const navigate = useNavigate();
   const { eventId } = useParams();
-  const [{ data: event }, { data: guestStatus }, { data: organizerStatus }] = useSuspenseQueries({
+  const [
+    { data: event },
+    { data: guestStatus, isError: guestStatusError, error: guestStatusErrorData },
+    { data: organizerStatus },
+  ] = useQueries({
     queries: [
       eventQueryOptions.detail(Number(eventId)),
       eventQueryOptions.guestStatus(Number(eventId)),
       eventQueryOptions.organizer(Number(eventId)),
     ],
   });
+
+  if (guestStatusError) {
+    if (guestStatusErrorData instanceof HttpError && guestStatusErrorData.status === 404) {
+      alert('해당 조직의 멤버가 아닙니다. 조직에 가입 후 다시 시도해주세요.');
+      navigate('/');
+      return null;
+    }
+  }
 
   if (!event) {
     return (
@@ -61,7 +74,7 @@ export const EventDetailPage = () => {
     >
       <EventDetailContainer>
         <EventHeader
-          isOrganizer={organizerStatus.isOrganizer}
+          isOrganizer={organizerStatus?.isOrganizer || false}
           eventId={Number(eventId)}
           title={event.title}
           place={event.place}
@@ -84,8 +97,8 @@ export const EventDetailPage = () => {
 
           <Tabs.Content value="detail">
             <EventBody
-              isOrganizer={organizerStatus.isOrganizer}
-              isGuest={guestStatus.isGuest}
+              isOrganizer={organizerStatus?.isOrganizer || false}
+              isGuest={guestStatus?.isGuest || false}
               {...event}
             />
           </Tabs.Content>

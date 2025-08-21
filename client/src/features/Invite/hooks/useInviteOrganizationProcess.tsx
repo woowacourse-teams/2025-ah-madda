@@ -23,12 +23,6 @@ export const useInviteOrganizationProcess = () => {
       navigate('/', { replace: true });
       return;
     }
-
-    if (!isAuthenticated()) {
-      error('로그인이 필요한 서비스입니다.', { duration: 3000 });
-      navigate('/', { replace: true });
-      return;
-    }
   }, [inviteCode, error, navigate]);
 
   useEffect(() => {
@@ -54,6 +48,10 @@ export const useInviteOrganizationProcess = () => {
         },
         onError: (err) => {
           error(err.message, { duration: 3000 });
+          if (err.message === '이미 참여한 조직입니다.') {
+            navigate(`/event?organizationId=${organizationData?.organizationId}`);
+            return;
+          }
           navigate('/');
         },
       }
@@ -69,5 +67,6 @@ export const useInviteOrganizationProcess = () => {
     organizationData,
     handleJoin,
     handleClose,
+    inviteCode,
   };
 };
