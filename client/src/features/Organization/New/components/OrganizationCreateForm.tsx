@@ -12,7 +12,6 @@ import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
-import { Textarea } from '@/shared/components/Textarea';
 import { useModal } from '@/shared/hooks/useModal';
 
 import { MAX_LENGTH } from '../constants/validationRules';
@@ -92,7 +91,7 @@ export const OrganizationCreateForm = () => {
 
   const isSubmitting = isEdit ? isPatching : isCreating;
 
-  const onSubmit = (e: React.FormEvent) => {
+  const handleEditButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (!isValid()) return;
 
@@ -110,7 +109,7 @@ export const OrganizationCreateForm = () => {
         },
         {
           onSuccess: () => {
-            navigate(`/event?organizationId=${organizationId}`);
+            navigate(`/${organizationId}/event`);
           },
         }
       );
@@ -127,7 +126,7 @@ export const OrganizationCreateForm = () => {
   };
 
   return (
-    <form onSubmit={onSubmit}>
+    <>
       <Flex dir="column" padding="60px 0" gap="40px">
         <Flex padding="40px 0">
           <Text as="h1" type="Display" weight="bold">
@@ -174,18 +173,26 @@ export const OrganizationCreateForm = () => {
             <Text as="label" htmlFor="orgDescription" type="Heading" weight="medium">
               한 줄 소개
             </Text>
-            <Textarea
+            <Input
               id="orgDescription"
               name="description"
               placeholder="조직을 소개해주세요."
               value={form.description}
               onChange={handleChange}
               errorMessage={errors.description}
+              showCounter
               maxLength={MAX_LENGTH.DESCRIPTION}
+              isRequired
             />
           </Flex>
 
-          <Button type="submit" color="primary" size="full" disabled={!isValid() || isSubmitting}>
+          <Button
+            type="submit"
+            color="primary"
+            size="full"
+            disabled={!isValid() || isSubmitting}
+            onClick={handleEditButtonClick}
+          >
             {isEdit ? '조직 수정하기' : '조직 생성하기'}
           </Button>
         </Flex>
@@ -201,6 +208,6 @@ export const OrganizationCreateForm = () => {
           onConfirm={handleConfirmNickname}
         />
       )}
-    </form>
+    </>
   );
 };
