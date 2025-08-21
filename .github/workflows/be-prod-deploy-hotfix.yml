@@ -7,6 +7,8 @@ on:
     paths:
       - 'server/**'
 
+permissions: write-all
+
 jobs:
   setup:
     if: startsWith(github.event.head_commit.message, 'hotfix')
@@ -29,9 +31,7 @@ jobs:
           git fetch --tags
 
           latest_be_tag=$(git tag -l 'be-*' | sort -V | tail -n 1)
-          echo "latest_be_tag=$latest_be_tag"
 
-          # Extract head, yearweek, build
           base=$(echo "$latest_be_tag" | sed 's/^be-//')
           head=$(echo "$base" | cut -d'.' -f1 | sed 's/v//')
           yearweek=$(echo "$base" | cut -d'.' -f2)
