@@ -41,8 +41,6 @@ import { MyPastEventModal } from './MyPastEventModal';
 import { QuestionForm } from './QuestionForm';
 import { TemplateDropdown } from './TemplateDropdown';
 
-const ORGANIZATION_ID = 1; // 임시
-
 type EventCreateFormProps = {
   isEdit: boolean;
   eventId?: number;
@@ -52,7 +50,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const navigate = useNavigate();
   const { organizationId } = useParams();
   const { success, error } = useToast();
-  const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
+  const { mutate: addEvent } = useAddEvent(Number(organizationId));
   const { mutate: updateEvent } = useUpdateEvent();
   const { mutate: addTemplate } = useAddTemplate();
 
