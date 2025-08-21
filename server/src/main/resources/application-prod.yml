@@ -28,12 +28,12 @@ jwt:
 
 cookie:
   refresh-token:
-    path: ${cookie.prod.refresh-token.path}
-    domain: ${cookie.prod.refresh-token.domain}
-    same-site: ${cookie.prod.refresh-token.same-site}
-    secure: ${cookie.prod.refresh-token.secure}
-    http-only: ${cookie.prod.refresh-token.http-only}
-    ttl: ${cookie.prod.refresh-token.ttl}
+    path: /
+    domain: ahmadda.com
+    same-site: Strict
+    secure: true
+    http-only: true
+    ttl: 14d
 
 cors:
   allowed-origins:
