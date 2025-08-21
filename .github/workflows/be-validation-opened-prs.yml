@@ -1,4 +1,4 @@
-name: Validation Opened PRs
+name: BE Validation Opened PRs
 
 on:
   pull_request:

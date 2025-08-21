@@ -1,4 +1,4 @@
-name: Dev Deploy Closed Prs
+name: BE Dev Deploy Closed Prs
 
 on:
   push:
