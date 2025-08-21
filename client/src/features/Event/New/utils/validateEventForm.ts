@@ -15,15 +15,11 @@ export const validateEventForm = (
   (Object.keys(FIELD_CONFIG) as Array<keyof BasicEventFormFields>).forEach((key) => {
     if ((key === 'eventStart' || key === 'eventEnd') && bothDateEmpty) return;
 
-    const currentValue = formData[key];
-    const value: string =
-      typeof currentValue === 'string'
-        ? currentValue
-        : typeof currentValue === 'number'
-          ? String(currentValue)
-          : '';
-
-    const msg = getErrorMessage(key as keyof CreateEventAPIRequest, value, formData);
+    const msg = getErrorMessage(
+      key as keyof CreateEventAPIRequest,
+      String(formData[key] ?? ''),
+      formData
+    );
     if (msg) newErrors[key] = msg;
   });
 
