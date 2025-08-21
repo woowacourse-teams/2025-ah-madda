@@ -12,13 +12,13 @@ export const useMaxCapacity = (initialValue: number | string) => {
     const numberValue = Number(e.target.value);
 
     if (!Number.isInteger(numberValue)) {
-      error('수용 인원은 숫자만 입력가능합니다.');
+      error('수용 인원은 숫자만 입력가능해요.');
       setMaxCapacity(Number(maxCapacity));
       return;
     }
 
-    if (numberValue >= MAX_CAPACITY) {
-      error('수용 인원이 너무 큽니다. 더 작은 값을 입력해주세요.');
+    if (numberValue > MAX_CAPACITY) {
+      error(`최대 ${MAX_CAPACITY.toLocaleString('ko-KR')}명까지 입력할 수 있어요.`);
       return;
     }
 
