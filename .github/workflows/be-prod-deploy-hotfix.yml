@@ -106,3 +106,37 @@ jobs:
           file: ./server/Dockerfile
           push: true
           tags: amadda/ahmadda_server:${{ steps.calc.outputs.version }}
+
+  deploy:
+    needs: setup
+    runs-on:
+      - self-hosted
+      - prod
+
+    steps:
+      - name: Set tag name from setup output
+        run: echo "TAG=${{ needs.setup.outputs.image-tag }}" >> $GITHUB_ENV
+
+      - name: Log in to Docker Hub
+        run: |
+          sudo docker login \
+            --username ${{ secrets.PROD_DOCKERHUB_DEPLOY_USERNAME }} \
+            --password ${{ secrets.PROD_DOCKERHUB_DEPLOY_TOKEN }}
+
+      - name: Stop existing container and pull latest image
+        run: |
+          if sudo docker inspect ahmadda-prod-server &>/dev/null; then
+            sudo docker stop ahmadda-prod-server || true
+            sudo docker rm -f ahmadda-prod-server || true
+            sudo docker image prune -af || true
+          fi
+          sudo docker pull amadda/ahmadda_server:$TAG
+
+      - name: Run container
+        run: |
+          sudo docker run -v /home/ubuntu/app/logs:/app/logs \
+            --name ahmadda-prod-server \
+            --restart unless-stopped \
+            -p 80:8080 \
+            -e PROFILE=prod \
+            -d amadda/ahmadda_server:$TAG
