@@ -2,7 +2,7 @@ import { ChangeEvent, useState } from 'react';
 
 import { useToast } from '@/shared/components/Toast/ToastContext';
 
-const MAX_CAPACITY = 100_000_000;
+const MAX_CAPACITY = 200;
 
 export const useMaxCapacity = (initialValue: number | string) => {
   const { error } = useToast();
