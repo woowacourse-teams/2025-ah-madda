@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Extract head version from branch name
         id: head
@@ -34,10 +36,20 @@ jobs:
 
       - name: Create and push HeadVer tag
         run: |
-          tag="v${{ steps.head.outputs.head }}.${{ steps.yearweek.outputs.yearweek }}"
+          head=${{ steps.head.outputs.head }}
+          yearweek=${{ steps.yearweek.outputs.yearweek }}
+
+          base_tag="v${head}.${yearweek}"
+          be_tag="be-${base_tag}.1"
+          fe_tag="fe-${base_tag}.1"
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git tag "$tag"
-          git push origin "$tag"
+          git tag "$base_tag"
+          git tag "$be_tag"
+          git tag "$fe_tag"
+
+          git push origin "$base_tag" "$be_tag" "$fe_tag"
+
+          echo "Tagged: $base_tag, $be_tag, $fe_tag"
