@@ -10,14 +10,15 @@ export const validateEventForm = (
 
   const startStr = (formData.eventStart ?? '').toString().trim();
   const endStr = (formData.eventEnd ?? '').toString().trim();
-  const bothDateEmpty = !startStr && !endStr;
+  const bothDateFilled = Boolean(startStr && endStr);
 
-  (Object.keys(FIELD_CONFIG) as Array<keyof BasicEventFormFields>).forEach((key) => {
-    if ((key === 'eventStart' || key === 'eventEnd') && bothDateEmpty) return;
+  (Object.keys(FIELD_CONFIG) as (keyof typeof FIELD_CONFIG)[]).forEach((key) => {
+    if ((key === 'eventStart' || key === 'eventEnd' || key === 'registrationEnd') && bothDateFilled)
+      return;
 
     const msg = getErrorMessage(
       key as keyof CreateEventAPIRequest,
-      String(formData[key] ?? ''),
+      String(formData[key] ?? '').trim(),
       formData
     );
     if (msg) newErrors[key] = msg;
