@@ -26,10 +26,6 @@ export const useBasicEventForm = (initialData?: Partial<CreateEventAPIRequest>) 
     });
   };
 
-  const setField = (key: keyof BasicEventFormFields, value: string | number) => {
-    patchAndValidate({ [key]: value } as Partial<BasicEventFormFields>);
-  };
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     const parsedValue = type === 'number' ? Number(value) : value;
@@ -60,7 +56,7 @@ export const useBasicEventForm = (initialData?: Partial<CreateEventAPIRequest>) 
 
   return {
     basicEventForm,
-    setField,
+    patchAndValidate,
     handleChange,
     isValid,
     errors,

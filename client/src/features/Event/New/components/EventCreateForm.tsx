@@ -74,7 +74,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
 
   const {
     basicEventForm,
-    setField,
+    patchAndValidate,
     handleChange,
     errors,
     isValid: isBasicFormValid,
@@ -236,9 +236,11 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     const finalRegistrationEnd =
       newRegistrationEnd.getTime() > finalStartTime.getTime() ? finalStartTime : newRegistrationEnd;
 
-    setField('eventStart', formatDateForInput(finalStartTime));
-    setField('eventEnd', formatDateForInput(finalEndTime));
-    setField('registrationEnd', formatDateForInput(finalRegistrationEnd));
+    patchAndValidate({
+      eventStart: formatDateForInput(finalStartTime),
+      eventEnd: formatDateForInput(finalEndTime),
+      registrationEnd: formatDateForInput(finalRegistrationEnd),
+    });
   };
 
   const handleRegistrationEndSelect = (date: Date, time: TimeValue) => {
@@ -253,7 +255,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       return;
     }
 
-    setField('registrationEnd', formatDateForInput(finalTime));
+    patchAndValidate({ registrationEnd: formatDateForInput(finalTime) });
   };
 
   return (
@@ -334,8 +336,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 errorMessage={errors.eventStart || errors.eventEnd}
                 isRequired
                 onClear={() => {
-                  setField('eventStart', '');
-                  setField('eventEnd', '');
+                  patchAndValidate({ eventStart: '', eventEnd: '' });
                 }}
                 css={css`
                   cursor: pointer;
@@ -388,7 +389,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 errorMessage={errors.registrationEnd}
                 isRequired
                 onClear={() => {
-                  setField('registrationEnd', '');
+                  patchAndValidate({ registrationEnd: '' });
                 }}
                 css={css`
                   cursor: pointer;
@@ -465,7 +466,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               }
               onClose={capacityModalClose}
               onSubmit={(value) => {
-                setField('maxCapacity', value.toString());
+                patchAndValidate({ maxCapacity: value });
               }}
             />
           </Flex>
