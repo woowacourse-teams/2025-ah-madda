@@ -18,8 +18,8 @@ const mockFetcher = vi.mocked(fetcher);
 const renderOverviewPage = () => {
   render(
     <RouterWithQueryClient
-      initialRoute="/event?organizationId=1"
-      routes={[{ path: '/event', element: <OverviewPage /> }]}
+      initialRoute="/1/event"
+      routes={[{ path: '/:organizationId/event', element: <OverviewPage /> }]}
     />
   );
 };
