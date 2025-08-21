@@ -6,8 +6,8 @@
   "scripts": {
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "test": "vitest",
-    "dev": "NODE_ENV=development webpack serve --mode development",
-    "build": "NODE_ENV=production webpack --mode production",
+    "dev": "webpack serve --config webpack.dev.cjs",
+    "build": "webpack --config webpack.prod.cjs",
     "type-check": "tsc --noEmit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
@@ -78,13 +78,15 @@
     "prettier": "^3.6.2",
     "storybook": "^9.0.16",
     "style-loader": "^4.0.0",
+    "terser-webpack-plugin": "^5.3.14",
     "ts-loader": "^9.5.2",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.36.0",
     "vitest": "^3.2.4",
     "webpack": "^5.100.0",
     "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^5.2.2"
+    "webpack-dev-server": "^5.2.2",
+    "webpack-merge": "^5.10.0"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

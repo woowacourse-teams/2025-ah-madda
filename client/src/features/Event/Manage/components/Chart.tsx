@@ -5,7 +5,7 @@ import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
-import { formatDate } from '../util/formatDate';
+import { formatDate } from '../utils/formatDate';
 
 type ChartProps = {
   statistics: StatisticsAPIResponse[];

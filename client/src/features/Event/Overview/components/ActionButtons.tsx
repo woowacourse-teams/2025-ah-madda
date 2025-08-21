@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
@@ -9,14 +9,14 @@ type ActionButtonsProps = {
 };
 export const ActionButtons = ({ onIssueInviteCode }: ActionButtonsProps) => {
   const navigate = useNavigate();
-
+  const { organizationId } = useParams();
   return (
     <>
       <DesktopButtonContainer>
         <Button size="md" iconName="share" onClick={onIssueInviteCode}>
           조직 초대
         </Button>
-        <Button size="md" iconName="plus" onClick={() => navigate('/event/new')}>
+        <Button size="md" iconName="plus" onClick={() => navigate(`/${organizationId}/event/new`)}>
           이벤트 생성
         </Button>
       </DesktopButtonContainer>

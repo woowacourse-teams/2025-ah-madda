@@ -11,7 +11,7 @@ import { EventCreateForm } from '../components/EventCreateForm';
 
 export const NewEventPage = () => {
   const navigate = useNavigate();
-  const { eventId } = useParams();
+  const { eventId, organizationId } = useParams();
   const isEdit = !!eventId;
 
   return (
@@ -22,14 +22,14 @@ export const NewEventPage = () => {
             <Icon
               name="logo"
               size={55}
-              onClick={() => navigate('/event')}
+              onClick={() => navigate(`/${organizationId}/event`)}
               css={css`
                 cursor: pointer;
               `}
             />
           }
           right={
-            <Button size="sm" onClick={() => navigate('/event/my')}>
+            <Button size="sm" onClick={() => navigate(`/${organizationId}/event/my`)}>
               내 이벤트
             </Button>
           }
