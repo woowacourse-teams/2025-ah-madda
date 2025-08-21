@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 
-import { css } from '@emotion/react';
 import { useQuery, useSuspenseQueries } from '@tanstack/react-query';
 
 import { useDeleteTemplate } from '@/api/mutations/useDeleteTemplate';
@@ -9,7 +8,6 @@ import type { TemplateDetailAPIResponse } from '@/api/types/event';
 import { Dropdown } from '@/shared/components/Dropdown';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
-import { IconButton } from '@/shared/components/IconButton';
 import { Text } from '@/shared/components/Text';
 import { useToast } from '@/shared/components/Toast/ToastContext';
 import { trackLoadTemplate } from '@/shared/lib/gaEvents';
@@ -81,30 +79,27 @@ export const TemplateDropdown = ({ onTemplateSelected }: TemplateDropdownProps) 
         <Dropdown.Content>
           {templateList && templateList.length > 0 ? (
             templateList.map((template) => (
-              <Dropdown.Item key={template.templateId}>
+              <Dropdown.Item
+                key={template.templateId}
+                onClick={() => handleTemplateSelect(template.templateId)}
+              >
                 <Flex justifyContent="space-between" alignItems="center" width="100%">
+                  <Text type="Body" color={theme.colors.gray800}>
+                    {truncateText(template.title)}
+                  </Text>
                   <Flex
-                    onClick={() => {
-                      handleTemplateSelect(template.templateId);
-                    }}
-                    css={css`
-                      flex: 1;
-                      cursor: pointer;
-                    `}
-                  >
-                    <Text type="Body" color={theme.colors.gray800}>
-                      {truncateText(template.title)}
-                    </Text>
-                  </Flex>
-                  <IconButton
-                    name="delete"
-                    size={16}
-                    color="gray500"
+                    alignItems="center"
+                    justifyContent="center"
+                    width="24px"
+                    height="24px"
+                    gap="4px"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDeleteTemplate(template.templateId);
                     }}
-                  />
+                  >
+                    <Icon name="delete" size={16} color="gray500" />
+                  </Flex>
                 </Flex>
               </Dropdown.Item>
             ))
