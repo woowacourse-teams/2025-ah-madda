@@ -1,4 +1,4 @@
-name: Prod Rollback On Manual
+name: BE Prod Rollback On Manual
 
 on:
   workflow_dispatch:

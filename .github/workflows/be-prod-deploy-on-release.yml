@@ -1,18 +1,15 @@
-name: Dev Deploy Closed Prs
+name: BE Prod Deploy On Release
 
 on:
-  push:
-    branches:
-      - be/dev
-    paths:
-      - 'server/**'
+  release:
+    types: [published]
 
 jobs:
   setup:
     runs-on: ubuntu-22.04-arm
 
     outputs:
-      image-tag: ${{ steps.set-tag.outputs.image-tag }}
+      image-tag: ${{ steps.extract.outputs.version }}
 
     steps:
       - name: Checkout repository
@@ -21,15 +18,18 @@ jobs:
           submodules: recursive
           token: ${{ secrets.BE_SUBMODULE_TOKEN }}
 
+      - name: Fetch latest BE tag
+        id: extract
+        run: |
+          git fetch --tags
+          LATEST_BE_TAG=$(git tag -l 'be-v*.*.*' | sort -V | tail -n 1)
+          echo "version=$LATEST_BE_TAG" >> $GITHUB_OUTPUT
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
-
-      - name: Set image tag based on date and run number
-        id: set-tag
-        run: echo "image-tag=$(date +'%Y-%m-%d')-${{ github.run_number }}" >> $GITHUB_OUTPUT
 
       - name: Run tests
         working-directory: ./server
@@ -40,8 +40,8 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DEV_DOCKERHUB_DEPLOY_USERNAME }}
-          password: ${{ secrets.DEV_DOCKERHUB_DEPLOY_TOKEN }}
+          username: ${{ secrets.PROD_DOCKERHUB_DEPLOY_USERNAME }}
+          password: ${{ secrets.PROD_DOCKERHUB_DEPLOY_TOKEN }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -52,13 +52,13 @@ jobs:
           context: ./server
           file: ./server/Dockerfile
           push: true
-          tags: ahmadda1234/ahmadda_server:${{ steps.set-tag.outputs.image-tag }}
+          tags: amadda/ahmadda_server:${{ steps.extract.outputs.version }}
 
   deploy:
     needs: setup
-    runs-on: 
+    runs-on:
       - self-hosted
-      - dev
+      - prod
 
     steps:
       - name: Set tag name from setup output
@@ -66,26 +66,22 @@ jobs:
 
       - name: Log in to Docker Hub
         run: |
-          sudo docker login --username ${{ secrets.DEV_DOCKERHUB_DEPLOY_USERNAME }} --password ${{ secrets.DEV_DOCKERHUB_DEPLOY_TOKEN }}
+          sudo docker login --username ${{ secrets.PROD_DOCKERHUB_DEPLOY_USERNAME }} --password ${{ secrets.PROD_DOCKERHUB_DEPLOY_TOKEN }}
 
       - name: Stop existing container and pull latest image
         run: |
-          if sudo docker inspect ahmadda-dev-server &>/dev/null; then
-            sudo docker stop ahmadda-dev-server || true
-            sudo docker rm -f ahmadda-dev-server || true
+          if sudo docker inspect ahmadda-prod-server &>/dev/null; then
+            sudo docker stop ahmadda-prod-server || true
+            sudo docker rm -f ahmadda-prod-server || true
             sudo docker image prune -af || true
           fi
-          sudo docker pull ahmadda1234/ahmadda_server:$TAG
+          sudo docker pull amadda/ahmadda_server:$TAG
 
       - name: Run container
         run: |
-          sudo docker run \
-            --name ahmadda-dev-server \
+          sudo docker run -v /home/ubuntu/app/logs:/app/logs \
+            --name ahmadda-prod-server \
             --restart unless-stopped \
-            -p 8080:8080 \
-            -e PROFILE=dev \
-            --log-driver=awslogs \
-            --log-opt awslogs-group=ahmadda-dev-server \
-            --log-opt awslogs-region=ap-northeast-2 \
-            --log-opt awslogs-stream=$TAG \
-            -d ahmadda1234/ahmadda_server:$TAG
+            -p 80:8080 \
+            -e PROFILE=prod \
+            -d amadda/ahmadda_server:$TAG
