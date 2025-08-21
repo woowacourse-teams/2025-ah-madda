@@ -20,12 +20,12 @@ jwt:
 
 cookie:
   refresh-token:
-    path: ${cookie.local.refresh-token.path}
-    domain: ${cookie.local.refresh-token.domain}
-    same-site: ${cookie.local.refresh-token.same-site}
-    secure: ${cookie.local.refresh-token.secure}
-    http-only: ${cookie.local.refresh-token.http-only}
-    ttl: ${cookie.local.refresh-token.ttl}
+    path: /
+    domain: localhost
+    same-site: None
+    secure: true
+    http-only: true
+    ttl: 14d
 
 cors:
   allowed-origins:
