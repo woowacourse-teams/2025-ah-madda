@@ -32,7 +32,7 @@ jwt:
 cookie:
   refresh-token:
     path: /
-    domain: .ahmadda.com
+    domain: localhost
     same-site: None
     secure: true
     http-only: true
