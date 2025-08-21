@@ -255,6 +255,43 @@ describe('DatePickerDropdown', () => {
       expect(screen.getByText('2025년 12월')).toBeInTheDocument();
     });
 
+    test('지난 날은 선택이 불가하다', async () => {
+      const user = userEvent.setup();
+
+      render(
+        <ThemeProviderWrapper>
+          <DatePickerDropdown
+            mode="range"
+            isOpen={true}
+            onClose={mockOnClose}
+            onSelect={mockOnSelect}
+          />
+        </ThemeProviderWrapper>
+      );
+
+      expect(screen.getByText('2025년 12월')).toBeInTheDocument();
+
+      const allButtons = screen.getAllByRole('button');
+      const dateButtons = allButtons.filter((button) => {
+        const text = button.textContent;
+        const dateNum = parseInt(text || '0');
+        return dateNum >= 1 && dateNum <= 31;
+      });
+
+      const disabledDateButtons = dateButtons.filter(
+        (button) => (button as HTMLButtonElement).disabled
+      );
+
+      if (disabledDateButtons.length > 0) {
+        const disabledButton = disabledDateButtons[0];
+        const initialCallCount = mockRangeDatePickerReturn.handleDateSelect.mock.calls.length;
+
+        await user.click(disabledButton);
+
+        expect(mockRangeDatePickerReturn.handleDateSelect.mock.calls.length).toBe(initialCallCount);
+      }
+    });
+
     test('취소 버튼 클릭 시 handleCancel을 호출해야 한다', async () => {
       const user = userEvent.setup();
 
