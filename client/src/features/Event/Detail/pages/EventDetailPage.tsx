@@ -19,7 +19,9 @@ import { EventDetailContainer } from '../containers/EventDetailContainer';
 
 export const EventDetailPage = () => {
   const navigate = useNavigate();
-  const { eventId } = useParams();
+  const { eventId, organizationId } = useParams();
+  console.log('organizationId', organizationId);
+  console.log('eventId', eventId);
   const [
     { data: event },
     { data: guestStatus, isError: guestStatusError, error: guestStatusErrorData },
@@ -58,14 +60,14 @@ export const EventDetailPage = () => {
             <Icon
               name="logo"
               size={55}
-              onClick={() => navigate('/event')}
+              onClick={() => navigate(`/${organizationId}/event`)}
               css={css`
                 cursor: pointer;
               `}
             />
           }
           right={
-            <Button size="sm" onClick={() => navigate('/event/my')}>
+            <Button size="sm" onClick={() => navigate(`/${organizationId}/event/my`)}>
               내 이벤트
             </Button>
           }

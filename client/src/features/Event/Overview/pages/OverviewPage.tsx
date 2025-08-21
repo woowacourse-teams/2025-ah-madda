@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { organizationQueryOptions } from '@/api/queries/organization';
 import { Button } from '@/shared/components/Button';
@@ -13,10 +13,7 @@ import { OrganizationInfo } from '../components/OrganizationInfo';
 
 export const OverviewPage = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-
-  const orgIdParam = searchParams.get('organizationId');
-  const organizationId = orgIdParam ? Number(orgIdParam) : undefined;
+  const { organizationId } = useParams();
 
   const { data: organizationData } = useQuery({
     ...organizationQueryOptions.organizations(String(organizationId ?? '')),
@@ -24,12 +21,12 @@ export const OverviewPage = () => {
   });
 
   const { data: eventData } = useQuery({
-    ...organizationQueryOptions.event(organizationId as number),
+    ...organizationQueryOptions.event(Number(organizationId)),
     enabled: !!organizationId,
   });
 
-  const goMyEvents = () => navigate(`/event/my?organizationId=${organizationId ?? ''}`);
-  const goHome = () => navigate(`/event?organizationId=${organizationId ?? ''}`);
+  const goMyEvents = () => navigate(`/${organizationId}/event/my`);
+  const goHome = () => navigate(`/${organizationId}/event`);
 
   // S.TODO 로딩 처리
 

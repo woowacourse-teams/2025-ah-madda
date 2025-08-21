@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { Button } from '@/shared/components/Button';
 import { Header } from '@/shared/components/Header';
@@ -12,7 +12,7 @@ import { MyEventContainer } from '../containers/MyEventContainer';
 
 export const MyEventPage = () => {
   const navigate = useNavigate();
-
+  const { organizationId } = useParams();
   return (
     <PageLayout
       header={
@@ -28,7 +28,7 @@ export const MyEventPage = () => {
             />
           }
           right={
-            <Button size="sm" onClick={() => navigate('/event/my')}>
+            <Button size="sm" onClick={() => navigate(`/${organizationId}/event/my`)}>
               내 이벤트
             </Button>
           }
