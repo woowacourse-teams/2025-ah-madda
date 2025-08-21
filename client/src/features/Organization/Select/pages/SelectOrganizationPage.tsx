@@ -23,7 +23,7 @@ const GAP = 80;
 const MAX_W_4 = CARD_W * 4 + GAP * 3;
 const MAX_W_3 = CARD_W * 3 + GAP * 2;
 const MAX_W_2 = CARD_W * 2 + GAP * 1;
-const MOBILE_ROW_HEIGHT = 168;
+const MOBILE_ROW_HEIGHT = 250;
 
 export const OrganizationSelectPage = () => {
   const navigate = useNavigate();
@@ -145,18 +145,7 @@ const OrganizationSelectBody = () => {
             }
 
             @media (max-width: 480px) {
-              display: grid;
-              grid-template-columns: repeat(2, ${CARD_W}px);
-              justify-content: center;
-              column-gap: 20px;
-              row-gap: 16px;
-
-              width: 100%;
-              max-width: 100%;
-              overflow-x: hidden;
-              overflow-y: auto;
-              max-height: ${MOBILE_ROW_HEIGHT}px;
-              padding-right: 8px;
+              display: none;
             }
           `}
         >
@@ -168,6 +157,87 @@ const OrganizationSelectBody = () => {
                 isAdmin={org.isAdmin}
                 onEdit={() => handleEdit(org.organizationId)}
               />
+            </Flex>
+          ))}
+        </Flex>
+
+        <Flex
+          dir="column"
+          css={css`
+            display: none;
+
+            @media (max-width: 480px) {
+              display: flex;
+              gap: 8px;
+
+              width: 100%;
+              max-width: 100%;
+              overflow-y: auto;
+              max-height: ${MOBILE_ROW_HEIGHT}px;
+              padding: 0 8px;
+              margin: 0 auto;
+            }
+          `}
+        >
+          {orgs.map((org) => (
+            <Flex
+              key={org.organizationId}
+              onClick={() => handleJoin(org.organizationId)}
+              alignItems="center"
+              width="100%"
+              gap="12px"
+              padding="10px 12px"
+              css={css`
+                border: 1px solid ${theme.colors.gray200};
+                border-radius: 12px;
+                background: #fff;
+                text-align: left;
+                cursor: pointer;
+                transition: background 0.15s ease;
+
+                &:hover {
+                  background: ${theme.colors.gray50};
+                }
+              `}
+            >
+              <Flex
+                as="span"
+                width="56px"
+                height="56px"
+                css={css`
+                  border-radius: 10px;
+                  background: ${theme.colors.gray100};
+                  background-image: ${org.imageUrl ? `url(${org.imageUrl})` : 'none'};
+                  background-size: cover;
+                  background-position: center;
+                `}
+              />
+
+              <Text
+                type="Body"
+                weight="bold"
+                css={css`
+                  flex: 1;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                `}
+              >
+                {org.name}
+              </Text>
+
+              {org.isAdmin && (
+                <Button
+                  size="sm"
+                  color="secondary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEdit(org.organizationId);
+                  }}
+                >
+                  수정
+                </Button>
+              )}
             </Flex>
           ))}
         </Flex>

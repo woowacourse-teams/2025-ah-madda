@@ -40,7 +40,7 @@ export const Info = () => {
 
   const handleEnterClick = () => {
     if (profileData?.nickname) {
-      navigate('/organization/select');
+      navigate('/organization');
       return;
     }
   };

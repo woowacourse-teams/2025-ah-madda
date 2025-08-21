@@ -6,9 +6,9 @@ import {
   CreateOrganizationAPIResponse,
 } from '../types/organizations';
 
-export async function createOrganization(
+const createOrganization = async (
   body: CreateOrganizationAPIRequest
-): Promise<CreateOrganizationAPIResponse> {
+): Promise<CreateOrganizationAPIResponse> => {
   const formData = new FormData();
 
   const organization = {
@@ -27,7 +27,7 @@ export async function createOrganization(
   }
 
   return fetcher.post<CreateOrganizationAPIResponse>('organizations', formData);
-}
+};
 
 export const useCreateOrganization = () =>
   useMutation<CreateOrganizationAPIResponse, Error, CreateOrganizationAPIRequest>({
