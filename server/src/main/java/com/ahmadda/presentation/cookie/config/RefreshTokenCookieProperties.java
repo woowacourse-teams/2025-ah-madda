@@ -44,6 +44,10 @@ public class RefreshTokenCookieProperties {
             throw new IllegalArgumentException("쿠키 Path가 비어있습니다.");
         }
 
+        if (domain == null || domain.isBlank()) {
+            throw new IllegalArgumentException("쿠키 Domain이 비어있습니다.");
+        }
+
         if (sameSite == null || sameSite.isBlank()) {
             throw new IllegalArgumentException("쿠키 SameSite가 비어있습니다.");
         }

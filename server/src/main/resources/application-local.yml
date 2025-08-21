@@ -28,7 +28,7 @@ jwt:
 cookie:
   refresh-token:
     path: /
-    domain: ~
+    domain: localhost
     same-site: None
     secure: true
     http-only: true
