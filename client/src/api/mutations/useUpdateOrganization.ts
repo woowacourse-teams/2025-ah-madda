@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { Organization } from '@/features/Event/types/Event';
+import { Organization } from '@/features/Organization/types/Organization';
 
 import { fetcher } from '../fetcher';
 
