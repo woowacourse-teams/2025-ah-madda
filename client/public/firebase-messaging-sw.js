@@ -68,7 +68,7 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('push', (event) => {
   if (!event.data) return;
 
-  const resultData = e.data.json().notification;
+  const resultData = event.data.json().notification;
   const notificationTitle = resultData.title;
   const notificationOptions = {
     body: resultData.body,
