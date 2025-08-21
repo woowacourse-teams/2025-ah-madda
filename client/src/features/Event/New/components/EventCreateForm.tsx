@@ -74,8 +74,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
 
   const {
     basicEventForm,
-    handleValueChange,
-    validateField,
+    setField,
     handleChange,
     errors,
     isValid: isBasicFormValid,
@@ -231,19 +230,15 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       return;
     }
 
-    handleValueChange('eventStart', formatDateForInput(finalStartTime));
-    handleValueChange('eventEnd', formatDateForInput(finalEndTime));
-
     const currentRegistrationEndTime =
       parseInputDate(basicEventForm.registrationEnd) || finalStartTime;
     const newRegistrationEnd = applyTimeToDate(startDate, currentRegistrationEndTime);
     const finalRegistrationEnd =
       newRegistrationEnd.getTime() > finalStartTime.getTime() ? finalStartTime : newRegistrationEnd;
-    handleValueChange('registrationEnd', formatDateForInput(finalRegistrationEnd));
 
-    validateField('eventStart', formatDateForInput(finalStartTime));
-    validateField('eventEnd', formatDateForInput(finalEndTime));
-    validateField('registrationEnd', formatDateForInput(finalRegistrationEnd));
+    setField('eventStart', formatDateForInput(finalStartTime));
+    setField('eventEnd', formatDateForInput(finalEndTime));
+    setField('registrationEnd', formatDateForInput(finalRegistrationEnd));
   };
 
   const handleRegistrationEndSelect = (date: Date, time: TimeValue) => {
@@ -258,8 +253,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       return;
     }
 
-    handleValueChange('registrationEnd', formatDateForInput(finalTime));
-    validateField('registrationEnd', formatDateForInput(finalTime));
+    setField('registrationEnd', formatDateForInput(finalTime));
   };
 
   return (
@@ -340,10 +334,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 errorMessage={errors.eventStart || errors.eventEnd}
                 isRequired
                 onClear={() => {
-                  handleValueChange('eventStart', '');
-                  handleValueChange('eventEnd', '');
-                  validateField('eventStart', '');
-                  validateField('eventEnd', '');
+                  setField('eventStart', '');
+                  setField('eventEnd', '');
                 }}
                 css={css`
                   cursor: pointer;
@@ -396,8 +388,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 errorMessage={errors.registrationEnd}
                 isRequired
                 onClear={() => {
-                  handleValueChange('registrationEnd', '');
-                  validateField('registrationEnd', '');
+                  setField('registrationEnd', '');
                 }}
                 css={css`
                   cursor: pointer;
@@ -474,8 +465,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               }
               onClose={capacityModalClose}
               onSubmit={(value) => {
-                handleValueChange('maxCapacity', value);
-                validateField('maxCapacity', value.toString());
+                setField('maxCapacity', value.toString());
               }}
             />
           </Flex>

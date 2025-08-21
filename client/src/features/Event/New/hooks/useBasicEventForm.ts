@@ -18,17 +18,16 @@ export const useBasicEventForm = (initialData?: Partial<CreateEventAPIRequest>) 
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleValueChange = (key: keyof BasicEventFormFields, value: string | number) => {
-    setBasicEventForm((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
+  const patchAndValidate = (patch: Partial<BasicEventFormFields>) => {
+    setBasicEventForm((prev) => {
+      const next = { ...prev, ...patch };
+      setErrors(validateEventForm(next));
+      return next;
+    });
   };
 
-  const validateField = (key: keyof BasicEventFormFields, value: string | number) => {
-    const updated = { ...basicEventForm, [key]: value };
-    const validation = validateEventForm(updated);
-    setErrors(validation);
+  const setField = (key: keyof BasicEventFormFields, value: string | number) => {
+    patchAndValidate({ [key]: value } as Partial<BasicEventFormFields>);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -36,8 +35,7 @@ export const useBasicEventForm = (initialData?: Partial<CreateEventAPIRequest>) 
     const parsedValue = type === 'number' ? Number(value) : value;
     const key = name as keyof BasicEventFormFields;
 
-    handleValueChange(key, parsedValue);
-    validateField(key, parsedValue);
+    patchAndValidate({ [key]: parsedValue } as Partial<BasicEventFormFields>);
   };
 
   const isValid = useMemo(() => {
@@ -57,18 +55,12 @@ export const useBasicEventForm = (initialData?: Partial<CreateEventAPIRequest>) 
   }, [basicEventForm, errors]);
 
   const loadFormData = (data: Partial<CreateEventAPIRequest>) => {
-    setBasicEventForm((prev) => {
-      const merged = { ...prev, ...data } as BasicEventFormFields;
-      const validation = validateEventForm(merged);
-      setErrors(validation);
-      return merged;
-    });
+    patchAndValidate(data as Partial<BasicEventFormFields>);
   };
 
   return {
     basicEventForm,
-    handleValueChange,
-    validateField,
+    setField,
     handleChange,
     isValid,
     errors,
