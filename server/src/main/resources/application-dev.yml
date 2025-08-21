@@ -33,7 +33,7 @@ cookie:
   refresh-token:
     path: /
     domain: ahmadda.com
-    same-site: None
+    same-site: Strict
     secure: true
     http-only: true
     ttl: 14d
