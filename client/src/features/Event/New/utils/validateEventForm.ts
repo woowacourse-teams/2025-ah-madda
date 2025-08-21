@@ -1,4 +1,4 @@
-import { BasicEventFormFields, CreateEventAPIRequest } from '../../types/Event';
+import type { BasicEventFormFields, CreateEventAPIRequest } from '../../types/Event';
 import { FIELD_CONFIG } from '../constants/formFieldConfig';
 
 import { getErrorMessage } from './getErrorMessage';
