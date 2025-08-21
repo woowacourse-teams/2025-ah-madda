@@ -65,6 +65,22 @@ self.addEventListener('fetch', (event) => {
   }
 });
 
+self.addEventListener('push', (event) => {
+  if (!event.data) return;
+
+  const resultData = e.data.json().notification;
+  const notificationTitle = resultData.title;
+  const notificationOptions = {
+    body: resultData.body,
+    icon: '/icon-512x512.png',
+    data: resultData.data,
+    tag: resultData.eventId || 'default',
+    requireInteraction: true,
+  };
+
+  event.waitUntil(self.registration.showNotification(notificationTitle, notificationOptions));
+});
+
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   const urlToOpen = event.notification.data?.redirectUrl || '/';
