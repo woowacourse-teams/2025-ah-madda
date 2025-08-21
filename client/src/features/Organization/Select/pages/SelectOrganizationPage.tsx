@@ -24,7 +24,6 @@ const MOBILE_ROW_HEIGHT = 250;
 
 export const OrganizationSelectPage = () => {
   const navigate = useNavigate();
-
   return (
     <PageLayout
       header={
@@ -33,7 +32,7 @@ export const OrganizationSelectPage = () => {
             <Icon
               name="logo"
               size={55}
-              onClick={() => navigate('/event')}
+              onClick={() => navigate(`/`)}
               css={css`
                 cursor: pointer;
               `}

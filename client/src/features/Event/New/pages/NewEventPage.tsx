@@ -22,7 +22,7 @@ export const NewEventPage = () => {
             <Icon
               name="logo"
               size={55}
-              onClick={() => navigate('/event')}
+              onClick={() => navigate(`/${organizationId}/event`)}
               css={css`
                 cursor: pointer;
               `}

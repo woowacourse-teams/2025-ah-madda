@@ -66,7 +66,7 @@ export const EventManagePage = () => {
               <Icon
                 name="logo"
                 size={55}
-                onClick={() => navigate('/event')}
+                onClick={() => navigate(`/${organizationId}/event`)}
                 css={css`
                   cursor: pointer;
                 `}
