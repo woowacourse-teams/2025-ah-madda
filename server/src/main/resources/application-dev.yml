@@ -32,8 +32,8 @@ jwt:
 cookie:
   refresh-token:
     path: /
-    domain: ahmadda.com
-    same-site: Strict
+    domain: .ahmadda.com
+    same-site: None
     secure: true
     http-only: true
     ttl: 14d
