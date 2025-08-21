@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 
 import { useQuery, useSuspenseQueries } from '@tanstack/react-query';
 
+import { HttpError } from '@/api/fetcher';
 import { useDeleteTemplate } from '@/api/mutations/useDeleteTemplate';
 import { eventQueryOptions } from '@/api/queries/event';
 import type { TemplateDetailAPIResponse } from '@/api/types/event';
@@ -70,8 +71,10 @@ export const TemplateDropdown = ({ onTemplateSelected }: TemplateDropdownProps) 
           close();
           setDeleteTemplateId(null);
         },
-        onError: () => {
-          error('템플릿 삭제에 실패했습니다.');
+        onError: (err) => {
+          if (err instanceof HttpError) {
+            error(err.message || '템플릿 삭제에 실패했어요.');
+          }
           setDeleteTemplateId(null);
         },
       });
