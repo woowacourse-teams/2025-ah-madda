@@ -52,7 +52,10 @@ export const InviteModal = () => {
           </Flex>
 
           <Flex dir="column" alignItems="center">
-            <OrganizationInfo name={organizationData?.name ?? ''} />
+            <OrganizationInfo
+              name={organizationData?.name ?? ''}
+              imageUrl={organizationData?.imageUrl ?? ''}
+            />
             <Input
               autoFocus
               id="nickname"

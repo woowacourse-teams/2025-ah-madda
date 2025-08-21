@@ -34,7 +34,7 @@ export const router = createBrowserRouter(
           Component: AuthCallback,
         },
         {
-          path: '/event',
+          path: '/:organizationId/event',
           Component: ProtectRoute,
           children: [
             {

@@ -1,11 +1,8 @@
-import { Suspense } from 'react';
-
 import { css } from '@emotion/react';
 import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import { organizationQueryOptions } from '@/api/queries/organization';
-import { ErrorPage } from '@/features/Error/pages/ErrorPage';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
@@ -27,7 +24,6 @@ const MOBILE_ROW_HEIGHT = 250;
 
 export const OrganizationSelectPage = () => {
   const navigate = useNavigate();
-
   return (
     <PageLayout
       header={
@@ -36,7 +32,7 @@ export const OrganizationSelectPage = () => {
             <Icon
               name="logo"
               size={55}
-              onClick={() => navigate('/event')}
+              onClick={() => navigate(`/`)}
               css={css`
                 cursor: pointer;
               `}
@@ -50,9 +46,7 @@ export const OrganizationSelectPage = () => {
         />
       }
     >
-      <Suspense fallback={<ErrorPage />}>
-        <OrganizationSelectBody />
-      </Suspense>
+      <OrganizationSelectBody />
     </PageLayout>
   );
 };
@@ -79,7 +73,7 @@ const OrganizationSelectBody = () => {
     isAdmin: profileQueries[idx]?.data?.isAdmin ?? org.isAdmin,
   }));
 
-  const handleJoin = (orgId: number) => navigate(`/event?organizationId=${orgId}`);
+  const handleJoin = (orgId: number) => navigate(`/${orgId}/event`);
   const handleEdit = (orgId: number) => navigate(`/organization/edit/${orgId}`);
 
   return (
