@@ -454,7 +454,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               <Text as="span" type="Body" color="#4b5563" data-role="value">
                 {basicEventForm.maxCapacity === UNLIMITED_CAPACITY
                   ? '제한없음 ✎'
-                  : `${basicEventForm.maxCapacity}명 ✎`}
+                  : `${basicEventForm.maxCapacity.toLocaleString()}명 ✎`}
               </Text>
             </Button>
 
