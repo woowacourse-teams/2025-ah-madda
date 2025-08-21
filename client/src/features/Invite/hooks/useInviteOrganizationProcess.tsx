@@ -49,7 +49,7 @@ export const useInviteOrganizationProcess = () => {
         onError: (err) => {
           error(err.message, { duration: 3000 });
           if (err.message === '이미 참여한 조직입니다.') {
-            navigate(`/event?organizationId=${organizationData?.organizationId}`);
+            navigate(`/${organizationData?.organizationId}/event`);
             return;
           }
           navigate('/');
