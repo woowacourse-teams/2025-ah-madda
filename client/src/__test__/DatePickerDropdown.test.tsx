@@ -1,4 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 
 import { DatePickerDropdown } from '@/features/Event/New/components/DatePickerDropdown';
@@ -94,7 +95,9 @@ describe('DatePickerDropdown', () => {
       expect(screen.getByText('확인')).toBeInTheDocument();
     });
 
-    test('취소 버튼 클릭 시 handleCancel을 호출해야 한다', () => {
+    test('취소 버튼 클릭 시 handleCancel을 호출해야 한다', async () => {
+      const user = userEvent.setup();
+
       render(
         <ThemeProviderWrapper>
           <DatePickerDropdown
@@ -107,12 +110,14 @@ describe('DatePickerDropdown', () => {
       );
 
       const cancelButton = screen.getByText('취소');
-      fireEvent.click(cancelButton);
+      await user.click(cancelButton);
 
       expect(mockSingleDatePickerReturn.handleCancel).toHaveBeenCalled();
     });
 
-    test('확인 버튼 클릭 시 handleConfirm을 호출해야 한다', () => {
+    test('확인 버튼 클릭 시 handleConfirm을 호출해야 한다', async () => {
+      const user = userEvent.setup();
+
       render(
         <ThemeProviderWrapper>
           <DatePickerDropdown
@@ -125,7 +130,7 @@ describe('DatePickerDropdown', () => {
       );
 
       const confirmButton = screen.getByText('확인');
-      fireEvent.click(confirmButton);
+      await user.click(confirmButton);
 
       expect(mockSingleDatePickerReturn.handleConfirm).toHaveBeenCalled();
     });
@@ -176,7 +181,9 @@ describe('DatePickerDropdown', () => {
       expect(screen.getByText('확인')).toBeInTheDocument();
     });
 
-    test('취소 버튼 클릭 시 handleCancel을 호출해야 한다', () => {
+    test('취소 버튼 클릭 시 handleCancel을 호출해야 한다', async () => {
+      const user = userEvent.setup();
+
       render(
         <ThemeProviderWrapper>
           <DatePickerDropdown
@@ -189,12 +196,14 @@ describe('DatePickerDropdown', () => {
       );
 
       const cancelButton = screen.getByText('취소');
-      fireEvent.click(cancelButton);
+      await user.click(cancelButton);
 
       expect(mockRangeDatePickerReturn.handleCancel).toHaveBeenCalled();
     });
 
-    test('확인 버튼 클릭 시 handleConfirm을 호출해야 한다', () => {
+    test('확인 버튼 클릭 시 handleConfirm을 호출해야 한다', async () => {
+      const user = userEvent.setup();
+
       render(
         <ThemeProviderWrapper>
           <DatePickerDropdown
@@ -207,7 +216,7 @@ describe('DatePickerDropdown', () => {
       );
 
       const confirmButton = screen.getByText('확인');
-      fireEvent.click(confirmButton);
+      await user.click(confirmButton);
 
       expect(mockRangeDatePickerReturn.handleConfirm).toHaveBeenCalled();
     });
