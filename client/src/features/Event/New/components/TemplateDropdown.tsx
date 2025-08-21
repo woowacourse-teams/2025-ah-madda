@@ -24,7 +24,7 @@ type TemplateDropdownProps = {
 export const TemplateDropdown = ({ onTemplateSelected }: TemplateDropdownProps) => {
   const [selectedTemplate, setSelectedTemplate] = useState('템플릿을 선택하세요');
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
-  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+  const [deleteTemplateId, setDeleteTemplateId] = useState<number | null>(null);
 
   const [{ data: templateList }] = useSuspenseQueries({
     queries: [eventQueryOptions.templateList()],
@@ -58,31 +58,24 @@ export const TemplateDropdown = ({ onTemplateSelected }: TemplateDropdownProps) 
   };
 
   const handleDeleteClick = (templateId: number) => {
-    const template = templateList.find((t) => t.templateId === templateId);
-    if (template) {
-      setDeleteTargetId(templateId);
-      open();
-    }
+    setDeleteTemplateId(templateId);
+    open();
   };
 
   const handleDeleteConfirm = () => {
-    if (deleteTargetId) {
-      deleteTemplate(deleteTargetId, {
+    if (deleteTemplateId) {
+      deleteTemplate(deleteTemplateId, {
         onSuccess: () => {
           success('템플릿이 성공적으로 삭제되었습니다!');
           close();
-          setDeleteTargetId(null);
+          setDeleteTemplateId(null);
         },
         onError: () => {
           error('템플릿 삭제에 실패했습니다.');
+          setDeleteTemplateId(null);
         },
       });
     }
-  };
-
-  const handleDeleteCancel = () => {
-    close();
-    setDeleteTargetId(null);
   };
 
   return (
@@ -134,11 +127,7 @@ export const TemplateDropdown = ({ onTemplateSelected }: TemplateDropdownProps) 
         </Dropdown.Content>
       </Dropdown>
 
-      <TemplateDeleteModal
-        isOpen={isOpen}
-        onClose={handleDeleteCancel}
-        onDeleteConfirm={handleDeleteConfirm}
-      />
+      <TemplateDeleteModal isOpen={isOpen} onClose={close} onDeleteConfirm={handleDeleteConfirm} />
     </Flex>
   );
 };
