@@ -45,17 +45,17 @@ export const useBasicEventForm = (initialData?: Partial<CreateEventAPIRequest>) 
 
       const all = validateEventForm(next);
 
-      (Object.keys(patch) as (keyof BasicEventFormFields)[]).forEach((k) => {
-        if (isProvided(next[k])) everNonEmptyRef.current[k] = true;
+      (Object.keys(patch) as (keyof BasicEventFormFields)[]).forEach((field) => {
+        if (isProvided(next[field])) everNonEmptyRef.current[field] = true;
       });
 
       const filtered: Partial<Record<keyof BasicEventFormFields, string>> = {};
-      (Object.keys(all) as (keyof BasicEventFormFields)[]).forEach((k) => {
-        const msg = all[k];
+      (Object.keys(all) as (keyof BasicEventFormFields)[]).forEach((field) => {
+        const msg = all[field];
         if (!msg) return;
 
-        if (!isProvided(next[k]) && !everNonEmptyRef.current[k]) return;
-        filtered[k] = msg;
+        if (!isProvided(next[field]) && !everNonEmptyRef.current[field]) return;
+        filtered[field] = msg;
       });
 
       setErrors(filtered);
