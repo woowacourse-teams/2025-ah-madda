@@ -266,7 +266,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
           </Text>
           <Flex gap="8px">
             <Button size="sm" onClick={templateModalOpen}>
-              나의 이벤트
+              불러오기
             </Button>
           </Flex>
         </Flex>
@@ -283,7 +283,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                   cursor: pointer;
                 `}
               >
-                <Text type="Label" color="gray">
+                <Text type="Label" color={theme.colors.primary500}>
                   +현재 글 템플릿에 추가
                 </Text>
               </Flex>
@@ -448,7 +448,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 }
               `}
             >
-              <Text type="Body" weight="medium">
+              <Text type="Heading" weight="medium">
                 인원
               </Text>
               <Text as="span" type="Body" color="#4b5563" data-role="value">
@@ -493,9 +493,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 </Text>
                 <Flex
                   css={css`
-                    width: 320px;
+                    min-width: 320px;
                     @media (max-width: 768px) {
-                      width: 100%;
+                      min-width: 260px;
                     }
                   `}
                 >
