@@ -94,9 +94,6 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
 
   const isFormReady = isBasicFormValid && isQuestionValid;
 
-  console.log('isFormReady', isFormReady);
-  console.log('isBasicFormValid', isBasicFormValid);
-  console.log('isQuestionValid', isQuestionValid);
   const handleTemplateSelected = (
     templateDetail: Pick<TemplateDetailAPIResponse, 'description'>
   ) => {
