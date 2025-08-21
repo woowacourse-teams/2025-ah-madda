@@ -62,7 +62,7 @@ export const MyPastEventModal = ({ isOpen, onClose, onEventSelected }: TemplateM
         width: 400px;
       `}
     >
-      <Flex dir="column" gap="24px" width="100%">
+      <Flex dir="column" width="100%">
         <Text type="Title" weight="bold" color={theme.colors.gray900}>
           나의 이벤트 불러오기
         </Text>
