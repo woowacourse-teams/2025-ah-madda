@@ -9,7 +9,6 @@ import { Input } from '@/shared/components/Input';
 import { Modal } from '@/shared/components/Modal';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
-import { removeLocalStorage, setLocalStorage } from '@/shared/utils/localStorage';
 
 import { useInviteOrganizationProcess } from '../hooks/useInviteOrganizationProcess';
 import { useNickNameForm } from '../hooks/useNickNameForm';
@@ -27,10 +26,10 @@ export const InviteModal = () => {
 
   useEffect(() => {
     if (inviteCode) {
-      setLocalStorage('inviteCode', inviteCode);
+      sessionStorage.setItem('inviteCode', inviteCode);
     }
     return () => {
-      removeLocalStorage('inviteCode');
+      sessionStorage.removeItem('inviteCode');
     };
   }, [inviteCode]);
 
