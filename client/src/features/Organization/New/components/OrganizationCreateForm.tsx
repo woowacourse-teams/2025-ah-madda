@@ -12,6 +12,7 @@ import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
+import { Textarea } from '@/shared/components/Textarea';
 import { useModal } from '@/shared/hooks/useModal';
 
 import { MAX_LENGTH } from '../constants/validationRules';
@@ -153,11 +154,9 @@ export const OrganizationCreateForm = () => {
           </Flex>
 
           <Flex dir="column" gap="12px">
-            <label htmlFor="orgName">
-              <Text type="Heading" weight="medium">
-                조직 이름
-              </Text>
-            </label>
+            <Text as="label" htmlFor="orgName" type="Heading" weight="medium">
+              조직 이름
+            </Text>
             <Input
               id="orgName"
               name="name"
@@ -172,21 +171,17 @@ export const OrganizationCreateForm = () => {
           </Flex>
 
           <Flex dir="column" gap="12px">
-            <label htmlFor="orgDescription">
-              <Text type="Heading" weight="medium">
-                한 줄 소개
-              </Text>
-            </label>
-            <Input
+            <Text as="label" htmlFor="orgDescription" type="Heading" weight="medium">
+              한 줄 소개
+            </Text>
+            <Textarea
               id="orgDescription"
               name="description"
               placeholder="조직을 소개해주세요."
               value={form.description}
               onChange={handleChange}
               errorMessage={errors.description}
-              showCounter
               maxLength={MAX_LENGTH.DESCRIPTION}
-              isRequired
             />
           </Flex>
 
