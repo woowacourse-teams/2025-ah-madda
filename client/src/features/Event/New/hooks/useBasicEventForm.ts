@@ -18,7 +18,7 @@ export const useBasicEventForm = (initialData?: Partial<CreateEventAPIRequest>) 
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const patchAndValidate = (patch: Partial<BasicEventFormFields>) => {
+  const updateAndValidate = (patch: Partial<BasicEventFormFields>) => {
     setBasicEventForm((prev) => {
       const next = { ...prev, ...patch };
       setErrors(validateEventForm(next));
@@ -31,7 +31,7 @@ export const useBasicEventForm = (initialData?: Partial<CreateEventAPIRequest>) 
     const parsedValue = type === 'number' ? Number(value) : value;
     const key = name as keyof BasicEventFormFields;
 
-    patchAndValidate({ [key]: parsedValue } as Partial<BasicEventFormFields>);
+    updateAndValidate({ [key]: parsedValue } as Partial<BasicEventFormFields>);
   };
 
   const isValid = useMemo(() => {
@@ -51,12 +51,12 @@ export const useBasicEventForm = (initialData?: Partial<CreateEventAPIRequest>) 
   }, [basicEventForm, errors]);
 
   const loadFormData = (data: Partial<CreateEventAPIRequest>) => {
-    patchAndValidate(data as Partial<BasicEventFormFields>);
+    updateAndValidate(data as Partial<BasicEventFormFields>);
   };
 
   return {
     basicEventForm,
-    patchAndValidate,
+    updateAndValidate,
     handleChange,
     isValid,
     errors,

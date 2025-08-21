@@ -74,7 +74,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
 
   const {
     basicEventForm,
-    patchAndValidate,
+    updateAndValidate,
     handleChange,
     errors,
     isValid: isBasicFormValid,
@@ -236,7 +236,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     const finalRegistrationEnd =
       newRegistrationEnd.getTime() > finalStartTime.getTime() ? finalStartTime : newRegistrationEnd;
 
-    patchAndValidate({
+    updateAndValidate({
       eventStart: formatDateForInput(finalStartTime),
       eventEnd: formatDateForInput(finalEndTime),
       registrationEnd: formatDateForInput(finalRegistrationEnd),
@@ -255,7 +255,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       return;
     }
 
-    patchAndValidate({ registrationEnd: formatDateForInput(finalTime) });
+    updateAndValidate({ registrationEnd: formatDateForInput(finalTime) });
   };
 
   return (
@@ -336,7 +336,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 errorMessage={errors.eventStart || errors.eventEnd}
                 isRequired
                 onClear={() => {
-                  patchAndValidate({ eventStart: '', eventEnd: '' });
+                  updateAndValidate({ eventStart: '', eventEnd: '' });
                 }}
                 css={css`
                   cursor: pointer;
@@ -389,7 +389,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 errorMessage={errors.registrationEnd}
                 isRequired
                 onClear={() => {
-                  patchAndValidate({ registrationEnd: '' });
+                  updateAndValidate({ registrationEnd: '' });
                 }}
                 css={css`
                   cursor: pointer;
@@ -466,7 +466,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               }
               onClose={capacityModalClose}
               onSubmit={(value) => {
-                patchAndValidate({ maxCapacity: value });
+                updateAndValidate({ maxCapacity: value });
               }}
             />
           </Flex>
