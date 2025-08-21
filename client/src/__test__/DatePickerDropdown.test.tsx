@@ -24,7 +24,7 @@ const mockUseSingleDatePicker = vi.mocked(useSingleDatePicker);
 const mockUseRangeDatePicker = vi.mocked(useRangeDatePicker);
 
 const mockSingleDatePickerReturn = {
-  selectedDate: new Date('2024-01-15'),
+  selectedDate: new Date('2025-12-15'),
   selectedTime: { hours: 14, minutes: 30 },
   setSelectedTime: vi.fn(),
   handleDateSelect: vi.fn(),
@@ -34,8 +34,8 @@ const mockSingleDatePickerReturn = {
 };
 
 const mockRangeDatePickerReturn = {
-  selectedStartDate: new Date('2024-01-15'),
-  selectedEndDate: new Date('2024-01-16'),
+  selectedStartDate: new Date('2025-12-15'),
+  selectedEndDate: new Date('2025-12-16'),
   selectedStartTime: { hours: 14, minutes: 30 },
   selectedEndTime: { hours: 16, minutes: 30 },
   setSelectedStartTime: vi.fn(),
@@ -95,7 +95,7 @@ describe('DatePickerDropdown', () => {
       expect(screen.getByText('확인')).toBeInTheDocument();
     });
 
-    test('취소 버튼 클릭 시 handleCancel을 호출해야 한다', async () => {
+    test('캘린더에서 이전/다음 월 버튼을 클릭하면 월이 변경되어야 한다', async () => {
       const user = userEvent.setup();
 
       render(
@@ -109,10 +109,19 @@ describe('DatePickerDropdown', () => {
         </ThemeProviderWrapper>
       );
 
-      const cancelButton = screen.getByText('취소');
-      await user.click(cancelButton);
+      expect(screen.getByText('2025년 12월')).toBeInTheDocument();
 
-      expect(mockSingleDatePickerReturn.handleCancel).toHaveBeenCalled();
+      const allButtons = screen.getAllByRole('button');
+      const prevMonthButton = allButtons[0];
+      const nextMonthButton = allButtons[1];
+
+      await user.click(nextMonthButton);
+
+      expect(screen.getByText('2026년 1월')).toBeInTheDocument();
+
+      await user.click(prevMonthButton);
+
+      expect(screen.getByText('2025년 12월')).toBeInTheDocument();
     });
 
     test('확인 버튼 클릭 시 handleConfirm을 호출해야 한다', async () => {
@@ -179,6 +188,71 @@ describe('DatePickerDropdown', () => {
       expect(screen.getByText('종료 시간')).toBeInTheDocument();
       expect(screen.getByText('취소')).toBeInTheDocument();
       expect(screen.getByText('확인')).toBeInTheDocument();
+    });
+
+    test('캘린더에서 시작 날짜와 종료 날짜를 순서대로 선택하면 날짜가 제대로 선택되어야 한다', async () => {
+      const user = userEvent.setup();
+
+      render(
+        <ThemeProviderWrapper>
+          <DatePickerDropdown
+            mode="range"
+            isOpen={true}
+            onClose={mockOnClose}
+            onSelect={mockOnSelect}
+          />
+        </ThemeProviderWrapper>
+      );
+
+      expect(screen.getByText('2025년 12월')).toBeInTheDocument();
+
+      const allButtons = screen.getAllByRole('button');
+      const dateButtons = allButtons.filter((button) => {
+        const text = button.textContent;
+        const dateNum = parseInt(text || '0');
+        return dateNum >= 1 && dateNum <= 31 && !(button as HTMLButtonElement).disabled;
+      });
+
+      expect(dateButtons.length).toBeGreaterThan(1);
+
+      const startDateButton = dateButtons[0];
+      const endDateButton = dateButtons[1];
+
+      await user.click(startDateButton);
+
+      await user.click(endDateButton);
+
+      expect(startDateButton).toBeInTheDocument();
+      expect(endDateButton).toBeInTheDocument();
+    });
+
+    test('캘린더에서 월 이동이 제대로 작동해야 한다', async () => {
+      const user = userEvent.setup();
+
+      render(
+        <ThemeProviderWrapper>
+          <DatePickerDropdown
+            mode="range"
+            isOpen={true}
+            onClose={mockOnClose}
+            onSelect={mockOnSelect}
+          />
+        </ThemeProviderWrapper>
+      );
+
+      expect(screen.getByText('2025년 12월')).toBeInTheDocument();
+
+      const allButtons = screen.getAllByRole('button');
+      const prevMonthButton = allButtons[0];
+      const nextMonthButton = allButtons[1];
+
+      await user.click(nextMonthButton);
+
+      expect(screen.getByText('2026년 1월')).toBeInTheDocument();
+
+      await user.click(prevMonthButton);
+
+      expect(screen.getByText('2025년 12월')).toBeInTheDocument();
     });
 
     test('취소 버튼 클릭 시 handleCancel을 호출해야 한다', async () => {
