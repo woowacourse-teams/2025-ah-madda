@@ -10,9 +10,12 @@ import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
 import { useToast } from '@/shared/components/Toast/ToastContext';
+import { useModal } from '@/shared/hooks/useModal';
 import { trackLoadTemplate } from '@/shared/lib/gaEvents';
 import { theme } from '@/shared/styles/theme';
 import { truncateText } from '@/shared/utils/text';
+
+import { TemplateDeleteModal } from './TemplateDeleteModal';
 
 type TemplateDropdownProps = {
   onTemplateSelected: (templateDetail: Pick<TemplateDetailAPIResponse, 'description'>) => void;
@@ -21,11 +24,15 @@ type TemplateDropdownProps = {
 export const TemplateDropdown = ({ onTemplateSelected }: TemplateDropdownProps) => {
   const [selectedTemplate, setSelectedTemplate] = useState('템플릿을 선택하세요');
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+
   const [{ data: templateList }] = useSuspenseQueries({
     queries: [eventQueryOptions.templateList()],
   });
 
   const { mutate: deleteTemplate } = useDeleteTemplate();
+
+  const { isOpen, open, close } = useModal();
 
   const { data: selectedTemplateData } = useQuery({
     ...eventQueryOptions.templateDetail(selectedTemplateId!),
@@ -50,18 +57,32 @@ export const TemplateDropdown = ({ onTemplateSelected }: TemplateDropdownProps) 
     setSelectedTemplateId(templateId);
   };
 
-  const handleDeleteTemplate = (templateId: number) => {
-    deleteTemplate(templateId, {
-      onSuccess: () => {
-        if (window.confirm('템플릿을 삭제하시겠습니까?')) {
+  const handleDeleteClick = (templateId: number) => {
+    const template = templateList.find((t) => t.templateId === templateId);
+    if (template) {
+      setDeleteTargetId(templateId);
+      open();
+    }
+  };
+
+  const handleDeleteConfirm = () => {
+    if (deleteTargetId) {
+      deleteTemplate(deleteTargetId, {
+        onSuccess: () => {
           success('템플릿이 성공적으로 삭제되었습니다!');
-          return;
-        }
-      },
-      onError: () => {
-        error('템플릿 삭제에 실패했습니다.');
-      },
-    });
+          close();
+          setDeleteTargetId(null);
+        },
+        onError: () => {
+          error('템플릿 삭제에 실패했습니다.');
+        },
+      });
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    close();
+    setDeleteTargetId(null);
   };
 
   return (
@@ -95,7 +116,7 @@ export const TemplateDropdown = ({ onTemplateSelected }: TemplateDropdownProps) 
                     gap="4px"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleDeleteTemplate(template.templateId);
+                      handleDeleteClick(template.templateId);
                     }}
                   >
                     <Icon name="delete" size={16} color="gray500" />
@@ -112,6 +133,12 @@ export const TemplateDropdown = ({ onTemplateSelected }: TemplateDropdownProps) 
           )}
         </Dropdown.Content>
       </Dropdown>
+
+      <TemplateDeleteModal
+        isOpen={isOpen}
+        onClose={handleDeleteCancel}
+        onDeleteConfirm={handleDeleteConfirm}
+      />
     </Flex>
   );
 };
