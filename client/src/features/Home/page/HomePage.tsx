@@ -26,11 +26,14 @@ export const HomePage = () => {
     window.location.href = authUrl;
   };
 
+  const shouldShowModal =
+    isAuthenticated() && isIOS() && isPWA() && Notification.permission === 'default';
+
   useEffect(() => {
-    if (isPWA() && isIOS() && Notification.permission !== 'granted') {
+    if (shouldShowModal) {
       open();
     }
-  }, [open]);
+  }, [open, shouldShowModal]);
 
   return (
     <>

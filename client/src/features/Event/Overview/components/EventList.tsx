@@ -4,6 +4,7 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 import { createInviteCode } from '@/api/mutations/useCreateInviteCode';
+import { Organization } from '@/features/Organization/types/Organization';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
@@ -12,7 +13,7 @@ import { theme } from '@/shared/styles/theme';
 
 import { useModal } from '../../../../shared/hooks/useModal';
 import { EventCard } from '../../components/EventCard';
-import { Event, Organization } from '../../types/Event';
+import { Event } from '../../types/Event';
 import { groupEventsByDate } from '../../utils/groupEventsByDate';
 import { EventContainer } from '../containers/EventContainer';
 
