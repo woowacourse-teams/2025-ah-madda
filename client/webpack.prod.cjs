@@ -4,6 +4,11 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = merge(common, {
   mode: 'production',
+  output: {
+    filename: '[name].[contenthash].js',
+    chunkFilename: '[name].[contenthash].chunk.js',
+    assetModuleFilename: 'assets/[name].[contenthash][ext]',
+  },
   devtool: 'source-map',
   optimization: {
     splitChunks: { chunks: 'all' },

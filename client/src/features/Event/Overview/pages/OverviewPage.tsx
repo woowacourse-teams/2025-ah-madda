@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { organizationQueryOptions } from '@/api/queries/organization';
 import { Button } from '@/shared/components/Button';
@@ -13,12 +13,20 @@ import { OrganizationInfo } from '../components/OrganizationInfo';
 
 export const OverviewPage = () => {
   const navigate = useNavigate();
+  const { organizationId } = useParams();
 
-  const { data: organizationData } = useQuery(
-    organizationQueryOptions.organizations('woowacourse')
-  );
+  const { data: organizationData } = useQuery({
+    ...organizationQueryOptions.organizations(String(organizationId ?? '')),
+    enabled: !!organizationId,
+  });
 
-  const { data: eventData } = useQuery(organizationQueryOptions.event(1));
+  const { data: eventData } = useQuery({
+    ...organizationQueryOptions.event(Number(organizationId)),
+    enabled: !!organizationId,
+  });
+
+  const goMyEvents = () => navigate(`/${organizationId}/event/my`);
+  const goHome = () => navigate(`/${organizationId}/event`);
 
   // S.TODO 로딩 처리
 
@@ -30,14 +38,14 @@ export const OverviewPage = () => {
             <Icon
               name="logo"
               size={55}
-              onClick={() => navigate('/event')}
+              onClick={goHome}
               css={css`
                 cursor: pointer;
               `}
             />
           }
           right={
-            <Button size="sm" onClick={() => navigate('/event/my')}>
+            <Button size="sm" onClick={goMyEvents}>
               내 이벤트
             </Button>
           }

@@ -28,12 +28,11 @@ import { EventManageContainer } from '../containers/EventManageContainer';
 
 export const EventManagePage = () => {
   const navigate = useNavigate();
-  const { eventId: eventIdParam } = useParams();
+  const { eventId: eventIdParam, organizationId } = useParams();
   const eventId = Number(eventIdParam);
   const { success, error } = useToast();
   const { isOpen, open, close } = useModal();
   const { data: event, refetch } = useQuery(eventQueryOptions.detail(eventId));
-
   const [{ data: profile }, { data: statistics = [] }] = useSuspenseQueries({
     queries: [profileQueryOptions.profile(), eventQueryOptions.statistic(eventId)],
   });
@@ -67,14 +66,14 @@ export const EventManagePage = () => {
               <Icon
                 name="logo"
                 size={55}
-                onClick={() => navigate('/event')}
+                onClick={() => navigate(`/${organizationId}/event`)}
                 css={css`
                   cursor: pointer;
                 `}
               />
             }
             right={
-              <Button size="sm" onClick={() => navigate('/event/my')}>
+              <Button size="sm" onClick={() => navigate(`/${organizationId}/event/my`)}>
                 내 이벤트
               </Button>
             }

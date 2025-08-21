@@ -1,9 +1,10 @@
 import { css } from '@emotion/react';
 
-import { NotificationButton } from '@/features/Event/My/components/NotificationButton';
 import { Flex } from '@/shared/components/Flex';
 import { Modal, ModalProps } from '@/shared/components/Modal/Modal';
 import { Text } from '@/shared/components/Text';
+
+import { NotificationButton } from './NotificationButton';
 
 export const AlarmModal = ({ isOpen, onClose }: ModalProps) => {
   return (

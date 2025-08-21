@@ -15,7 +15,6 @@ type OrganizationImageInputProps = {
   accept?: string;
   initialPreviewUrl?: string;
   disabled?: boolean;
-  label?: string;
   errorMessage?: string;
   helperText?: string;
 };
@@ -31,13 +30,24 @@ export const OrganizationImageInput = ({
   helperText,
 }: OrganizationImageInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
+
   const [preview, setPreview] = useState<string | null>(initialPreviewUrl ?? null);
+
+  const previewBlobRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (previewBlobRef.current) return;
+    setPreview(initialPreviewUrl ?? null);
+  }, [initialPreviewUrl]);
 
   useEffect(() => {
     return () => {
-      if (preview?.startsWith('blob:')) URL.revokeObjectURL(preview);
+      if (previewBlobRef.current) {
+        URL.revokeObjectURL(previewBlobRef.current);
+        previewBlobRef.current = null;
+      }
     };
-  }, [preview]);
+  }, []);
 
   const resetInputValue = () => {
     if (inputRef.current) inputRef.current.value = '';
@@ -49,7 +59,20 @@ export const OrganizationImageInput = ({
   };
 
   const handleImageSelection = (file: File | null) => {
-    const next = file ? URL.createObjectURL(file) : null;
+    if (previewBlobRef.current) {
+      URL.revokeObjectURL(previewBlobRef.current);
+      previewBlobRef.current = null;
+    }
+
+    if (!file) {
+      setPreview(initialPreviewUrl ?? null);
+      onChange(null);
+      resetInputValue();
+      return;
+    }
+
+    const next = URL.createObjectURL(file);
+    previewBlobRef.current = next;
     setPreview(next);
     onChange(file);
     resetInputValue();
@@ -58,6 +81,9 @@ export const OrganizationImageInput = ({
   const clearFile = () => handleImageSelection(null);
 
   const isError = Boolean(errorMessage);
+  const isEditMode = Boolean(initialPreviewUrl);
+  const hasNewFile = Boolean(previewBlobRef.current);
+  const showRemoveButton = isEditMode ? hasNewFile : Boolean(preview);
 
   return (
     <Flex
@@ -81,7 +107,7 @@ export const OrganizationImageInput = ({
             )}
           </StyledImgUpload>
 
-          {preview && (
+          {showRemoveButton && (
             <StyledRemoveButton
               size="sm"
               type="button"
@@ -92,7 +118,7 @@ export const OrganizationImageInput = ({
               }}
               disabled={disabled}
             >
-              제거
+              {isEditMode ? '복구' : '제거'}
             </StyledRemoveButton>
           )}
         </StyledImgBox>

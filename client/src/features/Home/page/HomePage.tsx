@@ -26,11 +26,14 @@ export const HomePage = () => {
     window.location.href = authUrl;
   };
 
+  const shouldShowModal =
+    isAuthenticated() && isIOS() && isPWA() && Notification.permission === 'default';
+
   useEffect(() => {
-    if (isPWA() && isIOS() && Notification.permission !== 'granted') {
+    if (shouldShowModal) {
       open();
     }
-  }, [open]);
+  }, [open, shouldShowModal]);
 
   return (
     <>
@@ -41,7 +44,7 @@ export const HomePage = () => {
               <Icon
                 name="logo"
                 size={55}
-                onClick={() => navigate('/event')}
+                onClick={() => navigate(`/`)}
                 css={css`
                   cursor: pointer;
                 `}

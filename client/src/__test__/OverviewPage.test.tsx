@@ -18,8 +18,8 @@ const mockFetcher = vi.mocked(fetcher);
 const renderOverviewPage = () => {
   render(
     <RouterWithQueryClient
-      initialRoute="/event"
-      routes={[{ path: '/event', element: <OverviewPage /> }]}
+      initialRoute="/1/event"
+      routes={[{ path: '/:organizationId/event', element: <OverviewPage /> }]}
     />
   );
 };
@@ -34,7 +34,7 @@ describe('OverView 페이지 테스트', () => {
       if (url.includes('organizations/1/events')) {
         return Promise.resolve(mockHostEvents);
       }
-      if (url.includes('organizations/woowacourse')) {
+      if (url.includes('organizations/1')) {
         return Promise.resolve(mockOrganization);
       }
       return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
@@ -51,7 +51,7 @@ describe('OverView 페이지 테스트', () => {
       if (url.includes('organizations/1/events')) {
         return Promise.resolve(mockHostEvents);
       }
-      if (url.includes('organizations/woowacourse')) {
+      if (url.includes('organizations/1')) {
         return Promise.resolve(mockOrganization);
       }
       return Promise.reject(new Error(`Unknown API endpoint: ${url}`));
@@ -71,7 +71,7 @@ describe('OverView 페이지 테스트', () => {
       if (url.includes('organizations/1/events')) {
         return Promise.resolve([]);
       }
-      if (url.includes('organizations/woowacourse')) {
+      if (url.includes('organizations/1')) {
         return Promise.resolve(mockOrganization);
       }
       return Promise.reject(new Error(`Unknown API endpoint: ${url}`));

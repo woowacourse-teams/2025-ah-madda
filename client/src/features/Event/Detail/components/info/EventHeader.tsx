@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { useEventNotificationToggle } from '@/api/mutations/useEventNotificationToggle';
 import { Badge } from '@/shared/components/Badge';
@@ -28,6 +28,7 @@ export const EventHeader = ({
   registrationEnd,
 }: EventHeaderProps) => {
   const navigate = useNavigate();
+  const { organizationId } = useParams();
   const status = badgeText(registrationEnd);
 
   const { optOut, optIn, isLoading, data } = useEventNotificationToggle(eventId);
@@ -65,7 +66,7 @@ export const EventHeader = ({
         <Button
           color="secondary"
           variant="outline"
-          onClick={() => navigate(`/event/edit/${eventId}`)}
+          onClick={() => navigate(`/${organizationId}/event/edit/${eventId}`)}
         >
           수정
         </Button>

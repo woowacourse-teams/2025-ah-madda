@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { HttpError } from '@/api/fetcher';
 import { useAddTemplate } from '@/api/mutations/useAddTemplate';
@@ -41,8 +41,6 @@ import { MyPastEventModal } from './MyPastEventModal';
 import { QuestionForm } from './QuestionForm';
 import { TemplateDropdown } from './TemplateDropdown';
 
-const ORGANIZATION_ID = 1; // 임시
-
 type EventCreateFormProps = {
   isEdit: boolean;
   eventId?: number;
@@ -50,8 +48,9 @@ type EventCreateFormProps = {
 
 export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const navigate = useNavigate();
+  const { organizationId } = useParams();
   const { success, error } = useToast();
-  const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
+  const { mutate: addEvent } = useAddEvent(Number(organizationId));
   const { mutate: updateEvent } = useUpdateEvent();
   const { mutate: addTemplate } = useAddTemplate();
 
@@ -74,8 +73,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
 
   const {
     basicEventForm,
-    handleValueChange,
-    validateField,
+    updateAndValidate,
     handleChange,
     errors,
     isValid: isBasicFormValid,
@@ -158,7 +156,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         clear();
         trackCreateEvent();
         success('😁 이벤트가 성공적으로 생성되었습니다!');
-        navigate(`/event/${eventId}`);
+        navigate(`/${organizationId}/event/${eventId}`);
       },
       onError: handleError,
     });
@@ -171,7 +169,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         onSuccess: () => {
           clear();
           success('😁 이벤트가 성공적으로 수정되었습니다!');
-          navigate(`/event/${eventId}`);
+          navigate(`/${organizationId}/event/${eventId}`);
         },
         onError: handleError,
       }
@@ -231,19 +229,17 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       return;
     }
 
-    handleValueChange('eventStart', formatDateForInput(finalStartTime));
-    handleValueChange('eventEnd', formatDateForInput(finalEndTime));
-
     const currentRegistrationEndTime =
       parseInputDate(basicEventForm.registrationEnd) || finalStartTime;
     const newRegistrationEnd = applyTimeToDate(startDate, currentRegistrationEndTime);
     const finalRegistrationEnd =
       newRegistrationEnd.getTime() > finalStartTime.getTime() ? finalStartTime : newRegistrationEnd;
-    handleValueChange('registrationEnd', formatDateForInput(finalRegistrationEnd));
 
-    validateField('eventStart', formatDateForInput(finalStartTime));
-    validateField('eventEnd', formatDateForInput(finalEndTime));
-    validateField('registrationEnd', formatDateForInput(finalRegistrationEnd));
+    updateAndValidate({
+      eventStart: formatDateForInput(finalStartTime),
+      eventEnd: formatDateForInput(finalEndTime),
+      registrationEnd: formatDateForInput(finalRegistrationEnd),
+    });
   };
 
   const handleRegistrationEndSelect = (date: Date, time: TimeValue) => {
@@ -258,8 +254,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       return;
     }
 
-    handleValueChange('registrationEnd', formatDateForInput(finalTime));
-    validateField('registrationEnd', formatDateForInput(finalTime));
+    updateAndValidate({ registrationEnd: formatDateForInput(finalTime) });
   };
 
   return (
@@ -340,10 +335,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 errorMessage={errors.eventStart || errors.eventEnd}
                 isRequired
                 onClear={() => {
-                  handleValueChange('eventStart', '');
-                  handleValueChange('eventEnd', '');
-                  validateField('eventStart', '');
-                  validateField('eventEnd', '');
+                  updateAndValidate({ eventStart: '', eventEnd: '' });
                 }}
                 css={css`
                   cursor: pointer;
@@ -396,8 +388,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 errorMessage={errors.registrationEnd}
                 isRequired
                 onClear={() => {
-                  handleValueChange('registrationEnd', '');
-                  validateField('registrationEnd', '');
+                  updateAndValidate({ registrationEnd: '' });
                 }}
                 css={css`
                   cursor: pointer;
@@ -474,8 +465,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               }
               onClose={capacityModalClose}
               onSubmit={(value) => {
-                handleValueChange('maxCapacity', value);
-                validateField('maxCapacity', value.toString());
+                updateAndValidate({ maxCapacity: value });
               }}
             />
           </Flex>
