@@ -1,3 +1,5 @@
+import { css } from '@emotion/react';
+
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Modal } from '@/shared/components/Modal';
@@ -16,17 +18,26 @@ export const TemplateDeleteModal = ({
   onDeleteConfirm,
 }: TemplateDeleteModalProps) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <Flex dir="column" gap="24px" padding="24px" width="400px">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      css={css`
+        max-width: 320px;
+      `}
+    >
+      <Flex dir="column" gap="24px" padding="24px">
         <Flex dir="column" gap="8px">
-          <Text type="Heading" color={theme.colors.gray900}>
+          <Text type="Heading" weight="bold" color={theme.colors.gray900}>
             템플릿 삭제
           </Text>
-          <Text type="Body" color={theme.colors.gray600}>
-            템플릿을 삭제하시겠습니까?
-            <br />
-            삭제된 템플릿은 복구할 수 없습니다.
-          </Text>
+          <Flex dir="column">
+            <Text type="Body" weight="regular" color={theme.colors.gray600}>
+              템플릿을 삭제하시겠습니까?
+            </Text>
+            <Text type="Body" weight="regular" color={theme.colors.gray600}>
+              삭제된 템플릿은 복구할 수 없습니다.
+            </Text>
+          </Flex>
         </Flex>
 
         <Flex dir="row" gap="8px" justifyContent="flex-end">
