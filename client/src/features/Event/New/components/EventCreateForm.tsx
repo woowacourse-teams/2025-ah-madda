@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { HttpError } from '@/api/fetcher';
 import { useAddTemplate } from '@/api/mutations/useAddTemplate';
@@ -50,6 +50,7 @@ type EventCreateFormProps = {
 
 export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const navigate = useNavigate();
+  const { organizationId } = useParams();
   const { success, error } = useToast();
   const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
   const { mutate: updateEvent } = useUpdateEvent();
@@ -93,6 +94,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
 
   const isFormReady = isBasicFormValid && isQuestionValid;
 
+  console.log('isFormReady', isFormReady);
+  console.log('isBasicFormValid', isBasicFormValid);
+  console.log('isQuestionValid', isQuestionValid);
   const handleTemplateSelected = (
     templateDetail: Pick<TemplateDetailAPIResponse, 'description'>
   ) => {
@@ -158,7 +162,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         clear();
         trackCreateEvent();
         success('😁 이벤트가 성공적으로 생성되었습니다!');
-        navigate(`/event/${eventId}`);
+        navigate(`/${organizationId}/event/${eventId}`);
       },
       onError: handleError,
     });
@@ -171,7 +175,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         onSuccess: () => {
           clear();
           success('😁 이벤트가 성공적으로 수정되었습니다!');
-          navigate(`/event/${eventId}`);
+          navigate(`/${organizationId}/event/${eventId}`);
         },
         onError: handleError,
       }
