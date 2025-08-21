@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
 
+import { css } from '@emotion/react';
 import { useQuery, useSuspenseQueries } from '@tanstack/react-query';
 
+import { useDeleteTemplate } from '@/api/mutations/useDeleteTemplate';
 import { eventQueryOptions } from '@/api/queries/event';
 import type { TemplateDetailAPIResponse } from '@/api/types/event';
 import { Dropdown } from '@/shared/components/Dropdown';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
+import { IconButton } from '@/shared/components/IconButton';
 import { Text } from '@/shared/components/Text';
+import { useToast } from '@/shared/components/Toast/ToastContext';
 import { trackLoadTemplate } from '@/shared/lib/gaEvents';
 import { theme } from '@/shared/styles/theme';
 import { truncateText } from '@/shared/utils/text';
@@ -23,10 +27,13 @@ export const TemplateDropdown = ({ onTemplateSelected }: TemplateDropdownProps) 
     queries: [eventQueryOptions.templateList()],
   });
 
+  const { mutate: deleteTemplate } = useDeleteTemplate();
+
   const { data: selectedTemplateData } = useQuery({
     ...eventQueryOptions.templateDetail(selectedTemplateId!),
     enabled: selectedTemplateId !== null,
   });
+  const { error, success } = useToast();
 
   useEffect(() => {
     if (selectedTemplateData && selectedTemplateId) {
@@ -45,6 +52,20 @@ export const TemplateDropdown = ({ onTemplateSelected }: TemplateDropdownProps) 
     setSelectedTemplateId(templateId);
   };
 
+  const handleDeleteTemplate = (templateId: number) => {
+    deleteTemplate(templateId, {
+      onSuccess: () => {
+        if (window.confirm('템플릿을 삭제하시겠습니까?')) {
+          success('템플릿이 성공적으로 삭제되었습니다!');
+          return;
+        }
+      },
+      onError: () => {
+        error('템플릿 삭제에 실패했습니다.');
+      },
+    });
+  };
+
   return (
     <Flex dir="column" gap="8px" width="100%">
       <Dropdown>
@@ -60,15 +81,31 @@ export const TemplateDropdown = ({ onTemplateSelected }: TemplateDropdownProps) 
         <Dropdown.Content>
           {templateList && templateList.length > 0 ? (
             templateList.map((template) => (
-              <Dropdown.Item
-                key={template.templateId}
-                onClick={() => {
-                  handleTemplateSelect(template.templateId);
-                }}
-              >
-                <Text type="Body" color={theme.colors.gray800}>
-                  {truncateText(template.title)}
-                </Text>
+              <Dropdown.Item key={template.templateId}>
+                <Flex justifyContent="space-between" alignItems="center" width="100%">
+                  <Flex
+                    onClick={() => {
+                      handleTemplateSelect(template.templateId);
+                    }}
+                    css={css`
+                      flex: 1;
+                      cursor: pointer;
+                    `}
+                  >
+                    <Text type="Body" color={theme.colors.gray800}>
+                      {truncateText(template.title)}
+                    </Text>
+                  </Flex>
+                  <IconButton
+                    name="delete"
+                    size={16}
+                    color="gray500"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteTemplate(template.templateId);
+                    }}
+                  />
+                </Flex>
               </Dropdown.Item>
             ))
           ) : (
