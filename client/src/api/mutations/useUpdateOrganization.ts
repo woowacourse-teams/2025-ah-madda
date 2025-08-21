@@ -4,13 +4,13 @@ import { Organization } from '@/features/Organization/types/Organization';
 
 import { fetcher } from '../fetcher';
 
-export async function updateOrganization(
+const updateOrganization = async (
   organizationId: number,
   body: {
     organization: { name: string; description: string };
     thumbnail?: File | null;
   }
-): Promise<void> {
+) => {
   const formData = new FormData();
 
   const organization = {
@@ -28,7 +28,7 @@ export async function updateOrganization(
   }
 
   await fetcher.patch<void>(`organizations/${organizationId}`, formData);
-}
+};
 
 export const useUpdateOrganization = () =>
   useMutation({
