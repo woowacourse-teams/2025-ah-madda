@@ -62,6 +62,15 @@ jobs:
           echo "version=$version" >> $GITHUB_OUTPUT
           echo "Using version: $version"
 
+      - name: Create and push Git tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          tag="${{ steps.calc.outputs.version }}"
+          git tag "$tag"
+          git push origin "$tag"
+
       - name: Checkout with submodules
         uses: actions/checkout@v4
         with:
@@ -97,12 +106,3 @@ jobs:
           file: ./server/Dockerfile
           push: true
           tags: amadda/ahmadda_server:${{ steps.calc.outputs.version }}
-
-      - name: Create and push Git tag
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          tag="${{ steps.calc.outputs.version }}"
-          git tag "$tag"
-          git push origin "$tag"

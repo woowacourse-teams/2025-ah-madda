@@ -26,8 +26,7 @@ public class CookieProvider {
                 .path(refreshTokenCookieProperties.getPath())
                 .build();
     }
-
-
+    
     public ResponseCookie createLogoutRefreshTokenCookie() {
         return ResponseCookie.from(REFRESH_TOKEN_KEY, "")
                 .maxAge(0)
