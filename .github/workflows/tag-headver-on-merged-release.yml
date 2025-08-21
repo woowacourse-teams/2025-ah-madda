@@ -41,17 +41,12 @@ jobs:
           head=${{ steps.head.outputs.head }}
           yearweek=${{ steps.yearweek.outputs.yearweek }}
 
-          base_tag="v${head}.${yearweek}"
-          be_tag="be-${base_tag}.1"
-          fe_tag="fe-${base_tag}.1"
+          tag="v${head}.${yearweek}"
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git tag "$base_tag"
-          git tag "$be_tag"
-          git tag "$fe_tag"
+          git tag "$tag"
+          git push origin "$tag"
 
-          git push origin "$base_tag" "$be_tag" "$fe_tag"
-
-          echo "Tagged: $base_tag, $be_tag, $fe_tag"
+          echo "Tagged: $tag"
