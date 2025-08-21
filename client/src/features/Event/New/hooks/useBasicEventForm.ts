@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react';
 
 import { BasicEventFormFields, CreateEventAPIRequest } from '../../types/Event';
 import { FIELD_CONFIG } from '../constants/formFieldConfig';
+import { computeEverNonEmpty, isProvided } from '../utils/fieldPresence';
 import { validateEventForm } from '../utils/validateEventForm';
 
 const makeInitialForm = (initialData?: Partial<CreateEventAPIRequest>): BasicEventFormFields => ({
@@ -14,20 +15,6 @@ const makeInitialForm = (initialData?: Partial<CreateEventAPIRequest>): BasicEve
   maxCapacity: 10,
   ...initialData,
 });
-
-const isProvided = (v: unknown): boolean => {
-  if (v === null || v === undefined) return false;
-  if (typeof v === 'string') return v.trim() !== '';
-  return true;
-};
-
-const computeEverNonEmpty = (form: BasicEventFormFields) => {
-  const map: Partial<Record<keyof BasicEventFormFields, boolean>> = {};
-  (Object.keys(form) as (keyof BasicEventFormFields)[]).forEach((k) => {
-    map[k] = isProvided(form[k]);
-  });
-  return map;
-};
 
 export const useBasicEventForm = (initialData?: Partial<CreateEventAPIRequest>) => {
   const initialForm = makeInitialForm(initialData);
