@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { Badge } from '@/shared/components/Badge';
 import { Flex } from '@/shared/components/Flex';
@@ -37,7 +37,7 @@ export const EventCard = ({
   cardType = 'default',
 }: EventCardProps) => {
   const navigate = useNavigate();
-
+  const { organizationId } = useParams();
   const { isUnlimited, progressValue, progressMax } = calculateCapacityStatus(
     maxCapacity,
     currentGuestCount
@@ -47,9 +47,9 @@ export const EventCard = ({
     trackClickEventCard(title);
 
     if (cardType === 'host') {
-      navigate(`/event/manage/${eventId}`);
+      navigate(`/${organizationId}/event/manage/${eventId}`);
     } else {
-      navigate(`/event/${eventId}`);
+      navigate(`/${organizationId}/event/${eventId}`);
     }
   };
 

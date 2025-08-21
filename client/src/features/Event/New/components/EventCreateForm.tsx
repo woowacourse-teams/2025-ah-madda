@@ -2,16 +2,19 @@ import { useEffect, useRef } from 'react';
 
 import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { HttpError } from '@/api/fetcher';
+import { useAddTemplate } from '@/api/mutations/useAddTemplate';
 import { useUpdateEvent } from '@/api/mutations/useUpdateEvent';
 import { getEventDetailAPI } from '@/api/queries/event';
+import type { EventTemplateAPIResponse, TemplateDetailAPIResponse } from '@/api/types/event';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
 import { Textarea } from '@/shared/components/Textarea';
+import { useToast } from '@/shared/components/Toast/ToastContext';
 import { useAutoSessionSave } from '@/shared/hooks/useAutoSessionSave';
 import { useModal } from '@/shared/hooks/useModal';
 import { trackCreateEvent } from '@/shared/lib/gaEvents';
@@ -20,15 +23,23 @@ import { theme } from '@/shared/styles/theme';
 import { MAX_LENGTH, UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useBasicEventForm } from '../hooks/useBasicEventForm';
+import { useDropdownStates } from '../hooks/useDropdownStates';
 import { useQuestionForm } from '../hooks/useQuestionForm';
-import { useTemplateLoader } from '../hooks/useTemplateLoader';
+import type { TimeValue } from '../types/time';
 import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
+import {
+  formatDateForInput,
+  formatDateForDisplay,
+  parseInputDate,
+  applyTimeToDate,
+} from '../utils/date';
+import { timeValueToDate, timeValueFromDate } from '../utils/time';
 
+import { DatePickerDropdown } from './DatePickerDropdown';
 import { MaxCapacityModal } from './MaxCapacityModal';
+import { MyPastEventModal } from './MyPastEventModal';
 import { QuestionForm } from './QuestionForm';
-import { TemplateModal } from './TemplateModal';
-
-const ORGANIZATION_ID = 1; // 임시
+import { TemplateDropdown } from './TemplateDropdown';
 
 type EventCreateFormProps = {
   isEdit: boolean;
@@ -37,13 +48,18 @@ type EventCreateFormProps = {
 
 export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const navigate = useNavigate();
-  const { mutate: addEvent } = useAddEvent(ORGANIZATION_ID);
+  const { organizationId } = useParams();
+  const { success, error } = useToast();
+  const { mutate: addEvent } = useAddEvent(Number(organizationId));
   const { mutate: updateEvent } = useUpdateEvent();
+  const { mutate: addTemplate } = useAddTemplate();
+
   const { data: eventDetail } = useQuery({
     queryKey: ['event', 'detail', Number(eventId)],
     queryFn: () => getEventDetailAPI(Number(eventId)),
     enabled: isEdit,
   });
+  const { openDropdown, closeDropdown, isOpen } = useDropdownStates();
   const {
     isOpen: isTemplateModalOpen,
     open: templateModalOpen,
@@ -57,8 +73,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
 
   const {
     basicEventForm,
-    handleValueChange,
-    validateField,
+    updateAndValidate,
     handleChange,
     errors,
     isValid: isBasicFormValid,
@@ -76,18 +91,32 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
 
   const isFormReady = isBasicFormValid && isQuestionValid;
 
-  const { template, selectedEventId, handleSelectEvent } = useTemplateLoader();
-
-  const handleTemplateLoad = () => {
-    loadFormData(template ?? {});
+  const handleTemplateSelected = (
+    templateDetail: Pick<TemplateDetailAPIResponse, 'description'>
+  ) => {
+    loadFormData({
+      title: basicEventForm.title,
+      description: templateDetail.description,
+      place: basicEventForm.place || '',
+      maxCapacity: basicEventForm.maxCapacity || UNLIMITED_CAPACITY,
+    });
   };
 
-  const handleError = (error: unknown) => {
-    if (error instanceof HttpError) {
-      alert(error.data?.detail || '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+  const handleEventSelected = (eventData: Omit<EventTemplateAPIResponse, 'eventId'>) => {
+    loadFormData({
+      title: eventData.title,
+      description: eventData.description,
+      place: eventData.place || '',
+      maxCapacity: eventData.maxCapacity || UNLIMITED_CAPACITY,
+    });
+  };
+
+  const handleError = (err: unknown) => {
+    if (err instanceof HttpError) {
+      error(err.data?.detail || '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
       return;
     }
-    alert('네트워크 연결을 확인해주세요.');
+    error('네트워크 연결을 확인해주세요.');
   };
 
   const buildPayload = () => ({
@@ -126,8 +155,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       onSuccess: ({ eventId }) => {
         clear();
         trackCreateEvent();
-        alert('😁 이벤트가 성공적으로 생성되었습니다!');
-        navigate(`/event/${eventId}`);
+        success('😁 이벤트가 성공적으로 생성되었습니다!');
+        navigate(`/${organizationId}/event/${eventId}`);
       },
       onError: handleError,
     });
@@ -139,8 +168,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       {
         onSuccess: () => {
           clear();
-          alert('😁 이벤트가 성공적으로 수정되었습니다!');
-          navigate(`/event/${eventId}`);
+          success('😁 이벤트가 성공적으로 수정되었습니다!');
+          navigate(`/${organizationId}/event/${eventId}`);
         },
         onError: handleError,
       }
@@ -160,6 +189,74 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     }
   };
 
+  const handleAddTemplate = () => {
+    const title = basicEventForm.description.split('\n')[0].trim();
+
+    addTemplate(
+      {
+        title: title,
+        description: basicEventForm.description,
+      },
+      {
+        onSuccess: () => {
+          success('템플릿이 성공적으로 추가되었습니다!');
+        },
+        onError: () => {
+          if (!basicEventForm.description || basicEventForm.description.trim() === '') {
+            error('이벤트 설명을 입력해 주세요');
+          }
+        },
+      }
+    );
+  };
+
+  const handleDateRangeSelect = (
+    startDate: Date,
+    endDate: Date,
+    startTime: TimeValue,
+    endTime: TimeValue
+  ) => {
+    if (!startTime || !endTime) {
+      error('시간이 선택되지 않았습니다. 시간을 먼저 선택해 주세요.');
+      return;
+    }
+
+    const finalStartTime = timeValueToDate(startTime, startDate);
+    const finalEndTime = timeValueToDate(endTime, endDate);
+
+    if (!finalStartTime || !finalEndTime) {
+      error('시간 처리 중 오류가 발생했습니다.');
+      return;
+    }
+
+    const currentRegistrationEndTime =
+      parseInputDate(basicEventForm.registrationEnd) || finalStartTime;
+    const newRegistrationEnd = applyTimeToDate(startDate, currentRegistrationEndTime);
+    const finalRegistrationEnd =
+      newRegistrationEnd.getTime() > finalStartTime.getTime() ? finalStartTime : newRegistrationEnd;
+
+    updateAndValidate({
+      eventStart: formatDateForInput(finalStartTime),
+      eventEnd: formatDateForInput(finalEndTime),
+      registrationEnd: formatDateForInput(finalRegistrationEnd),
+    });
+  };
+
+  const handleRegistrationEndSelect = (date: Date, time: TimeValue) => {
+    if (!time) {
+      error('시간이 선택되지 않았습니다. 시간을 먼저 선택해 주세요.');
+      return;
+    }
+
+    const finalTime = timeValueToDate(time, date);
+    if (!finalTime) {
+      error('시간 처리 중 오류가 발생했습니다.');
+      return;
+    }
+
+    updateAndValidate({ registrationEnd: formatDateForInput(finalTime) });
+  };
+
   return (
     <Flex>
       <Flex dir="column" gap="40px" padding="60px 0" width="100%">
@@ -167,18 +264,30 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
           <Text as="h1" type="Display" weight="bold">
             {isEdit ? '이벤트 수정' : '이벤트 생성하기'}
           </Text>
-          <Button size="sm" onClick={templateModalOpen}>
-            템플릿
-          </Button>
+          <Flex gap="8px">
+            <Button size="sm" onClick={templateModalOpen}>
+              나의 이벤트
+            </Button>
+          </Flex>
         </Flex>
 
         <Flex dir="column" gap="30px">
           <Flex dir="column" gap="8px">
-            <label htmlFor="title">
-              <Text type="Heading" weight="medium">
+            <Flex justifyContent="space-between">
+              <Text as="label" htmlFor="title" type="Heading" weight="medium">
                 이벤트 이름
               </Text>
-            </label>
+              <Flex
+                onClick={handleAddTemplate}
+                css={css`
+                  cursor: pointer;
+                `}
+              >
+                <Text type="Label" color="gray">
+                  +현재 글 템플릿에 추가
+                </Text>
+              </Flex>
+            </Flex>
             <Input
               id="title"
               name="title"
@@ -206,53 +315,41 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               gap="8px"
               css={css`
                 flex: 1;
+                position: relative;
               `}
             >
-              <label htmlFor="eventStart">
-                <Text type="Heading" weight="medium">
-                  이벤트 시작일
-                </Text>
-              </label>
+              <Text as="label" type="Heading" weight="medium" htmlFor="eventDateRange">
+                이벤트 기간
+              </Text>
               <Input
-                id="eventStart"
-                name="eventStart"
-                type="datetime-local"
-                min="2025-07-31T14:00"
-                placeholder="2025.07.30 13:00"
-                value={basicEventForm.eventStart}
-                onChange={(e) => {
-                  handleChange(e);
-                  const registrationEndValue = e.target.value;
-                  handleValueChange('registrationEnd', registrationEndValue);
-                  validateField('registrationEnd', registrationEndValue);
+                id="eventDateRange"
+                name="eventDateRange"
+                value={
+                  basicEventForm.eventStart && basicEventForm.eventEnd
+                    ? `${formatDateForDisplay(basicEventForm.eventStart)} ~ ${formatDateForDisplay(basicEventForm.eventEnd)}`
+                    : ''
+                }
+                placeholder="이벤트 시작일과 종료일을 선택해주세요"
+                readOnly
+                onClick={() => openDropdown('eventDateRange')}
+                errorMessage={errors.eventStart || errors.eventEnd}
+                isRequired
+                onClear={() => {
+                  updateAndValidate({ eventStart: '', eventEnd: '' });
                 }}
-                errorMessage={errors.eventStart}
-                isRequired
+                css={css`
+                  cursor: pointer;
+                `}
               />
-            </Flex>
-
-            <Flex
-              dir="column"
-              gap="8px"
-              css={css`
-                flex: 1;
-              `}
-            >
-              <label htmlFor="eventEnd">
-                <Text type="Heading" weight="medium">
-                  이벤트 종료일
-                </Text>
-              </label>
-              <Input
-                id="eventEnd"
-                name="eventEnd"
-                type="datetime-local"
-                placeholder="2025.07.30 15:00"
-                value={basicEventForm.eventEnd}
-                min={basicEventForm.eventStart}
-                onChange={handleChange}
-                errorMessage={errors.eventEnd}
-                isRequired
+              <DatePickerDropdown
+                mode="range"
+                isOpen={isOpen('eventDateRange')}
+                onClose={() => closeDropdown()}
+                onSelect={handleDateRangeSelect}
+                initialStartDate={parseInputDate(basicEventForm.eventStart)}
+                initialEndDate={parseInputDate(basicEventForm.eventEnd)}
+                initialStartTime={timeValueFromDate(parseInputDate(basicEventForm.eventStart))}
+                initialEndTime={timeValueFromDate(parseInputDate(basicEventForm.eventEnd))}
               />
             </Flex>
           </Flex>
@@ -271,23 +368,39 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               gap="8px"
               css={css`
                 flex: 1;
+                position: relative;
               `}
             >
-              <label htmlFor="registrationEnd">
-                <Text type="Heading" weight="medium">
-                  신청 종료일
-                </Text>
-              </label>
+              <Text as="label" type="Heading" weight="medium" htmlFor="registrationEnd">
+                신청 종료일
+              </Text>
               <Input
                 id="registrationEnd"
                 name="registrationEnd"
-                type="datetime-local"
-                placeholder="2025.07.25 15:00"
-                value={basicEventForm.registrationEnd}
-                max={basicEventForm.eventStart}
-                onChange={handleChange}
+                value={
+                  basicEventForm.registrationEnd
+                    ? formatDateForDisplay(basicEventForm.registrationEnd)
+                    : ''
+                }
+                placeholder="신청 종료일과 시간을 선택해주세요"
+                readOnly
+                onClick={() => openDropdown('registrationEnd')}
                 errorMessage={errors.registrationEnd}
                 isRequired
+                onClear={() => {
+                  updateAndValidate({ registrationEnd: '' });
+                }}
+                css={css`
+                  cursor: pointer;
+                `}
+              />
+              <DatePickerDropdown
+                mode="single"
+                isOpen={isOpen('registrationEnd')}
+                onClose={() => closeDropdown()}
+                onSelect={handleRegistrationEndSelect}
+                initialDate={parseInputDate(basicEventForm.registrationEnd) || null}
+                initialTime={timeValueFromDate(parseInputDate(basicEventForm.registrationEnd))}
               />
             </Flex>
 
@@ -298,11 +411,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 flex: 1;
               `}
             >
-              <label htmlFor="place">
-                <Text type="Heading" weight="medium">
-                  이벤트 장소
-                </Text>
-              </label>
+              <Text as="label" type="Heading" weight="medium" htmlFor="place">
+                이벤트 장소
+              </Text>
               <Input
                 id="place"
                 name="place"
@@ -315,6 +426,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               />
             </Flex>
           </Flex>
+
           <Flex dir="column" gap="8px" margin="10px 0">
             <Button
               type="button"
@@ -353,17 +465,44 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               }
               onClose={capacityModalClose}
               onSubmit={(value) => {
-                handleValueChange('maxCapacity', value);
-                validateField('maxCapacity', value.toString());
+                updateAndValidate({ maxCapacity: value });
               }}
             />
           </Flex>
+
           <Flex dir="column" gap="8px">
-            <label htmlFor="description">
-              <Text type="Heading" weight="medium">
-                소개글
-              </Text>
-            </label>
+            <Flex
+              justifyContent="space-between"
+              alignItems="flex-start"
+              css={css`
+                @media (max-width: 768px) {
+                  flex-direction: column;
+                  gap: 12px;
+                }
+              `}
+            >
+              <Flex
+                dir="row"
+                justifyContent="space-between"
+                alignItems="center"
+                width="100%"
+                gap="8px"
+              >
+                <Text as="label" htmlFor="description" type="Heading" weight="medium">
+                  소개글
+                </Text>
+                <Flex
+                  css={css`
+                    width: 320px;
+                    @media (max-width: 768px) {
+                      width: 100%;
+                    }
+                  `}
+                >
+                  <TemplateDropdown onTemplateSelected={handleTemplateSelected} />
+                </Flex>
+              </Flex>
+            </Flex>
             <Textarea
               id="description"
               name="description"
@@ -399,12 +538,10 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
           </Flex>
         </Flex>
 
-        <TemplateModal
+        <MyPastEventModal
           isOpen={isTemplateModalOpen}
           onClose={templateModalClose}
-          onConfirm={handleTemplateLoad}
-          onSelect={handleSelectEvent}
-          selectedEventId={selectedEventId}
+          onEventSelected={handleEventSelected}
         />
       </Flex>
     </Flex>

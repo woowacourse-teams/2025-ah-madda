@@ -14,6 +14,8 @@ import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE reminder_history SET deleted_at = CURRENT_TIMESTAMP WHERE reminder_history_id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class ReminderHistory extends BaseEntity {
 
     @Id

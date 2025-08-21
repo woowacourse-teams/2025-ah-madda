@@ -1,0 +1,51 @@
+spring:
+  flyway:
+    enabled: false
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+  cloud:
+    aws:
+      s3:
+        region: ap-northeast-2
+
+jwt:
+  access-secret-key: ${jwt.local.access-secret-key}
+  access-expiration: ${jwt.local.access-expiration}
+  refresh-secret-key: ${jwt.local.refresh-secret-key}
+  refresh-expiration: ${jwt.local.refresh-expiration}
+
+cookie:
+  refresh-token:
+    path: /
+    domain: localhost
+    same-site: None
+    secure: true
+    http-only: true
+    ttl: 14d
+
+cors:
+  allowed-origins:
+    - http://localhost:5173
+    - http://127.0.0.1:5173
+
+notification:
+  redirect-url-prefix: http://localhost:5173/event/
+
+mail:
+  mock: true
+
+push:
+  mock: true
+
+slack:
+  mock: true
+
+aws:
+  s3:
+    mock: true
+    bucket: ${aws.local.s3.bucket}
+    folder: ${aws.local.s3.folder}

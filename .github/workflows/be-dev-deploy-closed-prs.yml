@@ -1,0 +1,91 @@
+name: BE Dev Deploy Closed Prs
+
+on:
+  push:
+    branches:
+      - be/dev
+    paths:
+      - 'server/**'
+
+jobs:
+  setup:
+    runs-on: ubuntu-22.04-arm
+
+    outputs:
+      image-tag: ${{ steps.set-tag.outputs.image-tag }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.BE_SUBMODULE_TOKEN }}
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set image tag based on date and run number
+        id: set-tag
+        run: echo "image-tag=$(date +'%Y-%m-%d')-${{ github.run_number }}" >> $GITHUB_OUTPUT
+
+      - name: Run tests
+        working-directory: ./server
+        run: |
+          chmod +x ./gradlew
+          ./gradlew test
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DEV_DOCKERHUB_DEPLOY_USERNAME }}
+          password: ${{ secrets.DEV_DOCKERHUB_DEPLOY_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          file: ./server/Dockerfile
+          push: true
+          tags: ahmadda1234/ahmadda_server:${{ steps.set-tag.outputs.image-tag }}
+
+  deploy:
+    needs: setup
+    runs-on: 
+      - self-hosted
+      - dev
+
+    steps:
+      - name: Set tag name from setup output
+        run: echo "TAG=${{ needs.setup.outputs.image-tag }}" >> $GITHUB_ENV
+
+      - name: Log in to Docker Hub
+        run: |
+          sudo docker login --username ${{ secrets.DEV_DOCKERHUB_DEPLOY_USERNAME }} --password ${{ secrets.DEV_DOCKERHUB_DEPLOY_TOKEN }}
+
+      - name: Stop existing container and pull latest image
+        run: |
+          if sudo docker inspect ahmadda-dev-server &>/dev/null; then
+            sudo docker stop ahmadda-dev-server || true
+            sudo docker rm -f ahmadda-dev-server || true
+            sudo docker image prune -af || true
+          fi
+          sudo docker pull ahmadda1234/ahmadda_server:$TAG
+
+      - name: Run container
+        run: |
+          sudo docker run \
+            --name ahmadda-dev-server \
+            --restart unless-stopped \
+            -p 8080:8080 \
+            -e PROFILE=dev \
+            --log-driver=awslogs \
+            --log-opt awslogs-group=ahmadda-dev-server \
+            --log-opt awslogs-region=ap-northeast-2 \
+            --log-opt awslogs-stream=$TAG \
+            -d ahmadda1234/ahmadda_server:$TAG

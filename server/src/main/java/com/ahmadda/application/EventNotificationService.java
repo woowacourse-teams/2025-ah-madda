@@ -19,6 +19,8 @@ import com.ahmadda.domain.ReminderHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -28,6 +30,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class EventNotificationService {
+
+    private static final int REMINDER_LIMIT_DURATION_MINUTES = 30;
+    private static final int MAX_REMINDER_COUNT_IN_DURATION = 10;
 
     private final Reminder reminder;
     private final EventRepository eventRepository;
@@ -43,6 +48,7 @@ public class EventNotificationService {
         Event event = getEvent(eventId);
         validateOrganizer(event, loginMember.memberId());
         validateContentLength(request.content());
+        validateReminderLimit(event);
 
         List<OrganizationMember> recipients =
                 getOrganizationMemberFromIds(event, request.organizationMemberIds());
@@ -69,6 +75,53 @@ public class EventNotificationService {
         if (content.length() > 20) {
             throw new BusinessFlowViolatedException("알림 메시지는 20자 이하여야 합니다.");
         }
+    }
+
+    private void validateReminderLimit(final Event event) {
+        LocalDateTime now = LocalDateTime.now();
+        Long organizerId = event.getOrganizer()
+                .getId();
+        LocalDateTime threshold = now.minusMinutes(REMINDER_LIMIT_DURATION_MINUTES);
+
+        List<ReminderHistory> recentReminderHistories = getRecentReminderHistories(organizerId, threshold);
+
+        if (recentReminderHistories.size() >= MAX_REMINDER_COUNT_IN_DURATION) {
+            LocalDateTime oldestReminderTime = recentReminderHistories
+                    .get(MAX_REMINDER_COUNT_IN_DURATION - 1)
+                    .getCreatedAt();
+
+            long minutesUntilAvailable = calculateRemainingMinutes(now, oldestReminderTime);
+
+            throw new BusinessFlowViolatedException(
+                    String.format(
+                            "리마인더는 %d분 내 최대 %d회까지만 발송할 수 있습니다. 약 %d분 후 다시 시도해주세요.",
+                            REMINDER_LIMIT_DURATION_MINUTES,
+                            MAX_REMINDER_COUNT_IN_DURATION,
+                            minutesUntilAvailable
+                    )
+            );
+        }
+    }
+
+    private List<ReminderHistory> getRecentReminderHistories(final Long organizerId, final LocalDateTime threshold) {
+        return reminderHistoryRepository
+                .findTop10ByEventOrganizerIdAndCreatedAtAfterOrderByCreatedAtDesc(organizerId, threshold);
+    }
+
+    /**
+     * 남은 대기 시간을 분 단위로 계산한다.
+     * <p>
+     * 사유: Duration의 toMinutes()는 내림 처리되므로,
+     * 예외 메시지에 "0분"으로 표시되는 오차를 방지하기 위해 초 단위로 계산 후 올림 처리한다.
+     *
+     * @param now                현재 시각
+     * @param oldestReminderTime 제한 기준이 되는 리마인더의 시각
+     * @return 제한 해제까지 남은 시간 (분 단위, 올림 처리)
+     */
+    private long calculateRemainingMinutes(final LocalDateTime now, final LocalDateTime oldestReminderTime) {
+        Duration remaining = Duration.between(now, oldestReminderTime.plusMinutes(REMINDER_LIMIT_DURATION_MINUTES));
+
+        return Math.max(0, (remaining.getSeconds() + 59) / 60);
     }
 
     private List<OrganizationMember> getOrganizationMemberFromIds(

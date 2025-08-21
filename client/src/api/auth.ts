@@ -11,9 +11,13 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 
 const getRedirectUri = (): string => {
   const isProduction = window.location.hostname === 'ahmadda.com';
+  const isStaging = window.location.hostname === 'staging.ahmadda.com';
 
   if (isProduction) {
     return 'https://ahmadda.com/auth';
+  }
+  if (isStaging) {
+    return 'https://staging.ahmadda.com/auth';
   }
   return 'http://localhost:5173/auth';
 };

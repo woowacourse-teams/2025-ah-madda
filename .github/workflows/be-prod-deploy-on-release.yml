@@ -1,0 +1,117 @@
+name: BE Prod Deploy On Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write 
+
+jobs:
+  setup:
+    runs-on: ubuntu-22.04-arm
+
+    outputs:
+      image-tag: ${{ steps.extract.outputs.version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+          token: ${{ secrets.BE_SUBMODULE_TOKEN }}
+
+      - name: Fetch and determine BE image tag
+        id: extract
+        run: |
+          git fetch --tags
+
+          base_tag=$(git tag -l 'v*.*' | sort -V | tail -n 1)
+          base_version="${base_tag#v}"
+
+          latest_be_tag=$(git tag -l 'be-v*.*.*' | sort -V | tail -n 1)
+
+          if [[ "$latest_be_tag" == be-v${base_version}.* ]]; then
+            last_build=$(echo "$latest_be_tag" | awk -F. '{print $3}')
+            next_build=$((last_build + 1))
+          else
+            next_build=1
+          fi
+
+          version="be-v${base_version}.${next_build}"
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "Using version: $version"
+
+          if ! git tag -l | grep -q "^$version$"; then
+            echo "Tag $version does not exist. Creating and pushing..."
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git tag "$version"
+            git push origin "$version"
+          else
+            echo "Tag $version already exists. Skipping creation."
+          fi
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Run tests
+        working-directory: ./server
+        run: |
+          chmod +x ./gradlew
+          ./gradlew test
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.PROD_DOCKERHUB_DEPLOY_USERNAME }}
+          password: ${{ secrets.PROD_DOCKERHUB_DEPLOY_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          file: ./server/Dockerfile
+          push: true
+          tags: amadda/ahmadda_server:${{ steps.extract.outputs.version }}
+
+  deploy:
+    needs: setup
+    runs-on:
+      - self-hosted
+      - prod
+
+    steps:
+      - name: Set tag name from setup output
+        run: echo "TAG=${{ needs.setup.outputs.image-tag }}" >> $GITHUB_ENV
+
+      - name: Log in to Docker Hub
+        run: |
+          sudo docker login \
+            --username ${{ secrets.PROD_DOCKERHUB_DEPLOY_USERNAME }} \
+            --password ${{ secrets.PROD_DOCKERHUB_DEPLOY_TOKEN }}
+
+      - name: Stop existing container and pull latest image
+        run: |
+          if sudo docker inspect ahmadda-prod-server &>/dev/null; then
+            sudo docker stop ahmadda-prod-server || true
+            sudo docker rm -f ahmadda-prod-server || true
+            sudo docker image prune -af || true
+          fi
+          sudo docker pull amadda/ahmadda_server:$TAG
+
+      - name: Run container
+        run: |
+          sudo docker run -v /home/ubuntu/app/logs:/app/logs \
+            --name ahmadda-prod-server \
+            --restart unless-stopped \
+            -p 80:8080 \
+            -e PROFILE=prod \
+            -d amadda/ahmadda_server:$TAG
