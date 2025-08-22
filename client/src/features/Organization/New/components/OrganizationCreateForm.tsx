@@ -82,9 +82,9 @@ export const OrganizationCreateForm = () => {
     name: form.name.trim(),
     description: form.description.trim(),
     thumbnail: form.thumbnail,
-    onSuccess: (id) => {
+    onSuccess: (newOrganizationId: number) => {
       close();
-      navigate(`/event?organizationId=${id}`);
+      navigate(`/${newOrganizationId}/event`);
     },
     onClose: close,
   });
