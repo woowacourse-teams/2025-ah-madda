@@ -25,7 +25,7 @@ export const ActionButtons = ({ onIssueInviteCode }: ActionButtonsProps) => {
         <Button size="md" iconName="share" variant="outline" onClick={onIssueInviteCode}>
           조직 초대
         </Button>
-        <Button size="md" iconName="plus" onClick={() => navigate('/event/new')}>
+        <Button size="md" iconName="plus" onClick={() => navigate(`/${organizationId}/event/new`)}>
           이벤트 생성
         </Button>
       </MobileFixedCTA>
