@@ -47,3 +47,7 @@ export const RouterWithQueryClient = ({
     </ThemeProvider>
   );
 };
+
+export const ThemeProviderWrapper = ({ children }: { children: React.ReactNode }) => {
+  return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
+};
