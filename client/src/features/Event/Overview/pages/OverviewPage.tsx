@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQueries } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { organizationQueryOptions } from '@/api/queries/organization';
@@ -15,14 +15,11 @@ export const OverviewPage = () => {
   const navigate = useNavigate();
   const { organizationId } = useParams();
 
-  const { data: organizationData } = useQuery({
-    ...organizationQueryOptions.organizations(String(organizationId ?? '')),
-    enabled: !!organizationId,
-  });
-
-  const { data: eventData } = useQuery({
-    ...organizationQueryOptions.event(Number(organizationId)),
-    enabled: !!organizationId,
+  const [{ data: organizationData }, { data: eventData }] = useSuspenseQueries({
+    queries: [
+      organizationQueryOptions.organizations(String(organizationId)),
+      organizationQueryOptions.event(Number(organizationId)),
+    ],
   });
 
   const goMyEvents = () => navigate(`/${organizationId}/event/my`);

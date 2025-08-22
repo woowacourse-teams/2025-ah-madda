@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { useQueries } from '@tanstack/react-query';
+import { useSuspenseQueries } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { HttpError } from '@/api/fetcher';
@@ -20,11 +20,12 @@ import { EventDetailContainer } from '../containers/EventDetailContainer';
 export const EventDetailPage = () => {
   const navigate = useNavigate();
   const { eventId, organizationId } = useParams();
+
   const [
     { data: event },
     { data: guestStatus, isError: guestStatusError, error: guestStatusErrorData },
     { data: organizerStatus },
-  ] = useQueries({
+  ] = useSuspenseQueries({
     queries: [
       eventQueryOptions.detail(Number(eventId)),
       eventQueryOptions.guestStatus(Number(eventId)),
