@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
 
-    private static final long WINDOW_NANOS = TimeUnit.MILLISECONDS.toNanos(60_000);
+    private static final long WINDOW_NANOS = TimeUnit.SECONDS.toNanos(60);
     private static final int MAX_REQUESTS = 100;
 
     private final HeaderProvider headerProvider;
