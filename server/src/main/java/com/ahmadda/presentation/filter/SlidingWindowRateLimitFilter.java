@@ -69,7 +69,7 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
                         removeExpiredTimestamps(timestamps, now);
 
                         if (timestamps.size() >= MAX_REQUESTS) {
-                            long retryAfterSeconds = calculateRetryAfterSeconds(timestamps, now);
+                            long retryAfterSeconds = calculateRetryAfterSeconds(timestamps, now, id);
 
                             return new RateLimitResult(timestamps, true, retryAfterSeconds);
                         }
@@ -120,8 +120,13 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
      * @param now        현재 시각 (System.nanoTime() 기준)
      * @return 다음 요청이 허용되기까지 남은 시간 (초). 최소 1초 이상으로 보정됨.
      */
-    private long calculateRetryAfterSeconds(final Deque<Long> timestamps, final long now) {
+    private long calculateRetryAfterSeconds(final Deque<Long> timestamps, final long now, final Long memberId) {
         if (timestamps.isEmpty()) {
+            log.warn(
+                    "SlidingWindowRateLimitFilterError: reRetryAfterSeconds를 계산할 때 timestamps가 비어있습니다. 발생시간={}, memberId={}",
+                    now,
+                    memberId
+            );
             return 1;
         }
 
