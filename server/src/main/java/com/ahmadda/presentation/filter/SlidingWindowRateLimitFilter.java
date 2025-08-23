@@ -69,17 +69,29 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
 
     private boolean isRateLimited(final Deque<Long> timestamps, final long now) {
         synchronized (timestamps) {
-            while (!timestamps.isEmpty() && timestamps.peekFirst() < now - WINDOW_NANOS) {
-                timestamps.pollFirst();
-            }
+            removeExpiredTimestamps(timestamps, now);
 
-            if (timestamps.size() >= MAX_REQUESTS) {
+            if (hasExceededRequestLimit(timestamps)) {
                 return true;
             }
 
             timestamps.addLast(now);
             return false;
         }
+    }
+
+    private void removeExpiredTimestamps(final Deque<Long> timestamps, final long now) {
+        while (!timestamps.isEmpty() && isOutsideWindow(timestamps.peekFirst(), now)) {
+            timestamps.pollFirst();
+        }
+    }
+
+    private boolean isOutsideWindow(final long timestamp, final long now) {
+        return timestamp < now - WINDOW_NANOS;
+    }
+
+    private boolean hasExceededRequestLimit(final Deque<Long> timestamps) {
+        return timestamps.size() >= MAX_REQUESTS;
     }
 
     private void respondTooManyRequests(
