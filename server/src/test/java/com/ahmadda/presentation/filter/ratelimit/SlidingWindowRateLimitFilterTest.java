@@ -11,6 +11,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
+import java.util.ArrayDeque;
+import java.util.concurrent.TimeUnit;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -84,5 +88,24 @@ class SlidingWindowRateLimitFilterTest {
                 eq(response),
                 anyLong()
         );
+    }
+
+    @Test
+    void 오래된_요청기록을_제거한다() {
+        // given
+        var memberId = 1L;
+        var oldTimestamp = System.nanoTime() - TimeUnit.MINUTES.toNanos(10);
+
+        var deque = new ArrayDeque<Long>();
+        deque.add(oldTimestamp);
+
+        filter.getRequestLogs()
+                .put(memberId, deque);
+
+        // when
+        filter.cleanUpStaleRequestLogs();
+
+        // then
+        assertThat(filter.getRequestLogs()).doesNotContainKey(memberId);
     }
 }

@@ -6,6 +6,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+@Getter
 @Slf4j
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE + 2)
@@ -89,6 +91,7 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
         requestLogs.entrySet()
                 .removeIf(entry -> {
                     Deque<Long> timestamps = entry.getValue();
+
                     synchronized (timestamps) {
                         removeExpiredTimestamps(timestamps, now);
 
