@@ -15,16 +15,17 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -46,73 +47,66 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             final HttpServletRequest request,
             final HttpServletResponse response,
-            final FilterChain filterChain
+            final FilterChain chain
     ) throws ServletException, IOException {
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         Long memberId = extractMemberIdSafely(authorizationHeader);
 
         if (memberId == null) {
-            filterChain.doFilter(request, response);
+            chain.doFilter(request, response);
             return;
         }
 
         long now = System.nanoTime();
-        Deque<Long> timestamps = requestLogs.computeIfAbsent(memberId, id -> new ConcurrentLinkedDeque<>());
 
-        if (isRateLimited(timestamps, now)) {
-            respondTooManyRequests(request, response, timestamps, now);
+        RateLimitResult result = (RateLimitResult) requestLogs.compute(
+                memberId, (id, timestamps) -> {
+                    if (timestamps == null) {
+                        timestamps = new ArrayDeque<>();
+                    }
+
+                    synchronized (timestamps) {
+                        removeExpiredTimestamps(timestamps, now);
+
+                        if (timestamps.size() >= MAX_REQUESTS) {
+                            long retryAfterSeconds = calculateRetryAfterSeconds(timestamps, now);
+
+                            return new RateLimitResult(timestamps, true, retryAfterSeconds);
+                        }
+
+                        timestamps.addLast(now);
+                        return new RateLimitResult(timestamps, false, 0);
+                    }
+                }
+        );
+
+        if (result.isRateLimited) {
+            respondTooManyRequests(request, response, result.retryAfterSeconds);
             return;
         }
 
-        filterChain.doFilter(request, response);
+        chain.doFilter(request, response);
     }
 
-    private boolean isRateLimited(final Deque<Long> timestamps, final long now) {
-        synchronized (timestamps) {
-            removeExpiredTimestamps(timestamps, now);
+    @Scheduled(fixedDelay = 10 * 60 * 1000)
+    public void cleanUpStaleRequestLogs() {
+        long now = System.nanoTime();
 
-            if (hasExceededRequestLimit(timestamps)) {
-                return true;
-            }
+        requestLogs.entrySet()
+                .removeIf(entry -> {
+                    Deque<Long> timestamps = entry.getValue();
+                    synchronized (timestamps) {
+                        removeExpiredTimestamps(timestamps, now);
 
-            timestamps.addLast(now);
-            return false;
-        }
+                        return timestamps.isEmpty();
+                    }
+                });
     }
 
     private void removeExpiredTimestamps(final Deque<Long> timestamps, final long now) {
-        while (!timestamps.isEmpty() && isOutsideWindow(timestamps.peekFirst(), now)) {
+        while (!timestamps.isEmpty() && timestamps.peekFirst() < now - WINDOW_NANOS) {
             timestamps.pollFirst();
         }
-    }
-
-    private boolean isOutsideWindow(final long timestamp, final long now) {
-        return timestamp < now - WINDOW_NANOS;
-    }
-
-    private boolean hasExceededRequestLimit(final Deque<Long> timestamps) {
-        return timestamps.size() >= MAX_REQUESTS;
-    }
-
-    private void respondTooManyRequests(
-            final HttpServletRequest request,
-            final HttpServletResponse response,
-            final Deque<Long> timestamps,
-            final long now
-    ) throws IOException {
-        long retryAfterSeconds = calculateRetryAfterSeconds(timestamps, now);
-
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.TOO_MANY_REQUESTS);
-        problemDetail.setTitle("Too Many Requests");
-        problemDetail.setDetail("요청이 너무 많습니다." + retryAfterSeconds + "초 후 다시 시도해 주세요.");
-        problemDetail.setInstance(URI.create(request.getRequestURI()));
-
-        response.setHeader(HttpHeaders.RETRY_AFTER, String.valueOf(retryAfterSeconds));
-        response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-        response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
-        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        response.getWriter()
-                .write(objectMapper.writeValueAsString(problemDetail));
     }
 
     /**
@@ -127,16 +121,32 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
      * @return 다음 요청이 허용되기까지 남은 시간 (초). 최소 1초 이상으로 보정됨.
      */
     private long calculateRetryAfterSeconds(final Deque<Long> timestamps, final long now) {
-        synchronized (timestamps) {
-            if (timestamps.isEmpty()) {
-                return 1;
-            }
-
-            long oldest = timestamps.peekFirst();
-            long retryNanos = (oldest + WINDOW_NANOS) - now;
-
-            return Math.max(1, TimeUnit.NANOSECONDS.toSeconds(retryNanos + 999_999_999));
+        if (timestamps.isEmpty()) {
+            return 1;
         }
+
+        long oldest = timestamps.peekFirst();
+        long retryNanos = (oldest + WINDOW_NANOS) - now;
+
+        return Math.max(1, TimeUnit.NANOSECONDS.toSeconds(retryNanos + 999_999_999));
+    }
+
+    private void respondTooManyRequests(
+            final HttpServletRequest request,
+            final HttpServletResponse response,
+            final long retryAfterSeconds
+    ) throws IOException {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.TOO_MANY_REQUESTS);
+        problemDetail.setTitle("Too Many Requests");
+        problemDetail.setDetail("요청이 너무 많습니다. " + retryAfterSeconds + "초 후 다시 시도해 주세요.");
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
+
+        response.setHeader(HttpHeaders.RETRY_AFTER, String.valueOf(retryAfterSeconds));
+        response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+        response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        response.getWriter()
+                .write(objectMapper.writeValueAsString(problemDetail));
     }
 
     private Long extractMemberIdSafely(final String authorizationHeader) {
@@ -147,6 +157,18 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
                     .getMemberId();
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    private static class RateLimitResult extends ArrayDeque<Long> {
+
+        final boolean isRateLimited;
+        final long retryAfterSeconds;
+
+        RateLimitResult(final Deque<Long> delegate, final boolean isRateLimited, final long retryAfterSeconds) {
+            super(delegate);
+            this.isRateLimited = isRateLimited;
+            this.retryAfterSeconds = retryAfterSeconds;
         }
     }
 }
