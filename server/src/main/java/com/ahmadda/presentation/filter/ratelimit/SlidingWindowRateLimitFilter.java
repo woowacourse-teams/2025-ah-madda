@@ -1,8 +1,7 @@
-package com.ahmadda.presentation.filter;
+package com.ahmadda.presentation.filter.ratelimit;
 
 import com.ahmadda.infra.login.jwt.JwtProvider;
 import com.ahmadda.presentation.header.HeaderProvider;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,16 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ProblemDetail;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Map;
@@ -39,7 +33,7 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
 
     private final HeaderProvider headerProvider;
     private final JwtProvider jwtProvider;
-    private final ObjectMapper objectMapper;
+    private final RateLimitExceededHandler rateLimitExceededHandler;
 
     private final Map<Long, Deque<Long>> requestLogs = new ConcurrentHashMap<>();
 
@@ -59,7 +53,7 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
 
         long now = System.nanoTime();
 
-        RateLimitResult result = (RateLimitResult) requestLogs.compute(
+        RateLimitResult rateLimitResult = (RateLimitResult) requestLogs.compute(
                 memberId, (id, timestamps) -> {
                     if (timestamps == null) {
                         timestamps = new ArrayDeque<>();
@@ -80,8 +74,8 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
                 }
         );
 
-        if (result.isRateLimited) {
-            respondTooManyRequests(request, response, result.retryAfterSeconds);
+        if (rateLimitResult.isRateLimited) {
+            rateLimitExceededHandler.handle(request, response, rateLimitResult.retryAfterSeconds);
             return;
         }
 
@@ -134,24 +128,6 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
         long retryNanos = (oldest + WINDOW_NANOS) - now;
 
         return Math.max(1, TimeUnit.NANOSECONDS.toSeconds(retryNanos + 999_999_999));
-    }
-
-    private void respondTooManyRequests(
-            final HttpServletRequest request,
-            final HttpServletResponse response,
-            final long retryAfterSeconds
-    ) throws IOException {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.TOO_MANY_REQUESTS);
-        problemDetail.setTitle("Too Many Requests");
-        problemDetail.setDetail("요청이 너무 많습니다. " + retryAfterSeconds + "초 후 다시 시도해 주세요.");
-        problemDetail.setInstance(URI.create(request.getRequestURI()));
-
-        response.setHeader(HttpHeaders.RETRY_AFTER, String.valueOf(retryAfterSeconds));
-        response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-        response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
-        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        response.getWriter()
-                .write(objectMapper.writeValueAsString(problemDetail));
     }
 
     private Long extractMemberIdSafely(final String authorizationHeader) {
