@@ -28,6 +28,8 @@ public record EventEmailPayload(
                 event.getRegistrationEnd(),
                 event.getEventStart(),
                 event.getEventEnd(),
+                event.getOrganization()
+                        .getId(),
                 event.getId()
         );
 
@@ -57,6 +59,7 @@ public record EventEmailPayload(
             Object registrationEnd,
             Object eventStart,
             Object eventEnd,
+            Long organizationId,
             Long eventId
     ) {
 
@@ -70,6 +73,7 @@ public record EventEmailPayload(
             Assert.notNull(registrationEnd, "신청 종료 시간은 null일 수 없습니다.");
             Assert.notNull(eventStart, "이벤트 시작 시간은 null일 수 없습니다.");
             Assert.notNull(eventEnd, "이벤트 종료 시간은 null일 수 없습니다.");
+            Assert.notNull(organizationId, "조직 ID는 null일 수 없습니다.");
             Assert.notNull(eventId, "이벤트 ID는 null일 수 없습니다.");
         }
     }
