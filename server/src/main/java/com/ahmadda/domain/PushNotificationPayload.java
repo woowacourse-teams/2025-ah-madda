@@ -5,12 +5,14 @@ import com.ahmadda.domain.util.Assert;
 public record PushNotificationPayload(
         String title,
         String body,
+        Long organizationId,
         Long eventId
 ) {
 
     public PushNotificationPayload {
         Assert.notBlank(title, "푸시 제목은 공백일 수 없습니다.");
         Assert.notBlank(body, "푸시 본문은 공백일 수 없습니다.");
+        Assert.notNull(organizationId, "조직 ID는 null일 수 없습니다.");
         Assert.notNull(eventId, "이벤트 ID는 null일 수 없습니다.");
     }
 
@@ -18,6 +20,8 @@ public record PushNotificationPayload(
         return new PushNotificationPayload(
                 event.getTitle(),
                 content,
+                event.getOrganization()
+                        .getId(),
                 event.getId()
         );
     }
