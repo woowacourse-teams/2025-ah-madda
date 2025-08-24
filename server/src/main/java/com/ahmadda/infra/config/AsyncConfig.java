@@ -20,7 +20,6 @@ public class AsyncConfig implements AsyncConfigurer {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setThreadNamePrefix("async-");
         executor.setTaskDecorator(new AsyncTraceLoggingDecorator());
-        executor.initialize();
 
         return executor;
     }
