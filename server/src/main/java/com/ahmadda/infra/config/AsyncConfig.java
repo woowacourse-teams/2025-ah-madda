@@ -1,6 +1,7 @@
 package com.ahmadda.infra.config;
 
 import com.ahmadda.infra.logger.AsyncTraceLoggingDecorator;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -13,12 +14,12 @@ import java.util.concurrent.Executor;
 public class AsyncConfig implements AsyncConfigurer {
 
     // TODO. 추후 ThreadPoolTaskExecutor의 thread 설정 변경 및 graceful shutdown 고려 필요
+    @Bean
     @Override
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setThreadNamePrefix("async-");
         executor.setTaskDecorator(new AsyncTraceLoggingDecorator());
-        executor.initialize();
 
         return executor;
     }
