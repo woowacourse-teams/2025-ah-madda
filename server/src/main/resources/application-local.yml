@@ -43,7 +43,7 @@ notification:
   redirect-url-prefix: http://localhost:5173/event/
 
 mail:
-  mock: true
+  mock: false
 
 push:
   mock: true
