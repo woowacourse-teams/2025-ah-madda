@@ -2,6 +2,8 @@ package com.ahmadda.domain;
 
 import com.ahmadda.domain.util.Assert;
 
+import java.time.LocalDateTime;
+
 public record EventEmailPayload(
         Subject subject,
         Body body
@@ -55,10 +57,10 @@ public record EventEmailPayload(
             String title,
             String organizerNickname,
             String place,
-            Object registrationStart,
-            Object registrationEnd,
-            Object eventStart,
-            Object eventEnd,
+            LocalDateTime registrationStart,
+            LocalDateTime registrationEnd,
+            LocalDateTime eventStart,
+            LocalDateTime eventEnd,
             Long organizationId,
             Long eventId
     ) {
