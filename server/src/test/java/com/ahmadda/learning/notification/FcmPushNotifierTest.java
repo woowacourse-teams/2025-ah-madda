@@ -53,6 +53,7 @@ class FcmPushNotifierTest {
         var payload = new PushNotificationPayload(
                 "테스트 알림 제목",
                 "이것은 테스트 메시지입니다.",
+                1L,
                 1L
         );
 
@@ -80,6 +81,7 @@ class FcmPushNotifierTest {
         var payload = new PushNotificationPayload(
                 "테스트 알림 제목",
                 "이것은 테스트 메시지입니다.",
+                1L,
                 1L
         );
 

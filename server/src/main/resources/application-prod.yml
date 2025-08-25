@@ -43,7 +43,7 @@ cors:
     - https://prod.ahmadda.com
 
 notification:
-  redirect-url-prefix: https://ahmadda.com/event/
+  redirect-url-prefix: https://ahmadda.com/
 
 aws:
   s3:

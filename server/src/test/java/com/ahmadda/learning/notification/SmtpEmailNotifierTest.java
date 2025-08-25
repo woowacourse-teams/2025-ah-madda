@@ -54,6 +54,7 @@ class SmtpEmailNotifierTest {
                                 .plusDays(3),
                         LocalDateTime.now()
                                 .plusDays(4),
+                        1L,
                         1L
                 )
         );
