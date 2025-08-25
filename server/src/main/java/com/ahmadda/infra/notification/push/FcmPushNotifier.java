@@ -51,6 +51,7 @@ public class FcmPushNotifier implements PushNotifier {
         return fcmRegistrationTokenRepository.findAllByMemberIdIn(memberIds)
                 .stream()
                 .map(FcmRegistrationToken::getRegistrationToken)
+                .distinct()
                 .toList();
     }
 
@@ -61,6 +62,7 @@ public class FcmPushNotifier implements PushNotifier {
         return fcmRegistrationTokenRepository.findAllByMemberId(memberId)
                 .stream()
                 .map(FcmRegistrationToken::getRegistrationToken)
+                .distinct()
                 .toList();
     }
 
