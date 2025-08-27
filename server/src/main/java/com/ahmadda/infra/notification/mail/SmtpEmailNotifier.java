@@ -36,6 +36,7 @@ public class SmtpEmailNotifier implements EmailNotifier {
         recipientEmails.forEach(recipientEmail -> {
             MimeMessage mimeMessage = createMimeMessage(recipientEmail, subject, text);
 
+            // TODO: 추후 지수 백오프를 이용한 재시도 로직 구현
             javaMailSender.send(mimeMessage);
         });
     }
