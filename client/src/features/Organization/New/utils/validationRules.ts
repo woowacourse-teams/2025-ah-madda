@@ -1,4 +1,4 @@
-import { MAX_LENGTH } from '../constants/validationRules';
+import { IMAGE, MAX_LENGTH } from '../constants/validationRules';
 
 export type OrgFormFields = {
   name: string;
@@ -10,6 +10,7 @@ type ValidationRule = {
   label: string;
   required?: boolean;
   maxLength?: number;
+  maxBytes?: number;
 };
 
 export const ORG_VALIDATION_RULES: Record<keyof OrgFormFields, ValidationRule> = {
@@ -26,5 +27,6 @@ export const ORG_VALIDATION_RULES: Record<keyof OrgFormFields, ValidationRule> =
   thumbnail: {
     label: '조직 이미지',
     required: true,
+    maxBytes: IMAGE.MAX_BYTES,
   },
 };
