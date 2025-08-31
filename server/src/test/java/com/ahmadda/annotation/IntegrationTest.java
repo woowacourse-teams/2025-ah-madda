@@ -1,7 +1,7 @@
 package com.ahmadda.annotation;
 
-import io.jeyong.detector.annotation.NPlusOneTest;
-import io.jeyong.detector.annotation.NPlusOneTest.Mode;
+import io.jeyong.nplus1detector.test.annotation.NPlusOneTest;
+import io.jeyong.nplus1detector.test.annotation.NPlusOneTest.Mode;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
