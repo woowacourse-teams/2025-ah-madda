@@ -1,4 +1,5 @@
 import { ERROR_MESSAGES } from '../constants/errorMessages';
+import { IMAGE } from '../constants/validationRules';
 
 import { ORG_VALIDATION_RULES, OrgFormFields } from './validationRules';
 import { isEmpty } from './validators';
@@ -17,6 +18,12 @@ export const getOrgErrorMessage = (
     const v = value.trim();
     if (v.length > rule.maxLength) {
       return ERROR_MESSAGES.MAX_LENGTH(rule.label, rule.maxLength);
+    }
+  }
+
+  if (rule.maxBytes && value instanceof File) {
+    if (value.size > rule.maxBytes) {
+      return ERROR_MESSAGES.MAX_FILE_SIZE_MB(rule.label, IMAGE.MAX_MB);
     }
   }
 
