@@ -90,13 +90,14 @@ class PokeServiceTest {
         var loginMember = new LoginMember(member.getId());
 
         // when
-        var result = sut.poke(eventId, request, loginMember);
+        sut.poke(eventId, request, loginMember);
 
         // then
         assertSoftly(softly -> {
             softly.assertThat(pokeHistoryRepository.count())
                     .isEqualTo(1L);
-            var pokeHistory = pokeHistoryRepository.getReferenceById(result.getId());
+            var pokeHistory = pokeHistoryRepository.findAll()
+                    .getFirst();
             softly.assertThat(pokeHistory
                             .getRecipient())
                     .isEqualTo(participant);

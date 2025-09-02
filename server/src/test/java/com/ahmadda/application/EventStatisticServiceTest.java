@@ -8,6 +8,7 @@ import com.ahmadda.domain.EventOperationPeriod;
 import com.ahmadda.domain.EventRepository;
 import com.ahmadda.domain.EventStatistic;
 import com.ahmadda.domain.EventStatisticRepository;
+import com.ahmadda.domain.EventViewMetric;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
@@ -19,14 +20,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @IntegrationTest
 class EventStatisticServiceTest {
 
     @Autowired
-    private EventStatisticService eventStatisticService;
+    private EventStatisticService sut;
 
     @Autowired
     private OrganizationRepository organizationRepository;
@@ -44,6 +47,25 @@ class EventStatisticServiceTest {
     private EventStatisticRepository eventStatisticRepository;
 
     @Test
+    void 이벤트_조회수를_가지고_올_수_있다() {
+        // given
+        var organization = createOrganization();
+        var member = createMember();
+        var organizationMember = createOrganizationMember(organization, member);
+        var event = createEvent(organization, organizationMember);
+        createEventStatistic(event);
+
+        // when // then
+        assertSoftly(softly -> {
+            List<EventViewMetric> eventStatistics =
+                    sut.getEventStatistic(event.getId(), new LoginMember(member.getId()));
+
+            softly.assertThat(eventStatistics)
+                    .isEmpty();
+        });
+    }
+
+    @Test
     void 존재하지_않는_조직원일시_예외가_발생한다() {
         // given
         var organization = createOrganization();
@@ -55,7 +77,7 @@ class EventStatisticServiceTest {
         var loginMember = new LoginMember(-1L);
 
         // when // then
-        assertThatThrownBy(() -> eventStatisticService.getEventStatistic(event.getId(), loginMember))
+        assertThatThrownBy(() -> sut.getEventStatistic(event.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 조직원입니다.");
     }
@@ -71,7 +93,7 @@ class EventStatisticServiceTest {
         var nonExistentEventId = 999L;
 
         // when // then
-        assertThatThrownBy(() -> eventStatisticService.getEventStatistic(nonExistentEventId, loginMember))
+        assertThatThrownBy(() -> sut.getEventStatistic(nonExistentEventId, loginMember))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("요청한 이벤트 조회수 정보가 존재하지 않습니다.");
     }
@@ -87,7 +109,7 @@ class EventStatisticServiceTest {
         var loginMember = new LoginMember(member.getId());
 
         // when // then
-        assertThatThrownBy(() -> eventStatisticService.getEventStatistic(event.getId(), loginMember))
+        assertThatThrownBy(() -> sut.getEventStatistic(event.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("요청한 이벤트 조회수 정보가 존재하지 않습니다.");
     }
