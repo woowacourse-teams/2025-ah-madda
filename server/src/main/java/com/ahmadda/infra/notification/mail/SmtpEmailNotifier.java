@@ -30,14 +30,15 @@ public class SmtpEmailNotifier implements EmailNotifier {
     @Override
     public void sendEmails(final List<OrganizationMember> recipients, final EventEmailPayload eventEmailPayload) {
         List<String> recipientEmails = getRecipientEmails(recipients);
+        if (recipientEmails.isEmpty()) {
+            return;
+        }
+
         String subject = createSubject(eventEmailPayload.subject());
         String text = createText(eventEmailPayload.body());
-        // TODO. 추후 BCC 방식으로 묶어서 전송 고려
-        recipientEmails.forEach(recipientEmail -> {
-            MimeMessage mimeMessage = createMimeMessage(recipientEmail, subject, text);
-
-            javaMailSender.send(mimeMessage);
-        });
+    
+        MimeMessage mimeMessage = createMimeMessageWithBcc(recipientEmails, subject, text);
+        javaMailSender.send(mimeMessage);
     }
 
     private List<String> getRecipientEmails(List<OrganizationMember> recipients) {
@@ -82,13 +83,18 @@ public class SmtpEmailNotifier implements EmailNotifier {
         return model;
     }
 
-    private MimeMessage createMimeMessage(final String recipientEmail, final String subject, final String text) {
+    private MimeMessage createMimeMessageWithBcc(
+            final List<String> bccRecipients,
+            final String subject,
+            final String text
+    ) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper;
         try {
-            helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
-            helper.setTo(recipientEmail);
+            helper.setTo("amadda.team@gmail.com");
+            // TODO. 추후 BCC 수신자가 100명 이상일 경우, 배치 처리 고려
+            helper.setBcc(bccRecipients.toArray(String[]::new));
             helper.setSubject(subject);
             helper.setText(text, true);
         } catch (MessagingException e) {
