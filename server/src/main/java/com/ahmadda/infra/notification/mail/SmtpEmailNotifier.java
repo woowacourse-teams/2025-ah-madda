@@ -75,7 +75,10 @@ public class SmtpEmailNotifier implements EmailNotifier {
         model.put("registrationEnd", body.registrationEnd());
         model.put("eventStart", body.eventStart());
         model.put("eventEnd", body.eventEnd());
-        model.put("redirectUrl", notificationProperties.getRedirectUrlPrefix() + body.eventId());
+        model.put(
+                "redirectUrl",
+                notificationProperties.getRedirectUrlPrefix() + body.organizationId() + "/event/" + body.eventId()
+        );
 
         return model;
     }
