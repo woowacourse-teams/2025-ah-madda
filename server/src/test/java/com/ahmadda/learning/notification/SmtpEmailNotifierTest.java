@@ -7,14 +7,13 @@ import com.ahmadda.domain.Member;
 import com.ahmadda.domain.Organization;
 import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.Role;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Disabled
 @IntegrationTest
@@ -101,6 +100,7 @@ class SmtpEmailNotifierTest {
                                 .plusDays(3),
                         LocalDateTime.now()
                                 .plusDays(4),
+                        1L,
                         1L
                 )
         );
