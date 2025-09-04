@@ -1,15 +1,15 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventRepository;
-import com.ahmadda.domain.EventStatistic;
-import com.ahmadda.domain.EventStatisticRepository;
-import com.ahmadda.domain.EventViewMetric;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberRepository;
+import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventRepository;
+import com.ahmadda.domain.event.EventStatistic;
+import com.ahmadda.domain.event.EventStatisticRepository;
+import com.ahmadda.domain.event.EventViewMetric;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

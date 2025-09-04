@@ -1,7 +1,7 @@
 package com.ahmadda.application.dto;
 
-import com.ahmadda.domain.Answer;
-import com.ahmadda.domain.Question;
+import com.ahmadda.domain.event.Answer;
+import com.ahmadda.domain.event.Question;
 
 public record GuestAnswerResponse(
         Long questionId,

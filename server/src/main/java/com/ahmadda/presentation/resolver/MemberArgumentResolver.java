@@ -1,8 +1,8 @@
 package com.ahmadda.presentation.resolver;
 
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.infra.login.jwt.JwtProvider;
-import com.ahmadda.infra.login.jwt.dto.JwtMemberPayload;
+import com.ahmadda.infra.auth.jwt.JwtProvider;
+import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
 import com.ahmadda.presentation.header.HeaderProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

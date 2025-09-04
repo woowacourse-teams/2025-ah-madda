@@ -1,0 +1,149 @@
+package com.ahmadda.domain.organization;
+
+
+import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
+import com.ahmadda.domain.BaseEntity;
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.member.Member;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE organization SET deleted_at = CURRENT_TIMESTAMP WHERE organization_id = ?")
+@SQLRestriction("deleted_at IS NULL")
+public class Organization extends BaseEntity {
+
+    private static final int MAX_DESCRIPTION_LENGTH = 30;
+    private static final int MAX_NAME_LENGTH = 30;
+    private static final int MIN_DESCRIPTION_LENGTH = 1;
+    private static final int MIN_NAME_LENGTH = 1;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "organization_id")
+    private Long id;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
+    private final List<Event> events = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
+    private final List<OrganizationMember> organizationMembers = new ArrayList<>();
+
+    @Column(nullable = false)
+    private String description;
+
+    @Column(nullable = false)
+    private String imageUrl;
+
+    @Column(nullable = false)
+    private String name;
+
+    private Organization(final String name, final String description, final String imageUrl) {
+        validateName(name);
+        validateDescription(description);
+
+        this.name = name;
+        this.description = description;
+        this.imageUrl = imageUrl;
+    }
+
+    public static Organization create(final String name, final String description, final String imageUrl) {
+        return new Organization(name, description, imageUrl);
+    }
+
+    public void addEvent(final Event event) {
+        this.events.add(event);
+    }
+
+    public List<Event> getActiveEvents(final LocalDateTime currentDateTime) {
+        return events.stream()
+                .filter((event) -> event.isRegistrationEnd(currentDateTime))
+                .toList();
+    }
+
+    public OrganizationMember participate(
+            final Member member,
+            final String nickname,
+            final InviteCode inviteCode,
+            final LocalDateTime now
+    ) {
+        if (!inviteCode.matchesOrganization(this)) {
+            throw new UnprocessableEntityException("잘못된 초대코드입니다.");
+        }
+        if (inviteCode.isExpired(now)) {
+            throw new UnprocessableEntityException("초대코드가 만료되었습니다.");
+        }
+
+        return OrganizationMember.create(nickname, member, this, OrganizationMemberRole.USER);
+    }
+
+    public boolean isExistOrganizationMember(final OrganizationMember otherOrganizationMember) {
+        return organizationMembers.contains(otherOrganizationMember);
+    }
+
+    public void update(
+            final OrganizationMember updatingOrganizationMember,
+            final String name,
+            final String description,
+            final String imageUrl
+    ) {
+        validateUpdatableBy(updatingOrganizationMember);
+        validateName(name);
+        validateDescription(description);
+
+        this.name = name;
+        this.description = description;
+        this.imageUrl = imageUrl;
+    }
+
+    private void validateUpdatableBy(final OrganizationMember updatingOrganizationMember) {
+        if (!updatingOrganizationMember.isBelongTo(this)) {
+            throw new ForbiddenException("조직에 속한 조직원만 수정이 가능합니다.");
+        }
+
+        if (!updatingOrganizationMember.isAdmin()) {
+            throw new ForbiddenException("조직원의 관리자만 조직 정보를 수정할 수 있습니다.");
+        }
+    }
+
+    private void validateName(final String name) {
+        if (name.length() < MIN_NAME_LENGTH || name.length() > MAX_NAME_LENGTH) {
+            throw new UnprocessableEntityException(
+                    String.format(
+                            "이름의 길이는 %d자 이상 %d자 이하이어야 합니다.",
+                            MIN_NAME_LENGTH,
+                            MAX_NAME_LENGTH
+                    )
+            );
+        }
+    }
+
+    private void validateDescription(final String description) {
+        if (description.length() < MIN_DESCRIPTION_LENGTH || description.length() > MAX_DESCRIPTION_LENGTH) {
+            throw new UnprocessableEntityException(
+                    String.format(
+                            "설명의 길이는 %d자 이상 %d자 이하이어야 합니다.",
+                            MIN_DESCRIPTION_LENGTH,
+                            MAX_DESCRIPTION_LENGTH
+                    )
+            );
+        }
+    }
+}

@@ -1,0 +1,50 @@
+package com.ahmadda.domain.event;
+
+import com.ahmadda.domain.BaseEntity;
+import com.ahmadda.domain.member.Member;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE event_template SET deleted_at = CURRENT_TIMESTAMP WHERE event_template_id = ?")
+@SQLRestriction("deleted_at IS NULL")
+public class EventTemplate extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "event_template_id")
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
+    private String description;
+
+    private EventTemplate(final Member member, final String title, final String description) {
+        this.member = member;
+        this.title = title;
+        this.description = description;
+    }
+
+    public static EventTemplate create(final Member member, final String title, final String description) {
+        return new EventTemplate(member, title, description);
+    }
+}

@@ -2,7 +2,7 @@ package com.ahmadda.presentation;
 
 import com.ahmadda.application.MemberService;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.domain.Member;
+import com.ahmadda.domain.member.Member;
 import com.ahmadda.presentation.dto.MemberResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;

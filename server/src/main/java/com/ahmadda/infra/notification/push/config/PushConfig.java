@@ -1,6 +1,6 @@
 package com.ahmadda.infra.notification.push.config;
 
-import com.ahmadda.domain.PushNotifier;
+import com.ahmadda.domain.notification.PushNotifier;
 import com.ahmadda.infra.notification.config.NotificationProperties;
 import com.ahmadda.infra.notification.push.FcmPushErrorHandler;
 import com.ahmadda.infra.notification.push.FcmPushNotifier;
