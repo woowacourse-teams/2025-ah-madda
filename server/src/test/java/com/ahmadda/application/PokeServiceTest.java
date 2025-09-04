@@ -16,7 +16,7 @@ import com.ahmadda.domain.OrganizationMember;
 import com.ahmadda.domain.OrganizationMemberRepository;
 import com.ahmadda.domain.OrganizationRepository;
 import com.ahmadda.domain.Poke;
-import com.ahmadda.domain.PokeHistory;
+import com.ahmadda.domain.PokeHistoryRepository;
 import com.ahmadda.domain.Role;
 import com.ahmadda.presentation.dto.PokeRequest;
 import org.junit.jupiter.api.Test;
@@ -55,6 +55,8 @@ class PokeServiceTest {
 
     @Autowired
     private EventNotificationOptOutRepository eventNotificationOptOutRepository;
+    @Autowired
+    private PokeHistoryRepository pokeHistoryRepository;
 
     @Test
     void 포키를_할_수_있다() {
@@ -88,17 +90,21 @@ class PokeServiceTest {
         var loginMember = new LoginMember(member.getId());
 
         // when
-        PokeHistory result = sut.poke(eventId, request, loginMember);
+        sut.poke(eventId, request, loginMember);
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(result
+            softly.assertThat(pokeHistoryRepository.count())
+                    .isEqualTo(1L);
+            var pokeHistory = pokeHistoryRepository.findAll()
+                    .getFirst();
+            softly.assertThat(pokeHistory
                             .getRecipient())
                     .isEqualTo(participant);
-            softly.assertThat(result
+            softly.assertThat(pokeHistory
                             .getSender())
                     .isEqualTo(organizer);
-            softly.assertThat(result
+            softly.assertThat(pokeHistory
                             .getEvent())
                     .isEqualTo(event);
         });
