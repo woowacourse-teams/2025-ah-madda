@@ -1,8 +1,7 @@
-package com.ahmadda.application;
+package com.ahmadda.application.listener;
 
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.EventCreated;
-import com.ahmadda.application.listener.EventCreatedListener;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;

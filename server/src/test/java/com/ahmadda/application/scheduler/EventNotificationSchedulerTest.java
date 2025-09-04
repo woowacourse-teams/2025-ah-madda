@@ -1,7 +1,6 @@
-package com.ahmadda.application;
+package com.ahmadda.application.scheduler;
 
 import com.ahmadda.annotation.IntegrationTest;
-import com.ahmadda.application.scheduler.EventNotificationScheduler;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
 import com.ahmadda.domain.event.EventRepository;
