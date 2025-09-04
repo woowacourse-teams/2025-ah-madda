@@ -1,6 +1,7 @@
 package com.ahmadda.domain.organization;
 
 
+import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.domain.BaseEntity;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.member.Member;
@@ -87,5 +88,21 @@ public class OrganizationMember extends BaseEntity {
 
     public boolean isAdmin() {
         return this.role == OrganizationMemberRole.ADMIN;
+    }
+
+    public void changeRole(final OrganizationMember operator, final OrganizationMemberRole newRole) {
+        validateRoleChangeBy(operator);
+
+        this.role = newRole;
+    }
+
+    private void validateRoleChangeBy(final OrganizationMember operator) {
+        if (!operator.isBelongTo(this.organization)) {
+            throw new ForbiddenException("같은 조직에 속한 조직원만 권한을 변경할 수 있습니다.");
+        }
+
+        if (!operator.isAdmin()) {
+            throw new ForbiddenException("관리자만 조직원의 권한을 변경할 수 있습니다.");
+        }
     }
 }

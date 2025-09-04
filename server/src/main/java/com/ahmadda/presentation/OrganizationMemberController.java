@@ -1,17 +1,11 @@
 package com.ahmadda.presentation;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.ahmadda.application.OrganizationMemberService;
 import com.ahmadda.application.dto.LoginMember;
+import com.ahmadda.application.dto.OrganizationMemberRoleUpdateRequest;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -19,11 +13,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Organization Member", description = "조직원 관련 API")
 @RestController
-@RequestMapping("/api/organizations")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class OrganizationMemberController {
 
@@ -70,7 +72,7 @@ public class OrganizationMemberController {
                     )
             )
     })
-    @GetMapping("/{organizationId}/profile")
+    @GetMapping("/organizations/{organizationId}/profile")
     public ResponseEntity<OrganizationMemberResponse> getOrganizationMemberProfile(
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember
@@ -81,5 +83,16 @@ public class OrganizationMemberController {
         OrganizationMemberResponse response = OrganizationMemberResponse.from(organizationMember);
 
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/organization-members/roles")
+    public ResponseEntity<Void> updateRoles(
+            @AuthMember final LoginMember loginMember,
+            @Valid @RequestBody final OrganizationMemberRoleUpdateRequest request
+    ) {
+        organizationMemberService.updateRoles(loginMember, request);
+
+        return ResponseEntity.ok()
+                .build();
     }
 }
