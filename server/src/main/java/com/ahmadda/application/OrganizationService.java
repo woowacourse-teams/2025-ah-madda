@@ -146,6 +146,22 @@ public class OrganizationService {
         return organizationRepository.findMemberOrganizations(member);
     }
 
+    @Transactional
+    public void deleteOrganization(final Long organizationId, final LoginMember loginMember) {
+        Organization organization = getOrganization(organizationId);
+        OrganizationMember deletingMember = getOrganizationMember(organizationId, loginMember);
+
+        validateAdmin(deletingMember);
+
+        organizationRepository.delete(organization);
+    }
+
+    private void validateAdmin(final OrganizationMember organizationMember) {
+        if (!organizationMember.isAdmin()) {
+            throw new ForbiddenException("조직의 관리자만 삭제할 수 있습니다.");
+        }
+    }
+
     private String resolveUpdateImageUrl(
             final String imageUrl,
             final OrganizationImageFile thumbnailOrganizationImageFile
