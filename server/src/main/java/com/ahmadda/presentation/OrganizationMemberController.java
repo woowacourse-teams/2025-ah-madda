@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @Tag(name = "Organization Member", description = "조직원 관련 API")
 @RestController
 @RequestMapping("/api")
@@ -177,5 +179,77 @@ public class OrganizationMemberController {
 
         return ResponseEntity.ok()
                 .build();
+    }
+
+    @Operation(summary = "조직의 모든 조직원 목록 조회", description = "조직에 속한 모든 조직원의 프로필을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            schema = @Schema(implementation = OrganizationMemberResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/organizations/{organizationId}/organization-members"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Forbidden",
+                                              "status": 403,
+                                              "detail": "조직에 속한 조직원만 조직원의 목록을 조회할 수 있습니다.",
+                                              "instance": "/api/organizations/{organizationId}/organization-members"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "존재하지 않는 조직입니다.",
+                                              "instance": "/api/organizations/{organizationId}/organization-members"
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
+    @GetMapping("/organizations/{organizationId}/organization-members")
+    public ResponseEntity<List<OrganizationMemberResponse>> getAllOrganizationMembers(
+            @PathVariable final Long organizationId,
+            @AuthMember final LoginMember loginMember
+    ) {
+        List<OrganizationMember> organizationMembers =
+                organizationMemberService.getAllOrganizationMembers(organizationId, loginMember);
+
+        List<OrganizationMemberResponse> response = organizationMembers.stream()
+                .map(OrganizationMemberResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(response);
     }
 }

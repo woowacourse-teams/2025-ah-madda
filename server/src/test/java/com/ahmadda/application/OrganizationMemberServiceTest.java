@@ -3,6 +3,7 @@ package com.ahmadda.application;
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationMemberRoleUpdateRequest;
+import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
@@ -161,6 +162,63 @@ class OrganizationMemberServiceTest {
         assertThatThrownBy(() -> sut.updateRoles(loginMember, request))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("모든 대상은 같은 조직에 속해 있어야 합니다.");
+    }
+
+    @Test
+    void 조직_멤버_목록을_조회할_수_있다() {
+        // given
+        var org = createOrganization("우테코");
+        var member1 = createMember("홍길동", "hong@email.com");
+        var member2 = createMember("박찬호", "chanho@email.com");
+
+        createOrganizationMember("길동", member1, org, OrganizationMemberRole.USER);
+        createOrganizationMember("찬호", member2, org, OrganizationMemberRole.USER);
+
+        var loginMember = new LoginMember(member1.getId());
+
+        // when
+        var result = sut.getAllOrganizationMembers(org.getId(), loginMember);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(result)
+                    .hasSize(2);
+            softly.assertThat(result)
+                    .extracting(OrganizationMember::getMember)
+                    .extracting(Member::getId)
+                    .containsExactlyInAnyOrder(member1.getId(), member2.getId());
+        });
+    }
+
+    @Test
+    void 조직_멤버_목록_조회시_조직이_존재하지_않으면_예외가_발생한다() {
+        // given
+        var member = createMember("홍길동", "hong@email.com");
+        var loginMember = new LoginMember(member.getId());
+
+        var invalidOrgId = -999L;
+
+        // when // then
+        assertThatThrownBy(() -> sut.getAllOrganizationMembers(invalidOrgId, loginMember))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 조직입니다.");
+    }
+    
+    @Test
+    void 조직_멤버_목록_조회시_조직에_속하지_않은_조직원이면_예외가_발생한다() {
+        // given
+        var org1 = createOrganization("우테코");
+        var org2 = createOrganization("다른조직");
+
+        var member = createMember("홍길동", "hong@email.com");
+        createOrganizationMember("길동", member, org2, OrganizationMemberRole.USER); // 다른 조직 소속
+
+        var loginMember = new LoginMember(member.getId());
+
+        // when // then
+        assertThatThrownBy(() -> sut.getAllOrganizationMembers(org1.getId(), loginMember))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage("조직에 속한 조직원만 조직원의 목록을 조회할 수 있습니다.");
     }
 
     private Organization createOrganization(String name) {
