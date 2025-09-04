@@ -12,6 +12,7 @@ jobs:
 
     outputs:
       image-tag: ${{ steps.calc.outputs.version }}
+      docker-tag: ${{ steps.calc.outputs.docker_version }}
 
     steps:
       - name: Checkout (for tagging)
@@ -56,6 +57,9 @@ jobs:
           version="${prefix}.${next_be_build}"
           echo "version=$version" >> $GITHUB_OUTPUT
 
+          docker_version=$(echo "$version" | sed 's/+be/./')
+          echo "docker_version=$docker_version" >> $GITHUB_OUTPUT
+
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git tag "$version"
@@ -95,7 +99,7 @@ jobs:
           context: ./server
           file: ./server/Dockerfile
           push: true
-          tags: amadda/ahmadda_server:${{ steps.calc.outputs.version }}
+          tags: amadda/ahmadda_server:${{ steps.calc.outputs.docker_version }}
 
   deploy:
     needs: setup
@@ -105,7 +109,7 @@ jobs:
 
     steps:
       - name: Set tag name from setup output
-        run: echo "TAG=${{ needs.setup.outputs.image-tag }}" >> $GITHUB_ENV
+        run: echo "TAG=${{ needs.setup.outputs.docker-tag }}" >> $GITHUB_ENV
 
       - name: Log in to Docker Hub
         run: |

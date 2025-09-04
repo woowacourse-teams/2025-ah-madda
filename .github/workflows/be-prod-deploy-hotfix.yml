@@ -16,6 +16,7 @@ jobs:
 
     outputs:
       image-tag: ${{ steps.calc.outputs.version }}
+      docker-tag: ${{ steps.calc.outputs.docker_version }}
 
     steps:
       - name: Checkout (for tagging)
@@ -29,7 +30,6 @@ jobs:
           git fetch --tags
 
           latest_be_tag=$(git tag -l 'v*.*.*+be.*' | sort -V | tail -n 1)
-
           base=$(echo "$latest_be_tag" | sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+)\+be\..*/\1/')
 
           head=$(echo "$base" | cut -d'.' -f1)
@@ -48,21 +48,23 @@ jobs:
           head="${{ steps.latest.outputs.head }}"
           yearweek="${{ steps.latest.outputs.yearweek }}"
           common="${{ steps.latest.outputs.common_build }}"
-
           prefix="v${head}.${yearweek}.${common}+be"
 
           matching_tags=$(git tag -l "${prefix}.*")
           if [[ -z "$matching_tags" ]]; then
             next_be_build=1
           else
-            last_be_build=$(echo "$matching_tags" | awk -F. '{print $2}' | awk -F'+' '{print $2}' | awk -F. '{print $2}' | sort -n | tail -n 1)
-
+            last_be_build=$(echo "$matching_tags" | sed -E 's/.*\+be\.([0-9]+)/\1/' | sort -n | tail -n 1)
             next_be_build=$((last_be_build + 1))
           fi
 
-          version="${prefix}.${next_be_build}"
+          version="${prefix}.${next_be_build}" 
           echo "version=$version" >> $GITHUB_OUTPUT
-          echo "Using version: $version"
+
+          docker_version=$(echo "$version" | sed 's/+be/./') 
+          echo "docker_version=$docker_version" >> $GITHUB_OUTPUT
+
+          echo "Using version: $version (Docker: $docker_version)"
 
       - name: Create and push Git tag
         run: |
@@ -107,7 +109,7 @@ jobs:
           context: ./server
           file: ./server/Dockerfile
           push: true
-          tags: amadda/ahmadda_server:${{ steps.calc.outputs.version }}
+          tags: amadda/ahmadda_server:${{ steps.calc.outputs.docker_version }}
 
   deploy:
     needs: setup
@@ -117,7 +119,7 @@ jobs:
 
     steps:
       - name: Set tag name from setup output
-        run: echo "TAG=${{ needs.setup.outputs.image-tag }}" >> $GITHUB_ENV
+        run: echo "TAG=${{ needs.setup.outputs.docker-tag }}" >> $GITHUB_ENV
 
       - name: Log in to Docker Hub
         run: |
