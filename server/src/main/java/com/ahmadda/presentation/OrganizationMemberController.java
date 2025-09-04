@@ -89,7 +89,7 @@ public class OrganizationMemberController {
 
     @Operation(summary = "조직원 역할 일괄 변경", description = "관리자가 같은 조직에 속한 여러 조직원의 역할을 한 번에 변경합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "204"),
             @ApiResponse(
                     responseCode = "401",
                     content = @Content(
@@ -177,7 +177,7 @@ public class OrganizationMemberController {
     ) {
         organizationMemberService.updateRoles(loginMember, request);
 
-        return ResponseEntity.ok()
+        return ResponseEntity.noContent()
                 .build();
     }
 
