@@ -1,4 +1,4 @@
-package com.ahmadda.infra.random;
+package com.ahmadda.domain.organization;
 
 @FunctionalInterface
 public interface RandomCodeGenerator {

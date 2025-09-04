@@ -1,6 +1,6 @@
 package com.ahmadda.domain.organization;
 
-import com.ahmadda.domain.exception.UnauthorizedOperationException;
+import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.domain.member.Member;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +22,7 @@ class InviteCodeTest {
 
         //when //then
         assertThatThrownBy(() -> InviteCode.create("code", organization2, inviter, LocalDateTime.now()))
-                .isInstanceOf(UnauthorizedOperationException.class)
+                .isInstanceOf(ForbiddenException.class)
                 .hasMessage("조직에 참여중인 조직원만 해당 조직의 초대코드를 만들 수 있습니다.");
     }
 

@@ -1,6 +1,6 @@
 package com.ahmadda.domain.event;
 
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -57,7 +57,7 @@ class EventOperationEventPeriodTest {
                 eventPeriod.end(),
                 currentTime
         ))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("신청 기간과 이벤트 기간이 겹칠 수 없습니다.");
     }
 
@@ -83,7 +83,7 @@ class EventOperationEventPeriodTest {
                 eventPeriod.end(),
                 currentTime
         ))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("신청 기간과 이벤트 기간이 겹칠 수 없습니다.");
     }
 
@@ -108,7 +108,7 @@ class EventOperationEventPeriodTest {
                 eventPeriod.end(),
                 currentTime
         ))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("이벤트 시작 시간은 현재 시점보다 미래여야 합니다.");
     }
 
@@ -133,7 +133,7 @@ class EventOperationEventPeriodTest {
                 eventPeriod.end(),
                 currentTime
         ))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("신청 기간은 이벤트 기간보다 앞서야 합니다.");
 
     }

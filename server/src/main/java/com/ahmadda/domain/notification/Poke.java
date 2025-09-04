@@ -1,7 +1,7 @@
 package com.ahmadda.domain.notification;
 
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +54,7 @@ public class Poke {
         int count = pokeHistories.size();
         if (count >= MAX_SENDABLE_COUNT) {
             long minutes = getRemainMinutesForPoke(findDuplicateStartTime, pokeHistories);
-            throw new BusinessRuleViolatedException(String.format(
+            throw new UnprocessableEntityException(String.format(
                     "%s님에게 너무 많은 포키를 보냈어요 🫠 %d분 뒤에 찌를 수 있어요!",
                     recipient.getNickname(),
                     minutes
@@ -116,11 +116,11 @@ public class Poke {
             final OrganizationMember receiveOrganizationMember
     ) {
         if (event.hasGuest(receiveOrganizationMember)) {
-            throw new BusinessRuleViolatedException("이미 이벤트에 참여한 조직원에게 포키를 보낼 수 없습니다.");
+            throw new UnprocessableEntityException("이미 이벤트에 참여한 조직원에게 포키를 보낼 수 없습니다.");
         }
 
         if (event.isOrganizer(receiveOrganizationMember)) {
-            throw new BusinessRuleViolatedException("주최자에게 포키를 보낼 수 없습니다");
+            throw new UnprocessableEntityException("주최자에게 포키를 보낼 수 없습니다");
         }
     }
 
@@ -129,7 +129,7 @@ public class Poke {
             final OrganizationMember receiveOrganizationMember
     ) {
         if (sendOrganizationMember.equals(receiveOrganizationMember)) {
-            throw new BusinessRuleViolatedException("스스로에게 포키를 보낼 수 없습니다");
+            throw new UnprocessableEntityException("스스로에게 포키를 보낼 수 없습니다");
         }
     }
 
@@ -141,11 +141,11 @@ public class Poke {
         Organization organization = event.getOrganization();
 
         if (!organization.isExistOrganizationMember(sendOrganizationMember)) {
-            throw new BusinessRuleViolatedException("포키를 보내려면 해당 조직에 참여하고 있어야 합니다.");
+            throw new UnprocessableEntityException("포키를 보내려면 해당 조직에 참여하고 있어야 합니다.");
         }
 
         if (!organization.isExistOrganizationMember(receiveOrganizationMember)) {
-            throw new BusinessRuleViolatedException("포키 대상이 해당 조직에 참여하고 있어야 합니다.");
+            throw new UnprocessableEntityException("포키 대상이 해당 조직에 참여하고 있어야 합니다.");
         }
     }
 }

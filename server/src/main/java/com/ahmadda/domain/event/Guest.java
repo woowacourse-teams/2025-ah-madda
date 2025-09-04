@@ -1,9 +1,9 @@
 package com.ahmadda.domain.event;
 
 
+import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.BaseEntity;
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
-import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import com.ahmadda.domain.organization.OrganizationMember;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -84,7 +84,7 @@ public class Guest extends BaseEntity {
         for (Question required : requiredQuestions) {
             String answer = questionAnswers.get(required);
             if (answer == null || answer.isBlank()) {
-                throw new BusinessRuleViolatedException("필수 질문에 대한 답변이 누락되었습니다.");
+                throw new UnprocessableEntityException("필수 질문에 대한 답변이 누락되었습니다.");
             }
         }
     }
@@ -92,7 +92,7 @@ public class Guest extends BaseEntity {
     private void addAnswers(final Map<Question, String> answers) {
         answers.forEach((question, answerText) -> {
             if (!event.hasQuestion(question)) {
-                throw new BusinessRuleViolatedException("이벤트에 포함되지 않은 질문입니다.");
+                throw new UnprocessableEntityException("이벤트에 포함되지 않은 질문입니다.");
             }
             if (answerText == null || answerText.isBlank()) {
                 return;
@@ -103,13 +103,13 @@ public class Guest extends BaseEntity {
 
     private void validateSameOrganization(final Event event, final OrganizationMember organizationMember) {
         if (!organizationMember.isBelongTo(event.getOrganization())) {
-            throw new BusinessRuleViolatedException("같은 조직의 이벤트에만 게스트로 참여가능합니다.");
+            throw new UnprocessableEntityException("같은 조직의 이벤트에만 게스트로 참여가능합니다.");
         }
     }
 
     public List<Answer> viewAnswersAs(final OrganizationMember organizationMember) {
         if (!canViewAnswers(organizationMember)) {
-            throw new UnauthorizedOperationException("답변을 볼 권한이 없습니다.");
+            throw new ForbiddenException("답변을 볼 권한이 없습니다.");
         }
 
         return answers;

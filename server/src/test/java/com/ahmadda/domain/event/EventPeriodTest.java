@@ -1,6 +1,6 @@
 package com.ahmadda.domain.event;
 
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -18,7 +18,7 @@ class EventPeriodTest {
     @CsvSource({"2025-07-18T04:21, 2025-07-18T04:21", "2025-07-18T04:21, 2025-07-18T04:20"})
     void 종료_시간이_시작_시간보다_미래가_아니라면_예외가_발생한다(LocalDateTime start, LocalDateTime end) {
         assertThatThrownBy(() -> EventPeriod.create(start, end))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("종료 시간은 시작 시간보다 미래여야 합니다.");
     }
 

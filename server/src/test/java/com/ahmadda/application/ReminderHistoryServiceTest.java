@@ -2,20 +2,20 @@ package com.ahmadda.application;
 
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.exception.AccessDeniedException;
-import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.notification.ReminderHistory;
+import com.ahmadda.domain.notification.ReminderHistoryRepository;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
-import com.ahmadda.domain.organization.OrganizationRepository;
-import com.ahmadda.domain.notification.ReminderHistory;
-import com.ahmadda.domain.notification.ReminderHistoryRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.domain.organization.OrganizationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -125,7 +125,7 @@ class ReminderHistoryServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.getNotifyHistory(event.getId(), loginMember))
-                .isInstanceOf(AccessDeniedException.class)
+                .isInstanceOf(ForbiddenException.class)
                 .hasMessage("리마인더 히스토리는 이벤트의 주최자만 조회할 수 있습니다.");
     }
 
@@ -138,10 +138,11 @@ class ReminderHistoryServiceTest {
     }
 
     private OrganizationMember createOrganizationMember(final Organization organization, final Member member) {
-        return organizationMemberRepository.save(OrganizationMember.create("nick",
-                                                                           member,
-                                                                           organization,
-                                                                           OrganizationMemberRole.USER
+        return organizationMemberRepository.save(OrganizationMember.create(
+                "nick",
+                member,
+                organization,
+                OrganizationMemberRole.USER
         ));
     }
 

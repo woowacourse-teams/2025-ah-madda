@@ -1,7 +1,7 @@
 package com.ahmadda.domain.event;
 
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
-import com.ahmadda.domain.exception.UnauthorizedOperationException;
+import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
@@ -81,7 +81,7 @@ class GuestTest {
 
         //then
         assertThat(event.getGuests()
-                           .contains(guest)).isTrue();
+                .contains(guest)).isTrue();
     }
 
     @Test
@@ -108,7 +108,7 @@ class GuestTest {
 
         //when //then
         assertThatThrownBy(() -> Guest.create(event, organizationMember2, event.getRegistrationStart()))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("같은 조직의 이벤트에만 게스트로 참여가능합니다.");
     }
 
@@ -132,7 +132,7 @@ class GuestTest {
 
         //when //then
         assertThatThrownBy(() -> Guest.create(event, organizationMember, event.getRegistrationStart()))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("이벤트의 주최자는 게스트로 참여할 수 없습니다.");
     }
 
@@ -161,7 +161,7 @@ class GuestTest {
 
         //when //then
         assertThatThrownBy(() -> Guest.create(event, organizationMember3, event.getRegistrationStart()))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("수용 인원이 가득차 이벤트에 참여할 수 없습니다.");
     }
 
@@ -173,7 +173,7 @@ class GuestTest {
                 event.getRegistrationStart()
                         .minusDays(1)
         ))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("이벤트 신청은 신청 시작 시간부터 신청 마감 시간까지 가능합니다.");
     }
 
@@ -220,7 +220,7 @@ class GuestTest {
 
         // when // then
         assertThatThrownBy(() -> guest.submitAnswers(answers))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessageContaining("필수 질문에 대한 답변이 누락되었습니다");
     }
 
@@ -241,7 +241,7 @@ class GuestTest {
 
         // when // then
         assertThatThrownBy(() -> guest.submitAnswers(answers))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessageContaining("필수 질문에 대한 답변이 누락되었습니다");
     }
 
@@ -262,7 +262,7 @@ class GuestTest {
 
         // when // then
         assertThatThrownBy(() -> guest.submitAnswers(answers))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessageContaining("이벤트에 포함되지 않은 질문입니다");
     }
 
@@ -308,7 +308,7 @@ class GuestTest {
         // then
         assertThat(retrievedAnswers).hasSize(1);
         assertThat(retrievedAnswers.get(0)
-                           .getAnswerText()).isEqualTo("답변");
+                .getAnswerText()).isEqualTo("답변");
     }
 
     @Test
@@ -319,10 +319,11 @@ class GuestTest {
         var event = createEvent("이벤트", participant, now, question);
         var otherMember = Member.create("다른 회원", "email@email.com", "profileUrl");
         var othrerOrganizationMember =
-                OrganizationMember.create("다른 게스트",
-                                          otherMember,
-                                          participant.getOrganization(),
-                                          OrganizationMemberRole.USER
+                OrganizationMember.create(
+                        "다른 게스트",
+                        otherMember,
+                        participant.getOrganization(),
+                        OrganizationMemberRole.USER
                 );
         var guest = Guest.create(event, otherParticipant, now);
         var answers = Map.of(question, "답변");
@@ -330,7 +331,7 @@ class GuestTest {
 
         // when // then
         assertThatThrownBy(() -> guest.viewAnswersAs(othrerOrganizationMember))
-                .isInstanceOf(UnauthorizedOperationException.class)
+                .isInstanceOf(ForbiddenException.class)
                 .hasMessage("답변을 볼 권한이 없습니다.");
     }
 

@@ -3,21 +3,21 @@ package com.ahmadda.application;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.application.dto.OrganizationUpdateRequest;
-import com.ahmadda.application.exception.AccessDeniedException;
-import com.ahmadda.application.exception.BusinessFlowViolatedException;
-import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
-import com.ahmadda.domain.organization.OrganizationImageFile;
-import com.ahmadda.domain.organization.OrganizationImageUploader;
-import com.ahmadda.domain.organization.InviteCode;
-import com.ahmadda.domain.organization.InviteCodeRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.organization.InviteCode;
+import com.ahmadda.domain.organization.InviteCodeRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationImageFile;
+import com.ahmadda.domain.organization.OrganizationImageUploader;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
-import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.presentation.dto.OrganizationParticipateRequest;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
@@ -58,10 +58,11 @@ public class OrganizationService {
         organizationRepository.save(organization);
 
         OrganizationMember organizationMember =
-                OrganizationMember.create(organizationCreateRequest.nickname(),
-                                          member,
-                                          organization,
-                                          OrganizationMemberRole.ADMIN
+                OrganizationMember.create(
+                        organizationCreateRequest.nickname(),
+                        member,
+                        organization,
+                        OrganizationMemberRole.ADMIN
                 );
         organizationMemberRepository.save(organizationMember);
 
@@ -76,7 +77,7 @@ public class OrganizationService {
         Organization organization = getOrganizationById(organizationId);
 
         if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId())) {
-            throw new AccessDeniedException("조직에 참여하지 않아 권한이 없습니다.");
+            throw new ForbiddenException("조직에 참여하지 않아 권한이 없습니다.");
         }
 
         return organization.getActiveEvents(LocalDateTime.now());
@@ -145,8 +146,10 @@ public class OrganizationService {
         return organizationRepository.findMemberOrganizations(member);
     }
 
-    private String resolveUpdateImageUrl(final String imageUrl,
-                                         final OrganizationImageFile thumbnailOrganizationImageFile) {
+    private String resolveUpdateImageUrl(
+            final String imageUrl,
+            final OrganizationImageFile thumbnailOrganizationImageFile
+    ) {
         String updateImageUrl = imageUrl;
 
         if (thumbnailOrganizationImageFile != null) {
@@ -158,7 +161,7 @@ public class OrganizationService {
 
     private void validateAlreadyParticipationMember(final Long organizationId, final LoginMember loginMember) {
         if (organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId())) {
-            throw new BusinessFlowViolatedException("이미 참여한 조직입니다.");
+            throw new UnprocessableEntityException("이미 참여한 조직입니다.");
         }
     }
 
@@ -169,7 +172,7 @@ public class OrganizationService {
 
     private InviteCode getInviteCode(final String code) {
         return inviteCodeRepository.findByCode(code)
-                .orElseThrow(() -> new BusinessFlowViolatedException("잘못된 초대코드입니다."));
+                .orElseThrow(() -> new UnprocessableEntityException("잘못된 초대코드입니다."));
     }
 
     private Organization getOrganization(final Long organizationId) {

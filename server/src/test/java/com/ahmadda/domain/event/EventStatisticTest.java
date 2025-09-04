@@ -1,7 +1,7 @@
 package com.ahmadda.domain.event;
 
 
-import com.ahmadda.domain.exception.UnauthorizedOperationException;
+import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
@@ -33,7 +33,7 @@ class EventStatisticTest {
 
         //then
         assertThatThrownBy(() -> sut.findEventViewMetrics(notOrganizerOrganizationMember, LocalDate.now()))
-                .isInstanceOf(UnauthorizedOperationException.class)
+                .isInstanceOf(ForbiddenException.class)
                 .hasMessage("이벤트의 조회수는 이벤트의 주최자만 조회할 수 있습니다.");
     }
 
@@ -65,7 +65,7 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, LocalDate.MAX)
-                           .size())
+                .size())
                 .isEqualTo(eventDuration);
     }
 
@@ -101,7 +101,7 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, LocalDate.MAX)
-                           .size())
+                .size())
                 .isEqualTo(eventDuration);
     }
 
@@ -128,7 +128,7 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, endLocalDate)
-                           .size())
+                .size())
                 .isEqualTo(eventDuration);
     }
 
@@ -148,8 +148,8 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, beforeEventEndDatetime)
-                           .getLast()
-                           .getViewDate())
+                .getLast()
+                .getViewDate())
                 .isEqualTo(beforeEventEndDatetime);
     }
 
@@ -177,7 +177,7 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, LocalDate.MAX)
-                           .size())
+                .size())
                 .isEqualTo(eventDuration);
     }
 
@@ -202,8 +202,8 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, startDatetime)
-                           .getFirst()
-                           .getViewCount()).isEqualTo(0L);
+                .getFirst()
+                .getViewCount()).isEqualTo(0L);
     }
 
     @Test
@@ -228,8 +228,8 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, startDatetime)
-                           .getFirst()
-                           .getViewCount()).isEqualTo(1L);
+                .getFirst()
+                .getViewCount()).isEqualTo(1L);
     }
 
     @Test
@@ -253,9 +253,9 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, startDatetime)
-                           .stream()
-                           .map(EventViewMetric::getViewCount)
-                           .toList())
+                .stream()
+                .map(EventViewMetric::getViewCount)
+                .toList())
                 .contains(0, 0);
     }
 

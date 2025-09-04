@@ -4,21 +4,22 @@ import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.application.dto.OrganizationUpdateRequest;
-import com.ahmadda.application.exception.BusinessFlowViolatedException;
-import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
 import com.ahmadda.domain.event.EventRepository;
-import com.ahmadda.domain.organization.OrganizationImageFile;
-import com.ahmadda.domain.organization.InviteCode;
-import com.ahmadda.domain.organization.InviteCodeRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.organization.InviteCode;
+import com.ahmadda.domain.organization.InviteCodeRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationImageFile;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
-import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.presentation.dto.OrganizationParticipateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,16 +138,18 @@ class OrganizationServiceTest {
         var orgA = organizationRepository.save(createOrganization("OrgA", "DescA", "a.png"));
         var orgB = organizationRepository.save(createOrganization("OrgB", "DescB", "b.png"));
         var orgMemberA =
-                organizationMemberRepository.save(OrganizationMember.create("nickname",
-                                                                            member,
-                                                                            orgA,
-                                                                            OrganizationMemberRole.USER
+                organizationMemberRepository.save(OrganizationMember.create(
+                        "nickname",
+                        member,
+                        orgA,
+                        OrganizationMemberRole.USER
                 ));
         var orgMemberB =
-                organizationMemberRepository.save(OrganizationMember.create("nickname",
-                                                                            member,
-                                                                            orgB,
-                                                                            OrganizationMemberRole.USER
+                organizationMemberRepository.save(OrganizationMember.create(
+                        "nickname",
+                        member,
+                        orgB,
+                        OrganizationMemberRole.USER
                 ));
 
         var now = LocalDateTime.now();
@@ -173,7 +176,7 @@ class OrganizationServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.getOrganizationEvents(organization.getId(), loginMember))
-                .isInstanceOf(BusinessFlowViolatedException.class)
+                .isInstanceOf(ForbiddenException.class)
                 .hasMessage("조직에 참여하지 않아 권한이 없습니다.");
     }
 
@@ -214,7 +217,7 @@ class OrganizationServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
-                .isInstanceOf(BusinessFlowViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("이미 참여한 조직입니다.");
     }
 
@@ -264,7 +267,7 @@ class OrganizationServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
-                .isInstanceOf(BusinessFlowViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("잘못된 초대코드입니다.");
     }
 

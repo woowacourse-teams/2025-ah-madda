@@ -1,11 +1,11 @@
 package com.ahmadda.domain.notification;
 
 import com.ahmadda.annotation.IntegrationTest;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.Guest;
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
@@ -79,7 +79,7 @@ class PokeTest {
 
         // when // then
         assertThatThrownBy(() -> sut.doPoke(sender, sender, event, LocalDateTime.now()))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("스스로에게 포키를 보낼 수 없습니다");
     }
 
@@ -95,7 +95,7 @@ class PokeTest {
 
         // when // then
         assertThatThrownBy(() -> sut.doPoke(sender, organizer, event, LocalDateTime.now()))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("주최자에게 포키를 보낼 수 없습니다");
     }
 
@@ -120,7 +120,7 @@ class PokeTest {
 
         // when // then
         assertThatThrownBy(() -> sut.doPoke(sender, otherOrganizationMember, event, LocalDateTime.now()))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("이미 이벤트에 참여한 조직원에게 포키를 보낼 수 없습니다.");
     }
 
@@ -137,7 +137,7 @@ class PokeTest {
 
         // when // then
         assertThatThrownBy(() -> sut.doPoke(sender, recipient, event, LocalDateTime.now()))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("포키를 보내려면 해당 조직에 참여하고 있어야 합니다.");
     }
 
@@ -154,7 +154,7 @@ class PokeTest {
 
         // when // then
         assertThatThrownBy(() -> sut.doPoke(sender, recipient, event, LocalDateTime.now()))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("포키 대상이 해당 조직에 참여하고 있어야 합니다.");
     }
 
@@ -183,7 +183,7 @@ class PokeTest {
 
         // when // then
         assertThatThrownBy(() -> sut.doPoke(sender, recipient, event, sentAt))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage(String.format(
                         "%s님에게 너무 많은 포키를 보냈어요 🫠 %d분 뒤에 찌를 수 있어요!",
                         recipient.getNickname(),

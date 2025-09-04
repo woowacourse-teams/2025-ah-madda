@@ -1,6 +1,6 @@
 package com.ahmadda.domain.organization;
 
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -49,9 +49,9 @@ class OrganizationImageFileTest {
     void 허용되지_않은_확장자를_사용하면_예외가_발생한다() {
         // when // then
         assertThatThrownBy(() ->
-                                   OrganizationImageFile.create("test.gif", "image/gif", 1024, validInputStream)
+                OrganizationImageFile.create("test.gif", "image/gif", 1024, validInputStream)
         )
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("이미지 파일의 확장자는 jpg, jpeg, png중 하나여야 합니다.");
     }
 
@@ -59,9 +59,9 @@ class OrganizationImageFileTest {
     void 컨텐츠_타입이_이미지가_아니면_예외가_발생한다() {
         // when // then
         assertThatThrownBy(() ->
-                                   OrganizationImageFile.create("test.jpg", "text/plain", 1024, validInputStream)
+                OrganizationImageFile.create("test.jpg", "text/plain", 1024, validInputStream)
         )
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("이미지 켄텐츠 유형이 아닙니다.");
     }
 }

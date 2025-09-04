@@ -1,10 +1,10 @@
 package com.ahmadda.domain.organization;
 
 
+import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.BaseEntity;
 import com.ahmadda.domain.event.Event;
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
-import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import com.ahmadda.domain.member.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -85,10 +85,10 @@ public class Organization extends BaseEntity {
             final LocalDateTime now
     ) {
         if (!inviteCode.matchesOrganization(this)) {
-            throw new BusinessRuleViolatedException("잘못된 초대코드입니다.");
+            throw new UnprocessableEntityException("잘못된 초대코드입니다.");
         }
         if (inviteCode.isExpired(now)) {
-            throw new BusinessRuleViolatedException("초대코드가 만료되었습니다.");
+            throw new UnprocessableEntityException("초대코드가 만료되었습니다.");
         }
 
         return OrganizationMember.create(nickname, member, this, OrganizationMemberRole.USER);
@@ -115,17 +115,17 @@ public class Organization extends BaseEntity {
 
     private void validateUpdatableBy(final OrganizationMember updatingOrganizationMember) {
         if (!updatingOrganizationMember.isBelongTo(this)) {
-            throw new UnauthorizedOperationException("조직에 속한 조직원만 수정이 가능합니다.");
+            throw new ForbiddenException("조직에 속한 조직원만 수정이 가능합니다.");
         }
 
         if (!updatingOrganizationMember.isAdmin()) {
-            throw new UnauthorizedOperationException("조직원의 관리자만 조직 정보를 수정할 수 있습니다.");
+            throw new ForbiddenException("조직원의 관리자만 조직 정보를 수정할 수 있습니다.");
         }
     }
 
     private void validateName(final String name) {
         if (name.length() < MIN_NAME_LENGTH || name.length() > MAX_NAME_LENGTH) {
-            throw new BusinessRuleViolatedException(
+            throw new UnprocessableEntityException(
                     String.format(
                             "이름의 길이는 %d자 이상 %d자 이하이어야 합니다.",
                             MIN_NAME_LENGTH,
@@ -137,7 +137,7 @@ public class Organization extends BaseEntity {
 
     private void validateDescription(final String description) {
         if (description.length() < MIN_DESCRIPTION_LENGTH || description.length() > MAX_DESCRIPTION_LENGTH) {
-            throw new BusinessRuleViolatedException(
+            throw new UnprocessableEntityException(
                     String.format(
                             "설명의 길이는 %d자 이상 %d자 이하이어야 합니다.",
                             MIN_DESCRIPTION_LENGTH,

@@ -1,14 +1,14 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.exception.AccessDeniedException;
-import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventRepository;
-import com.ahmadda.domain.organization.OrganizationMember;
-import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.notification.ReminderHistory;
 import com.ahmadda.domain.notification.ReminderHistoryRepository;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +42,7 @@ public class ReminderHistoryService {
 
     private void validateIsOrganizer(final Event event, final OrganizationMember organizationMember) {
         if (!event.isOrganizer(organizationMember)) {
-            throw new AccessDeniedException("리마인더 히스토리는 이벤트의 주최자만 조회할 수 있습니다.");
+            throw new ForbiddenException("리마인더 히스토리는 이벤트의 주최자만 조회할 수 있습니다.");
         }
     }
 }

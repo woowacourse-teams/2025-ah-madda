@@ -1,9 +1,9 @@
 package com.ahmadda.domain.event;
 
 
+import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.BaseEntity;
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
-import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
@@ -246,34 +246,34 @@ public class Event extends BaseEntity {
                 cancelParticipationTime,
                 BEFORE_EVENT_STARTED_CANCEL_AVAILABLE_MINUTE
         )) {
-            throw new BusinessRuleViolatedException("이벤트 시작전 10분 이후로는 신청을 취소할 수 없습니다");
+            throw new UnprocessableEntityException("이벤트 시작전 10분 이후로는 신청을 취소할 수 없습니다");
         }
     }
 
     private void validateParticipate(final Guest guest, final LocalDateTime participantDateTime) {
         if (eventOperationPeriod.canNotRegistration(participantDateTime)) {
-            throw new BusinessRuleViolatedException("이벤트 신청은 신청 시작 시간부터 신청 마감 시간까지 가능합니다.");
+            throw new UnprocessableEntityException("이벤트 신청은 신청 시작 시간부터 신청 마감 시간까지 가능합니다.");
         }
         if (guests.size() >= maxCapacity) {
-            throw new BusinessRuleViolatedException("수용 인원이 가득차 이벤트에 참여할 수 없습니다.");
+            throw new UnprocessableEntityException("수용 인원이 가득차 이벤트에 참여할 수 없습니다.");
         }
         if (guest.isSameOrganizationMember(organizer)) {
-            throw new BusinessRuleViolatedException("이벤트의 주최자는 게스트로 참여할 수 없습니다.");
+            throw new UnprocessableEntityException("이벤트의 주최자는 게스트로 참여할 수 없습니다.");
         }
         if (hasGuest(guest.getOrganizationMember())) {
-            throw new BusinessRuleViolatedException("이미 해당 이벤트에 참여중인 게스트입니다.");
+            throw new UnprocessableEntityException("이미 해당 이벤트에 참여중인 게스트입니다.");
         }
     }
 
     private void validateUpdatableBy(final Member organizer) {
         if (!isOrganizer(organizer)) {
-            throw new UnauthorizedOperationException("이벤트의 주최자만 수정할 수 있습니다.");
+            throw new ForbiddenException("이벤트의 주최자만 수정할 수 있습니다.");
         }
     }
 
     private void validateClosableBy(final Member organizer) {
         if (!isOrganizer(organizer)) {
-            throw new UnauthorizedOperationException("이벤트의 주최자만 마감할 수 있습니다.");
+            throw new ForbiddenException("이벤트의 주최자만 마감할 수 있습니다.");
         }
     }
 
@@ -282,13 +282,13 @@ public class Event extends BaseEntity {
             final Organization organization
     ) {
         if (!organizationMember.isBelongTo(organization)) {
-            throw new UnauthorizedOperationException("자신이 속한 조직이 아닙니다.");
+            throw new ForbiddenException("자신이 속한 조직이 아닙니다.");
         }
     }
 
     private void validateMaxCapacity(final int maxCapacity) {
         if (maxCapacity < MIN_CAPACITY || maxCapacity > MAX_CAPACITY) {
-            throw new BusinessRuleViolatedException("최대 수용 인원은 1명보다 적거나 21억명 보다 클 수 없습니다.");
+            throw new UnprocessableEntityException("최대 수용 인원은 1명보다 적거나 21억명 보다 클 수 없습니다.");
         }
     }
 
@@ -296,7 +296,7 @@ public class Event extends BaseEntity {
         return guests.stream()
                 .filter((guest) -> guest.isSameOrganizationMember(organizationMember))
                 .findAny()
-                .orElseThrow(() -> new BusinessRuleViolatedException("이벤트의 참가자 목록에서 일치하는 조직원을 찾을 수 없습니다"));
+                .orElseThrow(() -> new UnprocessableEntityException("이벤트의 참가자 목록에서 일치하는 조직원을 찾을 수 없습니다"));
     }
 
     public LocalDateTime getRegistrationStart() {

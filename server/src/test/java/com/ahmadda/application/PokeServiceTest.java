@@ -2,22 +2,22 @@ package com.ahmadda.application;
 
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.exception.BusinessFlowViolatedException;
-import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
-import com.ahmadda.domain.notification.EventNotificationOptOut;
-import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
 import com.ahmadda.domain.event.EventOperationPeriod;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.notification.EventNotificationOptOut;
+import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
+import com.ahmadda.domain.notification.Poke;
+import com.ahmadda.domain.notification.PokeHistoryRepository;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
-import com.ahmadda.domain.organization.OrganizationRepository;
-import com.ahmadda.domain.notification.Poke;
-import com.ahmadda.domain.notification.PokeHistoryRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.presentation.dto.PokeRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,13 +99,13 @@ class PokeServiceTest {
             var pokeHistory = pokeHistoryRepository.findAll()
                     .getFirst();
             softly.assertThat(pokeHistory
-                                      .getRecipient())
+                            .getRecipient())
                     .isEqualTo(participant);
             softly.assertThat(pokeHistory
-                                      .getSender())
+                            .getSender())
                     .isEqualTo(organizer);
             softly.assertThat(pokeHistory
-                                      .getEvent())
+                            .getEvent())
                     .isEqualTo(event);
         });
     }
@@ -211,7 +211,7 @@ class PokeServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.poke(eventId, request, loginMember))
-                .isInstanceOf(BusinessFlowViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("알림을 받지 않는 조직원입니다.");
     }
 

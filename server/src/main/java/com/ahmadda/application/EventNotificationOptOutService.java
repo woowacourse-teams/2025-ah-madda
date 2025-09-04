@@ -1,14 +1,14 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.exception.BusinessFlowViolatedException;
-import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
-import com.ahmadda.domain.notification.EventNotificationOptOut;
-import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.event.GuestWithOptStatus;
+import com.ahmadda.domain.notification.EventNotificationOptOut;
+import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberWithOptStatus;
@@ -36,7 +36,7 @@ public class EventNotificationOptOutService {
         );
 
         if (optOutRepository.existsByEventAndOrganizationMember(event, organizationMember)) {
-            throw new BusinessFlowViolatedException("이미 해당 이벤트에 대한 알림 수신 거부가 설정되어 있습니다.");
+            throw new UnprocessableEntityException("이미 해당 이벤트에 대한 알림 수신 거부가 설정되어 있습니다.");
         }
 
         EventNotificationOptOut optOut = EventNotificationOptOut.create(organizationMember, event);
@@ -55,7 +55,7 @@ public class EventNotificationOptOutService {
 
         EventNotificationOptOut optOut =
                 optOutRepository.findByEventAndOrganizationMember(event, organizationMember)
-                        .orElseThrow(() -> new BusinessFlowViolatedException("수신 거부 설정이 존재하지 않습니다."));
+                        .orElseThrow(() -> new UnprocessableEntityException("수신 거부 설정이 존재하지 않습니다."));
 
         optOutRepository.delete(optOut);
     }

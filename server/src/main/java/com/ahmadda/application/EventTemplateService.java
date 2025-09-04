@@ -1,8 +1,8 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.exception.AccessDeniedException;
-import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.event.EventTemplate;
 import com.ahmadda.domain.event.EventTemplateRepository;
 import com.ahmadda.domain.member.Member;
@@ -22,8 +22,10 @@ public class EventTemplateService {
     private final EventTemplateRepository eventTemplateRepository;
 
     @Transactional
-    public EventTemplate createTemplate(final LoginMember loginMember,
-                                        final EventTemplateCreateRequest eventTemplateCreateRequest) {
+    public EventTemplate createTemplate(
+            final LoginMember loginMember,
+            final EventTemplateCreateRequest eventTemplateCreateRequest
+    ) {
         Member member = getMember(loginMember);
         EventTemplate eventTemplate = EventTemplate.create(
                 member,
@@ -66,7 +68,7 @@ public class EventTemplateService {
 
     private void validateTemplateWriter(final Long templateId, final Long memberId) {
         if (!eventTemplateRepository.existsByIdAndMemberId(templateId, memberId)) {
-            throw new AccessDeniedException("본인이 작성한 템플릿이 아닙니다.");
+            throw new ForbiddenException("본인이 작성한 템플릿이 아닙니다.");
         }
     }
 

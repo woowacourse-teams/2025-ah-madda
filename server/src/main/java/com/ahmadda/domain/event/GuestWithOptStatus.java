@@ -1,6 +1,6 @@
 package com.ahmadda.domain.event;
 
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import lombok.Getter;
@@ -44,7 +44,7 @@ public class GuestWithOptStatus {
     private void validateOrganizerCannotOptOut(final Guest guest, final boolean optedOut) {
         if (guest.getEvent()
                 .isOrganizer(guest.getOrganizationMember()) && optedOut) {
-            throw new BusinessRuleViolatedException("이벤트 주최자는 알림 수신 거부 상태일 수 없습니다.");
+            throw new UnprocessableEntityException("이벤트 주최자는 알림 수신 거부 상태일 수 없습니다.");
         }
     }
 

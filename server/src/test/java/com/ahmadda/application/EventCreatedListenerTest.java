@@ -2,7 +2,7 @@ package com.ahmadda.application;
 
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.EventCreated;
-import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
 import com.ahmadda.domain.event.EventRepository;
@@ -62,7 +62,7 @@ class EventCreatedListenerTest {
             softly.assertThat(eventStatistic)
                     .isPresent();
             softly.assertThat(eventStatistic.get()
-                                      .getEvent())
+                            .getEvent())
                     .isEqualTo(event);
         });
     }

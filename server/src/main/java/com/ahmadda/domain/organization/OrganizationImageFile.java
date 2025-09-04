@@ -1,6 +1,6 @@
 package com.ahmadda.domain.organization;
 
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import lombok.Getter;
 import org.springframework.util.StringUtils;
 
@@ -47,19 +47,19 @@ public class OrganizationImageFile {
     private void validateFileName(final String fileName) {
         String extension = StringUtils.getFilenameExtension(fileName);
         if (extension == null || !ALLOW_EXTENSIONS.contains(extension.toLowerCase())) {
-            throw new BusinessRuleViolatedException("이미지 파일의 확장자는 jpg, jpeg, png중 하나여야 합니다.");
+            throw new UnprocessableEntityException("이미지 파일의 확장자는 jpg, jpeg, png중 하나여야 합니다.");
         }
     }
 
     private void validateContentType(final String contentType) {
         if (!contentType.startsWith("image")) {
-            throw new BusinessRuleViolatedException("이미지 켄텐츠 유형이 아닙니다.");
+            throw new UnprocessableEntityException("이미지 켄텐츠 유형이 아닙니다.");
         }
     }
 
     private void validateSize(final long size) {
         if (size > MAX_FILE_SIZE) {
-            throw new BusinessRuleViolatedException(
+            throw new UnprocessableEntityException(
                     String.format("이미지 파일 크기는 %dMB를 초과할 수 없습니다.", MAX_FILE_SIZE / (1024 * 1024))
             );
         }

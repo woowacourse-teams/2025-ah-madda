@@ -2,7 +2,7 @@ package com.ahmadda.application;
 
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
@@ -216,9 +216,10 @@ class LoginServiceTest {
         var loginTokens = sut.login(code, redirectUri, userAgent);
 
         // when // then
-        assertThatThrownBy(() -> sut.renewMemberToken(loginTokens.accessToken(),
-                                                      loginTokens.refreshToken(),
-                                                      userAgent
+        assertThatThrownBy(() -> sut.renewMemberToken(
+                loginTokens.accessToken(),
+                loginTokens.refreshToken(),
+                userAgent
         ))
                 .isInstanceOf(InvalidTokenException.class)
                 .hasMessage("엑세스 토큰이 만료되지 않았습니다.");

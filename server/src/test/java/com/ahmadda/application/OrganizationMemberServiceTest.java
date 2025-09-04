@@ -2,7 +2,7 @@ package com.ahmadda.application;
 
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
@@ -49,10 +49,10 @@ class OrganizationMemberServiceTest {
             softly.assertThat(result.getId())
                     .isEqualTo(organizationMember.getId());
             softly.assertThat(result.getMember()
-                                      .getId())
+                            .getId())
                     .isEqualTo(member.getId());
             softly.assertThat(result.getOrganization()
-                                      .getId())
+                            .getId())
                     .isEqualTo(organization.getId());
         });
     }

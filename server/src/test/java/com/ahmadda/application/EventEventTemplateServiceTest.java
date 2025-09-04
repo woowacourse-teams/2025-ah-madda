@@ -2,8 +2,8 @@ package com.ahmadda.application;
 
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.exception.AccessDeniedException;
-import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.event.EventTemplate;
 import com.ahmadda.domain.event.EventTemplateRepository;
 import com.ahmadda.domain.member.Member;
@@ -120,7 +120,7 @@ class EventEventTemplateServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.getTemplate(loginMember, tmpl.getId()))
-                .isInstanceOf(AccessDeniedException.class)
+                .isInstanceOf(ForbiddenException.class)
                 .hasMessage("본인이 작성한 템플릿이 아닙니다.");
     }
 
@@ -148,7 +148,7 @@ class EventEventTemplateServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.deleteTemplate(otherLoginMember, myTmpl.getId()))
-                .isInstanceOf(AccessDeniedException.class)
+                .isInstanceOf(ForbiddenException.class)
                 .hasMessage("본인이 작성한 템플릿이 아닙니다.");
 
         assertThat(eventTemplateRepository.findById(myTmpl.getId())).isPresent();

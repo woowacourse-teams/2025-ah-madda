@@ -1,9 +1,9 @@
 package com.ahmadda.domain.organization;
 
+import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
-import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import com.ahmadda.domain.member.Member;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -88,7 +88,7 @@ class OrganizationTest {
 
         //when //then
         assertThatThrownBy(() -> sut.participate(member, "surf", inviteCode, LocalDateTime.now()))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("잘못된 초대코드입니다.");
     }
 
@@ -100,7 +100,7 @@ class OrganizationTest {
 
         //when //then
         assertThatThrownBy(() -> sut.participate(member, "surf", inviteCode, LocalDateTime.now()))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("초대코드가 만료되었습니다.");
     }
 
@@ -130,9 +130,9 @@ class OrganizationTest {
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.update(user, "새 조직명", "새 설명", "newImage.png")
+                sut.update(user, "새 조직명", "새 설명", "newImage.png")
         )
-                .isInstanceOf(UnauthorizedOperationException.class)
+                .isInstanceOf(ForbiddenException.class)
                 .hasMessage("조직원의 관리자만 조직 정보를 수정할 수 있습니다.");
     }
 
@@ -140,17 +140,18 @@ class OrganizationTest {
     void 다른_조직의_관리자가_조직정보를_수정다면_예외가_발생한다() {
         // given
         var otherOrganization = Organization.create("테스트 조직", "조직 설명", "image.png");
-        var organizationMember = OrganizationMember.create("일반회원",
-                                                           organizer.getMember(),
-                                                           otherOrganization,
-                                                           OrganizationMemberRole.USER
+        var organizationMember = OrganizationMember.create(
+                "일반회원",
+                organizer.getMember(),
+                otherOrganization,
+                OrganizationMemberRole.USER
         );
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.update(organizationMember, "새 조직명", "새 설명", "newImage.png")
+                sut.update(organizationMember, "새 조직명", "새 설명", "newImage.png")
         )
-                .isInstanceOf(UnauthorizedOperationException.class)
+                .isInstanceOf(ForbiddenException.class)
                 .hasMessage("조직에 속한 조직원만 수정이 가능합니다.");
     }
 

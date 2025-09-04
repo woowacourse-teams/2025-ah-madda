@@ -1,7 +1,6 @@
 package com.ahmadda.domain.event;
 
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
-import com.ahmadda.domain.util.Assert;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
@@ -41,7 +40,6 @@ public class EventOperationPeriod {
             final EventPeriod eventPeriod,
             final LocalDateTime currentDateTime
     ) {
-        validateRegistrationPeriod(registrationEventPeriod);
         validateEventPeriod(eventPeriod, currentDateTime);
         validatePeriodRelationship(registrationEventPeriod, eventPeriod);
 
@@ -86,31 +84,23 @@ public class EventOperationPeriod {
 
     private void validateClosePeriod(final LocalDateTime closeDateTime) {
         if (closeDateTime.isAfter(this.registrationEventPeriod.end())) {
-            throw new BusinessRuleViolatedException("이미 신청이 마감된 이벤트입니다.");
+            throw new UnprocessableEntityException("이미 신청이 마감된 이벤트입니다.");
         }
     }
 
-    private void validateRegistrationPeriod(
-            final EventPeriod registrationEventPeriod
-    ) {
-        Assert.notNull(registrationEventPeriod, "이벤트 신청 기간은 null이 되면 안됩니다.");
-    }
-
     private void validateEventPeriod(final EventPeriod eventPeriod, final LocalDateTime currentDateTime) {
-        Assert.notNull(eventPeriod, "이벤트 기간은 null이 되면 안됩니다.");
-
         if (eventPeriod.start()
                 .isBefore(currentDateTime)) {
-            throw new BusinessRuleViolatedException("이벤트 시작 시간은 현재 시점보다 미래여야 합니다.");
+            throw new UnprocessableEntityException("이벤트 시작 시간은 현재 시점보다 미래여야 합니다.");
         }
     }
 
     private void validatePeriodRelationship(final EventPeriod registrationEventPeriod, final EventPeriod eventPeriod) {
         if (registrationEventPeriod.isOverlappedWith(eventPeriod)) {
-            throw new BusinessRuleViolatedException("신청 기간과 이벤트 기간이 겹칠 수 없습니다.");
+            throw new UnprocessableEntityException("신청 기간과 이벤트 기간이 겹칠 수 없습니다.");
         }
         if (registrationEventPeriod.isAfter(eventPeriod)) {
-            throw new BusinessRuleViolatedException("신청 기간은 이벤트 기간보다 앞서야 합니다.");
+            throw new UnprocessableEntityException("신청 기간은 이벤트 기간보다 앞서야 합니다.");
         }
     }
 

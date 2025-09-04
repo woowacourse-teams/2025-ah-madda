@@ -1,6 +1,6 @@
 package com.ahmadda.domain.event;
 
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -18,7 +18,7 @@ public class EventPeriod {
 
     private EventPeriod(final LocalDateTime start, final LocalDateTime end) {
         if (end.equals(start) || end.isBefore(start)) {
-            throw new BusinessRuleViolatedException("종료 시간은 시작 시간보다 미래여야 합니다.");
+            throw new UnprocessableEntityException("종료 시간은 시작 시간보다 미래여야 합니다.");
         }
 
         this.start = start;

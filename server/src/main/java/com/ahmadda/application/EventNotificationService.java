@@ -2,20 +2,20 @@ package com.ahmadda.application;
 
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.SelectedOrganizationMembersNotificationRequest;
-import com.ahmadda.application.exception.AccessDeniedException;
-import com.ahmadda.application.exception.BusinessFlowViolatedException;
-import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
-import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
-import com.ahmadda.domain.organization.Organization;
-import com.ahmadda.domain.organization.OrganizationMember;
-import com.ahmadda.domain.organization.OrganizationMemberWithOptStatus;
+import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
 import com.ahmadda.domain.notification.Reminder;
 import com.ahmadda.domain.notification.ReminderHistory;
 import com.ahmadda.domain.notification.ReminderHistoryRepository;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberWithOptStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -67,13 +67,13 @@ public class EventNotificationService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
 
         if (!event.isOrganizer(member)) {
-            throw new AccessDeniedException("이벤트 주최자가 아닙니다.");
+            throw new ForbiddenException("이벤트 주최자가 아닙니다.");
         }
     }
 
     private void validateContentLength(final String content) {
         if (content.length() > 20) {
-            throw new BusinessFlowViolatedException("알림 메시지는 20자 이하여야 합니다.");
+            throw new UnprocessableEntityException("알림 메시지는 20자 이하여야 합니다.");
         }
     }
 
@@ -92,7 +92,7 @@ public class EventNotificationService {
 
             long minutesUntilAvailable = calculateRemainingMinutes(now, oldestReminderTime);
 
-            throw new BusinessFlowViolatedException(
+            throw new UnprocessableEntityException(
                     String.format(
                             "리마인더는 %d분 내 최대 %d회까지만 발송할 수 있습니다. 약 %d분 후 다시 시도해주세요.",
                             REMINDER_LIMIT_DURATION_MINUTES,
@@ -169,7 +169,7 @@ public class EventNotificationService {
                 .anyMatch(OrganizationMemberWithOptStatus::isOptedOut);
 
         if (hasOptOut) {
-            throw new BusinessFlowViolatedException("선택된 조직원 중 알림 수신 거부자가 존재합니다.");
+            throw new UnprocessableEntityException("선택된 조직원 중 알림 수신 거부자가 존재합니다.");
         }
     }
 

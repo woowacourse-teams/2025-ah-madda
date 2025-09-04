@@ -1,5 +1,6 @@
 package com.ahmadda.infra.random;
 
+import com.ahmadda.domain.organization.RandomCodeGenerator;
 import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;

@@ -1,7 +1,7 @@
 package com.ahmadda.domain.organization;
 
+import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.domain.BaseEntity;
-import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -84,7 +84,7 @@ public class InviteCode extends BaseEntity {
             final OrganizationMember organizationMember
     ) {
         if (!organizationMember.isBelongTo(organization)) {
-            throw new UnauthorizedOperationException("조직에 참여중인 조직원만 해당 조직의 초대코드를 만들 수 있습니다.");
+            throw new ForbiddenException("조직에 참여중인 조직원만 해당 조직의 초대코드를 만들 수 있습니다.");
         }
     }
 }

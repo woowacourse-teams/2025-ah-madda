@@ -1,7 +1,7 @@
 package com.ahmadda.domain.event;
 
+import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.domain.BaseEntity;
-import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.organization.OrganizationMember;
 import jakarta.persistence.CascadeType;
@@ -80,7 +80,7 @@ public class EventStatistic extends BaseEntity {
 
     private void validateIsOrganizer(final OrganizationMember organizationMember) {
         if (!event.isOrganizer(organizationMember)) {
-            throw new UnauthorizedOperationException("이벤트의 조회수는 이벤트의 주최자만 조회할 수 있습니다.");
+            throw new ForbiddenException("이벤트의 조회수는 이벤트의 주최자만 조회할 수 있습니다.");
         }
     }
 

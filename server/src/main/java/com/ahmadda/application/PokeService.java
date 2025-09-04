@@ -1,18 +1,18 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.exception.BusinessFlowViolatedException;
-import com.ahmadda.application.exception.NotFoundException;
+import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
-import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
 import com.ahmadda.domain.event.EventRepository;
+import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
+import com.ahmadda.domain.notification.Poke;
+import com.ahmadda.domain.notification.PokeHistory;
+import com.ahmadda.domain.notification.PokeHistoryRepository;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberWithOptStatus;
-import com.ahmadda.domain.notification.Poke;
-import com.ahmadda.domain.notification.PokeHistory;
-import com.ahmadda.domain.notification.PokeHistoryRepository;
 import com.ahmadda.presentation.dto.PokeRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -71,7 +71,7 @@ public class PokeService {
                 );
 
         if (recipientWithOptOut.isOptedOut()) {
-            throw new BusinessFlowViolatedException("알림을 받지 않는 조직원입니다.");
+            throw new UnprocessableEntityException("알림을 받지 않는 조직원입니다.");
         }
     }
 }

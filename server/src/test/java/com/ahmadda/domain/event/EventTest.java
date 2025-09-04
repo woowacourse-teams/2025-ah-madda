@@ -1,7 +1,7 @@
 package com.ahmadda.domain.event;
 
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
-import com.ahmadda.domain.exception.UnauthorizedOperationException;
+import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
@@ -131,7 +131,7 @@ class EventTest {
                 updatedOperationPeriod,
                 20
         ))
-                .isInstanceOf(UnauthorizedOperationException.class)
+                .isInstanceOf(ForbiddenException.class)
                 .hasMessage("이벤트의 주최자만 수정할 수 있습니다.");
     }
 
@@ -202,7 +202,7 @@ class EventTest {
 
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization2))
-                .isInstanceOf(UnauthorizedOperationException.class)
+                .isInstanceOf(ForbiddenException.class)
                 .hasMessage("자신이 속한 조직이 아닙니다.");
     }
 
@@ -212,7 +212,7 @@ class EventTest {
         assertThatThrownBy(() -> createEvent(
                 "title", maxCapacity
         ))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("최대 수용 인원은 1명보다 적거나 21억명 보다 클 수 없습니다.");
     }
 
@@ -287,7 +287,7 @@ class EventTest {
 
         //when //then
         assertThatThrownBy(() -> sut.participate(guest, registrationPeriod.start()))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("이미 해당 이벤트에 참여중인 게스트입니다.");
     }
 
@@ -376,7 +376,7 @@ class EventTest {
 
         //when // then
         assertThatThrownBy(() -> sut.cancelParticipation(organizationMember, LocalDateTime.now()))
-                .isInstanceOf(BusinessRuleViolatedException.class);
+                .isInstanceOf(UnprocessableEntityException.class);
     }
 
     @Test
@@ -398,11 +398,11 @@ class EventTest {
         //when // then
         assertSoftly(softly -> {
             softly.assertThat(sut.getGuests()
-                                      .size())
+                            .size())
                     .isEqualTo(1L);
             sut.cancelParticipation(organizationMember2, LocalDateTime.now());
             softly.assertThat(sut.getGuests()
-                                      .size())
+                            .size())
                     .isEqualTo(0L);
         });
     }
@@ -455,7 +455,7 @@ class EventTest {
 
         // then
         assertThatThrownBy(() -> Guest.create(sut, organizationMember, registrationEnd))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("이벤트 신청은 신청 시작 시간부터 신청 마감 시간까지 가능합니다.");
     }
 
@@ -482,7 +482,7 @@ class EventTest {
 
         // when // then
         assertThatThrownBy(() -> sut.closeRegistrationAt(notBaseOrganizer, registrationCloseTime))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(ForbiddenException.class)
                 .hasMessage("이벤트의 주최자만 마감할 수 있습니다.");
     }
 
@@ -504,7 +504,7 @@ class EventTest {
 
         // when // then
         assertThatThrownBy(() -> sut.closeRegistrationAt(baseOrganizer, registrationCloseOverTime))
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("이미 신청이 마감된 이벤트입니다.");
     }
 
