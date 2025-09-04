@@ -1,5 +1,6 @@
 package com.ahmadda.learning.notification;
 
+import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.domain.Member;
 import com.ahmadda.domain.MemberRepository;
 import com.ahmadda.domain.Organization;
@@ -12,17 +13,14 @@ import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@TestPropertySource(properties = "push.mock=false")
-@Transactional
 @Disabled
+@IntegrationTest
+@TestPropertySource(properties = "push.mock=false")
 class FcmPushNotifierTest {
 
     @Autowired
@@ -53,6 +51,7 @@ class FcmPushNotifierTest {
         var payload = new PushNotificationPayload(
                 "테스트 알림 제목",
                 "이것은 테스트 메시지입니다.",
+                1L,
                 1L
         );
 
@@ -80,6 +79,7 @@ class FcmPushNotifierTest {
         var payload = new PushNotificationPayload(
                 "테스트 알림 제목",
                 "이것은 테스트 메시지입니다.",
+                1L,
                 1L
         );
 
