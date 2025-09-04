@@ -27,7 +27,7 @@ public class SmtpEmailNotifier implements EmailNotifier {
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
     private final NotificationProperties notificationProperties;
-    private EntityManager em;
+    private final EntityManager em;
 
     @Async
     @Transactional(readOnly = true)

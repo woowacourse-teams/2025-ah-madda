@@ -1,4 +1,4 @@
-package com.ahmadda.application;
+package com.ahmadda.application.listener;
 
 import com.ahmadda.application.dto.EventCreated;
 import com.ahmadda.common.exception.NotFoundException;

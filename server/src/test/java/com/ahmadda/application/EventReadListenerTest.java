@@ -3,6 +3,7 @@ package com.ahmadda.application;
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.EventRead;
 import com.ahmadda.application.dto.LoginMember;
+import com.ahmadda.application.listener.EventReadListener;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
@@ -14,8 +15,8 @@ import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
-import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.domain.organization.OrganizationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -1,23 +1,24 @@
 package com.ahmadda.application;
 
 import com.ahmadda.annotation.IntegrationTest;
+import com.ahmadda.application.scheduler.EventNotificationScheduler;
 import com.ahmadda.domain.event.Event;
-import com.ahmadda.domain.notification.EventNotificationOptOut;
-import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
 import com.ahmadda.domain.event.EventOperationPeriod;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.event.GuestRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
-import com.ahmadda.domain.organization.Organization;
-import com.ahmadda.domain.organization.OrganizationMember;
-import com.ahmadda.domain.organization.OrganizationMemberRepository;
-import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.domain.notification.EventNotificationOptOut;
+import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
 import com.ahmadda.domain.notification.Reminder;
 import com.ahmadda.domain.notification.ReminderHistoryRepository;
 import com.ahmadda.domain.notification.ReminderRecipient;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.domain.organization.OrganizationRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -319,10 +320,11 @@ class EventNotificationSchedulerTest {
     ) {
         var member = memberRepository.save(Member.create(nickname, email, "testPicture"));
 
-        return organizationMemberRepository.save(OrganizationMember.create(nickname,
-                                                                           member,
-                                                                           organization,
-                                                                           OrganizationMemberRole.USER
+        return organizationMemberRepository.save(OrganizationMember.create(
+                nickname,
+                member,
+                organization,
+                OrganizationMemberRole.USER
         ));
     }
 
