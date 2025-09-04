@@ -43,8 +43,7 @@ public class Guest extends BaseEntity {
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
-    // TODO. 추후에 @Async 사용을 고려하여 LAZY로 변경
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "participant_id", nullable = false)
     private OrganizationMember organizationMember;
 
