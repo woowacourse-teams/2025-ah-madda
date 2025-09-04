@@ -30,13 +30,15 @@ public class OrganizationMemberService {
 
     @Transactional
     public void updateRoles(
+            final Long organizationId,
             final LoginMember operatorLoginMember,
             final OrganizationMemberRoleUpdateRequest request
     ) {
-        List<OrganizationMember> targets = getAllTargetOrganizationMembers(request.organizationMemberIds());
-        Organization targetOrganization = validateAllBelongToSameOrganization(targets);
+        Organization organization = getOrganization(organizationId);
+        OrganizationMember operator = getOperatorOrganizationMember(organizationId, operatorLoginMember);
 
-        OrganizationMember operator = getOperatorOrganizationMember(targetOrganization.getId(), operatorLoginMember);
+        List<OrganizationMember> targets = getAllTargetOrganizationMembers(request.organizationMemberIds());
+        validateAllBelongToOrganization(organization, targets);
 
         updateRoles(operator, targets, request.role());
     }
@@ -45,12 +47,16 @@ public class OrganizationMemberService {
             final Long organizationId,
             final LoginMember loginMember
     ) {
-        Organization organization = organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직입니다."));
+        Organization organization = getOrganization(organizationId);
 
         validateBelongsToOrganization(organizationId, loginMember);
 
         return organization.getOrganizationMembers();
+    }
+
+    private Organization getOrganization(final Long organizationId) {
+        return organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직입니다."));
     }
 
     private List<OrganizationMember> getAllTargetOrganizationMembers(final List<Long> ids) {
@@ -63,19 +69,15 @@ public class OrganizationMemberService {
         return targets;
     }
 
-    private Organization validateAllBelongToSameOrganization(final List<OrganizationMember> targets) {
-        Organization baseOrganization = targets.get(0)
-                .getOrganization();
-
-        boolean allSame = targets.stream()
-                .allMatch(member -> member.getOrganization()
-                        .equals(baseOrganization));
-
-        if (!allSame) {
-            throw new UnprocessableEntityException("모든 대상은 같은 조직에 속해 있어야 합니다.");
-        }
-
-        return baseOrganization;
+    private void validateAllBelongToOrganization(
+            final Organization organization,
+            final List<OrganizationMember> targets
+    ) {
+        targets.forEach(target -> {
+            if (!organization.isExistOrganizationMember(target)) {
+                throw new UnprocessableEntityException("서로 다른 조직에 속한 조직원이 포함되어 있습니다.");
+            }
+        });
     }
 
     private OrganizationMember getOperatorOrganizationMember(final Long organizationId, final LoginMember loginMember) {

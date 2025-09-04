@@ -75,18 +75,14 @@ class OrganizationMemberServiceTest {
 
     @Test
     void 조직원_역할을_한번에_여러명_변경할_수_있다() {
-        // given
         var org = createOrganization("아맞다");
         var admin = createMember("admin", "admin@email.com");
         var user1 = createMember("user1", "user1@email.com");
         var user2 = createMember("user2", "user2@email.com");
 
-        var adminOrgMember =
-                createOrganizationMember("admin", admin, org, OrganizationMemberRole.ADMIN);
-        var user1OrgMember =
-                createOrganizationMember("user1", user1, org, OrganizationMemberRole.USER);
-        var user2OrgMember =
-                createOrganizationMember("user2", user2, org, OrganizationMemberRole.USER);
+        var adminOrgMember = createOrganizationMember("admin", admin, org, OrganizationMemberRole.ADMIN);
+        var user1OrgMember = createOrganizationMember("user1", user1, org, OrganizationMemberRole.USER);
+        var user2OrgMember = createOrganizationMember("user2", user2, org, OrganizationMemberRole.USER);
 
         var request = new OrganizationMemberRoleUpdateRequest(
                 List.of(user1OrgMember.getId(), user2OrgMember.getId()),
@@ -94,34 +90,57 @@ class OrganizationMemberServiceTest {
         );
         var loginMember = new LoginMember(admin.getId());
 
-        // when
-        sut.updateRoles(loginMember, request);
+        sut.updateRoles(org.getId(), loginMember, request);
 
-        // then
-        var updatedUser1 = organizationMemberRepository.findById(user1OrgMember.getId())
+        var updated1 = organizationMemberRepository.findById(user1OrgMember.getId())
                 .orElseThrow();
-        var updatedUser2 = organizationMemberRepository.findById(user2OrgMember.getId())
+        var updated2 = organizationMemberRepository.findById(user2OrgMember.getId())
                 .orElseThrow();
 
         assertSoftly(softly -> {
-            softly.assertThat(updatedUser1.getRole())
+            softly.assertThat(updated1.getRole())
                     .isEqualTo(OrganizationMemberRole.ADMIN);
-            softly.assertThat(updatedUser2.getRole())
+            softly.assertThat(updated2.getRole())
                     .isEqualTo(OrganizationMemberRole.ADMIN);
         });
     }
 
     @Test
-    void 조직원_역할_변경시_대상_중_일부라도_존재하지_않으면_예외가_발생한다() {
-        // given
+    void 조직원_역할_변경시_존재하지_않는_조직이면_예외가_발생한다() {
+        var admin = createMember("admin", "admin@email.com");
+        var loginMember = new LoginMember(admin.getId());
+        var request = new OrganizationMemberRoleUpdateRequest(List.of(1L, 2L), OrganizationMemberRole.ADMIN);
+
+        assertThatThrownBy(() -> sut.updateRoles(-1L, loginMember, request))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 조직입니다.");
+    }
+
+    @Test
+    void 조직원_역할_변경시_요청자가_조직에_속하지_않으면_예외가_발생한다() {
+        var org = createOrganization("아맞다");
+        var outsider = createMember("outsider", "out@email.com");
+        var user = createMember("user", "user@email.com");
+
+        var userOrgMember = createOrganizationMember("user", user, org, OrganizationMemberRole.USER);
+        var loginMember = new LoginMember(outsider.getId());
+
+        var request =
+                new OrganizationMemberRoleUpdateRequest(List.of(userOrgMember.getId()), OrganizationMemberRole.ADMIN);
+
+        assertThatThrownBy(() -> sut.updateRoles(org.getId(), loginMember, request))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 조직원입니다.");
+    }
+
+    @Test
+    void 조직원_역할_변경시_대상_조직원_중_일부라도_존재하지_않으면_예외가_발생한다() {
         var org = createOrganization("아맞다");
         var admin = createMember("admin", "admin@email.com");
         var user = createMember("user", "user@email.com");
 
-        var adminOrgMember =
-                createOrganizationMember("admin", admin, org, OrganizationMemberRole.ADMIN);
-        var userOrgMember =
-                createOrganizationMember("user", user, org, OrganizationMemberRole.USER);
+        var adminOrgMember = createOrganizationMember("admin", admin, org, OrganizationMemberRole.ADMIN);
+        var userOrgMember = createOrganizationMember("user", user, org, OrganizationMemberRole.USER);
 
         var invalidId = -999L;
         var request = new OrganizationMemberRoleUpdateRequest(
@@ -130,27 +149,22 @@ class OrganizationMemberServiceTest {
         );
         var loginMember = new LoginMember(admin.getId());
 
-        // when // then
-        assertThatThrownBy(() -> sut.updateRoles(loginMember, request))
+        assertThatThrownBy(() -> sut.updateRoles(org.getId(), loginMember, request))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("일부 조직원이 존재하지 않습니다.");
     }
 
     @Test
-    void 조직원_역할_변경시_대상_조직원이_다른_조직에_속해있다면_예외가_발생한다() {
-        // given
+    void 조직원_역할_변경시_대상_조직원이_다른_조직에_속해있으면_예외가_발생한다() {
         var org1 = createOrganization("아맞다1");
         var org2 = createOrganization("아맞다2");
         var admin = createMember("admin", "admin@email.com");
         var user1 = createMember("user1", "user1@email.com");
         var user2 = createMember("user2", "user2@email.com");
 
-        var adminOrgMember =
-                createOrganizationMember("admin", admin, org1, OrganizationMemberRole.ADMIN);
-        var user1OrgMember =
-                createOrganizationMember("user1", user1, org1, OrganizationMemberRole.USER);
-        var user2OrgMember =
-                createOrganizationMember("user2", user2, org2, OrganizationMemberRole.USER);
+        createOrganizationMember("admin", admin, org1, OrganizationMemberRole.ADMIN);
+        var user1OrgMember = createOrganizationMember("user1", user1, org1, OrganizationMemberRole.USER);
+        var user2OrgMember = createOrganizationMember("user2", user2, org2, OrganizationMemberRole.USER);
 
         var request = new OrganizationMemberRoleUpdateRequest(
                 List.of(user1OrgMember.getId(), user2OrgMember.getId()),
@@ -158,10 +172,9 @@ class OrganizationMemberServiceTest {
         );
         var loginMember = new LoginMember(admin.getId());
 
-        // when // then
-        assertThatThrownBy(() -> sut.updateRoles(loginMember, request))
+        assertThatThrownBy(() -> sut.updateRoles(org1.getId(), loginMember, request))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("모든 대상은 같은 조직에 속해 있어야 합니다.");
+                .hasMessage("서로 다른 조직에 속한 조직원이 포함되어 있습니다.");
     }
 
     @Test
@@ -203,7 +216,7 @@ class OrganizationMemberServiceTest {
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 조직입니다.");
     }
-    
+
     @Test
     void 조직_멤버_목록_조회시_조직에_속하지_않은_조직원이면_예외가_발생한다() {
         // given
