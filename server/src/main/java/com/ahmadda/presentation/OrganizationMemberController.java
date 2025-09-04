@@ -7,6 +7,7 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -205,7 +206,8 @@ public class OrganizationMemberController {
             @ApiResponse(
                     responseCode = "200",
                     content = @Content(
-                            schema = @Schema(implementation = OrganizationMemberResponse.class)
+                            array = @ArraySchema(schema = @Schema(implementation = OrganizationMemberResponse.class)
+                            )
                     )
             ),
             @ApiResponse(
