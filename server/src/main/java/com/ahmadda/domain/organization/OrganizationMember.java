@@ -37,8 +37,7 @@ public class OrganizationMember extends BaseEntity {
     @Column(nullable = false)
     private String nickname;
 
-    // TODO. 추후에 @Async 사용을 고려하여 LAZY로 변경
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
