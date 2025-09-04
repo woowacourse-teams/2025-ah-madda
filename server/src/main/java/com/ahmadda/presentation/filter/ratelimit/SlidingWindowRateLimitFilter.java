@@ -1,6 +1,6 @@
 package com.ahmadda.presentation.filter.ratelimit;
 
-import com.ahmadda.infra.login.jwt.JwtProvider;
+import com.ahmadda.infra.auth.jwt.JwtProvider;
 import com.ahmadda.presentation.header.HeaderProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
