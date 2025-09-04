@@ -1,4 +1,4 @@
-package com.ahmadda.learning;
+package com.ahmadda.learning.infra.image;
 
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.domain.organization.OrganizationImageFile;

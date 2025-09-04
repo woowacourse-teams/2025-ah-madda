@@ -1,10 +1,5 @@
-package com.ahmadda.domain;
+package com.ahmadda.domain.event;
 
-import com.ahmadda.domain.event.Answer;
-import com.ahmadda.domain.event.Event;
-import com.ahmadda.domain.event.EventOperationPeriod;
-import com.ahmadda.domain.event.Guest;
-import com.ahmadda.domain.event.Question;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import com.ahmadda.domain.member.Member;

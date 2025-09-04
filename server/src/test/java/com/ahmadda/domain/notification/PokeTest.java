@@ -1,4 +1,4 @@
-package com.ahmadda.domain;
+package com.ahmadda.domain.notification;
 
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.domain.event.Event;
@@ -8,15 +8,11 @@ import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
-import com.ahmadda.domain.notification.Poke;
-import com.ahmadda.domain.notification.PokeHistory;
-import com.ahmadda.domain.notification.PokeHistoryRepository;
-import com.ahmadda.domain.notification.PushNotifier;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
-import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.domain.organization.OrganizationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;

@@ -1,7 +1,6 @@
-package com.ahmadda.domain;
+package com.ahmadda.domain.organization;
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
-import com.ahmadda.domain.organization.OrganizationImageFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

@@ -1,11 +1,6 @@
-package com.ahmadda.domain;
+package com.ahmadda.domain.event;
 
 
-import com.ahmadda.domain.event.Event;
-import com.ahmadda.domain.event.EventOperationPeriod;
-import com.ahmadda.domain.event.EventPeriod;
-import com.ahmadda.domain.event.EventStatistic;
-import com.ahmadda.domain.event.EventViewMetric;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.organization.Organization;

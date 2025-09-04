@@ -1,21 +1,20 @@
-package com.ahmadda.learning.notification;
+package com.ahmadda.learning.infra.notification;
 
 import com.ahmadda.annotation.IntegrationTest;
+import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.domain.notification.EventEmailPayload;
-import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Disabled
 @IntegrationTest

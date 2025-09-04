@@ -1,7 +1,5 @@
-package com.ahmadda.domain;
+package com.ahmadda.domain.event;
 
-import com.ahmadda.domain.event.EventOperationPeriod;
-import com.ahmadda.domain.event.EventPeriod;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

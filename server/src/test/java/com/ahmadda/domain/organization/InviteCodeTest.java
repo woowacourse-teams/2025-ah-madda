@@ -1,11 +1,7 @@
-package com.ahmadda.domain;
+package com.ahmadda.domain.organization;
 
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import com.ahmadda.domain.member.Member;
-import com.ahmadda.domain.organization.InviteCode;
-import com.ahmadda.domain.organization.Organization;
-import com.ahmadda.domain.organization.OrganizationMember;
-import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;

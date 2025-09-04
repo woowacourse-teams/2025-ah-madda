@@ -1,4 +1,4 @@
-package com.ahmadda.learning;
+package com.ahmadda.learning.infra.notification;
 
 
 import com.ahmadda.annotation.IntegrationTest;
