@@ -85,6 +85,89 @@ public class OrganizationMemberController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "조직원 역할 일괄 변경", description = "관리자가 같은 조직에 속한 여러 조직원의 역할을 한 번에 변경합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/organization-members/roles"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "일부 조직원이 존재하지 않습니다.",
+                                              "instance": "/api/organization-members/roles"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "같은 조직 소속이 아님",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Forbidden",
+                                                      "status": 403,
+                                                      "detail": "같은 조직에 속한 조직원만 권한을 변경할 수 있습니다.",
+                                                      "instance": "/api/organization-members/roles"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "관리자 아님",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Forbidden",
+                                                      "status": 403,
+                                                      "detail": "관리자만 조직원의 권한을 변경할 수 있습니다.",
+                                                      "instance": "/api/organization-members/roles"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unprocessable Entity",
+                                              "status": 422,
+                                              "detail": "모든 대상은 같은 조직에 속해 있어야 합니다.",
+                                              "instance": "/api/organization-members/roles"
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
     @PatchMapping("/organization-members/roles")
     public ResponseEntity<Void> updateRoles(
             @AuthMember final LoginMember loginMember,
