@@ -3,18 +3,18 @@ package com.ahmadda.application;
 import com.ahmadda.application.dto.AnswerCreateRequest;
 import com.ahmadda.application.dto.EventParticipateRequest;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.exception.AccessDeniedException;
-import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.Answer;
-import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventRepository;
-import com.ahmadda.domain.Guest;
-import com.ahmadda.domain.GuestRepository;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberRepository;
-import com.ahmadda.domain.Question;
-import com.ahmadda.domain.QuestionRepository;
+import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.domain.event.Answer;
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventRepository;
+import com.ahmadda.domain.event.Guest;
+import com.ahmadda.domain.event.GuestRepository;
+import com.ahmadda.domain.event.Question;
+import com.ahmadda.domain.event.QuestionRepository;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -106,7 +106,7 @@ public class EventGuestService {
                 organization.getId(),
                 loginMember.memberId()
         )) {
-            throw new AccessDeniedException("조직의 조직원만 접근할 수 있습니다.");
+            throw new ForbiddenException("조직의 조직원만 접근할 수 있습니다.");
         }
     }
 

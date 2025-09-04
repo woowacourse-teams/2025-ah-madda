@@ -4,23 +4,23 @@ import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.AnswerCreateRequest;
 import com.ahmadda.application.dto.EventParticipateRequest;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.exception.AccessDeniedException;
-import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.Answer;
-import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventOperationPeriod;
-import com.ahmadda.domain.EventRepository;
-import com.ahmadda.domain.Guest;
-import com.ahmadda.domain.GuestRepository;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberRepository;
-import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Question;
-import com.ahmadda.domain.Role;
-import com.ahmadda.domain.exception.BusinessRuleViolatedException;
+import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
+import com.ahmadda.domain.event.Answer;
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventRepository;
+import com.ahmadda.domain.event.Guest;
+import com.ahmadda.domain.event.GuestRepository;
+import com.ahmadda.domain.event.Question;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
+import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.domain.organization.OrganizationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -109,7 +109,7 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.getGuests(event.getId(), createLoginMember(otherMember)))
-                .isInstanceOf(AccessDeniedException.class)
+                .isInstanceOf(ForbiddenException.class)
                 .hasMessage("조직의 조직원만 접근할 수 있습니다.");
     }
 
@@ -164,7 +164,7 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.getNonGuestOrganizationMembers(event.getId(), createLoginMember(otherMember)))
-                .isInstanceOf(AccessDeniedException.class)
+                .isInstanceOf(ForbiddenException.class)
                 .hasMessage("조직의 조직원만 접근할 수 있습니다.");
     }
 
@@ -264,7 +264,7 @@ class EventGuestServiceTest {
                         request
                 )
         )
-                .isInstanceOf(BusinessRuleViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessageContaining("필수 질문에 대한 답변이 누락되었습니다");
     }
 
@@ -449,7 +449,12 @@ class EventGuestServiceTest {
     }
 
     private OrganizationMember createAndSaveOrganizationMember(String nickname, Member member, Organization org) {
-        return organizationMemberRepository.save(OrganizationMember.create(nickname, member, org, Role.USER));
+        return organizationMemberRepository.save(OrganizationMember.create(
+                nickname,
+                member,
+                org,
+                OrganizationMemberRole.USER
+        ));
     }
 
     private Event createAndSaveEvent(OrganizationMember organizer, Organization organization, Question... questions) {

@@ -1,7 +1,7 @@
 package com.ahmadda.presentation.dto;
 
-import com.ahmadda.domain.Event;
-import com.ahmadda.domain.Question;
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.Question;
 
 import java.time.LocalDateTime;
 import java.util.List;

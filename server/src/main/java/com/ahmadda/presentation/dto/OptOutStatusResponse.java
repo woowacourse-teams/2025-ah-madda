@@ -1,6 +1,6 @@
 package com.ahmadda.presentation.dto;
 
-import com.ahmadda.domain.OrganizationMemberWithOptStatus;
+import com.ahmadda.domain.organization.OrganizationMemberWithOptStatus;
 
 public record OptOutStatusResponse(boolean optedOut) {
 

@@ -43,10 +43,8 @@ jobs:
           head="${{ steps.base.outputs.head }}"
           yearweek="${{ steps.base.outputs.yearweek }}"
           common="${{ steps.base.outputs.common_build }}"
-
           prefix="v${head}.${yearweek}.${common}+be"
 
-          # v1.2534.1+be.1, v1.2534.1+be.2 ...
           matching_tags=$(git tag -l "${prefix}.*")
           if [[ -z "$matching_tags" ]]; then
             next_be_build=1
@@ -62,7 +60,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git tag "$version"
           git push origin "$version"
-
 
       - name: Checkout with submodules
         uses: actions/checkout@v4

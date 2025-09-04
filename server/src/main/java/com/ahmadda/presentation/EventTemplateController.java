@@ -2,7 +2,7 @@ package com.ahmadda.presentation;
 
 import com.ahmadda.application.EventTemplateService;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.domain.EventTemplate;
+import com.ahmadda.domain.event.EventTemplate;
 import com.ahmadda.presentation.dto.EventTemplateCreateRequest;
 import com.ahmadda.presentation.dto.EventTemplateResponse;
 import com.ahmadda.presentation.dto.EventTemplateTitleResponse;

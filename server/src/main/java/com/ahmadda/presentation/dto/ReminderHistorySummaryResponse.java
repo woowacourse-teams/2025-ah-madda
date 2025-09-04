@@ -1,6 +1,6 @@
 package com.ahmadda.presentation.dto;
 
-import com.ahmadda.domain.ReminderHistory;
+import com.ahmadda.domain.notification.ReminderHistory;
 
 import java.time.LocalDateTime;
 

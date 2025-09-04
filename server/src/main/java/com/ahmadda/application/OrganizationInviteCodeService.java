@@ -1,15 +1,15 @@
 package com.ahmadda.application;
 
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.exception.BusinessFlowViolatedException;
-import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.InviteCode;
-import com.ahmadda.domain.InviteCodeRepository;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberRepository;
-import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.infra.generator.RandomCodeGenerator;
+import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
+import com.ahmadda.domain.organization.InviteCode;
+import com.ahmadda.domain.organization.InviteCodeRepository;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
+import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.domain.organization.RandomCodeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,12 +41,12 @@ public class OrganizationInviteCodeService {
 
     public Organization getOrganizationByCode(final String code) {
         InviteCode inviteCode = inviteCodeRepository.findByCode(code)
-                .orElseThrow(() -> new BusinessFlowViolatedException("유효하지 않은 초대코드입니다."));
+                .orElseThrow(() -> new UnprocessableEntityException("유효하지 않은 초대코드입니다."));
 
         if (inviteCode.isExpired(LocalDateTime.now())) {
-            throw new BusinessFlowViolatedException("만료된 초대코드입니다.");
+            throw new UnprocessableEntityException("만료된 초대코드입니다.");
         }
-        
+
         return inviteCode.getOrganization();
     }
 

@@ -1,6 +1,6 @@
 package com.ahmadda.application.dto;
 
-import com.ahmadda.domain.Member;
+import com.ahmadda.domain.member.Member;
 
 public record MemberCreateAlarmPayload(
         String name,

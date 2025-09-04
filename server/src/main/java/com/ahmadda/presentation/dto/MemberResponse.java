@@ -1,6 +1,6 @@
 package com.ahmadda.presentation.dto;
 
-import com.ahmadda.domain.Member;
+import com.ahmadda.domain.member.Member;
 
 public record MemberResponse(
         Long id,

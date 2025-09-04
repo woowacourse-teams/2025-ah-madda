@@ -1,8 +1,8 @@
 package com.ahmadda.infra.notification.mail;
 
-import com.ahmadda.domain.EmailNotifier;
-import com.ahmadda.domain.EventEmailPayload;
-import com.ahmadda.domain.OrganizationMember;
+import com.ahmadda.domain.notification.EmailNotifier;
+import com.ahmadda.domain.notification.EventEmailPayload;
+import com.ahmadda.domain.organization.OrganizationMember;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;

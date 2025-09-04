@@ -1,6 +1,6 @@
 package com.ahmadda.presentation.header;
 
-import com.ahmadda.presentation.exception.InvalidAuthorizationException;
+import com.ahmadda.common.exception.UnauthorizedException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,6 +13,6 @@ public class HeaderProvider {
             return header.substring(BEARER_TYPE.length())
                     .trim();
         }
-        throw new InvalidAuthorizationException("인증 토큰 정보가 존재하지 않거나 유효하지 않습니다.");
+        throw new UnauthorizedException("인증 토큰 정보가 존재하지 않거나 유효하지 않습니다.");
     }
 }

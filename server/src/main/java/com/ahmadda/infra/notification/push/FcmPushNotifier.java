@@ -1,8 +1,8 @@
 package com.ahmadda.infra.notification.push;
 
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.PushNotificationPayload;
-import com.ahmadda.domain.PushNotifier;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.notification.PushNotificationPayload;
+import com.ahmadda.domain.notification.PushNotifier;
 import com.ahmadda.infra.notification.config.NotificationProperties;
 import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -33,49 +33,13 @@ public class FcmPushNotifier implements PushNotifier {
             return;
         }
         List<String> registrationTokens = getRegistrationTokens(recipients);
-        if (registrationTokens.isEmpty()) {
-            return;
-        }
-
-        MulticastMessage message = createMulticastMessage(registrationTokens, pushNotificationPayload);
-        try {
-            // TODO. 추후 한번에 500개 이상의 토큰을 처리한다면 배치 처리를 고려해야 함
-            BatchResponse batchResponse = FirebaseMessaging.getInstance()
-                    .sendEachForMulticast(message);
-
-            fcmPushErrorHandler.handleFailures(batchResponse, registrationTokens);
-        } catch (FirebaseMessagingException e) {
-            log.error("fcmMulticastPushError: {}", e.getMessage(), e);
-        }
+        sendMulticast(pushNotificationPayload, registrationTokens);
     }
 
     @Override
     public void sendPush(final OrganizationMember recipient, final PushNotificationPayload pushNotificationPayload) {
         List<String> registrationTokens = getRegistrationTokens(recipient);
-        if (registrationTokens.isEmpty()) {
-            return;
-        }
-
-        MulticastMessage message = createMulticastMessage(registrationTokens, pushNotificationPayload);
-        try {
-            // TODO. 추후 한번에 500개 이상의 토큰을 처리한다면 배치 처리를 고려해야 함
-            BatchResponse batchResponse = FirebaseMessaging.getInstance()
-                    .sendEachForMulticast(message);
-
-            fcmPushErrorHandler.handleFailures(batchResponse, registrationTokens);
-        } catch (FirebaseMessagingException e) {
-            log.error("fcmMulticastPushError: {}", e.getMessage(), e);
-        }
-    }
-
-    private List<String> getRegistrationTokens(final OrganizationMember recipient) {
-        long memberId = recipient.getMember()
-                .getId();
-
-        return fcmRegistrationTokenRepository.findAllByMemberId(memberId)
-                .stream()
-                .map(FcmRegistrationToken::getRegistrationToken)
-                .toList();
+        sendMulticast(pushNotificationPayload, registrationTokens);
     }
 
     private List<String> getRegistrationTokens(final List<OrganizationMember> recipients) {
@@ -87,6 +51,18 @@ public class FcmPushNotifier implements PushNotifier {
         return fcmRegistrationTokenRepository.findAllByMemberIdIn(memberIds)
                 .stream()
                 .map(FcmRegistrationToken::getRegistrationToken)
+                .distinct()
+                .toList();
+    }
+
+    private List<String> getRegistrationTokens(final OrganizationMember recipient) {
+        long memberId = recipient.getMember()
+                .getId();
+
+        return fcmRegistrationTokenRepository.findAllByMemberId(memberId)
+                .stream()
+                .map(FcmRegistrationToken::getRegistrationToken)
+                .distinct()
                 .toList();
     }
 
@@ -97,10 +73,33 @@ public class FcmPushNotifier implements PushNotifier {
         return MulticastMessage.builder()
                 .addAllTokens(recipientPushTokens)
                 .setNotification(Notification.builder()
-                        .setTitle(payload.title())
-                        .setBody(payload.body())
-                        .build())
-                .putData("redirectUrl", notificationProperties.getRedirectUrlPrefix() + payload.eventId())
+                                         .setTitle(payload.title())
+                                         .setBody(payload.body())
+                                         .build())
+                .putData(
+                        "redirectUrl",
+                        notificationProperties.getRedirectUrlPrefix() + payload.organizationId() + "/event/" + payload.eventId()
+                )
                 .build();
+    }
+
+    private void sendMulticast(
+            final PushNotificationPayload pushNotificationPayload,
+            final List<String> registrationTokens
+    ) {
+        if (registrationTokens.isEmpty()) {
+            return;
+        }
+
+        MulticastMessage message = createMulticastMessage(registrationTokens, pushNotificationPayload);
+        try {
+            // TODO. 추후 한번에 500개 이상의 토큰을 처리한다면 배치 처리를 고려해야 함
+            BatchResponse batchResponse = FirebaseMessaging.getInstance()
+                    .sendEachForMulticast(message);
+
+            fcmPushErrorHandler.handleFailures(batchResponse, registrationTokens);
+        } catch (FirebaseMessagingException e) {
+            log.error("fcmMulticastPushError: {}", e.getMessage(), e);
+        }
     }
 }

@@ -4,21 +4,22 @@ import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.application.dto.OrganizationUpdateRequest;
-import com.ahmadda.application.exception.BusinessFlowViolatedException;
-import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventOperationPeriod;
-import com.ahmadda.domain.EventRepository;
-import com.ahmadda.domain.ImageFile;
-import com.ahmadda.domain.InviteCode;
-import com.ahmadda.domain.InviteCodeRepository;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberRepository;
-import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Role;
+import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventRepository;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.organization.InviteCode;
+import com.ahmadda.domain.organization.InviteCodeRepository;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationImageFile;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
+import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.presentation.dto.OrganizationParticipateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +106,7 @@ class OrganizationServiceTest {
             softly.assertThat(organizationMember.getNickname())
                     .isEqualTo("서프");
             softly.assertThat(organizationMember.getRole())
-                    .isEqualTo(Role.ADMIN);
+                    .isEqualTo(OrganizationMemberRole.ADMIN);
         });
     }
 
@@ -137,9 +138,19 @@ class OrganizationServiceTest {
         var orgA = organizationRepository.save(createOrganization("OrgA", "DescA", "a.png"));
         var orgB = organizationRepository.save(createOrganization("OrgB", "DescB", "b.png"));
         var orgMemberA =
-                organizationMemberRepository.save(OrganizationMember.create("nickname", member, orgA, Role.USER));
+                organizationMemberRepository.save(OrganizationMember.create(
+                        "nickname",
+                        member,
+                        orgA,
+                        OrganizationMemberRole.USER
+                ));
         var orgMemberB =
-                organizationMemberRepository.save(OrganizationMember.create("nickname", member, orgB, Role.USER));
+                organizationMemberRepository.save(OrganizationMember.create(
+                        "nickname",
+                        member,
+                        orgB,
+                        OrganizationMemberRole.USER
+                ));
 
         var now = LocalDateTime.now();
         eventRepository.save(createEvent(orgMemberA, orgA, "EventA1", now.plusDays(1), now.plusDays(2)));
@@ -165,7 +176,7 @@ class OrganizationServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.getOrganizationEvents(organization.getId(), loginMember))
-                .isInstanceOf(BusinessFlowViolatedException.class)
+                .isInstanceOf(ForbiddenException.class)
                 .hasMessage("조직에 참여하지 않아 권한이 없습니다.");
     }
 
@@ -175,7 +186,7 @@ class OrganizationServiceTest {
         var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        var inviter = createAndSaveOrganizationMember("surf", member2, organization, Role.USER);
+        var inviter = createAndSaveOrganizationMember("surf", member2, organization, OrganizationMemberRole.USER);
         var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(member1.getId());
@@ -196,8 +207,9 @@ class OrganizationServiceTest {
         var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        var organizationMember = createAndSaveOrganizationMember("surf", member1, organization, Role.USER);
-        var inviter = createAndSaveOrganizationMember("tuda", member2, organization, Role.USER);
+        var organizationMember =
+                createAndSaveOrganizationMember("surf", member1, organization, OrganizationMemberRole.USER);
+        var inviter = createAndSaveOrganizationMember("tuda", member2, organization, OrganizationMemberRole.USER);
         var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(member1.getId());
@@ -205,7 +217,7 @@ class OrganizationServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
-                .isInstanceOf(BusinessFlowViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("이미 참여한 조직입니다.");
     }
 
@@ -215,7 +227,7 @@ class OrganizationServiceTest {
         var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        var inviter = createAndSaveOrganizationMember("surf", member2, organization, Role.USER);
+        var inviter = createAndSaveOrganizationMember("surf", member2, organization, OrganizationMemberRole.USER);
         var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(member1.getId());
@@ -232,7 +244,7 @@ class OrganizationServiceTest {
         // given
         var member = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        var inviter = createAndSaveOrganizationMember("surf", member, organization, Role.USER);
+        var inviter = createAndSaveOrganizationMember("surf", member, organization, OrganizationMemberRole.USER);
         var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(999L);
@@ -255,7 +267,7 @@ class OrganizationServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
-                .isInstanceOf(BusinessFlowViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("잘못된 초대코드입니다.");
     }
 
@@ -287,7 +299,8 @@ class OrganizationServiceTest {
         //given
         var organization = createAndSaveOrganization("Org");
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
-        var organizationMember = createAndSaveOrganizationMember("surf", member, organization, Role.ADMIN);
+        var organizationMember =
+                createAndSaveOrganizationMember("surf", member, organization, OrganizationMemberRole.ADMIN);
         var request = new OrganizationUpdateRequest("새 이름", "새 설명");
         var imageFile = createImageFile("new.png");
 
@@ -312,7 +325,8 @@ class OrganizationServiceTest {
         //given
         var organization = createAndSaveOrganization("Org");
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
-        var organizationMember = createAndSaveOrganizationMember("surf", member, organization, Role.ADMIN);
+        var organizationMember =
+                createAndSaveOrganizationMember("surf", member, organization, OrganizationMemberRole.ADMIN);
         var request = new OrganizationUpdateRequest("새 이름", "새 설명");
 
         //when
@@ -369,9 +383,9 @@ class OrganizationServiceTest {
         var organization3 = createAndSaveOrganization("서프의 조직");
         var organization4 = createAndSaveOrganization("프론트 조직");
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
-        createAndSaveOrganizationMember("surf", member, organization1, Role.USER);
-        createAndSaveOrganizationMember("surf", member, organization2, Role.ADMIN);
-        createAndSaveOrganizationMember("surf", member, organization3, Role.USER);
+        createAndSaveOrganizationMember("surf", member, organization1, OrganizationMemberRole.USER);
+        createAndSaveOrganizationMember("surf", member, organization2, OrganizationMemberRole.ADMIN);
+        createAndSaveOrganizationMember("surf", member, organization3, OrganizationMemberRole.USER);
 
         //when
         var participatingOrganizations =
@@ -439,7 +453,7 @@ class OrganizationServiceTest {
             String nickname,
             Member member,
             Organization organization,
-            Role role
+            OrganizationMemberRole role
     ) {
         var organizationMember = OrganizationMember.create(nickname, member, organization, role);
         return organizationMemberRepository.save(organizationMember);
@@ -455,8 +469,8 @@ class OrganizationServiceTest {
         return inviteCodeRepository.save(prevInviteCode);
     }
 
-    private ImageFile createImageFile(String fileName) {
-        return ImageFile.create(
+    private OrganizationImageFile createImageFile(String fileName) {
+        return OrganizationImageFile.create(
                 fileName,
                 "image/png",
                 1000,

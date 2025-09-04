@@ -2,22 +2,22 @@ package com.ahmadda.application;
 
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.exception.BusinessFlowViolatedException;
-import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventNotificationOptOut;
-import com.ahmadda.domain.EventNotificationOptOutRepository;
-import com.ahmadda.domain.EventOperationPeriod;
-import com.ahmadda.domain.EventRepository;
-import com.ahmadda.domain.Guest;
-import com.ahmadda.domain.GuestRepository;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberRepository;
-import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Role;
+import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventRepository;
+import com.ahmadda.domain.event.Guest;
+import com.ahmadda.domain.event.GuestRepository;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.notification.EventNotificationOptOut;
+import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
+import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.domain.organization.OrganizationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -120,7 +120,7 @@ class EventNotificationOptOutServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.optOut(event.getId(), loginMember))
-                .isInstanceOf(BusinessFlowViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("이미 해당 이벤트에 대한 알림 수신 거부가 설정되어 있습니다.");
     }
 
@@ -184,7 +184,7 @@ class EventNotificationOptOutServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.cancelOptOut(event.getId(), loginMember))
-                .isInstanceOf(BusinessFlowViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("수신 거부 설정이 존재하지 않습니다.");
     }
 
@@ -357,7 +357,12 @@ class EventNotificationOptOutServiceTest {
     }
 
     private OrganizationMember createOrganizationMember(String nickname, Member member, Organization org) {
-        return organizationMemberRepository.save(OrganizationMember.create(nickname, member, org, Role.USER));
+        return organizationMemberRepository.save(OrganizationMember.create(
+                nickname,
+                member,
+                org,
+                OrganizationMemberRole.USER
+        ));
     }
 
     private Event createEvent(OrganizationMember organizer, Organization organization) {

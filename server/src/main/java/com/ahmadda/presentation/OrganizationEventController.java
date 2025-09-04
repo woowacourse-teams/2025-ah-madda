@@ -7,7 +7,7 @@ import com.ahmadda.application.OrganizationService;
 import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.domain.Event;
+import com.ahmadda.domain.event.Event;
 import com.ahmadda.presentation.dto.EventCreateResponse;
 import com.ahmadda.presentation.dto.EventDetailResponse;
 import com.ahmadda.presentation.dto.EventLoadResponse;
