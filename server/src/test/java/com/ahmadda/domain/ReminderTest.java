@@ -1,6 +1,20 @@
 package com.ahmadda.domain;
 
 import com.ahmadda.annotation.IntegrationTest;
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventRepository;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.notification.EmailNotifier;
+import com.ahmadda.domain.notification.PushNotifier;
+import com.ahmadda.domain.notification.Reminder;
+import com.ahmadda.domain.notification.ReminderRecipient;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
+import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -47,7 +61,7 @@ class ReminderTest {
                         "host",
                         organizerMember,
                         organization,
-                        Role.USER
+                        OrganizationMemberRole.USER
                 ));
 
         var now = LocalDateTime.now();
@@ -63,8 +77,16 @@ class ReminderTest {
 
         var m1 = memberRepository.save(Member.create("게스트1", "g1@example.com", "pic"));
         var m2 = memberRepository.save(Member.create("게스트2", "g2@example.com", "pic"));
-        var om1 = organizationMemberRepository.save(OrganizationMember.create("g1", m1, organization, Role.USER));
-        var om2 = organizationMemberRepository.save(OrganizationMember.create("g2", m2, organization, Role.USER));
+        var om1 = organizationMemberRepository.save(OrganizationMember.create("g1",
+                                                                              m1,
+                                                                              organization,
+                                                                              OrganizationMemberRole.USER
+        ));
+        var om2 = organizationMemberRepository.save(OrganizationMember.create("g2",
+                                                                              m2,
+                                                                              organization,
+                                                                              OrganizationMemberRole.USER
+        ));
         var recipients = List.of(om1, om2);
         var content = "이벤트 알림입니다.";
 
@@ -95,7 +117,7 @@ class ReminderTest {
                         "host",
                         organizerMember,
                         organization,
-                        Role.USER
+                        OrganizationMemberRole.USER
                 ));
 
         var now = LocalDateTime.now();
@@ -111,8 +133,16 @@ class ReminderTest {
 
         var m1 = memberRepository.save(Member.create("게스트1", "g1@example.com", "pic"));
         var m2 = memberRepository.save(Member.create("게스트2", "g2@example.com", "pic"));
-        var om1 = organizationMemberRepository.save(OrganizationMember.create("g1", m1, organization, Role.USER));
-        var om2 = organizationMemberRepository.save(OrganizationMember.create("g2", m2, organization, Role.USER));
+        var om1 = organizationMemberRepository.save(OrganizationMember.create("g1",
+                                                                              m1,
+                                                                              organization,
+                                                                              OrganizationMemberRole.USER
+        ));
+        var om2 = organizationMemberRepository.save(OrganizationMember.create("g2",
+                                                                              m2,
+                                                                              organization,
+                                                                              OrganizationMemberRole.USER
+        ));
         var recipients = List.of(om1, om2);
         var content = "이벤트 알림입니다.";
 

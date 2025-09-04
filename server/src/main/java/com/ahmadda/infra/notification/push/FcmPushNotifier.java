@@ -1,8 +1,8 @@
 package com.ahmadda.infra.notification.push;
 
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.PushNotificationPayload;
-import com.ahmadda.domain.PushNotifier;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.notification.PushNotificationPayload;
+import com.ahmadda.domain.notification.PushNotifier;
 import com.ahmadda.infra.notification.config.NotificationProperties;
 import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -73,9 +73,9 @@ public class FcmPushNotifier implements PushNotifier {
         return MulticastMessage.builder()
                 .addAllTokens(recipientPushTokens)
                 .setNotification(Notification.builder()
-                        .setTitle(payload.title())
-                        .setBody(payload.body())
-                        .build())
+                                         .setTitle(payload.title())
+                                         .setBody(payload.body())
+                                         .build())
                 .putData(
                         "redirectUrl",
                         notificationProperties.getRedirectUrlPrefix() + payload.organizationId() + "/event/" + payload.eventId()

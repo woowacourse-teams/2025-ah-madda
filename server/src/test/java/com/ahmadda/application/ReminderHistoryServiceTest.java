@@ -4,18 +4,18 @@ import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventOperationPeriod;
-import com.ahmadda.domain.EventRepository;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberRepository;
-import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.ReminderHistory;
-import com.ahmadda.domain.ReminderHistoryRepository;
-import com.ahmadda.domain.Role;
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventRepository;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
+import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.domain.notification.ReminderHistory;
+import com.ahmadda.domain.notification.ReminderHistoryRepository;
+import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -138,7 +138,11 @@ class ReminderHistoryServiceTest {
     }
 
     private OrganizationMember createOrganizationMember(final Organization organization, final Member member) {
-        return organizationMemberRepository.save(OrganizationMember.create("nick", member, organization, Role.USER));
+        return organizationMemberRepository.save(OrganizationMember.create("nick",
+                                                                           member,
+                                                                           organization,
+                                                                           OrganizationMemberRole.USER
+        ));
     }
 
     private Event createEvent(final OrganizationMember organizer, final Organization organization) {

@@ -3,7 +3,7 @@ package com.ahmadda.learning;
 
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.MemberCreateAlarmPayload;
-import com.ahmadda.domain.Member;
+import com.ahmadda.domain.member.Member;
 import com.ahmadda.infra.alarm.slack.SlackAlarm;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

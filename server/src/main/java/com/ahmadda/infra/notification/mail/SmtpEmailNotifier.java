@@ -1,8 +1,8 @@
 package com.ahmadda.infra.notification.mail;
 
-import com.ahmadda.domain.EmailNotifier;
-import com.ahmadda.domain.EventEmailPayload;
-import com.ahmadda.domain.OrganizationMember;
+import com.ahmadda.domain.notification.EmailNotifier;
+import com.ahmadda.domain.notification.EventEmailPayload;
+import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.infra.notification.config.NotificationProperties;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -36,7 +36,7 @@ public class SmtpEmailNotifier implements EmailNotifier {
 
         String subject = createSubject(eventEmailPayload.subject());
         String text = createText(eventEmailPayload.body());
-    
+
         MimeMessage mimeMessage = createMimeMessageWithBcc(recipientEmails, subject, text);
         // TODO: 추후 지수 백오프를 이용한 재시도 로직 구현
         javaMailSender.send(mimeMessage);

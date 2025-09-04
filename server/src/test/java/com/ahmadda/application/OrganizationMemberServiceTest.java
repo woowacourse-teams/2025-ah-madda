@@ -3,13 +3,13 @@ package com.ahmadda.application;
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberRepository;
-import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Role;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
+import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,7 +37,7 @@ class OrganizationMemberServiceTest {
         var member = memberRepository.save(Member.create("홍길동", "hong@email.com", "testPicture"));
         var organization = organizationRepository.save(Organization.create("우테코", "설명", "img.png"));
         var organizationMember = organizationMemberRepository.save(
-                OrganizationMember.create("닉네임", member, organization, Role.USER)
+                OrganizationMember.create("닉네임", member, organization, OrganizationMemberRole.USER)
         );
         var loginMember = new LoginMember(member.getId());
 
@@ -49,10 +49,10 @@ class OrganizationMemberServiceTest {
             softly.assertThat(result.getId())
                     .isEqualTo(organizationMember.getId());
             softly.assertThat(result.getMember()
-                            .getId())
+                                      .getId())
                     .isEqualTo(member.getId());
             softly.assertThat(result.getOrganization()
-                            .getId())
+                                      .getId())
                     .isEqualTo(organization.getId());
         });
     }

@@ -1,6 +1,11 @@
 package com.ahmadda.domain;
 
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.organization.InviteCode;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -85,7 +90,7 @@ class InviteCodeTest {
     }
 
     private OrganizationMember createOrganizationMember(Member member, Organization organization) {
-        return OrganizationMember.create("nickname", member, organization, Role.USER);
+        return OrganizationMember.create("nickname", member, organization, OrganizationMemberRole.USER);
     }
 
     private Member createMember() {

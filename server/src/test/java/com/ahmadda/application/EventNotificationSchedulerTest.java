@@ -1,23 +1,23 @@
 package com.ahmadda.application;
 
 import com.ahmadda.annotation.IntegrationTest;
-import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventNotificationOptOut;
-import com.ahmadda.domain.EventNotificationOptOutRepository;
-import com.ahmadda.domain.EventOperationPeriod;
-import com.ahmadda.domain.EventRepository;
-import com.ahmadda.domain.Guest;
-import com.ahmadda.domain.GuestRepository;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberRepository;
-import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Reminder;
-import com.ahmadda.domain.ReminderHistoryRepository;
-import com.ahmadda.domain.ReminderRecipient;
-import com.ahmadda.domain.Role;
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.notification.EventNotificationOptOut;
+import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
+import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventRepository;
+import com.ahmadda.domain.event.Guest;
+import com.ahmadda.domain.event.GuestRepository;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
+import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.domain.notification.Reminder;
+import com.ahmadda.domain.notification.ReminderHistoryRepository;
+import com.ahmadda.domain.notification.ReminderRecipient;
+import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -319,7 +319,11 @@ class EventNotificationSchedulerTest {
     ) {
         var member = memberRepository.save(Member.create(nickname, email, "testPicture"));
 
-        return organizationMemberRepository.save(OrganizationMember.create(nickname, member, organization, Role.USER));
+        return organizationMemberRepository.save(OrganizationMember.create(nickname,
+                                                                           member,
+                                                                           organization,
+                                                                           OrganizationMemberRole.USER
+        ));
     }
 
     private Guest saveGuest(Event event, OrganizationMember participant) {

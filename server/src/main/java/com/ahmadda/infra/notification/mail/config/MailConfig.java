@@ -1,6 +1,6 @@
 package com.ahmadda.infra.notification.mail.config;
 
-import com.ahmadda.domain.EmailNotifier;
+import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.infra.notification.config.NotificationProperties;
 import com.ahmadda.infra.notification.mail.MockEmailNotifier;
 import com.ahmadda.infra.notification.mail.SmtpEmailNotifier;

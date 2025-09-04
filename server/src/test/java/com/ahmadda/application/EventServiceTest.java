@@ -7,25 +7,25 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventNotificationOptOut;
-import com.ahmadda.domain.EventNotificationOptOutRepository;
-import com.ahmadda.domain.EventOperationPeriod;
-import com.ahmadda.domain.EventRepository;
-import com.ahmadda.domain.Guest;
-import com.ahmadda.domain.GuestRepository;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberRepository;
-import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Question;
-import com.ahmadda.domain.Reminder;
-import com.ahmadda.domain.ReminderHistory;
-import com.ahmadda.domain.ReminderHistoryRepository;
-import com.ahmadda.domain.ReminderRecipient;
-import com.ahmadda.domain.Role;
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.notification.EventNotificationOptOut;
+import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
+import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventRepository;
+import com.ahmadda.domain.event.Guest;
+import com.ahmadda.domain.event.GuestRepository;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
+import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.domain.event.Question;
+import com.ahmadda.domain.notification.Reminder;
+import com.ahmadda.domain.notification.ReminderHistory;
+import com.ahmadda.domain.notification.ReminderHistoryRepository;
+import com.ahmadda.domain.notification.ReminderRecipient;
+import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
@@ -238,7 +238,7 @@ class EventServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.createEvent(organization.getId(), loginMember, request, now)
+                                   sut.createEvent(organization.getId(), loginMember, request, now)
         )
                 .isInstanceOf(BusinessFlowViolatedException.class)
                 .hasMessageStartingWith("리마인더는 30분 내 최대 10회까지만 발송할 수 있습니다.");
@@ -509,16 +509,16 @@ class EventServiceTest {
                                 .isEqualTo(200);
 
                         softly.assertThat(savedEvent.getEventOperationPeriod()
-                                        .getRegistrationPeriod()
-                                        .end())
+                                                  .getRegistrationEventPeriod()
+                                                  .end())
                                 .isEqualTo(now.plusDays(5));
                         softly.assertThat(savedEvent.getEventOperationPeriod()
-                                        .getEventPeriod()
-                                        .start())
+                                                  .getEventPeriod()
+                                                  .start())
                                 .isEqualTo(now.plusDays(6));
                         softly.assertThat(savedEvent.getEventOperationPeriod()
-                                        .getEventPeriod()
-                                        .end())
+                                                  .getEventPeriod()
+                                                  .end())
                                 .isEqualTo(now.plusDays(7));
                     });
                 });
@@ -626,7 +626,7 @@ class EventServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.updateEvent(event.getId(), loginMember, updateRequest, now)
+                                   sut.updateEvent(event.getId(), loginMember, updateRequest, now)
         )
                 .isInstanceOf(BusinessFlowViolatedException.class)
                 .hasMessageStartingWith("리마인더는 30분 내 최대 10회까지만 발송할 수 있습니다.");
@@ -827,7 +827,7 @@ class EventServiceTest {
     }
 
     private OrganizationMember createOrganizationMember(Organization organization, Member member) {
-        var organizationMember = OrganizationMember.create("surf", member, organization, Role.USER);
+        var organizationMember = OrganizationMember.create("surf", member, organization, OrganizationMemberRole.USER);
 
         return organizationMemberRepository.save(organizationMember);
     }

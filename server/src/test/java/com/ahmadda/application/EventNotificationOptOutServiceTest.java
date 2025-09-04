@@ -4,20 +4,20 @@ import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventNotificationOptOut;
-import com.ahmadda.domain.EventNotificationOptOutRepository;
-import com.ahmadda.domain.EventOperationPeriod;
-import com.ahmadda.domain.EventRepository;
-import com.ahmadda.domain.Guest;
-import com.ahmadda.domain.GuestRepository;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberRepository;
-import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Role;
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.notification.EventNotificationOptOut;
+import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
+import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventRepository;
+import com.ahmadda.domain.event.Guest;
+import com.ahmadda.domain.event.GuestRepository;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
+import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -281,17 +281,17 @@ class EventNotificationOptOutServiceTest {
                     .hasSize(2);
 
             softly.assertThat(results.get(0)
-                            .getGuest())
+                                      .getGuest())
                     .isEqualTo(guest1);
             softly.assertThat(results.get(0)
-                            .isOptedOut())
+                                      .isOptedOut())
                     .isFalse();
 
             softly.assertThat(results.get(1)
-                            .getGuest())
+                                      .getGuest())
                     .isEqualTo(guest2);
             softly.assertThat(results.get(1)
-                            .isOptedOut())
+                                      .isOptedOut())
                     .isTrue();
         });
     }
@@ -319,17 +319,17 @@ class EventNotificationOptOutServiceTest {
                     .hasSize(2);
 
             softly.assertThat(results.get(0)
-                            .getOrganizationMember())
+                                      .getOrganizationMember())
                     .isEqualTo(orgMember1);
             softly.assertThat(results.get(0)
-                            .isOptedOut())
+                                      .isOptedOut())
                     .isFalse();
 
             softly.assertThat(results.get(1)
-                            .getOrganizationMember())
+                                      .getOrganizationMember())
                     .isEqualTo(orgMember2);
             softly.assertThat(results.get(1)
-                            .isOptedOut())
+                                      .isOptedOut())
                     .isTrue();
         });
     }
@@ -357,7 +357,11 @@ class EventNotificationOptOutServiceTest {
     }
 
     private OrganizationMember createOrganizationMember(String nickname, Member member, Organization org) {
-        return organizationMemberRepository.save(OrganizationMember.create(nickname, member, org, Role.USER));
+        return organizationMemberRepository.save(OrganizationMember.create(nickname,
+                                                                           member,
+                                                                           org,
+                                                                           OrganizationMemberRole.USER
+        ));
     }
 
     private Event createEvent(OrganizationMember organizer, Organization organization) {

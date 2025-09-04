@@ -3,12 +3,12 @@ package com.ahmadda.application;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.InviteCode;
-import com.ahmadda.domain.InviteCodeRepository;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberRepository;
-import com.ahmadda.domain.OrganizationRepository;
+import com.ahmadda.domain.organization.InviteCode;
+import com.ahmadda.domain.organization.InviteCodeRepository;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
+import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.infra.generator.RandomCodeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,7 +46,7 @@ public class OrganizationInviteCodeService {
         if (inviteCode.isExpired(LocalDateTime.now())) {
             throw new BusinessFlowViolatedException("만료된 초대코드입니다.");
         }
-        
+
         return inviteCode.getOrganization();
     }
 

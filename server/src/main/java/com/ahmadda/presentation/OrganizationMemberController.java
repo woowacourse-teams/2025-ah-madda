@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ahmadda.application.OrganizationMemberService;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.domain.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 

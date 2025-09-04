@@ -1,5 +1,12 @@
 package com.ahmadda.domain;
 
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.Guest;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,14 +25,15 @@ class OrganizationMemberTest {
     void setUp() {
         member = Member.create("테스트 회원", "test@example.com", "testPicture");
         organization = Organization.create("테스트 조직", "조직 설명", "image.png");
-        sut = OrganizationMember.create("주최자", member, organization, Role.USER);
+        sut = OrganizationMember.create("주최자", member, organization, OrganizationMemberRole.USER);
     }
 
     @Test
     void 게스트로_참여한_이벤트_목록을_조회한다() {
         // given
         var participantMember = Member.create("참여자", "participant@example.com", "testPicture");
-        var participant = OrganizationMember.create("참여자 조직원", participantMember, organization, Role.USER);
+        var participant =
+                OrganizationMember.create("참여자 조직원", participantMember, organization, OrganizationMemberRole.USER);
 
         var event1 = createEventForTest("이벤트 1");
         var event2 = createEventForTest("이벤트 2");

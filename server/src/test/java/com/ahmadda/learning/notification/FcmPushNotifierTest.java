@@ -1,13 +1,13 @@
 package com.ahmadda.learning.notification;
 
 import com.ahmadda.annotation.IntegrationTest;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.PushNotificationPayload;
-import com.ahmadda.domain.PushNotifier;
-import com.ahmadda.domain.Role;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.notification.PushNotificationPayload;
+import com.ahmadda.domain.notification.PushNotifier;
+import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.infra.notification.push.FcmRegistrationToken;
 import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import org.junit.jupiter.api.Disabled;
@@ -37,7 +37,7 @@ class FcmPushNotifierTest {
         // given
         var member = Member.create("테스트 회원", "amadda.team@gmail.com", "testPicture");
         var organization = Organization.create("테스트 조직", "설명", "logo.png");
-        var organizationMember = OrganizationMember.create("푸시대상", member, organization, Role.USER);
+        var organizationMember = OrganizationMember.create("푸시대상", member, organization, OrganizationMemberRole.USER);
 
         memberRepository.save(member);
 
@@ -64,7 +64,7 @@ class FcmPushNotifierTest {
         // given
         var member = Member.create("테스트 회원", "amadda.team@gmail.com", "testPicture");
         var organization = Organization.create("테스트 조직", "설명", "logo.png");
-        var organizationMember = OrganizationMember.create("푸시대상", member, organization, Role.USER);
+        var organizationMember = OrganizationMember.create("푸시대상", member, organization, OrganizationMemberRole.USER);
 
         memberRepository.save(member);
 

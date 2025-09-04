@@ -1,7 +1,14 @@
 package com.ahmadda.domain;
 
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventOperationPeriod;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.organization.InviteCode;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +26,7 @@ class OrganizationTest {
     void setUp() {
         sut = Organization.create("테스트 조직", "조직 설명", "image.png");
         var member = Member.create("주최자 회원", "organizer@example.com", "testPicture");
-        organizer = OrganizationMember.create("주최자", member, sut, Role.USER);
+        organizer = OrganizationMember.create("주최자", member, sut, OrganizationMemberRole.USER);
     }
 
     @Test
@@ -80,7 +87,7 @@ class OrganizationTest {
         //given
         var organization = Organization.create("테스트 조직2", "조직 설명", "image.png");
         var member = Member.create("주최자 회원", "organizer@example.com", "testPicture");
-        var inviter = OrganizationMember.create("test", member, organization, Role.USER);
+        var inviter = OrganizationMember.create("test", member, organization, OrganizationMemberRole.USER);
         var inviteCode = InviteCode.create("code", organization, inviter, LocalDateTime.now());
 
         //when //then
@@ -104,7 +111,7 @@ class OrganizationTest {
     @Test
     void 관리자가_조직정보를_수정할_수_있다() {
         // given
-        var admin = OrganizationMember.create("관리자", organizer.getMember(), sut, Role.ADMIN);
+        var admin = OrganizationMember.create("관리자", organizer.getMember(), sut, OrganizationMemberRole.ADMIN);
 
         // when
         sut.update(admin, "새 조직명", "새 설명", "newImage.png");
@@ -123,11 +130,11 @@ class OrganizationTest {
     @Test
     void 관리자가_아니면_조직정보를_수정한다면_예외가_발생한다() {
         // given
-        var user = OrganizationMember.create("일반회원", organizer.getMember(), sut, Role.USER);
+        var user = OrganizationMember.create("일반회원", organizer.getMember(), sut, OrganizationMemberRole.USER);
 
         // when // then
         assertThatThrownBy(() ->
-                sut.update(user, "새 조직명", "새 설명", "newImage.png")
+                                   sut.update(user, "새 조직명", "새 설명", "newImage.png")
         )
                 .isInstanceOf(UnauthorizedOperationException.class)
                 .hasMessage("조직원의 관리자만 조직 정보를 수정할 수 있습니다.");
@@ -137,11 +144,15 @@ class OrganizationTest {
     void 다른_조직의_관리자가_조직정보를_수정다면_예외가_발생한다() {
         // given
         var otherOrganization = Organization.create("테스트 조직", "조직 설명", "image.png");
-        var organizationMember = OrganizationMember.create("일반회원", organizer.getMember(), otherOrganization, Role.USER);
+        var organizationMember = OrganizationMember.create("일반회원",
+                                                           organizer.getMember(),
+                                                           otherOrganization,
+                                                           OrganizationMemberRole.USER
+        );
 
         // when // then
         assertThatThrownBy(() ->
-                sut.update(organizationMember, "새 조직명", "새 설명", "newImage.png")
+                                   sut.update(organizationMember, "새 조직명", "새 설명", "newImage.png")
         )
                 .isInstanceOf(UnauthorizedOperationException.class)
                 .hasMessage("조직에 속한 조직원만 수정이 가능합니다.");

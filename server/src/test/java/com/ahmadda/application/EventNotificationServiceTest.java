@@ -6,22 +6,22 @@ import com.ahmadda.application.dto.SelectedOrganizationMembersNotificationReques
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventNotificationOptOut;
-import com.ahmadda.domain.EventNotificationOptOutRepository;
-import com.ahmadda.domain.EventOperationPeriod;
-import com.ahmadda.domain.EventRepository;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberRepository;
-import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Reminder;
-import com.ahmadda.domain.ReminderHistory;
-import com.ahmadda.domain.ReminderHistoryRepository;
-import com.ahmadda.domain.ReminderRecipient;
-import com.ahmadda.domain.Role;
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.notification.EventNotificationOptOut;
+import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
+import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventRepository;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
+import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.domain.notification.Reminder;
+import com.ahmadda.domain.notification.ReminderHistory;
+import com.ahmadda.domain.notification.ReminderHistoryRepository;
+import com.ahmadda.domain.notification.ReminderRecipient;
+import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
@@ -152,7 +152,7 @@ class EventNotificationServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.notifySelectedOrganizationMembers(999L, request, createLoginMember(organizer))
+                                   sut.notifySelectedOrganizationMembers(999L, request, createLoginMember(organizer))
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 이벤트입니다.");
@@ -185,11 +185,11 @@ class EventNotificationServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.notifySelectedOrganizationMembers(
-                        event.getId(),
-                        request,
-                        createLoginMember(other)
-                )
+                                   sut.notifySelectedOrganizationMembers(
+                                           event.getId(),
+                                           request,
+                                           createLoginMember(other)
+                                   )
         )
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessage("이벤트 주최자가 아닙니다.");
@@ -227,11 +227,11 @@ class EventNotificationServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.notifySelectedOrganizationMembers(
-                        event.getId(),
-                        request,
-                        createLoginMember(organizer)
-                )
+                                   sut.notifySelectedOrganizationMembers(
+                                           event.getId(),
+                                           request,
+                                           createLoginMember(organizer)
+                                   )
         )
                 .isInstanceOf(BusinessFlowViolatedException.class)
                 .hasMessage("알림 메시지는 20자 이하여야 합니다.");
@@ -268,11 +268,11 @@ class EventNotificationServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.notifySelectedOrganizationMembers(
-                        event.getId(),
-                        request,
-                        createLoginMember(organizer)
-                )
+                                   sut.notifySelectedOrganizationMembers(
+                                           event.getId(),
+                                           request,
+                                           createLoginMember(organizer)
+                                   )
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 조직원입니다.");
@@ -311,7 +311,10 @@ class EventNotificationServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.notifySelectedOrganizationMembers(event.getId(), request, createLoginMember(organizer))
+                                   sut.notifySelectedOrganizationMembers(event.getId(),
+                                                                         request,
+                                                                         createLoginMember(organizer)
+                                   )
         )
                 .isInstanceOf(BusinessFlowViolatedException.class)
                 .hasMessageStartingWith("리마인더는 30분 내 최대 10회까지만 발송할 수 있습니다.");
@@ -344,10 +347,10 @@ class EventNotificationServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.notifySelectedOrganizationMembers(
-                        event.getId(),
-                        request,
-                        createLoginMember(organizer)
-                )
+                                   event.getId(),
+                                   request,
+                                   createLoginMember(organizer)
+                           )
         )
                 .isInstanceOf(BusinessFlowViolatedException.class)
                 .hasMessage("선택된 조직원 중 알림 수신 거부자가 존재합니다.");
@@ -364,7 +367,11 @@ class EventNotificationServiceTest {
     ) {
         var member = memberRepository.save(Member.create(nickname, email, "testPicture"));
 
-        return organizationMemberRepository.save(OrganizationMember.create(nickname, member, organization, Role.USER));
+        return organizationMemberRepository.save(OrganizationMember.create(nickname,
+                                                                           member,
+                                                                           organization,
+                                                                           OrganizationMemberRole.USER
+        ));
     }
 
     private LoginMember createLoginMember(OrganizationMember organizationMember) {

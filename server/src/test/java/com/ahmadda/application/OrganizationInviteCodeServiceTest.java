@@ -4,15 +4,15 @@ import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.InviteCode;
-import com.ahmadda.domain.InviteCodeRepository;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberRepository;
-import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Role;
+import com.ahmadda.domain.organization.InviteCode;
+import com.ahmadda.domain.organization.InviteCodeRepository;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
+import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.infra.generator.RandomCodeGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -193,7 +193,7 @@ class OrganizationInviteCodeServiceTest {
             Member member,
             Organization organization
     ) {
-        var organizationMember = OrganizationMember.create(nickname, member, organization, Role.USER);
+        var organizationMember = OrganizationMember.create(nickname, member, organization, OrganizationMemberRole.USER);
         return organizationMemberRepository.save(organizationMember);
     }
 

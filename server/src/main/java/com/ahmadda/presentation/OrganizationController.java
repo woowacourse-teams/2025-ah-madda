@@ -4,9 +4,9 @@ import com.ahmadda.application.OrganizationService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.application.dto.OrganizationUpdateRequest;
-import com.ahmadda.domain.ImageFile;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationImageFile;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.presentation.dto.OrganizationCreateResponse;
 import com.ahmadda.presentation.dto.OrganizationParticipateRequest;
 import com.ahmadda.presentation.dto.OrganizationParticipateResponse;
@@ -109,7 +109,7 @@ public class OrganizationController {
             @RequestPart("thumbnail") MultipartFile multipartFile,
             @AuthMember LoginMember loginMember
     ) throws IOException {
-        ImageFile thumbnailImageFile = ImageFile.create(
+        OrganizationImageFile thumbnailOrganizationImageFile = OrganizationImageFile.create(
                 multipartFile.getOriginalFilename(),
                 multipartFile.getContentType(),
                 multipartFile.getSize(),
@@ -118,7 +118,7 @@ public class OrganizationController {
 
         Organization organization = organizationService.createOrganization(
                 organizationCreateRequest,
-                thumbnailImageFile,
+                thumbnailOrganizationImageFile,
                 loginMember
         );
 
@@ -401,9 +401,9 @@ public class OrganizationController {
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember
     ) throws IOException {
-        ImageFile thumbnailImageFile = null;
+        OrganizationImageFile thumbnailOrganizationImageFile = null;
         if (multipartFile != null) {
-            thumbnailImageFile = ImageFile.create(
+            thumbnailOrganizationImageFile = OrganizationImageFile.create(
                     multipartFile.getOriginalFilename(),
                     multipartFile.getContentType(),
                     multipartFile.getSize(),
@@ -414,7 +414,7 @@ public class OrganizationController {
         organizationService.updateOrganization(
                 organizationId,
                 organizationUpdateRequest,
-                thumbnailImageFile,
+                thumbnailOrganizationImageFile,
                 loginMember
         );
 

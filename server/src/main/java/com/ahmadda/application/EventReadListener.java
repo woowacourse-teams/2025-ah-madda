@@ -2,12 +2,12 @@ package com.ahmadda.application;
 
 import com.ahmadda.application.dto.EventRead;
 import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventRepository;
-import com.ahmadda.domain.EventStatistic;
-import com.ahmadda.domain.EventStatisticRepository;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventRepository;
+import com.ahmadda.domain.event.EventStatistic;
+import com.ahmadda.domain.event.EventStatisticRepository;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;

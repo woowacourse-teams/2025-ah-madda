@@ -1,6 +1,6 @@
 package com.ahmadda.presentation.dto;
 
-import com.ahmadda.domain.EventTemplate;
+import com.ahmadda.domain.event.EventTemplate;
 
 public record EventTemplateResponse(
         Long templateId,

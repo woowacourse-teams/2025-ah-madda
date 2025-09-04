@@ -3,17 +3,17 @@ package com.ahmadda.application;
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.EventCreated;
 import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventOperationPeriod;
-import com.ahmadda.domain.EventRepository;
-import com.ahmadda.domain.EventStatisticRepository;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberRepository;
-import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Role;
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventRepository;
+import com.ahmadda.domain.event.EventStatisticRepository;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
+import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -62,7 +62,7 @@ class EventCreatedListenerTest {
             softly.assertThat(eventStatistic)
                     .isPresent();
             softly.assertThat(eventStatistic.get()
-                            .getEvent())
+                                      .getEvent())
                     .isEqualTo(event);
         });
     }
@@ -89,7 +89,7 @@ class EventCreatedListenerTest {
     }
 
     private OrganizationMember createOrganizationMember(Organization organization, Member member) {
-        var organizationMember = OrganizationMember.create("surf", member, organization, Role.USER);
+        var organizationMember = OrganizationMember.create("surf", member, organization, OrganizationMemberRole.USER);
 
         return organizationMemberRepository.save(organizationMember);
     }

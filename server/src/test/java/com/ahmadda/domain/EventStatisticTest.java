@@ -1,7 +1,16 @@
 package com.ahmadda.domain;
 
 
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventPeriod;
+import com.ahmadda.domain.event.EventStatistic;
+import com.ahmadda.domain.event.EventViewMetric;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -46,7 +55,7 @@ class EventStatisticTest {
                 .toLocalDate();
 
         var startDate = event.getEventOperationPeriod()
-                .getRegistrationPeriod()
+                .getRegistrationEventPeriod()
                 .start()
                 .toLocalDate();
         var endDate = event.getEventOperationPeriod()
@@ -61,7 +70,7 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, LocalDate.MAX)
-                .size())
+                           .size())
                 .isEqualTo(eventDuration);
     }
 
@@ -73,8 +82,8 @@ class EventStatisticTest {
         var event = createEvent(organizationMember, organization);
         var now = LocalDateTime.now();
 
-        var modifyRegistrationPeriod = Period.create(now.plusDays(1), now.plusDays(2));
-        var modifyEventPeriod = Period.create(now.plusDays(3), now.plusDays(8));
+        var modifyRegistrationPeriod = EventPeriod.create(now.plusDays(1), now.plusDays(2));
+        var modifyEventPeriod = EventPeriod.create(now.plusDays(3), now.plusDays(8));
 
         var eventDuration = ChronoUnit.DAYS
                 .between(modifyRegistrationPeriod.start(), modifyEventPeriod.end()) + 1;
@@ -97,7 +106,7 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, LocalDate.MAX)
-                .size())
+                           .size())
                 .isEqualTo(eventDuration);
     }
 
@@ -109,7 +118,7 @@ class EventStatisticTest {
         var event = createEvent(organizationMember, organization);
 
         var startLocalDate = event.getEventOperationPeriod()
-                .getRegistrationPeriod()
+                .getRegistrationEventPeriod()
                 .start()
                 .toLocalDate();
         var endLocalDate = event.getEventOperationPeriod()
@@ -124,7 +133,7 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, endLocalDate)
-                .size())
+                           .size())
                 .isEqualTo(eventDuration);
     }
 
@@ -144,8 +153,8 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, beforeEventEndDatetime)
-                .getLast()
-                .getViewDate())
+                           .getLast()
+                           .getViewDate())
                 .isEqualTo(beforeEventEndDatetime);
     }
 
@@ -158,7 +167,7 @@ class EventStatisticTest {
         var event = createEvent(organizationMember, organization);
 
         var startLocalDate = event.getEventOperationPeriod()
-                .getRegistrationPeriod()
+                .getRegistrationEventPeriod()
                 .start()
                 .toLocalDate();
         var endLocalDate = event.getEventOperationPeriod()
@@ -173,7 +182,7 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, LocalDate.MAX)
-                .size())
+                           .size())
                 .isEqualTo(eventDuration);
     }
 
@@ -185,7 +194,7 @@ class EventStatisticTest {
         var event = createEvent(organizationMember, organization);
 
         var startDatetime = event.getEventOperationPeriod()
-                .getRegistrationPeriod()
+                .getRegistrationEventPeriod()
                 .start()
                 .toLocalDate();
         var sut = EventStatistic.create(event);
@@ -198,8 +207,8 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, startDatetime)
-                .getFirst()
-                .getViewCount()).isEqualTo(0L);
+                           .getFirst()
+                           .getViewCount()).isEqualTo(0L);
     }
 
     @Test
@@ -211,7 +220,7 @@ class EventStatisticTest {
         var event = createEvent(organizationMember, organization);
 
         var startDatetime = event.getEventOperationPeriod()
-                .getRegistrationPeriod()
+                .getRegistrationEventPeriod()
                 .start()
                 .toLocalDate();
         var sut = EventStatistic.create(event);
@@ -224,8 +233,8 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, startDatetime)
-                .getFirst()
-                .getViewCount()).isEqualTo(1L);
+                           .getFirst()
+                           .getViewCount()).isEqualTo(1L);
     }
 
     @Test
@@ -236,7 +245,7 @@ class EventStatisticTest {
         var event = createEvent(organizationMember, organization);
 
         var startDatetime = event.getEventOperationPeriod()
-                .getRegistrationPeriod()
+                .getRegistrationEventPeriod()
                 .start()
                 .toLocalDate();
         var sut = EventStatistic.create(event);
@@ -249,14 +258,14 @@ class EventStatisticTest {
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, startDatetime)
-                .stream()
-                .map(EventViewMetric::getViewCount)
-                .toList())
+                           .stream()
+                           .map(EventViewMetric::getViewCount)
+                           .toList())
                 .contains(0, 0);
     }
 
     private OrganizationMember createOrganizationMember(Member member, Organization organization) {
-        return OrganizationMember.create("nickname", member, organization, Role.USER);
+        return OrganizationMember.create("nickname", member, organization, OrganizationMemberRole.USER);
     }
 
     private Member createMember(String name, String email) {

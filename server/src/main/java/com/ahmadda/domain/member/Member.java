@@ -1,0 +1,62 @@
+package com.ahmadda.domain.member;
+
+import com.ahmadda.domain.BaseEntity;
+import com.ahmadda.domain.util.Assert;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE member SET deleted_at = CURRENT_TIMESTAMP WHERE member_id = ?")
+@SQLRestriction("deleted_at IS NULL")
+public class Member extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
+    private Long id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(nullable = false)
+    private String profileImageUrl;
+
+    private Member(final String name, final String email, final String profileImageUrl) {
+        validateName(name);
+        validateEmail(email);
+        validateProfileImageUrl(profileImageUrl);
+
+        this.name = name;
+        this.email = email;
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    public static Member create(final String name, final String email, final String profileImageUrl) {
+        return new Member(name, email, profileImageUrl);
+    }
+
+    private void validateName(final String name) {
+        Assert.notBlank(name, "이름은 공백이면 안됩니다.");
+    }
+
+    private void validateEmail(final String email) {
+        Assert.notBlank(email, "이메일은 공백이면 안됩니다.");
+    }
+
+    private void validateProfileImageUrl(final String profileImageUrl) {
+        Assert.notBlank(profileImageUrl, "이미지 URI는 공백이면 안됩니다.");
+    }
+}

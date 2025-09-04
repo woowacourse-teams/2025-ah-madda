@@ -10,21 +10,21 @@ import com.ahmadda.application.dto.QuestionCreateRequest;
 import com.ahmadda.application.exception.AccessDeniedException;
 import com.ahmadda.application.exception.BusinessFlowViolatedException;
 import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventNotificationOptOutRepository;
-import com.ahmadda.domain.EventOperationPeriod;
-import com.ahmadda.domain.EventRepository;
-import com.ahmadda.domain.GuestWithOptStatus;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberRepository;
-import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Question;
-import com.ahmadda.domain.Reminder;
-import com.ahmadda.domain.ReminderHistory;
-import com.ahmadda.domain.ReminderHistoryRepository;
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
+import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventRepository;
+import com.ahmadda.domain.event.GuestWithOptStatus;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
+import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.domain.event.Question;
+import com.ahmadda.domain.notification.Reminder;
+import com.ahmadda.domain.notification.ReminderHistory;
+import com.ahmadda.domain.notification.ReminderHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -136,7 +136,7 @@ public class EventService {
                 updatedOperationPeriod,
                 eventUpdateRequest.maxCapacity()
         );
-        
+
         notifyEventUpdated(event);
 
         eventPublisher.publishEvent(EventUpdated.from(event));

@@ -1,15 +1,17 @@
 package com.ahmadda.learning.notification;
 
 import com.ahmadda.annotation.IntegrationTest;
-import com.ahmadda.domain.EmailNotifier;
-import com.ahmadda.domain.EventEmailPayload;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.Role;
+import com.ahmadda.domain.notification.EmailNotifier;
+import com.ahmadda.domain.notification.EventEmailPayload;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRole;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,8 @@ class SmtpEmailNotifierTest {
 
         var member = Member.create("주최자", "amadda.team@gmail.com", "testPicture");
         var organization = Organization.create(organizationName, "설명", "logo.png");
-        var organizationMember = OrganizationMember.create(organizerNickname, member, organization, Role.USER);
+        var organizationMember =
+                OrganizationMember.create(organizerNickname, member, organization, OrganizationMemberRole.USER);
 
         var emailPayload = new EventEmailPayload(
                 new EventEmailPayload.Subject(
@@ -76,7 +79,8 @@ class SmtpEmailNotifierTest {
         for (int i = 0; i < 100; i++) {
             var email = "dummy" + i + "@example.com";
             var dummyMember = Member.create("유저" + i, email, "profile.png");
-            var orgMember = OrganizationMember.create("닉네임" + i, dummyMember, organization, Role.USER);
+            var orgMember =
+                    OrganizationMember.create("닉네임" + i, dummyMember, organization, OrganizationMemberRole.USER);
             recipients.add(orgMember);
         }
 

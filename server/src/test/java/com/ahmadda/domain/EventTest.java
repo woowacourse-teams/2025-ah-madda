@@ -1,7 +1,16 @@
 package com.ahmadda.domain;
 
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventPeriod;
+import com.ahmadda.domain.event.Guest;
+import com.ahmadda.domain.event.Question;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -30,8 +39,8 @@ class EventTest {
     void 이벤트_정보를_수정할_수_있다() {
         // given
         var now = LocalDateTime.now();
-        var registrationPeriod = Period.create(now.plusDays(1), now.plusDays(2));
-        var eventPeriod = Period.create(now.plusDays(3), now.plusDays(4));
+        var registrationPeriod = EventPeriod.create(now.plusDays(1), now.plusDays(2));
+        var eventPeriod = EventPeriod.create(now.plusDays(3), now.plusDays(4));
         var sut = Event.create(
                 "이전 제목",
                 "이전 설명",
@@ -48,8 +57,8 @@ class EventTest {
                 10
         );
 
-        var updatedRegistrationPeriod = Period.create(now.plusDays(2), now.plusDays(3));
-        var updatedEventPeriod = Period.create(now.plusDays(4), now.plusDays(5));
+        var updatedRegistrationPeriod = EventPeriod.create(now.plusDays(2), now.plusDays(3));
+        var updatedEventPeriod = EventPeriod.create(now.plusDays(4), now.plusDays(5));
         var updatedOperationPeriod = EventOperationPeriod.create(
                 updatedRegistrationPeriod.start(),
                 updatedRegistrationPeriod.end(),
@@ -88,8 +97,8 @@ class EventTest {
     void 주최자가_아니라면_이벤트_정보_수정_시_예외가_발생한다() {
         // given
         var now = LocalDateTime.now();
-        var registrationPeriod = Period.create(now.plusDays(1), now.plusDays(2));
-        var eventPeriod = Period.create(now.plusDays(3), now.plusDays(4));
+        var registrationPeriod = EventPeriod.create(now.plusDays(1), now.plusDays(2));
+        var eventPeriod = EventPeriod.create(now.plusDays(3), now.plusDays(4));
         var sut = Event.create(
                 "이전 제목",
                 "이전 설명",
@@ -108,8 +117,8 @@ class EventTest {
 
         var notOrganizer = createOrganizationMember("조직원", createMember("일반유저", "user@email.com"), baseOrganization);
 
-        var updatedRegistrationPeriod = Period.create(now.plusDays(2), now.plusDays(3));
-        var updatedEventPeriod = Period.create(now.plusDays(4), now.plusDays(5));
+        var updatedRegistrationPeriod = EventPeriod.create(now.plusDays(2), now.plusDays(3));
+        var updatedEventPeriod = EventPeriod.create(now.plusDays(4), now.plusDays(5));
         var updatedOperationPeriod = EventOperationPeriod.create(
                 updatedRegistrationPeriod.start(),
                 updatedRegistrationPeriod.end(),
@@ -135,7 +144,7 @@ class EventTest {
     void 게스트가_이벤트에_참여했는지_알_수_있다() {
         // given
         var now = LocalDateTime.now();
-        var registrationPeriod = Period.create(
+        var registrationPeriod = EventPeriod.create(
                 LocalDateTime.now()
                         .plusDays(1),
                 LocalDateTime.now()
@@ -163,7 +172,7 @@ class EventTest {
     void 이벤트에_참여한_게스트들을_조회할_수_있다() {
         // given
         var now = LocalDateTime.now();
-        var registrationPeriod = Period.create(now.plusDays(1), now.plusDays(2));
+        var registrationPeriod = EventPeriod.create(now.plusDays(1), now.plusDays(2));
         var sut = createEvent(now, registrationPeriod);
 
         var guest1 = Guest.create(
@@ -241,7 +250,7 @@ class EventTest {
     void 이벤트에_참여하지_않은_조직원을_조회할_수_있다() {
         // given
         var now = LocalDateTime.now();
-        var registrationPeriod = Period.create(
+        var registrationPeriod = EventPeriod.create(
                 LocalDateTime.now()
                         .plusDays(1),
                 LocalDateTime.now()
@@ -270,7 +279,7 @@ class EventTest {
     void 이벤트에_참여중인_게스트가_또_참여한다면_예외가_발생한다() {
         //given
         var now = LocalDateTime.now();
-        var registrationPeriod = Period.create(
+        var registrationPeriod = EventPeriod.create(
                 LocalDateTime.now()
                         .plusDays(1),
                 LocalDateTime.now()
@@ -313,7 +322,7 @@ class EventTest {
     void 이벤트의_주최자인지_판단한다() {
         // given
         var now = LocalDateTime.now();
-        var registrationPeriod = Period.create(
+        var registrationPeriod = EventPeriod.create(
                 LocalDateTime.now()
                         .plusDays(1),
                 LocalDateTime.now()
@@ -360,12 +369,12 @@ class EventTest {
         var organization = Organization.create("우아한 테크코스", "woowahan-tech-course", "우아한 테크코스 6기");
         var member = Member.create("박미참여", "not.participant.park@woowahan.com", "testPicture");
         var organizationMember =
-                OrganizationMember.create("참여안한_조직원", member, organization, Role.USER);
+                OrganizationMember.create("참여안한_조직원", member, organization, OrganizationMemberRole.USER);
 
 
         var member2 = Member.create("김참가", "participant.kim@woowahan.com", "testPicture");
         var organizationMember2 =
-                OrganizationMember.create("실제_참가자", member2, organization, Role.USER);
+                OrganizationMember.create("실제_참가자", member2, organization, OrganizationMemberRole.USER);
 
         var sut = createEvent(organizationMember, organization);
         var participate = Guest.create(sut, organizationMember2, sut.getRegistrationStart());
@@ -381,12 +390,12 @@ class EventTest {
         var organization = Organization.create("우아한 테크코스", "woowahan-tech-course", "우아한 테크코스 6기");
         var member = Member.create("박찬양", "creator.chanyang@woowahan.com", "testPicture");
         var organizationMember =
-                OrganizationMember.create("이벤트_개설자_닉네임", member, organization, Role.USER);
+                OrganizationMember.create("이벤트_개설자_닉네임", member, organization, OrganizationMemberRole.USER);
 
 
         var member2 = Member.create("김참가", "participant.kim@woowahan.com", "testPicture");
         var organizationMember2 =
-                OrganizationMember.create("참가자A_닉네임", member2, organization, Role.USER);
+                OrganizationMember.create("참가자A_닉네임", member2, organization, OrganizationMemberRole.USER);
 
         var sut = createEvent(organizationMember, organization);
         var participate = Guest.create(sut, organizationMember2, sut.getRegistrationStart());
@@ -394,11 +403,11 @@ class EventTest {
         //when // then
         assertSoftly(softly -> {
             softly.assertThat(sut.getGuests()
-                            .size())
+                                      .size())
                     .isEqualTo(1L);
             sut.cancelParticipation(organizationMember2, LocalDateTime.now());
             softly.assertThat(sut.getGuests()
-                            .size())
+                                      .size())
                     .isEqualTo(0L);
         });
     }
@@ -413,7 +422,7 @@ class EventTest {
         var registrationEnd = now.plusDays(1);
         var registrationCloseTime = now.plusHours(6);
 
-        var registrationPeriod = Period.create(
+        var registrationPeriod = EventPeriod.create(
                 now,
                 registrationEnd
         );
@@ -436,7 +445,7 @@ class EventTest {
         var registrationEnd = now.plusDays(1);
         var registrationCloseTime = now.plusHours(6);
 
-        var registrationPeriod = Period.create(
+        var registrationPeriod = EventPeriod.create(
                 now,
                 registrationEnd
         );
@@ -465,7 +474,7 @@ class EventTest {
         var registrationEnd = now.plusDays(1);
         var registrationCloseTime = now.plusHours(6);
 
-        var registrationPeriod = Period.create(
+        var registrationPeriod = EventPeriod.create(
                 now,
                 registrationEnd
         );
@@ -492,7 +501,7 @@ class EventTest {
         var registrationEnd = now.plusDays(1);
         var registrationCloseOverTime = registrationEnd.plusHours(6);
 
-        var registrationPeriod = Period.create(
+        var registrationPeriod = EventPeriod.create(
                 now,
                 registrationEnd
         );
@@ -508,7 +517,7 @@ class EventTest {
     void 이벤트가_정원이_다_찼는지_확인할_수_있다() {
         // given
         var now = LocalDateTime.now();
-        var registrationPeriod = Period.create(now.plusDays(1), now.plusDays(2));
+        var registrationPeriod = EventPeriod.create(now.plusDays(1), now.plusDays(2));
         var sut = createEvent(now, registrationPeriod);
 
         createOrganizationMember("게스트1", createMember("게스트1", "g1@email.com"), baseOrganization);
@@ -553,7 +562,7 @@ class EventTest {
         );
     }
 
-    private Event createEvent(LocalDateTime now, Period registrationPeriod) {
+    private Event createEvent(LocalDateTime now, EventPeriod registrationEventPeriod) {
         return Event.create(
                 "title",
                 "description",
@@ -561,7 +570,7 @@ class EventTest {
                 baseOrganizer,
                 baseOrganization,
                 EventOperationPeriod.create(
-                        registrationPeriod.start(), registrationPeriod.end(),
+                        registrationEventPeriod.start(), registrationEventPeriod.end(),
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
@@ -582,7 +591,7 @@ class EventTest {
             Member member,
             Organization organization
     ) {
-        return OrganizationMember.create(nickname, member, organization, Role.USER);
+        return OrganizationMember.create(nickname, member, organization, OrganizationMemberRole.USER);
     }
 
     private Event createEvent(String title, EventOperationPeriod eventOperationPeriod) {
@@ -600,7 +609,7 @@ class EventTest {
     }
 
     private OrganizationMember createOrganizationMember(Member member, Organization organization) {
-        return OrganizationMember.create("nickname", member, organization, Role.USER);
+        return OrganizationMember.create("nickname", member, organization, OrganizationMemberRole.USER);
     }
 
     private Member createMember() {

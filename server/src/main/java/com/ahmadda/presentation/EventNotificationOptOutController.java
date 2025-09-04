@@ -2,7 +2,7 @@ package com.ahmadda.presentation;
 
 import com.ahmadda.application.EventNotificationOptOutService;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.domain.OrganizationMemberWithOptStatus;
+import com.ahmadda.domain.organization.OrganizationMemberWithOptStatus;
 import com.ahmadda.presentation.dto.OptOutStatusResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
