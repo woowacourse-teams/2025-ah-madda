@@ -5,6 +5,7 @@ import { getLocalStorage } from '@/shared/utils/localStorage';
 import { tokenErrorHandler } from '@/shared/utils/tokenErrorHandler';
 
 type HttpMethod = 'GET' | 'POST' | 'DELETE' | 'PATCH' | 'PUT';
+type BuiltInit = Pick<RequestInit, 'headers' | 'body'>;
 
 export type HttpErrorResponse = {
   type: string;
@@ -23,20 +24,39 @@ export class HttpError extends Error {
     this.name = 'HttpError';
   }
 }
-
-const request = async <T>(path: string, method: HttpMethod, body?: object): Promise<T> => {
-  const config: RequestInit = {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${getLocalStorage(ACCESS_TOKEN_KEY)}`,
-    },
-  };
-
-  if (body) {
-    config.body = JSON.stringify(body);
+const serializeBody = (body?: object | FormData): BuiltInit => {
+  if (!body) return {};
+  if (typeof FormData !== 'undefined' && body instanceof FormData) {
+    return { body };
   }
+  return {
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  };
+};
 
+const withAuthHeader = (headers?: HeadersInit): HeadersInit => {
+  return {
+    Authorization: `Bearer ${getLocalStorage(ACCESS_TOKEN_KEY)}`,
+    ...(headers ?? {}),
+  };
+};
+
+const buildRequestInit = (method: HttpMethod, body?: object | FormData): RequestInit => {
+  const { headers, body: serialized } = serializeBody(body);
+  return {
+    method,
+    headers: withAuthHeader(headers),
+    body: serialized,
+  };
+};
+
+const request = async <T>(
+  path: string,
+  method: HttpMethod,
+  body?: object | FormData
+): Promise<T> => {
+  const config = buildRequestInit(method, body);
   const response = await fetch(process.env.API_BASE_URL + path, config);
 
   if (!response.ok) {
@@ -49,7 +69,6 @@ const request = async <T>(path: string, method: HttpMethod, body?: object): Prom
         Sentry.captureException(parseError);
         throw parseError;
       }
-
       throw new HttpError(response.status);
     }
   }
@@ -66,8 +85,8 @@ const request = async <T>(path: string, method: HttpMethod, body?: object): Prom
 
 export const fetcher = {
   get: <T>(path: string) => request<T>(path, 'GET'),
-  post: <T>(path: string, body?: object) => request<T>(path, 'POST', body),
-  patch: <T>(path: string, body?: object) => request<T>(path, 'PATCH', body),
+  post: <T>(path: string, body?: object | FormData) => request<T>(path, 'POST', body),
+  patch: <T>(path: string, body?: object | FormData) => request<T>(path, 'PATCH', body),
   put: <T>(path: string, body?: object) => request<T>(path, 'PUT', body),
   delete: (path: string) => request<void>(path, 'DELETE'),
 };

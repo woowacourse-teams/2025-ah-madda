@@ -1,10 +1,8 @@
 import { css, keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
-import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import { isAuthenticated } from '@/api/auth';
-import { organizationQueryOptions } from '@/api/queries/organization';
 import Ahmadda from '@/assets/icon/ahmadda.webp';
 import Point from '@/assets/icon/point.webp';
 import { Button } from '@/shared/components/Button';
@@ -13,31 +11,27 @@ import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
 import { useModal } from '@/shared/hooks/useModal';
 
+import { useToast } from '../../../shared/components/Toast/ToastContext';
+
 import { GuideModal } from './GuideModal';
 
 export const Info = () => {
+  const { error } = useToast();
   const { isOpen, open, close } = useModal();
   const navigate = useNavigate();
 
-  //E.TODO 추후 organizationId 받아오기
-  const { data: profileData } = useQuery({
-    ...organizationQueryOptions.profile(1),
-    enabled: isAuthenticated(),
-  });
-
   const handelGuideOpenClick = () => {
     if (!isAuthenticated()) {
-      alert('로그인이 필요한 서비스입니다. 먼저 로그인해 주세요.');
+      error(`로그인이 필요한 서비스입니다.\n먼저 로그인해 주세요.`, {
+        duration: 3000,
+      });
       return;
     }
     open();
   };
 
   const handleEnterClick = () => {
-    if (profileData?.nickname) {
-      navigate('/event');
-      return;
-    }
+    navigate(`/organization`);
   };
 
   return (

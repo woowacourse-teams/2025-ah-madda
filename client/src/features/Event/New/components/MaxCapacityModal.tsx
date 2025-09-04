@@ -3,6 +3,7 @@ import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Modal } from '@/shared/components/Modal';
 import { Text } from '@/shared/components/Text';
+import { useToast } from '@/shared/components/Toast/ToastContext';
 
 import { UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { useMaxCapacity } from '../hooks/useMaxCapacity';
@@ -15,10 +16,11 @@ type Props = {
 };
 
 export const MaxCapacityModal = ({ isOpen, initialValue, onClose, onSubmit }: Props) => {
+  const { error } = useToast();
   const { maxCapacity, handleMaxCapacityChange } = useMaxCapacity(initialValue);
 
   const handleLimitedCapacity = () => {
-    if (maxCapacity === 0) return alert('수용 인원은 1명 이상이여야 합니다.');
+    if (maxCapacity === 0) return error('수용 인원은 1명 이상이여야 합니다.');
     onSubmit(Number(maxCapacity));
     onClose();
   };

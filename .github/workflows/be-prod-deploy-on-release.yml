@@ -24,7 +24,7 @@ jobs:
         run: |
           git fetch --tags
 
-          base_tag=$(git tag -l 'v*.*.*' | sort -V | tail -n 1)
+          base_tag=$(git tag -l 'v*.*.*' | grep -v '+be' | sort -V | tail -n 1)
           base_version="${base_tag#v}"
 
           head=$(echo "$base_version" | cut -d'.' -f1)
@@ -43,14 +43,13 @@ jobs:
           head="${{ steps.base.outputs.head }}"
           yearweek="${{ steps.base.outputs.yearweek }}"
           common="${{ steps.base.outputs.common_build }}"
-
-          prefix="be-v${head}.${yearweek}.${common}"
+          prefix="v${head}.${yearweek}.${common}+be"
 
           matching_tags=$(git tag -l "${prefix}.*")
           if [[ -z "$matching_tags" ]]; then
             next_be_build=1
           else
-            last_be_build=$(echo "$matching_tags" | awk -F. '{print $4}' | sort -n | tail -n 1)
+            last_be_build=$(echo "$matching_tags" | sed -E 's/.*\+be\.([0-9]+)/\1/' | sort -n | tail -n 1)
             next_be_build=$((last_be_build + 1))
           fi
 

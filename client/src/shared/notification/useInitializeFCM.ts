@@ -1,7 +1,11 @@
 import { useEffect } from 'react';
 
+import * as Sentry from '@sentry/react';
+
 import { isAuthenticated } from '@/api/auth';
 import { fetcher } from '@/api/fetcher';
+
+import { isIOS } from '../utils/device';
 
 import { requestFCMPermission, setupForegroundMessage } from './firebase';
 
@@ -12,7 +16,7 @@ export const registerFCMToken = async (registrationToken: string) => {
 export const useInitializeFCM = () => {
   useEffect(() => {
     const initializeFCM = async () => {
-      if (!('serviceWorker' in navigator)) return;
+      if (!('serviceWorker' in navigator) || isIOS()) return;
 
       try {
         await navigator.serviceWorker.register('/firebase-messaging-sw.js');
@@ -24,7 +28,7 @@ export const useInitializeFCM = () => {
         setupForegroundMessage();
       } catch (error) {
         // TODO : FCM 초기화 실패 시 처리 로직 추가
-        console.error('FCM 초기화 실패:', error);
+        Sentry.captureException(error);
       }
     };
 

@@ -34,8 +34,8 @@ describe('MyEventPage 테스트', () => {
 
       render(
         <RouterWithQueryClient
-          initialRoute="/event/my"
-          routes={[{ path: '/event/my', element: <MyEventPage /> }]}
+          initialRoute="/1/event/my"
+          routes={[{ path: '/:organizationId/event/my', element: <MyEventPage /> }]}
         />
       );
 
@@ -59,8 +59,8 @@ describe('MyEventPage 테스트', () => {
 
       render(
         <RouterWithQueryClient
-          initialRoute="/event/my"
-          routes={[{ path: '/event/my', element: <MyEventPage /> }]}
+          initialRoute="/1/event/my"
+          routes={[{ path: '/:organizationId/event/my', element: <MyEventPage /> }]}
         />
       );
 
@@ -90,8 +90,8 @@ describe('MyEventPage 테스트', () => {
 
       render(
         <RouterWithQueryClient
-          initialRoute="/event/my"
-          routes={[{ path: '/event/my', element: <MyEventPage /> }]}
+          initialRoute="/1/event/my"
+          routes={[{ path: '/:organizationId/event/my', element: <MyEventPage /> }]}
         />
       );
 

@@ -22,7 +22,7 @@ export const ErrorPage = () => {
             <Icon
               name="logo"
               size={55}
-              onClick={() => navigate('/event')}
+              onClick={() => navigate(`/`)}
               css={css`
                 cursor: pointer;
               `}
