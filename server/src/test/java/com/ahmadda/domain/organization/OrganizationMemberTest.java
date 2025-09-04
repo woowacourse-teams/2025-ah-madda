@@ -53,8 +53,10 @@ class OrganizationMemberTest {
     @Test
     void 관리자는_같은_조직원의_권한을_변경할_수_있다() {
         // given
-        var target = OrganizationMember.create("user", member, organization, OrganizationMemberRole.USER);
-        var admin = OrganizationMember.create("admin", member, organization, OrganizationMemberRole.ADMIN);
+        var targetMember = Member.create("user-m", "user@example.com", "pic");
+        var adminMember = Member.create("admin-m", "admin@example.com", "pic");
+        var target = OrganizationMember.create("user", targetMember, organization, OrganizationMemberRole.USER);
+        var admin = OrganizationMember.create("admin", adminMember, organization, OrganizationMemberRole.ADMIN);
 
         // when
         target.changeRole(admin, OrganizationMemberRole.ADMIN);
@@ -66,8 +68,10 @@ class OrganizationMemberTest {
     @Test
     void 권한_변경시_관리자가_아닌_경우_예외가_발생한다() {
         // given
-        var target = OrganizationMember.create("user", member, organization, OrganizationMemberRole.USER);
-        var notAdmin = OrganizationMember.create("notAdmin", member, organization, OrganizationMemberRole.USER);
+        var targetMember = Member.create("user-m", "user@example.com", "pic");
+        var nonAdminMember = Member.create("non-admin-m", "non-admin@example.com", "pic");
+        var target = OrganizationMember.create("user", targetMember, organization, OrganizationMemberRole.USER);
+        var notAdmin = OrganizationMember.create("notAdmin", nonAdminMember, organization, OrganizationMemberRole.USER);
 
         // when // then
         assertThatThrownBy(() -> target.changeRole(notAdmin, OrganizationMemberRole.ADMIN))
@@ -78,9 +82,13 @@ class OrganizationMemberTest {
     @Test
     void 권한_변경시_다른_조직의_관리자라면_예외가_발생한다() {
         // given
-        var target = OrganizationMember.create("user", member, organization, OrganizationMemberRole.USER);
+        var targetMember = Member.create("user-m", "user@example.com", "pic");
+        var target = OrganizationMember.create("user", targetMember, organization, OrganizationMemberRole.USER);
+
         var otherOrg = Organization.create("다른 조직", "desc", "image.png");
-        var outsiderAdmin = OrganizationMember.create("outsider", member, otherOrg, OrganizationMemberRole.ADMIN);
+        var outsiderAdminMember = Member.create("outsider-admin-m", "outsider-admin@example.com", "pic");
+        var outsiderAdmin =
+                OrganizationMember.create("outsider", outsiderAdminMember, otherOrg, OrganizationMemberRole.ADMIN);
 
         // when // then
         assertThatThrownBy(() -> target.changeRole(outsiderAdmin, OrganizationMemberRole.ADMIN))
