@@ -422,9 +422,7 @@ class OrganizationServiceTest {
         sut.deleteOrganization(organization.getId(), loginMember);
 
         // then
-        assertThatThrownBy(() -> organizationRepository.findById(organization.getId())
-                .orElseThrow(() -> new NotFoundException("조직이 존재하지 않아야 합니다.")))
-                .isInstanceOf(NotFoundException.class);
+        assertThat(organizationRepository.findById(organization.getId())).isEmpty();
     }
 
     @Test
