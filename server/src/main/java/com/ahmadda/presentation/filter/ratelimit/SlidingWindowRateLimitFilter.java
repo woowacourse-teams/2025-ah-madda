@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -84,8 +83,7 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 
-    @Scheduled(fixedDelay = 10 * 60 * 1000)
-    public void cleanUpStaleRequestLogs() {
+    public void cleanUpStaleRequestLogsInternal() {
         long now = System.nanoTime();
 
         requestLogs.entrySet()

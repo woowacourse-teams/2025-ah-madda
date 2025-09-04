@@ -103,7 +103,7 @@ class SlidingWindowRateLimitFilterTest {
                 .put(memberId, deque);
 
         // when
-        filter.cleanUpStaleRequestLogs();
+        filter.cleanUpStaleRequestLogsInternal();
 
         // then
         assertThat(filter.getRequestLogs()).doesNotContainKey(memberId);
