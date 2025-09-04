@@ -192,7 +192,7 @@ public class EventService {
 
     private void validateOrganizationAccess(final Long organizationId, final Long memberId) {
         if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, memberId)) {
-            throw new ForbiddenException("조직에 소속되지 않아 권한이 없습니다.");
+            throw new ForbiddenException("이벤트 스페이스에 소속되지 않아 권한이 없습니다.");
         }
     }
 

@@ -899,7 +899,7 @@ class EventServiceTest {
         //when // then
         assertThatThrownBy(() -> sut.getPastEvent(organization.getId(), loginMember, LocalDateTime.now()))
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("조직에 소속되지 않아 권한이 없습니다.");
+                .hasMessage("이벤트 스페이스에 소속되지 않아 권한이 없습니다.");
     }
 
     private Event createEventWithDates(

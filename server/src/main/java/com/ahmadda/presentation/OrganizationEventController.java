@@ -155,7 +155,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Forbidden",
                                               "status": 403,
-                                              "detail": "조직에 소속되지 않은 회원입니다.",
+                                              "detail": "이벤트 스페이스에 소속되지 않은 회원입니다.",
                                               "instance": "/api/organizations/{organizationId}/events/past"
                                             }
                                             """
@@ -577,7 +577,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Forbidden",
                                               "status": 403,
-                                              "detail": "조직에 소속되지 않은 회원입니다.",
+                                              "detail": "이벤트 스페이스에 소속되지 않은 회원입니다.",
                                               "instance": "/api/organizations/events/{eventId}/registration/close"
                                             }
                                             """
