@@ -851,4 +851,80 @@ class EventServiceTest {
 
         return eventRepository.save(event);
     }
+
+    @Test
+    void 과거_이벤트를_조회할_수_있다() {
+        // given
+        var member = createMember();
+        var organization = createOrganization();
+        var organizationMember = createOrganizationMember(organization, member);
+        var loginMember = createLoginMember(member);
+
+        var now = LocalDateTime.now();
+
+        var pastEvent = createEventWithDates(
+                organizationMember,
+                organization,
+                now.plusDays(1),
+                now.plusDays(2),
+                now.plusDays(4)
+        );
+        createEventWithDates(organizationMember, organization, now.plusDays(2), now.plusDays(3), now.plusDays(5));
+
+        // when
+        var pastEvents = sut.getPastEvent(
+                organization.getId(),
+                loginMember,
+                LocalDateTime.now()
+                        .plusDays(4L)
+        );
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(pastEvents)
+                    .hasSize(1);
+            softly.assertThat(pastEvents.get(0)
+                            .getId())
+                    .isEqualTo(pastEvent.getId());
+        });
+    }
+
+    @Test
+    void 과거_이벤트는_조직원이_아니면_조회시_예외가_발생한다() {
+        // given
+        var member = createMember();
+        var organization = createOrganization();
+        var loginMember = createLoginMember(member);
+
+        //when // then
+        assertThatThrownBy(() -> sut.getPastEvent(organization.getId(), loginMember, LocalDateTime.now()))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage("조직에 소속되지 않아 권한이 없습니다.");
+    }
+
+    private Event createEventWithDates(
+            final OrganizationMember organizationMember,
+            final Organization organization,
+            final LocalDateTime registrationEnd,
+            final LocalDateTime eventStart,
+            final LocalDateTime eventEnd
+    ) {
+        var now = LocalDateTime.now();
+        var event = Event.create(
+                "title",
+                "description",
+                "place",
+                organizationMember,
+                organization,
+                EventOperationPeriod.create(
+                        now,
+                        registrationEnd,
+                        eventStart,
+                        eventEnd,
+                        now
+                ),
+                10
+        );
+        return eventRepository.save(event);
+    }
 }

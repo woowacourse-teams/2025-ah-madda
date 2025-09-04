@@ -151,6 +151,16 @@ public class EventService {
         return event.isOrganizer(member);
     }
 
+    public List<Event> getPastEvent(
+            final Long organizationId,
+            final LoginMember loginMember,
+            final LocalDateTime compareDateTime
+    ) {
+        validateOrganizationAccess(organizationId, loginMember.memberId());
+
+        return eventRepository.findAllByEventOperationPeriodEventPeriodEndBefore(compareDateTime);
+    }
+
     private Member getMember(final Long loginMember) {
         return memberRepository.findById(loginMember)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
