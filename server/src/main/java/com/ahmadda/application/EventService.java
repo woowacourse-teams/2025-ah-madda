@@ -7,24 +7,24 @@ import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.EventUpdated;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
-import com.ahmadda.application.exception.AccessDeniedException;
-import com.ahmadda.application.exception.BusinessFlowViolatedException;
-import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.Event;
-import com.ahmadda.domain.EventNotificationOptOutRepository;
-import com.ahmadda.domain.EventOperationPeriod;
-import com.ahmadda.domain.EventRepository;
-import com.ahmadda.domain.GuestWithOptStatus;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberRepository;
-import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Question;
-import com.ahmadda.domain.Reminder;
-import com.ahmadda.domain.ReminderHistory;
-import com.ahmadda.domain.ReminderHistoryRepository;
+import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventRepository;
+import com.ahmadda.domain.event.GuestWithOptStatus;
+import com.ahmadda.domain.event.Question;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
+import com.ahmadda.domain.notification.Reminder;
+import com.ahmadda.domain.notification.ReminderHistory;
+import com.ahmadda.domain.notification.ReminderHistoryRepository;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
+import com.ahmadda.domain.organization.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -136,7 +136,7 @@ public class EventService {
                 updatedOperationPeriod,
                 eventUpdateRequest.maxCapacity()
         );
-        
+
         notifyEventUpdated(event);
 
         eventPublisher.publishEvent(EventUpdated.from(event));
@@ -182,7 +182,7 @@ public class EventService {
 
     private void validateOrganizationAccess(final Long organizationId, final Long memberId) {
         if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, memberId)) {
-            throw new AccessDeniedException("조직에 소속되지 않아 권한이 없습니다.");
+            throw new ForbiddenException("조직에 소속되지 않아 권한이 없습니다.");
         }
     }
 
@@ -215,7 +215,7 @@ public class EventService {
 
             long minutesUntilAvailable = calculateRemainingMinutes(now, oldestReminderTime);
 
-            throw new BusinessFlowViolatedException(
+            throw new UnprocessableEntityException(
                     String.format(
                             "리마인더는 %d분 내 최대 %d회까지만 발송할 수 있습니다. 약 %d분 후 다시 시도해주세요.",
                             REMINDER_LIMIT_DURATION_MINUTES,

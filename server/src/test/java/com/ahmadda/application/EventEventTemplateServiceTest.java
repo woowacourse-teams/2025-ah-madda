@@ -2,12 +2,12 @@ package com.ahmadda.application;
 
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.exception.AccessDeniedException;
-import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.EventTemplate;
-import com.ahmadda.domain.EventTemplateRepository;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
+import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.domain.event.EventTemplate;
+import com.ahmadda.domain.event.EventTemplateRepository;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.presentation.dto.EventTemplateCreateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,7 +120,7 @@ class EventEventTemplateServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.getTemplate(loginMember, tmpl.getId()))
-                .isInstanceOf(AccessDeniedException.class)
+                .isInstanceOf(ForbiddenException.class)
                 .hasMessage("본인이 작성한 템플릿이 아닙니다.");
     }
 
@@ -148,7 +148,7 @@ class EventEventTemplateServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.deleteTemplate(otherLoginMember, myTmpl.getId()))
-                .isInstanceOf(AccessDeniedException.class)
+                .isInstanceOf(ForbiddenException.class)
                 .hasMessage("본인이 작성한 템플릿이 아닙니다.");
 
         assertThat(eventTemplateRepository.findById(myTmpl.getId())).isPresent();

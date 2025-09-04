@@ -1,19 +1,19 @@
 package com.ahmadda.application;
 
-import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.exception.NotFoundException;
 import com.ahmadda.annotation.IntegrationTest;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.OrganizationMemberRepository;
-import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.infra.login.RefreshTokenRepository;
-import com.ahmadda.infra.login.exception.InvalidTokenException;
-import com.ahmadda.infra.login.jwt.config.JwtProperties;
-import com.ahmadda.infra.login.jwt.dto.JwtMemberPayload;
-import com.ahmadda.infra.login.util.HashUtils;
-import com.ahmadda.infra.oauth.GoogleOAuthProvider;
-import com.ahmadda.infra.oauth.dto.OAuthUserInfoResponse;
+import com.ahmadda.application.dto.LoginMember;
+import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
+import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.infra.auth.RefreshTokenRepository;
+import com.ahmadda.infra.auth.exception.InvalidTokenException;
+import com.ahmadda.infra.auth.jwt.config.JwtProperties;
+import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
+import com.ahmadda.infra.auth.oauth.GoogleOAuthProvider;
+import com.ahmadda.infra.auth.oauth.dto.OAuthUserInfoResponse;
+import com.ahmadda.infra.auth.util.HashUtils;
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -216,9 +216,10 @@ class LoginServiceTest {
         var loginTokens = sut.login(code, redirectUri, userAgent);
 
         // when // then
-        assertThatThrownBy(() -> sut.renewMemberToken(loginTokens.accessToken(),
-                                                      loginTokens.refreshToken(),
-                                                      userAgent
+        assertThatThrownBy(() -> sut.renewMemberToken(
+                loginTokens.accessToken(),
+                loginTokens.refreshToken(),
+                userAgent
         ))
                 .isInstanceOf(InvalidTokenException.class)
                 .hasMessage("엑세스 토큰이 만료되지 않았습니다.");

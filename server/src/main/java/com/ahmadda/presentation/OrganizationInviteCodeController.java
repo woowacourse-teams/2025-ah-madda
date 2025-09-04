@@ -2,8 +2,8 @@ package com.ahmadda.presentation;
 
 import com.ahmadda.application.OrganizationInviteCodeService;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.domain.InviteCode;
-import com.ahmadda.domain.Organization;
+import com.ahmadda.domain.organization.InviteCode;
+import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.presentation.dto.InviteCodeCreateResponse;
 import com.ahmadda.presentation.dto.OrganizationResponse;
 import com.ahmadda.presentation.resolver.AuthMember;

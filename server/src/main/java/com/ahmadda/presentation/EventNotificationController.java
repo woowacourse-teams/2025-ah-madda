@@ -4,7 +4,7 @@ import com.ahmadda.application.EventNotificationService;
 import com.ahmadda.application.ReminderHistoryService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.SelectedOrganizationMembersNotificationRequest;
-import com.ahmadda.domain.ReminderHistory;
+import com.ahmadda.domain.notification.ReminderHistory;
 import com.ahmadda.presentation.dto.ReminderHistorySummaryResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;

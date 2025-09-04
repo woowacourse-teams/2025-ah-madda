@@ -2,7 +2,7 @@ package com.ahmadda.presentation;
 
 import com.ahmadda.application.EventStatisticService;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.domain.EventViewMetric;
+import com.ahmadda.domain.event.EventViewMetric;
 import com.ahmadda.presentation.dto.EventViewMetricResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;

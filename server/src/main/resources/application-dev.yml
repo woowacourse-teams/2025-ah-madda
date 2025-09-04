@@ -48,7 +48,7 @@ cors:
     - http://local.ahmadda.com:5173
 
 notification:
-  redirect-url-prefix: http://localhost:5173/event/
+  redirect-url-prefix: https://staging.ahmadda.com/
 
 aws:
   s3:

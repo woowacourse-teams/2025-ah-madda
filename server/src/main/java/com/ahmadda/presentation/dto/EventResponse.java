@@ -1,6 +1,6 @@
 package com.ahmadda.presentation.dto;
 
-import com.ahmadda.domain.Event;
+import com.ahmadda.domain.event.Event;
 
 import java.time.LocalDateTime;
 

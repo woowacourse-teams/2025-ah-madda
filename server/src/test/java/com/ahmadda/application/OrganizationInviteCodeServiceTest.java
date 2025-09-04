@@ -2,18 +2,18 @@ package com.ahmadda.application;
 
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.application.exception.BusinessFlowViolatedException;
-import com.ahmadda.application.exception.NotFoundException;
-import com.ahmadda.domain.InviteCode;
-import com.ahmadda.domain.InviteCodeRepository;
-import com.ahmadda.domain.Member;
-import com.ahmadda.domain.MemberRepository;
-import com.ahmadda.domain.Organization;
-import com.ahmadda.domain.OrganizationMember;
-import com.ahmadda.domain.OrganizationMemberRepository;
-import com.ahmadda.domain.OrganizationRepository;
-import com.ahmadda.domain.Role;
-import com.ahmadda.infra.generator.RandomCodeGenerator;
+import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.organization.InviteCode;
+import com.ahmadda.domain.organization.InviteCodeRepository;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
+import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.domain.organization.RandomCodeGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -158,7 +158,7 @@ class OrganizationInviteCodeServiceTest {
     void 존재하지_않는_초대코드로_조직을_찾는다면_예외가_발생한다() {
         //when //then
         assertThatThrownBy(() -> sut.getOrganizationByCode("fakeCode"))
-                .isInstanceOf(BusinessFlowViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("유효하지 않은 초대코드입니다.");
     }
 
@@ -174,7 +174,7 @@ class OrganizationInviteCodeServiceTest {
 
         //when //then
         assertThatThrownBy(() -> sut.getOrganizationByCode(inviteCode.getCode()))
-                .isInstanceOf(BusinessFlowViolatedException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("만료된 초대코드입니다.");
     }
 
@@ -193,7 +193,7 @@ class OrganizationInviteCodeServiceTest {
             Member member,
             Organization organization
     ) {
-        var organizationMember = OrganizationMember.create(nickname, member, organization, Role.USER);
+        var organizationMember = OrganizationMember.create(nickname, member, organization, OrganizationMemberRole.USER);
         return organizationMemberRepository.save(organizationMember);
     }
 

@@ -1,6 +1,6 @@
 package com.ahmadda.application.dto;
 
-import com.ahmadda.domain.Event;
+import com.ahmadda.domain.event.Event;
 
 public record EventRead(
         Long eventId,

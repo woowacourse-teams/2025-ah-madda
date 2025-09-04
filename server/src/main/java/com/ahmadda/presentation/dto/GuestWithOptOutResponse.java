@@ -1,6 +1,6 @@
 package com.ahmadda.presentation.dto;
 
-import com.ahmadda.domain.GuestWithOptStatus;
+import com.ahmadda.domain.event.GuestWithOptStatus;
 
 public record GuestWithOptOutResponse(
         Long guestId,
