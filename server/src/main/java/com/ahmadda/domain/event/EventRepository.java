@@ -10,7 +10,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     List<Event> findAllByOrganizer(final OrganizationMember organizer);
 
-    List<Event> findAllByEventOperationPeriodRegistrationPeriodEndBetween(
+    List<Event> findAllByEventOperationPeriodRegistrationEventPeriodEndBetween(
             final LocalDateTime from,
             final LocalDateTime to
     );

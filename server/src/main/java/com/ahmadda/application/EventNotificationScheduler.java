@@ -1,15 +1,15 @@
 package com.ahmadda.application;
 
 import com.ahmadda.domain.event.Event;
-import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.event.GuestWithOptStatus;
-import com.ahmadda.domain.organization.OrganizationMember;
-import com.ahmadda.domain.organization.OrganizationMemberWithOptStatus;
+import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
 import com.ahmadda.domain.notification.Reminder;
 import com.ahmadda.domain.notification.ReminderHistory;
 import com.ahmadda.domain.notification.ReminderHistoryRepository;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberWithOptStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -42,7 +42,7 @@ public class EventNotificationScheduler {
         LocalDateTime windowEnd = windowStart.plus(SCHEDULER_SCAN_WINDOW);
 
         List<Event> upcomingEvents =
-                eventRepository.findAllByEventOperationPeriodRegistrationPeriodEndBetween(windowStart, windowEnd);
+                eventRepository.findAllByEventOperationPeriodRegistrationEventPeriodEndBetween(windowStart, windowEnd);
 
         upcomingEvents.stream()
                 .filter(event -> !event.isFull()).
@@ -76,7 +76,7 @@ public class EventNotificationScheduler {
     private List<OrganizationMember> getOptInNonGuestOrganizationMembers(final Event event) {
         List<OrganizationMember> nonGuestOrganizationMembers =
                 event.getNonGuestOrganizationMembers(event.getOrganization()
-                                                             .getOrganizationMembers());
+                        .getOrganizationMembers());
 
         return OrganizationMemberWithOptStatus.extractOptInOrganizationMembers(
                 nonGuestOrganizationMembers
