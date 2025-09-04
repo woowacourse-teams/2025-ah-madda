@@ -4,7 +4,6 @@ import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
-import com.ahmadda.domain.util.Assert;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,11 +90,9 @@ public class Poke {
             final Event event,
             final LocalDateTime sentAt
     ) {
-        validateEvent(event);
         validatePokeOrganizationMembers(sender, recipient);
         validateOrganizationParticipate(event, sender, recipient);
         validateReceiveOrganizationMember(event, recipient);
-        validateSentAt(sentAt);
     }
 
     private void pushPoke(
@@ -112,10 +109,6 @@ public class Poke {
                         sendMessage
                 )
         );
-    }
-
-    private void validateSentAt(final LocalDateTime sentAt) {
-        Assert.notNull(sentAt, "포키 전송 날짜는 null 일 수 없습니다.");
     }
 
     private void validateReceiveOrganizationMember(
@@ -135,9 +128,6 @@ public class Poke {
             final OrganizationMember sendOrganizationMember,
             final OrganizationMember receiveOrganizationMember
     ) {
-        Assert.notNull(sendOrganizationMember, "포키를 보내는 조직원은 null이 되면 안됩니다.");
-        Assert.notNull(receiveOrganizationMember, "포키를 받는 조직원은 null이 되면 안됩니다.");
-
         if (sendOrganizationMember.equals(receiveOrganizationMember)) {
             throw new BusinessRuleViolatedException("스스로에게 포키를 보낼 수 없습니다");
         }
@@ -157,9 +147,5 @@ public class Poke {
         if (!organization.isExistOrganizationMember(receiveOrganizationMember)) {
             throw new BusinessRuleViolatedException("포키 대상이 해당 조직에 참여하고 있어야 합니다.");
         }
-    }
-
-    private void validateEvent(final Event event) {
-        Assert.notNull(event, "이벤트는 null이 되면 안됩니다.");
     }
 }

@@ -1,14 +1,12 @@
 package com.ahmadda.domain.event;
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
-import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Embeddable;
-
-import java.time.LocalDateTime;
-
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Embeddable
 @EqualsAndHashCode
@@ -19,9 +17,6 @@ public class EventPeriod {
     private LocalDateTime end;
 
     private EventPeriod(final LocalDateTime start, final LocalDateTime end) {
-        Assert.notNull(start, "시작 시간은 null일 수 없습니다.");
-        Assert.notNull(end, "종료 시간은 null일 수 없습니다.");
-
         if (end.equals(start) || end.isBefore(start)) {
             throw new BusinessRuleViolatedException("종료 시간은 시작 시간보다 미래여야 합니다.");
         }

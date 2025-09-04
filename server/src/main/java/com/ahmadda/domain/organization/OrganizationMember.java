@@ -4,7 +4,6 @@ package com.ahmadda.domain.organization;
 import com.ahmadda.domain.BaseEntity;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.member.Member;
-import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -57,11 +56,6 @@ public class OrganizationMember extends BaseEntity {
             final Organization organization,
             final OrganizationMemberRole role
     ) {
-        validateNickname(nickname);
-        validateMember(member);
-        validateOrganization(organization);
-        validateRole(role);
-
         this.nickname = nickname;
         this.member = member;
         this.organization = organization;
@@ -93,21 +87,5 @@ public class OrganizationMember extends BaseEntity {
 
     public boolean isAdmin() {
         return this.role == OrganizationMemberRole.ADMIN;
-    }
-
-    private void validateNickname(final String nickname) {
-        Assert.notBlank(nickname, "닉네임은 공백이면 안됩니다.");
-    }
-
-    private void validateMember(final Member member) {
-        Assert.notNull(member, "멤버는 null이 되면 안됩니다.");
-    }
-
-    private void validateOrganization(final Organization organization) {
-        Assert.notNull(organization, "조직은 null이 되면 안됩니다.");
-    }
-
-    private void validateRole(final OrganizationMemberRole role) {
-        Assert.notNull(role, "조직원의 역할은 null이 되면 안됩니다.");
     }
 }

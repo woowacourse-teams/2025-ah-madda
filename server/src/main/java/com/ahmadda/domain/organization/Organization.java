@@ -6,7 +6,6 @@ import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import com.ahmadda.domain.member.Member;
-import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -59,7 +58,6 @@ public class Organization extends BaseEntity {
     private Organization(final String name, final String description, final String imageUrl) {
         validateName(name);
         validateDescription(description);
-        validateImageUrl(imageUrl);
 
         this.name = name;
         this.description = description;
@@ -109,7 +107,6 @@ public class Organization extends BaseEntity {
         validateUpdatableBy(updatingOrganizationMember);
         validateName(name);
         validateDescription(description);
-        validateImageUrl(imageUrl);
 
         this.name = name;
         this.description = description;
@@ -127,8 +124,6 @@ public class Organization extends BaseEntity {
     }
 
     private void validateName(final String name) {
-        Assert.notBlank(name, "이름은 공백이면 안됩니다.");
-
         if (name.length() < MIN_NAME_LENGTH || name.length() > MAX_NAME_LENGTH) {
             throw new BusinessRuleViolatedException(
                     String.format(
@@ -141,8 +136,6 @@ public class Organization extends BaseEntity {
     }
 
     private void validateDescription(final String description) {
-        Assert.notBlank(description, "설명은 공백이면 안됩니다.");
-
         if (description.length() < MIN_DESCRIPTION_LENGTH || description.length() > MAX_DESCRIPTION_LENGTH) {
             throw new BusinessRuleViolatedException(
                     String.format(
@@ -152,9 +145,5 @@ public class Organization extends BaseEntity {
                     )
             );
         }
-    }
-
-    private void validateImageUrl(final String imageUrl) {
-        Assert.notBlank(imageUrl, "이미지 url은 공백이면 안됩니다.");
     }
 }

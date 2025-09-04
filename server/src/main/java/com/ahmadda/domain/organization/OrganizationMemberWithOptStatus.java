@@ -1,9 +1,8 @@
 package com.ahmadda.domain.organization;
 
 import com.ahmadda.domain.event.Event;
-import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
-import com.ahmadda.domain.util.Assert;
+import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
 import lombok.Getter;
 
 import java.util.List;
@@ -19,8 +18,6 @@ public class OrganizationMemberWithOptStatus {
             final boolean optedOut,
             final Event event
     ) {
-        validateOrganizationMember(organizationMember);
-        validateEvent(event);
         validateOrganizerCannotOptOut(organizationMember, optedOut, event);
 
         this.organizationMember = organizationMember;
@@ -50,14 +47,6 @@ public class OrganizationMemberWithOptStatus {
                 .filter(organizationMemberWithOptOut -> !organizationMemberWithOptOut.isOptedOut())
                 .map(OrganizationMemberWithOptStatus::getOrganizationMember)
                 .toList();
-    }
-
-    private void validateOrganizationMember(final OrganizationMember organizationMember) {
-        Assert.notNull(organizationMember, "조직원은 null이 될 수 없습니다.");
-    }
-
-    private void validateEvent(final Event event) {
-        Assert.notNull(event, "조직원은 반드시 이벤트와 함께 전달되어야 합니다.");
     }
 
     private void validateOrganizerCannotOptOut(

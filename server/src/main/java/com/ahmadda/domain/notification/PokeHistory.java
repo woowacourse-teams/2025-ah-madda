@@ -3,7 +3,6 @@ package com.ahmadda.domain.notification;
 import com.ahmadda.domain.BaseEntity;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.organization.OrganizationMember;
-import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -53,27 +52,10 @@ public class PokeHistory extends BaseEntity {
             final Event event,
             final LocalDateTime sentAt
     ) {
-        validateOrganizationMember(sender, recipient);
-        validateEvent(event);
-        validateSentAt(sentAt);
-
         this.sender = sender;
         this.recipient = recipient;
         this.event = event;
         this.sentAt = sentAt;
-    }
-
-    private void validateEvent(final Event event) {
-        Assert.notNull(event, "이벤트는 null일 수 없습니다.");
-    }
-
-    private void validateSentAt(final LocalDateTime sentAt) {
-        Assert.notNull(sentAt, "전송 시간은 null일 수 없습니다.");
-    }
-
-    private void validateOrganizationMember(final OrganizationMember sender, final OrganizationMember recipient) {
-        Assert.notNull(sender, "포키 전송자는 null일 수 없습니다.");
-        Assert.notNull(recipient, "포키 수신자는 null일 수 없습니다.");
     }
 
     public static PokeHistory create(

@@ -2,7 +2,6 @@ package com.ahmadda.domain.notification;
 
 import com.ahmadda.domain.BaseEntity;
 import com.ahmadda.domain.organization.OrganizationMember;
-import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -34,15 +33,10 @@ public class ReminderRecipient extends BaseEntity {
     private OrganizationMember organizationMember;
 
     private ReminderRecipient(final OrganizationMember organizationMember) {
-        validateOrganizationMember(organizationMember);
         this.organizationMember = organizationMember;
     }
 
     public static ReminderRecipient create(final OrganizationMember organizationMember) {
         return new ReminderRecipient(organizationMember);
-    }
-
-    private void validateOrganizationMember(final OrganizationMember organizationMember) {
-        Assert.notNull(organizationMember, "리마인더 수신자의 조직원이 null일 수 없습니다.");
     }
 }

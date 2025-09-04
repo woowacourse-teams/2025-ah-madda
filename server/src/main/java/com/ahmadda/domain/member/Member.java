@@ -1,7 +1,6 @@
 package com.ahmadda.domain.member;
 
 import com.ahmadda.domain.BaseEntity;
-import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,10 +34,6 @@ public class Member extends BaseEntity {
     private String profileImageUrl;
 
     private Member(final String name, final String email, final String profileImageUrl) {
-        validateName(name);
-        validateEmail(email);
-        validateProfileImageUrl(profileImageUrl);
-
         this.name = name;
         this.email = email;
         this.profileImageUrl = profileImageUrl;
@@ -46,17 +41,5 @@ public class Member extends BaseEntity {
 
     public static Member create(final String name, final String email, final String profileImageUrl) {
         return new Member(name, email, profileImageUrl);
-    }
-
-    private void validateName(final String name) {
-        Assert.notBlank(name, "이름은 공백이면 안됩니다.");
-    }
-
-    private void validateEmail(final String email) {
-        Assert.notBlank(email, "이메일은 공백이면 안됩니다.");
-    }
-
-    private void validateProfileImageUrl(final String profileImageUrl) {
-        Assert.notBlank(profileImageUrl, "이미지 URI는 공백이면 안됩니다.");
     }
 }

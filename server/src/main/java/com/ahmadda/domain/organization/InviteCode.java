@@ -2,7 +2,6 @@ package com.ahmadda.domain.organization;
 
 import com.ahmadda.domain.BaseEntity;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
-import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -53,11 +52,6 @@ public class InviteCode extends BaseEntity {
             final Organization organization,
             final OrganizationMember inviter
     ) {
-        Assert.notBlank(code, "초대 코드는 공백이면 안됩니다.");
-        Assert.notNull(expiresAt, "만료 기한은 null이 되면 안됩니다.");
-        Assert.notNull(organization, "조직은 null이 되면 안됩니다.");
-        Assert.notNull(inviter, "초대자는는 null이 되면 안됩니다.");
-
         this.code = code;
         this.expiresAt = expiresAt;
         this.organization = organization;

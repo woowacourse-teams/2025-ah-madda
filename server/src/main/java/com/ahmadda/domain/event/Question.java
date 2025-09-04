@@ -2,7 +2,6 @@ package com.ahmadda.domain.event;
 
 
 import com.ahmadda.domain.BaseEntity;
-import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -40,8 +39,6 @@ public class Question extends BaseEntity {
             final boolean isRequired,
             final int orderIndex
     ) {
-        validateQuestionText(questionText);
-
         this.questionText = questionText;
         this.isRequired = isRequired;
         this.orderIndex = orderIndex;
@@ -53,9 +50,5 @@ public class Question extends BaseEntity {
             final int orderIndex
     ) {
         return new Question(questionText, isRequired, orderIndex);
-    }
-
-    private void validateQuestionText(final String questionText) {
-        Assert.notBlank(questionText, "질문은 공백이면 안됩니다.");
     }
 }

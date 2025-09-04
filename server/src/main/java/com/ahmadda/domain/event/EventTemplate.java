@@ -2,7 +2,6 @@ package com.ahmadda.domain.event;
 
 import com.ahmadda.domain.BaseEntity;
 import com.ahmadda.domain.member.Member;
-import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -40,10 +39,6 @@ public class EventTemplate extends BaseEntity {
     private String description;
 
     private EventTemplate(final Member member, final String title, final String description) {
-        validateMember(member);
-        validateTitle(title);
-        validateDescription(description);
-
         this.member = member;
         this.title = title;
         this.description = description;
@@ -51,17 +46,5 @@ public class EventTemplate extends BaseEntity {
 
     public static EventTemplate create(final Member member, final String title, final String description) {
         return new EventTemplate(member, title, description);
-    }
-
-    private void validateMember(final Member member) {
-        Assert.notNull(member, "멤버는 null이 되면 안됩니다.");
-    }
-
-    private void validateTitle(final String title) {
-        Assert.notBlank(title, "제목은 공백이면 안됩니다.");
-    }
-
-    private void validateDescription(final String description) {
-        Assert.notBlank(description, "설명은 공백이면 안됩니다.");
     }
 }

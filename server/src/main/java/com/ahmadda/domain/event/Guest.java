@@ -5,7 +5,6 @@ import com.ahmadda.domain.BaseEntity;
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import com.ahmadda.domain.organization.OrganizationMember;
-import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -53,8 +52,6 @@ public class Guest extends BaseEntity {
     private final List<Answer> answers = new ArrayList<>();
 
     private Guest(final Event event, final OrganizationMember organizationMember, final LocalDateTime currentDateTime) {
-        validateEvent(event);
-        validateOrganizationMember(organizationMember);
         validateSameOrganization(event, organizationMember);
 
         this.event = event;
@@ -102,14 +99,6 @@ public class Guest extends BaseEntity {
             }
             this.answers.add(Answer.create(question, this, answerText));
         });
-    }
-
-    private void validateEvent(final Event event) {
-        Assert.notNull(event, "이벤트는 null이 되면 안됩니다.");
-    }
-
-    private void validateOrganizationMember(final OrganizationMember organizationMember) {
-        Assert.notNull(organizationMember, "참여자는 null이 되면 안됩니다.");
     }
 
     private void validateSameOrganization(final Event event, final OrganizationMember organizationMember) {

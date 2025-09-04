@@ -191,22 +191,6 @@ class PokeTest {
                 ));
     }
 
-    @Test
-    void 포키_전송_날짜가_null일_때_예외가_발생한다() {
-        // given
-        var organization = createOrganization("ahmadda");
-        var senderMember = createMember("sender");
-        var sender = createOrganizationMember(organization, senderMember);
-        var recipientMember = createMember("recipient");
-        var recipient = createOrganizationMember(organization, recipientMember);
-        var event = createEvent(organization, sender, LocalDateTime.now());
-
-        // when // then
-        assertThatThrownBy(() -> sut.doPoke(sender, recipient, event, null))
-                .isInstanceOf(BusinessRuleViolatedException.class)
-                .hasMessage("포키 전송 날짜는 null 일 수 없습니다.");
-    }
-
     private Organization createOrganization(String name) {
         var organization = Organization.create(name, "설명", "http://image.com");
         return organizationRepository.save(organization);

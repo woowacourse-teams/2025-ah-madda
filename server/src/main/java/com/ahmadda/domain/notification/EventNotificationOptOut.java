@@ -3,7 +3,6 @@ package com.ahmadda.domain.notification;
 import com.ahmadda.domain.BaseEntity;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.organization.OrganizationMember;
-import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -42,9 +41,6 @@ public class EventNotificationOptOut extends BaseEntity {
             final OrganizationMember organizationMember,
             final Event event
     ) {
-        validateOrganizationMember(organizationMember);
-        validateEvent(event);
-
         this.organizationMember = organizationMember;
         this.event = event;
     }
@@ -54,13 +50,5 @@ public class EventNotificationOptOut extends BaseEntity {
             final Event event
     ) {
         return new EventNotificationOptOut(organizationMember, event);
-    }
-
-    private void validateOrganizationMember(final OrganizationMember organizationMember) {
-        Assert.notNull(organizationMember, "알림 수신 거부의 조직원은 null이 될 수 없습니다.");
-    }
-
-    private void validateEvent(final Event event) {
-        Assert.notNull(event, "알림 수신 거부의 이벤트는 null이 될 수 없습니다.");
     }
 }

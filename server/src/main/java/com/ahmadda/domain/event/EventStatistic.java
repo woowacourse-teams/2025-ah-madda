@@ -4,7 +4,6 @@ import com.ahmadda.domain.BaseEntity;
 import com.ahmadda.domain.exception.UnauthorizedOperationException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.organization.OrganizationMember;
-import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,8 +47,6 @@ public class EventStatistic extends BaseEntity {
     private Event event;
 
     private EventStatistic(final Event event) {
-        validateEvent(event);
-
         this.event = event;
 
         updateEventViewMatricUntilEventEnd();
@@ -81,10 +78,6 @@ public class EventStatistic extends BaseEntity {
                 .toList();
     }
 
-    private void validateEvent(final Event event) {
-        Assert.notNull(event, "이벤트 조회수의 이벤트가 null일 수 없습니다.");
-    }
-
     private void validateIsOrganizer(final OrganizationMember organizationMember) {
         if (!event.isOrganizer(organizationMember)) {
             throw new UnauthorizedOperationException("이벤트의 조회수는 이벤트의 주최자만 조회할 수 있습니다.");
@@ -93,8 +86,8 @@ public class EventStatistic extends BaseEntity {
 
     public void updateEventViewMatricUntilEventEnd() {
         LocalDate currentDate = LocalDate.from(event.getEventOperationPeriod()
-                                                       .getRegistrationEventPeriod()
-                                                       .start());
+                .getRegistrationEventPeriod()
+                .start());
 
         EventOperationPeriod eventOperationPeriod = event.getEventOperationPeriod();
 

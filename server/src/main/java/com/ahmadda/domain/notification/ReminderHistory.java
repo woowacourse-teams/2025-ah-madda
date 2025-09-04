@@ -3,7 +3,6 @@ package com.ahmadda.domain.notification;
 import com.ahmadda.domain.BaseEntity;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.organization.OrganizationMember;
-import com.ahmadda.domain.util.Assert;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -56,11 +55,6 @@ public class ReminderHistory extends BaseEntity {
             final LocalDateTime sentAt,
             final List<OrganizationMember> organizationMembers
     ) {
-        validateEvent(event);
-        validateContent(content);
-        validateSentAt(sentAt);
-        validateOrganizationMembers(organizationMembers);
-
         this.event = event;
         this.content = content;
         this.sentAt = sentAt;
@@ -84,21 +78,5 @@ public class ReminderHistory extends BaseEntity {
             final List<OrganizationMember> organizationMembers
     ) {
         return new ReminderHistory(event, content, LocalDateTime.now(), organizationMembers);
-    }
-
-    private void validateEvent(final Event event) {
-        Assert.notNull(event, "리마인더 히스토리의 이벤트가 null일 수 없습니다.");
-    }
-
-    private void validateContent(final String content) {
-        Assert.notBlank(content, "리마인더 히스토리의 콘텐츠는 공백일 수 없습니다.");
-    }
-
-    private void validateSentAt(final LocalDateTime sentAt) {
-        Assert.notNull(sentAt, "리마인더 히스토리의 리마인더 발송 시각이 null일 수 없습니다.");
-    }
-
-    private void validateOrganizationMembers(final List<OrganizationMember> organizationMembers) {
-        Assert.notNull(organizationMembers, "리마인더 히스토리의 리마인더 수신자 목록이 null일 수 없습니다.");
     }
 }

@@ -1,7 +1,6 @@
 package com.ahmadda.domain.organization;
 
 import com.ahmadda.domain.exception.BusinessRuleViolatedException;
-import com.ahmadda.domain.util.Assert;
 import lombok.Getter;
 import org.springframework.util.StringUtils;
 
@@ -20,14 +19,15 @@ public class OrganizationImageFile {
     private final long size;
     private final InputStream inputStream;
 
-    private OrganizationImageFile(final String fileName,
-                                  final String contentType,
-                                  final long size,
-                                  final InputStream inputStream) {
+    private OrganizationImageFile(
+            final String fileName,
+            final String contentType,
+            final long size,
+            final InputStream inputStream
+    ) {
         validateFileName(fileName);
         validateContentType(contentType);
         validateSize(size);
-        validateInputStream(inputStream);
 
         this.fileName = fileName;
         this.contentType = contentType;
@@ -45,8 +45,6 @@ public class OrganizationImageFile {
     }
 
     private void validateFileName(final String fileName) {
-        Assert.notBlank(fileName, "이미지 파일의 이름은 공백일 수 없습니다.");
-
         String extension = StringUtils.getFilenameExtension(fileName);
         if (extension == null || !ALLOW_EXTENSIONS.contains(extension.toLowerCase())) {
             throw new BusinessRuleViolatedException("이미지 파일의 확장자는 jpg, jpeg, png중 하나여야 합니다.");
@@ -54,15 +52,9 @@ public class OrganizationImageFile {
     }
 
     private void validateContentType(final String contentType) {
-        Assert.notBlank(contentType, "이미지 컨텐츠 유형은 공백일 수 없습니다.");
-
         if (!contentType.startsWith("image")) {
             throw new BusinessRuleViolatedException("이미지 켄텐츠 유형이 아닙니다.");
         }
-    }
-
-    private void validateInputStream(final InputStream inputStream) {
-        Assert.notNull(inputStream, "이미지 데이터가 비어 있을 수 없습니다.");
     }
 
     private void validateSize(final long size) {
