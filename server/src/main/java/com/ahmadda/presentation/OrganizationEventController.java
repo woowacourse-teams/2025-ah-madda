@@ -14,7 +14,6 @@ import com.ahmadda.presentation.dto.EventLoadResponse;
 import com.ahmadda.presentation.dto.EventResponse;
 import com.ahmadda.presentation.dto.EventTitleResponse;
 import com.ahmadda.presentation.dto.EventUpdateResponse;
-import com.ahmadda.presentation.dto.MainEventResponse;
 import com.ahmadda.presentation.dto.OrganizerStatusResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
@@ -113,62 +112,7 @@ public class OrganizationEventController {
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember
     ) {
-        List<Event> organizationEvents = eventService.getActiveEvents(organizationId, loginMember);
-
-        List<MainEventResponse> eventResponses = organizationEvents.stream()
-                .map(event -> MainEventResponse.from(event, loginMember))
-                .toList();
-
-        return ResponseEntity.ok(eventResponses);
-    }
-
-    @Operation(summary = "과거에 열렸던 이벤트 목록 조회", description = "조직의 과거의 이벤트 목록을 조회합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    content = @Content(
-                            array = @ArraySchema(schema = @Schema(implementation = MainEventResponse.class))
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "401",
-                    content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Unauthorized",
-                                              "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
-                                              "instance": "/api/organizations/{organizationId}/events/past"
-                                            }
-                                            """
-                            )
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "403",
-                    content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Forbidden",
-                                              "status": 403,
-                                              "detail": "이벤트 스페이스에 소속되지 않은 회원입니다.",
-                                              "instance": "/api/organizations/{organizationId}/events/past"
-                                            }
-                                            """
-                            )
-                    )
-            )
-    })
-    @GetMapping("/{organizationId}/events/past")
-    public ResponseEntity<List<MainEventResponse>> getPastEvents(
-            @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
-    ) {
-        List<Event> organizationEvents = eventService.getPastEvent(organizationId, loginMember, LocalDateTime.now());
+        List<Event> organizationEvents = organizationService.getOrganizationEvents(organizationId, loginMember);
 
         List<MainEventResponse> eventResponses = organizationEvents.stream()
                 .map(event -> MainEventResponse.from(event, loginMember))
@@ -561,8 +505,8 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Forbidden",
                                               "status": 403,
-                                              "detail": "이벤트 스페이스에 소속되지 않은 회원입니다.",
-                                              "instance": "/api/organizations/events/{eventId}"
+                                              "detail": "조직에 소속되지 않은 회원입니다.",
+                                              "instance": "/api/organizations/events/{eventId}/registration/close"
                                             }
                                             """
                             )
