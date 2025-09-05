@@ -808,50 +808,6 @@ class EventServiceTest {
                 .hasMessage("존재하지 않는 회원입니다.");
     }
 
-    private Organization createOrganization() {
-        var organization = Organization.create("우테코", "우테코입니다.", "image");
-
-        return organizationRepository.save(organization);
-    }
-
-    private LoginMember createLoginMember(Member member) {
-        return new LoginMember(member.getId());
-    }
-
-    private Member createMember() {
-        return memberRepository.save(Member.create("name", "ahmadda@ahmadda.com", "testPicture"));
-    }
-
-    private Member createMember(String name, String email) {
-        return memberRepository.save(Member.create(name, email, "testPicture"));
-    }
-
-    private OrganizationMember createOrganizationMember(Organization organization, Member member) {
-        var organizationMember = OrganizationMember.create("surf", member, organization, OrganizationMemberRole.USER);
-
-        return organizationMemberRepository.save(organizationMember);
-    }
-
-    private Event createEvent(final OrganizationMember organizationMember, final Organization organization) {
-        var now = LocalDateTime.now();
-
-        var event = Event.create(
-                "title",
-                "description",
-                "place",
-                organizationMember,
-                organization,
-                EventOperationPeriod.create(
-                        now.plusDays(1), now.plusDays(2),
-                        now.plusDays(3), now.plusDays(4),
-                        now
-                ),
-                10
-        );
-
-        return eventRepository.save(event);
-    }
-
     @Test
     void 과거_이벤트를_조회할_수_있다() {
         // given
@@ -898,11 +854,11 @@ class EventServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getActiveEvents(999L, loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직 정보입니다.");
+                .hasMessage("존재하지 않은 조직 정보입니다.");
     }
 
     @Test
-    void 과거_이벤트는_조직원이_아니면_조회시_예외가_발생한다() {
+    void 과거_이벤트_조회시_조직에_속하지_않으면_예외가_발생한다() {
         // given
         var member = createMember();
         var organization = createOrganization();
@@ -962,6 +918,50 @@ class EventServiceTest {
         assertThat(events).hasSize(2)
                 .extracting(Event::getTitle)
                 .containsExactlyInAnyOrder("EventA1", "EventA2");
+    }
+
+    private Organization createOrganization() {
+        var organization = Organization.create("우테코", "우테코입니다.", "image");
+
+        return organizationRepository.save(organization);
+    }
+
+    private LoginMember createLoginMember(Member member) {
+        return new LoginMember(member.getId());
+    }
+
+    private Member createMember() {
+        return memberRepository.save(Member.create("name", "ahmadda@ahmadda.com", "testPicture"));
+    }
+
+    private Member createMember(String name, String email) {
+        return memberRepository.save(Member.create(name, email, "testPicture"));
+    }
+
+    private OrganizationMember createOrganizationMember(Organization organization, Member member) {
+        var organizationMember = OrganizationMember.create("surf", member, organization, OrganizationMemberRole.USER);
+
+        return organizationMemberRepository.save(organizationMember);
+    }
+
+    private Event createEvent(final OrganizationMember organizationMember, final Organization organization) {
+        var now = LocalDateTime.now();
+
+        var event = Event.create(
+                "title",
+                "description",
+                "place",
+                organizationMember,
+                organization,
+                EventOperationPeriod.create(
+                        now.plusDays(1), now.plusDays(2),
+                        now.plusDays(3), now.plusDays(4),
+                        now
+                ),
+                10
+        );
+
+        return eventRepository.save(event);
     }
 
     private Organization createOrganization(String name, String description, String imageUrl) {
