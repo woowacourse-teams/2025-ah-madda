@@ -151,6 +151,16 @@ public class EventService {
         return event.isOrganizer(member);
     }
 
+    public List<Event> getPastEvent(
+            final Long organizationId,
+            final LoginMember loginMember,
+            final LocalDateTime compareDateTime
+    ) {
+        validateOrganizationAccess(organizationId, loginMember.memberId());
+
+        return eventRepository.findAllByEventOperationPeriodEventPeriodEndBefore(compareDateTime);
+    }
+
     private Member getMember(final Long loginMember) {
         return memberRepository.findById(loginMember)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
@@ -182,7 +192,7 @@ public class EventService {
 
     private void validateOrganizationAccess(final Long organizationId, final Long memberId) {
         if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, memberId)) {
-            throw new ForbiddenException("조직에 소속되지 않아 권한이 없습니다.");
+            throw new ForbiddenException("이벤트 스페이스에 소속되지 않아 권한이 없습니다.");
         }
     }
 
@@ -273,5 +283,15 @@ public class EventService {
     ) {
         ReminderHistory reminderHistory = reminder.remind(recipients, event, content);
         reminderHistoryRepository.save(reminderHistory);
+    }
+
+    public List<Event> getActiveEvents(final Long organizationId, final LoginMember loginMember) {
+        Organization organization = getOrganization(organizationId);
+
+        if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId())) {
+            throw new ForbiddenException("조직에 참여하지 않아 권한이 없습니다.");
+        }
+
+        return organization.getActiveEvents(LocalDateTime.now());
     }
 }

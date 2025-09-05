@@ -113,7 +113,7 @@ public class OrganizationEventController {
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember
     ) {
-        List<Event> organizationEvents = organizationService.getOrganizationEvents(organizationId, loginMember);
+        List<Event> organizationEvents = eventService.getActiveEvents(organizationId, loginMember);
 
         List<MainEventResponse> eventResponses = organizationEvents.stream()
                 .map(event -> MainEventResponse.from(event, loginMember))

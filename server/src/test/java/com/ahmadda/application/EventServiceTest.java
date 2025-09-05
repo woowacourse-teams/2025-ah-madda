@@ -808,6 +808,118 @@ class EventServiceTest {
                 .hasMessage("존재하지 않는 회원입니다.");
     }
 
+    @Test
+    void 과거_이벤트를_조회할_수_있다() {
+        // given
+        var member = createMember();
+        var organization = createOrganization();
+        var organizationMember = createOrganizationMember(organization, member);
+        var loginMember = createLoginMember(member);
+
+        var now = LocalDateTime.now();
+
+        var pastEvent = createEventWithDates(
+                organizationMember,
+                organization,
+                now.plusDays(1),
+                now.plusDays(2),
+                now.plusDays(4)
+        );
+        createEventWithDates(organizationMember, organization, now.plusDays(2), now.plusDays(3), now.plusDays(5));
+
+        // when
+        var pastEvents = sut.getPastEvent(
+                organization.getId(),
+                loginMember,
+                LocalDateTime.now()
+                        .plusDays(4L)
+        );
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(pastEvents)
+                    .hasSize(1);
+            softly.assertThat(pastEvents.get(0)
+                            .getId())
+                    .isEqualTo(pastEvent.getId());
+        });
+    }
+
+    @Test
+    void 존재하지_않는_조직의_이벤트를_조회하면_예외가_발생한다() {
+        // given
+        var member = memberRepository.save(Member.create("user", "user@test.com", "testPicture"));
+        var loginMember = new LoginMember(member.getId());
+
+        // when // then
+        assertThatThrownBy(() -> sut.getActiveEvents(999L, loginMember))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않은 조직 정보입니다.");
+    }
+
+    @Test
+    void 과거_이벤트_조회시_조직에_속하지_않으면_예외가_발생한다() {
+        // given
+        var member = createMember();
+        var organization = createOrganization();
+        var loginMember = createLoginMember(member);
+
+        //when // then
+        assertThatThrownBy(() -> sut.getPastEvent(organization.getId(), loginMember, LocalDateTime.now()))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage("이벤트 스페이스에 소속되지 않아 권한이 없습니다.");
+    }
+
+    @Test
+    void 조직원이_아니면_조직의_이벤트를_조회시_예외가_발생한다() {
+        // given
+        var member = memberRepository.save(Member.create("user", "user@test.com", "testPicture"));
+        var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
+        var loginMember = new LoginMember(member.getId());
+
+        // when // then
+        assertThatThrownBy(() -> sut.getActiveEvents(organization.getId(), loginMember))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage("조직에 참여하지 않아 권한이 없습니다.");
+    }
+
+    @Test
+    void 여러_조직의_이벤트가_있을때_선택된_조직의_활성화된_이벤트만_가져온다() {
+        // given
+        var member = memberRepository.save(Member.create("name", "test@test.com", "testPicture"));
+        var loginMember = new LoginMember(member.getId());
+        var orgA = organizationRepository.save(createOrganization("OrgA", "DescA", "a.png"));
+        var orgB = organizationRepository.save(createOrganization("OrgB", "DescB", "b.png"));
+        var orgMemberA =
+                organizationMemberRepository.save(OrganizationMember.create(
+                        "nickname",
+                        member,
+                        orgA,
+                        OrganizationMemberRole.USER
+                ));
+        var orgMemberB =
+                organizationMemberRepository.save(OrganizationMember.create(
+                        "nickname",
+                        member,
+                        orgB,
+                        OrganizationMemberRole.USER
+                ));
+
+        var now = LocalDateTime.now();
+        eventRepository.save(createEvent(orgMemberA, orgA, "EventA1", now.plusDays(1), now.plusDays(2)));
+        eventRepository.save(createEvent(orgMemberA, orgA, "EventA2", now.plusDays(2), now.plusDays(3)));
+        eventRepository.save(createEvent(orgMemberA, orgA, "EventA3", now.minusDays(2), now.minusDays(1))); // inactive
+        eventRepository.save(createEvent(orgMemberB, orgB, "EventB1", now.plusDays(1), now.plusDays(2)));
+
+        // when
+        var events = sut.getActiveEvents(orgA.getId(), loginMember);
+
+        // then
+        assertThat(events).hasSize(2)
+                .extracting(Event::getTitle)
+                .containsExactlyInAnyOrder("EventA1", "EventA2");
+    }
+
     private Organization createOrganization() {
         var organization = Organization.create("우테코", "우테코입니다.", "image");
 
@@ -850,5 +962,58 @@ class EventServiceTest {
         );
 
         return eventRepository.save(event);
+    }
+
+    private Organization createOrganization(String name, String description, String imageUrl) {
+        return Organization.create(name, description, imageUrl);
+    }
+
+    private Event createEventWithDates(
+            final OrganizationMember organizationMember,
+            final Organization organization,
+            final LocalDateTime registrationEnd,
+            final LocalDateTime eventStart,
+            final LocalDateTime eventEnd
+    ) {
+        var now = LocalDateTime.now();
+        var event = Event.create(
+                "title",
+                "description",
+                "place",
+                organizationMember,
+                organization,
+                EventOperationPeriod.create(
+                        now,
+                        registrationEnd,
+                        eventStart,
+                        eventEnd,
+                        now
+                ),
+                10
+        );
+        return eventRepository.save(event);
+    }
+
+    private Event createEvent(
+            OrganizationMember organizer,
+            Organization organization,
+            String title,
+            LocalDateTime start,
+            LocalDateTime end
+    ) {
+
+        return Event.create(
+                title,
+                "description",
+                "place",
+                organizer,
+                organization,
+                EventOperationPeriod.create(
+                        start, end,
+                        end.plusHours(1), end.plusHours(2),
+                        start.minusDays(1)
+                ),
+                100
+        );
     }
 }
