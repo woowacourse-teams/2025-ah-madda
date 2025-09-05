@@ -284,4 +284,14 @@ public class EventService {
         ReminderHistory reminderHistory = reminder.remind(recipients, event, content);
         reminderHistoryRepository.save(reminderHistory);
     }
+
+    public List<Event> getActiveEvents(final Long organizationId, final LoginMember loginMember) {
+        Organization organization = getOrganization(organizationId);
+
+        if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId())) {
+            throw new ForbiddenException("조직에 참여하지 않아 권한이 없습니다.");
+        }
+
+        return organization.getActiveEvents(LocalDateTime.now());
+    }
 }

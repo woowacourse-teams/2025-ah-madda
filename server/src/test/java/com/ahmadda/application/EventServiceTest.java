@@ -890,6 +890,18 @@ class EventServiceTest {
     }
 
     @Test
+    void 존재하지_않는_조직의_이벤트를_조회하면_예외가_발생한다() {
+        // given
+        var member = memberRepository.save(Member.create("user", "user@test.com", "testPicture"));
+        var loginMember = new LoginMember(member.getId());
+
+        // when // then
+        assertThatThrownBy(() -> sut.getActiveEvents(999L, loginMember))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 조직 정보입니다.");
+    }
+
+    @Test
     void 과거_이벤트는_조직원이_아니면_조회시_예외가_발생한다() {
         // given
         var member = createMember();
@@ -900,6 +912,60 @@ class EventServiceTest {
         assertThatThrownBy(() -> sut.getPastEvent(organization.getId(), loginMember, LocalDateTime.now()))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage("이벤트 스페이스에 소속되지 않아 권한이 없습니다.");
+    }
+
+    @Test
+    void 조직원이_아니면_조직의_이벤트를_조회시_예외가_발생한다() {
+        // given
+        var member = memberRepository.save(Member.create("user", "user@test.com", "testPicture"));
+        var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
+        var loginMember = new LoginMember(member.getId());
+
+        // when // then
+        assertThatThrownBy(() -> sut.getActiveEvents(organization.getId(), loginMember))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage("조직에 참여하지 않아 권한이 없습니다.");
+    }
+
+    @Test
+    void 여러_조직의_이벤트가_있을때_선택된_조직의_활성화된_이벤트만_가져온다() {
+        // given
+        var member = memberRepository.save(Member.create("name", "test@test.com", "testPicture"));
+        var loginMember = new LoginMember(member.getId());
+        var orgA = organizationRepository.save(createOrganization("OrgA", "DescA", "a.png"));
+        var orgB = organizationRepository.save(createOrganization("OrgB", "DescB", "b.png"));
+        var orgMemberA =
+                organizationMemberRepository.save(OrganizationMember.create(
+                        "nickname",
+                        member,
+                        orgA,
+                        OrganizationMemberRole.USER
+                ));
+        var orgMemberB =
+                organizationMemberRepository.save(OrganizationMember.create(
+                        "nickname",
+                        member,
+                        orgB,
+                        OrganizationMemberRole.USER
+                ));
+
+        var now = LocalDateTime.now();
+        eventRepository.save(createEvent(orgMemberA, orgA, "EventA1", now.plusDays(1), now.plusDays(2)));
+        eventRepository.save(createEvent(orgMemberA, orgA, "EventA2", now.plusDays(2), now.plusDays(3)));
+        eventRepository.save(createEvent(orgMemberA, orgA, "EventA3", now.minusDays(2), now.minusDays(1))); // inactive
+        eventRepository.save(createEvent(orgMemberB, orgB, "EventB1", now.plusDays(1), now.plusDays(2)));
+
+        // when
+        var events = sut.getActiveEvents(orgA.getId(), loginMember);
+
+        // then
+        assertThat(events).hasSize(2)
+                .extracting(Event::getTitle)
+                .containsExactlyInAnyOrder("EventA1", "EventA2");
+    }
+
+    private Organization createOrganization(String name, String description, String imageUrl) {
+        return Organization.create(name, description, imageUrl);
     }
 
     private Event createEventWithDates(
@@ -926,5 +992,28 @@ class EventServiceTest {
                 10
         );
         return eventRepository.save(event);
+    }
+
+    private Event createEvent(
+            OrganizationMember organizer,
+            Organization organization,
+            String title,
+            LocalDateTime start,
+            LocalDateTime end
+    ) {
+
+        return Event.create(
+                title,
+                "description",
+                "place",
+                organizer,
+                organization,
+                EventOperationPeriod.create(
+                        start, end,
+                        end.plusHours(1), end.plusHours(2),
+                        start.minusDays(1)
+                ),
+                100
+        );
     }
 }

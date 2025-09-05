@@ -113,7 +113,7 @@ public class OrganizationEventController {
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember
     ) {
-        List<Event> organizationEvents = organizationService.getOrganizationEvents(organizationId, loginMember);
+        List<Event> organizationEvents = eventService.getActiveEvents(organizationId, loginMember);
 
         List<MainEventResponse> eventResponses = organizationEvents.stream()
                 .map(event -> MainEventResponse.from(event, loginMember))
@@ -122,7 +122,7 @@ public class OrganizationEventController {
         return ResponseEntity.ok(eventResponses);
     }
 
-    @Operation(summary = "메인 화면의 과거에 열렸던 이벤트 목록 조회", description = "조직의 과거의 이벤트 목록을 조회합니다.")
+    @Operation(summary = "과거에 열렸던 이벤트 목록 조회", description = "조직의 과거의 이벤트 목록을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -156,22 +156,6 @@ public class OrganizationEventController {
                                               "title": "Forbidden",
                                               "status": 403,
                                               "detail": "이벤트 스페이스에 소속되지 않은 회원입니다.",
-                                              "instance": "/api/organizations/{organizationId}/events/past"
-                                            }
-                                            """
-                            )
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Not Found",
-                                              "status": 404,
-                                              "detail": "존재하지 않은 조직원 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events/past"
                                             }
                                             """
