@@ -562,7 +562,7 @@ public class OrganizationEventController {
                                               "title": "Forbidden",
                                               "status": 403,
                                               "detail": "이벤트 스페이스에 소속되지 않은 회원입니다.",
-                                              "instance": "/api/organizations/events/{eventId}/registration/close"
+                                              "instance": "/api/organizations/events/{eventId}"
                                             }
                                             """
                             )
