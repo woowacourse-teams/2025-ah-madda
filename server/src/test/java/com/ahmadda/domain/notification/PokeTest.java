@@ -1,5 +1,10 @@
 package com.ahmadda.domain.notification;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
@@ -13,19 +18,13 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @IntegrationTest
 class PokeTest {
@@ -159,7 +158,7 @@ class PokeTest {
     }
 
     @Test
-    void 포키_30분내_10번_전송_횟수_제한을_초과할_때_예외가_발생한다() {
+    void 포키_30분내_3번_전송_횟수_제한을_초과할_때_예외가_발생한다() {
         // given
         var organization = createOrganization("ahmadda");
         var senderMember = createMember("sender");
@@ -170,7 +169,7 @@ class PokeTest {
         var sentAt = LocalDateTime.now();
 
         var firstSentAt = sentAt;
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 3; i++) {
             if (i == 1) {
                 firstSentAt = sentAt.plusMinutes(i);
             }
