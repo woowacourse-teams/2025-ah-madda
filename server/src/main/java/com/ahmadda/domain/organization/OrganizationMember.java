@@ -90,10 +90,18 @@ public class OrganizationMember extends BaseEntity {
         return this.role == OrganizationMemberRole.ADMIN;
     }
 
-    public void changeRole(final OrganizationMember operator, final OrganizationMemberRole newRole) {
-        validateRoleChangeBy(operator);
+    public void changeRolesOf(final List<OrganizationMember> targets, final OrganizationMemberRole newRole) {
+        if (!isAdmin()) {
+            throw new ForbiddenException("관리자만 조직원의 권한을 변경할 수 있습니다.");
+        }
 
-        this.role = newRole;
+        for (final OrganizationMember target : targets) {
+            if (!target.isBelongTo(this.organization)) {
+                throw new ForbiddenException("같은 조직에 속한 조직원만 권한을 변경할 수 있습니다.");
+            }
+
+            target.role = newRole;
+        }
     }
 
     private void validateRoleChangeBy(final OrganizationMember operator) {

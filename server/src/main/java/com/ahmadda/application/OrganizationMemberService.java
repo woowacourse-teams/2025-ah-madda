@@ -90,9 +90,7 @@ public class OrganizationMemberService {
             final List<OrganizationMember> targets,
             final OrganizationMemberRole newRole
     ) {
-        for (OrganizationMember target : targets) {
-            target.changeRole(operator, newRole);
-        }
+        operator.changeRolesOf(targets, newRole);
     }
 
     private void validateBelongsToOrganization(final Long organizationId, final LoginMember loginMember) {

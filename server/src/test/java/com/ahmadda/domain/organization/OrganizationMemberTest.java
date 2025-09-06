@@ -59,7 +59,7 @@ class OrganizationMemberTest {
         var admin = OrganizationMember.create("admin", adminMember, organization, OrganizationMemberRole.ADMIN);
 
         // when
-        target.changeRole(admin, OrganizationMemberRole.ADMIN);
+        admin.changeRolesOf(List.of(target), OrganizationMemberRole.ADMIN);
 
         // then
         assertThat(target.getRole()).isEqualTo(OrganizationMemberRole.ADMIN);
@@ -74,7 +74,7 @@ class OrganizationMemberTest {
         var notAdmin = OrganizationMember.create("notAdmin", nonAdminMember, organization, OrganizationMemberRole.USER);
 
         // when // then
-        assertThatThrownBy(() -> target.changeRole(notAdmin, OrganizationMemberRole.ADMIN))
+        assertThatThrownBy(() -> notAdmin.changeRolesOf(List.of(target), OrganizationMemberRole.ADMIN))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage("관리자만 조직원의 권한을 변경할 수 있습니다.");
     }
@@ -91,7 +91,7 @@ class OrganizationMemberTest {
                 OrganizationMember.create("outsider", outsiderAdminMember, otherOrg, OrganizationMemberRole.ADMIN);
 
         // when // then
-        assertThatThrownBy(() -> target.changeRole(outsiderAdmin, OrganizationMemberRole.ADMIN))
+        assertThatThrownBy(() -> outsiderAdmin.changeRolesOf(List.of(target), OrganizationMemberRole.ADMIN))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage("같은 조직에 속한 조직원만 권한을 변경할 수 있습니다.");
     }
