@@ -14,10 +14,6 @@ public final class HashEncoder {
     private static final Charset ENCODING = StandardCharsets.UTF_8;
 
     public String sha256(final String value) {
-        if (value == null) {
-            throw new IllegalArgumentException("값이 null일 수 없습니다");
-        }
-
         try {
             MessageDigest digest = MessageDigest.getInstance(HASH_ALGORITHM);
             byte[] hashBytes = digest.digest(value.getBytes(ENCODING));
