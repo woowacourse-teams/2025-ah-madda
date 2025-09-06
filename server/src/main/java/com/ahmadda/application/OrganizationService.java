@@ -3,6 +3,7 @@ package com.ahmadda.application;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.application.dto.OrganizationUpdateRequest;
+import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
