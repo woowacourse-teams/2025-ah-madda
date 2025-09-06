@@ -151,7 +151,7 @@ class OrganizationMemberServiceTest {
 
         assertThatThrownBy(() -> sut.updateRoles(org.getId(), loginMember, request))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("일부 조직원이 존재하지 않습니다.");
+                .hasMessage("선택된 조직원 중 일부가 존재하지 않습니다.");
     }
 
     @Test

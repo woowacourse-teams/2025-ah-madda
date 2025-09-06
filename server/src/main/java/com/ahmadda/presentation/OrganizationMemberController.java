@@ -121,7 +121,7 @@ public class OrganizationMemberController {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "일부 조직원이 존재하지 않습니다.",
+                                                      "detail": "선택된 조직원 중 일부가 존재하지 않습니다.",
                                                       "instance": "/api/organizations/{organizationId}/organization-members/roles"
                                                     }
                                                     """
