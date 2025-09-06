@@ -56,7 +56,7 @@ public class LoginController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다. 인가 코드가 만료되었거나, 잘못되었습니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다. 인가 코드가 만료되었거나, 잘못되었습니다.",
                                               "instance": "/api/members/login"
                                             }
                                             """
@@ -67,7 +67,8 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseEntity<AccessTokenResponse> login(
             @RequestHeader(HttpHeaders.USER_AGENT) final String userAgent,
-            @RequestBody final LoginRequest loginRequest) {
+            @RequestBody final LoginRequest loginRequest
+    ) {
         MemberToken memberToken = loginService.login(loginRequest.code(), loginRequest.redirectUri(), userAgent);
         AccessTokenResponse accessTokenResponse = new AccessTokenResponse(memberToken.accessToken());
 
@@ -96,7 +97,7 @@ public class LoginController {
                     responseCode = "401",
                     content = @Content(examples = {
                             @ExampleObject(
-                                    name = "아직 만료되지 않은 액세스 토큰",
+                                    name = "아직 만료되지 않는 액세스 토큰",
                                     value = """
                                             {
                                               "type": "about:blank",
@@ -254,6 +255,7 @@ public class LoginController {
             @AuthMember final LoginMember loginMember,
             @RequestHeader(HttpHeaders.USER_AGENT) final String userAgent,
             @CookieValue(RefreshCookieProvider.REFRESH_TOKEN_KEY) final String refreshToken) {
+    ) {
         loginService.logout(loginMember, refreshToken, userAgent);
 
         ResponseCookie logoutRefreshTokenCookie = refreshCookieProvider.createLogoutRefreshTokenCookie();

@@ -85,7 +85,7 @@ class EventGuestServiceTest {
     @Test
     void 존재하지_않는_이벤트로_게스트_조회시_예외가_발생한다() {
         // given
-        var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
+        var organization = organizationRepository.save(Organization.create("이벤트 스페이스명", "설명", "img.png"));
         var organizer =
                 createAndSaveOrganizationMember("주최자", createAndSaveMember("주최자", "host@email.com"), organization);
         var loginMember = createLoginMember(organizer);
@@ -97,7 +97,7 @@ class EventGuestServiceTest {
     }
 
     @Test
-    void 이벤트가_생성된_조직의_조직원이_아닐때_게스트_조회시_예외가_발생한다() {
+    void 이벤트가_생성된_이벤트_스페이스의_구성원이_아닐때_게스트_조회시_예외가_발생한다() {
         // given
         var organization1 = createAndSaveOrganization();
         var organization2 = createAndSaveOrganization();
@@ -110,11 +110,11 @@ class EventGuestServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getGuests(event.getId(), createLoginMember(otherMember)))
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("조직의 조직원만 접근할 수 있습니다.");
+                .hasMessage("이벤트 스페이스의 구성원만 접근할 수 있습니다.");
     }
 
     @Test
-    void 이벤트에_참여하지_않은_비게스트_조직원들을_조회한다() {
+    void 이벤트에_참여하지_않는_비게스트_구성원들을_조회한다() {
         // given
         var org = createAndSaveOrganization();
         var organizer = createAndSaveOrganizationMember("주최자", createAndSaveMember("홍길동", "host@email.com"), org);
@@ -140,7 +140,7 @@ class EventGuestServiceTest {
     @Test
     void 존재하지_않는_이벤트로_비게스트_조회시_예외가_발생한다() {
         // given
-        var organization = organizationRepository.save(Organization.create("조직명", "설명", "img.png"));
+        var organization = organizationRepository.save(Organization.create("이벤트 스페이스명", "설명", "img.png"));
         var organizer =
                 createAndSaveOrganizationMember("주최자", createAndSaveMember("주최자", "host@email.com"), organization);
         var loginMember = createLoginMember(organizer);
@@ -152,7 +152,7 @@ class EventGuestServiceTest {
     }
 
     @Test
-    void 이벤트가_생성된_조직의_조직원이_아닐때_비게스트_조회시_예외가_발생한다() {
+    void 이벤트가_생성된_이벤트_스페이스의_구성원이_아닐때_비게스트_조회시_예외가_발생한다() {
         // given
         var organization1 = createAndSaveOrganization();
         var organization2 = createAndSaveOrganization();
@@ -165,11 +165,11 @@ class EventGuestServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getNonGuestOrganizationMembers(event.getId(), createLoginMember(otherMember)))
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("조직의 조직원만 접근할 수 있습니다.");
+                .hasMessage("이벤트 스페이스의 구성원만 접근할 수 있습니다.");
     }
 
     @Test
-    void 조직원은_이벤트의_게스트로_참여할_수_있다() {
+    void 구성원은_이벤트의_게스트로_참여할_수_있다() {
         // given
         var organization = createAndSaveOrganization();
         var member1 = createAndSaveMember("name1", "email1@ahmadda.com");
@@ -298,7 +298,7 @@ class EventGuestServiceTest {
     }
 
     @Test
-    void 특정_조직원이_이벤트의_게스트인지_알_수_있다() {
+    void 특정_구성원이_이벤트의_게스트인지_알_수_있다() {
         //given
         var organization = createAndSaveOrganization();
         var member1 = createAndSaveMember("test1", "ahmadda1@ahmadda.com");
@@ -324,7 +324,7 @@ class EventGuestServiceTest {
     }
 
     @Test
-    void 조직원이_아니라면_게스트_여부를_확인할때_예외가_발생한다() {
+    void 구성원이_아니라면_게스트_여부를_확인할때_예외가_발생한다() {
         // given
         var organization = createAndSaveOrganization();
         var member1 = createAndSaveMember("test1", "ahmadda1@ahmadda.com");
@@ -341,7 +341,7 @@ class EventGuestServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.isGuest(event.getId(), new LoginMember(member3.getId())))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원입니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
@@ -416,7 +416,7 @@ class EventGuestServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.getAnswers(event.getId(), 1L, new LoginMember(999L)))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원입니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
@@ -445,7 +445,7 @@ class EventGuestServiceTest {
     }
 
     private Organization createAndSaveOrganization() {
-        return organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        return organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
     }
 
     private OrganizationMember createAndSaveOrganizationMember(String nickname, Member member, Organization org) {

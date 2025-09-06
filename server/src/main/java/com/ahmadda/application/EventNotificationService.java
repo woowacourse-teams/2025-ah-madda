@@ -152,7 +152,7 @@ public class EventNotificationService {
                 .allMatch(organizationMembersById::containsKey);
 
         if (!allExist) {
-            throw new NotFoundException("존재하지 않는 조직원입니다.");
+            throw new NotFoundException("존재하지 않는 구성원입니다.");
         }
     }
 
@@ -169,7 +169,7 @@ public class EventNotificationService {
                 .anyMatch(OrganizationMemberWithOptStatus::isOptedOut);
 
         if (hasOptOut) {
-            throw new UnprocessableEntityException("선택된 조직원 중 알림 수신 거부자가 존재합니다.");
+            throw new UnprocessableEntityException("선택된 구성원 중 알림 수신 거부자가 존재합니다.");
         }
     }
 
@@ -179,7 +179,7 @@ public class EventNotificationService {
             final String request
     ) {
         ReminderHistory reminderHistory = reminder.remind(recipients, event, request);
-       
+
         reminderHistoryRepository.save(reminderHistory);
     }
 }

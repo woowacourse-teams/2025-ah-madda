@@ -82,7 +82,7 @@ class EventServiceTest {
         var now = LocalDateTime.now();
         var eventCreateRequest = new EventCreateRequest(
                 "UI/UX 이벤트",
-                "UI/UX 이벤트 입니다",
+                "UI/UX 이벤트입니다",
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
@@ -103,7 +103,7 @@ class EventServiceTest {
                         softly.assertThat(savedEvent.getTitle())
                                 .isEqualTo("UI/UX 이벤트");
                         softly.assertThat(savedEvent.getDescription())
-                                .isEqualTo("UI/UX 이벤트 입니다");
+                                .isEqualTo("UI/UX 이벤트입니다");
                         softly.assertThat(savedEvent.getPlace())
                                 .isEqualTo("선릉");
                         softly.assertThat(savedEvent.getOrganization())
@@ -126,12 +126,12 @@ class EventServiceTest {
     }
 
     @Test
-    void 이벤트_생성시_조직_id에_해당하는_조직이_없다면_예외가_발생한다() {
+    void 이벤트_생성시_이벤트_스페이스_id에_해당하는_이벤트_스페이스가_없다면_예외가_발생한다() {
         //given
         var now = LocalDateTime.now();
         var eventCreateRequest = new EventCreateRequest(
                 "UI/UX 이벤트",
-                "UI/UX 이벤트 입니다",
+                "UI/UX 이벤트입니다",
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
@@ -144,18 +144,18 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.createEvent(999L, loginMember, eventCreateRequest, now))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 조직 정보입니다.");
+                .hasMessage("존재하지 않는 이벤트 스페이스 정보입니다.");
     }
 
     @Test
-    void 이벤트_생성시_조직원_id에_해당하는_조직원이_없다면_예외가_발생한다() {
+    void 이벤트_생성시_구성원_id에_해당하는_구성원이_없다면_예외가_발생한다() {
         //given
         var organization = createOrganization();
 
         var now = LocalDateTime.now();
         var eventCreateRequest = new EventCreateRequest(
                 "UI/UX 이벤트",
-                "UI/UX 이벤트 입니다",
+                "UI/UX 이벤트입니다",
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5),
@@ -169,11 +169,11 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("조직원을 찾을 수 없습니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
-    void 이벤트_생성시_요청한_조직에_소속되지_않았다면_예외가_발생한다() {
+    void 이벤트_생성시_요청한_이벤트_스페이스에_소속되지_않았다면_예외가_발생한다() {
         //given
         var organization1 = createOrganization();
         var organization2 = createOrganization();
@@ -183,7 +183,7 @@ class EventServiceTest {
         var now = LocalDateTime.now();
         var eventCreateRequest = new EventCreateRequest(
                 "UI/UX 이벤트",
-                "UI/UX 이벤트 입니다",
+                "UI/UX 이벤트입니다",
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
@@ -196,7 +196,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.createEvent(organization1.getId(), loginMember, eventCreateRequest, now))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("조직원을 찾을 수 없습니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
@@ -255,7 +255,7 @@ class EventServiceTest {
 
         var request = new EventCreateRequest(
                 "UI/UX 이벤트",
-                "UI/UX 이벤트 입니다",
+                "UI/UX 이벤트입니다",
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5),
@@ -279,7 +279,7 @@ class EventServiceTest {
     }
 
     @Test
-    void 조직에_속해_있지_않으면_이벤트를_조회할_수_없다() {
+    void 이벤트_스페이스에_속해_있지_않으면_이벤트를_조회할_수_없다() {
         //given
         var organization = createOrganization();
         var otherOrganization = createOrganization();
@@ -289,7 +289,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization)).isInstanceOf(
                         ForbiddenException.class)
-                .hasMessage("자신이 속한 조직이 아닙니다.");
+                .hasMessage("자신이 속한 이벤트 스페이스가 아닙니다.");
     }
 
     @Test
@@ -301,11 +301,11 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.getOrganizationMemberEvent(loginMember, 999L))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 이벤트 정보입니다.");
+                .hasMessage("존재하지 않는 이벤트 정보입니다.");
     }
 
     @Test
-    void 이벤트_마감_시_조직원_id에_해당하는_조직원이_없다면_예외가_발생한다() {
+    void 이벤트_마감_시_구성원_id에_해당하는_구성원이_없다면_예외가_발생한다() {
         // given
         var organization = createOrganization();
         var member = createMember();
@@ -320,11 +320,11 @@ class EventServiceTest {
                 now
         ))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("조직원을 찾을 수 없습니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
-    void 이벤트_마감_시_요청한_조직에_소속되지_않았다면_예외가_발생한다() {
+    void 이벤트_마감_시_요청한_이벤트_스페이스에_소속되지_않았다면_예외가_발생한다() {
         // given
         var organization1 = createOrganization();
         var organization2 = createOrganization();
@@ -345,7 +345,7 @@ class EventServiceTest {
                 now
         ))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("조직원을 찾을 수 없습니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
@@ -367,7 +367,7 @@ class EventServiceTest {
     }
 
     @Test
-    void 이벤트_생성_시_조직원에게_알림을_보낸다() {
+    void 이벤트_생성_시_구성원에게_알림을_보낸다() {
         // given
         var organization = createOrganization();
 
@@ -382,7 +382,7 @@ class EventServiceTest {
         var now = LocalDateTime.now();
         var request = new EventCreateRequest(
                 "UI/UX 이벤트",
-                "UI/UX 이벤트 입니다",
+                "UI/UX 이벤트입니다",
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5),
@@ -420,7 +420,7 @@ class EventServiceTest {
         var now = LocalDateTime.now();
         var request = new EventCreateRequest(
                 "UI/UX 이벤트",
-                "UI/UX 이벤트 입니다",
+                "UI/UX 이벤트입니다",
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5),
@@ -544,7 +544,7 @@ class EventServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.updateEvent(9999L, loginMember, updateRequest, now))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 이벤트 정보입니다.");
+                .hasMessage("존재하지 않는 이벤트 정보입니다.");
     }
 
     @Test
@@ -633,7 +633,7 @@ class EventServiceTest {
     }
 
     @Test
-    void 이벤트_수정_시_수신_거부_하지_않은_게스트들에게_알림을_보낸다() {
+    void 이벤트_수정_시_수신_거부_하지_않는_게스트들에게_알림을_보낸다() {
         // given
         var organization = createOrganization();
         var organizerMember = createMember("organizer", "organizer@email.com");
@@ -791,7 +791,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.isOrganizer(999L, loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 이벤트 정보입니다.");
+                .hasMessage("존재하지 않는 이벤트 정보입니다.");
     }
 
     @Test
@@ -846,7 +846,7 @@ class EventServiceTest {
     }
 
     @Test
-    void 존재하지_않는_조직의_이벤트를_조회하면_예외가_발생한다() {
+    void 존재하지_않는_이벤트_스페이스의_이벤트를_조회하면_예외가_발생한다() {
         // given
         var member = memberRepository.save(Member.create("user", "user@test.com", "testPicture"));
         var loginMember = new LoginMember(member.getId());
@@ -854,11 +854,11 @@ class EventServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getActiveEvents(999L, loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 조직 정보입니다.");
+                .hasMessage("존재하지 않는 이벤트 스페이스 정보입니다.");
     }
 
     @Test
-    void 과거_이벤트_조회시_조직에_속하지_않으면_예외가_발생한다() {
+    void 과거_이벤트_조회시_이벤트_스페이스에_속하지_않으면_예외가_발생한다() {
         // given
         var member = createMember();
         var organization = createOrganization();
@@ -871,7 +871,7 @@ class EventServiceTest {
     }
 
     @Test
-    void 조직원이_아니면_조직의_이벤트를_조회시_예외가_발생한다() {
+    void 구성원이_아니면_이벤트_스페이스의_이벤트를_조회시_예외가_발생한다() {
         // given
         var member = memberRepository.save(Member.create("user", "user@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
@@ -880,11 +880,11 @@ class EventServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getActiveEvents(organization.getId(), loginMember))
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("조직에 참여하지 않아 권한이 없습니다.");
+                .hasMessage("이벤트 스페이스에 참여하지 않아 권한이 없습니다.");
     }
 
     @Test
-    void 여러_조직의_이벤트가_있을때_선택된_조직의_활성화된_이벤트만_가져온다() {
+    void 여러_이벤트_스페이스의_이벤트가_있을때_선택된_이벤트_스페이스의_활성화된_이벤트만_가져온다() {
         // given
         var member = memberRepository.save(Member.create("name", "test@test.com", "testPicture"));
         var loginMember = new LoginMember(member.getId());

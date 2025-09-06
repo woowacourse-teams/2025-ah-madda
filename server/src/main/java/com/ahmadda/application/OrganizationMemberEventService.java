@@ -32,6 +32,6 @@ public class OrganizationMemberEventService {
 
     private OrganizationMember getOrganizationMember(final Long organizationId, final LoginMember loginMember) {
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, loginMember.memberId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않은 조직원 정보입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 구성원 정보입니다."));
     }
 }

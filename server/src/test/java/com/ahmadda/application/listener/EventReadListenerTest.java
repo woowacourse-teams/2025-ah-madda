@@ -1,4 +1,4 @@
-package com.ahmadda.application;
+package com.ahmadda.application.listener;
 
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.EventRead;
@@ -14,8 +14,8 @@ import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
-import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.domain.organization.OrganizationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

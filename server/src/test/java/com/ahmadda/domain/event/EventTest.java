@@ -110,7 +110,7 @@ class EventTest {
                 10
         );
 
-        var notOrganizer = createOrganizationMember("조직원", createMember("일반유저", "user@email.com"), baseOrganization);
+        var notOrganizer = createOrganizationMember("구성원", createMember("일반유저", "user@email.com"), baseOrganization);
 
         var updatedRegistrationPeriod = EventPeriod.create(now.plusDays(2), now.plusDays(3));
         var updatedEventPeriod = EventPeriod.create(now.plusDays(4), now.plusDays(5));
@@ -146,8 +146,8 @@ class EventTest {
                         .plusDays(2)
         );
         var sut = createEvent(now, registrationPeriod);
-        var guest = createOrganizationMember("조직원", createMember("참가자1", "guest1@example.com"), baseOrganization);
-        var notGuest = createOrganizationMember("다른 조직원", createMember("참가자2", "guest2@example.com"), baseOrganization);
+        var guest = createOrganizationMember("구성원", createMember("참가자1", "guest1@example.com"), baseOrganization);
+        var notGuest = createOrganizationMember("다른 구성원", createMember("참가자2", "guest2@example.com"), baseOrganization);
         Guest.create(sut, guest, registrationPeriod.start());
 
         // when
@@ -194,7 +194,7 @@ class EventTest {
     }
 
     @Test
-    void 주최자는_자신의_조직이_아닌_다른_조직의_이벤트를_생성한다면_예외가_발생한다() {
+    void 주최자는_자신의_이벤트_스페이스가_아닌_다른_이벤트_스페이스의_이벤트를_생성한다면_예외가_발생한다() {
         //given
         var organization1 = createOrganization("우테코1");
         var organization2 = createOrganization("우테코2");
@@ -203,7 +203,7 @@ class EventTest {
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization2))
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("자신이 속한 조직이 아닙니다.");
+                .hasMessage("자신이 속한 이벤트 스페이스가 아닙니다.");
     }
 
     @ParameterizedTest
@@ -242,7 +242,7 @@ class EventTest {
 
 
     @Test
-    void 이벤트에_참여하지_않은_조직원을_조회할_수_있다() {
+    void 이벤트에_참여하지_않는_구성원을_조회할_수_있다() {
         // given
         var now = LocalDateTime.now();
         var registrationPeriod = EventPeriod.create(
@@ -271,7 +271,7 @@ class EventTest {
     }
 
     @Test
-    void 이벤트에_참여중인_게스트가_또_참여한다면_예외가_발생한다() {
+    void 이벤트에_참여_중인_게스트가_또_참여한다면_예외가_발생한다() {
         //given
         var now = LocalDateTime.now();
         var registrationPeriod = EventPeriod.create(
@@ -288,7 +288,7 @@ class EventTest {
         //when //then
         assertThatThrownBy(() -> sut.participate(guest, registrationPeriod.start()))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("이미 해당 이벤트에 참여중인 게스트입니다.");
+                .hasMessage("이미 해당 이벤트에 참여 중인 게스트입니다.");
     }
 
     @Test
@@ -324,7 +324,7 @@ class EventTest {
                         .plusDays(2)
         );
         var sut = createEvent(now, registrationPeriod);
-        var nonOrganizer = createOrganizationMember("다른 조직원", createMember(), baseOrganization);
+        var nonOrganizer = createOrganizationMember("다른 구성원", createMember(), baseOrganization);
 
         // when
         var isOrganizer = sut.isOrganizer(baseOrganizer.getMember());
@@ -364,7 +364,7 @@ class EventTest {
         var organization = Organization.create("우아한 테크코스", "woowahan-tech-course", "우아한 테크코스 6기");
         var member = Member.create("박미참여", "not.participant.park@woowahan.com", "testPicture");
         var organizationMember =
-                OrganizationMember.create("참여안한_조직원", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create("참여안한_구성원", member, organization, OrganizationMemberRole.USER);
 
 
         var member2 = Member.create("김참가", "participant.kim@woowahan.com", "testPicture");
@@ -578,7 +578,7 @@ class EventTest {
     }
 
     private Organization createOrganization() {
-        return Organization.create("테스트 조직", "설명", "image.png");
+        return Organization.create("테스트 이벤트 스페이스", "설명", "image.png");
     }
 
     private OrganizationMember createOrganizationMember(
