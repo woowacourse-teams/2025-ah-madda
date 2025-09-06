@@ -82,7 +82,7 @@ class EventServiceTest {
         var now = LocalDateTime.now();
         var eventCreateRequest = new EventCreateRequest(
                 "UI/UX 이벤트",
-                "UI/UX 이벤트 입니다",
+                "UI/UX 이벤트입니다",
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
@@ -103,7 +103,7 @@ class EventServiceTest {
                         softly.assertThat(savedEvent.getTitle())
                                 .isEqualTo("UI/UX 이벤트");
                         softly.assertThat(savedEvent.getDescription())
-                                .isEqualTo("UI/UX 이벤트 입니다");
+                                .isEqualTo("UI/UX 이벤트입니다");
                         softly.assertThat(savedEvent.getPlace())
                                 .isEqualTo("선릉");
                         softly.assertThat(savedEvent.getOrganization())
@@ -131,7 +131,7 @@ class EventServiceTest {
         var now = LocalDateTime.now();
         var eventCreateRequest = new EventCreateRequest(
                 "UI/UX 이벤트",
-                "UI/UX 이벤트 입니다",
+                "UI/UX 이벤트입니다",
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
@@ -155,7 +155,7 @@ class EventServiceTest {
         var now = LocalDateTime.now();
         var eventCreateRequest = new EventCreateRequest(
                 "UI/UX 이벤트",
-                "UI/UX 이벤트 입니다",
+                "UI/UX 이벤트입니다",
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5),
@@ -183,7 +183,7 @@ class EventServiceTest {
         var now = LocalDateTime.now();
         var eventCreateRequest = new EventCreateRequest(
                 "UI/UX 이벤트",
-                "UI/UX 이벤트 입니다",
+                "UI/UX 이벤트입니다",
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
@@ -255,7 +255,7 @@ class EventServiceTest {
 
         var request = new EventCreateRequest(
                 "UI/UX 이벤트",
-                "UI/UX 이벤트 입니다",
+                "UI/UX 이벤트입니다",
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5),
@@ -382,7 +382,7 @@ class EventServiceTest {
         var now = LocalDateTime.now();
         var request = new EventCreateRequest(
                 "UI/UX 이벤트",
-                "UI/UX 이벤트 입니다",
+                "UI/UX 이벤트입니다",
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5),
@@ -420,7 +420,7 @@ class EventServiceTest {
         var now = LocalDateTime.now();
         var request = new EventCreateRequest(
                 "UI/UX 이벤트",
-                "UI/UX 이벤트 입니다",
+                "UI/UX 이벤트입니다",
                 "선릉",
                 now.plusDays(4),
                 now.plusDays(5),

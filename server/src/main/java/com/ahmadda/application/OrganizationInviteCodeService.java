@@ -41,7 +41,7 @@ public class OrganizationInviteCodeService {
 
     public Organization getOrganizationByCode(final String code) {
         InviteCode inviteCode = inviteCodeRepository.findByCode(code)
-                .orElseThrow(() -> new UnprocessableEntityException("유효하지 않는 초대코드입니다."));
+                .orElseThrow(() -> new UnprocessableEntityException("유효하지 않은 초대코드입니다."));
 
         if (inviteCode.isExpired(LocalDateTime.now())) {
             throw new UnprocessableEntityException("만료된 초대코드입니다.");

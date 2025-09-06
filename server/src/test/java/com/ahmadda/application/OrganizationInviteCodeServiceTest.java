@@ -159,7 +159,7 @@ class OrganizationInviteCodeServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.getOrganizationByCode("fakeCode"))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("유효하지 않는 초대코드입니다.");
+                .hasMessage("유효하지 않은 초대코드입니다.");
     }
 
     @Test

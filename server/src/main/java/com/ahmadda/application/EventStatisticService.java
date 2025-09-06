@@ -48,6 +48,6 @@ public class EventStatisticService {
 
     private EventStatistic getEventStatistic(final Long eventId) {
         return eventStatisticRepository.findByEventId(eventId)
-                .orElseThrow(() -> new NotFoundException("요청한 이벤트 조회수 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 요청한 이벤트 조회수 정보입니다."));
     }
 }

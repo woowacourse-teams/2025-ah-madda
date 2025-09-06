@@ -66,7 +66,7 @@ public class EventGuestController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않는 인증 정보입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/events/{eventId}/guests"
                                             }
                                             """
@@ -138,7 +138,7 @@ public class EventGuestController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않는 인증 정보입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/events/{eventId}/non-guests"
                                             }
                                             """
@@ -212,7 +212,7 @@ public class EventGuestController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않는 인증 정보입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/events/{eventId}/participation"
                                             }
                                             """
@@ -390,7 +390,7 @@ public class EventGuestController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않는 인증 정보입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/events/{eventId}/guest-status"
                                             }
                                             """
@@ -453,7 +453,7 @@ public class EventGuestController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않는 인증 정보입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/events/{eventId}/cancel-participate"
                                             }
                                             """
@@ -532,7 +532,7 @@ public class EventGuestController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않는 인증 정보입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/events/{eventId}/guests/{guestId}/answers"
                                             }
                                             """

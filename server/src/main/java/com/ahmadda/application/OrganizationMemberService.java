@@ -63,7 +63,7 @@ public class OrganizationMemberService {
         List<OrganizationMember> targets = organizationMemberRepository.findAllById(targetOrganizationMemberIds);
 
         if (targets.size() != targetOrganizationMemberIds.size()) {
-            throw new NotFoundException("선택된 구성원 중 일부가 존재하지 않습니다.");
+            throw new NotFoundException("존재하지 않는 선택된 구성원입니다.");
         }
 
         return targets;

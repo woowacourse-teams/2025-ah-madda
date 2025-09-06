@@ -52,7 +52,7 @@ public class OrganizationInviteCodeController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않는 인증 정보입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/invite-codes"
                                             }
                                             """
@@ -133,13 +133,13 @@ public class OrganizationInviteCodeController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
-                                            name = "유효하지 않는 초대코드",
+                                            name = "유효하지 않은 초대코드",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Unprocessable Entity",
                                                       "status": 422,
-                                                      "detail": "유효하지 않는 초대코드입니다.",
+                                                      "detail": "유효하지 않은 초대코드입니다.",
                                                       "instance": "/api/organizations/preview?inviteCode={inviteCode}"
                                                     }
                                                     """

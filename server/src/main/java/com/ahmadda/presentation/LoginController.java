@@ -56,7 +56,7 @@ public class LoginController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않는 인증 정보입니다. 인가 코드가 만료되었거나, 잘못되었습니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다. 인가 코드가 만료되었거나, 잘못되었습니다.",
                                               "instance": "/api/members/login"
                                             }
                                             """

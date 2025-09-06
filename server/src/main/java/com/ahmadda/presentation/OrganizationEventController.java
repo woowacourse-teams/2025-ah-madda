@@ -68,7 +68,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않는 인증 정보입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events"
                                             }
                                             """
@@ -144,7 +144,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않는 인증 정보입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events"
                                             }
                                             """
@@ -298,7 +298,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않는 인증 정보입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/events/{eventId}/registration/close"
                                             }
                                             """
@@ -416,7 +416,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않는 인증 정보입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/events/{eventId}"
                                             }
                                             """
@@ -557,7 +557,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않는 인증 정보입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events/owned"
                                             }
                                             """
@@ -612,7 +612,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않는 인증 정보입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events/owned"
                                             }
                                             """
@@ -670,7 +670,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않는 인증 정보입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events/owned"
                                             }
                                             """
@@ -723,7 +723,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않는 인증 정보입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events/participated"
                                             }
                                             """
@@ -781,7 +781,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않는 인증 정보입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/events/{eventId}/organizer-status"
                                             }
                                             """

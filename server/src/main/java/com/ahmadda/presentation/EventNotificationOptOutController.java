@@ -42,7 +42,7 @@ public class EventNotificationOptOutController {
                               "type": "about:blank",
                               "title": "Unauthorized",
                               "status": 401,
-                              "detail": "유효하지 않는 인증 정보입니다.",
+                              "detail": "유효하지 않은 인증 정보입니다.",
                               "instance": "/api/events/{eventId}/notification/opt-out"
                             }
                             """))
@@ -115,7 +115,7 @@ public class EventNotificationOptOutController {
                               "type": "about:blank",
                               "title": "Unauthorized",
                               "status": 401,
-                              "detail": "유효하지 않는 인증 정보입니다.",
+                              "detail": "유효하지 않은 인증 정보입니다.",
                               "instance": "/api/events/{eventId}/notification/opt-out"
                             }
                             """))
@@ -158,7 +158,7 @@ public class EventNotificationOptOutController {
                               "type": "about:blank",
                               "title": "Unprocessable Entity",
                               "status": 422,
-                              "detail": "수신 거부 설정이 존재하지 않습니다.",
+                              "detail": "존재하지 않는 수신 거부 설정입니다.",
                               "instance": "/api/events/{eventId}/notification/opt-out"
                             }
                             """))
@@ -195,7 +195,7 @@ public class EventNotificationOptOutController {
                               "type": "about:blank",
                               "title": "Unauthorized",
                               "status": 401,
-                              "detail": "유효하지 않는 인증 정보입니다.",
+                              "detail": "유효하지 않은 인증 정보입니다.",
                               "instance": "/api/events/{eventId}/notification/opt-out"
                             }
                             """))

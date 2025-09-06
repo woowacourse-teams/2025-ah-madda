@@ -185,7 +185,7 @@ class EventNotificationOptOutServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.cancelOptOut(event.getId(), loginMember))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("수신 거부 설정이 존재하지 않습니다.");
+                .hasMessage("존재하지 않는 수신 거부 설정입니다.");
     }
 
     @Test

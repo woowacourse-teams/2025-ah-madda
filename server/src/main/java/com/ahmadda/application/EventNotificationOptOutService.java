@@ -55,7 +55,7 @@ public class EventNotificationOptOutService {
 
         EventNotificationOptOut optOut =
                 optOutRepository.findByEventAndOrganizationMember(event, organizationMember)
-                        .orElseThrow(() -> new UnprocessableEntityException("수신 거부 설정이 존재하지 않습니다."));
+                        .orElseThrow(() -> new UnprocessableEntityException("존재하지 않는 수신 거부 설정입니다."));
 
         optOutRepository.delete(optOut);
     }

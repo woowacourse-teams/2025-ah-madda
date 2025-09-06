@@ -51,7 +51,7 @@ public class OrganizationMemberController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않는 인증 정보입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/profile"
                                             }
                                             """
@@ -103,7 +103,7 @@ public class OrganizationMemberController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않는 인증 정보입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/organization-members/roles"
                                             }
                                             """
@@ -121,7 +121,7 @@ public class OrganizationMemberController {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "선택된 구성원 중 일부가 존재하지 않습니다.",
+                                                      "detail": "존재하지 않는 선택된 구성원입니다.",
                                                       "instance": "/api/organizations/{organizationId}/organization-members/roles"
                                                     }
                                                     """
@@ -219,7 +219,7 @@ public class OrganizationMemberController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않는 인증 정보입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/organization-members"
                                             }
                                             """

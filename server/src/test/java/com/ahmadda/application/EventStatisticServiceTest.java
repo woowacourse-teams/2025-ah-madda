@@ -92,7 +92,7 @@ class EventStatisticServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getEventStatistic(nonExistentEventId, loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("요청한 이벤트 조회수 정보가 존재하지 않습니다.");
+                .hasMessage("존재하지 않는 요청한 이벤트 조회수 정보입니다.");
     }
 
     @Test
@@ -108,7 +108,7 @@ class EventStatisticServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getEventStatistic(event.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("요청한 이벤트 조회수 정보가 존재하지 않습니다.");
+                .hasMessage("존재하지 않는 요청한 이벤트 조회수 정보입니다.");
     }
 
     private Organization createOrganization() {
