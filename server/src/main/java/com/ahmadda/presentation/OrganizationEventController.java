@@ -14,6 +14,7 @@ import com.ahmadda.presentation.dto.EventLoadResponse;
 import com.ahmadda.presentation.dto.EventResponse;
 import com.ahmadda.presentation.dto.EventTitleResponse;
 import com.ahmadda.presentation.dto.EventUpdateResponse;
+import com.ahmadda.presentation.dto.MainEventResponse;
 import com.ahmadda.presentation.dto.OrganizerStatusResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,7 +56,7 @@ public class OrganizationEventController {
             @ApiResponse(
                     responseCode = "200",
                     content = @Content(
-                            array = @ArraySchema(schema = @Schema(implementation = EventResponse.class))
+                            array = @ArraySchema(schema = @Schema(implementation = MainEventResponse.class))
                     )
             ),
             @ApiResponse(
@@ -108,14 +109,14 @@ public class OrganizationEventController {
             )
     })
     @GetMapping("/{organizationId}/events")
-    public ResponseEntity<List<EventResponse>> getOrganizationEvents(
+    public ResponseEntity<List<MainEventResponse>> getOrganizationEvents(
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember
     ) {
-        List<Event> organizationEvents = organizationService.getOrganizationEvents(organizationId, loginMember);
+        List<Event> organizationEvents = eventService.getActiveEvents(organizationId, loginMember);
 
-        List<EventResponse> eventResponses = organizationEvents.stream()
-                .map(EventResponse::from)
+        List<MainEventResponse> eventResponses = organizationEvents.stream()
+                .map(event -> MainEventResponse.from(event, loginMember))
                 .toList();
 
         return ResponseEntity.ok(eventResponses);

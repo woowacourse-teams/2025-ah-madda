@@ -1,9 +1,7 @@
 import styled from '@emotion/styled';
 
 import { StatisticsAPIResponse } from '@/api/types/event';
-import { Card } from '@/shared/components/Card/Card';
 import { Flex } from '@/shared/components/Flex';
-import { Icon } from '@/shared/components/Icon';
 import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
@@ -22,49 +20,51 @@ export const Statistics = ({ statistics }: StatisticsProps) => {
   const totalCount = statistics.reduce((acc, item) => acc + item.count, 0);
 
   return (
-    <Card>
-      <Flex as="section" dir="column">
-        <Flex justifyContent="space-between" alignItems="center" gap="8px">
-          <Flex gap="10px">
-            <Icon name="chart" size={18} />
-            <Text type="Body" weight="regular" color="#4A5565">
-              통계
-            </Text>
-          </Flex>
-          <Text>총 조회수 {totalCount}회</Text>
+    <Flex as="section" dir="column">
+      <Flex dir="column" gap="20px">
+        <Text type="Heading" weight="bold" color={theme.colors.gray800}>
+          이벤트 조회수
+        </Text>
+        <Flex dir="column" alignItems="flex-start">
+          <Text type="Label" weight="medium" color={theme.colors.gray600}>
+            Total
+          </Text>
+          <Text type="Heading" weight="medium" color={theme.colors.gray900}>
+            {totalCount}
+          </Text>
         </Flex>
-        <Spacing height="20px" />
-        <ChartContainer>
-          <YAxisLabels
-            dir="column"
-            justifyContent="space-between"
-            alignItems="center"
-            padding="0 4px 0 0"
-            gap="27px"
-          >
-            {[
-              maxViews,
-              Math.round(maxViews * 0.75),
-              Math.round(maxViews * 0.5),
-              Math.round(maxViews * 0.25),
-              0,
-            ].map((value, index) => (
-              <Text key={index} type="Body" weight="regular" color={theme.colors.primary600}>
-                {value}
-              </Text>
-            ))}
-          </YAxisLabels>
-          <ChartWrapper>
-            <Chart
-              statistics={statistics}
-              maxViews={maxViews}
-              hoveredIndex={hoveredIndex}
-              onChangeHover={handleChangeHover}
-            />
-          </ChartWrapper>
-        </ChartContainer>
       </Flex>
-    </Card>
+      <Spacing height="20px" />
+      <ChartContainer>
+        <YAxisLabels
+          dir="column"
+          justifyContent="space-between"
+          alignItems="center"
+          padding="0 4px 0 0"
+          gap="27px"
+        >
+          {[
+            maxViews,
+            Math.round(maxViews * 0.75),
+            Math.round(maxViews * 0.5),
+            Math.round(maxViews * 0.25),
+            0,
+          ].map((value, index) => (
+            <Text key={index} type="Body" weight="regular" color={theme.colors.primary600}>
+              {value}
+            </Text>
+          ))}
+        </YAxisLabels>
+        <ChartWrapper>
+          <Chart
+            statistics={statistics}
+            maxViews={maxViews}
+            hoveredIndex={hoveredIndex}
+            onChangeHover={handleChangeHover}
+          />
+        </ChartWrapper>
+      </ChartContainer>
+    </Flex>
   );
 };
 

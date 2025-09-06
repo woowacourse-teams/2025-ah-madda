@@ -4,6 +4,7 @@ import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.infra.notification.config.NotificationProperties;
 import com.ahmadda.infra.notification.mail.MockEmailNotifier;
 import com.ahmadda.infra.notification.mail.SmtpEmailNotifier;
+import jakarta.persistence.EntityManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -26,8 +27,9 @@ public class MailConfig {
     public EmailNotifier smtpEmailNotifier(
             final JavaMailSender javaMailSender,
             final TemplateEngine templateEngine,
-            final NotificationProperties notificationProperties
+            final NotificationProperties notificationProperties,
+            final EntityManager em
     ) {
-        return new SmtpEmailNotifier(javaMailSender, templateEngine, notificationProperties);
+        return new SmtpEmailNotifier(javaMailSender, templateEngine, notificationProperties, em);
     }
 }

@@ -179,6 +179,7 @@ public class EventNotificationService {
             final String request
     ) {
         ReminderHistory reminderHistory = reminder.remind(recipients, event, request);
+       
         reminderHistoryRepository.save(reminderHistory);
     }
 }

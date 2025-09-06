@@ -7,3 +7,20 @@ export type OrganizationParticipateAPIRequest = {
   nickname: string;
   inviteCode: string;
 };
+
+export type OrganizationProfileAPIResponse = {
+  organizationMemberId: number;
+  nickname: string;
+  isAdmin: boolean;
+};
+
+export type CreateOrganizationAPIRequest = {
+  organization: {
+    name: string;
+    description: string;
+    nickname: string;
+  };
+  thumbnail: File;
+};
+
+export type CreateOrganizationAPIResponse = { organizationId: number };

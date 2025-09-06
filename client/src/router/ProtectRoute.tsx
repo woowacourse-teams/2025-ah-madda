@@ -1,18 +1,22 @@
 import { useEffect } from 'react';
 
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 
-import { isAuthenticated } from '@/api/auth';
+import { getGoogleAuthUrl, isAuthenticated } from '@/api/auth';
+import { useToast } from '@/shared/components/Toast/ToastContext';
 
 export const ProtectRoute = () => {
-  const navigate = useNavigate();
+  const { error } = useToast();
+  const location = useLocation();
 
   useEffect(() => {
     if (!isAuthenticated()) {
-      alert('로그인이 필요한 서비스입니다. 먼저 로그인해 주세요.');
-      navigate('/');
+      sessionStorage.setItem('redirectAfterLogin', location.pathname);
+      error('로그인이 필요한 서비스입니다. 먼저 로그인해 주세요.', { duration: 1500 });
+      const authUrl = getGoogleAuthUrl();
+      window.location.href = authUrl;
     }
-  }, [navigate]);
+  }, [error, location.pathname]);
 
   if (!isAuthenticated()) {
     return null;

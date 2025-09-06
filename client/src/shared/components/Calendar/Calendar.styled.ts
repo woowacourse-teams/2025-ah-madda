@@ -14,8 +14,8 @@ type DateButtonProps = {
 };
 
 export const DateButton = styled(Button)<DateButtonProps>`
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   transition: all 0.2s ease;
   background-color: ${({ isToday, isSelected, isInRange }) => {
     if (isSelected) return theme.colors.primary300;
@@ -44,11 +44,12 @@ export const WeekDay = styled(Flex)`
 export const WeekDayHeader = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
 `;
 
 export const DateContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  justify-items: center;
   gap: 1px;
 `;

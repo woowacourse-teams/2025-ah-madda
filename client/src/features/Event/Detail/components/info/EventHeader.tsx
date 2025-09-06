@@ -1,10 +1,13 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
+import { useEventNotificationToggle } from '@/api/mutations/useEventNotificationToggle';
 import { Badge } from '@/shared/components/Badge';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
+import { Switch } from '@/shared/components/Switch';
 import { Text } from '@/shared/components/Text';
+import { useToast } from '@/shared/components/Toast/ToastContext';
 
 import type { EventDetail } from '../../../types/Event';
 import { badgeText } from '../../../utils/badgeText';
@@ -25,7 +28,23 @@ export const EventHeader = ({
   registrationEnd,
 }: EventHeaderProps) => {
   const navigate = useNavigate();
+  const { organizationId } = useParams();
   const status = badgeText(registrationEnd);
+
+  const { optOut, optIn, isLoading, data } = useEventNotificationToggle(eventId);
+  const { error } = useToast();
+
+  const checked = !data.optedOut;
+
+  const handleSwitch = (next: boolean) => {
+    if (next === checked) return;
+
+    (next ? optIn : optOut).mutate(undefined, {
+      onError: () => {
+        error(next ? '알림을 켜는 데 문제가 생겼어요.' : '알림을 끄는 데 문제가 생겼어요.');
+      },
+    });
+  };
 
   return (
     <Flex width="100%" justifyContent="space-between" alignItems="center">
@@ -43,14 +62,24 @@ export const EventHeader = ({
           <Text type="Label">{`${formatDateTime(eventStart, eventEnd)}`}</Text>
         </Flex>
       </Flex>
-      {isOrganizer && (
+      {isOrganizer ? (
         <Button
           color="secondary"
           variant="outline"
-          onClick={() => navigate(`/event/edit/${eventId}`)}
+          onClick={() => navigate(`/${organizationId}/event/edit/${eventId}`)}
         >
           수정
         </Button>
+      ) : (
+        <Flex alignItems="center" gap="8px">
+          <Text type="Body">알림 받기</Text>
+          <Switch
+            aria-label="이벤트 알림 수신 설정"
+            checked={checked}
+            onCheckedChange={handleSwitch}
+            disabled={isLoading}
+          />
+        </Flex>
       )}
     </Flex>
   );

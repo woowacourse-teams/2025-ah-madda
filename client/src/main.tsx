@@ -31,11 +31,9 @@ if (GA_ID) {
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <ClientQueryProvider>
-      <ThemeProvider theme={theme}>
-        <RouterProvider router={router} />
-      </ThemeProvider>
-    </ClientQueryProvider>
-  </React.StrictMode>
+  <ClientQueryProvider>
+    <ThemeProvider theme={theme}>
+      <RouterProvider router={router} />
+    </ThemeProvider>
+  </ClientQueryProvider>
 );
