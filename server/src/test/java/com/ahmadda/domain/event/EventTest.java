@@ -194,7 +194,7 @@ class EventTest {
     }
 
     @Test
-    void 주최자는_자신의_조직이_아닌_다른_조직의_이벤트를_생성한다면_예외가_발생한다() {
+    void 주최자는_자신의_이벤트_스페이스이_아닌_다른_이벤트_스페이스의_이벤트를_생성한다면_예외가_발생한다() {
         //given
         var organization1 = createOrganization("우테코1");
         var organization2 = createOrganization("우테코2");
@@ -203,7 +203,7 @@ class EventTest {
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization2))
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("자신이 속한 조직이 아닙니다.");
+                .hasMessage("자신이 속한 이벤트 스페이스이 아닙니다.");
     }
 
     @ParameterizedTest
@@ -578,7 +578,7 @@ class EventTest {
     }
 
     private Organization createOrganization() {
-        return Organization.create("테스트 조직", "설명", "image.png");
+        return Organization.create("테스트 이벤트 스페이스", "설명", "image.png");
     }
 
     private OrganizationMember createOrganizationMember(

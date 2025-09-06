@@ -13,8 +13,8 @@ import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
-import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.domain.organization.OrganizationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -47,7 +47,7 @@ class OrganizationMemberEventServiceTest {
     @Test
     void 구성원이_주최한_이벤트들을_조회한다() {
         // given
-        var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
+        var organization = createAndSaveOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "org.png");
         var member = createAndSaveMember("주최자", "organizer@test.com");
         var organizer = createAndSaveOrganizationMember("주최자닉네임", member, organization);
 
@@ -126,7 +126,7 @@ class OrganizationMemberEventServiceTest {
     @Test
     void 구성원이_참여한_이벤트들을_조회한다() {
         // given
-        var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
+        var organization = createAndSaveOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "org.png");
         var organizerMember = createAndSaveMember("주최자", "organizer@test.com");
         var participantMember = createAndSaveMember("참여자", "participant@test.com");
 
@@ -199,7 +199,7 @@ class OrganizationMemberEventServiceTest {
     @Test
     void 존재하지_않는_회원으로_주최_이벤트_조회하면_예외가_발생한다() {
         // given
-        var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
+        var organization = createAndSaveOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "org.png");
         var loginMember = new LoginMember(999L);
 
         // when // then
@@ -211,7 +211,7 @@ class OrganizationMemberEventServiceTest {
     @Test
     void 존재하지_않는_구성원으로_참여_이벤트_조회하면_예외가_발생한다() {
         // given
-        var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
+        var organization = createAndSaveOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "org.png");
         var loginMember = new LoginMember(999L);
 
         // when // then

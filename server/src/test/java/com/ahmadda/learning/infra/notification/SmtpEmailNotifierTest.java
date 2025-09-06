@@ -27,7 +27,7 @@ class SmtpEmailNotifierTest {
     @Test
     void 실제_SMTP로_메일을_발송한다() {
         // given
-        var organizationName = "테스트 조직";
+        var organizationName = "테스트 이벤트 스페이스";
         var eventTitle = "테스트 이벤트";
         var organizerNickname = "주최자";
 
@@ -68,7 +68,7 @@ class SmtpEmailNotifierTest {
     @Test
     void BCC_수신자가_100명_이상이면_예외가_발생한다() {
         // given
-        var organizationName = "테스트 조직";
+        var organizationName = "테스트 이벤트 스페이스";
         var eventTitle = "테스트 이벤트";
         var organizerNickname = "주최자";
 

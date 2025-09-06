@@ -98,7 +98,7 @@ public class EventGuestController {
                                               "type": "about:blank",
                                               "title": "Forbidden",
                                               "status": 403,
-                                              "detail": "조직의 구성원만 접근할 수 있습니다.",
+                                              "detail": "이벤트 스페이스의 구성원만 접근할 수 있습니다.",
                                               "instance": "/api/events/{eventId}/guests"
                                             }
                                             """
@@ -170,7 +170,7 @@ public class EventGuestController {
                                               "type": "about:blank",
                                               "title": "Forbidden",
                                               "status": 403,
-                                              "detail": "조직의 구성원만 접근할 수 있습니다.",
+                                              "detail": "이벤트 스페이스의 구성원만 접근할 수 있습니다.",
                                               "instance": "/api/events/{eventId}/non-guests"
                                             }
                                             """
@@ -267,13 +267,13 @@ public class EventGuestController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
-                                            name = "로그인 멤버가 이벤트를 생성한 조직에 속해있지 않음",
+                                            name = "로그인 멤버가 이벤트를 생성한 이벤트 스페이스에 속해있지 않음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Unprocessable Entity",
                                                       "status": 422,
-                                                      "detail": "같은 조직의 이벤트에만 게스트로 참여가능합니다.",
+                                                      "detail": "같은 이벤트 스페이스의 이벤트에만 게스트로 참여가능합니다.",
                                                       "instance": "/api/events/{eventId}/participation"
                                                     }
                                                     """

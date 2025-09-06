@@ -91,7 +91,7 @@ class EventNotificationOptOutServiceTest {
     }
 
     @Test
-    void 조직의_구성원이_아니면_수신거부_설정시_예외가_발생한다() {
+    void 이벤트_스페이스의_구성원이_아니면_수신거부_설정시_예외가_발생한다() {
         // given
         var org = createOrganization();
         var event = createEvent(
@@ -156,7 +156,7 @@ class EventNotificationOptOutServiceTest {
     }
 
     @Test
-    void 조직의_구성원이_아니면_수신거부_취소시_예외가_발생한다() {
+    void 이벤트_스페이스의_구성원이_아니면_수신거부_취소시_예외가_발생한다() {
         // given
         var org = createOrganization();
         var event = createEvent(
@@ -227,7 +227,7 @@ class EventNotificationOptOutServiceTest {
     }
 
     @Test
-    void 수신_거부_여부_정보를_조회시_조직의_구성원이_아니면_예외가_발생한다() {
+    void 수신_거부_여부_정보를_조회시_이벤트_스페이스의_구성원이_아니면_예외가_발생한다() {
         // given
         var org = createOrganization();
         var event = createEvent(
@@ -349,7 +349,7 @@ class EventNotificationOptOutServiceTest {
     }
 
     private Organization createOrganization() {
-        return organizationRepository.save(Organization.create("조직", "설명", "image.png"));
+        return organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "image.png"));
     }
 
     private Member createMember(String name, String email) {

@@ -187,7 +187,7 @@ public class EventService {
 
     private Organization getOrganization(final Long organizationId) {
         return organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않은 조직 정보입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않은 이벤트 스페이스 정보입니다."));
     }
 
     private void validateOrganizationAccess(final Long organizationId, final Long memberId) {
@@ -289,7 +289,7 @@ public class EventService {
         Organization organization = getOrganization(organizationId);
 
         if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId())) {
-            throw new ForbiddenException("조직에 참여하지 않아 권한이 없습니다.");
+            throw new ForbiddenException("이벤트 스페이스에 참여하지 않아 권한이 없습니다.");
         }
 
         return organization.getActiveEvents(LocalDateTime.now());

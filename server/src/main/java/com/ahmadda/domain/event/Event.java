@@ -282,7 +282,7 @@ public class Event extends BaseEntity {
             final Organization organization
     ) {
         if (!organizationMember.isBelongTo(organization)) {
-            throw new ForbiddenException("자신이 속한 조직이 아닙니다.");
+            throw new ForbiddenException("자신이 속한 이벤트 스페이스이 아닙니다.");
         }
     }
 

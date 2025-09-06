@@ -40,7 +40,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
-@Tag(name = "Organization", description = "조직 관련 API")
+@Tag(name = "Organization", description = "이벤트 스페이스 관련 API")
 @RestController
 @RequestMapping("/api/organizations")
 @RequiredArgsConstructor
@@ -48,7 +48,7 @@ public class OrganizationController {
 
     private final OrganizationService organizationService;
 
-    @Operation(summary = "신규 조직 생성", description = "새로운 조직을 생성합니다.")
+    @Operation(summary = "신규 이벤트 스페이스 생성", description = "새로운 이벤트 스페이스을 생성합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "201",
@@ -127,7 +127,7 @@ public class OrganizationController {
                 .body(new OrganizationCreateResponse(organization.getId()));
     }
 
-    @Operation(summary = "조직 정보 조회", description = "조직 ID로 특정 조직의 정보를 조회합니다.")
+    @Operation(summary = "이벤트 스페이스 정보 조회", description = "이벤트 스페이스 ID로 특정 이벤트 스페이스의 정보를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -144,7 +144,7 @@ public class OrganizationController {
                                               "type": "about:blank",
                                               "title": "Not Found",
                                               "status": 404,
-                                              "detail": "존재하지 않는 조직입니다.",
+                                              "detail": "존재하지 않는 이벤트 스페이스입니다.",
                                               "instance": "/api/organizations/{organizationId}"
                                             }
                                             """
@@ -160,7 +160,7 @@ public class OrganizationController {
         return ResponseEntity.ok(organizationResponse);
     }
 
-    @Operation(summary = "조직 참여", description = "사용자가 특정 조직에 참여합니다.")
+    @Operation(summary = "이벤트 스페이스 참여", description = "사용자가 특정 이벤트 스페이스에 참여합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -189,13 +189,13 @@ public class OrganizationController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
-                                            name = "조직 없음",
+                                            name = "이벤트 스페이스 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않는 조직입니다.",
+                                                      "detail": "존재하지 않는 이벤트 스페이스입니다.",
                                                       "instance": "/api/organizations/{organizationId}/participation"
                                                     }
                                                     """
@@ -220,19 +220,19 @@ public class OrganizationController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
-                                            name = "이미 참여한 조직",
+                                            name = "이미 참여한 이벤트 스페이스",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Unprocessable Entity",
                                                       "status": 422,
-                                                      "detail": "이미 참여한 조직입니다.",
+                                                      "detail": "이미 참여한 이벤트 스페이스입니다.",
                                                       "instance": "/api/organizations/{organizationId}/participation"
                                                     }
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "조직의 초대코드가 아니거나 없는 경우",
+                                            name = "이벤트 스페이스의 초대코드가 아니거나 없는 경우",
                                             value = """
                                                     {
                                                       "type": "about:blank",
@@ -278,7 +278,7 @@ public class OrganizationController {
                 ));
     }
 
-    @Operation(summary = "조직 수정", description = "조직을 수정합니다.")
+    @Operation(summary = "이벤트 스페이스 수정", description = "이벤트 스페이스을 수정합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(
@@ -286,13 +286,13 @@ public class OrganizationController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
-                                            name = "존재하지 않는 조직",
+                                            name = "존재하지 않는 이벤트 스페이스",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않는 조직입니다.",
+                                                      "detail": "존재하지 않는 이벤트 스페이스입니다.",
                                                       "instance": "/api/organizations/{organizationId}"
                                                     }
                                                     """
@@ -349,25 +349,25 @@ public class OrganizationController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
-                                            name = "조직에 속한 구성원이 아님",
+                                            name = "이벤트 스페이스에 속한 구성원이 아님",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Forbidden",
                                                       "status": 403,
-                                                      "detail": "조직에 속한 구성원만 수정이 가능합니다.",
+                                                      "detail": "이벤트 스페이스에 속한 구성원만 수정이 가능합니다.",
                                                       "instance": "/api/organizations/{organizationId}"
                                                     }
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "조직의 관리자가 아님",
+                                            name = "이벤트 스페이스의 관리자가 아님",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Forbidden",
                                                       "status": 403,
-                                                      "detail": "구성원의 관리자만 조직 정보를 수정할 수 있습니다.",
+                                                      "detail": "구성원의 관리자만 이벤트 스페이스 정보를 수정할 수 있습니다.",
                                                       "instance": "/api/organizations/{organizationId}"
                                                     }
                                                     """
@@ -404,7 +404,7 @@ public class OrganizationController {
                 .build();
     }
 
-    @Operation(summary = "내가 참여중인 조직 목록 조회", description = "로그인한 사용자가 참여중인 조직 목록을 조회합니다.")
+    @Operation(summary = "내가 참여중인 이벤트 스페이스 목록 조회", description = "로그인한 사용자가 참여중인 이벤트 스페이스 목록을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -458,7 +458,7 @@ public class OrganizationController {
         return ResponseEntity.ok(organizationResponses);
     }
 
-    @Operation(summary = "조직 삭제", description = "조직을 삭제합니다.")
+    @Operation(summary = "이벤트 스페이스 삭제", description = "이벤트 스페이스을 삭제합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(
@@ -486,7 +486,7 @@ public class OrganizationController {
                                               "type": "about:blank",
                                               "title": "Forbidden",
                                               "status": 403,
-                                              "detail": "조직의 관리자만 삭제할 수 있습니다.",
+                                              "detail": "이벤트 스페이스의 관리자만 삭제할 수 있습니다.",
                                               "instance": "/api/organizations/{organizationId}"
                                             }
                                             """
@@ -498,13 +498,13 @@ public class OrganizationController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
-                                            name = "존재하지 않는 조직",
+                                            name = "존재하지 않는 이벤트 스페이스",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않는 조직입니다.",
+                                                      "detail": "존재하지 않는 이벤트 스페이스입니다.",
                                                       "instance": "/api/organizations/{organizationId}"
                                                     }
                                                     """

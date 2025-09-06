@@ -71,7 +71,7 @@ class EventNotificationSchedulerTest {
             boolean expectToSend
     ) {
         // given
-        var organization = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        var organization = organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
         var host = saveOrganizationMember("주최자", "host@email.com", organization);
         var ng1 = saveOrganizationMember("비게스트1", "ng1@email.com", organization);
         var ng2 = saveOrganizationMember("비게스트2", "ng2@email.com", organization);
@@ -112,7 +112,7 @@ class EventNotificationSchedulerTest {
     @Test
     void 등록_마감_30분_전_리마인더_호출_후_히스토리가_저장된다() {
         // given
-        var org = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        var org = organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
         var host = saveOrganizationMember("주최자", "host@email.com", org);
         var ng1 = saveOrganizationMember("비게스트1", "ng1@email.com", org);
         var ng2 = saveOrganizationMember("비게스트2", "ng2@email.com", org);
@@ -157,7 +157,7 @@ class EventNotificationSchedulerTest {
     @Test
     void 정원이_다_찼다면_알림을_전송하지_않는다() {
         // given
-        var organization = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        var organization = organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
         var host = saveOrganizationMember("주최자", "host@email.com", organization);
 
         saveOrganizationMember("비게스트1", "ng1@email.com", organization);
@@ -196,7 +196,7 @@ class EventNotificationSchedulerTest {
             boolean expectToSend
     ) {
         // given
-        var org = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        var org = organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
         var host = saveOrganizationMember("주최자", "host@email.com", org);
 
         var now = LocalDateTime.now();
@@ -240,7 +240,7 @@ class EventNotificationSchedulerTest {
     @Test
     void 이벤트_시작_24시간_전_리마인더_호출_후_히스토리가_저장된다() {
         // given
-        var org = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        var org = organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
         var host = saveOrganizationMember("주최자", "host@email.com", org);
 
         var now = LocalDateTime.now();

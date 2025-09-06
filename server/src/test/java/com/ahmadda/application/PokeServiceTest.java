@@ -61,7 +61,7 @@ class PokeServiceTest {
     @Test
     void 포키를_할_수_있다() {
         // given
-        var organization = createOrganization("테스트 조직", "조직 설명", "test-image.png");
+        var organization = createOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "test-image.png");
         var member = createMember("테스트 회원", "test@example.com", "test-profile.png");
         var organizer = createOrganizationMember("주최자", member, organization);
         var participantMember = createMember("참여자", "participant@example.com", "participant-profile.png");
@@ -78,7 +78,7 @@ class PokeServiceTest {
     @Test
     void 포키를_성공적으로_전송하면_이력을_저장한다() {
         // given
-        var organization = createOrganization("테스트 조직", "조직 설명", "test-image.png");
+        var organization = createOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "test-image.png");
         var member = createMember("테스트 회원", "test@example.com", "test-profile.png");
         var organizer = createOrganizationMember("주최자", member, organization);
         var participantMember = createMember("참여자", "participant@example.com", "participant-profile.png");
@@ -113,7 +113,7 @@ class PokeServiceTest {
     @Test
     void 존재하지_않는_이벤트에서_포키_전송시_예외가_발생한다() {
         // given
-        var organization = createOrganization("테스트 조직", "조직 설명", "test-image.png");
+        var organization = createOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "test-image.png");
         var member = createMember("테스트 회원", "test@example.com", "test-profile.png");
         var organizer = createOrganizationMember("주최자", member, organization);
         var participantMember = createMember("참여자", "participant@example.com", "participant-profile.png");
@@ -132,7 +132,7 @@ class PokeServiceTest {
     @Test
     void 존재하지_않는_구성원에게로_포키_전송시_예외가_발생한다() {
         // given
-        var organization = createOrganization("테스트 조직", "조직 설명", "test-image.png");
+        var organization = createOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "test-image.png");
         var member = createMember("테스트 회원", "test@example.com", "test-profile.png");
         var organizer = createOrganizationMember("주최자", member, organization);
         var event = createEvent("테스트 이벤트", "이벤트 설명", "테스트 장소", organizer, organization);
@@ -150,7 +150,7 @@ class PokeServiceTest {
     @Test
     void 존재하지_않는_구성원이_포키_전송시_예외가_발생한다() {
         // given
-        var organization = createOrganization("테스트 조직", "조직 설명", "test-image.png");
+        var organization = createOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "test-image.png");
         var member = createMember("테스트 회원", "test@example.com", "test-profile.png");
         var organizer = createOrganizationMember("주최자", member, organization);
         var participantMember = createMember("참여자", "participant@example.com", "participant-profile.png");
@@ -168,17 +168,17 @@ class PokeServiceTest {
     }
 
     @Test
-    void 조직에_속하지_않는_회원이_포키_전송시_예외가_발생한다() {
+    void 이벤트_스페이스에_속하지_않는_회원이_포키_전송시_예외가_발생한다() {
         // given
-        var organization = createOrganization("테스트 조직", "조직 설명", "test-image.png");
+        var organization = createOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "test-image.png");
         var member = createMember("테스트 회원", "test@example.com", "test-profile.png");
         var organizer = createOrganizationMember("주최자", member, organization);
         var participantMember = createMember("참여자", "participant@example.com", "participant-profile.png");
         var participant = createOrganizationMember("참여자", participantMember, organization);
         var event = createEvent("테스트 이벤트", "이벤트 설명", "테스트 장소", organizer, organization);
 
-        var otherOrganization = createOrganization("다른 조직", "다른 조직 설명", "other-image.png");
-        var otherMember = createMember("다른 조직 회원", "other@example.com", "other-profile.png");
+        var otherOrganization = createOrganization("다른 이벤트 스페이스", "다른 이벤트 스페이스 설명", "other-image.png");
+        var otherMember = createMember("다른 이벤트 스페이스 회원", "other@example.com", "other-profile.png");
         var otherOrganizationMember = createOrganizationMember("다른 구성원", otherMember, otherOrganization);
 
         var eventId = event.getId();
@@ -194,7 +194,7 @@ class PokeServiceTest {
     @Test
     void 알림_수신을_거부한_구성원에게_포키_전송시_예외가_발생한다() {
         // given
-        var organization = createOrganization("테스트 조직", "조직 설명", "test-image.png");
+        var organization = createOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "test-image.png");
         var member = createMember("테스트 회원", "test@example.com", "test-profile.png");
         var organizer = createOrganizationMember("주최자", member, organization);
         var participantMember = createMember("참여자", "participant@example.com", "participant-profile.png");

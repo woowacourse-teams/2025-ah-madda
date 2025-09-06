@@ -56,7 +56,7 @@ public class OrganizationMemberService {
 
     private Organization getOrganization(final Long organizationId) {
         return organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 이벤트 스페이스입니다."));
     }
 
     private List<OrganizationMember> getAllTargetOrganizationMembers(final List<Long> targetOrganizationMemberIds) {
@@ -75,7 +75,7 @@ public class OrganizationMemberService {
     ) {
         targets.forEach(target -> {
             if (!organization.isExistOrganizationMember(target)) {
-                throw new UnprocessableEntityException("서로 다른 조직에 속한 구성원이 포함되어 있습니다.");
+                throw new UnprocessableEntityException("서로 다른 이벤트 스페이스에 속한 구성원이 포함되어 있습니다.");
             }
         });
     }
@@ -95,7 +95,7 @@ public class OrganizationMemberService {
 
     private void validateBelongsToOrganization(final Long organizationId, final LoginMember loginMember) {
         if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId())) {
-            throw new ForbiddenException("조직에 속한 구성원만 구성원의 목록을 조회할 수 있습니다.");
+            throw new ForbiddenException("이벤트 스페이스에 속한 구성원만 구성원의 목록을 조회할 수 있습니다.");
         }
     }
 }

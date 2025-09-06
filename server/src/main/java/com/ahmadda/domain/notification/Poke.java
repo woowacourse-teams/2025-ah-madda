@@ -4,16 +4,15 @@ import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
-
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 //TODO 성능 문제 추후에 고려
 @Service
@@ -142,11 +141,11 @@ public class Poke {
         Organization organization = event.getOrganization();
 
         if (!sendOrganizationMember.isBelongTo(organization)) {
-            throw new UnprocessableEntityException("포키를 보내려면 해당 조직에 참여하고 있어야 합니다.");
+            throw new UnprocessableEntityException("포키를 보내려면 해당 이벤트 스페이스에 참여하고 있어야 합니다.");
         }
 
         if (!receiveOrganizationMember.isBelongTo(organization)) {
-            throw new UnprocessableEntityException("포키 대상이 해당 조직에 참여하고 있어야 합니다.");
+            throw new UnprocessableEntityException("포키 대상이 해당 이벤트 스페이스에 참여하고 있어야 합니다.");
         }
     }
 }

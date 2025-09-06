@@ -102,7 +102,7 @@ public class Guest extends BaseEntity {
 
     private void validateSameOrganization(final Event event, final OrganizationMember organizationMember) {
         if (!organizationMember.isBelongTo(event.getOrganization())) {
-            throw new UnprocessableEntityException("같은 조직의 이벤트에만 게스트로 참여가능합니다.");
+            throw new UnprocessableEntityException("같은 이벤트 스페이스의 이벤트에만 게스트로 참여가능합니다.");
         }
     }
 

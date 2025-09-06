@@ -84,7 +84,7 @@ public class InviteCode extends BaseEntity {
             final OrganizationMember organizationMember
     ) {
         if (!organizationMember.isBelongTo(organization)) {
-            throw new ForbiddenException("조직에 참여중인 구성원만 해당 조직의 초대코드를 만들 수 있습니다.");
+            throw new ForbiddenException("이벤트 스페이스에 참여중인 구성원만 해당 이벤트 스페이스의 초대코드를 만들 수 있습니다.");
         }
     }
 }

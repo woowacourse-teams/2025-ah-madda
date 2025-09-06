@@ -88,7 +88,7 @@ class ReminderHistoryServiceTest {
     }
 
     @Test
-    void 이벤트_조직의_구성원이_아니면_예외가_발생한다() {
+    void 이벤트_이벤트_스페이스의_구성원이_아니면_예외가_발생한다() {
         // given
         var org1 = createOrganization();
         var org2 = createOrganization();
@@ -130,7 +130,7 @@ class ReminderHistoryServiceTest {
     }
 
     private Organization createOrganization() {
-        return organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        return organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
     }
 
     private Member createMember(final String name, final String email) {

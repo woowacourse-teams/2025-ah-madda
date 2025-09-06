@@ -96,7 +96,7 @@ public class OrganizationMember extends BaseEntity {
 
         for (final OrganizationMember target : targets) {
             if (!target.isBelongTo(this.organization)) {
-                throw new ForbiddenException("같은 조직에 속한 구성원만 권한을 변경할 수 있습니다.");
+                throw new ForbiddenException("같은 이벤트 스페이스에 속한 구성원만 권한을 변경할 수 있습니다.");
             }
 
             target.role = newRole;
@@ -105,7 +105,7 @@ public class OrganizationMember extends BaseEntity {
 
     private void validateRoleChangeBy(final OrganizationMember operator) {
         if (!operator.isBelongTo(this.organization)) {
-            throw new ForbiddenException("같은 조직에 속한 구성원만 권한을 변경할 수 있습니다.");
+            throw new ForbiddenException("같은 이벤트 스페이스에 속한 구성원만 권한을 변경할 수 있습니다.");
         }
 
         if (!operator.isAdmin()) {

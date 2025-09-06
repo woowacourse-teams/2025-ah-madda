@@ -125,7 +125,7 @@ public class PokeController {
                                                       "type": "about:blank",
                                                       "title": "Unprocessable Entity",
                                                       "status": 422,
-                                                      "detail": "포키를 보내려면 해당 조직에 참여하고 있어야 합니다.",
+                                                      "detail": "포키를 보내려면 해당 이벤트 스페이스에 참여하고 있어야 합니다.",
                                                       "instance": "/api/events/{eventId}/poke"
                                                     }
                                                     """
@@ -137,7 +137,7 @@ public class PokeController {
                                                       "type": "about:blank",
                                                       "title": "Unprocessable Entity",
                                                       "status": 422,
-                                                      "detail": "포키 대상이 해당 조직에 참여하고 있어야 합니다.",
+                                                      "detail": "포키 대상이 해당 이벤트 스페이스에 참여하고 있어야 합니다.",
                                                       "instance": "/api/events/{eventId}/poke"
                                                     }
                                                     """

@@ -34,7 +34,7 @@ public class OrganizationMemberController {
 
     private final OrganizationMemberService organizationMemberService;
 
-    @Operation(summary = "자신의 구성원 프로필 조회", description = "로그인한 사용자가 속한 조직에서의 자신의 정보를 조회합니다.")
+    @Operation(summary = "자신의 구성원 프로필 조회", description = "로그인한 사용자가 속한 이벤트 스페이스에서의 자신의 정보를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -90,7 +90,7 @@ public class OrganizationMemberController {
 
     @Operation(
             summary = "구성원 역할 일괄 변경",
-            description = "관리자가 같은 조직에 속한 여러 구성원의 역할을 한 번에 변경합니다."
+            description = "관리자가 같은 이벤트 스페이스에 속한 여러 구성원의 역할을 한 번에 변경합니다."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204"),
@@ -146,13 +146,13 @@ public class OrganizationMemberController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
-                                            name = "같은 조직 소속이 아님",
+                                            name = "같은 이벤트 스페이스 소속이 아님",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Forbidden",
                                                       "status": 403,
-                                                      "detail": "같은 조직에 속한 구성원만 권한을 변경할 수 있습니다.",
+                                                      "detail": "같은 이벤트 스페이스에 속한 구성원만 권한을 변경할 수 있습니다.",
                                                       "instance": "/api/organizations/{organizationId}/organization-members/roles"
                                                     }
                                                     """
@@ -181,7 +181,7 @@ public class OrganizationMemberController {
                                               "type": "about:blank",
                                               "title": "Unprocessable Entity",
                                               "status": 422,
-                                              "detail": "서로 다른 조직에 속한 구성원이 포함되어 있습니다.",
+                                              "detail": "서로 다른 이벤트 스페이스에 속한 구성원이 포함되어 있습니다.",
                                               "instance": "/api/organizations/{organizationId}/organization-members/roles"
                                             }
                                             """
@@ -201,7 +201,7 @@ public class OrganizationMemberController {
                 .build();
     }
 
-    @Operation(summary = "조직의 모든 구성원 목록 조회", description = "조직에 속한 모든 구성원의 프로필을 조회합니다.")
+    @Operation(summary = "이벤트 스페이스의 모든 구성원 목록 조회", description = "이벤트 스페이스에 속한 모든 구성원의 프로필을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -235,7 +235,7 @@ public class OrganizationMemberController {
                                               "type": "about:blank",
                                               "title": "Forbidden",
                                               "status": 403,
-                                              "detail": "조직에 속한 구성원만 구성원의 목록을 조회할 수 있습니다.",
+                                              "detail": "이벤트 스페이스에 속한 구성원만 구성원의 목록을 조회할 수 있습니다.",
                                               "instance": "/api/organizations/{organizationId}/organization-members"
                                             }
                                             """
@@ -251,7 +251,7 @@ public class OrganizationMemberController {
                                               "type": "about:blank",
                                               "title": "Not Found",
                                               "status": 404,
-                                              "detail": "존재하지 않는 조직입니다.",
+                                              "detail": "존재하지 않는 이벤트 스페이스입니다.",
                                               "instance": "/api/organizations/{organizationId}/organization-members"
                                             }
                                             """

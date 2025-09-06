@@ -52,7 +52,7 @@ public class OrganizationInviteCodeService {
 
     private Organization getOrganization(final Long organizationId) {
         return organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직 정보입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 이벤트 스페이스 정보입니다."));
     }
 
     private OrganizationMember getOrganizationMember(final Long organizationId, final LoginMember loginMember) {

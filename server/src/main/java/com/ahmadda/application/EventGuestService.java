@@ -106,7 +106,7 @@ public class EventGuestService {
                 organization.getId(),
                 loginMember.memberId()
         )) {
-            throw new ForbiddenException("조직의 구성원만 접근할 수 있습니다.");
+            throw new ForbiddenException("이벤트 스페이스의 구성원만 접근할 수 있습니다.");
         }
     }
 

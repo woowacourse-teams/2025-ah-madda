@@ -14,8 +14,8 @@ import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
-import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.domain.organization.OrganizationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -112,7 +112,7 @@ class EventStatisticServiceTest {
     }
 
     private Organization createOrganization() {
-        Organization organization = Organization.create("테스트 조직", "테스트 설명", "test-image-url");
+        Organization organization = Organization.create("테스트 이벤트 스페이스", "테스트 설명", "test-image-url");
         return organizationRepository.save(organization);
     }
 
