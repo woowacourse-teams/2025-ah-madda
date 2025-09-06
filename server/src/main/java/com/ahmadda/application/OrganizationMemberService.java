@@ -59,10 +59,10 @@ public class OrganizationMemberService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 조직입니다."));
     }
 
-    private List<OrganizationMember> getAllTargetOrganizationMembers(final List<Long> ids) {
-        List<OrganizationMember> targets = organizationMemberRepository.findAllById(ids);
+    private List<OrganizationMember> getAllTargetOrganizationMembers(final List<Long> targetOrganizationMemberIds) {
+        List<OrganizationMember> targets = organizationMemberRepository.findAllById(targetOrganizationMemberIds);
 
-        if (targets.size() != ids.size()) {
+        if (targets.size() != targetOrganizationMemberIds.size()) {
             throw new NotFoundException("일부 조직원이 존재하지 않습니다.");
         }
 
