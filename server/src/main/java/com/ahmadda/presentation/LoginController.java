@@ -255,7 +255,6 @@ public class LoginController {
             @AuthMember final LoginMember loginMember,
             @RequestHeader(HttpHeaders.USER_AGENT) final String userAgent,
             @CookieValue(RefreshCookieProvider.REFRESH_TOKEN_KEY) final String refreshToken) {
-    ) {
         loginService.logout(loginMember, refreshToken, userAgent);
 
         ResponseCookie logoutRefreshTokenCookie = refreshCookieProvider.createLogoutRefreshTokenCookie();
