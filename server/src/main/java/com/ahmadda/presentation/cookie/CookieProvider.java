@@ -24,13 +24,6 @@ public class CookieProvider {
     }
 
     public ResponseCookie expiresCookie(final String name, final CookieProperties cookieProperties) {
-        return ResponseCookie.from(name, "")
-                .maxAge(0)
-                .domain(cookieProperties.getDomain())
-                .sameSite(cookieProperties.getSameSite())
-                .secure(cookieProperties.isSecure())
-                .httpOnly(cookieProperties.isHttpOnly())
-                .path(cookieProperties.getPath())
-                .build();
+        return createCookie(name, "", cookieProperties, Duration.ZERO);
     }
 }
