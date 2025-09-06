@@ -11,7 +11,11 @@ public class CookieProperties {
     private final boolean secure;
     private final boolean httpOnly;
 
-    public CookieProperties(String path, String domain, String sameSite, boolean secure, boolean httpOnly) {
+    public CookieProperties(final String path,
+                            final String domain,
+                            final String sameSite,
+                            final boolean secure,
+                            final boolean httpOnly) {
         validateCookieProperties(path, domain, sameSite);
 
         this.path = path;
