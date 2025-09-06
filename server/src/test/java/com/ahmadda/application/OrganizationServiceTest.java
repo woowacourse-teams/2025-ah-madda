@@ -7,8 +7,6 @@ import com.ahmadda.application.dto.OrganizationUpdateRequest;
 import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
-import com.ahmadda.domain.event.Event;
-import com.ahmadda.domain.event.EventOperationPeriod;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
@@ -387,28 +385,6 @@ class OrganizationServiceTest {
 
     private Organization createOrganization(String name, String description, String imageUrl) {
         return Organization.create(name, description, imageUrl);
-    }
-
-    private Event createEvent(
-            OrganizationMember organizer,
-            Organization organization,
-            String title,
-            LocalDateTime start,
-            LocalDateTime end
-    ) {
-        return Event.create(
-                title,
-                "description",
-                "place",
-                organizer,
-                organization,
-                EventOperationPeriod.create(
-                        start, end,
-                        end.plusHours(1), end.plusHours(2),
-                        start.minusDays(1)
-                ),
-                100
-        );
     }
 
     private OrganizationCreateRequest createOrganizationCreateRequest(
