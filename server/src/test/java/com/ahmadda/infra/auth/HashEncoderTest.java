@@ -1,10 +1,12 @@
-package com.ahmadda.infra.auth.util;
+package com.ahmadda.infra.auth;
 
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class HashUtilsTest {
+class HashEncoderTest {
+
+    private final HashEncoder sut = new HashEncoder();
 
     @Test
     void 해시_결과는_64자리_이어야_한다() {
@@ -12,7 +14,7 @@ class HashUtilsTest {
         var token = "token";
 
         // when
-        var hash = HashUtils.sha256(token);
+        var hash = sut.encodeSha256(token);
 
         assertThat(hash).hasSize(64);
     }
@@ -23,8 +25,8 @@ class HashUtilsTest {
         var input = "repeat";
 
         // When
-        var hash1 = HashUtils.sha256(input);
-        var hash2 = HashUtils.sha256(input);
+        var hash1 = sut.encodeSha256(input);
+        var hash2 = sut.encodeSha256(input);
 
         // Then
         assertThat(hash1).isEqualTo(hash2);

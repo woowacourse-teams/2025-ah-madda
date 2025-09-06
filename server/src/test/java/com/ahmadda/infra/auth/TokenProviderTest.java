@@ -23,6 +23,8 @@ class TokenProviderTest {
 
     static JwtProvider jwtProvider;
 
+    static HashEncoder hashEncoder;
+
     static TokenProvider sut;
 
     @BeforeAll
@@ -39,7 +41,9 @@ class TokenProviderTest {
                 refreshSecretKey, refreshExpiration
         );
         jwtProvider = new JwtProvider(jwtProperties);
-        sut = new TokenProvider(jwtProvider);
+        hashEncoder = new HashEncoder();
+
+        sut = new TokenProvider(jwtProvider, hashEncoder);
     }
 
     @Test
@@ -92,7 +96,11 @@ class TokenProviderTest {
         var userAgent = createUserAgent();
         var expiresAt = LocalDateTime.now()
                 .plusDays(1);
-        var savedRefreshToken = RefreshToken.create(memberToken.refreshToken(), memberId, userAgent, expiresAt);
+
+        var encodedToken = hashEncoder.encodeSha256(memberToken.refreshToken());
+        var deviceId = hashEncoder.encodeSha256(userAgent);
+
+        var savedRefreshToken = RefreshToken.create(encodedToken, memberId, deviceId, expiresAt);
         // when // then
         assertDoesNotThrow(() -> sut.validateRefreshTokenMatch(memberToken.refreshToken(),
                                                                savedRefreshToken.getToken(),

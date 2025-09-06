@@ -7,13 +7,13 @@ import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.infra.auth.HashEncoder;
 import com.ahmadda.infra.auth.RefreshTokenRepository;
 import com.ahmadda.infra.auth.exception.InvalidTokenException;
 import com.ahmadda.infra.auth.jwt.config.JwtProperties;
 import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
 import com.ahmadda.infra.auth.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.auth.oauth.dto.OAuthUserInfoResponse;
-import com.ahmadda.infra.auth.util.HashUtils;
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +49,9 @@ class LoginServiceTest {
 
     @Autowired
     private JwtProperties jwtProperties;
+
+    @Autowired
+    private HashEncoder hashEncoder;
 
     @MockitoBean
     private GoogleOAuthProvider googleOAuthProvider;
@@ -138,7 +141,7 @@ class LoginServiceTest {
 
         sut.login(code, redirectUri, userAgent);
 
-        var deviceId = HashUtils.sha256(userAgent);
+        var deviceId = hashEncoder.encodeSha256(userAgent);
         var oldSavedToken = refreshTokenRepository.findByMemberIdAndDeviceId(member.getId(), deviceId)
                 .get();
 
@@ -166,7 +169,7 @@ class LoginServiceTest {
 
         var redirectUri = "redirectUri";
         var testPicture = "testPicture";
-        var deviceId = HashUtils.sha256(userAgent);
+        var deviceId = hashEncoder.encodeSha256(userAgent);
 
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
                 .willReturn(new OAuthUserInfoResponse(email, name, testPicture));

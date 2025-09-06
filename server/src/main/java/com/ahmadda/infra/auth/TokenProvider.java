@@ -4,7 +4,6 @@ import com.ahmadda.application.dto.MemberToken;
 import com.ahmadda.infra.auth.exception.InvalidTokenException;
 import com.ahmadda.infra.auth.jwt.JwtProvider;
 import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
-import com.ahmadda.infra.auth.util.HashUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +15,7 @@ import java.util.Objects;
 public class TokenProvider {
 
     private final JwtProvider jwtProvider;
+    private final HashEncoder hashEncoder;
 
     public MemberToken createMemberToken(final Long memberId) {
         String accessToken = jwtProvider.createAccessToken(memberId);
@@ -60,7 +60,7 @@ public class TokenProvider {
     }
 
     private void validateRefreshTokenMatches(final String refreshToken, final String savedRefreshToken) {
-        String encodedRefreshToken = HashUtils.sha256(refreshToken);
+        String encodedRefreshToken = hashEncoder.encodeSha256(refreshToken);
 
         if (!encodedRefreshToken.equals(savedRefreshToken)) {
             throw new InvalidTokenException("리프레시 토큰이 유효하지 않습니다.");
