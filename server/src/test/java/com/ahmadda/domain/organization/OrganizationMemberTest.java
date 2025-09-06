@@ -51,7 +51,7 @@ class OrganizationMemberTest {
     }
 
     @Test
-    void 관리자는_같은_구성원의_권한을_변경할_수_있다() {
+    void 관리자는_같은_이벤트_스페이스의_구성원_권한을_변경할_수_있다() {
         // given
         var targetMember = Member.create("user-m", "user@example.com", "pic");
         var adminMember = Member.create("admin-m", "admin@example.com", "pic");

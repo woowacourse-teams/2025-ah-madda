@@ -159,10 +159,10 @@ class OrganizationMemberEventServiceTest {
                 30
         );
 
-        // 참여하지 않은 이벤트 (결과에 포함되지 않아야 함)
+        // 참여하지 않는 이벤트 (결과에 포함되지 않아야 함)
         createAndSaveEvent(
                 "미참여 이벤트",
-                "참여하지 않은 이벤트",
+                "참여하지 않는 이벤트",
                 "미참여장소",
                 organizer,
                 organization,
@@ -205,7 +205,7 @@ class OrganizationMemberEventServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getOwnerEvents(organization.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 구성원 정보입니다.");
+                .hasMessage("존재하지 않는 구성원 정보입니다.");
     }
 
     @Test
@@ -217,7 +217,7 @@ class OrganizationMemberEventServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getParticipantEvents(organization.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 구성원 정보입니다.");
+                .hasMessage("존재하지 않는 구성원 정보입니다.");
     }
 
     private Organization createAndSaveOrganization(String name, String description, String imageUrl) {

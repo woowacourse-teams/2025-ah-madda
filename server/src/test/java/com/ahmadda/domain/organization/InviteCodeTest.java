@@ -23,7 +23,7 @@ class InviteCodeTest {
         //when //then
         assertThatThrownBy(() -> InviteCode.create("code", organization2, inviter, LocalDateTime.now()))
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("이벤트 스페이스에 참여중인 구성원만 해당 이벤트 스페이스의 초대코드를 만들 수 있습니다.");
+                .hasMessage("이벤트 스페이스에 참여 중인 구성원만 해당 이벤트 스페이스의 초대코드를 만들 수 있습니다.");
     }
 
     @Test

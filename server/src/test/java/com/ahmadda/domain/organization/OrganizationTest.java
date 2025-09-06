@@ -105,7 +105,7 @@ class OrganizationTest {
     }
 
     @Test
-    void 관리자가_이벤트_스페이스정보를_수정할_수_있다() {
+    void 관리자가_이벤트_스페이스_정보를_수정할_수_있다() {
         // given
         var admin = OrganizationMember.create("관리자", organizer.getMember(), sut, OrganizationMemberRole.ADMIN);
 
@@ -124,7 +124,7 @@ class OrganizationTest {
     }
 
     @Test
-    void 관리자가_아니면_이벤트_스페이스정보를_수정한다면_예외가_발생한다() {
+    void 관리자가_아니면_이벤트_스페이스_정보를_수정하면_예외가_발생한다() {
         // given
         var user = OrganizationMember.create("일반회원", organizer.getMember(), sut, OrganizationMemberRole.USER);
 
@@ -137,7 +137,7 @@ class OrganizationTest {
     }
 
     @Test
-    void 다른_이벤트_스페이스의_관리자가_이벤트_스페이스정보를_수정다면_예외가_발생한다() {
+    void 다른_이벤트_스페이스의_관리자가_이벤트_스페이스_정보를_수정다면_예외가_발생한다() {
         // given
         var otherOrganization = Organization.create("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "image.png");
         var organizationMember = OrganizationMember.create(

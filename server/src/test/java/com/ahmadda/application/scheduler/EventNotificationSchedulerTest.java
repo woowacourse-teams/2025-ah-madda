@@ -66,7 +66,7 @@ class EventNotificationSchedulerTest {
 
     @ParameterizedTest
     @MethodSource("registrationEndOffsets")
-    void 등록_마감_30분_전_수신_거부하지_않은_비게스트에게만_알람을_전송한다(
+    void 등록_마감_30분_전_수신_거부하지_않는_비게스트에게만_알람을_전송한다(
             int minutesUntilRegistrationEnds,
             boolean expectToSend
     ) {
@@ -191,7 +191,7 @@ class EventNotificationSchedulerTest {
 
     @ParameterizedTest
     @MethodSource("eventStartOffsets")
-    void 이벤트_시작_24시간_전_수신_거부하지_않은_게스트에게만_알람을_전송한다(
+    void 이벤트_시작_24시간_전_수신_거부하지_않는_게스트에게만_알람을_전송한다(
             int minutesFrom24hOffset,
             boolean expectToSend
     ) {

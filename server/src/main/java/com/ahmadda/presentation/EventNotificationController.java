@@ -51,7 +51,7 @@ public class EventNotificationController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않는 인증 정보입니다.",
                                               "instance": "/api/events/{eventId}/notify-organization-members"
                                             }
                                             """
@@ -156,7 +156,7 @@ public class EventNotificationController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않는 인증 정보입니다.",
                                               "instance": "/api/events/{eventId}/notification/history"
                                             }
                                             """

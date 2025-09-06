@@ -197,7 +197,7 @@ class LoginServiceTest {
     }
 
     @Test
-    void 액세스토큰이_만료되지_않은_경우_재발급_받을_수_없다() {
+    void 액세스토큰이_만료되지_않는_경우_재발급_받을_수_없다() {
         // given
         var code = "code";
         var name = "홍길동";

@@ -194,7 +194,7 @@ class EventTest {
     }
 
     @Test
-    void 주최자는_자신의_이벤트_스페이스이_아닌_다른_이벤트_스페이스의_이벤트를_생성한다면_예외가_발생한다() {
+    void 주최자는_자신의_이벤트_스페이스가_아닌_다른_이벤트_스페이스의_이벤트를_생성한다면_예외가_발생한다() {
         //given
         var organization1 = createOrganization("우테코1");
         var organization2 = createOrganization("우테코2");
@@ -203,7 +203,7 @@ class EventTest {
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization2))
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("자신이 속한 이벤트 스페이스이 아닙니다.");
+                .hasMessage("자신이 속한 이벤트 스페이스가 아닙니다.");
     }
 
     @ParameterizedTest
@@ -242,7 +242,7 @@ class EventTest {
 
 
     @Test
-    void 이벤트에_참여하지_않은_구성원을_조회할_수_있다() {
+    void 이벤트에_참여하지_않는_구성원을_조회할_수_있다() {
         // given
         var now = LocalDateTime.now();
         var registrationPeriod = EventPeriod.create(
@@ -271,7 +271,7 @@ class EventTest {
     }
 
     @Test
-    void 이벤트에_참여중인_게스트가_또_참여한다면_예외가_발생한다() {
+    void 이벤트에_참여_중인_게스트가_또_참여한다면_예외가_발생한다() {
         //given
         var now = LocalDateTime.now();
         var registrationPeriod = EventPeriod.create(
@@ -288,7 +288,7 @@ class EventTest {
         //when //then
         assertThatThrownBy(() -> sut.participate(guest, registrationPeriod.start()))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("이미 해당 이벤트에 참여중인 게스트입니다.");
+                .hasMessage("이미 해당 이벤트에 참여 중인 게스트입니다.");
     }
 
     @Test

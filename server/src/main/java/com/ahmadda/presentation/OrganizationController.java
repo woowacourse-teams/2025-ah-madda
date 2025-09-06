@@ -48,7 +48,7 @@ public class OrganizationController {
 
     private final OrganizationService organizationService;
 
-    @Operation(summary = "신규 이벤트 스페이스 생성", description = "새로운 이벤트 스페이스을 생성합니다.")
+    @Operation(summary = "신규 이벤트 스페이스 생성", description = "새로운 이벤트 스페이스를 생성합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "201",
@@ -177,7 +177,7 @@ public class OrganizationController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않는 인증 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/participation"
                                             }
                                             """
@@ -278,7 +278,7 @@ public class OrganizationController {
                 ));
     }
 
-    @Operation(summary = "이벤트 스페이스 수정", description = "이벤트 스페이스을 수정합니다.")
+    @Operation(summary = "이벤트 스페이스 수정", description = "이벤트 스페이스를 수정합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(
@@ -404,7 +404,7 @@ public class OrganizationController {
                 .build();
     }
 
-    @Operation(summary = "내가 참여중인 이벤트 스페이스 목록 조회", description = "로그인한 사용자가 참여중인 이벤트 스페이스 목록을 조회합니다.")
+    @Operation(summary = "내가 참여 중인 이벤트 스페이스 목록 조회", description = "로그인한 사용자가 참여 중인 이벤트 스페이스 목록을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -421,7 +421,7 @@ public class OrganizationController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않는 인증 정보입니다.",
                                               "instance": "/api/organizations/participated"
                                             }
                                             """
@@ -458,7 +458,7 @@ public class OrganizationController {
         return ResponseEntity.ok(organizationResponses);
     }
 
-    @Operation(summary = "이벤트 스페이스 삭제", description = "이벤트 스페이스을 삭제합니다.")
+    @Operation(summary = "이벤트 스페이스 삭제", description = "이벤트 스페이스를 삭제합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(
@@ -470,7 +470,7 @@ public class OrganizationController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않는 인증 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}"
                                             }
                                             """

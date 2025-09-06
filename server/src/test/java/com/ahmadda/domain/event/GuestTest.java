@@ -85,7 +85,7 @@ class GuestTest {
     }
 
     @Test
-    void 같은_이벤트_스페이스이_아닌_이벤트의_구성원이_참여한다면_예외가_발생한다() {
+    void 같은_이벤트_스페이스가_아닌_이벤트의_구성원이_참여한다면_예외가_발생한다() {
         //given
         var organization1 = Organization.create("테스트 이벤트 스페이스1", "이벤트 스페이스 설명", "image.png");
         var organization2 = Organization.create("테스트 이벤트 스페이스2", "이벤트 스페이스 설명", "image.png");
@@ -109,7 +109,7 @@ class GuestTest {
         //when //then
         assertThatThrownBy(() -> Guest.create(event, organizationMember2, event.getRegistrationStart()))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("같은 이벤트 스페이스의 이벤트에만 게스트로 참여가능합니다.");
+                .hasMessage("같은 이벤트 스페이스의 이벤트에만 게스트로 참여할 수 있습니다합니다.");
     }
 
     @Test
@@ -263,7 +263,7 @@ class GuestTest {
         // when // then
         assertThatThrownBy(() -> guest.submitAnswers(answers))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessageContaining("이벤트에 포함되지 않은 질문입니다");
+                .hasMessageContaining("이벤트에 포함되지 않는 질문입니다");
     }
 
     @Test

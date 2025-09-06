@@ -144,7 +144,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.createEvent(999L, loginMember, eventCreateRequest, now))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 이벤트 스페이스 정보입니다.");
+                .hasMessage("존재하지 않는 이벤트 스페이스 정보입니다.");
     }
 
     @Test
@@ -169,7 +169,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("구성원을 찾을 수 없습니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
@@ -196,7 +196,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.createEvent(organization1.getId(), loginMember, eventCreateRequest, now))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("구성원을 찾을 수 없습니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
@@ -289,7 +289,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization)).isInstanceOf(
                         ForbiddenException.class)
-                .hasMessage("자신이 속한 이벤트 스페이스이 아닙니다.");
+                .hasMessage("자신이 속한 이벤트 스페이스가 아닙니다.");
     }
 
     @Test
@@ -301,7 +301,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.getOrganizationMemberEvent(loginMember, 999L))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 이벤트 정보입니다.");
+                .hasMessage("존재하지 않는 이벤트 정보입니다.");
     }
 
     @Test
@@ -320,7 +320,7 @@ class EventServiceTest {
                 now
         ))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("구성원을 찾을 수 없습니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
@@ -345,7 +345,7 @@ class EventServiceTest {
                 now
         ))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("구성원을 찾을 수 없습니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
@@ -544,7 +544,7 @@ class EventServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.updateEvent(9999L, loginMember, updateRequest, now))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 이벤트 정보입니다.");
+                .hasMessage("존재하지 않는 이벤트 정보입니다.");
     }
 
     @Test
@@ -633,7 +633,7 @@ class EventServiceTest {
     }
 
     @Test
-    void 이벤트_수정_시_수신_거부_하지_않은_게스트들에게_알림을_보낸다() {
+    void 이벤트_수정_시_수신_거부_하지_않는_게스트들에게_알림을_보낸다() {
         // given
         var organization = createOrganization();
         var organizerMember = createMember("organizer", "organizer@email.com");
@@ -791,7 +791,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.isOrganizer(999L, loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 이벤트 정보입니다.");
+                .hasMessage("존재하지 않는 이벤트 정보입니다.");
     }
 
     @Test
@@ -854,7 +854,7 @@ class EventServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getActiveEvents(999L, loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 이벤트 스페이스 정보입니다.");
+                .hasMessage("존재하지 않는 이벤트 스페이스 정보입니다.");
     }
 
     @Test

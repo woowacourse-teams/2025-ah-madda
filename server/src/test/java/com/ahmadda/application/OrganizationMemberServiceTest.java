@@ -106,7 +106,7 @@ class OrganizationMemberServiceTest {
     }
 
     @Test
-    void 구성원_역할_변경시_존재하지_않는_이벤트_스페이스이면_예외가_발생한다() {
+    void 구성원_역할_변경시_존재하지_않는_이벤트_스페이스가면_예외가_발생한다() {
         var admin = createMember("admin", "admin@email.com");
         var loginMember = new LoginMember(admin.getId());
         var request = new OrganizationMemberRoleUpdateRequest(List.of(1L, 2L), OrganizationMemberRole.ADMIN);
@@ -178,7 +178,7 @@ class OrganizationMemberServiceTest {
     }
 
     @Test
-    void 이벤트_스페이스_멤버_목록을_조회할_수_있다() {
+    void 이벤트_스페이스_구성원_목록을_조회할_수_있다() {
         // given
         var org = createOrganization("우테코");
         var member1 = createMember("홍길동", "hong@email.com");
@@ -204,7 +204,7 @@ class OrganizationMemberServiceTest {
     }
 
     @Test
-    void 이벤트_스페이스_멤버_목록_조회시_이벤트_스페이스가_존재하지_않으면_예외가_발생한다() {
+    void 이벤트_스페이스_구성원_목록_조회시_이벤트_스페이스가_존재하지_않으면_예외가_발생한다() {
         // given
         var member = createMember("홍길동", "hong@email.com");
         var loginMember = new LoginMember(member.getId());
@@ -218,10 +218,10 @@ class OrganizationMemberServiceTest {
     }
 
     @Test
-    void 이벤트_스페이스_멤버_목록_조회시_이벤트_스페이스에_속하지_않은_구성원이면_예외가_발생한다() {
+    void 이벤트_스페이스_구성원_목록_조회시_이벤트_스페이스에_속하지_않는_구성원이면_예외가_발생한다() {
         // given
         var org1 = createOrganization("우테코");
-        var org2 = createOrganization("다른이벤트 스페이스");
+        var org2 = createOrganization("다른 이벤트 스페이스");
 
         var member = createMember("홍길동", "hong@email.com");
         createOrganizationMember("길동", member, org2, OrganizationMemberRole.USER); // 다른 이벤트 스페이스 소속

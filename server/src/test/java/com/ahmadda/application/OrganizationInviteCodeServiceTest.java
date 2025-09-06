@@ -113,7 +113,7 @@ class OrganizationInviteCodeServiceTest {
     }
 
     @Test
-    void 초대코드를_만들때_이벤트_스페이스이_없다면_예외가_발생한다() {
+    void 초대코드를_만들때_이벤트_스페이스가_없다면_예외가_발생한다() {
         //given
         var organization = createAndSaveOrganization("우테코");
         var member = createAndSaveMember("surf", "surf@ahmadda.com");
@@ -140,7 +140,7 @@ class OrganizationInviteCodeServiceTest {
     }
 
     @Test
-    void 초대코드를_통해_이벤트_스페이스을_조회할_수_있다() {
+    void 초대코드를_통해_이벤트_스페이스를_조회할_수_있다() {
         //given
         var organization = createAndSaveOrganization("우테코");
         var member = createAndSaveMember("surf", "surf@ahmadda.com");
@@ -155,15 +155,15 @@ class OrganizationInviteCodeServiceTest {
     }
 
     @Test
-    void 존재하지_않는_초대코드로_이벤트_스페이스을_찾는다면_예외가_발생한다() {
+    void 존재하지_않는_초대코드로_이벤트_스페이스를_찾는다면_예외가_발생한다() {
         //when //then
         assertThatThrownBy(() -> sut.getOrganizationByCode("fakeCode"))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("유효하지 않은 초대코드입니다.");
+                .hasMessage("유효하지 않는 초대코드입니다.");
     }
 
     @Test
-    void 만료된_초대코드를_통해_이벤트_스페이스을_조회한다면_예외가_발생한다() {
+    void 만료된_초대코드를_통해_이벤트_스페이스를_조회한다면_예외가_발생한다() {
         //given
         var organization = createAndSaveOrganization("우테코");
         var member = createAndSaveMember("surf", "surf@ahmadda.com");

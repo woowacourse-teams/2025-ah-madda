@@ -261,7 +261,7 @@ class EventNotificationServiceTest {
 
         var validOm = saveOrganizationMember("유효", "valid@email.com", organization);
 
-        var otherOrg = organizationRepository.save(Organization.create("다른이벤트 스페이스", "설명", "img2.png"));
+        var otherOrg = organizationRepository.save(Organization.create("다른 이벤트 스페이스", "설명", "img2.png"));
         var otherOm = saveOrganizationMember("다른구성원", "otherorg@email.com", otherOrg);
 
         var request = createSelectedMembersRequest(java.util.List.of(validOm.getId(), otherOm.getId()));

@@ -52,7 +52,7 @@ class OrganizationServiceTest {
     private OrganizationService sut;
 
     @Test
-    void 이벤트_스페이스을_ID로_조회한다() {
+    void 이벤트_스페이스를_ID로_조회한다() {
         // given
         var organization = createOrganization("Org");
 
@@ -71,7 +71,7 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void 이벤트_스페이스을_생성한다() {
+    void 이벤트_스페이스를_생성한다() {
         // given
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var request = createOrganizationCreateRequest("이벤트 스페이스명", "이벤트 스페이스 설명", "서프");
@@ -208,7 +208,7 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void 이벤트_스페이스의_관리자는_이벤트_스페이스을_수정할_수_있다() {
+    void 이벤트_스페이스의_관리자는_이벤트_스페이스를_수정할_수_있다() {
         //given
         var organization = createOrganization("Org");
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
@@ -259,7 +259,7 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void 이벤트_스페이스이_없다면_이벤트_스페이스을_수정할때_예외가_발생한다() {
+    void 이벤트_스페이스가_없다면_이벤트_스페이스를_수정할때_예외가_발생한다() {
         // given
         var request = new OrganizationUpdateRequest("새 이름", "새 설명");
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
@@ -271,7 +271,7 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void 구성원이_없다면_이벤트_스페이스을_수정할때_예외가_발생한다() {
+    void 구성원이_없다면_이벤트_스페이스를_수정할때_예외가_발생한다() {
         // given
         var organization = createOrganization("Org");
         var request = new OrganizationUpdateRequest("새 이름", "새 설명");
@@ -289,7 +289,7 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void 사용자가_가입한_이벤트_스페이스을_조회할_수_있다() {
+    void 사용자가_가입한_이벤트_스페이스를_조회할_수_있다() {
         //given
         var organization1 = createOrganization("우테코");
         var organization2 = createOrganization("아맞다");
@@ -315,7 +315,7 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void 사용자가_가입한_이벤트_스페이스을_조회할때_사용자가_없다면_예외가_발생한다() {
+    void 사용자가_가입한_이벤트_스페이스를_조회할때_사용자가_없다면_예외가_발생한다() {
         //when //then
         assertThatThrownBy(() -> sut.getParticipatingOrganizations(new LoginMember(999L)))
                 .isInstanceOf(NotFoundException.class)
@@ -323,7 +323,7 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void 이벤트_스페이스의_관리자는_이벤트_스페이스을_삭제할_수_있다() {
+    void 이벤트_스페이스의_관리자는_이벤트_스페이스를_삭제할_수_있다() {
         // given
         var organization = createOrganization("삭제될 이벤트 스페이스");
         var admin = memberRepository.save(Member.create("admin", "admin@test.com", "pic"));
@@ -351,7 +351,7 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void 이벤트_스페이스_삭제시_이벤트_스페이스에_속하지_않은_회원이라면_예외가_발생한다() {
+    void 이벤트_스페이스_삭제시_이벤트_스페이스에_속하지_않는_회원이라면_예외가_발생한다() {
         // given
         var organization = createOrganization("삭제 대상 이벤트 스페이스");
         var member = memberRepository.save(Member.create("user", "user@test.com", "pic"));

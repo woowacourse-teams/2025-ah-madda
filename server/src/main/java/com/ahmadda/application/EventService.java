@@ -182,12 +182,12 @@ public class EventService {
 
     private Event getEvent(final Long eventId) {
         return eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않은 이벤트 정보입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 이벤트 정보입니다."));
     }
 
     private Organization getOrganization(final Long organizationId) {
         return organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않은 이벤트 스페이스 정보입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 이벤트 스페이스 정보입니다."));
     }
 
     private void validateOrganizationAccess(final Long organizationId, final Long memberId) {
@@ -198,7 +198,7 @@ public class EventService {
 
     private OrganizationMember getOrganizationMember(final Long organizationId, final Long memberId) {
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
-                .orElseThrow(() -> new NotFoundException("구성원을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 구성원입니다."));
     }
 
     private List<Question> createQuestions(final List<QuestionCreateRequest> questionCreateRequests) {

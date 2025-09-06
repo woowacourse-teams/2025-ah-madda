@@ -91,7 +91,7 @@ public class Guest extends BaseEntity {
     private void addAnswers(final Map<Question, String> answers) {
         answers.forEach((question, answerText) -> {
             if (!event.hasQuestion(question)) {
-                throw new UnprocessableEntityException("이벤트에 포함되지 않은 질문입니다.");
+                throw new UnprocessableEntityException("이벤트에 포함되지 않는 질문입니다.");
             }
             if (answerText == null || answerText.isBlank()) {
                 return;
@@ -102,7 +102,7 @@ public class Guest extends BaseEntity {
 
     private void validateSameOrganization(final Event event, final OrganizationMember organizationMember) {
         if (!organizationMember.isBelongTo(event.getOrganization())) {
-            throw new UnprocessableEntityException("같은 이벤트 스페이스의 이벤트에만 게스트로 참여가능합니다.");
+            throw new UnprocessableEntityException("같은 이벤트 스페이스의 이벤트에만 게스트로 참여할 수 있습니다합니다.");
         }
     }
 

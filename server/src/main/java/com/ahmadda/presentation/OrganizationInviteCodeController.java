@@ -52,7 +52,7 @@ public class OrganizationInviteCodeController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않는 인증 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/invite-codes"
                                             }
                                             """
@@ -68,7 +68,7 @@ public class OrganizationInviteCodeController {
                                               "type": "about:blank",
                                               "title": "Forbidden",
                                               "status": 403,
-                                              "detail": "이벤트 스페이스에 참여중인 구성원만 해당 이벤트 스페이스의 초대코드를 만들 수 있습니다.",
+                                              "detail": "이벤트 스페이스에 참여 중인 구성원만 해당 이벤트 스페이스의 초대코드를 만들 수 있습니다.",
                                               "instance": "/api/organizations/{organizationId}/invite-codes"
                                             }
                                             """
@@ -118,7 +118,7 @@ public class OrganizationInviteCodeController {
         return ResponseEntity.ok(new InviteCodeCreateResponse(inviteCode.getCode(), inviteCode.getExpiresAt()));
     }
 
-    @Operation(summary = "초대코드를 통해 이벤트 스페이스 조회", description = "초대코드를 통해 이벤트 스페이스을 조회합니다.")
+    @Operation(summary = "초대코드를 통해 이벤트 스페이스 조회", description = "초대코드를 통해 이벤트 스페이스를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -133,13 +133,13 @@ public class OrganizationInviteCodeController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
-                                            name = "유효하지 않은 초대코드",
+                                            name = "유효하지 않는 초대코드",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Unprocessable Entity",
                                                       "status": 422,
-                                                      "detail": "유효하지 않은 초대코드입니다.",
+                                                      "detail": "유효하지 않는 초대코드입니다.",
                                                       "instance": "/api/organizations/preview?inviteCode={inviteCode}"
                                                     }
                                                     """

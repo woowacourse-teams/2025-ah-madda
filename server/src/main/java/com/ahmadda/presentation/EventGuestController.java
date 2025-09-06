@@ -66,7 +66,7 @@ public class EventGuestController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않는 인증 정보입니다.",
                                               "instance": "/api/events/{eventId}/guests"
                                             }
                                             """
@@ -121,7 +121,7 @@ public class EventGuestController {
         return ResponseEntity.ok(responses);
     }
 
-    @Operation(summary = "이벤트 미참여 구성원 목록 및 알림 수신 거부 여부 조회", description = "해당 이벤트에 아직 참여하지 않은 구성원 목록과, 각 구성원의 알림 수신 거부 여부를 조회합니다.")
+    @Operation(summary = "이벤트 미참여 구성원 목록 및 알림 수신 거부 여부 조회", description = "해당 이벤트에 아직 참여하지 않는 구성원 목록과, 각 구성원의 알림 수신 거부 여부를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -138,7 +138,7 @@ public class EventGuestController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않는 인증 정보입니다.",
                                               "instance": "/api/events/{eventId}/non-guests"
                                             }
                                             """
@@ -212,7 +212,7 @@ public class EventGuestController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않는 인증 정보입니다.",
                                               "instance": "/api/events/{eventId}/participation"
                                             }
                                             """
@@ -273,7 +273,7 @@ public class EventGuestController {
                                                       "type": "about:blank",
                                                       "title": "Unprocessable Entity",
                                                       "status": 422,
-                                                      "detail": "같은 이벤트 스페이스의 이벤트에만 게스트로 참여가능합니다.",
+                                                      "detail": "같은 이벤트 스페이스의 이벤트에만 게스트로 참여할 수 있습니다합니다.",
                                                       "instance": "/api/events/{eventId}/participation"
                                                     }
                                                     """
@@ -303,13 +303,13 @@ public class EventGuestController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "이미 참여중인 이벤트",
+                                            name = "이미 참여 중인 이벤트",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Unprocessable Entity",
                                                       "status": 422,
-                                                      "detail": "이미 해당 이벤트에 참여중인 게스트입니다.",
+                                                      "detail": "이미 해당 이벤트에 참여 중인 게스트입니다.",
                                                       "instance": "/api/events/{eventId}/participation"
                                                     }
                                                     """
@@ -339,13 +339,13 @@ public class EventGuestController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "이벤트에 포함되지 않은 질문에 대한 답변",
+                                            name = "이벤트에 포함되지 않는 질문에 대한 답변",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Unprocessable Entity",
                                                       "status": 422,
-                                                      "detail": "이벤트에 포함되지 않은 질문입니다.",
+                                                      "detail": "이벤트에 포함되지 않는 질문입니다.",
                                                       "instance": "/api/events/{eventId}/participation"
                                                     }
                                                     """
@@ -390,7 +390,7 @@ public class EventGuestController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않는 인증 정보입니다.",
                                               "instance": "/api/events/{eventId}/guest-status"
                                             }
                                             """
@@ -453,7 +453,7 @@ public class EventGuestController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않는 인증 정보입니다.",
                                               "instance": "/api/events/{eventId}/cancel-participate"
                                             }
                                             """
@@ -489,7 +489,7 @@ public class EventGuestController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "참여하지 않은 이벤트",
+                                            name = "참여하지 않는 이벤트",
                                             value = """
                                                     {
                                                       "type": "about:blank",
@@ -532,7 +532,7 @@ public class EventGuestController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않는 인증 정보입니다.",
                                               "instance": "/api/events/{eventId}/guests/{guestId}/answers"
                                             }
                                             """
