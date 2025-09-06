@@ -38,7 +38,7 @@ public class EventStatisticService {
                         organization.getId(),
                         loginMember.memberId()
                 )
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직원입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 구성원입니다."));
     }
 
     private Event getEvent(final Long eventId) {

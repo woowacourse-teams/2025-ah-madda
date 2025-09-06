@@ -14,8 +14,8 @@ import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
-import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.domain.organization.OrganizationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -63,7 +63,7 @@ class EventStatisticServiceTest {
     }
 
     @Test
-    void 존재하지_않는_조직원일시_예외가_발생한다() {
+    void 존재하지_않는_구성원일시_예외가_발생한다() {
         // given
         var organization = createOrganization();
         var member = createMember();
@@ -76,7 +76,7 @@ class EventStatisticServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getEventStatistic(event.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원입니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
@@ -112,7 +112,7 @@ class EventStatisticServiceTest {
     }
 
     private Organization createOrganization() {
-        Organization organization = Organization.create("테스트 조직", "테스트 설명", "test-image-url");
+        Organization organization = Organization.create("테스트 이벤트 스페이스", "테스트 설명", "test-image-url");
         return organizationRepository.save(organization);
     }
 

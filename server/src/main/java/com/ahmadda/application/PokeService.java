@@ -46,7 +46,7 @@ public class PokeService {
 
     private OrganizationMember getOrganizationMember(final Long organizationMemberId) {
         return organizationMemberRepository.findById(organizationMemberId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직원입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 구성원입니다."));
     }
 
     private OrganizationMember getOrganizationMember(final LoginMember loginMember, final Organization organization) {
@@ -54,7 +54,7 @@ public class PokeService {
                         organization.getId(),
                         loginMember.memberId()
                 )
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직원입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 구성원입니다."));
     }
 
     private Event getEvent(final Long eventId) {
@@ -71,7 +71,7 @@ public class PokeService {
                 );
 
         if (recipientWithOptOut.isOptedOut()) {
-            throw new UnprocessableEntityException("알림을 받지 않는 조직원입니다.");
+            throw new UnprocessableEntityException("알림을 받지 않는 구성원입니다.");
         }
     }
 }

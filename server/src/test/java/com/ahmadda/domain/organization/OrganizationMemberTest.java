@@ -23,7 +23,7 @@ class OrganizationMemberTest {
     @BeforeEach
     void setUp() {
         member = Member.create("테스트 회원", "test@example.com", "testPicture");
-        organization = Organization.create("테스트 조직", "조직 설명", "image.png");
+        organization = Organization.create("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "image.png");
         sut = OrganizationMember.create("주최자", member, organization, OrganizationMemberRole.USER);
     }
 
@@ -32,7 +32,7 @@ class OrganizationMemberTest {
         // given
         var participantMember = Member.create("참여자", "participant@example.com", "testPicture");
         var participant =
-                OrganizationMember.create("참여자 조직원", participantMember, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create("참여자 구성원", participantMember, organization, OrganizationMemberRole.USER);
 
         var event1 = createEvent("이벤트 1");
         var event2 = createEvent("이벤트 2");
@@ -51,7 +51,7 @@ class OrganizationMemberTest {
     }
 
     @Test
-    void 관리자는_같은_조직원의_권한을_변경할_수_있다() {
+    void 관리자는_같은_이벤트_스페이스의_구성원_권한을_변경할_수_있다() {
         // given
         var targetMember = Member.create("user-m", "user@example.com", "pic");
         var adminMember = Member.create("admin-m", "admin@example.com", "pic");
@@ -76,16 +76,16 @@ class OrganizationMemberTest {
         // when // then
         assertThatThrownBy(() -> notAdmin.changeRolesOf(List.of(target), OrganizationMemberRole.ADMIN))
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("관리자만 조직원의 권한을 변경할 수 있습니다.");
+                .hasMessage("관리자만 구성원의 권한을 변경할 수 있습니다.");
     }
 
     @Test
-    void 권한_변경시_다른_조직의_관리자라면_예외가_발생한다() {
+    void 권한_변경시_다른_이벤트_스페이스의_관리자라면_예외가_발생한다() {
         // given
         var targetMember = Member.create("user-m", "user@example.com", "pic");
         var target = OrganizationMember.create("user", targetMember, organization, OrganizationMemberRole.USER);
 
-        var otherOrg = Organization.create("다른 조직", "desc", "image.png");
+        var otherOrg = Organization.create("다른 이벤트 스페이스", "desc", "image.png");
         var outsiderAdminMember = Member.create("outsider-admin-m", "outsider-admin@example.com", "pic");
         var outsiderAdmin =
                 OrganizationMember.create("outsider", outsiderAdminMember, otherOrg, OrganizationMemberRole.ADMIN);
@@ -93,7 +93,7 @@ class OrganizationMemberTest {
         // when // then
         assertThatThrownBy(() -> outsiderAdmin.changeRolesOf(List.of(target), OrganizationMemberRole.ADMIN))
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("같은 조직에 속한 조직원만 권한을 변경할 수 있습니다.");
+                .hasMessage("같은 이벤트 스페이스에 속한 구성원만 권한을 변경할 수 있습니다.");
     }
 
     private Event createEvent(String title) {

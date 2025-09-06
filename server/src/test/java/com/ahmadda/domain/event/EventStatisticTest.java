@@ -133,7 +133,7 @@ class EventStatisticTest {
     }
 
     @Test
-    void 이벤트가_끝나지_않은_경우_오늘까지의_조회수만_반환한다() {
+    void 이벤트가_끝나지_않는_경우_오늘까지의_조회수만_반환한다() {
         //given
         var organization = createOrganization("우테코1");
         var organizationMember = createOrganizationMember(createMember("서프", "surf@gmail.com"), organization);

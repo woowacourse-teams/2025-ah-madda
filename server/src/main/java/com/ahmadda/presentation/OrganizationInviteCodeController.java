@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 
-@Tag(name = "Organization InviteCode", description = "조직 초대코드 관련 API")
+@Tag(name = "Organization InviteCode", description = "이벤트 스페이스 초대코드 관련 API")
 @RestController
 @RequestMapping("/api/organizations")
 @RequiredArgsConstructor
@@ -33,7 +33,7 @@ public class OrganizationInviteCodeController {
 
     private final OrganizationInviteCodeService organizationInviteCodeService;
 
-    @Operation(summary = "조직 초대코드 생성", description = "조직의 초대코드를 생성합니다.")
+    @Operation(summary = "이벤트 스페이스 초대코드 생성", description = "이벤트 스페이스의 초대코드를 생성합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -52,7 +52,7 @@ public class OrganizationInviteCodeController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않는 인증 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/invite-codes"
                                             }
                                             """
@@ -68,7 +68,7 @@ public class OrganizationInviteCodeController {
                                               "type": "about:blank",
                                               "title": "Forbidden",
                                               "status": 403,
-                                              "detail": "조직에 참여중인 조직원만 해당 조직의 초대코드를 만들 수 있습니다.",
+                                              "detail": "이벤트 스페이스에 참여 중인 구성원만 해당 이벤트 스페이스의 초대코드를 만들 수 있습니다.",
                                               "instance": "/api/organizations/{organizationId}/invite-codes"
                                             }
                                             """
@@ -80,25 +80,25 @@ public class OrganizationInviteCodeController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
-                                            name = "조직 없음",
+                                            name = "이벤트 스페이스 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않는 조직 정보입니다.",
+                                                      "detail": "존재하지 않는 이벤트 스페이스 정보입니다.",
                                                       "instance": "/api/organizations/{organizationId}/invite-codes"
                                                     }
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "조직원 없음",
+                                            name = "구성원 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않는 조직원 정보입니다.",
+                                                      "detail": "존재하지 않는 구성원 정보입니다.",
                                                       "instance": "/api/organizations/{organizationId}/invite-codes"
                                                     }
                                                     """
@@ -118,7 +118,7 @@ public class OrganizationInviteCodeController {
         return ResponseEntity.ok(new InviteCodeCreateResponse(inviteCode.getCode(), inviteCode.getExpiresAt()));
     }
 
-    @Operation(summary = "초대코드를 통해 조직 조회", description = "초대코드를 통해 조직을 조회합니다.")
+    @Operation(summary = "초대코드를 통해 이벤트 스페이스 조회", description = "초대코드를 통해 이벤트 스페이스를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -133,13 +133,13 @@ public class OrganizationInviteCodeController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
-                                            name = "유효하지 않은 초대코드",
+                                            name = "유효하지 않는 초대코드",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Unprocessable Entity",
                                                       "status": 422,
-                                                      "detail": "유효하지 않은 초대코드입니다.",
+                                                      "detail": "유효하지 않는 초대코드입니다.",
                                                       "instance": "/api/organizations/preview?inviteCode={inviteCode}"
                                                     }
                                                     """

@@ -1,10 +1,5 @@
 package com.ahmadda.domain.notification;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
@@ -18,13 +13,19 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 @IntegrationTest
 class PokeTest {
@@ -99,7 +100,7 @@ class PokeTest {
     }
 
     @Test
-    void 이미_이벤트에_참여한_조직원에게_포키를_보낼_때_예외가_발생한다() {
+    void 이미_이벤트에_참여한_구성원에게_포키를_보낼_때_예외가_발생한다() {
         // given
         var organization = createOrganization("ahmadda");
         var senderMember = createMember("sender");
@@ -120,11 +121,11 @@ class PokeTest {
         // when // then
         assertThatThrownBy(() -> sut.doPoke(sender, otherOrganizationMember, event, LocalDateTime.now()))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("이미 이벤트에 참여한 조직원에게 포키를 보낼 수 없습니다.");
+                .hasMessage("이미 이벤트에 참여한 구성원에게 포키를 보낼 수 없습니다.");
     }
 
     @Test
-    void 보내는_사람이_조직에_참여하고_있지_않을_때_예외가_발생한다() {
+    void 보내는_사람이_이벤트_스페이스에_참여하고_있지_않을_때_예외가_발생한다() {
         // given
         var organization = createOrganization("ahmadda");
         var anotherOrganization = createOrganization("another");
@@ -137,11 +138,11 @@ class PokeTest {
         // when // then
         assertThatThrownBy(() -> sut.doPoke(sender, recipient, event, LocalDateTime.now()))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("포키를 보내려면 해당 조직에 참여하고 있어야 합니다.");
+                .hasMessage("포키를 보내려면 해당 이벤트 스페이스에 참여하고 있어야 합니다.");
     }
 
     @Test
-    void 받는_사람이_조직에_참여하고_있지_않을_때_예외가_발생한다() {
+    void 받는_사람이_이벤트_스페이스에_참여하고_있지_않을_때_예외가_발생한다() {
         // given
         var organization = createOrganization("ahmadda");
         var anotherOrganization = createOrganization("another");
@@ -154,7 +155,7 @@ class PokeTest {
         // when // then
         assertThatThrownBy(() -> sut.doPoke(sender, recipient, event, LocalDateTime.now()))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("포키 대상이 해당 조직에 참여하고 있어야 합니다.");
+                .hasMessage("포키 대상이 해당 이벤트 스페이스에 참여하고 있어야 합니다.");
     }
 
     @Test
