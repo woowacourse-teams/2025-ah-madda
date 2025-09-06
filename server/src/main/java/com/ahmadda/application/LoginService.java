@@ -6,12 +6,12 @@ import com.ahmadda.application.dto.MemberToken;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.infra.auth.HashEncoder;
 import com.ahmadda.infra.auth.RefreshToken;
 import com.ahmadda.infra.auth.RefreshTokenRepository;
 import com.ahmadda.infra.auth.TokenProvider;
 import com.ahmadda.infra.auth.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.auth.oauth.dto.OAuthUserInfoResponse;
-import com.ahmadda.infra.auth.util.HashUtils;
 import com.ahmadda.infra.notification.slack.SlackAlarm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +28,7 @@ public class LoginService {
     private final GoogleOAuthProvider googleOAuthProvider;
     private final TokenProvider tokenProvider;
     private final SlackAlarm slackAlarm;
+    private final HashEncoder hashEncoder;
 
     @Transactional
     public MemberToken login(final String code, final String redirectUri, final String userAgent) {
@@ -81,7 +82,7 @@ public class LoginService {
     }
 
     private RefreshToken getRefreshToken(final Long memberId, final String userAgent) {
-        String deviceId = HashUtils.sha256(userAgent);
+        String deviceId = hashEncoder.sha256(userAgent);
 
         return refreshTokenRepository.findByMemberIdAndDeviceId(memberId, deviceId)
                 .orElseThrow(() -> new NotFoundException("토큰을 찾을 수 없습니다."));
@@ -90,20 +91,25 @@ public class LoginService {
     private void rotateRefreshToken(final String refreshToken, final Long memberId, final String userAgent) {
         deleteExistRefreshToken(memberId, userAgent);
 
-        saveRefreshToken(refreshToken, memberId, userAgent);
+        RefreshToken encodedRefreshToken = issueEncodedRefreshToken(refreshToken, memberId, userAgent);
+
+        refreshTokenRepository.save(encodedRefreshToken);
     }
 
     private void deleteExistRefreshToken(final Long memberId, final String userAgent) {
-        String deviceId = HashUtils.sha256(userAgent);
+        String deviceId = hashEncoder.sha256(userAgent);
 
         refreshTokenRepository.deleteByMemberIdAndDeviceId(memberId, deviceId);
     }
 
-    private void saveRefreshToken(final String refreshToken, final Long memberId, final String userAgent) {
+    private RefreshToken issueEncodedRefreshToken(final String refreshToken,
+                                                  final Long memberId,
+                                                  final String userAgent) {
         LocalDateTime expiresAt = tokenProvider.parseRefreshTokenExpiresAt(refreshToken);
 
-        RefreshToken createdRefreshToken = RefreshToken.create(refreshToken, memberId, userAgent, expiresAt);
+        String encodedToken = hashEncoder.sha256(refreshToken);
+        String deviceId = hashEncoder.sha256(userAgent);
 
-        refreshTokenRepository.save(createdRefreshToken);
+        return RefreshToken.create(encodedToken, memberId, deviceId, expiresAt);
     }
 }

@@ -1,19 +1,19 @@
-package com.ahmadda.infra.auth.util;
+package com.ahmadda.infra.auth;
+
+import org.springframework.stereotype.Component;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public final class HashUtils {
+@Component
+public final class HashEncoder {
 
     private static final String HASH_ALGORITHM = "SHA-256";
     private static final Charset ENCODING = StandardCharsets.UTF_8;
 
-    private HashUtils() {
-    }
-
-    public static String sha256(final String value) {
+    public String sha256(final String value) {
         if (value == null) {
             throw new IllegalArgumentException("값이 null일 수 없습니다");
         }
