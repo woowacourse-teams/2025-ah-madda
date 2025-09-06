@@ -13,7 +13,7 @@ public final class HashEncoder {
     private static final String HASH_ALGORITHM = "SHA-256";
     private static final Charset ENCODING = StandardCharsets.UTF_8;
 
-    public String sha256(final String value) {
+    public String encodeSha256(final String value) {
         try {
             MessageDigest digest = MessageDigest.getInstance(HASH_ALGORITHM);
             byte[] hashBytes = digest.digest(value.getBytes(ENCODING));

@@ -14,7 +14,7 @@ class HashEncoderTest {
         var token = "token";
 
         // when
-        var hash = sut.sha256(token);
+        var hash = sut.encodeSha256(token);
 
         assertThat(hash).hasSize(64);
     }
@@ -25,8 +25,8 @@ class HashEncoderTest {
         var input = "repeat";
 
         // When
-        var hash1 = sut.sha256(input);
-        var hash2 = sut.sha256(input);
+        var hash1 = sut.encodeSha256(input);
+        var hash2 = sut.encodeSha256(input);
 
         // Then
         assertThat(hash1).isEqualTo(hash2);

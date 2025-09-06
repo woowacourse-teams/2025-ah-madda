@@ -60,7 +60,7 @@ public class TokenProvider {
     }
 
     private void validateRefreshTokenMatches(final String refreshToken, final String savedRefreshToken) {
-        String encodedRefreshToken = hashEncoder.sha256(refreshToken);
+        String encodedRefreshToken = hashEncoder.encodeSha256(refreshToken);
 
         if (!encodedRefreshToken.equals(savedRefreshToken)) {
             throw new InvalidTokenException("리프레시 토큰이 유효하지 않습니다.");

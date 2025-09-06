@@ -141,7 +141,7 @@ class LoginServiceTest {
 
         sut.login(code, redirectUri, userAgent);
 
-        var deviceId = hashEncoder.sha256(userAgent);
+        var deviceId = hashEncoder.encodeSha256(userAgent);
         var oldSavedToken = refreshTokenRepository.findByMemberIdAndDeviceId(member.getId(), deviceId)
                 .get();
 
@@ -169,7 +169,7 @@ class LoginServiceTest {
 
         var redirectUri = "redirectUri";
         var testPicture = "testPicture";
-        var deviceId = hashEncoder.sha256(userAgent);
+        var deviceId = hashEncoder.encodeSha256(userAgent);
 
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
                 .willReturn(new OAuthUserInfoResponse(email, name, testPicture));

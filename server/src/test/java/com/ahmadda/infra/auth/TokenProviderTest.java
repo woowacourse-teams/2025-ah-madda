@@ -97,8 +97,8 @@ class TokenProviderTest {
         var expiresAt = LocalDateTime.now()
                 .plusDays(1);
 
-        var encodedToken = hashEncoder.sha256(memberToken.refreshToken());
-        var deviceId = hashEncoder.sha256(userAgent);
+        var encodedToken = hashEncoder.encodeSha256(memberToken.refreshToken());
+        var deviceId = hashEncoder.encodeSha256(userAgent);
 
         var savedRefreshToken = RefreshToken.create(encodedToken, memberId, deviceId, expiresAt);
         // when // then

@@ -82,7 +82,7 @@ public class LoginService {
     }
 
     private RefreshToken getRefreshToken(final Long memberId, final String userAgent) {
-        String deviceId = hashEncoder.sha256(userAgent);
+        String deviceId = hashEncoder.encodeSha256(userAgent);
 
         return refreshTokenRepository.findByMemberIdAndDeviceId(memberId, deviceId)
                 .orElseThrow(() -> new NotFoundException("토큰을 찾을 수 없습니다."));
@@ -97,7 +97,7 @@ public class LoginService {
     }
 
     private void deleteExistRefreshToken(final Long memberId, final String userAgent) {
-        String deviceId = hashEncoder.sha256(userAgent);
+        String deviceId = hashEncoder.encodeSha256(userAgent);
 
         refreshTokenRepository.deleteByMemberIdAndDeviceId(memberId, deviceId);
     }
@@ -107,8 +107,8 @@ public class LoginService {
                                                   final String userAgent) {
         LocalDateTime expiresAt = tokenProvider.parseRefreshTokenExpiresAt(refreshToken);
 
-        String encodedToken = hashEncoder.sha256(refreshToken);
-        String deviceId = hashEncoder.sha256(userAgent);
+        String encodedToken = hashEncoder.encodeSha256(refreshToken);
+        String deviceId = hashEncoder.encodeSha256(userAgent);
 
         return RefreshToken.create(encodedToken, memberId, deviceId, expiresAt);
     }
