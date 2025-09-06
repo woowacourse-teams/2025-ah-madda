@@ -1,14 +1,13 @@
 package com.ahmadda.presentation.cookie;
 
 import com.ahmadda.presentation.cookie.config.RefreshTokenCookieProperties;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 @EnableConfigurationProperties(RefreshTokenCookieProperties.class)
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor
 @Component
 public class RefreshCookieProvider {
 

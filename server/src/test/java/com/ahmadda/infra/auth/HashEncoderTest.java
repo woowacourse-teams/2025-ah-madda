@@ -1,16 +1,12 @@
 package com.ahmadda.infra.auth;
 
-import com.ahmadda.annotation.IntegrationTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@IntegrationTest
 class HashEncoderTest {
 
-    @Autowired
-    private HashEncoder sut;
+    private final HashEncoder sut = new HashEncoder();
 
     @Test
     void 해시_결과는_64자리_이어야_한다() {
