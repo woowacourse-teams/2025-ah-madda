@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -455,5 +456,83 @@ public class OrganizationController {
                 .toList();
 
         return ResponseEntity.ok(organizationResponses);
+    }
+
+    @Operation(summary = "조직 삭제", description = "조직을 삭제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "instance": "/api/organizations/{organizationId}"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Forbidden",
+                                              "status": 403,
+                                              "detail": "조직의 관리자만 삭제할 수 있습니다.",
+                                              "instance": "/api/organizations/{organizationId}"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "존재하지 않는 조직",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 조직입니다.",
+                                                      "instance": "/api/organizations/{organizationId}"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "존재하지 않는 조직원",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 조직원입니다.",
+                                                      "instance": "/api/organizations/{organizationId}"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            )
+    })
+    @DeleteMapping("/{organizationId}")
+    public ResponseEntity<Void> deleteOrganization(
+            @PathVariable final Long organizationId,
+            @AuthMember final LoginMember loginMember
+    ) {
+        organizationService.deleteOrganization(organizationId, loginMember);
+
+        return ResponseEntity.noContent()
+                .build();
     }
 }

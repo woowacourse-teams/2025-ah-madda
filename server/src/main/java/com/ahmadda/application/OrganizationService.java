@@ -3,6 +3,7 @@ package com.ahmadda.application;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.application.dto.OrganizationUpdateRequest;
+import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
@@ -117,6 +118,22 @@ public class OrganizationService {
         Member member = getMember(loginMember);
 
         return organizationRepository.findMemberOrganizations(member);
+    }
+
+    @Transactional
+    public void deleteOrganization(final Long organizationId, final LoginMember loginMember) {
+        Organization organization = getOrganization(organizationId);
+        OrganizationMember deletingMember = getOrganizationMember(organizationId, loginMember);
+
+        validateAdmin(deletingMember);
+
+        organizationRepository.delete(organization);
+    }
+
+    private void validateAdmin(final OrganizationMember organizationMember) {
+        if (!organizationMember.isAdmin()) {
+            throw new ForbiddenException("조직의 관리자만 삭제할 수 있습니다.");
+        }
     }
 
     private String resolveUpdateImageUrl(
