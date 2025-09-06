@@ -160,25 +160,6 @@ public class OrganizationController {
         return ResponseEntity.ok(organizationResponse);
     }
 
-    //TODO 07.25 이후 리팩터링 및 제거하기
-    @Deprecated
-    @Operation(summary = "우아코스 조직 정보 조회 (임시)", description = "항상 우아코스 조직 정보를 반환하는 임시 API입니다. 추후 제거될 예정입니다.")
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    content = @Content(
-                            schema = @Schema(implementation = OrganizationResponse.class)
-                    )
-            )
-    })
-    @GetMapping("/woowacourse")
-    public ResponseEntity<OrganizationResponse> getOrganization() {
-        Organization organization = organizationService.alwaysGetWoowacourse();
-        OrganizationResponse organizationResponse = OrganizationResponse.from(organization);
-
-        return ResponseEntity.ok(organizationResponse);
-    }
-
     @Operation(summary = "조직 참여", description = "사용자가 특정 조직에 참여합니다.")
     @ApiResponses(value = {
             @ApiResponse(

@@ -1,17 +1,19 @@
 package com.ahmadda.infra.notification.push;
 
-import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.notification.PushNotificationPayload;
 import com.ahmadda.domain.notification.PushNotifier;
+import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.infra.notification.config.NotificationProperties;
 import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.Notification;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,8 +24,10 @@ public class FcmPushNotifier implements PushNotifier {
     private final FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
     private final FcmPushErrorHandler fcmPushErrorHandler;
     private final NotificationProperties notificationProperties;
+    private final EntityManager em;
 
     @Async
+    @Transactional(readOnly = true)
     @Override
     public void sendPushs(
             final List<OrganizationMember> recipients,
@@ -32,7 +36,11 @@ public class FcmPushNotifier implements PushNotifier {
         if (recipients.isEmpty()) {
             return;
         }
-        List<String> registrationTokens = getRegistrationTokens(recipients);
+        List<OrganizationMember> mergedRecipients = recipients.stream()
+                .map(em::merge)
+                .toList();
+
+        List<String> registrationTokens = getRegistrationTokens(mergedRecipients);
         sendMulticast(pushNotificationPayload, registrationTokens);
     }
 
@@ -73,9 +81,9 @@ public class FcmPushNotifier implements PushNotifier {
         return MulticastMessage.builder()
                 .addAllTokens(recipientPushTokens)
                 .setNotification(Notification.builder()
-                                         .setTitle(payload.title())
-                                         .setBody(payload.body())
-                                         .build())
+                        .setTitle(payload.title())
+                        .setBody(payload.body())
+                        .build())
                 .putData(
                         "redirectUrl",
                         notificationProperties.getRedirectUrlPrefix() + payload.organizationId() + "/event/" + payload.eventId()

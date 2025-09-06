@@ -3,10 +3,8 @@ package com.ahmadda.application;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.application.dto.OrganizationUpdateRequest;
-import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
-import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.InviteCode;
@@ -26,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -71,30 +68,6 @@ public class OrganizationService {
 
     public Organization getOrganizationById(final Long organizationId) {
         return getOrganization(organizationId);
-    }
-
-    public List<Event> getOrganizationEvents(final Long organizationId, final LoginMember loginMember) {
-        Organization organization = getOrganizationById(organizationId);
-
-        if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId())) {
-            throw new ForbiddenException("조직에 참여하지 않아 권한이 없습니다.");
-        }
-
-        return organization.getActiveEvents(LocalDateTime.now());
-    }
-
-    //TODO 07.25 이후 리팩터링 및 제거하기
-    @Transactional
-    @Deprecated
-    public Organization alwaysGetWoowacourse() {
-        Optional<Organization> organization = organizationRepository.findByName(WOOWACOURSE_NAME);
-
-        return organization.orElseGet(() -> organizationRepository.save(
-                Organization.create(
-                        WOOWACOURSE_NAME,
-                        "우아한테크코스입니다",
-                        imageUrl
-                )));
     }
 
     @Transactional
