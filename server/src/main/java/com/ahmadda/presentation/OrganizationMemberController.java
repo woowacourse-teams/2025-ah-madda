@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Tag(name = "Organization Member", description = "조직원 관련 API")
+@Tag(name = "Organization Member", description = "구성원 관련 API")
 @RestController
 @RequestMapping("/api/organizations/{organizationId}")
 @RequiredArgsConstructor
@@ -34,7 +34,7 @@ public class OrganizationMemberController {
 
     private final OrganizationMemberService organizationMemberService;
 
-    @Operation(summary = "자신의 조직원 프로필 조회", description = "로그인한 사용자가 속한 조직에서의 자신의 정보를 조회합니다.")
+    @Operation(summary = "자신의 구성원 프로필 조회", description = "로그인한 사용자가 속한 조직에서의 자신의 정보를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -67,7 +67,7 @@ public class OrganizationMemberController {
                                               "type": "about:blank",
                                               "title": "Not Found",
                                               "status": 404,
-                                              "detail": "존재하지 않는 조직원입니다.",
+                                              "detail": "존재하지 않는 구성원입니다.",
                                               "instance": "/api/organizations/{organizationId}/profile"
                                             }
                                             """
@@ -89,8 +89,8 @@ public class OrganizationMemberController {
     }
 
     @Operation(
-            summary = "조직원 역할 일괄 변경",
-            description = "관리자가 같은 조직에 속한 여러 조직원의 역할을 한 번에 변경합니다."
+            summary = "구성원 역할 일괄 변경",
+            description = "관리자가 같은 조직에 속한 여러 구성원의 역할을 한 번에 변경합니다."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204"),
@@ -115,25 +115,25 @@ public class OrganizationMemberController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
-                                            name = "일부 조직원 없음",
+                                            name = "일부 구성원 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "선택된 조직원 중 일부가 존재하지 않습니다.",
+                                                      "detail": "선택된 구성원 중 일부가 존재하지 않습니다.",
                                                       "instance": "/api/organizations/{organizationId}/organization-members/roles"
                                                     }
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "조직원 없음",
+                                            name = "구성원 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않는 조직원입니다.",
+                                                      "detail": "존재하지 않는 구성원입니다.",
                                                       "instance": "/api/organizations/{organizationId}/organization-members/roles"
                                                     }
                                                     """
@@ -152,7 +152,7 @@ public class OrganizationMemberController {
                                                       "type": "about:blank",
                                                       "title": "Forbidden",
                                                       "status": 403,
-                                                      "detail": "같은 조직에 속한 조직원만 권한을 변경할 수 있습니다.",
+                                                      "detail": "같은 조직에 속한 구성원만 권한을 변경할 수 있습니다.",
                                                       "instance": "/api/organizations/{organizationId}/organization-members/roles"
                                                     }
                                                     """
@@ -164,7 +164,7 @@ public class OrganizationMemberController {
                                                       "type": "about:blank",
                                                       "title": "Forbidden",
                                                       "status": 403,
-                                                      "detail": "관리자만 조직원의 권한을 변경할 수 있습니다.",
+                                                      "detail": "관리자만 구성원의 권한을 변경할 수 있습니다.",
                                                       "instance": "/api/organizations/{organizationId}/organization-members/roles"
                                                     }
                                                     """
@@ -181,7 +181,7 @@ public class OrganizationMemberController {
                                               "type": "about:blank",
                                               "title": "Unprocessable Entity",
                                               "status": 422,
-                                              "detail": "서로 다른 조직에 속한 조직원이 포함되어 있습니다.",
+                                              "detail": "서로 다른 조직에 속한 구성원이 포함되어 있습니다.",
                                               "instance": "/api/organizations/{organizationId}/organization-members/roles"
                                             }
                                             """
@@ -201,7 +201,7 @@ public class OrganizationMemberController {
                 .build();
     }
 
-    @Operation(summary = "조직의 모든 조직원 목록 조회", description = "조직에 속한 모든 조직원의 프로필을 조회합니다.")
+    @Operation(summary = "조직의 모든 구성원 목록 조회", description = "조직에 속한 모든 구성원의 프로필을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -235,7 +235,7 @@ public class OrganizationMemberController {
                                               "type": "about:blank",
                                               "title": "Forbidden",
                                               "status": 403,
-                                              "detail": "조직에 속한 조직원만 조직원의 목록을 조회할 수 있습니다.",
+                                              "detail": "조직에 속한 구성원만 구성원의 목록을 조회할 수 있습니다.",
                                               "instance": "/api/organizations/{organizationId}/organization-members"
                                             }
                                             """

@@ -88,7 +88,7 @@ class ReminderHistoryServiceTest {
     }
 
     @Test
-    void 이벤트_조직의_조직원이_아니면_예외가_발생한다() {
+    void 이벤트_조직의_구성원이_아니면_예외가_발생한다() {
         // given
         var org1 = createOrganization();
         var org2 = createOrganization();
@@ -106,7 +106,7 @@ class ReminderHistoryServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getNotifyHistory(event.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원 정보입니다.");
+                .hasMessage("존재하지 않는 구성원 정보입니다.");
     }
 
     @Test

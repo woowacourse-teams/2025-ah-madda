@@ -198,7 +198,7 @@ public class EventService {
 
     private OrganizationMember getOrganizationMember(final Long organizationId, final Long memberId) {
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
-                .orElseThrow(() -> new NotFoundException("조직원을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("구성원을 찾을 수 없습니다."));
     }
 
     private List<Question> createQuestions(final List<QuestionCreateRequest> questionCreateRequests) {

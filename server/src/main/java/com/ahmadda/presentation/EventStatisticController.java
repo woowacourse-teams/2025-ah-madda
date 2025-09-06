@@ -74,13 +74,13 @@ public class EventStatisticController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
-                                            name = "존재하지 않는 조직원",
+                                            name = "존재하지 않는 구성원",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않는 조직원입니다.",
+                                                      "detail": "존재하지 않는 구성원입니다.",
                                                       "instance": "/api/events/{eventId}/statistic"
                                                     }
                                                     """

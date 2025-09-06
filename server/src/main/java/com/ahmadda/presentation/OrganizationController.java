@@ -298,13 +298,13 @@ public class OrganizationController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "존재하지 않는 조직원",
+                                            name = "존재하지 않는 구성원",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않는 조직원입니다.",
+                                                      "detail": "존재하지 않는 구성원입니다.",
                                                       "instance": "/api/organizations/{organizationId}"
                                                     }
                                                     """
@@ -349,13 +349,13 @@ public class OrganizationController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
-                                            name = "조직에 속한 조직원이 아님",
+                                            name = "조직에 속한 구성원이 아님",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Forbidden",
                                                       "status": 403,
-                                                      "detail": "조직에 속한 조직원만 수정이 가능합니다.",
+                                                      "detail": "조직에 속한 구성원만 수정이 가능합니다.",
                                                       "instance": "/api/organizations/{organizationId}"
                                                     }
                                                     """
@@ -367,7 +367,7 @@ public class OrganizationController {
                                                       "type": "about:blank",
                                                       "title": "Forbidden",
                                                       "status": 403,
-                                                      "detail": "조직원의 관리자만 조직 정보를 수정할 수 있습니다.",
+                                                      "detail": "구성원의 관리자만 조직 정보를 수정할 수 있습니다.",
                                                       "instance": "/api/organizations/{organizationId}"
                                                     }
                                                     """
@@ -510,13 +510,13 @@ public class OrganizationController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "존재하지 않는 조직원",
+                                            name = "존재하지 않는 구성원",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않는 조직원입니다.",
+                                                      "detail": "존재하지 않는 구성원입니다.",
                                                       "instance": "/api/organizations/{organizationId}"
                                                     }
                                                     """

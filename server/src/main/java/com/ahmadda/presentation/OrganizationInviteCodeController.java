@@ -68,7 +68,7 @@ public class OrganizationInviteCodeController {
                                               "type": "about:blank",
                                               "title": "Forbidden",
                                               "status": 403,
-                                              "detail": "조직에 참여중인 조직원만 해당 조직의 초대코드를 만들 수 있습니다.",
+                                              "detail": "조직에 참여중인 구성원만 해당 조직의 초대코드를 만들 수 있습니다.",
                                               "instance": "/api/organizations/{organizationId}/invite-codes"
                                             }
                                             """
@@ -92,13 +92,13 @@ public class OrganizationInviteCodeController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "조직원 없음",
+                                            name = "구성원 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않는 조직원 정보입니다.",
+                                                      "detail": "존재하지 않는 구성원 정보입니다.",
                                                       "instance": "/api/organizations/{organizationId}/invite-codes"
                                                     }
                                                     """

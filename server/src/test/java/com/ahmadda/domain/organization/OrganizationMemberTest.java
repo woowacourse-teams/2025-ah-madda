@@ -32,7 +32,7 @@ class OrganizationMemberTest {
         // given
         var participantMember = Member.create("참여자", "participant@example.com", "testPicture");
         var participant =
-                OrganizationMember.create("참여자 조직원", participantMember, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create("참여자 구성원", participantMember, organization, OrganizationMemberRole.USER);
 
         var event1 = createEvent("이벤트 1");
         var event2 = createEvent("이벤트 2");
@@ -51,7 +51,7 @@ class OrganizationMemberTest {
     }
 
     @Test
-    void 관리자는_같은_조직원의_권한을_변경할_수_있다() {
+    void 관리자는_같은_구성원의_권한을_변경할_수_있다() {
         // given
         var targetMember = Member.create("user-m", "user@example.com", "pic");
         var adminMember = Member.create("admin-m", "admin@example.com", "pic");
@@ -76,7 +76,7 @@ class OrganizationMemberTest {
         // when // then
         assertThatThrownBy(() -> notAdmin.changeRolesOf(List.of(target), OrganizationMemberRole.ADMIN))
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("관리자만 조직원의 권한을 변경할 수 있습니다.");
+                .hasMessage("관리자만 구성원의 권한을 변경할 수 있습니다.");
     }
 
     @Test
@@ -93,7 +93,7 @@ class OrganizationMemberTest {
         // when // then
         assertThatThrownBy(() -> outsiderAdmin.changeRolesOf(List.of(target), OrganizationMemberRole.ADMIN))
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("같은 조직에 속한 조직원만 권한을 변경할 수 있습니다.");
+                .hasMessage("같은 조직에 속한 구성원만 권한을 변경할 수 있습니다.");
     }
 
     private Event createEvent(String title) {

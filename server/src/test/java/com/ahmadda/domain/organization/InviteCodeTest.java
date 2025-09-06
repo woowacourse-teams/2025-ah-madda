@@ -13,7 +13,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 class InviteCodeTest {
 
     @Test
-    void 조직에_속한_조직원이_아닌데_초대코드를_만든다면_예외가_발생한다() {
+    void 조직에_속한_구성원이_아닌데_초대코드를_만든다면_예외가_발생한다() {
         //given
         var organization1 = createOrganization("우테코");
         var organization2 = createOrganization("아맞다");
@@ -23,7 +23,7 @@ class InviteCodeTest {
         //when //then
         assertThatThrownBy(() -> InviteCode.create("code", organization2, inviter, LocalDateTime.now()))
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("조직에 참여중인 조직원만 해당 조직의 초대코드를 만들 수 있습니다.");
+                .hasMessage("조직에 참여중인 구성원만 해당 조직의 초대코드를 만들 수 있습니다.");
     }
 
     @Test

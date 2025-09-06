@@ -127,7 +127,7 @@ class OrganizationInviteCodeServiceTest {
     }
 
     @Test
-    void 초대코드를_만들때_조직원이_없다면_예외가_발생한다() {
+    void 초대코드를_만들때_구성원이_없다면_예외가_발생한다() {
         //given
         var organization = createAndSaveOrganization("우테코");
         var member = createAndSaveMember("surf", "surf@ahmadda.com");
@@ -136,7 +136,7 @@ class OrganizationInviteCodeServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.createInviteCode(organization.getId(), new LoginMember(member.getId()), now))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원 정보입니다.");
+                .hasMessage("존재하지 않는 구성원 정보입니다.");
     }
 
     @Test

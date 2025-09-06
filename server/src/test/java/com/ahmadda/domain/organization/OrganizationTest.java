@@ -133,7 +133,7 @@ class OrganizationTest {
                 sut.update(user, "새 조직명", "새 설명", "newImage.png")
         )
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("조직원의 관리자만 조직 정보를 수정할 수 있습니다.");
+                .hasMessage("구성원의 관리자만 조직 정보를 수정할 수 있습니다.");
     }
 
     @Test
@@ -152,7 +152,7 @@ class OrganizationTest {
                 sut.update(organizationMember, "새 조직명", "새 설명", "newImage.png")
         )
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("조직에 속한 조직원만 수정이 가능합니다.");
+                .hasMessage("조직에 속한 구성원만 수정이 가능합니다.");
     }
 
     private Event createEventForTest(

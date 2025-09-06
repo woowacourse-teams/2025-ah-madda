@@ -115,11 +115,11 @@ public class Organization extends BaseEntity {
 
     private void validateUpdatableBy(final OrganizationMember updatingOrganizationMember) {
         if (!updatingOrganizationMember.isBelongTo(this)) {
-            throw new ForbiddenException("조직에 속한 조직원만 수정이 가능합니다.");
+            throw new ForbiddenException("조직에 속한 구성원만 수정이 가능합니다.");
         }
 
         if (!updatingOrganizationMember.isAdmin()) {
-            throw new ForbiddenException("조직원의 관리자만 조직 정보를 수정할 수 있습니다.");
+            throw new ForbiddenException("구성원의 관리자만 조직 정보를 수정할 수 있습니다.");
         }
     }
 

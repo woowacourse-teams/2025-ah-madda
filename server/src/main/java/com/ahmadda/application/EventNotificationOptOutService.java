@@ -113,6 +113,6 @@ public class EventNotificationOptOutService {
 
     private OrganizationMember getOrganizationMember(final Long organizationId, final Long memberId) {
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직원입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 구성원입니다."));
     }
 }

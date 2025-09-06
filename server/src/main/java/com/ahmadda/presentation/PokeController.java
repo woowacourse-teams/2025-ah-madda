@@ -63,13 +63,13 @@ public class PokeController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "조직원 없음",
+                                            name = "구성원 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않는 조직원입니다.",
+                                                      "detail": "존재하지 않는 구성원입니다.",
                                                       "instance": "/api/events/{eventId}/poke"
                                                     }
                                                     """
@@ -119,7 +119,7 @@ public class PokeController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "발신자가 조직원 아님",
+                                            name = "발신자가 구성원 아님",
                                             value = """
                                                     {
                                                       "type": "about:blank",
@@ -131,7 +131,7 @@ public class PokeController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "수신자가 조직원 아님",
+                                            name = "수신자가 구성원 아님",
                                             value = """
                                                     {
                                                       "type": "about:blank",
@@ -143,13 +143,13 @@ public class PokeController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "이미 참여한 조직원에게 전송 불가",
+                                            name = "이미 참여한 구성원에게 전송 불가",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Unprocessable Entity",
                                                       "status": 422,
-                                                      "detail": "이미 이벤트에 참여한 조직원에게 포키를 보낼 수 없습니다.",
+                                                      "detail": "이미 이벤트에 참여한 구성원에게 포키를 보낼 수 없습니다.",
                                                       "instance": "/api/events/{eventId}/poke"
                                                     }
                                                     """
@@ -161,7 +161,7 @@ public class PokeController {
                                                       "type": "about:blank",
                                                       "title": "Unprocessable Entity",
                                                       "status": 422,
-                                                      "detail": "알림을 받지 않는 조직원입니다.",
+                                                      "detail": "알림을 받지 않는 구성원입니다.",
                                                       "instance": "/api/events/{eventId}/poke"
                                                     }
                                                     """

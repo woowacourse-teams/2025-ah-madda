@@ -37,8 +37,8 @@ public class EventNotificationController {
     private final ReminderHistoryService reminderHistoryService;
 
     @Operation(
-            summary = "선택된 조직원에게 알림 발송",
-            description = "주최자가 선택한 조직원들에게 이메일 알림을 발송합니다."
+            summary = "선택된 구성원에게 알림 발송",
+            description = "주최자가 선택한 구성원들에게 이메일 알림을 발송합니다."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -91,13 +91,13 @@ public class EventNotificationController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "조직원 없음",
+                                            name = "구성원 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않는 조직원입니다.",
+                                                      "detail": "존재하지 않는 구성원입니다.",
                                                       "instance": "/api/events/{eventId}/notify-organization-members"
                                                     }
                                                     """
@@ -114,7 +114,7 @@ public class EventNotificationController {
                                               "type": "about:blank",
                                               "title": "Unprocessable Entity",
                                               "status": 422,
-                                              "detail": "선택된 조직원 중 알림 수신 거부자가 존재합니다.",
+                                              "detail": "선택된 구성원 중 알림 수신 거부자가 존재합니다.",
                                               "instance": "/api/events/{eventId}/notify-organization-members"
                                             }
                                             """
@@ -196,13 +196,13 @@ public class EventNotificationController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "조직원 없음",
+                                            name = "구성원 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않는 조직원 정보입니다.",
+                                                      "detail": "존재하지 않는 구성원 정보입니다.",
                                                       "instance": "/api/events/{eventId}/notification/history"
                                                     }
                                                     """

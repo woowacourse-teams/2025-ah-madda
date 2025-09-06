@@ -45,7 +45,7 @@ class OrganizationMemberEventServiceTest {
     private OrganizationMemberEventService sut;
 
     @Test
-    void 조직원이_주최한_이벤트들을_조회한다() {
+    void 구성원이_주최한_이벤트들을_조회한다() {
         // given
         var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
         var member = createAndSaveMember("주최자", "organizer@test.com");
@@ -124,7 +124,7 @@ class OrganizationMemberEventServiceTest {
     }
 
     @Test
-    void 조직원이_참여한_이벤트들을_조회한다() {
+    void 구성원이_참여한_이벤트들을_조회한다() {
         // given
         var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
         var organizerMember = createAndSaveMember("주최자", "organizer@test.com");
@@ -205,11 +205,11 @@ class OrganizationMemberEventServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getOwnerEvents(organization.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 조직원 정보입니다.");
+                .hasMessage("존재하지 않은 구성원 정보입니다.");
     }
 
     @Test
-    void 존재하지_않는_조직원으로_참여_이벤트_조회하면_예외가_발생한다() {
+    void 존재하지_않는_구성원으로_참여_이벤트_조회하면_예외가_발생한다() {
         // given
         var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
         var loginMember = new LoginMember(999L);
@@ -217,7 +217,7 @@ class OrganizationMemberEventServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getParticipantEvents(organization.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 조직원 정보입니다.");
+                .hasMessage("존재하지 않은 구성원 정보입니다.");
     }
 
     private Organization createAndSaveOrganization(String name, String description, String imageUrl) {

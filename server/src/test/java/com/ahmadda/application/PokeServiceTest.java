@@ -130,7 +130,7 @@ class PokeServiceTest {
     }
 
     @Test
-    void 존재하지_않는_조직원에게로_포키_전송시_예외가_발생한다() {
+    void 존재하지_않는_구성원에게로_포키_전송시_예외가_발생한다() {
         // given
         var organization = createOrganization("테스트 조직", "조직 설명", "test-image.png");
         var member = createMember("테스트 회원", "test@example.com", "test-profile.png");
@@ -144,11 +144,11 @@ class PokeServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.poke(eventId, request, loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원입니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
-    void 존재하지_않는_조직원이_포키_전송시_예외가_발생한다() {
+    void 존재하지_않는_구성원이_포키_전송시_예외가_발생한다() {
         // given
         var organization = createOrganization("테스트 조직", "조직 설명", "test-image.png");
         var member = createMember("테스트 회원", "test@example.com", "test-profile.png");
@@ -164,7 +164,7 @@ class PokeServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.poke(eventId, request, loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원입니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
@@ -179,7 +179,7 @@ class PokeServiceTest {
 
         var otherOrganization = createOrganization("다른 조직", "다른 조직 설명", "other-image.png");
         var otherMember = createMember("다른 조직 회원", "other@example.com", "other-profile.png");
-        var otherOrganizationMember = createOrganizationMember("다른 조직원", otherMember, otherOrganization);
+        var otherOrganizationMember = createOrganizationMember("다른 구성원", otherMember, otherOrganization);
 
         var eventId = event.getId();
         var request = new PokeRequest(participant.getId());
@@ -188,11 +188,11 @@ class PokeServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.poke(eventId, request, loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원입니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
-    void 알림_수신을_거부한_조직원에게_포키_전송시_예외가_발생한다() {
+    void 알림_수신을_거부한_구성원에게_포키_전송시_예외가_발생한다() {
         // given
         var organization = createOrganization("테스트 조직", "조직 설명", "test-image.png");
         var member = createMember("테스트 회원", "test@example.com", "test-profile.png");
@@ -212,7 +212,7 @@ class PokeServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.poke(eventId, request, loginMember))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("알림을 받지 않는 조직원입니다.");
+                .hasMessage("알림을 받지 않는 구성원입니다.");
     }
 
     private Organization createOrganization(String name, String description, String imageUrl) {

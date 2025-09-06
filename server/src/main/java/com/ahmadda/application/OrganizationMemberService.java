@@ -25,7 +25,7 @@ public class OrganizationMemberService {
 
     public OrganizationMember getOrganizationMember(final Long organizationId, final LoginMember loginMember) {
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, loginMember.memberId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직원입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 구성원입니다."));
     }
 
     @Transactional
@@ -63,7 +63,7 @@ public class OrganizationMemberService {
         List<OrganizationMember> targets = organizationMemberRepository.findAllById(targetOrganizationMemberIds);
 
         if (targets.size() != targetOrganizationMemberIds.size()) {
-            throw new NotFoundException("선택된 조직원 중 일부가 존재하지 않습니다.");
+            throw new NotFoundException("선택된 구성원 중 일부가 존재하지 않습니다.");
         }
 
         return targets;
@@ -75,14 +75,14 @@ public class OrganizationMemberService {
     ) {
         targets.forEach(target -> {
             if (!organization.isExistOrganizationMember(target)) {
-                throw new UnprocessableEntityException("서로 다른 조직에 속한 조직원이 포함되어 있습니다.");
+                throw new UnprocessableEntityException("서로 다른 조직에 속한 구성원이 포함되어 있습니다.");
             }
         });
     }
 
     private OrganizationMember getOperatorOrganizationMember(final Long organizationId, final LoginMember loginMember) {
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, loginMember.memberId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직원입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 구성원입니다."));
     }
 
     private void updateRoles(
@@ -95,7 +95,7 @@ public class OrganizationMemberService {
 
     private void validateBelongsToOrganization(final Long organizationId, final LoginMember loginMember) {
         if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId())) {
-            throw new ForbiddenException("조직에 속한 조직원만 조직원의 목록을 조회할 수 있습니다.");
+            throw new ForbiddenException("조직에 속한 구성원만 구성원의 목록을 조회할 수 있습니다.");
         }
     }
 }

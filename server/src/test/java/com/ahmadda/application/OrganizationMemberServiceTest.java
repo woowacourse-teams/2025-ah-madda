@@ -37,7 +37,7 @@ class OrganizationMemberServiceTest {
     private OrganizationMemberRepository organizationMemberRepository;
 
     @Test
-    void 자신의_조직원_정보를_조회한다() {
+    void 자신의_구성원_정보를_조회한다() {
         // given
         var org = createOrganization("우테코");
         var member = createMember("홍길동", "hong@email.com");
@@ -61,7 +61,7 @@ class OrganizationMemberServiceTest {
     }
 
     @Test
-    void 자신의_조직원_정보_조회시_존재하지_않는_조직원이면_예외가_발생한다() {
+    void 자신의_구성원_정보_조회시_존재하지_않는_구성원이면_예외가_발생한다() {
         // given
         Organization org = createOrganization("우테코");
         Member member = createMember("홍길동", "hong@email.com");
@@ -70,11 +70,11 @@ class OrganizationMemberServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getOrganizationMember(org.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원입니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
-    void 조직원_역할을_한번에_여러명_변경할_수_있다() {
+    void 구성원_역할을_한번에_여러명_변경할_수_있다() {
         var org = createOrganization("아맞다");
         var admin = createMember("admin", "admin@email.com");
         var user1 = createMember("user1", "user1@email.com");
@@ -106,7 +106,7 @@ class OrganizationMemberServiceTest {
     }
 
     @Test
-    void 조직원_역할_변경시_존재하지_않는_조직이면_예외가_발생한다() {
+    void 구성원_역할_변경시_존재하지_않는_조직이면_예외가_발생한다() {
         var admin = createMember("admin", "admin@email.com");
         var loginMember = new LoginMember(admin.getId());
         var request = new OrganizationMemberRoleUpdateRequest(List.of(1L, 2L), OrganizationMemberRole.ADMIN);
@@ -117,7 +117,7 @@ class OrganizationMemberServiceTest {
     }
 
     @Test
-    void 조직원_역할_변경시_요청자가_조직에_속하지_않으면_예외가_발생한다() {
+    void 구성원_역할_변경시_요청자가_조직에_속하지_않으면_예외가_발생한다() {
         var org = createOrganization("아맞다");
         var outsider = createMember("outsider", "out@email.com");
         var user = createMember("user", "user@email.com");
@@ -130,11 +130,11 @@ class OrganizationMemberServiceTest {
 
         assertThatThrownBy(() -> sut.updateRoles(org.getId(), loginMember, request))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원입니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
-    void 조직원_역할_변경시_대상_조직원_중_일부라도_존재하지_않으면_예외가_발생한다() {
+    void 구성원_역할_변경시_대상_구성원_중_일부라도_존재하지_않으면_예외가_발생한다() {
         var org = createOrganization("아맞다");
         var admin = createMember("admin", "admin@email.com");
         var user = createMember("user", "user@email.com");
@@ -151,11 +151,11 @@ class OrganizationMemberServiceTest {
 
         assertThatThrownBy(() -> sut.updateRoles(org.getId(), loginMember, request))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("선택된 조직원 중 일부가 존재하지 않습니다.");
+                .hasMessage("선택된 구성원 중 일부가 존재하지 않습니다.");
     }
 
     @Test
-    void 조직원_역할_변경시_대상_조직원이_다른_조직에_속해있으면_예외가_발생한다() {
+    void 구성원_역할_변경시_대상_구성원이_다른_조직에_속해있으면_예외가_발생한다() {
         var org1 = createOrganization("아맞다1");
         var org2 = createOrganization("아맞다2");
         var admin = createMember("admin", "admin@email.com");
@@ -174,7 +174,7 @@ class OrganizationMemberServiceTest {
 
         assertThatThrownBy(() -> sut.updateRoles(org1.getId(), loginMember, request))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("서로 다른 조직에 속한 조직원이 포함되어 있습니다.");
+                .hasMessage("서로 다른 조직에 속한 구성원이 포함되어 있습니다.");
     }
 
     @Test
@@ -218,7 +218,7 @@ class OrganizationMemberServiceTest {
     }
 
     @Test
-    void 조직_멤버_목록_조회시_조직에_속하지_않은_조직원이면_예외가_발생한다() {
+    void 조직_멤버_목록_조회시_조직에_속하지_않은_구성원이면_예외가_발생한다() {
         // given
         var org1 = createOrganization("우테코");
         var org2 = createOrganization("다른조직");
@@ -231,7 +231,7 @@ class OrganizationMemberServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getAllOrganizationMembers(org1.getId(), loginMember))
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("조직에 속한 조직원만 조직원의 목록을 조회할 수 있습니다.");
+                .hasMessage("조직에 속한 구성원만 구성원의 목록을 조회할 수 있습니다.");
     }
 
     private Organization createOrganization(String name) {

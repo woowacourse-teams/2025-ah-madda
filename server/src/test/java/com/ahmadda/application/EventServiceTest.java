@@ -148,7 +148,7 @@ class EventServiceTest {
     }
 
     @Test
-    void 이벤트_생성시_조직원_id에_해당하는_조직원이_없다면_예외가_발생한다() {
+    void 이벤트_생성시_구성원_id에_해당하는_구성원이_없다면_예외가_발생한다() {
         //given
         var organization = createOrganization();
 
@@ -169,7 +169,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("조직원을 찾을 수 없습니다.");
+                .hasMessage("구성원을 찾을 수 없습니다.");
     }
 
     @Test
@@ -196,7 +196,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> sut.createEvent(organization1.getId(), loginMember, eventCreateRequest, now))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("조직원을 찾을 수 없습니다.");
+                .hasMessage("구성원을 찾을 수 없습니다.");
     }
 
     @Test
@@ -305,7 +305,7 @@ class EventServiceTest {
     }
 
     @Test
-    void 이벤트_마감_시_조직원_id에_해당하는_조직원이_없다면_예외가_발생한다() {
+    void 이벤트_마감_시_구성원_id에_해당하는_구성원이_없다면_예외가_발생한다() {
         // given
         var organization = createOrganization();
         var member = createMember();
@@ -320,7 +320,7 @@ class EventServiceTest {
                 now
         ))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("조직원을 찾을 수 없습니다.");
+                .hasMessage("구성원을 찾을 수 없습니다.");
     }
 
     @Test
@@ -345,7 +345,7 @@ class EventServiceTest {
                 now
         ))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("조직원을 찾을 수 없습니다.");
+                .hasMessage("구성원을 찾을 수 없습니다.");
     }
 
     @Test
@@ -367,7 +367,7 @@ class EventServiceTest {
     }
 
     @Test
-    void 이벤트_생성_시_조직원에게_알림을_보낸다() {
+    void 이벤트_생성_시_구성원에게_알림을_보낸다() {
         // given
         var organization = createOrganization();
 
@@ -871,7 +871,7 @@ class EventServiceTest {
     }
 
     @Test
-    void 조직원이_아니면_조직의_이벤트를_조회시_예외가_발생한다() {
+    void 구성원이_아니면_조직의_이벤트를_조회시_예외가_발생한다() {
         // given
         var member = memberRepository.save(Member.create("user", "user@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));

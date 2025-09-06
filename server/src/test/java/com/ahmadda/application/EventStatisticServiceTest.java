@@ -63,7 +63,7 @@ class EventStatisticServiceTest {
     }
 
     @Test
-    void 존재하지_않는_조직원일시_예외가_발생한다() {
+    void 존재하지_않는_구성원일시_예외가_발생한다() {
         // given
         var organization = createOrganization();
         var member = createMember();
@@ -76,7 +76,7 @@ class EventStatisticServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getEventStatistic(event.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원입니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test

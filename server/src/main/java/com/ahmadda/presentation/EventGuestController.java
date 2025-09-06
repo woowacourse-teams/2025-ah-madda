@@ -98,7 +98,7 @@ public class EventGuestController {
                                               "type": "about:blank",
                                               "title": "Forbidden",
                                               "status": 403,
-                                              "detail": "조직의 조직원만 접근할 수 있습니다.",
+                                              "detail": "조직의 구성원만 접근할 수 있습니다.",
                                               "instance": "/api/events/{eventId}/guests"
                                             }
                                             """
@@ -121,7 +121,7 @@ public class EventGuestController {
         return ResponseEntity.ok(responses);
     }
 
-    @Operation(summary = "이벤트 미참여 조직원 목록 및 알림 수신 거부 여부 조회", description = "해당 이벤트에 아직 참여하지 않은 조직원 목록과, 각 조직원의 알림 수신 거부 여부를 조회합니다.")
+    @Operation(summary = "이벤트 미참여 구성원 목록 및 알림 수신 거부 여부 조회", description = "해당 이벤트에 아직 참여하지 않은 구성원 목록과, 각 구성원의 알림 수신 거부 여부를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -170,7 +170,7 @@ public class EventGuestController {
                                               "type": "about:blank",
                                               "title": "Forbidden",
                                               "status": 403,
-                                              "detail": "조직의 조직원만 접근할 수 있습니다.",
+                                              "detail": "조직의 구성원만 접근할 수 있습니다.",
                                               "instance": "/api/events/{eventId}/non-guests"
                                             }
                                             """
@@ -236,13 +236,13 @@ public class EventGuestController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "조직원 없음",
+                                            name = "구성원 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않는 조직원입니다.",
+                                                      "detail": "존재하지 않는 구성원입니다.",
                                                       "instance": "/api/events/{eventId}/participation"
                                                     }
                                                     """
@@ -414,13 +414,13 @@ public class EventGuestController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "조직원 없음",
+                                            name = "구성원 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않는 조직원입니다.",
+                                                      "detail": "존재하지 않는 구성원입니다.",
                                                       "instance": "/api/events/{eventId}/guest-status"
                                                     }
                                                     """
@@ -477,13 +477,13 @@ public class EventGuestController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "조직원 없음",
+                                            name = "구성원 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않는 조직원입니다.",
+                                                      "detail": "존재하지 않는 구성원입니다.",
                                                       "instance": "/api/events/{eventId}/cancel-participate"
                                                     }
                                                     """
@@ -495,7 +495,7 @@ public class EventGuestController {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "이벤트의 참가자 목록에서 일치하는 조직원을 찾을 수 없습니다.",
+                                                      "detail": "이벤트의 참가자 목록에서 일치하는 구성원을 찾을 수 없습니다.",
                                                       "instance": "/api/events/{eventId}/cancel-participate"
                                                     }
                                                     """
@@ -556,13 +556,13 @@ public class EventGuestController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "조직원 없음",
+                                            name = "구성원 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않는 조직원입니다.",
+                                                      "detail": "존재하지 않는 구성원입니다.",
                                                       "instance": "/api/events/{eventId}/guests/{guestId}/answers"
                                                     }
                                                     """

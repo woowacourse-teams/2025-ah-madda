@@ -271,7 +271,7 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void 조직원이_없다면_조직을_수정할때_예외가_발생한다() {
+    void 구성원이_없다면_조직을_수정할때_예외가_발생한다() {
         // given
         var organization = createOrganization("Org");
         var request = new OrganizationUpdateRequest("새 이름", "새 설명");
@@ -285,7 +285,7 @@ class OrganizationServiceTest {
                 new LoginMember(member.getId())
         ))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원입니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
@@ -360,7 +360,7 @@ class OrganizationServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.deleteOrganization(organization.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원입니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test

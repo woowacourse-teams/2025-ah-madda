@@ -4,11 +4,13 @@ import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -115,7 +117,7 @@ public class Poke {
             final OrganizationMember receiveOrganizationMember
     ) {
         if (event.hasGuest(receiveOrganizationMember)) {
-            throw new UnprocessableEntityException("이미 이벤트에 참여한 조직원에게 포키를 보낼 수 없습니다.");
+            throw new UnprocessableEntityException("이미 이벤트에 참여한 구성원에게 포키를 보낼 수 없습니다.");
         }
 
         if (event.isOrganizer(receiveOrganizationMember)) {

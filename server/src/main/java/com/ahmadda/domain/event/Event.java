@@ -296,7 +296,7 @@ public class Event extends BaseEntity {
         return guests.stream()
                 .filter((guest) -> guest.isSameOrganizationMember(organizationMember))
                 .findAny()
-                .orElseThrow(() -> new UnprocessableEntityException("이벤트의 참가자 목록에서 일치하는 조직원을 찾을 수 없습니다"));
+                .orElseThrow(() -> new UnprocessableEntityException("이벤트의 참가자 목록에서 일치하는 구성원을 찾을 수 없습니다"));
     }
 
     public LocalDateTime getRegistrationStart() {

@@ -104,7 +104,7 @@ class EventNotificationOptOutServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.optOut(event.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원입니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
@@ -169,7 +169,7 @@ class EventNotificationOptOutServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.cancelOptOut(event.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원입니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
@@ -239,7 +239,7 @@ class EventNotificationOptOutServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getMemberWithOptStatus(event.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원입니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
@@ -297,7 +297,7 @@ class EventNotificationOptOutServiceTest {
     }
 
     @Test
-    void 조직원_목록에_알람_수신_거부_정보를_매핑할_수_있다() {
+    void 구성원_목록에_알람_수신_거부_정보를_매핑할_수_있다() {
         // given
         var organization = createOrganization();
         var member1 = createMember("user1", "user1@mail.com");
@@ -335,7 +335,7 @@ class EventNotificationOptOutServiceTest {
     }
 
     @Test
-    void 이벤트가_없으면_조직원_수신거부_정보_매핑시_예외가_발생한다() {
+    void 이벤트가_없으면_구성원_수신거부_정보_매핑시_예외가_발생한다() {
         // given
         var member = createMember("user", "user@mail.com");
         var org = createOrganization();

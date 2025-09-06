@@ -85,7 +85,7 @@ class GuestTest {
     }
 
     @Test
-    void 같은_조직이_아닌_이벤트의_조직원이_참여한다면_예외가_발생한다() {
+    void 같은_조직이_아닌_이벤트의_구성원이_참여한다면_예외가_발생한다() {
         //given
         var organization1 = Organization.create("테스트 조직1", "조직 설명", "image.png");
         var organization2 = Organization.create("테스트 조직2", "조직 설명", "image.png");

@@ -122,7 +122,7 @@ public class OrganizationEventController {
         return ResponseEntity.ok(eventResponses);
     }
 
-    @Operation(summary = "이벤트 생성", description = "조직 ID에 속한 이벤트를 생성합니다. 해당 조직 ID에 속한 조직원만 이벤트를 생성할 수 있습니다.")
+    @Operation(summary = "이벤트 생성", description = "조직 ID에 속한 이벤트를 생성합니다. 해당 조직 ID에 속한 구성원만 이벤트를 생성할 수 있습니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "201",
@@ -185,13 +185,13 @@ public class OrganizationEventController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "조직원 없음",
+                                            name = "구성원 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않은 조직원 정보입니다.",
+                                                      "detail": "존재하지 않은 구성원 정보입니다.",
                                                       "instance": "/api/organizations/{organizationId}/events"
                                                     }
                                                     """
@@ -573,7 +573,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Not Found",
                                               "status": 404,
-                                              "detail": "존재하지 않은 조직원 정보입니다.",
+                                              "detail": "존재하지 않은 구성원 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events/owned"
                                             }
                                             """
@@ -628,7 +628,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Not Found",
                                               "status": 404,
-                                              "detail": "존재하지 않은 조직원 정보입니다.",
+                                              "detail": "존재하지 않은 구성원 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events/owned"
                                             }
                                             """
@@ -686,7 +686,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Not Found",
                                               "status": 404,
-                                              "detail": "존재하지 않은 조직원 정보입니다.",
+                                              "detail": "존재하지 않은 구성원 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events/owned"
                                             }
                                             """
@@ -739,7 +739,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Not Found",
                                               "status": 404,
-                                              "detail": "존재하지 않은 조직원 정보입니다.",
+                                              "detail": "존재하지 않은 구성원 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events/participated"
                                             }
                                             """
