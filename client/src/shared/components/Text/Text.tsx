@@ -39,9 +39,10 @@ export const Text = <T extends TextElementType = 'p'>({
   weight = 'regular',
   color = 'black',
   children,
+  ...props
 }: TextProps<T>) => {
   return (
-    <StyledText as={as} type={type} weight={weight} color={color}>
+    <StyledText as={as} type={type} weight={weight} color={color} {...props}>
       {children}
     </StyledText>
   );

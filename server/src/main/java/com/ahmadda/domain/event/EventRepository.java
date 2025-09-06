@@ -15,6 +15,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             final LocalDateTime to
     );
 
+    List<Event> findAllByEventOperationPeriodEventPeriodEndBefore(final LocalDateTime now);
+
     List<Event> findAllByEventOperationPeriodEventPeriodStartBetween(
             final LocalDateTime from,
             final LocalDateTime to

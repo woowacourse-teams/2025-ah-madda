@@ -4,8 +4,8 @@ import com.ahmadda.application.OrganizationService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.application.dto.OrganizationUpdateRequest;
-import com.ahmadda.domain.organization.OrganizationImageFile;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationImageFile;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.presentation.dto.OrganizationCreateResponse;
 import com.ahmadda.presentation.dto.OrganizationParticipateRequest;
@@ -154,25 +154,6 @@ public class OrganizationController {
     @GetMapping("/{organizationId}")
     public ResponseEntity<OrganizationResponse> readOrganization(@PathVariable final Long organizationId) {
         Organization organization = organizationService.getOrganizationById(organizationId);
-        OrganizationResponse organizationResponse = OrganizationResponse.from(organization);
-
-        return ResponseEntity.ok(organizationResponse);
-    }
-
-    //TODO 07.25 이후 리팩터링 및 제거하기
-    @Deprecated
-    @Operation(summary = "우아코스 조직 정보 조회 (임시)", description = "항상 우아코스 조직 정보를 반환하는 임시 API입니다. 추후 제거될 예정입니다.")
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    content = @Content(
-                            schema = @Schema(implementation = OrganizationResponse.class)
-                    )
-            )
-    })
-    @GetMapping("/woowacourse")
-    public ResponseEntity<OrganizationResponse> getOrganization() {
-        Organization organization = organizationService.alwaysGetWoowacourse();
         OrganizationResponse organizationResponse = OrganizationResponse.from(organization);
 
         return ResponseEntity.ok(organizationResponse);

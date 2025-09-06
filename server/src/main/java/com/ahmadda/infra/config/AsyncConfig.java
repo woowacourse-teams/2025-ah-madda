@@ -1,6 +1,7 @@
 package com.ahmadda.infra.config;
 
 import com.ahmadda.infra.logger.AsyncTraceLoggingDecorator;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;

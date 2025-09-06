@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
@@ -7,7 +7,7 @@ import { Text } from '@/shared/components/Text';
 
 export const Info = () => {
   const navigate = useNavigate();
-
+  const { organizationId } = useParams();
   return (
     <Flex
       dir="row"
@@ -33,7 +33,7 @@ export const Info = () => {
           내가 주최하고, 참여한 이벤트를 확인해보세요.
         </Text>
       </Flex>
-      <Button size="md" variant="outline" onClick={() => navigate('/event/new')}>
+      <Button size="md" variant="outline" onClick={() => navigate(`/${organizationId}/event/new`)}>
         + 이벤트 만들기
       </Button>
     </Flex>

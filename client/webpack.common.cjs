@@ -1,18 +1,15 @@
-const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
-
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { DefinePlugin } = require('webpack');
+const webpack = require('webpack');
 const Dotenv = require('dotenv-webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
 
 module.exports = {
-  mode: 'development',
   entry: './src/main.tsx',
-
   output: {
-    filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
+    filename: '[name].[contenthash].js',
     publicPath: '/',
     clean: true,
   },
@@ -22,9 +19,6 @@ module.exports = {
       template: './index.html',
       filename: 'index.html',
       inject: true,
-      templateParameters: {
-        GOOGLE_ANALYTICS_ID: process.env.GOOGLE_ANALYTICS_ID || '',
-      },
     }),
     new CopyWebpackPlugin({
       patterns: [
@@ -37,9 +31,9 @@ module.exports = {
         },
       ],
     }),
-    new DefinePlugin({
+    new webpack.DefinePlugin({
       VERSION: JSON.stringify('1.0.0'),
-      __DEV__: JSON.stringify(true),
+      __DEV__: JSON.stringify(process.env.NODE_ENV !== 'production'),
     }),
     new Dotenv({
       path: path.resolve(
@@ -47,6 +41,7 @@ module.exports = {
         process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development'
       ),
       safe: true,
+      systemvars: true,
     }),
     sentryWebpackPlugin({
       authToken: process.env.SENTRY_AUTH_TOKEN,
@@ -77,24 +72,10 @@ module.exports = {
       },
     ],
   },
-
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src/'),
     },
     extensions: ['.ts', '.tsx', '.js'],
-  },
-
-  devServer: {
-    static: {
-      directory: path.join(__dirname, 'dist'),
-    },
-    port: 5173,
-    open: true,
-    hot: true,
-    historyApiFallback: true,
-    client: {
-      overlay: true,
-    },
   },
 };
