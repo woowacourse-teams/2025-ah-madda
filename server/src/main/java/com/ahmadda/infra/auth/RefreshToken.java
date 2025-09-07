@@ -1,6 +1,5 @@
 package com.ahmadda.infra.auth;
 
-import com.ahmadda.infra.auth.util.HashUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -47,14 +46,11 @@ public class RefreshToken {
     }
 
     public static RefreshToken create(
-            final String token,
+            final String encodedToken,
             final Long memberId,
-            final String userAgent,
+            final String deviceId,
             final LocalDateTime expiresAt
     ) {
-        String encodedToken = HashUtils.sha256(token);
-        String deviceId = HashUtils.sha256(userAgent);
-
         return new RefreshToken(encodedToken, memberId, deviceId, expiresAt);
     }
 }

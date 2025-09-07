@@ -3,6 +3,7 @@ package com.ahmadda.application;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.application.dto.OrganizationUpdateRequest;
+import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
@@ -119,6 +120,22 @@ public class OrganizationService {
         return organizationRepository.findMemberOrganizations(member);
     }
 
+    @Transactional
+    public void deleteOrganization(final Long organizationId, final LoginMember loginMember) {
+        Organization organization = getOrganization(organizationId);
+        OrganizationMember deletingMember = getOrganizationMember(organizationId, loginMember);
+
+        validateAdmin(deletingMember);
+
+        organizationRepository.delete(organization);
+    }
+
+    private void validateAdmin(final OrganizationMember organizationMember) {
+        if (!organizationMember.isAdmin()) {
+            throw new ForbiddenException("이벤트 스페이스의 관리자만 삭제할 수 있습니다.");
+        }
+    }
+
     private String resolveUpdateImageUrl(
             final String imageUrl,
             final OrganizationImageFile thumbnailOrganizationImageFile
@@ -134,7 +151,7 @@ public class OrganizationService {
 
     private void validateAlreadyParticipationMember(final Long organizationId, final LoginMember loginMember) {
         if (organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId())) {
-            throw new UnprocessableEntityException("이미 참여한 조직입니다.");
+            throw new UnprocessableEntityException("이미 참여한 이벤트 스페이스입니다.");
         }
     }
 
@@ -150,11 +167,11 @@ public class OrganizationService {
 
     private Organization getOrganization(final Long organizationId) {
         return organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 이벤트 스페이스입니다."));
     }
 
     private OrganizationMember getOrganizationMember(final Long organizationId, final LoginMember loginMember) {
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, loginMember.memberId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직원입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 구성원입니다."));
     }
 }

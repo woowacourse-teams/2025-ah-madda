@@ -36,7 +36,7 @@ class FcmPushNotifierTest {
     void 실제_FCM으로_푸시를_전송한다() {
         // given
         var member = Member.create("테스트 회원", "amadda.team@gmail.com", "testPicture");
-        var organization = Organization.create("테스트 조직", "설명", "logo.png");
+        var organization = Organization.create("테스트 이벤트 스페이스", "설명", "logo.png");
         var organizationMember = OrganizationMember.create("푸시대상", member, organization, OrganizationMemberRole.USER);
 
         memberRepository.save(member);
@@ -63,7 +63,7 @@ class FcmPushNotifierTest {
     void 실제_FCM으로_한명에게_푸시알람을_전송한다() {
         // given
         var member = Member.create("테스트 회원", "amadda.team@gmail.com", "testPicture");
-        var organization = Organization.create("테스트 조직", "설명", "logo.png");
+        var organization = Organization.create("테스트 이벤트 스페이스", "설명", "logo.png");
         var organizationMember = OrganizationMember.create("푸시대상", member, organization, OrganizationMemberRole.USER);
 
         memberRepository.save(member);

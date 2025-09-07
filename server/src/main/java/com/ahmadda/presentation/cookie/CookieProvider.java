@@ -1,40 +1,29 @@
 package com.ahmadda.presentation.cookie;
 
-import com.ahmadda.presentation.cookie.config.RefreshTokenCookieProperties;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import com.ahmadda.presentation.cookie.config.CookieProperties;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
-@EnableConfigurationProperties(RefreshTokenCookieProperties.class)
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+import java.time.Duration;
+
 @Component
 public class CookieProvider {
 
-    public static final String REFRESH_TOKEN_KEY = "refresh_token";
-
-    private final RefreshTokenCookieProperties refreshTokenCookieProperties;
-
-    public ResponseCookie createRefreshTokenCookie(final String refreshToken) {
-        return ResponseCookie.from(REFRESH_TOKEN_KEY, refreshToken)
-                .maxAge(refreshTokenCookieProperties.getTtl())
-                .domain(refreshTokenCookieProperties.getDomain())
-                .sameSite(refreshTokenCookieProperties.getSameSite())
-                .secure(refreshTokenCookieProperties.isSecure())
-                .httpOnly(refreshTokenCookieProperties.isHttpOnly())
-                .path(refreshTokenCookieProperties.getPath())
+    public ResponseCookie createCookie(final String name,
+                                       final String value,
+                                       final CookieProperties cookieProperties,
+                                       final Duration ttl) {
+        return ResponseCookie.from(name, value)
+                .maxAge(ttl)
+                .domain(cookieProperties.getDomain())
+                .sameSite(cookieProperties.getSameSite())
+                .secure(cookieProperties.isSecure())
+                .httpOnly(cookieProperties.isHttpOnly())
+                .path(cookieProperties.getPath())
                 .build();
     }
-    
-    public ResponseCookie createLogoutRefreshTokenCookie() {
-        return ResponseCookie.from(REFRESH_TOKEN_KEY, "")
-                .maxAge(0)
-                .domain(refreshTokenCookieProperties.getDomain())
-                .sameSite(refreshTokenCookieProperties.getSameSite())
-                .secure(refreshTokenCookieProperties.isSecure())
-                .httpOnly(refreshTokenCookieProperties.isHttpOnly())
-                .path(refreshTokenCookieProperties.getPath())
-                .build();
+
+    public ResponseCookie expiresCookie(final String name, final CookieProperties cookieProperties) {
+        return createCookie(name, "", cookieProperties, Duration.ZERO);
     }
 }

@@ -41,7 +41,7 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Tag(name = "Organization Event", description = "조직 이벤트 관련 API")
+@Tag(name = "Organization Event", description = "이벤트 스페이스 이벤트 관련 API")
 @RestController
 @RequestMapping("/api/organizations")
 @RequiredArgsConstructor
@@ -51,7 +51,7 @@ public class OrganizationEventController {
     private final OrganizationMemberEventService organizationMemberEventService;
     private final EventService eventService;
 
-    @Operation(summary = "조직의 모든 이벤트 조회", description = "특정 조직에 속한 모든 이벤트를 조회합니다.")
+    @Operation(summary = "이벤트 스페이스의 모든 이벤트 조회", description = "특정 이벤트 스페이스에 속한 모든 이벤트를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -68,7 +68,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events"
                                             }
                                             """
@@ -84,7 +84,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Forbidden",
                                               "status": 403,
-                                              "detail": "조직에 참여하지 않아 권한이 없습니다.",
+                                              "detail": "이벤트 스페이스에 참여하지 않아 권한이 없습니다.",
                                               "instance": "/api/organizations/{organizationId}/events"
                                             }
                                             """
@@ -100,7 +100,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Not Found",
                                               "status": 404,
-                                              "detail": "존재하지 않는 조직입니다.",
+                                              "detail": "존재하지 않는 이벤트 스페이스입니다.",
                                               "instance": "/api/organizations/{organizationId}/events"
                                             }
                                             """
@@ -122,7 +122,7 @@ public class OrganizationEventController {
         return ResponseEntity.ok(eventResponses);
     }
 
-    @Operation(summary = "이벤트 생성", description = "조직 ID에 속한 이벤트를 생성합니다. 해당 조직 ID에 속한 조직원만 이벤트를 생성할 수 있습니다.")
+    @Operation(summary = "이벤트 생성", description = "이벤트 스페이스 ID에 속한 이벤트를 생성합니다. 해당 이벤트 스페이스 ID에 속한 구성원만 이벤트를 생성할 수 있습니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "201",
@@ -144,7 +144,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events"
                                             }
                                             """
@@ -161,7 +161,7 @@ public class OrganizationEventController {
                                                       "type": "about:blank",
                                                       "title": "Forbidden",
                                                       "status": 403,
-                                                      "detail": "자신이 속한 조직이 아닙니다.",
+                                                      "detail": "자신이 속한 이벤트 스페이스가 아닙니다.",
                                                       "instance": "/api/organizations/{organizationId}/events"
                                                     }
                                                     """
@@ -173,25 +173,25 @@ public class OrganizationEventController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
-                                            name = "조직 없음",
+                                            name = "이벤트 스페이스 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않은 조직 정보입니다.",
+                                                      "detail": "존재하지 않는 이벤트 스페이스 정보입니다.",
                                                       "instance": "/api/organizations/{organizationId}/events"
                                                     }
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "조직원 없음",
+                                            name = "구성원 없음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않은 조직원 정보입니다.",
+                                                      "detail": "존재하지 않는 구성원 정보입니다.",
                                                       "instance": "/api/organizations/{organizationId}/events"
                                                     }
                                                     """
@@ -298,7 +298,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/events/{eventId}/registration/close"
                                             }
                                             """
@@ -416,7 +416,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/events/{eventId}"
                                             }
                                             """
@@ -450,7 +450,7 @@ public class OrganizationEventController {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않은 이벤트 정보입니다.",
+                                                      "detail": "존재하지 않는 이벤트 정보입니다.",
                                                       "instance": "/api/organizations/events/{eventId}"
                                                     }
                                                     """
@@ -506,7 +506,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Forbidden",
                                               "status": 403,
-                                              "detail": "조직에 소속되지 않은 회원입니다.",
+                                              "detail": "이벤트 스페이스에 소속되지 않는 회원입니다.",
                                               "instance": "/api/organizations/events/{eventId}/registration/close"
                                             }
                                             """
@@ -522,7 +522,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Not Found",
                                               "status": 404,
-                                              "detail": "존재하지 않은 이벤트 정보입니다.",
+                                              "detail": "존재하지 않는 이벤트 정보입니다.",
                                               "instance": "/api/organizations/events/{eventId}"
                                             }
                                             """
@@ -557,7 +557,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events/owned"
                                             }
                                             """
@@ -573,7 +573,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Not Found",
                                               "status": 404,
-                                              "detail": "존재하지 않은 조직원 정보입니다.",
+                                              "detail": "존재하지 않는 구성원 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events/owned"
                                             }
                                             """
@@ -612,7 +612,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events/owned"
                                             }
                                             """
@@ -628,7 +628,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Not Found",
                                               "status": 404,
-                                              "detail": "존재하지 않은 조직원 정보입니다.",
+                                              "detail": "존재하지 않는 구성원 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events/owned"
                                             }
                                             """
@@ -670,7 +670,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events/owned"
                                             }
                                             """
@@ -686,7 +686,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Not Found",
                                               "status": 404,
-                                              "detail": "존재하지 않은 조직원 정보입니다.",
+                                              "detail": "존재하지 않는 구성원 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events/owned"
                                             }
                                             """
@@ -723,7 +723,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events/participated"
                                             }
                                             """
@@ -739,7 +739,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Not Found",
                                               "status": 404,
-                                              "detail": "존재하지 않은 조직원 정보입니다.",
+                                              "detail": "존재하지 않는 구성원 정보입니다.",
                                               "instance": "/api/organizations/{organizationId}/events/participated"
                                             }
                                             """
@@ -781,7 +781,7 @@ public class OrganizationEventController {
                                               "type": "about:blank",
                                               "title": "Unauthorized",
                                               "status": 401,
-                                              "detail": "유효하지 않은 인증 정보 입니다.",
+                                              "detail": "유효하지 않은 인증 정보입니다.",
                                               "instance": "/api/organizations/events/{eventId}/organizer-status"
                                             }
                                             """
@@ -799,7 +799,7 @@ public class OrganizationEventController {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않은 이벤트 정보입니다.",
+                                                      "detail": "존재하지 않는 이벤트 정보입니다.",
                                                       "instance": "/api/organizations/events/{eventId}/organizer-status"
                                                     }
                                                     """

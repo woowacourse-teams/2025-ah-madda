@@ -20,7 +20,7 @@ class OrganizationTest {
 
     @BeforeEach
     void setUp() {
-        sut = Organization.create("테스트 조직", "조직 설명", "image.png");
+        sut = Organization.create("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "image.png");
         var member = Member.create("주최자 회원", "organizer@example.com", "testPicture");
         organizer = OrganizationMember.create("주최자", member, sut, OrganizationMemberRole.USER);
     }
@@ -59,7 +59,7 @@ class OrganizationTest {
     }
 
     @Test
-    void 조직에_참여할_수_있다() {
+    void 이벤트_스페이스에_참여할_수_있다() {
         //given
         var member = Member.create("주최자 회원", "organizer@example.com", "testPicture");
         var inviteCode = InviteCode.create("code", sut, organizer, LocalDateTime.now());
@@ -79,9 +79,9 @@ class OrganizationTest {
     }
 
     @Test
-    void 조직의_초대코드가_아닌_초대코드로_조직에_참여한다면_예외가_발생한다() {
+    void 이벤트_스페이스의_초대코드가_아닌_초대코드로_이벤트_스페이스에_참여한다면_예외가_발생한다() {
         //given
-        var organization = Organization.create("테스트 조직2", "조직 설명", "image.png");
+        var organization = Organization.create("테스트 이벤트 스페이스2", "이벤트 스페이스 설명", "image.png");
         var member = Member.create("주최자 회원", "organizer@example.com", "testPicture");
         var inviter = OrganizationMember.create("test", member, organization, OrganizationMemberRole.USER);
         var inviteCode = InviteCode.create("code", organization, inviter, LocalDateTime.now());
@@ -93,7 +93,7 @@ class OrganizationTest {
     }
 
     @Test
-    void 만료된_초대코드로_조직에_참여한다면_예외가_발생한다() {
+    void 만료된_초대코드로_이벤트_스페이스에_참여한다면_예외가_발생한다() {
         //given
         var member = Member.create("주최자 회원", "organizer@example.com", "testPicture");
         var inviteCode = InviteCode.create("code", sut, organizer, LocalDateTime.of(2000, 1, 1, 0, 0));
@@ -105,17 +105,17 @@ class OrganizationTest {
     }
 
     @Test
-    void 관리자가_조직정보를_수정할_수_있다() {
+    void 관리자가_이벤트_스페이스_정보를_수정할_수_있다() {
         // given
         var admin = OrganizationMember.create("관리자", organizer.getMember(), sut, OrganizationMemberRole.ADMIN);
 
         // when
-        sut.update(admin, "새 조직명", "새 설명", "newImage.png");
+        sut.update(admin, "새 이벤트 스페이스명", "새 설명", "newImage.png");
 
         // then
         assertSoftly(softly -> {
             softly.assertThat(sut.getName())
-                    .isEqualTo("새 조직명");
+                    .isEqualTo("새 이벤트 스페이스명");
             softly.assertThat(sut.getDescription())
                     .isEqualTo("새 설명");
             softly.assertThat(sut.getImageUrl())
@@ -124,22 +124,22 @@ class OrganizationTest {
     }
 
     @Test
-    void 관리자가_아니면_조직정보를_수정한다면_예외가_발생한다() {
+    void 관리자가_아니면_이벤트_스페이스_정보를_수정하면_예외가_발생한다() {
         // given
         var user = OrganizationMember.create("일반회원", organizer.getMember(), sut, OrganizationMemberRole.USER);
 
         // when // then
         assertThatThrownBy(() ->
-                sut.update(user, "새 조직명", "새 설명", "newImage.png")
+                sut.update(user, "새 이벤트 스페이스명", "새 설명", "newImage.png")
         )
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("조직원의 관리자만 조직 정보를 수정할 수 있습니다.");
+                .hasMessage("구성원의 관리자만 이벤트 스페이스 정보를 수정할 수 있습니다.");
     }
 
     @Test
-    void 다른_조직의_관리자가_조직정보를_수정다면_예외가_발생한다() {
+    void 다른_이벤트_스페이스의_관리자가_이벤트_스페이스_정보를_수정다면_예외가_발생한다() {
         // given
-        var otherOrganization = Organization.create("테스트 조직", "조직 설명", "image.png");
+        var otherOrganization = Organization.create("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "image.png");
         var organizationMember = OrganizationMember.create(
                 "일반회원",
                 organizer.getMember(),
@@ -149,10 +149,10 @@ class OrganizationTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.update(organizationMember, "새 조직명", "새 설명", "newImage.png")
+                sut.update(organizationMember, "새 이벤트 스페이스명", "새 설명", "newImage.png")
         )
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("조직에 속한 조직원만 수정이 가능합니다.");
+                .hasMessage("이벤트 스페이스에 속한 구성원만 수정이 가능합니다.");
     }
 
     private Event createEventForTest(

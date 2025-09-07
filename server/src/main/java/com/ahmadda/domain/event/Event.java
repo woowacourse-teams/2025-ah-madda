@@ -261,7 +261,7 @@ public class Event extends BaseEntity {
             throw new UnprocessableEntityException("이벤트의 주최자는 게스트로 참여할 수 없습니다.");
         }
         if (hasGuest(guest.getOrganizationMember())) {
-            throw new UnprocessableEntityException("이미 해당 이벤트에 참여중인 게스트입니다.");
+            throw new UnprocessableEntityException("이미 해당 이벤트에 참여 중인 게스트입니다.");
         }
     }
 
@@ -282,7 +282,7 @@ public class Event extends BaseEntity {
             final Organization organization
     ) {
         if (!organizationMember.isBelongTo(organization)) {
-            throw new ForbiddenException("자신이 속한 조직이 아닙니다.");
+            throw new ForbiddenException("자신이 속한 이벤트 스페이스가 아닙니다.");
         }
     }
 
@@ -296,7 +296,7 @@ public class Event extends BaseEntity {
         return guests.stream()
                 .filter((guest) -> guest.isSameOrganizationMember(organizationMember))
                 .findAny()
-                .orElseThrow(() -> new UnprocessableEntityException("이벤트의 참가자 목록에서 일치하는 조직원을 찾을 수 없습니다"));
+                .orElseThrow(() -> new UnprocessableEntityException("이벤트의 참가자 목록에서 일치하는 구성원을 찾을 수 없습니다"));
     }
 
     public LocalDateTime getRegistrationStart() {

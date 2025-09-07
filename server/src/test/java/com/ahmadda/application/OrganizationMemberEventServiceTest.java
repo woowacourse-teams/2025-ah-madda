@@ -13,8 +13,8 @@ import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
-import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.domain.organization.OrganizationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -45,9 +45,9 @@ class OrganizationMemberEventServiceTest {
     private OrganizationMemberEventService sut;
 
     @Test
-    void 조직원이_주최한_이벤트들을_조회한다() {
+    void 구성원이_주최한_이벤트들을_조회한다() {
         // given
-        var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
+        var organization = createAndSaveOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "org.png");
         var member = createAndSaveMember("주최자", "organizer@test.com");
         var organizer = createAndSaveOrganizationMember("주최자닉네임", member, organization);
 
@@ -124,9 +124,9 @@ class OrganizationMemberEventServiceTest {
     }
 
     @Test
-    void 조직원이_참여한_이벤트들을_조회한다() {
+    void 구성원이_참여한_이벤트들을_조회한다() {
         // given
-        var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
+        var organization = createAndSaveOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "org.png");
         var organizerMember = createAndSaveMember("주최자", "organizer@test.com");
         var participantMember = createAndSaveMember("참여자", "participant@test.com");
 
@@ -159,10 +159,10 @@ class OrganizationMemberEventServiceTest {
                 30
         );
 
-        // 참여하지 않은 이벤트 (결과에 포함되지 않아야 함)
+        // 참여하지 않는 이벤트 (결과에 포함되지 않아야 함)
         createAndSaveEvent(
                 "미참여 이벤트",
-                "참여하지 않은 이벤트",
+                "참여하지 않는 이벤트",
                 "미참여장소",
                 organizer,
                 organization,
@@ -199,25 +199,25 @@ class OrganizationMemberEventServiceTest {
     @Test
     void 존재하지_않는_회원으로_주최_이벤트_조회하면_예외가_발생한다() {
         // given
-        var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
+        var organization = createAndSaveOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "org.png");
         var loginMember = new LoginMember(999L);
 
         // when // then
         assertThatThrownBy(() -> sut.getOwnerEvents(organization.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 조직원 정보입니다.");
+                .hasMessage("존재하지 않는 구성원 정보입니다.");
     }
 
     @Test
-    void 존재하지_않는_조직원으로_참여_이벤트_조회하면_예외가_발생한다() {
+    void 존재하지_않는_구성원으로_참여_이벤트_조회하면_예외가_발생한다() {
         // given
-        var organization = createAndSaveOrganization("테스트 조직", "조직 설명", "org.png");
+        var organization = createAndSaveOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "org.png");
         var loginMember = new LoginMember(999L);
 
         // when // then
         assertThatThrownBy(() -> sut.getParticipantEvents(organization.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않은 조직원 정보입니다.");
+                .hasMessage("존재하지 않는 구성원 정보입니다.");
     }
 
     private Organization createAndSaveOrganization(String name, String description, String imageUrl) {

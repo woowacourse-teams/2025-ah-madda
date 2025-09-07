@@ -1,23 +1,23 @@
-package com.ahmadda.application;
+package com.ahmadda.application.scheduler;
 
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.domain.event.Event;
-import com.ahmadda.domain.notification.EventNotificationOptOut;
-import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
 import com.ahmadda.domain.event.EventOperationPeriod;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.event.GuestRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
-import com.ahmadda.domain.organization.Organization;
-import com.ahmadda.domain.organization.OrganizationMember;
-import com.ahmadda.domain.organization.OrganizationMemberRepository;
-import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.domain.notification.EventNotificationOptOut;
+import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
 import com.ahmadda.domain.notification.Reminder;
 import com.ahmadda.domain.notification.ReminderHistoryRepository;
 import com.ahmadda.domain.notification.ReminderRecipient;
+import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.domain.organization.OrganizationRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -66,12 +66,12 @@ class EventNotificationSchedulerTest {
 
     @ParameterizedTest
     @MethodSource("registrationEndOffsets")
-    void 등록_마감_30분_전_수신_거부하지_않은_비게스트에게만_알람을_전송한다(
+    void 등록_마감_30분_전_수신_거부하지_않는_비게스트에게만_알람을_전송한다(
             int minutesUntilRegistrationEnds,
             boolean expectToSend
     ) {
         // given
-        var organization = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        var organization = organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
         var host = saveOrganizationMember("주최자", "host@email.com", organization);
         var ng1 = saveOrganizationMember("비게스트1", "ng1@email.com", organization);
         var ng2 = saveOrganizationMember("비게스트2", "ng2@email.com", organization);
@@ -112,7 +112,7 @@ class EventNotificationSchedulerTest {
     @Test
     void 등록_마감_30분_전_리마인더_호출_후_히스토리가_저장된다() {
         // given
-        var org = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        var org = organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
         var host = saveOrganizationMember("주최자", "host@email.com", org);
         var ng1 = saveOrganizationMember("비게스트1", "ng1@email.com", org);
         var ng2 = saveOrganizationMember("비게스트2", "ng2@email.com", org);
@@ -157,7 +157,7 @@ class EventNotificationSchedulerTest {
     @Test
     void 정원이_다_찼다면_알림을_전송하지_않는다() {
         // given
-        var organization = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        var organization = organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
         var host = saveOrganizationMember("주최자", "host@email.com", organization);
 
         saveOrganizationMember("비게스트1", "ng1@email.com", organization);
@@ -191,12 +191,12 @@ class EventNotificationSchedulerTest {
 
     @ParameterizedTest
     @MethodSource("eventStartOffsets")
-    void 이벤트_시작_24시간_전_수신_거부하지_않은_게스트에게만_알람을_전송한다(
+    void 이벤트_시작_24시간_전_수신_거부하지_않는_게스트에게만_알람을_전송한다(
             int minutesFrom24hOffset,
             boolean expectToSend
     ) {
         // given
-        var org = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        var org = organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
         var host = saveOrganizationMember("주최자", "host@email.com", org);
 
         var now = LocalDateTime.now();
@@ -240,7 +240,7 @@ class EventNotificationSchedulerTest {
     @Test
     void 이벤트_시작_24시간_전_리마인더_호출_후_히스토리가_저장된다() {
         // given
-        var org = organizationRepository.save(Organization.create("조직", "설명", "img.png"));
+        var org = organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
         var host = saveOrganizationMember("주최자", "host@email.com", org);
 
         var now = LocalDateTime.now();
@@ -319,10 +319,11 @@ class EventNotificationSchedulerTest {
     ) {
         var member = memberRepository.save(Member.create(nickname, email, "testPicture"));
 
-        return organizationMemberRepository.save(OrganizationMember.create(nickname,
-                                                                           member,
-                                                                           organization,
-                                                                           OrganizationMemberRole.USER
+        return organizationMemberRepository.save(OrganizationMember.create(
+                nickname,
+                member,
+                organization,
+                OrganizationMemberRole.USER
         ));
     }
 

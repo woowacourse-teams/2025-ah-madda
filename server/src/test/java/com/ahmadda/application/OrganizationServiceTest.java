@@ -4,6 +4,7 @@ import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.application.dto.OrganizationUpdateRequest;
+import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.EventRepository;
@@ -51,9 +52,9 @@ class OrganizationServiceTest {
     private OrganizationService sut;
 
     @Test
-    void 조직을_ID로_조회한다() {
+    void 이벤트_스페이스를_ID로_조회한다() {
         // given
-        var organization = createAndSaveOrganization("Org");
+        var organization = createOrganization("Org");
 
         // when
         var found = sut.getOrganizationById(organization.getId());
@@ -70,10 +71,10 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void 조직을_생성한다() {
+    void 이벤트_스페이스를_생성한다() {
         // given
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
-        var request = createOrganizationCreateRequest("조직명", "조직 설명", "서프");
+        var request = createOrganizationCreateRequest("이벤트 스페이스명", "이벤트 스페이스 설명", "서프");
         var thumbnailImageFile = createImageFile("test.png");
 
         // when
@@ -87,9 +88,9 @@ class OrganizationServiceTest {
             softly.assertThat(organizations)
                     .hasSize(1);
             softly.assertThat(organization.getName())
-                    .isEqualTo("조직명");
+                    .isEqualTo("이벤트 스페이스명");
             softly.assertThat(organization.getDescription())
-                    .isEqualTo("조직 설명");
+                    .isEqualTo("이벤트 스페이스 설명");
             softly.assertThat(organization.getImageUrl())
                     .isEqualTo("test.png");
 
@@ -108,21 +109,21 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void 존재하지_않는_조직_ID로_조회하면_예외가_발생한다() {
+    void 존재하지_않는_이벤트_스페이스_ID로_조회하면_예외가_발생한다() {
         // when // then
         assertThatThrownBy(() -> sut.getOrganizationById(999L))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직입니다.");
+                .hasMessage("존재하지 않는 이벤트 스페이스입니다.");
     }
 
     @Test
-    void 초대코드를_통해_조직에_참여할_수_있다() {
+    void 초대코드를_통해_이벤트_스페이스에_참여할_수_있다() {
         // given
         var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        var inviter = createAndSaveOrganizationMember("surf", member2, organization, OrganizationMemberRole.USER);
-        var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
+        var inviter = createOrganizationMember("surf", member2, organization, OrganizationMemberRole.USER);
+        var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(member1.getId());
         var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode());
@@ -137,15 +138,15 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void 이미_참여한_조직에_중복_참여하면_예외가_발생한다() {
+    void 이미_참여한_이벤트_스페이스에_중복_참여하면_예외가_발생한다() {
         // given
         var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
         var organizationMember =
-                createAndSaveOrganizationMember("surf", member1, organization, OrganizationMemberRole.USER);
-        var inviter = createAndSaveOrganizationMember("tuda", member2, organization, OrganizationMemberRole.USER);
-        var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
+                createOrganizationMember("surf", member1, organization, OrganizationMemberRole.USER);
+        var inviter = createOrganizationMember("tuda", member2, organization, OrganizationMemberRole.USER);
+        var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(member1.getId());
         var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode());
@@ -153,17 +154,17 @@ class OrganizationServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("이미 참여한 조직입니다.");
+                .hasMessage("이미 참여한 이벤트 스페이스입니다.");
     }
 
     @Test
-    void 존재하지_않는_조직에_참여한다면_예외가_발생한다() {
+    void 존재하지_않는_이벤트_스페이스에_참여한다면_예외가_발생한다() {
         // given
         var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        var inviter = createAndSaveOrganizationMember("surf", member2, organization, OrganizationMemberRole.USER);
-        var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
+        var inviter = createOrganizationMember("surf", member2, organization, OrganizationMemberRole.USER);
+        var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(member1.getId());
         var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode());
@@ -171,16 +172,16 @@ class OrganizationServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.participateOrganization(999L, loginMember, request))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직입니다.");
+                .hasMessage("존재하지 않는 이벤트 스페이스입니다.");
     }
 
     @Test
-    void 존재하지_않는_회원이_조직에_참여하려_한다면_예외가_발생한다() {
+    void 존재하지_않는_회원이_이벤트_스페이스에_참여하려_한다면_예외가_발생한다() {
         // given
         var member = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        var inviter = createAndSaveOrganizationMember("surf", member, organization, OrganizationMemberRole.USER);
-        var inviteCode = createAndSaveInviteCode("code", organization, inviter, LocalDateTime.now());
+        var inviter = createOrganizationMember("surf", member, organization, OrganizationMemberRole.USER);
+        var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(999L);
         var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode());
@@ -192,7 +193,7 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void 존재하지_않는_초대코드로_조직에_참여하려_한다면_예외가_발생한다() {
+    void 존재하지_않는_초대코드로_이벤트_스페이스에_참여하려_한다면_예외가_발생한다() {
         // given
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
@@ -207,12 +208,12 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void 조직의_관리자는_조직을_수정할_수_있다() {
+    void 이벤트_스페이스의_관리자는_이벤트_스페이스를_수정할_수_있다() {
         //given
-        var organization = createAndSaveOrganization("Org");
+        var organization = createOrganization("Org");
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var organizationMember =
-                createAndSaveOrganizationMember("surf", member, organization, OrganizationMemberRole.ADMIN);
+                createOrganizationMember("surf", member, organization, OrganizationMemberRole.ADMIN);
         var request = new OrganizationUpdateRequest("새 이름", "새 설명");
         var imageFile = createImageFile("new.png");
 
@@ -233,12 +234,12 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void 썸네일이_null이어도_조직_수정이_가능하다() {
+    void 썸네일이_null이어도_이벤트_스페이스_수정이_가능하다() {
         //given
-        var organization = createAndSaveOrganization("Org");
+        var organization = createOrganization("Org");
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var organizationMember =
-                createAndSaveOrganizationMember("surf", member, organization, OrganizationMemberRole.ADMIN);
+                createOrganizationMember("surf", member, organization, OrganizationMemberRole.ADMIN);
         var request = new OrganizationUpdateRequest("새 이름", "새 설명");
 
         //when
@@ -258,7 +259,7 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void 조직이_없다면_조직을_수정할때_예외가_발생한다() {
+    void 이벤트_스페이스가_없다면_이벤트_스페이스를_수정할때_예외가_발생한다() {
         // given
         var request = new OrganizationUpdateRequest("새 이름", "새 설명");
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
@@ -266,13 +267,13 @@ class OrganizationServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.updateOrganization(999L, request, null, new LoginMember(member.getId())))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직입니다.");
+                .hasMessage("존재하지 않는 이벤트 스페이스입니다.");
     }
 
     @Test
-    void 조직원이_없다면_조직을_수정할때_예외가_발생한다() {
+    void 구성원이_없다면_이벤트_스페이스를_수정할때_예외가_발생한다() {
         // given
-        var organization = createAndSaveOrganization("Org");
+        var organization = createOrganization("Org");
         var request = new OrganizationUpdateRequest("새 이름", "새 설명");
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
 
@@ -284,20 +285,20 @@ class OrganizationServiceTest {
                 new LoginMember(member.getId())
         ))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원입니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
-    void 사용자가_가입한_조직을_조회할_수_있다() {
+    void 사용자가_가입한_이벤트_스페이스를_조회할_수_있다() {
         //given
-        var organization1 = createAndSaveOrganization("우테코");
-        var organization2 = createAndSaveOrganization("아맞다");
-        var organization3 = createAndSaveOrganization("서프의 조직");
-        var organization4 = createAndSaveOrganization("프론트 조직");
+        var organization1 = createOrganization("우테코");
+        var organization2 = createOrganization("아맞다");
+        var organization3 = createOrganization("서프의 이벤트 스페이스");
+        var organization4 = createOrganization("프론트 이벤트 스페이스");
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
-        createAndSaveOrganizationMember("surf", member, organization1, OrganizationMemberRole.USER);
-        createAndSaveOrganizationMember("surf", member, organization2, OrganizationMemberRole.ADMIN);
-        createAndSaveOrganizationMember("surf", member, organization3, OrganizationMemberRole.USER);
+        createOrganizationMember("surf", member, organization1, OrganizationMemberRole.USER);
+        createOrganizationMember("surf", member, organization2, OrganizationMemberRole.ADMIN);
+        createOrganizationMember("surf", member, organization3, OrganizationMemberRole.USER);
 
         //when
         var participatingOrganizations =
@@ -309,19 +310,75 @@ class OrganizationServiceTest {
                     .hasSize(3);
             softly.assertThat(participatingOrganizations)
                     .extracting("name")
-                    .contains("우테코", "아맞다", "서프의 조직");
+                    .contains("우테코", "아맞다", "서프의 이벤트 스페이스");
         });
     }
 
     @Test
-    void 사용자가_가입한_조직을_조회할때_사용자가_없다면_예외가_발생한다() {
+    void 사용자가_가입한_이벤트_스페이스를_조회할때_사용자가_없다면_예외가_발생한다() {
         //when //then
         assertThatThrownBy(() -> sut.getParticipatingOrganizations(new LoginMember(999L)))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 회원입니다");
     }
 
-    private Organization createAndSaveOrganization(String name) {
+    @Test
+    void 이벤트_스페이스의_관리자는_이벤트_스페이스를_삭제할_수_있다() {
+        // given
+        var organization = createOrganization("삭제될 이벤트 스페이스");
+        var admin = memberRepository.save(Member.create("admin", "admin@test.com", "pic"));
+        createOrganizationMember("관리자", admin, organization, OrganizationMemberRole.ADMIN);
+
+        var loginMember = new LoginMember(admin.getId());
+
+        // when
+        sut.deleteOrganization(organization.getId(), loginMember);
+
+        // then
+        assertThat(organizationRepository.findById(organization.getId())).isEmpty();
+    }
+
+    @Test
+    void 이벤트_스페이스_삭제시_이벤트_스페이스가_존재하지_않는다면_예외가_발생한다() {
+        // given
+        var invalidId = Long.MAX_VALUE;
+        var loginMember = new LoginMember(1L);
+
+        // when // then
+        assertThatThrownBy(() -> sut.deleteOrganization(invalidId, loginMember))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 이벤트 스페이스입니다.");
+    }
+
+    @Test
+    void 이벤트_스페이스_삭제시_이벤트_스페이스에_속하지_않는_회원이라면_예외가_발생한다() {
+        // given
+        var organization = createOrganization("삭제 대상 이벤트 스페이스");
+        var member = memberRepository.save(Member.create("user", "user@test.com", "pic"));
+        var loginMember = new LoginMember(member.getId());
+
+        // when // then
+        assertThatThrownBy(() -> sut.deleteOrganization(organization.getId(), loginMember))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 구성원입니다.");
+    }
+
+    @Test
+    void 이벤트_스페이스_삭제시_이벤트_스페이스의_관리자가_아니라면_예외가_발생한다() {
+        // given
+        var organization = createOrganization("삭제 불가 이벤트 스페이스");
+        var user = memberRepository.save(Member.create("user", "user@test.com", "pic"));
+        createOrganizationMember("사용자", user, organization, OrganizationMemberRole.USER);
+
+        var loginMember = new LoginMember(user.getId());
+
+        // when // then
+        assertThatThrownBy(() -> sut.deleteOrganization(organization.getId(), loginMember))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage("이벤트 스페이스의 관리자만 삭제할 수 있습니다.");
+    }
+
+    private Organization createOrganization(String name) {
         var organization = createOrganization(name, "Desc", "img.png");
         return organizationRepository.save(organization);
     }
@@ -338,7 +395,7 @@ class OrganizationServiceTest {
         return new OrganizationCreateRequest(name, description, nickname);
     }
 
-    private OrganizationMember createAndSaveOrganizationMember(
+    private OrganizationMember createOrganizationMember(
             String nickname,
             Member member,
             Organization organization,
@@ -348,7 +405,7 @@ class OrganizationServiceTest {
         return organizationMemberRepository.save(organizationMember);
     }
 
-    private InviteCode createAndSaveInviteCode(
+    private InviteCode createInviteCode(
             String code,
             Organization organization,
             OrganizationMember organizationMember,
