@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -73,14 +74,26 @@ public class TokenProvider {
     }
 
     private void validateRefreshTokenExpired(final String refreshToken) {
-        if (jwtProvider.isRefreshTokenExpired(refreshToken)) {
-            throw new InvalidTokenException("리프레시 토큰이 만료되었습니다.");
+        Optional<Boolean> refreshTokenExpired = jwtProvider.isRefreshTokenExpired(refreshToken);
+
+        if (refreshTokenExpired.isEmpty()) {
+            throw new InvalidTokenException("인증 토큰이 올바르지 않습니다.");
+        }
+
+        if (Boolean.FALSE.equals(refreshTokenExpired.get())) {
+            throw new InvalidTokenException("리프레시 토큰이 아직 만료되지 않았습니다.");
         }
     }
 
     private void validateNotAccessTokenExpired(final String accessToken) {
-        if (!jwtProvider.isAccessTokenExpired(accessToken)) {
-            throw new InvalidTokenException("엑세스 토큰이 만료되지 않았습니다.");
+        Optional<Boolean> accessTokenExpired = jwtProvider.isAccessTokenExpired(accessToken);
+
+        if (accessTokenExpired.isEmpty()) {
+            throw new InvalidTokenException("인증 토큰이 올바르지 않습니다.");
+        }
+
+        if (Boolean.FALSE.equals(accessTokenExpired.get())) {
+            throw new InvalidTokenException("엑세스 토큰이 아직 만료되지 않았습니다.");
         }
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.Optional;
 import javax.crypto.SecretKey;
 
 @Slf4j
@@ -65,33 +66,33 @@ public class JwtProvider {
         return JwtMemberPayload.from(claims);
     }
 
-    public boolean isAccessTokenExpired(final String accessToken) {
+    public Optional<Boolean> isAccessTokenExpired(final String accessToken) {
         try {
             Jwts.parser()
                     .verifyWith(jwtProperties.getAccessSecretKey())
                     .build()
                     .parseSignedClaims(accessToken)
                     .getPayload();
-            return false;
+            return Optional.of(false);
         } catch (ExpiredJwtException e) {
-            return true;
+            return Optional.of(true);
         } catch (JwtException e) {
-            throw new InvalidJwtException("인증 토큰을 파싱하는데 실패했습니다.", e);
+            return Optional.empty();
         }
     }
 
-    public boolean isRefreshTokenExpired(final String refreshToken) {
+    public Optional<Boolean> isRefreshTokenExpired(final String refreshToken) {
         try {
             Jwts.parser()
                     .verifyWith(jwtProperties.getRefreshSecretKey())
                     .build()
                     .parseSignedClaims(refreshToken)
                     .getPayload();
-            return false;
+            return Optional.of(false);
         } catch (ExpiredJwtException e) {
-            return true;
+            return Optional.of(true);
         } catch (JwtException e) {
-            throw new InvalidJwtException("인증 토큰을 파싱하는데 실패했습니다.", e);
+            return Optional.empty();
         }
     }
 
