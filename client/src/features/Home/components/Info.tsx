@@ -75,8 +75,15 @@ export const Info = () => {
                 height: 100px;
               `}
             />
-            <Text as="h2" type="Heading" weight="medium">
-              조직 내 이벤트를 더 잘 참여하게!
+            <Text
+              as="h2"
+              type="Heading"
+              weight="medium"
+              css={css`
+                word-break: keep-all;
+              `}
+            >
+              이벤트 스페이스 내 이벤트를 더 잘 참여하게!
             </Text>
           </Flex>
           <Flex
