@@ -1,6 +1,7 @@
 package com.ahmadda.presentation.filter.ratelimit;
 
 import com.ahmadda.infra.auth.jwt.JwtProvider;
+import com.ahmadda.infra.auth.jwt.config.JwtProperties;
 import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
 import com.ahmadda.presentation.header.HeaderProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.when;
 class SlidingWindowRateLimitFilterTest {
 
     SlidingWindowRateLimitFilter filter;
+    JwtProperties jwtProperties;
     JwtProvider jwtProvider;
     HeaderProvider headerProvider;
     RateLimitExceededHandler rateLimitExceededHandler;
@@ -39,8 +41,9 @@ class SlidingWindowRateLimitFilterTest {
         jwtProvider = mock(JwtProvider.class);
         headerProvider = mock(HeaderProvider.class);
         rateLimitExceededHandler = spy(new RateLimitExceededHandler(new ObjectMapper()));
+        jwtProperties = mock(JwtProperties.class);
 
-        filter = new SlidingWindowRateLimitFilter(headerProvider, jwtProvider, rateLimitExceededHandler);
+        filter = new SlidingWindowRateLimitFilter(headerProvider, jwtProperties, jwtProvider, rateLimitExceededHandler);
 
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
@@ -73,7 +76,7 @@ class SlidingWindowRateLimitFilterTest {
         var payload = mock(JwtMemberPayload.class);
         when(payload.getMemberId()).thenReturn(memberId);
         when(headerProvider.extractAccessToken(bearerToken)).thenReturn(token);
-        when(jwtProvider.parseAccessPayload(token)).thenReturn(payload);
+        when(jwtProvider.parsePayload(token, jwtProperties.getAccessSecretKey())).thenReturn(payload);
 
         for (int i = 0; i < 100; i++) {
             filter.doFilterInternal(request, response, chain);

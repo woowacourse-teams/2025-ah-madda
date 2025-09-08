@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
@@ -26,9 +27,9 @@ public class JwtProvider {
 
     private final JwtProperties jwtProperties;
 
-    public String createAccessToken(final Long memberId) {
+    public String createToken(final Long memberId, final Duration duration, final SecretKey secretKey) {
         Instant now = Instant.now();
-        Instant expire = now.plus(jwtProperties.getAccessExpiration());
+        Instant expire = now.plus(duration);
 
         Claims claims = JwtMemberPayload.toClaims(memberId);
 
@@ -36,57 +37,22 @@ public class JwtProvider {
                 .claims(claims)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expire))
-                .signWith(jwtProperties.getAccessSecretKey())
+                .signWith(secretKey)
                 .compact();
     }
 
-    public String createRefreshToken(final Long memberId) {
-        Instant now = Instant.now();
-        Instant expire = now.plus(jwtProperties.getRefreshExpiration());
-
-        Claims claims = JwtMemberPayload.toClaims(memberId);
-
-        return Jwts.builder()
-                .claims(claims)
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(expire))
-                .signWith(jwtProperties.getRefreshSecretKey())
-                .compact();
-    }
-
-    public JwtMemberPayload parseAccessPayload(final String accessToken) {
-        Claims claims = parseClaims(accessToken, jwtProperties.getAccessSecretKey());
+    public JwtMemberPayload parsePayload(final String token, final SecretKey secretKey) {
+        Claims claims = parseClaims(token, secretKey);
 
         return JwtMemberPayload.from(claims);
     }
 
-    public JwtMemberPayload parseRefreshPayload(final String refreshToken) {
-        Claims claims = parseClaims(refreshToken, jwtProperties.getRefreshSecretKey());
-
-        return JwtMemberPayload.from(claims);
-    }
-
-    public Optional<Boolean> isAccessTokenExpired(final String accessToken) {
+    public Optional<Boolean> isTokenExpired(final String token, final SecretKey secretKey) {
         try {
             Jwts.parser()
-                    .verifyWith(jwtProperties.getAccessSecretKey())
+                    .verifyWith(secretKey)
                     .build()
-                    .parseSignedClaims(accessToken)
-                    .getPayload();
-            return Optional.of(false);
-        } catch (ExpiredJwtException e) {
-            return Optional.of(true);
-        } catch (JwtException | IllegalArgumentException e) {
-            return Optional.empty();
-        }
-    }
-
-    public Optional<Boolean> isRefreshTokenExpired(final String refreshToken) {
-        try {
-            Jwts.parser()
-                    .verifyWith(jwtProperties.getRefreshSecretKey())
-                    .build()
-                    .parseSignedClaims(refreshToken)
+                    .parseSignedClaims(token)
                     .getPayload();
             return Optional.of(false);
         } catch (ExpiredJwtException e) {

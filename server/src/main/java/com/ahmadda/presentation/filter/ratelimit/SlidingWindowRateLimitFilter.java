@@ -1,6 +1,7 @@
 package com.ahmadda.presentation.filter.ratelimit;
 
 import com.ahmadda.infra.auth.jwt.JwtProvider;
+import com.ahmadda.infra.auth.jwt.config.JwtProperties;
 import com.ahmadda.presentation.header.HeaderProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -33,6 +34,7 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
     private static final int MAX_REQUESTS = 100;
 
     private final HeaderProvider headerProvider;
+    private final JwtProperties jwtProperties;
     private final JwtProvider jwtProvider;
     private final RateLimitExceededHandler rateLimitExceededHandler;
 
@@ -135,7 +137,7 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
         try {
             String accessToken = headerProvider.extractAccessToken(authorizationHeader);
 
-            return jwtProvider.parseAccessPayload(accessToken)
+            return jwtProvider.parsePayload(accessToken, jwtProperties.getAccessSecretKey())
                     .getMemberId();
         } catch (Exception e) {
             return null;

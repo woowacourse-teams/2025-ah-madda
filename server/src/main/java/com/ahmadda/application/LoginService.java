@@ -10,7 +10,9 @@ import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.infra.auth.HashEncoder;
 import com.ahmadda.infra.auth.RefreshToken;
 import com.ahmadda.infra.auth.RefreshTokenRepository;
-import com.ahmadda.infra.auth.TokenProvider;
+import com.ahmadda.infra.auth.jwt.JwtProvider;
+import com.ahmadda.infra.auth.jwt.config.JwtProperties;
+import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
 import com.ahmadda.infra.auth.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.auth.oauth.dto.OAuthUserInfoResponse;
 import com.ahmadda.infra.notification.slack.SlackAlarm;
@@ -29,7 +31,8 @@ public class LoginService {
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final GoogleOAuthProvider googleOAuthProvider;
-    private final TokenProvider tokenProvider;
+    private final JwtProvider jwtProvider;
+    private final JwtProperties jwtProperties;
     private final SlackAlarm slackAlarm;
     private final HashEncoder hashEncoder;
 
@@ -38,7 +41,7 @@ public class LoginService {
         OAuthUserInfoResponse userInfo = googleOAuthProvider.getUserInfo(code, redirectUri);
 
         Member member = findOrCreateMember(userInfo.name(), userInfo.email(), userInfo.picture());
-        MemberToken memberToken = tokenProvider.createMemberToken(member.getId());
+        MemberToken memberToken = createMemberToken(member.getId());
 
         rotateRefreshToken(memberToken.refreshToken(), member.getId(), userAgent);
 
@@ -49,13 +52,12 @@ public class LoginService {
     public MemberToken renewMemberToken(final String accessToken, final String refreshToken, final String userAgent) {
         validateTokenExpired(accessToken, refreshToken);
 
-        Long memberId = tokenProvider.parseRefreshTokenMemberId(refreshToken);
+        Long memberId = parseRefreshTokenMemberId(refreshToken);
         RefreshToken savedRefreshToken = getRefreshToken(memberId, userAgent);
 
         validateTokenMatch(refreshToken, savedRefreshToken, memberId);
 
-        MemberToken refreshedMemberToken =
-                tokenProvider.createMemberToken(memberId);
+        MemberToken refreshedMemberToken = createMemberToken(memberId);
 
         rotateRefreshToken(refreshedMemberToken.refreshToken(), memberId, userAgent);
 
@@ -86,7 +88,7 @@ public class LoginService {
 
     private void validateRefreshTokenMemberIdMatch(final String refreshToken,
                                                    final Long memberId) {
-        Long refreshTokenMemberId = tokenProvider.parseRefreshTokenMemberId(refreshToken);
+        Long refreshTokenMemberId = parseRefreshTokenMemberId(refreshToken);
 
         if (!Objects.equals(memberId, refreshTokenMemberId)) {
             throw new InvalidTokenException("토큰 정보가 일치하지 않습니다.");
@@ -102,7 +104,9 @@ public class LoginService {
     }
 
     private void validateAccessTokenNotActive(final String accessToken) {
-        Optional<Boolean> accessTokenExpired = tokenProvider.checkAccessTokenExpired(accessToken);
+        Optional<Boolean> accessTokenExpired = jwtProvider.isTokenExpired(accessToken,
+                                                                          jwtProperties.getAccessSecretKey()
+        );
 
         if (accessTokenExpired.isEmpty()) {
             throw new InvalidTokenException("엑세스 토큰이 올바르지 않습니다.");
@@ -114,7 +118,9 @@ public class LoginService {
     }
 
     private void validateRefreshTokenActive(final String refreshToken) {
-        Optional<Boolean> refreshTokenExpired = tokenProvider.checkRefreshTokenExpired(refreshToken);
+        Optional<Boolean> refreshTokenExpired = jwtProvider.isTokenExpired(refreshToken,
+                                                                           jwtProperties.getRefreshSecretKey()
+        );
 
         if (refreshTokenExpired.isEmpty()) {
             throw new InvalidTokenException("리프레시 토큰이 올바르지 않습니다.");
@@ -165,11 +171,36 @@ public class LoginService {
     private RefreshToken issueEncodedRefreshToken(final String refreshToken,
                                                   final Long memberId,
                                                   final String userAgent) {
-        LocalDateTime expiresAt = tokenProvider.parseRefreshTokenExpiresAt(refreshToken);
+        LocalDateTime expiresAt = parseRefreshTokenExpiresAt(refreshToken);
 
         String encodedToken = hashEncoder.encodeSha256(refreshToken);
         String deviceId = hashEncoder.encodeSha256(userAgent);
 
         return RefreshToken.create(encodedToken, memberId, deviceId, expiresAt);
+    }
+
+    private MemberToken createMemberToken(final Long memberId) {
+        String accessToken = jwtProvider.createToken(memberId,
+                                                     jwtProperties.getAccessExpiration(),
+                                                     jwtProperties.getAccessSecretKey()
+        );
+        String refreshToken = jwtProvider.createToken(memberId,
+                                                      jwtProperties.getRefreshExpiration(),
+                                                      jwtProperties.getRefreshSecretKey()
+        );
+
+        return new MemberToken(accessToken, refreshToken);
+    }
+
+    private LocalDateTime parseRefreshTokenExpiresAt(final String refreshToken) {
+        JwtMemberPayload jwtMemberPayload = jwtProvider.parsePayload(refreshToken, jwtProperties.getRefreshSecretKey());
+
+        return jwtMemberPayload.getExpiresAt();
+    }
+
+    private Long parseRefreshTokenMemberId(final String refreshToken) {
+        JwtMemberPayload jwtMemberPayload = jwtProvider.parsePayload(refreshToken, jwtProperties.getRefreshSecretKey());
+
+        return jwtMemberPayload.getMemberId();
     }
 }

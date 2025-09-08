@@ -2,6 +2,7 @@ package com.ahmadda.presentation.resolver;
 
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.infra.auth.jwt.JwtProvider;
+import com.ahmadda.infra.auth.jwt.config.JwtProperties;
 import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
 import com.ahmadda.presentation.header.HeaderProvider;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +19,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @RequiredArgsConstructor
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
+    private final JwtProperties jwtProperties;
     private final JwtProvider jwtProvider;
     private final HeaderProvider headerProvider;
 
@@ -38,7 +40,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
         String accessToken = headerProvider.extractAccessToken(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
 
-        JwtMemberPayload jwtMemberPayload = jwtProvider.parseAccessPayload(accessToken);
+        JwtMemberPayload jwtMemberPayload = jwtProvider.parsePayload(accessToken, jwtProperties.getAccessSecretKey());
 
         return new LoginMember(jwtMemberPayload.getMemberId());
     }
