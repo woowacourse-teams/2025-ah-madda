@@ -204,6 +204,15 @@ class JwtProviderTest {
     }
 
     @Test
+    void 액세스토큰_만료여부에서_올바르지_않으면_빈_옵셔널을_반환한다() {
+        var invalidToken = "invalidAccessToken";
+
+        //when // then
+        assertThat(sut.isAccessTokenExpired(invalidToken)).isEmpty();
+    }
+
+
+    @Test
     void 액세스토큰을_리프레시로_검증시_예외가_발생한다() {
         // given
         var accessToken = sut.createAccessToken(60L);
