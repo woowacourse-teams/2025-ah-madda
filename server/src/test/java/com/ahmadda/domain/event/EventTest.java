@@ -203,7 +203,7 @@ class EventTest {
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization2))
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("자신이 속한 이벤트 스페이스가 아닙니다.");
+                .hasMessage("이벤트 스페이스에 속하지 않은 구성원입니다.");
     }
 
     @ParameterizedTest

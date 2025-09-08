@@ -77,6 +77,9 @@ public class Event extends BaseEntity {
     @Embedded
     private EventOperationPeriod eventOperationPeriod;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<OrganizationMember> hasRoleOrganizationMembers = new ArrayList<>();
+
     @Column(nullable = false)
     private int maxCapacity;
 
@@ -90,8 +93,9 @@ public class Event extends BaseEntity {
             final int maxCapacity,
             final List<Question> questions
     ) {
-        validateBelongToOrganization(organizer, organization);
         validateMaxCapacity(maxCapacity);
+        validateHasRoleMembersBelongToOrganization(hasRoleOrganizationMembers, organization);
+        validateOrganizerHasRole(organizer, hasRoleOrganizationMembers);
 
         this.title = title;
         this.description = description;
@@ -103,6 +107,24 @@ public class Event extends BaseEntity {
 
         organization.addEvent(this);
         this.questions.addAll(questions);
+    }
+
+    private void validateOrganizerHasRole(
+            OrganizationMember organizer,
+            List<OrganizationMember> hasRoleOrganizationMembers
+    ) {
+        if (!hasRoleOrganizationMembers.contains(organizer)) {
+            throw new ForbiddenException("주최자는 공동 주최자에 포함되어야합니다.");
+        }
+    }
+
+    private void validateHasRoleMembersBelongToOrganization(
+            List<OrganizationMember> hasRoleOrganizationMembers,
+            Organization organization
+    ) {
+        for (OrganizationMember organizationMember : hasRoleOrganizationMembers) {
+            validateBelongToOrganization(organizationMember, organization);
+        }
     }
 
     public static Event create(
@@ -282,7 +304,7 @@ public class Event extends BaseEntity {
             final Organization organization
     ) {
         if (!organizationMember.isBelongTo(organization)) {
-            throw new ForbiddenException("자신이 속한 이벤트 스페이스가 아닙니다.");
+            throw new ForbiddenException("이벤트 스페이스에 속하지 않은 구성원입니다.");
         }
     }
 

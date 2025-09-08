@@ -23,7 +23,9 @@ public record EventCreateRequest(
         LocalDateTime eventEnd,
         int maxCapacity,
         @Valid
-        List<QuestionCreateRequest> questions
+        List<QuestionCreateRequest> questions,
+        @NotNull
+        List<Long> hasRoleOrganizationMembers
 ) {
 
 }

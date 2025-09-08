@@ -161,7 +161,7 @@ public class OrganizationEventController {
                                                       "type": "about:blank",
                                                       "title": "Forbidden",
                                                       "status": 403,
-                                                      "detail": "자신이 속한 이벤트 스페이스가 아닙니다.",
+                                                      "detail": "이벤트 스페이스에 속하지 않은 구성원입니다.",
                                                       "instance": "/api/organizations/{organizationId}/events"
                                                     }
                                                     """
