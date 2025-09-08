@@ -80,13 +80,14 @@ public class LoginService {
     private void validateTokenMatch(final String refreshToken,
                                     final RefreshToken savedRefreshToken,
                                     final Long memberId) {
-        validateRefreshTokenMatch(refreshToken, memberId);
+        validateRefreshTokenMemberIdMatch(refreshToken, memberId);
         validateSavedRefreshTokenMatch(refreshToken, savedRefreshToken);
     }
 
-    private void validateRefreshTokenMatch(final String refreshToken,
-                                           final Long memberId) {
+    private void validateRefreshTokenMemberIdMatch(final String refreshToken,
+                                                   final Long memberId) {
         Long refreshTokenMemberId = tokenProvider.parseRefreshTokenMemberId(refreshToken);
+
         if (!Objects.equals(memberId, refreshTokenMemberId)) {
             throw new InvalidTokenException("토큰 정보가 일치하지 않습니다.");
         }
