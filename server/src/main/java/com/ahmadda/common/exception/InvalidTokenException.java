@@ -1,4 +1,4 @@
-package com.ahmadda.infra.auth.exception;
+package com.ahmadda.common.exception;
 
 public class InvalidTokenException extends RuntimeException {
 

@@ -2,6 +2,7 @@ package com.ahmadda.application;
 
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
+import com.ahmadda.common.exception.InvalidTokenException;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
@@ -9,7 +10,6 @@ import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.infra.auth.HashEncoder;
 import com.ahmadda.infra.auth.RefreshTokenRepository;
-import com.ahmadda.infra.auth.exception.InvalidTokenException;
 import com.ahmadda.infra.auth.jwt.config.JwtProperties;
 import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
 import com.ahmadda.infra.auth.oauth.GoogleOAuthProvider;
@@ -229,6 +229,36 @@ class LoginServiceTest {
     }
 
     @Test
+    void 리프레시_토큰이_만료된_경우_재발급_받을_수_없다() {
+        // given
+        var code = "code";
+        var name = "홍길동";
+        var email = "test@example.com";
+        var userAgent = createUserAgent();
+
+        var redirectUri = "redirectUri";
+        var testPicture = "testPicture";
+
+        given(googleOAuthProvider.getUserInfo(code, redirectUri))
+                .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
+
+        var member = Member.create(name, email, testPicture);
+        memberRepository.save(member);
+
+        var expiredAccessToken = createExpiredAccessToken(member.getId());
+        var expiredRefreshToken = createExpiredRefreshToken(member.getId());
+
+        // when // then
+        assertThatThrownBy(() -> sut.renewMemberToken(
+                expiredAccessToken,
+                expiredRefreshToken,
+                userAgent
+        ))
+                .isInstanceOf(InvalidTokenException.class)
+                .hasMessage("리프레시 토큰이 만료되었습니다.");
+    }
+
+    @Test
     void 존재하지_않는_회원을_로그아웃_하면_예외가_발생한다() {
         // given
         var name = "홍길동";
@@ -289,6 +319,19 @@ class LoginServiceTest {
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.minus(Duration.ofDays(1))))
                 .signWith(jwtProperties.getAccessSecretKey())
+                .compact();
+    }
+
+    private String createExpiredRefreshToken(Long memberId) {
+        var now = Instant.now();
+
+        var claims = JwtMemberPayload.toClaims(memberId);
+
+        return Jwts.builder()
+                .claims(claims)
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(now.minus(Duration.ofDays(1))))
+                .signWith(jwtProperties.getRefreshSecretKey())
                 .compact();
     }
 }

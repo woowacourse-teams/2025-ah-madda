@@ -3,6 +3,7 @@ package com.ahmadda.application;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.MemberCreateAlarmPayload;
 import com.ahmadda.application.dto.MemberToken;
+import com.ahmadda.common.exception.InvalidTokenException;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -44,11 +47,15 @@ public class LoginService {
 
     @Transactional
     public MemberToken renewMemberToken(final String accessToken, final String refreshToken, final String userAgent) {
-        Long memberId = tokenProvider.parseRefreshTokenMemberId(refreshToken);
+        validateTokenExpired(accessToken, refreshToken);
 
+        Long memberId = tokenProvider.parseRefreshTokenMemberId(refreshToken);
         RefreshToken savedRefreshToken = getRefreshToken(memberId, userAgent);
+
+        validateTokenMatch(refreshToken, savedRefreshToken, memberId);
+
         MemberToken refreshedMemberToken =
-                tokenProvider.refreshMemberToken(accessToken, refreshToken, savedRefreshToken.getToken());
+                tokenProvider.createMemberToken(memberId);
 
         rotateRefreshToken(refreshedMemberToken.refreshToken(), memberId, userAgent);
 
@@ -60,9 +67,61 @@ public class LoginService {
         Member member = getMember(loginMember);
         RefreshToken savedRefreshToken = getRefreshToken(member.getId(), userAgent);
 
-        tokenProvider.validateRefreshTokenMatch(refreshToken, savedRefreshToken.getToken(), member.getId());
+        validateTokenMatch(refreshToken, savedRefreshToken, member.getId());
 
         refreshTokenRepository.delete(savedRefreshToken);
+    }
+
+    private void validateTokenExpired(final String accessToken, final String refreshToken) {
+        validateAccessTokenNotActive(accessToken);
+        validateRefreshTokenActive(refreshToken);
+    }
+
+    private void validateTokenMatch(final String refreshToken,
+                                    final RefreshToken savedRefreshToken,
+                                    final Long memberId) {
+        validateRefreshTokenMatch(refreshToken, memberId);
+        validateSavedRefreshTokenMatch(refreshToken, savedRefreshToken);
+    }
+
+    private void validateRefreshTokenMatch(final String refreshToken,
+                                           final Long memberId) {
+        Long refreshTokenMemberId = tokenProvider.parseRefreshTokenMemberId(refreshToken);
+        if (!Objects.equals(memberId, refreshTokenMemberId)) {
+            throw new InvalidTokenException("토큰 정보가 일치하지 않습니다.");
+        }
+    }
+
+    private void validateSavedRefreshTokenMatch(final String refreshToken, final RefreshToken savedRefreshToken) {
+        String encodedRefreshToken = hashEncoder.encodeSha256(refreshToken);
+
+        if (!encodedRefreshToken.equals(savedRefreshToken.getToken())) {
+            throw new InvalidTokenException("리프레시 토큰이 유효하지 않습니다.");
+        }
+    }
+
+    private void validateAccessTokenNotActive(final String accessToken) {
+        Optional<Boolean> accessTokenExpired = tokenProvider.checkAccessTokenExpired(accessToken);
+
+        if (accessTokenExpired.isEmpty()) {
+            throw new InvalidTokenException("엑세스 토큰이 올바르지 않습니다.");
+        }
+
+        if (Objects.equals(accessTokenExpired.get(), Boolean.FALSE)) {
+            throw new InvalidTokenException("엑세스 토큰이 만료되지 않았습니다.");
+        }
+    }
+
+    private void validateRefreshTokenActive(final String refreshToken) {
+        Optional<Boolean> refreshTokenExpired = tokenProvider.checkRefreshTokenExpired(refreshToken);
+
+        if (refreshTokenExpired.isEmpty()) {
+            throw new InvalidTokenException("리프레시 토큰이 올바르지 않습니다.");
+        }
+
+        if (Objects.equals(refreshTokenExpired.get(), Boolean.TRUE)) {
+            throw new InvalidTokenException("리프레시 토큰이 만료되었습니다.");
+        }
     }
 
     private Member findOrCreateMember(final String name, final String email, final String profileImageUrl) {

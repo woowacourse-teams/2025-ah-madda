@@ -76,7 +76,7 @@ public class JwtProvider {
             return Optional.of(false);
         } catch (ExpiredJwtException e) {
             return Optional.of(true);
-        } catch (JwtException e) {
+        } catch (JwtException | IllegalArgumentException e) {
             return Optional.empty();
         }
     }
@@ -91,7 +91,7 @@ public class JwtProvider {
             return Optional.of(false);
         } catch (ExpiredJwtException e) {
             return Optional.of(true);
-        } catch (JwtException e) {
+        } catch (JwtException | IllegalArgumentException e) {
             return Optional.empty();
         }
     }
