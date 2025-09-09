@@ -35,12 +35,15 @@ export const TimePicker = ({
 
   const hasTime = selectedTime !== undefined;
 
-  const isSameDay =
-    selectedDate &&
-    minTime &&
-    selectedDate.getFullYear() === minTime.getFullYear() &&
-    selectedDate.getMonth() === minTime.getMonth() &&
-    selectedDate.getDate() === minTime.getDate();
+  const isSameDay = (() => {
+    if (!selectedDate || !minTime) return false;
+
+    const isSameYear = selectedDate.getFullYear() === minTime.getFullYear();
+    const isSameMonth = selectedDate.getMonth() === minTime.getMonth();
+    const isSameDate = selectedDate.getDate() === minTime.getDate();
+
+    return isSameYear && isSameMonth && isSameDate;
+  })();
 
   const isHourDisabled = (hour: number) => {
     if (!isSameDay || !minTime) return false;
