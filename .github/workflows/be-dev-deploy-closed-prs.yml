@@ -82,10 +82,11 @@ jobs:
           sudo docker run \
             --name ahmadda-dev-server \
             --restart unless-stopped \
+            --network ahmadda-net \
             -p 8080:8080 \
             -e PROFILE=dev \
-            --log-driver=awslogs \
-            --log-opt awslogs-group=ahmadda-dev-server \
-            --log-opt awslogs-region=ap-northeast-2 \
-            --log-opt awslogs-stream=$TAG \
             -d ahmadda1234/ahmadda_server:$TAG
+            # --log-driver=awslogs \
+            # --log-opt awslogs-group=ahmadda-dev-server \
+            # --log-opt awslogs-region=ap-northeast-2 \
+            # --log-opt awslogs-stream=$TAG \
