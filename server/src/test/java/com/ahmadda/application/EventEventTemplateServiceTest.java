@@ -13,7 +13,6 @@ import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import com.ahmadda.presentation.dto.EventTemplateCreateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -31,10 +30,10 @@ class EventEventTemplateServiceTest {
     @Autowired
     private EventTemplateRepository eventTemplateRepository;
 
-    @MockitoBean
+    @Autowired
     private JwtAccessTokenProperties accessTokenProperties;
 
-    @MockitoBean
+    @Autowired
     private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test

@@ -23,7 +23,6 @@ import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import com.ahmadda.presentation.dto.PokeRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.LocalDateTime;
@@ -56,14 +55,15 @@ class PokeServiceTest {
     @MockitoSpyBean
     private Poke poke;
 
-    @MockitoBean
+    @Autowired
     private JwtAccessTokenProperties accessTokenProperties;
 
-    @MockitoBean
+    @Autowired
     private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Autowired
     private EventNotificationOptOutRepository eventNotificationOptOutRepository;
+
     @Autowired
     private PokeHistoryRepository pokeHistoryRepository;
 

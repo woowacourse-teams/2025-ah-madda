@@ -25,7 +25,6 @@ import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
 import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -56,10 +55,10 @@ class EventGuestServiceTest {
     @Autowired
     private GuestRepository guestRepository;
 
-    @MockitoBean
+    @Autowired
     private JwtAccessTokenProperties accessTokenProperties;
 
-    @MockitoBean
+    @Autowired
     private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test

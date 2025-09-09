@@ -23,7 +23,6 @@ import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import com.ahmadda.presentation.dto.OrganizationParticipateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,10 +50,10 @@ class OrganizationServiceTest {
     @Autowired
     private InviteCodeRepository inviteCodeRepository;
 
-    @MockitoBean
+    @Autowired
     private JwtAccessTokenProperties accessTokenProperties;
 
-    @MockitoBean
+    @Autowired
     private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Autowired

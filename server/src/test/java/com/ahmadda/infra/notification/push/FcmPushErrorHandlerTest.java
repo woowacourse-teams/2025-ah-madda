@@ -9,7 +9,6 @@ import com.google.firebase.messaging.MessagingErrorCode;
 import com.google.firebase.messaging.SendResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
 
@@ -23,10 +22,10 @@ class FcmPushErrorHandlerTest {
     @Autowired
     private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
 
-    @MockitoBean
+    @Autowired
     private JwtAccessTokenProperties accessTokenProperties;
 
-    @MockitoBean
+    @Autowired
     private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test

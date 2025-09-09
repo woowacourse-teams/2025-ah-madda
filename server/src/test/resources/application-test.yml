@@ -13,10 +13,12 @@ spring:
         region: ap-northeast-2
 
 jwt:
-  access-secret-key: ${jwt.local.access-secret-key}
-  access-expiration: ${jwt.local.access-expiration}
-  refresh-secret-key: ${jwt.local.refresh-secret-key}
-  refresh-expiration: ${jwt.local.refresh-expiration}
+  access:
+    secret-key: ${jwt.local.access.secret-key}
+    expiration: ${jwt.local.access.expiration}
+  refresh:
+    secret-key: ${jwt.local.refresh.secret-key}
+    expiration: ${jwt.local.refresh.expiration}
 
 cookie:
   refresh-token:

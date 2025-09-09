@@ -16,13 +16,10 @@ import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
 import com.ahmadda.infra.auth.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.auth.oauth.dto.OAuthUserInfoResponse;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
@@ -51,34 +48,17 @@ class LoginServiceTest {
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
 
-    @MockitoBean
-    private JwtAccessTokenProperties jwtAccessTokenProperties;
+    @Autowired
+    private JwtAccessTokenProperties accessTokenProperties;
 
-    @MockitoBean
-    private JwtRefreshTokenProperties jwtRefreshTokenProperties;
+    @Autowired
+    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Autowired
     private HashEncoder hashEncoder;
 
     @MockitoBean
     private GoogleOAuthProvider googleOAuthProvider;
-
-    @BeforeEach
-    void setUpJwtProps() {
-        var accessSecret = UUID.randomUUID()
-                .toString();
-        var refreshSecret = UUID.randomUUID()
-                .toString();
-
-        var accessKey = Keys.hmacShaKeyFor(accessSecret.getBytes(StandardCharsets.UTF_8));
-        var refreshKey = Keys.hmacShaKeyFor(refreshSecret.getBytes(StandardCharsets.UTF_8));
-
-        given(jwtAccessTokenProperties.getAccessSecretKey()).willReturn(accessKey);
-        given(jwtAccessTokenProperties.getAccessExpiration()).willReturn(Duration.ofHours(1));
-
-        given(jwtRefreshTokenProperties.getRefreshSecretKey()).willReturn(refreshKey);
-        given(jwtRefreshTokenProperties.getRefreshExpiration()).willReturn(Duration.ofDays(14));
-    }
 
     @Test
     void 신규회원이면_저장한다() {
@@ -433,7 +413,7 @@ class LoginServiceTest {
                 .claims(claims)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.minus(Duration.ofDays(1))))
-                .signWith(jwtAccessTokenProperties.getAccessSecretKey())
+                .signWith(accessTokenProperties.getAccessSecretKey())
                 .compact();
     }
 
@@ -446,7 +426,7 @@ class LoginServiceTest {
                 .claims(claims)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.minus(Duration.ofDays(1))))
-                .signWith(jwtRefreshTokenProperties.getRefreshSecretKey())
+                .signWith(refreshTokenProperties.getRefreshSecretKey())
                 .compact();
     }
 }

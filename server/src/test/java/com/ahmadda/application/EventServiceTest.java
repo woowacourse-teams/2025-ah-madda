@@ -32,7 +32,6 @@ import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.LocalDateTime;
@@ -75,10 +74,10 @@ class EventServiceTest {
     @Autowired
     private EventNotificationOptOutRepository eventNotificationOptOutRepository;
 
-    @MockitoBean
+    @Autowired
     private JwtAccessTokenProperties accessTokenProperties;
 
-    @MockitoBean
+    @Autowired
     private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test

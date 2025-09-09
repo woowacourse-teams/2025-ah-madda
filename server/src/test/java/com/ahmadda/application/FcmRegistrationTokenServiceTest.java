@@ -11,7 +11,6 @@ import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -29,10 +28,10 @@ class FcmRegistrationTokenServiceTest {
     @Autowired
     private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
 
-    @MockitoBean
+    @Autowired
     private JwtAccessTokenProperties accessTokenProperties;
 
-    @MockitoBean
+    @Autowired
     private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
