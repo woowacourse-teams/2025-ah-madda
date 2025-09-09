@@ -2,8 +2,6 @@ name: BE Dev Deploy Closed Prs
 
 on:
   pull_request:
-    paths:
-      - 'server/**'
     types:
       - opened
       - synchronize
@@ -86,8 +84,8 @@ jobs:
             --restart unless-stopped \
             -p 8080:8080 \
             -e PROFILE=dev \
+            -d ahmadda1234/ahmadda_server:$TAG
             # --log-driver=awslogs \
             # --log-opt awslogs-group=ahmadda-dev-server \
             # --log-opt awslogs-region=ap-northeast-2 \
             # --log-opt awslogs-stream=$TAG \
-            -d ahmadda1234/ahmadda_server:$TAG
