@@ -14,6 +14,6 @@ public class HeaderProvider {
                     .trim();
         }
 
-        throw new UnauthorizedException("인증 토큰 정보가 존재하지 않거나 유효하지 않습니다.");
+        throw new UnauthorizedException("유효하지 않은 인증 정보입니다.");
     }
 }
