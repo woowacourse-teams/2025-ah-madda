@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <included>
     <include resource="logger/console/console-colorless-appender.xml"/>
-    <include resource="logger/console/console-parameter-appender.xml"/>
 
     <root level="INFO">
         <appender-ref ref="console-colorless-appender"/>
     </root>
 
     <logger name="com.ahmadda" level="DEBUG" />
-
-    <logger name="org.hibernate.orm.jdbc.bind" level="TRACE" additivity="false">
-        <appender-ref ref="console-parameter-appender"/>
-    </logger>
 </included>
