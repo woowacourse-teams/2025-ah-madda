@@ -79,7 +79,7 @@ public class EventOwnerOrganizationMember extends BaseEntity {
     private void validateIsSameOrganization(final Event event, final OrganizationMember organizationMember) {
         if (!event.getOrganization()
                 .isExistOrganizationMember(organizationMember)) {
-            throw new ForbiddenException("공동 주최자가 같은 이벤트 스페이스에 속하지 않습니다.");
+            throw new ForbiddenException("자신과 공동 주최자는 동일한 이벤트 스페이스에 속해야 합니다.");
         }
     }
 }

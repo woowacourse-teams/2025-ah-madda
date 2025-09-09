@@ -161,7 +161,7 @@ public class OrganizationEventController {
                                                       "type": "about:blank",
                                                       "title": "Forbidden",
                                                       "status": 403,
-                                                      "detail": "이벤트 스페이스에 속하지 않은 구성원입니다.",
+                                                      "detail": "자신과 공동 주최자는 동일한 이벤트 스페이스에 속해야 합니다.",
                                                       "instance": "/api/organizations/{organizationId}/events"
                                                     }
                                                     """
@@ -185,13 +185,13 @@ public class OrganizationEventController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "구성원 없음",
+                                            name = "구성원 누락",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않는 구성원 정보입니다.",
+                                                      "detail": "요청된 조직 구성원 중 일부 구성원을 찾을 수 없습니다.",
                                                       "instance": "/api/organizations/{organizationId}/events"
                                                     }
                                                     """

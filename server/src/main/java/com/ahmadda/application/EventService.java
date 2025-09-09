@@ -25,7 +25,6 @@ import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -100,7 +99,7 @@ public class EventService {
                 organizationMemberRepository.findAllById(new ArrayList<>(organizationMemberIdsSet));
 
         if (findOrganizationMembers.size() != organizationMemberIdsSet.size()) {
-            throw new EntityNotFoundException("요청된 조직 구성원 중 일부를 찾을 수 없습니다.");
+            throw new NotFoundException("요청된 조직 구성원 중 일부 구성원을 찾을 수 없습니다.");
         }
 
         return findOrganizationMembers;

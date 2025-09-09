@@ -289,7 +289,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization)).isInstanceOf(
                         ForbiddenException.class)
-                .hasMessage("자신이 속한 이벤트 스페이스가 아닙니다.");
+                .hasMessage("자신과 공동 주최자는 동일한 이벤트 스페이스에 속해야 합니다.");
     }
 
     @Test

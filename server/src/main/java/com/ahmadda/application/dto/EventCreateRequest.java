@@ -28,4 +28,26 @@ public record EventCreateRequest(
         List<Long> eventOwnerOrganizationMembers
 ) {
 
+    public EventCreateRequest(
+            String title,
+            String description,
+            String place,
+            LocalDateTime registrationEnd,
+            LocalDateTime eventStart,
+            LocalDateTime eventEnd,
+            int maxCapacity,
+            List<QuestionCreateRequest> questions
+    ) {
+        this(
+                title,
+                description,
+                place,
+                registrationEnd,
+                eventStart,
+                eventEnd,
+                maxCapacity,
+                questions,
+                List.of()
+        );
+    }
 }
