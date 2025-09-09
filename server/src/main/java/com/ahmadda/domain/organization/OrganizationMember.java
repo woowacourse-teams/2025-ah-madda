@@ -104,33 +104,23 @@ public class OrganizationMember extends BaseEntity {
         }
     }
 
-    private void validateRoleChangeBy(final OrganizationMember operator) {
-        if (!operator.isBelongTo(this.organization)) {
-            throw new ForbiddenException("같은 이벤트 스페이스에 속한 구성원만 권한을 변경할 수 있습니다.");
-        }
-
-        if (!operator.isAdmin()) {
-            throw new ForbiddenException("관리자만 구성원의 권한을 변경할 수 있습니다.");
-        }
-    }
-
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof OrganizationMember that)) {
             return false;
         }
-        OrganizationMember that = (OrganizationMember) o;
-        if (id == null || that.id == null) {
+        if (getId() == null || that.getId() == null) {
             return false;
         }
+
         return Objects.equals(getId(), that.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(getId());
     }
 }
