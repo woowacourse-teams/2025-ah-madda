@@ -16,8 +16,11 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,6 +48,12 @@ class ReminderHistoryServiceTest {
 
     @Autowired
     private ReminderHistoryRepository reminderHistoryRepository;
+
+    @MockitoBean
+    JwtAccessTokenProperties accessTokenProperties;
+
+    @MockitoBean
+    JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 주최자가_리마인드_히스토리를_조회한다() {

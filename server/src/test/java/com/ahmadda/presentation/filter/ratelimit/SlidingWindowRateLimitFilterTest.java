@@ -41,18 +41,19 @@ class SlidingWindowRateLimitFilterTest {
 
     @BeforeEach
     void setUp() {
-        jwtProvider = mock(JwtProvider.class);
-        headerProvider = mock(HeaderProvider.class);
-        rateLimitExceededHandler = spy(new RateLimitExceededHandler(new ObjectMapper()));
-
-        filter = new SlidingWindowRateLimitFilter(headerProvider,
-                                                  jwtAccessTokenProperties, jwtProvider, rateLimitExceededHandler);
-
         var accessSecretKey = UUID.randomUUID()
                 .toString();
         var accessExpiration = Duration.ofHours(1);
+
+        jwtProvider = mock(JwtProvider.class);
+        headerProvider = mock(HeaderProvider.class);
+        rateLimitExceededHandler = spy(new RateLimitExceededHandler(new ObjectMapper()));
         jwtAccessTokenProperties = new JwtAccessTokenProperties(
                 accessSecretKey, accessExpiration
+        );
+
+        filter = new SlidingWindowRateLimitFilter(headerProvider,
+                                                  jwtAccessTokenProperties, jwtProvider, rateLimitExceededHandler
         );
 
         request = new MockHttpServletRequest();
@@ -86,7 +87,8 @@ class SlidingWindowRateLimitFilterTest {
         var payload = mock(JwtMemberPayload.class);
         when(payload.getMemberId()).thenReturn(memberId);
         when(headerProvider.extractAccessToken(bearerToken)).thenReturn(token);
-        when(jwtProvider.parsePayload(token, jwtAccessTokenProperties.getAccessSecretKey())).thenReturn(Optional.of(payload));
+        when(jwtProvider.parsePayload(token, jwtAccessTokenProperties.getAccessSecretKey())).thenReturn(Optional.of(
+                payload));
 
         for (int i = 0; i < 100; i++) {
             filter.doFilterInternal(request, response, chain);

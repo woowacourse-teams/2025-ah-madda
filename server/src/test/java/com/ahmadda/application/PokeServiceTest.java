@@ -18,9 +18,12 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import com.ahmadda.presentation.dto.PokeRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.LocalDateTime;
@@ -52,6 +55,12 @@ class PokeServiceTest {
 
     @MockitoSpyBean
     private Poke poke;
+
+    @MockitoBean
+    JwtAccessTokenProperties accessTokenProperties;
+
+    @MockitoBean
+    JwtRefreshTokenProperties refreshTokenProperties;
 
     @Autowired
     private EventNotificationOptOutRepository eventNotificationOptOutRepository;
@@ -99,13 +108,13 @@ class PokeServiceTest {
             var pokeHistory = pokeHistoryRepository.findAll()
                     .getFirst();
             softly.assertThat(pokeHistory
-                            .getRecipient())
+                                      .getRecipient())
                     .isEqualTo(participant);
             softly.assertThat(pokeHistory
-                            .getSender())
+                                      .getSender())
                     .isEqualTo(organizer);
             softly.assertThat(pokeHistory
-                            .getEvent())
+                                      .getEvent())
                     .isEqualTo(event);
         });
     }

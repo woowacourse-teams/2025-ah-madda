@@ -13,8 +13,11 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
 
@@ -36,6 +39,12 @@ class OrganizationMemberServiceTest {
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
 
+    @MockitoBean
+    JwtAccessTokenProperties accessTokenProperties;
+
+    @MockitoBean
+    JwtRefreshTokenProperties refreshTokenProperties;
+
     @Test
     void 자신의_구성원_정보를_조회한다() {
         // given
@@ -52,10 +61,10 @@ class OrganizationMemberServiceTest {
             softly.assertThat(result.getId())
                     .isEqualTo(orgMember.getId());
             softly.assertThat(result.getMember()
-                            .getId())
+                                      .getId())
                     .isEqualTo(member.getId());
             softly.assertThat(result.getOrganization()
-                            .getId())
+                                      .getId())
                     .isEqualTo(org.getId());
         });
     }

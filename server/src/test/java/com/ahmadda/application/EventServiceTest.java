@@ -27,9 +27,12 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.LocalDateTime;
@@ -71,6 +74,12 @@ class EventServiceTest {
 
     @Autowired
     private EventNotificationOptOutRepository eventNotificationOptOutRepository;
+
+    @MockitoBean
+    JwtAccessTokenProperties accessTokenProperties;
+
+    @MockitoBean
+    JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 이벤트를_생성할_수_있다() {
@@ -238,7 +247,7 @@ class EventServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.createEvent(organization.getId(), loginMember, request, now)
+                                   sut.createEvent(organization.getId(), loginMember, request, now)
         )
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessageStartingWith("리마인더는 30분 내 최대 10회까지만 발송할 수 있습니다.");
@@ -509,16 +518,16 @@ class EventServiceTest {
                                 .isEqualTo(200);
 
                         softly.assertThat(savedEvent.getEventOperationPeriod()
-                                        .getRegistrationEventPeriod()
-                                        .end())
+                                                  .getRegistrationEventPeriod()
+                                                  .end())
                                 .isEqualTo(now.plusDays(5));
                         softly.assertThat(savedEvent.getEventOperationPeriod()
-                                        .getEventPeriod()
-                                        .start())
+                                                  .getEventPeriod()
+                                                  .start())
                                 .isEqualTo(now.plusDays(6));
                         softly.assertThat(savedEvent.getEventOperationPeriod()
-                                        .getEventPeriod()
-                                        .end())
+                                                  .getEventPeriod()
+                                                  .end())
                                 .isEqualTo(now.plusDays(7));
                     });
                 });
@@ -626,7 +635,7 @@ class EventServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.updateEvent(event.getId(), loginMember, updateRequest, now)
+                                   sut.updateEvent(event.getId(), loginMember, updateRequest, now)
         )
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessageStartingWith("리마인더는 30분 내 최대 10회까지만 발송할 수 있습니다.");
@@ -840,7 +849,7 @@ class EventServiceTest {
             softly.assertThat(pastEvents)
                     .hasSize(1);
             softly.assertThat(pastEvents.get(0)
-                            .getId())
+                                      .getId())
                     .isEqualTo(pastEvent.getId());
         });
     }

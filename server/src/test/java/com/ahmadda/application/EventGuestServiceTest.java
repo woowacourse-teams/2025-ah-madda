@@ -21,8 +21,11 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -52,6 +55,12 @@ class EventGuestServiceTest {
 
     @Autowired
     private GuestRepository guestRepository;
+
+    @MockitoBean
+    JwtAccessTokenProperties accessTokenProperties;
+
+    @MockitoBean
+    JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 이벤트에_참여한_게스트들을_조회한다() {
@@ -257,12 +266,12 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.participantEvent(
-                        event.getId(),
-                        new LoginMember(member2.getId()),
-                        event.getRegistrationStart(),
-                        request
-                )
+                                   sut.participantEvent(
+                                           event.getId(),
+                                           new LoginMember(member2.getId()),
+                                           event.getRegistrationStart(),
+                                           request
+                                   )
         )
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessageContaining("필수 질문에 대한 답변이 누락되었습니다");
@@ -286,12 +295,12 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.participantEvent(
-                        event.getId(),
-                        new LoginMember(member2.getId()),
-                        event.getRegistrationStart(),
-                        request
-                )
+                                   sut.participantEvent(
+                                           event.getId(),
+                                           new LoginMember(member2.getId()),
+                                           event.getRegistrationStart(),
+                                           request
+                                   )
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("존재하지 않는 질문입니다.");

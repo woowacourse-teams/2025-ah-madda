@@ -18,8 +18,11 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -51,6 +54,12 @@ class EventNotificationOptOutServiceTest {
 
     @Autowired
     private GuestRepository guestRepository;
+
+    @MockitoBean
+    JwtAccessTokenProperties accessTokenProperties;
+
+    @MockitoBean
+    JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 이벤트에_대한_알림_수신_거부를_설정할_수_있다() {
@@ -281,17 +290,17 @@ class EventNotificationOptOutServiceTest {
                     .hasSize(2);
 
             softly.assertThat(results.get(0)
-                            .getGuest())
+                                      .getGuest())
                     .isEqualTo(guest1);
             softly.assertThat(results.get(0)
-                            .isOptedOut())
+                                      .isOptedOut())
                     .isFalse();
 
             softly.assertThat(results.get(1)
-                            .getGuest())
+                                      .getGuest())
                     .isEqualTo(guest2);
             softly.assertThat(results.get(1)
-                            .isOptedOut())
+                                      .isOptedOut())
                     .isTrue();
         });
     }
@@ -319,17 +328,17 @@ class EventNotificationOptOutServiceTest {
                     .hasSize(2);
 
             softly.assertThat(results.get(0)
-                            .getOrganizationMember())
+                                      .getOrganizationMember())
                     .isEqualTo(orgMember1);
             softly.assertThat(results.get(0)
-                            .isOptedOut())
+                                      .isOptedOut())
                     .isFalse();
 
             softly.assertThat(results.get(1)
-                            .getOrganizationMember())
+                                      .getOrganizationMember())
                     .isEqualTo(orgMember2);
             softly.assertThat(results.get(1)
-                            .isOptedOut())
+                                      .isOptedOut())
                     .isTrue();
         });
     }

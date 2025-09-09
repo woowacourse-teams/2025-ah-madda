@@ -14,8 +14,11 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 
@@ -43,6 +46,12 @@ class EventCreatedListenerTest {
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
 
+    @MockitoBean
+    JwtAccessTokenProperties accessTokenProperties;
+
+    @MockitoBean
+    JwtRefreshTokenProperties refreshTokenProperties;
+
     @Test
     void 이벤트가_생성되면_이벤트_통계가_저장된다() {
         // given
@@ -62,7 +71,7 @@ class EventCreatedListenerTest {
             softly.assertThat(eventStatistic)
                     .isPresent();
             softly.assertThat(eventStatistic.get()
-                            .getEvent())
+                                      .getEvent())
                     .isEqualTo(event);
         });
     }
