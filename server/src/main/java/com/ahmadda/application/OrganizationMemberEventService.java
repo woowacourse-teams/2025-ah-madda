@@ -3,7 +3,8 @@ package com.ahmadda.application;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.event.Event;
-import com.ahmadda.domain.event.EventRepository;
+import com.ahmadda.domain.event.EventOwnerOrganizationMember;
+import com.ahmadda.domain.event.EventOwnerOrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,13 +16,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrganizationMemberEventService {
 
-    private final EventRepository eventRepository;
+    private final EventOwnerOrganizationMemberRepository eventOwnerOrganizationMemberRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
 
     public List<Event> getOwnerEvents(final Long organizationId, final LoginMember loginMember) {
         OrganizationMember organizationMember = getOrganizationMember(organizationId, loginMember);
 
-        return eventRepository.findAllByOrganizer(organizationMember);
+        List<EventOwnerOrganizationMember> eventOwnerOrganizationMembers =
+                eventOwnerOrganizationMemberRepository.findAllByOrganizationMemberId(organizationMember.getId());
+
+        return eventOwnerOrganizationMembers.stream()
+                .map((EventOwnerOrganizationMember::getEvent))
+                .toList();
     }
 
     public List<Event> getParticipantEvents(final Long organizationId, final LoginMember loginMember) {

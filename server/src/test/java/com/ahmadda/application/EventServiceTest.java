@@ -279,7 +279,7 @@ class EventServiceTest {
     }
 
     @Test
-    void 이벤트_스페이스에_속해_있지_않으면_이벤트를_조회할_수_없다() {
+    void 이벤트_스페이스에_속해_있지_않으면_이벤트를_생성할_수_없다() {
         //given
         var organization = createOrganization();
         var otherOrganization = createOrganization();

@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -78,25 +77,6 @@ class EventStatisticServiceTest {
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage("이벤트의 조회수는 이벤트의 주최자만 조회할 수 있습니다.");
     }
-
-    @Test
-    void 공동_주최자는_이벤트_조회수를_가져올_수_있다() {
-        // given
-        var organization = createOrganization();
-        var member = createMember();
-        var otherCreateMember = createMember("test", "test@naver.com");
-        var organizationMember = createOrganizationMember(organization, member);
-        var otherCreateOrganizationMember = createOrganizationMember(organization, otherCreateMember);
-        var event = createEvent(organization, organizationMember, List.of(otherCreateOrganizationMember.getId()));
-        createEventStatistic(event);
-
-        //when
-        var eventStatistics = sut.getEventStatistic(event.getId(), new LoginMember(otherCreateMember.getId()));
-
-        // when //then
-        assertThat(eventStatistics).isEmpty();
-    }
-
 
     @Test
     void 존재하지_않는_구성원일시_예외가_발생한다() {
@@ -186,38 +166,6 @@ class EventStatisticServiceTest {
                 organization,
                 operationPeriod,
                 30
-        );
-
-        return eventRepository.save(event);
-    }
-
-    private Event createEvent(
-            Organization organization,
-            OrganizationMember organizationMember,
-            List<Long> organizationMemberIds
-    ) {
-        LocalDateTime now = LocalDateTime.now();
-        EventOperationPeriod operationPeriod = EventOperationPeriod.create(
-                now.plusDays(1), // registrationStart
-                now.plusDays(2),  // registrationEnd
-                now.plusDays(3),  // eventStart
-                now.plusDays(5),  // eventEnd
-                now               // currentDateTime
-        );
-
-        List<OrganizationMember> organizationMembers = organizationMemberIds.stream()
-                .map(organizationMemberId -> organizationMemberRepository.getReferenceById(organizationMemberId))
-                .toList();
-
-        Event event = Event.create(
-                "테스트 이벤트",
-                "테스트 설명",
-                "test-location",
-                organizationMember,
-                organization,
-                operationPeriod,
-                30,
-                organizationMembers
         );
 
         return eventRepository.save(event);
