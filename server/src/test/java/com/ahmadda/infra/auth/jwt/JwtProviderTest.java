@@ -2,7 +2,6 @@ package com.ahmadda.infra.auth.jwt;
 
 import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
 import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
-import com.ahmadda.infra.auth.jwt.exception.InvalidJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,7 +13,6 @@ import java.util.Date;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class JwtProviderTest {
 
@@ -45,13 +43,17 @@ class JwtProviderTest {
     void JWT_토큰을_정상적으로_생성_및_검증_할_수_있다() {
         // given
         var memberId = 1L;
-        var token = sut.createToken(memberId, jwtAccessTokenProperties.getAccessExpiration(), jwtAccessTokenProperties.getAccessSecretKey());
+        var token = sut.createToken(memberId,
+                                    jwtAccessTokenProperties.getAccessExpiration(),
+                                    jwtAccessTokenProperties.getAccessSecretKey()
+        );
 
         // when
         var memberPayload = sut.parsePayload(token, jwtAccessTokenProperties.getAccessSecretKey());
 
         // then
-        assertThat(memberPayload.get().getMemberId()).isEqualTo(memberId);
+        assertThat(memberPayload.get()
+                           .getMemberId()).isEqualTo(memberId);
     }
 
     @Test
@@ -93,30 +95,22 @@ class JwtProviderTest {
                 .compact();
 
         // when // then
-        assertThatThrownBy(() -> sut.parsePayload(token, jwtAccessTokenProperties.getAccessSecretKey()))
-                .isInstanceOf(InvalidJwtException.class)
-                .hasMessage("인증 토큰을 파싱하는데 실패하였습니다.");
+        assertThat(sut.parsePayload(token, jwtAccessTokenProperties.getAccessSecretKey())).isEmpty();
     }
 
     @Test
-    void 페이로드_변환시_빈_토큰이면_예외가_발생한다() {
-        assertThatThrownBy(() -> sut.parsePayload("", jwtAccessTokenProperties.getAccessSecretKey()))
-                .isInstanceOf(InvalidJwtException.class)
-                .hasMessage("인증 토큰을 파싱하는데 실패하였습니다.");
+    void 페이로드_변환시_빈_토큰이면_빈_옵셔널을_반환한다() {
+        assertThat(sut.parsePayload("", jwtAccessTokenProperties.getAccessSecretKey())).isEmpty();
     }
 
     @Test
-    void 페이로드_변환시_null_토큰이면_예외가_발생한다() {
-        assertThatThrownBy(() -> sut.parsePayload(null, jwtAccessTokenProperties.getAccessSecretKey()))
-                .isInstanceOf(InvalidJwtException.class)
-                .hasMessage("인증 토큰을 파싱하는데 실패하였습니다.");
+    void 페이로드_변환시_null_토큰이면_빈_옵셔널을_반환한다() {
+        assertThat(sut.parsePayload(null, jwtAccessTokenProperties.getAccessSecretKey())).isEmpty();
     }
 
     @Test
-    void 페이로드_변환시_형식이_잘못된_토큰이면_예외가_발생한다() {
-        assertThatThrownBy(() -> sut.parsePayload("this.is.not.jwt", jwtAccessTokenProperties.getAccessSecretKey()))
-                .isInstanceOf(InvalidJwtException.class)
-                .hasMessage("잘못된 형식의 토큰입니다.");
+    void 페이로드_변환시_형식이_잘못된_토큰이면_빈_옵셔널을_반환한다() {
+        assertThat(sut.parsePayload("this is not jwt", jwtAccessTokenProperties.getAccessSecretKey())).isEmpty();
     }
 
     @Test
@@ -147,13 +141,15 @@ class JwtProviderTest {
 
 
     @Test
-    void 토큰을_올바르지_않은_키로_검증시_예외가_발생한다() {
+    void 토큰을_올바르지_않은_키로_검증시_빈_옵셔널을_반환한다() {
         // given
-        var accessToken = sut.createToken(60L, jwtAccessTokenProperties.getAccessExpiration(), jwtAccessTokenProperties.getAccessSecretKey());
+        var accessToken = sut.createToken(60L,
+                                          jwtAccessTokenProperties.getAccessExpiration(),
+                                          jwtAccessTokenProperties.getAccessSecretKey()
+        );
 
         // when // then
-        assertThatThrownBy(() -> sut.parsePayload(accessToken, jwtRefreshProperties.getRefreshSecretKey()))
-                .isInstanceOf(InvalidJwtException.class)
-                .hasMessage("인증 토큰을 파싱하는데 실패하였습니다.");
+        assertThat(sut.isTokenExpired(accessToken, jwtRefreshProperties.getRefreshSecretKey())).isEmpty();
+
     }
 }
