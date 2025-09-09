@@ -1,5 +1,6 @@
 package com.ahmadda.domain.organization;
 
+import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,4 +36,24 @@ public class Group extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
+
+    private Group(final String name, final Organization organization) {
+        this.name = name;
+        this.organization = organization;
+    }
+
+    public static Group create(
+            final String name,
+            final Organization organization,
+            final OrganizationMember creator
+    ) {
+        if (!creator.isBelongTo(organization)) {
+            throw new ForbiddenException("이벤트 스페이스의 구성원만 그룹을 만들 수 있습니다.");
+        }
+        if (!creator.isAdmin()) {
+            throw new ForbiddenException("어드민만 그룹을 만들 수 있습니다.");
+        }
+
+        return new Group(name, organization);
+    }
 }
