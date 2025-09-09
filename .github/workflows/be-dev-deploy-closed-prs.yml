@@ -82,6 +82,7 @@ jobs:
           sudo docker run \
             --name ahmadda-dev-server \
             --restart unless-stopped \
+            --network ahmadda-net \
             -p 8080:8080 \
             -e PROFILE=dev \
             -d ahmadda1234/ahmadda_server:$TAG
