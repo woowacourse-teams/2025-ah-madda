@@ -1,6 +1,7 @@
 package com.ahmadda.infra.auth.jwt;
 
-import com.ahmadda.infra.auth.jwt.config.JwtProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import com.ahmadda.infra.auth.jwt.exception.InvalidJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -17,7 +18,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class JwtProviderTest {
 
-    static JwtProperties jwtProperties;
+    static JwtAccessTokenProperties jwtAccessTokenProperties;
+    static JwtRefreshTokenProperties jwtRefreshProperties;
     static JwtProvider sut;
 
     @BeforeAll
@@ -29,24 +31,27 @@ class JwtProviderTest {
         Duration accessExpiration = Duration.ofHours(1);
         Duration refreshExpiration = Duration.ofHours(1);
 
-        jwtProperties = new JwtProperties(
-                accessSecretKey, accessExpiration,
+        jwtAccessTokenProperties = new JwtAccessTokenProperties(
+                accessSecretKey, accessExpiration
+        );
+        jwtRefreshProperties = new JwtRefreshTokenProperties(
                 refreshSecretKey, refreshExpiration
         );
-        sut = new JwtProvider(jwtProperties);
+
+        sut = new JwtProvider();
     }
 
     @Test
     void JWT_토큰을_정상적으로_생성_및_검증_할_수_있다() {
         // given
         var memberId = 1L;
-        var token = sut.createToken(memberId, jwtProperties.getAccessExpiration(), jwtProperties.getAccessSecretKey());
+        var token = sut.createToken(memberId, jwtAccessTokenProperties.getAccessExpiration(), jwtAccessTokenProperties.getAccessSecretKey());
 
         // when
-        var memberPayload = sut.parsePayload(token, jwtProperties.getAccessSecretKey());
+        var memberPayload = sut.parsePayload(token, jwtAccessTokenProperties.getAccessSecretKey());
 
         // then
-        assertThat(memberPayload.getMemberId()).isEqualTo(memberId);
+        assertThat(memberPayload.get().getMemberId()).isEqualTo(memberId);
     }
 
     @Test
@@ -59,11 +64,11 @@ class JwtProviderTest {
                                 .issuedAt(Date.from(now.minus(Duration.ofHours(2))))
                                 .expiration(Date.from(now.minus(Duration.ofMinutes(1))))
                                 .build())
-                .signWith(jwtProperties.getAccessSecretKey())
+                .signWith(jwtAccessTokenProperties.getAccessSecretKey())
                 .compact();
 
         // when // then
-        assertThatThrownBy(() -> sut.parsePayload(token, jwtProperties.getAccessSecretKey()))
+        assertThatThrownBy(() -> sut.parsePayload(token, jwtAccessTokenProperties.getAccessSecretKey()))
                 .isInstanceOf(InvalidJwtException.class)
                 .hasMessage("만료기한이 지난 토큰입니다.");
     }
@@ -90,28 +95,28 @@ class JwtProviderTest {
                 .compact();
 
         // when // then
-        assertThatThrownBy(() -> sut.parsePayload(token, jwtProperties.getAccessSecretKey()))
+        assertThatThrownBy(() -> sut.parsePayload(token, jwtAccessTokenProperties.getAccessSecretKey()))
                 .isInstanceOf(InvalidJwtException.class)
                 .hasMessage("인증 토큰을 파싱하는데 실패하였습니다.");
     }
 
     @Test
     void 페이로드_변환시_빈_토큰이면_예외가_발생한다() {
-        assertThatThrownBy(() -> sut.parsePayload("", jwtProperties.getAccessSecretKey()))
+        assertThatThrownBy(() -> sut.parsePayload("", jwtAccessTokenProperties.getAccessSecretKey()))
                 .isInstanceOf(InvalidJwtException.class)
                 .hasMessage("인증 토큰을 파싱하는데 실패하였습니다.");
     }
 
     @Test
     void 페이로드_변환시_null_토큰이면_예외가_발생한다() {
-        assertThatThrownBy(() -> sut.parsePayload(null, jwtProperties.getAccessSecretKey()))
+        assertThatThrownBy(() -> sut.parsePayload(null, jwtAccessTokenProperties.getAccessSecretKey()))
                 .isInstanceOf(InvalidJwtException.class)
                 .hasMessage("인증 토큰을 파싱하는데 실패하였습니다.");
     }
 
     @Test
     void 페이로드_변환시_형식이_잘못된_토큰이면_예외가_발생한다() {
-        assertThatThrownBy(() -> sut.parsePayload("this.is.not.jwt", jwtProperties.getAccessSecretKey()))
+        assertThatThrownBy(() -> sut.parsePayload("this.is.not.jwt", jwtAccessTokenProperties.getAccessSecretKey()))
                 .isInstanceOf(InvalidJwtException.class)
                 .hasMessage("잘못된 형식의 토큰입니다.");
     }
@@ -126,11 +131,11 @@ class JwtProviderTest {
                                 .issuedAt(Date.from(now.minus(Duration.ofHours(2))))
                                 .expiration(Date.from(now.minus(Duration.ofMinutes(1))))
                                 .build())
-                .signWith(jwtProperties.getAccessSecretKey())
+                .signWith(jwtAccessTokenProperties.getAccessSecretKey())
                 .compact();
 
         //when // then
-        assertThat(sut.isTokenExpired(expiredAccessToken, jwtProperties.getAccessSecretKey())
+        assertThat(sut.isTokenExpired(expiredAccessToken, jwtAccessTokenProperties.getAccessSecretKey())
                            .get()).isTrue();
     }
 
@@ -139,17 +144,17 @@ class JwtProviderTest {
         var invalidToken = "invalidAccessToken";
 
         //when // then
-        assertThat(sut.isTokenExpired(invalidToken, jwtProperties.getAccessSecretKey())).isEmpty();
+        assertThat(sut.isTokenExpired(invalidToken, jwtAccessTokenProperties.getAccessSecretKey())).isEmpty();
     }
 
 
     @Test
     void 토큰을_올바르지_않은_키로_검증시_예외가_발생한다() {
         // given
-        var accessToken = sut.createToken(60L, jwtProperties.getAccessExpiration(), jwtProperties.getAccessSecretKey());
+        var accessToken = sut.createToken(60L, jwtAccessTokenProperties.getAccessExpiration(), jwtAccessTokenProperties.getAccessSecretKey());
 
         // when // then
-        assertThatThrownBy(() -> sut.parsePayload(accessToken, jwtProperties.getRefreshSecretKey()))
+        assertThatThrownBy(() -> sut.parsePayload(accessToken, jwtRefreshProperties.getRefreshSecretKey()))
                 .isInstanceOf(InvalidJwtException.class)
                 .hasMessage("인증 토큰을 파싱하는데 실패하였습니다.");
     }

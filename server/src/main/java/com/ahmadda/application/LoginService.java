@@ -11,12 +11,14 @@ import com.ahmadda.infra.auth.HashEncoder;
 import com.ahmadda.infra.auth.RefreshToken;
 import com.ahmadda.infra.auth.RefreshTokenRepository;
 import com.ahmadda.infra.auth.jwt.JwtProvider;
-import com.ahmadda.infra.auth.jwt.config.JwtProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
 import com.ahmadda.infra.auth.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.auth.oauth.dto.OAuthUserInfoResponse;
 import com.ahmadda.infra.notification.slack.SlackAlarm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@EnableConfigurationProperties({JwtAccessTokenProperties.class, JwtRefreshTokenProperties.class})
 @RequiredArgsConstructor
 public class LoginService {
 
@@ -32,7 +35,8 @@ public class LoginService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final GoogleOAuthProvider googleOAuthProvider;
     private final JwtProvider jwtProvider;
-    private final JwtProperties jwtProperties;
+    private final JwtAccessTokenProperties jwtAccessTokenProperties;
+    private final JwtRefreshTokenProperties jwtRefreshTokenProperties;
     private final SlackAlarm slackAlarm;
     private final HashEncoder hashEncoder;
 
@@ -105,7 +109,7 @@ public class LoginService {
 
     private void validateAccessTokenNotActive(final String accessToken) {
         Optional<Boolean> accessTokenExpired = jwtProvider.isTokenExpired(accessToken,
-                                                                          jwtProperties.getAccessSecretKey()
+                                                                          jwtAccessTokenProperties.getAccessSecretKey()
         );
 
         if (accessTokenExpired.isEmpty()) {
@@ -119,7 +123,7 @@ public class LoginService {
 
     private void validateRefreshTokenActive(final String refreshToken) {
         Optional<Boolean> refreshTokenExpired = jwtProvider.isTokenExpired(refreshToken,
-                                                                           jwtProperties.getRefreshSecretKey()
+                                                                           jwtRefreshTokenProperties.getRefreshSecretKey()
         );
 
         if (refreshTokenExpired.isEmpty()) {
@@ -181,26 +185,26 @@ public class LoginService {
 
     private MemberToken createMemberToken(final Long memberId) {
         String accessToken = jwtProvider.createToken(memberId,
-                                                     jwtProperties.getAccessExpiration(),
-                                                     jwtProperties.getAccessSecretKey()
+                                                     jwtAccessTokenProperties.getAccessExpiration(),
+                                                     jwtAccessTokenProperties.getAccessSecretKey()
         );
         String refreshToken = jwtProvider.createToken(memberId,
-                                                      jwtProperties.getRefreshExpiration(),
-                                                      jwtProperties.getRefreshSecretKey()
+                                                      jwtRefreshTokenProperties.getRefreshExpiration(),
+                                                      jwtRefreshTokenProperties.getRefreshSecretKey()
         );
 
         return new MemberToken(accessToken, refreshToken);
     }
 
     private LocalDateTime parseRefreshTokenExpiresAt(final String refreshToken) {
-        JwtMemberPayload jwtMemberPayload = jwtProvider.parsePayload(refreshToken, jwtProperties.getRefreshSecretKey());
-
-        return jwtMemberPayload.getExpiresAt();
+        return jwtProvider.parsePayload(refreshToken, jwtRefreshTokenProperties.getRefreshSecretKey())
+                .map(JwtMemberPayload::getExpiresAt)
+                .orElseThrow(() -> new UnprocessableEntityException("리프레시 토큰이 유효하지 않습니다."));
     }
 
     private Long parseRefreshTokenMemberId(final String refreshToken) {
-        JwtMemberPayload jwtMemberPayload = jwtProvider.parsePayload(refreshToken, jwtProperties.getRefreshSecretKey());
-
-        return jwtMemberPayload.getMemberId();
+        return jwtProvider.parsePayload(refreshToken, jwtRefreshTokenProperties.getRefreshSecretKey())
+                .map(JwtMemberPayload::getMemberId)
+                .orElseThrow(() -> new UnprocessableEntityException("리프레시 토큰이 유효하지 않습니다."));
     }
 }
