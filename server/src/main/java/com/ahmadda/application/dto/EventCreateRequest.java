@@ -29,14 +29,14 @@ public record EventCreateRequest(
 ) {
 
     public EventCreateRequest(
-            String title,
-            String description,
-            String place,
-            LocalDateTime registrationEnd,
-            LocalDateTime eventStart,
-            LocalDateTime eventEnd,
-            int maxCapacity,
-            List<QuestionCreateRequest> questions
+            final String title,
+            final String description,
+            final String place,
+            final LocalDateTime registrationEnd,
+            final LocalDateTime eventStart,
+            final LocalDateTime eventEnd,
+            final int maxCapacity,
+            final List<QuestionCreateRequest> questions
     ) {
         this(
                 title,

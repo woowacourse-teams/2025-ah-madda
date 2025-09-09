@@ -259,13 +259,6 @@ public class Event extends BaseEntity {
         this.guests.add(guest);
     }
 
-    public void addEventOwnerOrganizationMembers(List<EventOwnerOrganizationMember> eventOwnerOrganizationMembers) {
-        validateHasRoleMembersBelongToOrganization(eventOwnerOrganizationMembers, organization);
-        validateOrganizerHasRole(eventOwnerOrganizationMembers, organizer);
-
-        this.eventOwnerOrganizationMembers.addAll(eventOwnerOrganizationMembers);
-    }
-
     public boolean hasQuestion(final Question question) {
         return questions.contains(question);
     }
