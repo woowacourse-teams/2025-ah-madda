@@ -25,6 +25,7 @@ import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -64,6 +65,7 @@ public class EventService {
         OrganizationMember organizer = getOrganizationMember(organizationId, loginMember.memberId());
 
         EventOperationPeriod eventOperationPeriod = createEventOperationPeriod(eventCreateRequest, currentDateTime);
+
         Event event = Event.create(
                 eventCreateRequest.title(),
                 eventCreateRequest.description(),
@@ -72,8 +74,10 @@ public class EventService {
                 organization,
                 eventOperationPeriod,
                 eventCreateRequest.maxCapacity(),
+                getOrganizationMemberByIds(eventCreateRequest.eventOwnerOrganizationMembers()),
                 createQuestions(eventCreateRequest.questions())
         );
+
         validateReminderLimit(event);
 
         Event savedEvent = eventRepository.save(event);
@@ -82,6 +86,17 @@ public class EventService {
         eventPublisher.publishEvent(EventCreated.from(savedEvent.getId()));
 
         return savedEvent;
+    }
+
+    private List<OrganizationMember> getOrganizationMemberByIds(
+            final List<Long> organizationMemberIds
+    ) {
+        List<OrganizationMember> organizationMembers = organizationMemberRepository.findAllById(organizationMemberIds);
+        if (organizationMembers.size() != organizationMemberIds.size()) {
+            throw new EntityNotFoundException("요청된 조직 구성원 중 일부를 찾을 수 없습니다.");
+        }
+
+        return organizationMembers;
     }
 
     @Transactional

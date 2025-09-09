@@ -51,6 +51,9 @@ public class Event extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Question> questions = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<EventOwnerOrganizationMember> eventOwnerOrganizationMembers = new ArrayList<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id")
@@ -74,11 +77,10 @@ public class Event extends BaseEntity {
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
 
+
     @Embedded
     private EventOperationPeriod eventOperationPeriod;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<OrganizationMember> hasRoleOrganizationMembers = new ArrayList<>();
 
     @Column(nullable = false)
     private int maxCapacity;
@@ -91,11 +93,10 @@ public class Event extends BaseEntity {
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
             final int maxCapacity,
+            final List<OrganizationMember> eventOwnerOrganizationMembers,
             final List<Question> questions
     ) {
         validateMaxCapacity(maxCapacity);
-        validateHasRoleMembersBelongToOrganization(hasRoleOrganizationMembers, organization);
-        validateOrganizerHasRole(organizer, hasRoleOrganizationMembers);
 
         this.title = title;
         this.description = description;
@@ -107,24 +108,13 @@ public class Event extends BaseEntity {
 
         organization.addEvent(this);
         this.questions.addAll(questions);
+        this.eventOwnerOrganizationMembers.addAll(createEventOwnerOrganizationMembers(eventOwnerOrganizationMembers));
     }
 
-    private void validateOrganizerHasRole(
-            OrganizationMember organizer,
-            List<OrganizationMember> hasRoleOrganizationMembers
-    ) {
-        if (!hasRoleOrganizationMembers.contains(organizer)) {
-            throw new ForbiddenException("주최자는 공동 주최자에 포함되어야합니다.");
-        }
-    }
-
-    private void validateHasRoleMembersBelongToOrganization(
-            List<OrganizationMember> hasRoleOrganizationMembers,
-            Organization organization
-    ) {
-        for (OrganizationMember organizationMember : hasRoleOrganizationMembers) {
-            validateBelongToOrganization(organizationMember, organization);
-        }
+    private List<EventOwnerOrganizationMember> createEventOwnerOrganizationMembers(final List<OrganizationMember> eventOwnerOrganizationMembers) {
+        return eventOwnerOrganizationMembers.stream()
+                .map(organizationMember -> new EventOwnerOrganizationMember(this, organizationMember))
+                .toList();
     }
 
     public static Event create(
@@ -135,6 +125,7 @@ public class Event extends BaseEntity {
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
             final int maxCapacity,
+            final List<OrganizationMember> eventOwnerOrganizationMembers,
             final Question... questions
     ) {
         return new Event(
@@ -145,6 +136,7 @@ public class Event extends BaseEntity {
                 organization,
                 eventOperationPeriod,
                 maxCapacity,
+                eventOwnerOrganizationMembers,
                 new ArrayList<>(List.of(questions))
         );
     }
@@ -157,6 +149,7 @@ public class Event extends BaseEntity {
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
             final int maxCapacity,
+            final List<OrganizationMember> eventOwnerOrganizationMembers,
             final List<Question> questions
     ) {
         return new Event(
@@ -167,6 +160,7 @@ public class Event extends BaseEntity {
                 organization,
                 eventOperationPeriod,
                 maxCapacity,
+                eventOwnerOrganizationMembers,
                 questions
         );
     }
@@ -215,6 +209,13 @@ public class Event extends BaseEntity {
         this.guests.add(guest);
     }
 
+    public void addEventOwnerOrganizationMembers(List<EventOwnerOrganizationMember> eventOwnerOrganizationMembers) {
+        validateHasRoleMembersBelongToOrganization(eventOwnerOrganizationMembers, organization);
+        validateOrganizerHasRole(eventOwnerOrganizationMembers, organizer);
+
+        this.eventOwnerOrganizationMembers.addAll(eventOwnerOrganizationMembers);
+    }
+
     public boolean hasQuestion(final Question question) {
         return questions.contains(question);
     }
@@ -236,12 +237,14 @@ public class Event extends BaseEntity {
     }
 
     public boolean isOrganizer(final Member member) {
-        return organizer.getMember()
-                .equals(member);
+        return eventOwnerOrganizationMembers.stream()
+                .anyMatch((eventOwnerOrganizationMember) -> eventOwnerOrganizationMember.isSameMember(member));
     }
 
     public boolean isOrganizer(final OrganizationMember organizationMember) {
-        return organizer.equals(organizationMember);
+        return eventOwnerOrganizationMembers.stream()
+                .anyMatch((eventOwnerOrganizationMember) -> eventOwnerOrganizationMember.isSameOrganizationMember(
+                        organizationMember));
     }
 
     public void cancelParticipation(
@@ -300,10 +303,10 @@ public class Event extends BaseEntity {
     }
 
     private void validateBelongToOrganization(
-            final OrganizationMember organizationMember,
+            final EventOwnerOrganizationMember eventOwnerOrganizationMember,
             final Organization organization
     ) {
-        if (!organizationMember.isBelongTo(organization)) {
+        if (!eventOwnerOrganizationMember.isBelongTo(organization)) {
             throw new ForbiddenException("이벤트 스페이스에 속하지 않은 구성원입니다.");
         }
     }
@@ -311,6 +314,24 @@ public class Event extends BaseEntity {
     private void validateMaxCapacity(final int maxCapacity) {
         if (maxCapacity < MIN_CAPACITY || maxCapacity > MAX_CAPACITY) {
             throw new UnprocessableEntityException("최대 수용 인원은 1명보다 적거나 21억명 보다 클 수 없습니다.");
+        }
+    }
+
+    private void validateOrganizerHasRole(
+            final List<EventOwnerOrganizationMember> eventOwnerOrganizationMembers,
+            final OrganizationMember organizer
+    ) {
+        if (!eventOwnerOrganizationMembers.contains(organizer)) {
+            throw new ForbiddenException("주최자는 공동 주최자에 포함되어야합니다.");
+        }
+    }
+
+    private void validateHasRoleMembersBelongToOrganization(
+            final List<EventOwnerOrganizationMember> hasRoleOrganizationMembers,
+            final Organization organization
+    ) {
+        for (EventOwnerOrganizationMember eventOwnerOrganizationMember : hasRoleOrganizationMembers) {
+            validateBelongToOrganization(eventOwnerOrganizationMember, organization);
         }
     }
 

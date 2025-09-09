@@ -22,6 +22,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -111,5 +112,23 @@ public class OrganizationMember extends BaseEntity {
         if (!operator.isAdmin()) {
             throw new ForbiddenException("관리자만 구성원의 권한을 변경할 수 있습니다.");
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        OrganizationMember that = (OrganizationMember) o;
+        if (id == null || that.id == null) {
+            return false;
+        }
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

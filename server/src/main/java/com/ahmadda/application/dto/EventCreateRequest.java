@@ -25,7 +25,7 @@ public record EventCreateRequest(
         @Valid
         List<QuestionCreateRequest> questions,
         @NotNull
-        List<Long> hasRoleOrganizationMembers
+        List<Long> eventOwnerOrganizationMembers
 ) {
 
 }
