@@ -24,10 +24,12 @@ spring:
         region: ${aws.prod.s3.region}
 
 jwt:
-  access-secret-key: ${jwt.dev.access-secret-key}
-  access-expiration: ${jwt.dev.access-expiration}
-  refresh-secret-key: ${jwt.dev.refresh-secret-key}
-  refresh-expiration: ${jwt.dev.refresh-expiration}
+  access:
+    secret-key: ${jwt.dev.access.secret-key}
+    expiration: ${jwt.dev.access.expiration}
+  refresh:
+    secret-key: ${jwt.dev.refresh.secret-key}
+    expiration: ${jwt.dev.refresh.expiration}
 
 cookie:
   refresh-token:
