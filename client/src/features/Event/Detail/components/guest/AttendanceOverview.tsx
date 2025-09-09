@@ -46,7 +46,7 @@ export const AttendanceOverview = ({ eventId }: { eventId: number }) => {
 
       <Flex dir="column" gap="16px" alignItems="flex-start" padding="20px">
         <Text type="Heading" weight="bold" color={theme.colors.gray900}>
-          알림을 받지 않는 조직원이라고 떠요!
+          알림을 받지 않는 구성원이라고 떠요!
         </Text>
         <Text type="Body" weight="medium" color={theme.colors.gray700}>
           오른쪽의 앱 다운로드를 통해 알림을 받을 수 있어요. 친구와 함께 앱을 설치하고, 알림을

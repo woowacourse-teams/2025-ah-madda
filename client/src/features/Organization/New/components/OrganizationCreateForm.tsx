@@ -130,7 +130,7 @@ export const OrganizationCreateForm = () => {
       <Flex dir="column" padding="60px 0" gap="40px">
         <Flex padding="40px 0">
           <Text as="h1" type="Display" weight="bold">
-            {isEdit ? '조직 수정하기' : '조직 생성하기'}
+            {isEdit ? '이벤트 스페이스 수정하기' : '이벤트 스페이스 생성하기'}
           </Text>
         </Flex>
 
@@ -143,7 +143,7 @@ export const OrganizationCreateForm = () => {
             `}
           >
             <Text as="label" htmlFor="orgImage" type="Heading" weight="medium">
-              조직 이미지
+              이벤트 스페이스 이미지
             </Text>
             <OrganizationImageInput
               onChange={onSelectLogo}
@@ -154,12 +154,12 @@ export const OrganizationCreateForm = () => {
 
           <Flex dir="column" gap="12px">
             <Text as="label" htmlFor="orgName" type="Heading" weight="medium">
-              조직 이름
+              이벤트 스페이스 이름
             </Text>
             <Input
               id="orgName"
               name="name"
-              placeholder="조직 이름을 입력해주세요."
+              placeholder="이벤트 스페이스 이름을 입력해주세요."
               value={form.name}
               onChange={handleChange}
               errorMessage={errors.name}
@@ -176,7 +176,7 @@ export const OrganizationCreateForm = () => {
             <Input
               id="orgDescription"
               name="description"
-              placeholder="조직을 소개해주세요."
+              placeholder="이벤트 스페이스를 소개해주세요."
               value={form.description}
               onChange={handleChange}
               errorMessage={errors.description}
@@ -193,7 +193,7 @@ export const OrganizationCreateForm = () => {
             disabled={!isValid() || isSubmitting}
             onClick={handleEditButtonClick}
           >
-            {isEdit ? '조직 수정하기' : '조직 생성하기'}
+            {isEdit ? '이벤트 스페이스 수정하기' : '이벤트 스페이스 생성하기'}
           </Button>
         </Flex>
       </Flex>
@@ -201,7 +201,7 @@ export const OrganizationCreateForm = () => {
       {!isEdit && (
         <CreatorNicknameModal
           isOpen={isOpen}
-          orgName={form.name || '조직'}
+          orgName={form.name || '이벤트 스페이스'}
           previewUrl={previewUrl}
           isSubmitting={isSubmitting}
           onClose={close}

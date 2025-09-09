@@ -36,7 +36,7 @@ export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationPr
         >
           <Img
             src={imageUrl || DefaultImage}
-            alt={imageUrl ? `${name} 썸네일` : '기본 조직 이미지'}
+            alt={imageUrl ? `${name} 썸네일` : '기본 이벤트 스페이스 이미지'}
             onError={(e) => {
               e.currentTarget.onerror = null;
               e.currentTarget.src = DefaultImage;
