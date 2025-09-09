@@ -116,7 +116,9 @@ public class OrganizationMember extends BaseEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
+        if (this == o) {
+            return true;
+        }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
@@ -124,7 +126,7 @@ public class OrganizationMember extends BaseEntity {
         if (id == null || that.id == null) {
             return false;
         }
-        return Objects.equals(id, that.id);
+        return Objects.equals(getId(), that.getId());
     }
 
     @Override
