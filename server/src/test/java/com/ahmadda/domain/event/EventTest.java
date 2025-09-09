@@ -323,16 +323,36 @@ class EventTest {
                 LocalDateTime.now()
                         .plusDays(2)
         );
-        var sut = createEvent(now, registrationPeriod);
+        var coOrganizer =
+                createOrganizationMember("공동주최자", createMember("co-organizer", "co@email.com"), baseOrganization);
+
+        var eventOperationPeriod = EventOperationPeriod.create(
+                registrationPeriod.start(), registrationPeriod.end(),
+                now.plusDays(3), now.plusDays(4),
+                now
+        );
+        var sut = Event.create(
+                "title",
+                "description",
+                "place",
+                baseOrganizer,
+                baseOrganization,
+                eventOperationPeriod,
+                10,
+                List.of(coOrganizer)
+        );
         var nonOrganizer = createOrganizationMember("다른 구성원", createMember(), baseOrganization);
 
         // when
         var isOrganizer = sut.isOrganizer(baseOrganizer.getMember());
+        var isCoOrganizer = sut.isOrganizer(coOrganizer.getMember());
         var isNotOrganizer = sut.isOrganizer(nonOrganizer.getMember());
 
         // then
         assertSoftly(softly -> {
             softly.assertThat(isOrganizer)
+                    .isTrue();
+            softly.assertThat(isCoOrganizer)
                     .isTrue();
             softly.assertThat(isNotOrganizer)
                     .isFalse();
