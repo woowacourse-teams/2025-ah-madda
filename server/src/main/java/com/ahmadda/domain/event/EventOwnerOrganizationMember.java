@@ -50,7 +50,7 @@ public class EventOwnerOrganizationMember extends BaseEntity {
     private OrganizationMember organizationMember;
 
     public EventOwnerOrganizationMember(final Event event, final OrganizationMember organizationMember) {
-        validateIsSameOrganization(event, organizationMember);
+        validateIsInSameOrganization(event, organizationMember);
 
         this.event = event;
         this.organizationMember = organizationMember;
@@ -76,10 +76,10 @@ public class EventOwnerOrganizationMember extends BaseEntity {
         return this.organizationMember.equals(organizationMember);
     }
 
-    private void validateIsSameOrganization(final Event event, final OrganizationMember organizationMember) {
+    private void validateIsInSameOrganization(final Event event, final OrganizationMember organizationMember) {
         if (!event.getOrganization()
                 .isExistOrganizationMember(organizationMember)) {
-            throw new ForbiddenException("자신과 공동 주최자는 동일한 이벤트 스페이스에 속해야 합니다.");
+            throw new ForbiddenException("주최자 혹은 공동 주최자는 동일한 이벤트 스페이스에 속해야 합니다.");
         }
     }
 }

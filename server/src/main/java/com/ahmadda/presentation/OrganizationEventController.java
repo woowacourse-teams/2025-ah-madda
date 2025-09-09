@@ -161,7 +161,7 @@ public class OrganizationEventController {
                                                       "type": "about:blank",
                                                       "title": "Forbidden",
                                                       "status": 403,
-                                                      "detail": "자신과 공동 주최자는 동일한 이벤트 스페이스에 속해야 합니다.",
+                                                      "detail": "주최자 혹은 공동 주최자는 동일한 이벤트 스페이스에 속해야 합니다.",
                                                       "instance": "/api/organizations/{organizationId}/events"
                                                     }
                                                     """
