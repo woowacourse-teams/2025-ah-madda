@@ -45,6 +45,9 @@ cors:
 notification:
   redirect-url-prefix: https://ahmadda.com/
 
+mail:
+  provider: gmail
+
 aws:
   s3:
     bucket: ${aws.prod.s3.bucket}

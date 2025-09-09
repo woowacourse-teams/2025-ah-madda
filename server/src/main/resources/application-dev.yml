@@ -50,6 +50,9 @@ cors:
 notification:
   redirect-url-prefix: https://staging.ahmadda.com/
 
+mail:
+  provider: gmail
+
 aws:
   s3:
     bucket: ${aws.dev.s3.bucket}

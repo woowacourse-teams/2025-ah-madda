@@ -18,7 +18,7 @@ import java.util.List;
 
 @Disabled
 @IntegrationTest
-@TestPropertySource(properties = "mail.mock=false")
+@TestPropertySource(properties = "mail.provider=gmail")
 class SmtpEmailNotifierTest {
 
     @Autowired
