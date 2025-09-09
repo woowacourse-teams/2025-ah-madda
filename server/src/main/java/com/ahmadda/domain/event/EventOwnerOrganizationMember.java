@@ -24,7 +24,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE event_owner_organization_member SET deleted_at = CURRENT_TIMESTAMP WHERE event_owner_organization_mebmer_id = ?")
+@SQLDelete(sql = "UPDATE event_owner_organization_member SET deleted_at = CURRENT_TIMESTAMP WHERE event_owner_organization_member_id = ?")
 @SQLRestriction("deleted_at IS NULL")
 @Table(
         uniqueConstraints = {
@@ -46,12 +46,12 @@ public class EventOwnerOrganizationMember extends BaseEntity {
     private Event event;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_member", nullable = false)
+    @JoinColumn(name = "organization_member_id", nullable = false)
     private OrganizationMember organizationMember;
 
     public EventOwnerOrganizationMember(final Event event, final OrganizationMember organizationMember) {
-        validateIsSameOrgarnization(event, organizationMember);
-        
+        validateIsSameOrganization(event, organizationMember);
+
         this.event = event;
         this.organizationMember = organizationMember;
     }
@@ -76,7 +76,7 @@ public class EventOwnerOrganizationMember extends BaseEntity {
         return this.organizationMember.equals(organizationMember);
     }
 
-    private void validateIsSameOrgarnization(final Event event, final OrganizationMember organizationMember) {
+    private void validateIsSameOrganization(final Event event, final OrganizationMember organizationMember) {
         if (!event.getOrganization()
                 .isExistOrganizationMember(organizationMember)) {
             throw new ForbiddenException("공동 주최자가 같은 이벤트 스페이스에 속하지 않습니다.");

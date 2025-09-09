@@ -34,7 +34,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 @Slf4j
@@ -91,12 +94,16 @@ public class EventService {
     private List<OrganizationMember> getOrganizationMemberByIds(
             final List<Long> organizationMemberIds
     ) {
-        List<OrganizationMember> organizationMembers = organizationMemberRepository.findAllById(organizationMemberIds);
-        if (organizationMembers.size() != organizationMemberIds.size()) {
+        Set<Long> organizationMemberIdsSet = new HashSet<>(organizationMemberIds);
+
+        List<OrganizationMember> findOrganizationMembers =
+                organizationMemberRepository.findAllById(new ArrayList<>(organizationMemberIdsSet));
+
+        if (findOrganizationMembers.size() != organizationMemberIdsSet.size()) {
             throw new EntityNotFoundException("요청된 조직 구성원 중 일부를 찾을 수 없습니다.");
         }
 
-        return organizationMembers;
+        return findOrganizationMembers;
     }
 
     @Transactional

@@ -29,6 +29,7 @@ import org.jspecify.annotations.Nullable;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,7 +52,7 @@ public class Event extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Question> questions = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "event")
     private final List<EventOwnerOrganizationMember> eventOwnerOrganizationMembers = new ArrayList<>();
 
     @Id
@@ -77,10 +78,8 @@ public class Event extends BaseEntity {
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
 
-
     @Embedded
     private EventOperationPeriod eventOperationPeriod;
-
 
     @Column(nullable = false)
     private int maxCapacity;
@@ -112,7 +111,12 @@ public class Event extends BaseEntity {
     }
 
     private List<EventOwnerOrganizationMember> createEventOwnerOrganizationMembers(final List<OrganizationMember> eventOwnerOrganizationMembers) {
-        return eventOwnerOrganizationMembers.stream()
+        Set<OrganizationMember> organizationMembers = new HashSet<>(eventOwnerOrganizationMembers);
+        organizationMembers.add(organizer);
+
+        return organizationMembers.stream()
+                .toList()
+                .stream()
                 .map(organizationMember -> new EventOwnerOrganizationMember(this, organizationMember))
                 .toList();
     }
@@ -149,6 +153,29 @@ public class Event extends BaseEntity {
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
             final int maxCapacity,
+            final Question... questions
+    ) {
+        return new Event(
+                title,
+                description,
+                place,
+                organizer,
+                organization,
+                eventOperationPeriod,
+                maxCapacity,
+                List.of(),
+                new ArrayList<>(List.of(questions))
+        );
+    }
+
+    public static Event create(
+            final String title,
+            final String description,
+            final String place,
+            final OrganizationMember organizer,
+            final Organization organization,
+            final EventOperationPeriod eventOperationPeriod,
+            final int maxCapacity,
             final List<OrganizationMember> eventOwnerOrganizationMembers,
             final List<Question> questions
     ) {
@@ -161,6 +188,29 @@ public class Event extends BaseEntity {
                 eventOperationPeriod,
                 maxCapacity,
                 eventOwnerOrganizationMembers,
+                questions
+        );
+    }
+
+    public static Event create(
+            final String title,
+            final String description,
+            final String place,
+            final OrganizationMember organizer,
+            final Organization organization,
+            final EventOperationPeriod eventOperationPeriod,
+            final int maxCapacity,
+            final List<Question> questions
+    ) {
+        return new Event(
+                title,
+                description,
+                place,
+                organizer,
+                organization,
+                eventOperationPeriod,
+                maxCapacity,
+                List.of(),
                 questions
         );
     }
