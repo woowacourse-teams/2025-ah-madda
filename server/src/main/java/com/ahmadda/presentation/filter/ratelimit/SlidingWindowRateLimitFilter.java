@@ -1,7 +1,11 @@
 package com.ahmadda.presentation.filter.ratelimit;
 
+import com.ahmadda.application.dto.LoginMember;
+import com.ahmadda.common.exception.UnauthorizedException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.infra.auth.jwt.JwtProvider;
-import com.ahmadda.infra.auth.jwt.config.JwtProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
+import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
 import com.ahmadda.presentation.header.HeaderProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -26,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 @Getter
 @Slf4j
 @Component
+@EnableConfigurationProperties(JwtAccessTokenProperties.class)
 @Order(Ordered.HIGHEST_PRECEDENCE + 2)
 @RequiredArgsConstructor
 public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
@@ -34,7 +40,7 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
     private static final int MAX_REQUESTS = 100;
 
     private final HeaderProvider headerProvider;
-    private final JwtProperties jwtProperties;
+    private final JwtAccessTokenProperties jwtAccessTokenProperties;
     private final JwtProvider jwtProvider;
     private final RateLimitExceededHandler rateLimitExceededHandler;
 
@@ -137,8 +143,9 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
         try {
             String accessToken = headerProvider.extractAccessToken(authorizationHeader);
 
-            return jwtProvider.parsePayload(accessToken, jwtProperties.getAccessSecretKey())
-                    .getMemberId();
+            return jwtProvider.parsePayload(accessToken, jwtAccessTokenProperties.getAccessSecretKey())
+                    .map(JwtMemberPayload::getMemberId)
+                    .orElseThrow(() -> new UnauthorizedException("유효하지 않은 액세스 토큰입니다."));
         } catch (Exception e) {
             return null;
         }

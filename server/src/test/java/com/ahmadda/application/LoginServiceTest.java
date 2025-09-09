@@ -2,23 +2,27 @@ package com.ahmadda.application;
 
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.common.exception.InvalidTokenException;
 import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnauthorizedException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.infra.auth.HashEncoder;
 import com.ahmadda.infra.auth.RefreshTokenRepository;
-import com.ahmadda.infra.auth.jwt.config.JwtProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
 import com.ahmadda.infra.auth.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.auth.oauth.dto.OAuthUserInfoResponse;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
@@ -47,14 +51,32 @@ class LoginServiceTest {
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
 
-    @Autowired
-    private JwtProperties jwtProperties;
+    @MockitoBean
+    private JwtAccessTokenProperties jwtAccessTokenProperties;
+
+    @MockitoBean
+    private JwtRefreshTokenProperties jwtRefreshTokenProperties;
 
     @Autowired
     private HashEncoder hashEncoder;
 
     @MockitoBean
     private GoogleOAuthProvider googleOAuthProvider;
+
+    @BeforeEach
+    void setUpJwtProps() {
+        var accessSecret = UUID.randomUUID().toString();
+        var refreshSecret = UUID.randomUUID().toString();
+
+        var accessKey = Keys.hmacShaKeyFor(accessSecret.getBytes(StandardCharsets.UTF_8));
+        var refreshKey = Keys.hmacShaKeyFor(refreshSecret.getBytes(StandardCharsets.UTF_8));
+
+        given(jwtAccessTokenProperties.getAccessSecretKey()).willReturn(accessKey);
+        given(jwtAccessTokenProperties.getAccessExpiration()).willReturn(Duration.ofHours(1));
+
+        given(jwtRefreshTokenProperties.getRefreshSecretKey()).willReturn(refreshKey);
+        given(jwtRefreshTokenProperties.getRefreshExpiration()).willReturn(Duration.ofDays(14));
+    }
 
     @Test
     void 신규회원이면_저장한다() {
@@ -224,7 +246,7 @@ class LoginServiceTest {
                 loginTokens.refreshToken(),
                 userAgent
         ))
-                .isInstanceOf(InvalidTokenException.class)
+                .isInstanceOf(UnauthorizedException.class)
                 .hasMessage("엑세스 토큰이 만료되지 않았습니다.");
     }
 
@@ -254,7 +276,7 @@ class LoginServiceTest {
                 expiredRefreshToken,
                 userAgent
         ))
-                .isInstanceOf(InvalidTokenException.class)
+                .isInstanceOf(UnauthorizedException.class)
                 .hasMessage("리프레시 토큰이 만료되었습니다.");
     }
 
@@ -318,7 +340,7 @@ class LoginServiceTest {
                 .claims(claims)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.minus(Duration.ofDays(1))))
-                .signWith(jwtProperties.getAccessSecretKey())
+                .signWith(jwtAccessTokenProperties.getAccessSecretKey())
                 .compact();
     }
 
@@ -331,7 +353,7 @@ class LoginServiceTest {
                 .claims(claims)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.minus(Duration.ofDays(1))))
-                .signWith(jwtProperties.getRefreshSecretKey())
+                .signWith(jwtRefreshTokenProperties.getRefreshSecretKey())
                 .compact();
     }
 }

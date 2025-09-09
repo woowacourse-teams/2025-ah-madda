@@ -55,7 +55,7 @@ class JwtProviderTest {
     }
 
     @Test
-    void 페이로드_변환시_만료된_토큰일_경우_예외가_발생한다() {
+    void 페이로드_변환시_만료된_토큰일_경우_옵셔널_빈을_반환한다() {
         // given
         var now = Instant.now();
         var token = Jwts.builder()
@@ -68,9 +68,7 @@ class JwtProviderTest {
                 .compact();
 
         // when // then
-        assertThatThrownBy(() -> sut.parsePayload(token, jwtAccessTokenProperties.getAccessSecretKey()))
-                .isInstanceOf(InvalidJwtException.class)
-                .hasMessage("만료기한이 지난 토큰입니다.");
+        assertThat(sut.parsePayload(token, jwtAccessTokenProperties.getAccessSecretKey())).isEmpty();
     }
 
     @Test

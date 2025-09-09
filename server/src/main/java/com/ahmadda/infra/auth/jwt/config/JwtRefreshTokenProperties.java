@@ -15,11 +15,11 @@ public class JwtRefreshTokenProperties {
     private final SecretKey refreshSecretKey;
     private final Duration refreshExpiration;
 
-    public JwtRefreshTokenProperties(final String refreshSecretKey, final Duration refreshExpiration) {
-        validateProperties(refreshSecretKey, refreshExpiration);
+    public JwtRefreshTokenProperties(final String secretKey, final Duration expiration) {
+        validateProperties(secretKey, expiration);
 
-        this.refreshSecretKey = Keys.hmacShaKeyFor(refreshSecretKey.getBytes(StandardCharsets.UTF_8));
-        this.refreshExpiration = refreshExpiration;
+        this.refreshSecretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+        this.refreshExpiration = expiration;
     }
 
     private void validateProperties(final String secretKey, final Duration accessExpiration) {

@@ -1,6 +1,7 @@
 package com.ahmadda.infra.auth.jwt.config;
 
 import io.jsonwebtoken.security.Keys;
+import jdk.jfr.Name;
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -15,11 +16,11 @@ public class JwtAccessTokenProperties {
     private final SecretKey accessSecretKey;
     private final Duration accessExpiration;
 
-    public JwtAccessTokenProperties(final String accessSecretKey, final Duration accessExpiration) {
-        validateProperties(accessSecretKey, accessExpiration);
+    public JwtAccessTokenProperties(final String secretKey, final Duration expiration) {
+        validateProperties(secretKey, expiration);
 
-        this.accessSecretKey = Keys.hmacShaKeyFor(accessSecretKey.getBytes(StandardCharsets.UTF_8));
-        this.accessExpiration = accessExpiration;
+        this.accessSecretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+        this.accessExpiration = expiration;
     }
 
     private void validateProperties(final String secretKey, final Duration accessExpiration) {
