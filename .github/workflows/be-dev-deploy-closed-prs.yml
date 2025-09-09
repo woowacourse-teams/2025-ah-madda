@@ -84,8 +84,8 @@ jobs:
             --restart unless-stopped \
             -p 8080:8080 \
             -e PROFILE=dev \
-            --log-driver=awslogs \
-            --log-opt awslogs-group=ahmadda-dev-server \
-            --log-opt awslogs-region=ap-northeast-2 \
-            --log-opt awslogs-stream=$TAG \
+            # --log-driver=awslogs \
+            # --log-opt awslogs-group=ahmadda-dev-server \
+            # --log-opt awslogs-region=ap-northeast-2 \
+            # --log-opt awslogs-stream=$TAG \
             -d ahmadda1234/ahmadda_server:$TAG
