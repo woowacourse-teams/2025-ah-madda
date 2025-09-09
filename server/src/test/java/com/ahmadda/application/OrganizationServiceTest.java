@@ -52,10 +52,10 @@ class OrganizationServiceTest {
     private InviteCodeRepository inviteCodeRepository;
 
     @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
+    private JwtAccessTokenProperties accessTokenProperties;
 
     @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
+    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Autowired
     private OrganizationService sut;

@@ -64,10 +64,10 @@ class EventNotificationServiceTest {
     private EventNotificationOptOutRepository eventNotificationOptOutRepository;
 
     @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
+    private JwtAccessTokenProperties accessTokenProperties;
 
     @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
+    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 선택된_구성원에게_알람을_전송한다() {

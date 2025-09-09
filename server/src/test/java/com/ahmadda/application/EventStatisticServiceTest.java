@@ -50,10 +50,10 @@ class EventStatisticServiceTest {
     private EventStatisticRepository eventStatisticRepository;
 
     @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
+    private JwtAccessTokenProperties accessTokenProperties;
 
     @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
+    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 이벤트_조회수를_가지고_올_수_있다() {

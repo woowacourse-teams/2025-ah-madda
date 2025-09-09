@@ -57,10 +57,10 @@ class EventGuestServiceTest {
     private GuestRepository guestRepository;
 
     @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
+    private JwtAccessTokenProperties accessTokenProperties;
 
     @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
+    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 이벤트에_참여한_게스트들을_조회한다() {

@@ -48,10 +48,10 @@ class OrganizationMemberEventServiceTest {
     private OrganizationMemberEventService sut;
 
     @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
+    private JwtAccessTokenProperties accessTokenProperties;
 
     @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
+    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 구성원이_주최한_이벤트들을_조회한다() {

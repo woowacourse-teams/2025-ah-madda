@@ -48,10 +48,10 @@ class EventUpdateListenerTest {
     private OrganizationMemberRepository organizationMemberRepository;
 
     @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
+    private JwtAccessTokenProperties accessTokenProperties;
 
     @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
+    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 이벤트_기간이_연장되어_수정되면_연장된_기간만큼_통계가_추가_생성된다() {

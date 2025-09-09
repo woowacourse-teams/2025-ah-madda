@@ -24,10 +24,10 @@ class FcmPushErrorHandlerTest {
     private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
 
     @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
+    private JwtAccessTokenProperties accessTokenProperties;
 
     @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
+    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 요청_실패시_유효하지_않는_토큰이_있으면_제거한다() {

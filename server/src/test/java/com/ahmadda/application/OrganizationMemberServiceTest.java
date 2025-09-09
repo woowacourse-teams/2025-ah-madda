@@ -40,10 +40,10 @@ class OrganizationMemberServiceTest {
     private OrganizationMemberRepository organizationMemberRepository;
 
     @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
+    private JwtAccessTokenProperties accessTokenProperties;
 
     @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
+    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 자신의_구성원_정보를_조회한다() {

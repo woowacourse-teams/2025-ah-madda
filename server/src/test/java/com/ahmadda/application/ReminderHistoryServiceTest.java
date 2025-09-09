@@ -50,10 +50,10 @@ class ReminderHistoryServiceTest {
     private ReminderHistoryRepository reminderHistoryRepository;
 
     @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
+    private JwtAccessTokenProperties accessTokenProperties;
 
     @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
+    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 주최자가_리마인드_히스토리를_조회한다() {

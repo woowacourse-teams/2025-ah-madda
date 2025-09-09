@@ -76,10 +76,10 @@ class EventServiceTest {
     private EventNotificationOptOutRepository eventNotificationOptOutRepository;
 
     @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
+    private JwtAccessTokenProperties accessTokenProperties;
 
     @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
+    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 이벤트를_생성할_수_있다() {

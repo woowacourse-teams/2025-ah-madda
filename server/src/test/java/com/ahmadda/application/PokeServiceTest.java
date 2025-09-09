@@ -57,10 +57,10 @@ class PokeServiceTest {
     private Poke poke;
 
     @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
+    private JwtAccessTokenProperties accessTokenProperties;
 
     @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
+    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Autowired
     private EventNotificationOptOutRepository eventNotificationOptOutRepository;

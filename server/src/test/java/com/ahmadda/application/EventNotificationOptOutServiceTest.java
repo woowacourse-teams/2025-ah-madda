@@ -56,10 +56,10 @@ class EventNotificationOptOutServiceTest {
     private GuestRepository guestRepository;
 
     @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
+    private JwtAccessTokenProperties accessTokenProperties;
 
     @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
+    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 이벤트에_대한_알림_수신_거부를_설정할_수_있다() {

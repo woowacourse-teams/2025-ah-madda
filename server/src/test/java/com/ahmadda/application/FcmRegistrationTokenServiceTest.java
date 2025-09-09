@@ -30,10 +30,10 @@ class FcmRegistrationTokenServiceTest {
     private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
 
     @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
+    private JwtAccessTokenProperties accessTokenProperties;
 
     @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
+    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 푸시알림_수신자를_등록한다() {

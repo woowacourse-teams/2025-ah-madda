@@ -33,20 +33,24 @@ class OrganizationInviteCodeServiceTest {
 
     @Autowired
     private OrganizationInviteCodeService sut;
+
     @Autowired
     private MemberRepository memberRepository;
+
     @Autowired
     private OrganizationRepository organizationRepository;
+
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
+
     @Autowired
     private InviteCodeRepository inviteCodeRepository;
 
     @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
+    private JwtAccessTokenProperties accessTokenProperties;
 
     @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
+    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 여섯_글자의_초대코드를_생성한다() {

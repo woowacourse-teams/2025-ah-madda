@@ -32,10 +32,10 @@ class EventEventTemplateServiceTest {
     private EventTemplateRepository eventTemplateRepository;
 
     @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
+    private JwtAccessTokenProperties accessTokenProperties;
 
     @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
+    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 템플릿을_생성할_수_있다() {
