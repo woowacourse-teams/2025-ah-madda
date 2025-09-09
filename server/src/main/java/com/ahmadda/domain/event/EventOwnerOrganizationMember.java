@@ -73,7 +73,8 @@ public class EventOwnerOrganizationMember extends BaseEntity {
     }
 
     public boolean isSameOrganizationMember(final OrganizationMember organizationMember) {
-        return this.organizationMember.equals(organizationMember);
+        return this.organizationMember.getId()
+                .equals(organizationMember.getId());
     }
 
     private void validateIsInSameOrganization(final Event event, final OrganizationMember organizationMember) {
