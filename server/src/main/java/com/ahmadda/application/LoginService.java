@@ -3,8 +3,8 @@ package com.ahmadda.application;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.MemberCreateAlarmPayload;
 import com.ahmadda.application.dto.MemberToken;
-import com.ahmadda.common.exception.InvalidTokenException;
 import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.infra.auth.HashEncoder;
@@ -91,7 +91,7 @@ public class LoginService {
         Long refreshTokenMemberId = parseRefreshTokenMemberId(refreshToken);
 
         if (!Objects.equals(memberId, refreshTokenMemberId)) {
-            throw new InvalidTokenException("토큰 정보가 일치하지 않습니다.");
+            throw new UnprocessableEntityException("토큰 정보가 일치하지 않습니다.");
         }
     }
 
@@ -99,7 +99,7 @@ public class LoginService {
         String encodedRefreshToken = hashEncoder.encodeSha256(refreshToken);
 
         if (!encodedRefreshToken.equals(savedRefreshToken.getToken())) {
-            throw new InvalidTokenException("리프레시 토큰이 유효하지 않습니다.");
+            throw new UnprocessableEntityException("리프레시 토큰이 유효하지 않습니다.");
         }
     }
 
@@ -109,11 +109,11 @@ public class LoginService {
         );
 
         if (accessTokenExpired.isEmpty()) {
-            throw new InvalidTokenException("엑세스 토큰이 올바르지 않습니다.");
+            throw new UnprocessableEntityException("엑세스 토큰이 올바르지 않습니다.");
         }
 
         if (Objects.equals(accessTokenExpired.get(), Boolean.FALSE)) {
-            throw new InvalidTokenException("엑세스 토큰이 만료되지 않았습니다.");
+            throw new UnprocessableEntityException("엑세스 토큰이 만료되지 않았습니다.");
         }
     }
 
@@ -123,11 +123,11 @@ public class LoginService {
         );
 
         if (refreshTokenExpired.isEmpty()) {
-            throw new InvalidTokenException("리프레시 토큰이 올바르지 않습니다.");
+            throw new UnprocessableEntityException("리프레시 토큰이 올바르지 않습니다.");
         }
 
         if (Objects.equals(refreshTokenExpired.get(), Boolean.TRUE)) {
-            throw new InvalidTokenException("리프레시 토큰이 만료되었습니다.");
+            throw new UnprocessableEntityException("리프레시 토큰이 만료되었습니다.");
         }
     }
 
