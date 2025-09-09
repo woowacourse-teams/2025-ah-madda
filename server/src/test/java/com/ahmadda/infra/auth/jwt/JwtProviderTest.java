@@ -127,8 +127,9 @@ class JwtProviderTest {
                 .compact();
 
         //when // then
-        assertThat(sut.isTokenExpired(expiredAccessToken, jwtAccessTokenProperties.getAccessSecretKey())
-                           .get()).isTrue();
+        assertThat(sut.isTokenExpired(expiredAccessToken,
+                                      jwtAccessTokenProperties.getAccessSecretKey()
+        )).contains(true);
     }
 
     @Test
