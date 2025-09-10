@@ -5,7 +5,7 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
-import com.ahmadda.domain.event.EventOwnerOrganizationMemberRepository;
+import com.ahmadda.domain.event.EventOrganizerRepository;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.event.GuestRepository;
@@ -44,8 +44,9 @@ class OrganizationMemberEventServiceTest {
 
     @Autowired
     private OrganizationMemberEventService sut;
+
     @Autowired
-    private EventOwnerOrganizationMemberRepository eventOwnerOrganizationMemberRepository;
+    private EventOrganizerRepository eventOrganizerRepository;
 
     @Test
     void 구성원이_주최한_이벤트들을_조회한다() {
@@ -273,7 +274,7 @@ class OrganizationMemberEventServiceTest {
         );
 
         Event savedEvent = eventRepository.save(event);
-        eventOwnerOrganizationMemberRepository.saveAll(event.getEventOwnerOrganizationMembers());
+        eventOrganizerRepository.saveAll(event.getEventOrganizers());
         return savedEvent;
     }
 

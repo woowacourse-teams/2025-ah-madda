@@ -233,19 +233,19 @@ public class OrganizationEventController {
                                                       "type": "about:blank",
                                                       "title": "Forbidden",
                                                       "status": 403,
-                                                      "detail": "주최자 혹은 공동 주최자는 동일한 이벤트 스페이스에 속해야 합니다.",
+                                                      "detail": "주최자는 동일한 이벤트 스페이스에 속해야 합니다.",
                                                       "instance": "/api/organizations/{organizationId}/events"
                                                     }
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "중복된 공동 주최자",
+                                            name = "중복된 주최자",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Forbidden",
                                                       "status": 403,
-                                                      "detail": "중복되는 공동 주최자가 존재합니다.",
+                                                      "detail": "중복되는 주최자가 존재합니다.",
                                                       "instance": "/api/organizations/{organizationId}/events"
                                                     }
                                                     """
@@ -276,7 +276,7 @@ public class OrganizationEventController {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "요청된 공동 주최자 구성원 중 일부 구성원을 찾는데 실패하였습니다.",
+                                                      "detail": "요청된 주최자 구성원 중 일부 구성원을 찾는데 실패하였습니다.",
                                                       "instance": "/api/organizations/{organizationId}/events"
                                                     }
                                                     """

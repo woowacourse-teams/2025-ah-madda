@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-class EventOwnerOrganizationMemberTest {
+class EventOrganizerTest {
 
     @Test
     void 공동_주최자를_생성할_수_있다() {
@@ -24,7 +24,7 @@ class EventOwnerOrganizationMemberTest {
         var coOwnerMember = createOrganizationMember(createMember("공동주최자", "coowner@email.com"), organization);
 
         // when
-        var sut = EventOwnerOrganizationMember.create(event, coOwnerMember);
+        var sut = EventOrganizer.create(event, coOwnerMember);
 
         // then
         assertSoftly(softly -> {
@@ -47,9 +47,9 @@ class EventOwnerOrganizationMemberTest {
         var memberInAnotherOrg = createOrganizationMember(createMember(), anotherOrganization);
 
         // when // then
-        assertThatThrownBy(() -> EventOwnerOrganizationMember.create(event, memberInAnotherOrg))
+        assertThatThrownBy(() -> EventOrganizer.create(event, memberInAnotherOrg))
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("주최자 혹은 공동 주최자는 동일한 이벤트 스페이스에 속해야 합니다.");
+                .hasMessage("주최자는 동일한 이벤트 스페이스에 속해야 합니다.");
     }
 
     @Test
@@ -59,7 +59,7 @@ class EventOwnerOrganizationMemberTest {
         var member = createMember();
         var organizationMember = createOrganizationMember(member, organization);
         var event = createEvent(organizationMember, organization);
-        var sut = EventOwnerOrganizationMember.create(event, organizationMember);
+        var sut = EventOrganizer.create(event, organizationMember);
         var anotherOrganization = createOrganization("다른 이벤트 스페이스");
 
         // when
@@ -82,7 +82,7 @@ class EventOwnerOrganizationMemberTest {
         var member = createMember();
         var organizationMember = createOrganizationMember(member, organization);
         var event = createEvent(organizationMember, organization);
-        var sut = EventOwnerOrganizationMember.create(event, organizationMember);
+        var sut = EventOrganizer.create(event, organizationMember);
         var anotherMember = createMember("다른 회원", "another@email.com");
 
         // when
@@ -105,7 +105,7 @@ class EventOwnerOrganizationMemberTest {
         var member = createMember();
         var organizationMember = createOrganizationMember(member, organization);
         var event = createEvent(organizationMember, organization);
-        var sut = EventOwnerOrganizationMember.create(event, organizationMember);
+        var sut = EventOrganizer.create(event, organizationMember);
         var anotherOrganizationMember = createOrganizationMember(createMember(), organization);
 
         // when

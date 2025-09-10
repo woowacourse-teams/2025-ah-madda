@@ -14,7 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,21 +23,14 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE event_owner_organization_member SET deleted_at = CURRENT_TIMESTAMP WHERE event_owner_organization_member_id = ?")
+@SQLDelete(sql = "UPDATE event_organizer SET deleted_at = CURRENT_TIMESTAMP WHERE event_organizer_id = ?")
 @SQLRestriction("deleted_at IS NULL")
-@Table(
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uk_event_owner_event_id_organization_member_id",
-                        columnNames = {"event_id", "organization_member_id", "deleted_at"}
-                )
-        }
-)
-public class EventOwnerOrganizationMember extends BaseEntity {
+@Table(name = "event_organizer")
+public class EventOrganizer extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "event_owner_organization_member_id")
+    @Column(name = "event_organizer_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -49,18 +41,18 @@ public class EventOwnerOrganizationMember extends BaseEntity {
     @JoinColumn(name = "organization_member_id", nullable = false)
     private OrganizationMember organizationMember;
 
-    public EventOwnerOrganizationMember(final Event event, final OrganizationMember organizationMember) {
+    public EventOrganizer(final Event event, final OrganizationMember organizationMember) {
         validateIsInSameOrganization(event, organizationMember);
 
         this.event = event;
         this.organizationMember = organizationMember;
     }
 
-    public static EventOwnerOrganizationMember create(
+    public static EventOrganizer create(
             final Event event,
             final OrganizationMember organizationMember
     ) {
-        return new EventOwnerOrganizationMember(event, organizationMember);
+        return new EventOrganizer(event, organizationMember);
     }
 
     public boolean isBelongTo(final Organization organization) {
@@ -79,7 +71,7 @@ public class EventOwnerOrganizationMember extends BaseEntity {
     private void validateIsInSameOrganization(final Event event, final OrganizationMember organizationMember) {
         if (!event.getOrganization()
                 .isExistOrganizationMember(organizationMember)) {
-            throw new ForbiddenException("주최자 혹은 공동 주최자는 동일한 이벤트 스페이스에 속해야 합니다.");
+            throw new ForbiddenException("주최자는 동일한 이벤트 스페이스에 속해야 합니다.");
         }
     }
 

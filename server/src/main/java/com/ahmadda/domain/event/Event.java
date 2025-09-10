@@ -53,7 +53,7 @@ public class Event extends BaseEntity {
     private final List<Question> questions = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
-    private final List<EventOwnerOrganizationMember> eventOwnerOrganizationMembers = new ArrayList<>();
+    private final List<EventOrganizer> eventOrganizers = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -87,7 +87,7 @@ public class Event extends BaseEntity {
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
             final int maxCapacity,
-            final List<OrganizationMember> eventOwnerOrganizationMembers,
+            final List<OrganizationMember> eventOrganizers,
             final List<Question> questions
     ) {
         validateMaxCapacity(maxCapacity);
@@ -101,7 +101,7 @@ public class Event extends BaseEntity {
 
         organization.addEvent(this);
         this.questions.addAll(questions);
-        this.eventOwnerOrganizationMembers.addAll(createEventOwnerOrganizationMembers(eventOwnerOrganizationMembers));
+        this.eventOrganizers.addAll(createEventOrganizers(eventOrganizers));
     }
 
     public static Event create(
@@ -110,7 +110,7 @@ public class Event extends BaseEntity {
             final String place,
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
-            final List<OrganizationMember> eventOwnerOrganizationMembers,
+            final List<OrganizationMember> eventOrganizers,
             final int maxCapacity,
             final Question... questions
     ) {
@@ -121,7 +121,7 @@ public class Event extends BaseEntity {
                 organization,
                 eventOperationPeriod,
                 maxCapacity,
-                eventOwnerOrganizationMembers,
+                eventOrganizers,
                 new ArrayList<>(List.of(questions))
         );
     }
@@ -154,7 +154,7 @@ public class Event extends BaseEntity {
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
             final int maxCapacity,
-            final List<OrganizationMember> eventOwnerOrganizationMembers,
+            final List<OrganizationMember> eventOrganizers,
             final List<Question> questions
     ) {
         return new Event(
@@ -164,7 +164,7 @@ public class Event extends BaseEntity {
                 organization,
                 eventOperationPeriod,
                 maxCapacity,
-                eventOwnerOrganizationMembers,
+                eventOrganizers,
                 questions
         );
     }
@@ -283,11 +283,11 @@ public class Event extends BaseEntity {
                 .map(Guest::getOrganizationMember)
                 .collect(Collectors.toSet());
 
-        List<OrganizationMember> eventOwnerOrganizationMemberList = eventOwnerOrganizationMembers.stream()
-                .map(eventOwnerOrganizationMember -> eventOwnerOrganizationMember.getOrganizationMember())
+        List<OrganizationMember> eventOrganizerList = eventOrganizers.stream()
+                .map(EventOrganizer::getOrganizationMember)
                 .toList();
 
-        participants.addAll(eventOwnerOrganizationMemberList);
+        participants.addAll(eventOrganizerList);
 
         return allOrganizationMembers.stream()
                 .filter(organizationMember -> !participants.contains(organizationMember))
@@ -325,13 +325,13 @@ public class Event extends BaseEntity {
     }
 
     public boolean isOrganizer(final Member member) {
-        return eventOwnerOrganizationMembers.stream()
-                .anyMatch((eventOwnerOrganizationMember) -> eventOwnerOrganizationMember.isSameMember(member));
+        return eventOrganizers.stream()
+                .anyMatch((eventOrganizer) -> eventOrganizer.isSameMember(member));
     }
 
     public boolean isOrganizer(final OrganizationMember organizationMember) {
-        return eventOwnerOrganizationMembers.stream()
-                .anyMatch((eventOwnerOrganizationMember) -> eventOwnerOrganizationMember.isSameOrganizationMember(
+        return eventOrganizers.stream()
+                .anyMatch((eventOrganizer) -> eventOrganizer.isSameOrganizationMember(
                         organizationMember));
     }
 
@@ -354,24 +354,24 @@ public class Event extends BaseEntity {
         return guests.size() >= maxCapacity;
     }
 
-    private List<EventOwnerOrganizationMember> createEventOwnerOrganizationMembers(final List<OrganizationMember> eventOwnerOrganizationMembers) {
-        validateDuplicateEventOwnerOrganizationMembers(eventOwnerOrganizationMembers);
+    private List<EventOrganizer> createEventOrganizers(final List<OrganizationMember> eventOrganizers) {
+        validateDuplicateEventOrganizers(eventOrganizers);
 
-        Set<OrganizationMember> organizationMembers = new HashSet<>(eventOwnerOrganizationMembers);
+        Set<OrganizationMember> organizationMembers = new HashSet<>(eventOrganizers);
 
         return organizationMembers.stream()
-                .map(organizationMember -> new EventOwnerOrganizationMember(this, organizationMember))
+                .map(organizationMember -> new EventOrganizer(this, organizationMember))
                 .toList();
     }
 
-    private void validateDuplicateEventOwnerOrganizationMembers(
-            final List<OrganizationMember> eventOwnerOrganizationMembers
+    private void validateDuplicateEventOrganizers(
+            final List<OrganizationMember> eventOrganizers
     ) {
-        Set<OrganizationMember> distinctOrganizationMembers = new HashSet<>(eventOwnerOrganizationMembers);
-        List<OrganizationMember> organizerIncludeOrganizationMembers = new ArrayList<>(eventOwnerOrganizationMembers);
+        Set<OrganizationMember> distinctOrganizationMembers = new HashSet<>(eventOrganizers);
+        List<OrganizationMember> organizerIncludeOrganizationMembers = new ArrayList<>(eventOrganizers);
 
         if (organizerIncludeOrganizationMembers.size() != distinctOrganizationMembers.size()) {
-            throw new ForbiddenException("공동 주최자는 중복될 수 없습니다.");
+            throw new ForbiddenException("주최자는 중복될 수 없습니다.");
         }
     }
 

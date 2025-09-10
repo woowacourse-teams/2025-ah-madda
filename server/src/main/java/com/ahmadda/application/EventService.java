@@ -68,7 +68,7 @@ public class EventService {
 
         EventOperationPeriod eventOperationPeriod = createEventOperationPeriod(eventCreateRequest, currentDateTime);
 
-        List<Long> loginMemberIncludedIds = new ArrayList<>(eventCreateRequest.eventOwnerOrganizationMemberIds());
+        List<Long> loginMemberIncludedIds = new ArrayList<>(eventCreateRequest.eventOrganizerIds());
         loginMemberIncludedIds.add(organizationMember.getId());
 
         Event event = Event.create(
@@ -95,17 +95,17 @@ public class EventService {
     private List<OrganizationMember> getOrganizationMemberByIds(
             final List<Long> organizationMemberIds
     ) {
-        Set<Long> organizationMemberIdsSet = new HashSet<>(organizationMemberIds);
+        Set<Long> NonDuplicatedOrganizationMemberIds = new HashSet<>(organizationMemberIds);
 
-        if (organizationMemberIdsSet.size() != organizationMemberIds.size()) {
-            throw new ForbiddenException("공동 주최자는 중복될 수 없습니다.");
+        if (NonDuplicatedOrganizationMemberIds.size() != organizationMemberIds.size()) {
+            throw new ForbiddenException("주최자는 중복될 수 없습니다.");
         }
 
         List<OrganizationMember> findOrganizationMembers =
-                organizationMemberRepository.findAllById(new ArrayList<>(organizationMemberIdsSet));
+                organizationMemberRepository.findAllById(new ArrayList<>(NonDuplicatedOrganizationMemberIds));
 
-        if (findOrganizationMembers.size() != organizationMemberIdsSet.size()) {
-            throw new NotFoundException("요청된 공동 주최자 구성원 중 일부 구성원을 찾는데 실패하였습니다.");
+        if (findOrganizationMembers.size() != NonDuplicatedOrganizationMemberIds.size()) {
+            throw new NotFoundException("요청된 주최자 구성원 중 일부 구성원이 존재하지 않습니다.");
         }
 
         return findOrganizationMembers;

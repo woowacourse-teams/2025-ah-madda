@@ -1,10 +1,10 @@
 package com.ahmadda.domain.notification;
 
-import com.ahmadda.domain.event.Event;
-import com.ahmadda.domain.event.EventOwnerOrganizationMember;
-
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
+
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventOrganizer;
 
 public record EventEmailPayload(
         Subject subject,
@@ -65,19 +65,19 @@ public record EventEmailPayload(
 
     }
 
-    private static String createOrganizerNicknames(Event event) {
-        boolean isTooLongOwners = event.getEventOwnerOrganizationMembers()
+    private static String createOrganizerNicknames(final Event event) {
+        boolean isTooLongOwners = event.getEventOrganizers()
                 .size() > MAX_PRESENT_NICKNAME;
 
-        String organizerNicknames = event.getEventOwnerOrganizationMembers()
+        String organizerNicknames = event.getEventOrganizers()
                 .stream()
-                .map(EventOwnerOrganizationMember::getNickname)
+                .map(EventOrganizer::getNickname)
                 .limit(MAX_PRESENT_NICKNAME)
                 .collect(Collectors.joining(","));
-
         if (isTooLongOwners) {
             organizerNicknames += " 등";
         }
+
         return organizerNicknames;
     }
 }

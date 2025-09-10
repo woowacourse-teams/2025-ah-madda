@@ -1,11 +1,11 @@
 package com.ahmadda.presentation.dto;
 
-import com.ahmadda.domain.event.Event;
-import com.ahmadda.domain.event.EventOwnerOrganizationMember;
-import com.ahmadda.domain.event.Question;
-
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventOrganizer;
+import com.ahmadda.domain.event.Question;
 
 public record EventDetailResponse(
         Long eventId,
@@ -40,9 +40,9 @@ public record EventDetailResponse(
     }
 
     public static EventDetailResponse from(final Event event) {
-        List<String> organizerNicknames = event.getEventOwnerOrganizationMembers()
+        List<String> organizerNicknames = event.getEventOrganizers()
                 .stream()
-                .map(EventOwnerOrganizationMember::getNickname)
+                .map(EventOrganizer::getNickname)
                 .toList();
 
         return new EventDetailResponse(

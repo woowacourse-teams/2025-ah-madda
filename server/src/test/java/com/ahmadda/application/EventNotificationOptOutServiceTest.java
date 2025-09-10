@@ -6,10 +6,10 @@ import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventOrganizerRepository;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.event.GuestRepository;
-import com.ahmadda.domain.event.EventOwnerOrganizationMemberRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.notification.EventNotificationOptOut;
@@ -54,7 +54,7 @@ class EventNotificationOptOutServiceTest {
     private GuestRepository guestRepository;
 
     @Autowired
-    private EventOwnerOrganizationMemberRepository eventOwnerOrganizationMemberRepository;
+    private EventOrganizerRepository eventOrganizerRepository;
 
     @Test
     void 이벤트에_대한_알림_수신_거부를_설정할_수_있다() {
@@ -388,7 +388,7 @@ class EventNotificationOptOutServiceTest {
                 100
         );
         eventRepository.save(event);
-        eventOwnerOrganizationMemberRepository.saveAll(event.getEventOwnerOrganizationMembers());
+        eventOrganizerRepository.saveAll(event.getEventOrganizers());
         return event;
     }
 }

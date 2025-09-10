@@ -108,7 +108,7 @@ class EventServiceTest {
                                 .isEqualTo("선릉");
                         softly.assertThat(savedEvent.getOrganization())
                                 .isEqualTo(organization);
-                        softly.assertThat(savedEvent.getEventOwnerOrganizationMembers()
+                        softly.assertThat(savedEvent.getEventOrganizers()
                                         .getFirst()
                                         .getOrganizationMember())
                                 .isEqualTo(organizationMember);
@@ -246,7 +246,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization)).isInstanceOf(
                         ForbiddenException.class)
-                .hasMessage("주최자 혹은 공동 주최자는 동일한 이벤트 스페이스에 속해야 합니다.");
+                .hasMessage("주최자는 동일한 이벤트 스페이스에 속해야 합니다.");
     }
 
     @Test
@@ -902,7 +902,7 @@ class EventServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now))
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("공동 주최자는 중복될 수 없습니다.");
+                .hasMessage("주최자는 중복될 수 없습니다.");
     }
 
     private Organization createOrganization() {

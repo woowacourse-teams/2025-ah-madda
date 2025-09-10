@@ -22,7 +22,6 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Getter
@@ -102,25 +101,5 @@ public class OrganizationMember extends BaseEntity {
 
             target.role = newRole;
         }
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof OrganizationMember that)) {
-            return false;
-        }
-        if (getId() == null || that.getId() == null) {
-            return false;
-        }
-
-        return Objects.equals(getId(), that.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getId());
     }
 }
