@@ -379,7 +379,7 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void 이미_같은_이름의_사용자가_존재한다면_가입할_수_없다() {
+    void 이미_같은_이름의_사용자가_존재한다면_가입하려하면_예외가_발생한다() {
         // given
         var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));

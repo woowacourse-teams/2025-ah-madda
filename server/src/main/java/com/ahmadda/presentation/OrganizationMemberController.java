@@ -296,32 +296,17 @@ public class OrganizationMemberController {
             @ApiResponse(
                     responseCode = "404",
                     content = @Content(
-                            examples = {
-                                    @ExampleObject(
-                                            name = "일부 구성원 없음",
-                                            value = """
-                                                    {
-                                                      "type": "about:blank",
-                                                      "title": "Not Found",
-                                                      "status": 404,
-                                                      "detail": "존재하지 않는 선택된 구성원입니다.",
-                                                      "instance": "/api/organizations/{organizationId}/organization-members/rename"
-                                                    }
-                                                    """
-                                    ),
-                                    @ExampleObject(
-                                            name = "구성원 없음",
-                                            value = """
-                                                    {
-                                                      "type": "about:blank",
-                                                      "title": "Not Found",
-                                                      "status": 404,
-                                                      "detail": "존재하지 않는 구성원입니다.",
-                                                      "instance": "/api/organizations/{organizationId}/organization-members/rename"
-                                                    }
-                                                    """
-                                    )
-                            }
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "존재하지 않는 구성원입니다.",
+                                              "instance": "/api/organizations/{organizationId}/organization-members/rename"
+                                            }
+                                            """
+                            )
                     )
             ),
             @ApiResponse(
