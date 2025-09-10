@@ -17,7 +17,7 @@ spring:
   cloud:
     aws:
       s3:
-        region: ap-northeast-2
+        region: ${aws.local.s3.region}
 
 jwt:
   access-secret-key: ${jwt.local.access.secret-key}
@@ -43,7 +43,7 @@ notification:
   redirect-url-prefix: http://localhost:5173/
 
 mail:
-  provider: mock
+  mock: true
 
 push:
   mock: true

@@ -2,11 +2,11 @@ package com.ahmadda.learning.infra.notification;
 
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.domain.member.Member;
-import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.domain.notification.EventEmailPayload;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.infra.notification.mail.SmtpEmailNotifier;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +18,11 @@ import java.util.List;
 
 @Disabled
 @IntegrationTest
-@TestPropertySource(properties = "mail.provider=gmail")
+@TestPropertySource(properties = "mail.mock=false")
 class SmtpEmailNotifierTest {
 
     @Autowired
-    private EmailNotifier smtpEmailNotifier;
+    private SmtpEmailNotifier smtpEmailNotifier;
 
     @Test
     void 실제_SMTP로_메일을_발송한다() {

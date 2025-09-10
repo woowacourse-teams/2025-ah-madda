@@ -36,7 +36,7 @@ notification:
   redirect-url-prefix: http://localhost:5173/
 
 mail:
-  provider: mock
+  mock: true
 
 push:
   mock: true

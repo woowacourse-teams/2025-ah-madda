@@ -21,7 +21,7 @@ spring:
   cloud:
     aws:
       s3:
-        region: ${aws.prod.s3.region}
+        region: ${aws.dev.s3.region}
 
 jwt:
   access-secret-key: ${jwt.dev.access.secret-key}
@@ -49,9 +49,6 @@ cors:
 
 notification:
   redirect-url-prefix: https://staging.ahmadda.com/
-
-mail:
-  provider: gmail
 
 aws:
   s3:

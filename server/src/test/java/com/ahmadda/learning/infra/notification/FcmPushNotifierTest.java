@@ -4,10 +4,10 @@ import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.notification.PushNotificationPayload;
-import com.ahmadda.domain.notification.PushNotifier;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.infra.notification.push.FcmPushNotifier;
 import com.ahmadda.infra.notification.push.FcmRegistrationToken;
 import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import org.junit.jupiter.api.Disabled;
@@ -24,7 +24,7 @@ import java.util.List;
 class FcmPushNotifierTest {
 
     @Autowired
-    private PushNotifier fcmPushNotifier;
+    private FcmPushNotifier fcmPushNotifier;
 
     @Autowired
     private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;

@@ -9,59 +9,46 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.thymeleaf.TemplateEngine;
-
-import java.util.Map;
-import java.util.Properties;
 
 @EnableConfigurationProperties({NotificationProperties.class, SmtpProperties.class})
 @Configuration
 public class MailConfig {
 
     @Bean
-    @ConditionalOnProperty(name = "mail.provider", havingValue = "mock")
+    @ConditionalOnProperty(name = "mail.mock", havingValue = "true")
     public EmailNotifier mockEmailNotifier() {
         return new MockEmailNotifier();
     }
 
     @Bean
-    @ConditionalOnProperty(name = "mail.provider", havingValue = "gmail")
-    public EmailNotifier gmailEmailNotifier(
-            final JavaMailSender smtpMailSender,
+    @ConditionalOnProperty(name = "mail.mock", havingValue = "false", matchIfMissing = true)
+    public EmailNotifier smtpEmailNotifier(
+            final JavaMailSender javaMailSender,
             final TemplateEngine templateEngine,
             final NotificationProperties notificationProperties,
             final EntityManager em
     ) {
-        return new SmtpEmailNotifier(smtpMailSender, templateEngine, notificationProperties, em);
+        return new SmtpEmailNotifier(javaMailSender, templateEngine, notificationProperties, em);
     }
 
     @Bean
-    @ConditionalOnProperty(name = "mail.provider", havingValue = "aws")
-    public EmailNotifier awsEmailNotifier(
-            final JavaMailSender smtpMailSender,
-            final TemplateEngine templateEngine,
-            final NotificationProperties notificationProperties,
-            final EntityManager em
-    ) {
-        return new SmtpEmailNotifier(smtpMailSender, templateEngine, notificationProperties, em);
+    @Profile("prod")
+    public JavaMailSender awsMailSender(final SmtpProperties smtpProperties) {
+        SmtpProperties.Account account = smtpProperties.getAws();
+
+        return getJavaMailSender(account);
     }
 
     @Bean
-    @ConditionalOnProperty(name = "mail.provider", havingValue = "gmail")
-    public JavaMailSender gmailSmtpMailSender(final SmtpProperties props) {
-        SmtpProperties.Account acc = props.getGoogle();
+    @Profile("!prod")
+    public JavaMailSender gmailMailSender(final SmtpProperties smtpProperties) {
+        SmtpProperties.Account account = smtpProperties.getGoogle();
 
-        return getJavaMailSender(acc);
-    }
-
-    @Bean
-    @ConditionalOnProperty(name = "mail.provider", havingValue = "aws")
-    public JavaMailSender awsSmtpMailSender(final SmtpProperties props) {
-        SmtpProperties.Account acc = props.getAws();
-        
-        return getJavaMailSender(acc);
+        return getJavaMailSender(account);
     }
 
     private JavaMailSender getJavaMailSender(final SmtpProperties.Account acc) {
@@ -71,17 +58,11 @@ public class MailConfig {
         sender.setUsername(acc.getUsername());
         sender.setPassword(acc.getPassword());
         sender.setDefaultEncoding("UTF-8");
-        apply(sender, acc.getProperties());
-
-        return sender;
-    }
-
-    private void apply(final JavaMailSenderImpl sender, final Map<String, String> props) {
-        if (props == null) {
-            return;
+        if (acc.getProperties() != null) {
+            sender.getJavaMailProperties()
+                    .putAll(acc.getProperties());
         }
 
-        Properties javaMailProps = sender.getJavaMailProperties();
-        javaMailProps.putAll(props);
+        return sender;
     }
 }
