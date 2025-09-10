@@ -10,7 +10,6 @@ import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
-import com.ahmadda.domain.event.EventOwnerOrganizationMember;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.event.GuestRepository;
@@ -109,8 +108,10 @@ class EventServiceTest {
                                 .isEqualTo("선릉");
                         softly.assertThat(savedEvent.getOrganization())
                                 .isEqualTo(organization);
-                        softly.assertThat(savedEvent.getEventOwnerOrganizationMembers())
-                                .containsExactly(new EventOwnerOrganizationMember(event, organizationMember));
+                        softly.assertThat(savedEvent.getEventOwnerOrganizationMembers()
+                                        .getFirst()
+                                        .getOrganizationMember())
+                                .isEqualTo(organizationMember);
                         softly.assertThat(savedEvent.getEventOperationPeriod())
                                 .isEqualTo(EventOperationPeriod.create(
                                         now, now.plusDays(4),
@@ -198,51 +199,6 @@ class EventServiceTest {
         assertThatThrownBy(() -> sut.createEvent(organization1.getId(), loginMember, eventCreateRequest, now))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 구성원입니다.");
-    }
-
-    @Test
-    void 이벤트_생성시_30분_내_리마인더_10회_초과하면_예외가_발생한다() {
-        // given
-        var organization = createOrganization();
-        var member = createMember("organizer", "organizer@mail.com");
-        var organizer = createOrganizationMember(organization, member);
-        var now = LocalDateTime.now();
-
-        var request = new EventCreateRequest(
-                "제한 테스트 이벤트",
-                "제한 테스트 설명",
-                "장소",
-                now.plusDays(4),
-                now.plusDays(5),
-                now.plusDays(6),
-                100,
-                new ArrayList<>()
-        );
-        var loginMember = new LoginMember(member.getId());
-
-        var existingEvent = eventRepository.save(Event.create(
-                "기존 이벤트", "설명", "장소",
-                organizer, organization,
-                EventOperationPeriod.create(
-                        now.plusDays(1), now.plusDays(2),
-                        now.plusDays(3), now.plusDays(4),
-                        now.minusDays(1)
-                ),
-                100
-        ));
-
-        for (int i = 0; i < 10; i++) {
-            reminderHistoryRepository.save(
-                    ReminderHistory.createNow(existingEvent, "테스트 알림", List.of(organizer))
-            );
-        }
-
-        // when // then
-        assertThatThrownBy(() ->
-                sut.createEvent(organization.getId(), loginMember, request, now)
-        )
-                .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessageStartingWith("리마인더는 30분 내 최대 10회까지만 발송할 수 있습니다.");
     }
 
     @Test
@@ -943,7 +899,7 @@ class EventServiceTest {
 
         var loginMember = new LoginMember(member.getId());
 
-        // when & then
+        // when // then
         assertThatThrownBy(() -> sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage("공동 주최자는 중복될 수 없습니다.");

@@ -279,7 +279,7 @@ public class OrganizationEventController {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "요청된 조직 구성원 중 일부 구성원을 찾을 수 없습니다.",
+                                                      "detail": "요청된 공동 주최자 구성원 중 일부 구성원을 찾는데 실패하였습니다.",
                                                       "instance": "/api/organizations/{organizationId}/events"
                                                     }
                                                     """

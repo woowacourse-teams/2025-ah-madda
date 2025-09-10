@@ -68,7 +68,7 @@ public class EventService {
 
         EventOperationPeriod eventOperationPeriod = createEventOperationPeriod(eventCreateRequest, currentDateTime);
 
-        List<Long> loginMemberIncludedIds = new ArrayList<>(eventCreateRequest.eventOwnerOrganizationMembers());
+        List<Long> loginMemberIncludedIds = new ArrayList<>(eventCreateRequest.eventOwnerOrganizationMemberIds());
         loginMemberIncludedIds.add(organizationMember.getId());
 
         Event event = Event.create(
@@ -82,9 +82,9 @@ public class EventService {
                 createQuestions(eventCreateRequest.questions())
         );
 
-        validateReminderLimit(event);
-
         Event savedEvent = eventRepository.save(event);
+        
+        validateReminderLimit(event);
         notifyEventCreated(savedEvent, organization);
 
         eventPublisher.publishEvent(EventCreated.from(savedEvent.getId()));
@@ -97,11 +97,15 @@ public class EventService {
     ) {
         Set<Long> organizationMemberIdsSet = new HashSet<>(organizationMemberIds);
 
+        if (organizationMemberIdsSet.size() != organizationMemberIds.size()) {
+            throw new ForbiddenException("공동 주최자는 중복될 수 없습니다.");
+        }
+
         List<OrganizationMember> findOrganizationMembers =
                 organizationMemberRepository.findAllById(new ArrayList<>(organizationMemberIdsSet));
 
         if (findOrganizationMembers.size() != organizationMemberIdsSet.size()) {
-            throw new NotFoundException("요청된 조직 구성원 중 일부 구성원을 찾을 수 없습니다.");
+            throw new NotFoundException("요청된 공동 주최자 구성원 중 일부 구성원을 찾는데 실패하였습니다.");
         }
 
         return findOrganizationMembers;
@@ -236,10 +240,10 @@ public class EventService {
     private void validateReminderLimit(final Event event) {
         LocalDateTime now = LocalDateTime.now();
 
-        Long organizerId = event.getId();
+        Long eventId = event.getId();
         LocalDateTime threshold = now.minusMinutes(REMINDER_LIMIT_DURATION_MINUTES);
 
-        List<ReminderHistory> recentReminderHistories = getRecentReminderHistories(organizerId, threshold);
+        List<ReminderHistory> recentReminderHistories = getRecentReminderHistories(eventId, threshold);
 
         if (recentReminderHistories.size() >= MAX_REMINDER_COUNT_IN_DURATION) {
             LocalDateTime oldestReminderTime = recentReminderHistories
@@ -259,9 +263,9 @@ public class EventService {
         }
     }
 
-    private List<ReminderHistory> getRecentReminderHistories(final Long organizerId, final LocalDateTime threshold) {
+    private List<ReminderHistory> getRecentReminderHistories(final Long eventId, final LocalDateTime threshold) {
         return reminderHistoryRepository
-                .findTop10ByEventIdAndCreatedAtAfterOrderByCreatedAtDesc(organizerId, threshold);
+                .findTop10ByEventIdAndCreatedAtAfterOrderByCreatedAtDesc(eventId, threshold);
     }
 
     /**

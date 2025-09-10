@@ -272,9 +272,9 @@ class OrganizationMemberEventServiceTest {
                 maxCapacity
         );
 
+        Event savedEvent = eventRepository.save(event);
         eventOwnerOrganizationMemberRepository.saveAll(event.getEventOwnerOrganizationMembers());
-
-        return eventRepository.save(event);
+        return savedEvent;
     }
 
     private Guest createAndSaveGuest(Event event, OrganizationMember participant) {

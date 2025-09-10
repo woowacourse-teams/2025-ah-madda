@@ -121,7 +121,7 @@ class EventTest {
                 now
         );
 
-        // when & then
+        // when // then
         assertThatThrownBy(() -> sut.update(
                 notOrganizer.getMember(),
                 "수정된 제목",

@@ -9,6 +9,7 @@ import com.ahmadda.domain.event.EventOperationPeriod;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.event.GuestRepository;
+import com.ahmadda.domain.event.EventOwnerOrganizationMemberRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.notification.EventNotificationOptOut;
@@ -51,6 +52,9 @@ class EventNotificationOptOutServiceTest {
 
     @Autowired
     private GuestRepository guestRepository;
+
+    @Autowired
+    private EventOwnerOrganizationMemberRepository eventOwnerOrganizationMemberRepository;
 
     @Test
     void 이벤트에_대한_알림_수신_거부를_설정할_수_있다() {
@@ -368,7 +372,7 @@ class EventNotificationOptOutServiceTest {
     private Event createEvent(OrganizationMember organizer, Organization organization) {
         var now = LocalDateTime.now();
 
-        return eventRepository.save(Event.create(
+        var event = Event.create(
                 "이벤트 제목",
                 "설명",
                 "장소",
@@ -382,6 +386,9 @@ class EventNotificationOptOutServiceTest {
                         now.minusDays(5)
                 ),
                 100
-        ));
+        );
+        eventRepository.save(event);
+        eventOwnerOrganizationMemberRepository.saveAll(event.getEventOwnerOrganizationMembers());
+        return event;
     }
 }
