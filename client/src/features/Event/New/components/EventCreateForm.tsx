@@ -130,9 +130,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const autoSaveKey =
     isEdit && eventId ? `event-form:draft:edit:${eventId}` : 'event-form:draft:create';
 
-  const { restore, clear } = useAutoSessionSave({
+  const { save, restore, clear } = useAutoSessionSave({
     key: autoSaveKey,
-    data: { basicEventForm, questions },
+    getData: () => ({ basicEventForm, questions }),
   });
 
   const restoredOnceRef = useRef(false);
@@ -265,6 +265,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
             {isEdit ? '이벤트 수정' : '이벤트 생성하기'}
           </Text>
           <Flex gap="8px">
+            <Button size="sm" onClick={save}>
+              임시저장
+            </Button>
             <Button size="sm" onClick={templateModalOpen}>
               불러오기
             </Button>
