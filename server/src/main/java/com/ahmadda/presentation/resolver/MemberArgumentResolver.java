@@ -2,7 +2,6 @@ package com.ahmadda.presentation.resolver;
 
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.common.exception.UnauthorizedException;
-import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.infra.auth.jwt.JwtProvider;
 import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
 import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
@@ -43,6 +42,13 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
     ) {
         HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
         String accessToken = headerProvider.extractAccessToken(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
+
+        Boolean isExpired = jwtProvider.isTokenExpired(accessToken, jwtAccessTokenProperties.getAccessSecretKey())
+                .orElseThrow(() -> new UnauthorizedException("유효하지 않은 액세스 토큰입니다."));
+
+        if (isExpired) {
+            throw new UnauthorizedException("만료기한이 지난 토큰입니다.");
+        }
 
         return jwtProvider.parsePayload(accessToken, jwtAccessTokenProperties.getAccessSecretKey())
                 .map(JwtMemberPayload::getMemberId)
