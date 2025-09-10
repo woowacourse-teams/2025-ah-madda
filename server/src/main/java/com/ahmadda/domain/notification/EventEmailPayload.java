@@ -67,7 +67,7 @@ public record EventEmailPayload(
 
     private static String createOrganizerNicknames(Event event) {
         boolean isTooLongOwners = event.getEventOwnerOrganizationMembers()
-                .size() > 3;
+                .size() > MAX_PRESENT_NICKNAME;
 
         String organizerNicknames = event.getEventOwnerOrganizationMembers()
                 .stream()
@@ -76,7 +76,7 @@ public record EventEmailPayload(
                 .collect(Collectors.joining(","));
 
         if (isTooLongOwners) {
-            organizerNicknames += "등";
+            organizerNicknames += " 등";
         }
         return organizerNicknames;
     }

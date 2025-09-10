@@ -80,10 +80,10 @@ public class EventNotificationService {
     private void validateReminderLimit(final Event event) {
         LocalDateTime now = LocalDateTime.now();
 
-        Long organizerId = event.getId();
+        Long eventId = event.getId();
         LocalDateTime threshold = now.minusMinutes(REMINDER_LIMIT_DURATION_MINUTES);
 
-        List<ReminderHistory> recentReminderHistories = getRecentReminderHistories(organizerId, threshold);
+        List<ReminderHistory> recentReminderHistories = getRecentReminderHistories(eventId, threshold);
 
         if (recentReminderHistories.size() >= MAX_REMINDER_COUNT_IN_DURATION) {
             LocalDateTime oldestReminderTime = recentReminderHistories

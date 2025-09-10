@@ -184,7 +184,7 @@ public class OrganizationEventController {
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember
     ) {
-        List<Event> organizationEvents = eventService.getPastEvent(organizationId, loginMember, LocalDateTime.now());
+        List<Event> organizationEvents = eventService.getPastEvents(organizationId, loginMember, LocalDateTime.now());
 
         List<MainEventResponse> eventResponses = organizationEvents.stream()
                 .map(event -> MainEventResponse.from(event, loginMember))
@@ -227,6 +227,7 @@ public class OrganizationEventController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
+                                            name = "동일한 이벤트 스페이스 속하지 않음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
@@ -238,6 +239,7 @@ public class OrganizationEventController {
                                                     """
                                     ),
                                     @ExampleObject(
+                                            name = "중복된 공동 주최자",
                                             value = """
                                                     {
                                                       "type": "about:blank",

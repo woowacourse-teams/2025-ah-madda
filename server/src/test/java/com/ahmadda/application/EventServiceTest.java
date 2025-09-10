@@ -785,7 +785,7 @@ class EventServiceTest {
         createEventWithDates(organizationMember, organization, now.plusDays(2), now.plusDays(3), now.plusDays(5));
 
         // when
-        var pastEvents = sut.getPastEvent(
+        var pastEvents = sut.getPastEvents(
                 organization.getId(),
                 loginMember,
                 LocalDateTime.now()
@@ -822,7 +822,7 @@ class EventServiceTest {
         var loginMember = createLoginMember(member);
 
         //when // then
-        assertThatThrownBy(() -> sut.getPastEvent(organization.getId(), loginMember, LocalDateTime.now()))
+        assertThatThrownBy(() -> sut.getPastEvents(organization.getId(), loginMember, LocalDateTime.now()))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage("이벤트 스페이스에 소속되지 않아 권한이 없습니다.");
     }

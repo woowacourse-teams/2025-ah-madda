@@ -83,8 +83,8 @@ public class EventService {
         );
 
         Event savedEvent = eventRepository.save(event);
-        
-        validateReminderLimit(event);
+
+        validateReminderLimit(savedEvent);
         notifyEventCreated(savedEvent, organization);
 
         eventPublisher.publishEvent(EventCreated.from(savedEvent.getId()));
@@ -178,7 +178,7 @@ public class EventService {
         return event.isOrganizer(member);
     }
 
-    public List<Event> getPastEvent(
+    public List<Event> getPastEvents(
             final Long organizationId,
             final LoginMember loginMember,
             final LocalDateTime compareDateTime
