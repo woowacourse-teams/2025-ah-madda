@@ -52,7 +52,7 @@ public class Event extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Question> questions = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "event")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
     private final List<EventOwnerOrganizationMember> eventOwnerOrganizationMembers = new ArrayList<>();
 
     @Id
@@ -71,10 +71,6 @@ public class Event extends BaseEntity {
     private String place;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organizer_id", nullable = false)
-    private OrganizationMember organizer;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
 
@@ -88,7 +84,6 @@ public class Event extends BaseEntity {
             final String title,
             final String description,
             final String place,
-            final OrganizationMember organizer,
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
             final int maxCapacity,
@@ -100,7 +95,6 @@ public class Event extends BaseEntity {
         this.title = title;
         this.description = description;
         this.place = place;
-        this.organizer = organizer;
         this.organization = organization;
         this.eventOperationPeriod = eventOperationPeriod;
         this.maxCapacity = maxCapacity;
@@ -114,7 +108,6 @@ public class Event extends BaseEntity {
             final String title,
             final String description,
             final String place,
-            final OrganizationMember organizer,
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
             final int maxCapacity,
@@ -125,7 +118,6 @@ public class Event extends BaseEntity {
                 title,
                 description,
                 place,
-                organizer,
                 organization,
                 eventOperationPeriod,
                 maxCapacity,
@@ -138,7 +130,6 @@ public class Event extends BaseEntity {
             final String title,
             final String description,
             final String place,
-            final OrganizationMember organizer,
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
             final int maxCapacity,
@@ -148,7 +139,6 @@ public class Event extends BaseEntity {
                 title,
                 description,
                 place,
-                organizer,
                 organization,
                 eventOperationPeriod,
                 maxCapacity,
@@ -161,7 +151,6 @@ public class Event extends BaseEntity {
             final String title,
             final String description,
             final String place,
-            final OrganizationMember organizer,
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
             final int maxCapacity,
@@ -172,7 +161,6 @@ public class Event extends BaseEntity {
                 title,
                 description,
                 place,
-                organizer,
                 organization,
                 eventOperationPeriod,
                 maxCapacity,
@@ -185,7 +173,6 @@ public class Event extends BaseEntity {
             final String title,
             final String description,
             final String place,
-            final OrganizationMember organizer,
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
             final int maxCapacity,
@@ -195,7 +182,6 @@ public class Event extends BaseEntity {
                 title,
                 description,
                 place,
-                organizer,
                 organization,
                 eventOperationPeriod,
                 maxCapacity,
@@ -231,7 +217,12 @@ public class Event extends BaseEntity {
         Set<OrganizationMember> participants = guests.stream()
                 .map(Guest::getOrganizationMember)
                 .collect(Collectors.toSet());
-        participants.add(organizer);
+
+        List<OrganizationMember> eventOwnerOrganizationMemberList = eventOwnerOrganizationMembers.stream()
+                .map(eventOwnerOrganizationMember -> eventOwnerOrganizationMember.getOrganizationMember())
+                .toList();
+
+        participants.addAll(eventOwnerOrganizationMemberList);
 
         return allOrganizationMembers.stream()
                 .filter(organizationMember -> !participants.contains(organizationMember))
@@ -299,10 +290,9 @@ public class Event extends BaseEntity {
     }
 
     private List<EventOwnerOrganizationMember> createEventOwnerOrganizationMembers(final List<OrganizationMember> eventOwnerOrganizationMembers) {
-        validateDuplicateEventOwnerOrganizationMembers(eventOwnerOrganizationMembers, organizer);
+        validateDuplicateEventOwnerOrganizationMembers(eventOwnerOrganizationMembers);
 
         Set<OrganizationMember> organizationMembers = new HashSet<>(eventOwnerOrganizationMembers);
-        organizationMembers.add(organizer);
 
         return organizationMembers.stream()
                 .map(organizationMember -> new EventOwnerOrganizationMember(this, organizationMember))
@@ -310,14 +300,10 @@ public class Event extends BaseEntity {
     }
 
     private void validateDuplicateEventOwnerOrganizationMembers(
-            final List<OrganizationMember> eventOwnerOrganizationMembers,
-            final OrganizationMember organizer
+            final List<OrganizationMember> eventOwnerOrganizationMembers
     ) {
         Set<OrganizationMember> distinctOrganizationMembers = new HashSet<>(eventOwnerOrganizationMembers);
-        distinctOrganizationMembers.add(organizer);
-
         List<OrganizationMember> organizerIncludeOrganizationMembers = new ArrayList<>(eventOwnerOrganizationMembers);
-        organizerIncludeOrganizationMembers.add(organizer);
 
         if (organizerIncludeOrganizationMembers.size() != distinctOrganizationMembers.size()) {
             throw new ForbiddenException("공동 주최자는 중복될 수 없습니다.");
@@ -340,7 +326,8 @@ public class Event extends BaseEntity {
         if (guests.size() >= maxCapacity) {
             throw new UnprocessableEntityException("수용 인원이 가득차 이벤트에 참여할 수 없습니다.");
         }
-        if (guest.isSameOrganizationMember(organizer)) {
+
+        if (isOrganizer(guest.getOrganizationMember())) {
             throw new UnprocessableEntityException("이벤트의 주최자는 게스트로 참여할 수 없습니다.");
         }
         if (hasGuest(guest.getOrganizationMember())) {

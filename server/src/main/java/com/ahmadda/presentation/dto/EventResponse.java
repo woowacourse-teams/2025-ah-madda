@@ -1,8 +1,10 @@
 package com.ahmadda.presentation.dto;
 
 import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventOwnerOrganizationMember;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record EventResponse(
         Long eventId,
@@ -15,7 +17,7 @@ public record EventResponse(
         String place,
         LocalDateTime registrationStart,
         LocalDateTime registrationEnd,
-        String organizerName
+        List<String> organizerName
 ) {
 
     public static EventResponse from(final Event event) {
@@ -31,8 +33,10 @@ public record EventResponse(
                 event.getPlace(),
                 event.getRegistrationStart(),
                 event.getRegistrationEnd(),
-                event.getOrganizer()
-                        .getNickname()
+                event.getEventOwnerOrganizationMembers()
+                        .stream()
+                        .map(EventOwnerOrganizationMember::getNickname)
+                        .toList()
         );
     }
 }

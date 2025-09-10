@@ -64,15 +64,17 @@ public class EventService {
             final LocalDateTime currentDateTime
     ) {
         Organization organization = getOrganization(organizationId);
-        OrganizationMember organizer = getOrganizationMember(organizationId, loginMember.memberId());
+        OrganizationMember organizationMember = getOrganizationMember(organizationId, loginMember.memberId());
 
         EventOperationPeriod eventOperationPeriod = createEventOperationPeriod(eventCreateRequest, currentDateTime);
+
+        eventCreateRequest.eventOwnerOrganizationMembers()
+                .add(organizationMember.getId());
 
         Event event = Event.create(
                 eventCreateRequest.title(),
                 eventCreateRequest.description(),
                 eventCreateRequest.place(),
-                organizer,
                 organization,
                 eventOperationPeriod,
                 eventCreateRequest.maxCapacity(),
@@ -233,8 +235,8 @@ public class EventService {
 
     private void validateReminderLimit(final Event event) {
         LocalDateTime now = LocalDateTime.now();
-        Long organizerId = event.getOrganizer()
-                .getId();
+
+        Long organizerId = event.getId();
         LocalDateTime threshold = now.minusMinutes(REMINDER_LIMIT_DURATION_MINUTES);
 
         List<ReminderHistory> recentReminderHistories = getRecentReminderHistories(organizerId, threshold);
@@ -259,7 +261,7 @@ public class EventService {
 
     private List<ReminderHistory> getRecentReminderHistories(final Long organizerId, final LocalDateTime threshold) {
         return reminderHistoryRepository
-                .findTop10ByEventOrganizerIdAndCreatedAtAfterOrderByCreatedAtDesc(organizerId, threshold);
+                .findTop10ByEventIdAndCreatedAtAfterOrderByCreatedAtDesc(organizerId, threshold);
     }
 
     /**
