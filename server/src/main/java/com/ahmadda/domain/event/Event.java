@@ -110,8 +110,8 @@ public class Event extends BaseEntity {
             final String place,
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
-            final int maxCapacity,
             final List<OrganizationMember> eventOwnerOrganizationMembers,
+            final int maxCapacity,
             final Question... questions
     ) {
         return new Event(
@@ -187,6 +187,71 @@ public class Event extends BaseEntity {
                 maxCapacity,
                 List.of(),
                 questions
+        );
+    }
+
+    public static Event create(
+            String title,
+            String description,
+            String place,
+            OrganizationMember organizer,
+            Organization organization,
+            EventOperationPeriod eventOperationPeriod,
+            int maxCapacity
+    ) {
+        return new Event(
+                title,
+                description,
+                place,
+                organization,
+                eventOperationPeriod,
+                maxCapacity,
+                List.of(organizer),
+                List.of()
+        );
+    }
+
+    public static Event create(
+            String title,
+            String description,
+            String place,
+            OrganizationMember organizer,
+            Organization organization,
+            EventOperationPeriod eventOperationPeriod,
+            int maxCapacity,
+            List<Question> questions
+    ) {
+        return new Event(
+                title,
+                description,
+                place,
+                organization,
+                eventOperationPeriod,
+                maxCapacity,
+                List.of(organizer),
+                questions
+        );
+    }
+
+    public static Event create(
+            String title,
+            String description,
+            String place,
+            OrganizationMember organizer,
+            Organization organization,
+            EventOperationPeriod eventOperationPeriod,
+            int maxCapacity,
+            Question... questions
+    ) {
+        return new Event(
+                title,
+                description,
+                place,
+                organization,
+                eventOperationPeriod,
+                maxCapacity,
+                List.of(organizer),
+                new ArrayList<>(List.of(questions))
         );
     }
 
