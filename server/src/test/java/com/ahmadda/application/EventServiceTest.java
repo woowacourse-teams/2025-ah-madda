@@ -10,6 +10,7 @@ import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventOwnerOrganizationMember;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.event.GuestRepository;
@@ -108,8 +109,8 @@ class EventServiceTest {
                                 .isEqualTo("선릉");
                         softly.assertThat(savedEvent.getOrganization())
                                 .isEqualTo(organization);
-                        softly.assertThat(savedEvent.getOrganizer())
-                                .isEqualTo(organizationMember);
+                        softly.assertThat(savedEvent.getEventOwnerOrganizationMembers())
+                                .containsExactly(new EventOwnerOrganizationMember(event, organizationMember));
                         softly.assertThat(savedEvent.getEventOperationPeriod())
                                 .isEqualTo(EventOperationPeriod.create(
                                         now, now.plusDays(4),

@@ -68,8 +68,8 @@ public class EventService {
 
         EventOperationPeriod eventOperationPeriod = createEventOperationPeriod(eventCreateRequest, currentDateTime);
 
-        eventCreateRequest.eventOwnerOrganizationMembers()
-                .add(organizationMember.getId());
+        List<Long> loginMemberIncludedIds = new ArrayList<>(eventCreateRequest.eventOwnerOrganizationMembers());
+        loginMemberIncludedIds.add(organizationMember.getId());
 
         Event event = Event.create(
                 eventCreateRequest.title(),
@@ -78,7 +78,7 @@ public class EventService {
                 organization,
                 eventOperationPeriod,
                 eventCreateRequest.maxCapacity(),
-                getOrganizationMemberByIds(eventCreateRequest.eventOwnerOrganizationMembers()),
+                getOrganizationMemberByIds(loginMemberIncludedIds),
                 createQuestions(eventCreateRequest.questions())
         );
 

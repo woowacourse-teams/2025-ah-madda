@@ -39,7 +39,6 @@ class SmtpEmailNotifierTest {
         var emailPayload = new EventEmailPayload(
                 new EventEmailPayload.Subject(
                         organizationName,
-                        organizerNickname,
                         eventTitle
                 ),
                 new EventEmailPayload.Body(
@@ -86,7 +85,6 @@ class SmtpEmailNotifierTest {
         var emailPayload = new EventEmailPayload(
                 new EventEmailPayload.Subject(
                         organizationName,
-                        organizerNickname,
                         eventTitle
                 ),
                 new EventEmailPayload.Body(
