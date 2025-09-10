@@ -33,7 +33,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 @Slf4j
@@ -61,27 +64,51 @@ public class EventService {
             final LocalDateTime currentDateTime
     ) {
         Organization organization = getOrganization(organizationId);
-        OrganizationMember organizer = getOrganizationMember(organizationId, loginMember.memberId());
+        OrganizationMember organizationMember = getOrganizationMember(organizationId, loginMember.memberId());
 
         EventOperationPeriod eventOperationPeriod = createEventOperationPeriod(eventCreateRequest, currentDateTime);
+
+        List<Long> loginMemberIncludedIds = new ArrayList<>(eventCreateRequest.eventOrganizerIds());
+        loginMemberIncludedIds.add(organizationMember.getId());
+
         Event event = Event.create(
                 eventCreateRequest.title(),
                 eventCreateRequest.description(),
                 eventCreateRequest.place(),
-                organizer,
                 organization,
                 eventOperationPeriod,
                 eventCreateRequest.maxCapacity(),
+                getOrganizationMemberByIds(loginMemberIncludedIds),
                 createQuestions(eventCreateRequest.questions())
         );
-        validateReminderLimit(event);
 
         Event savedEvent = eventRepository.save(event);
+
+        validateReminderLimit(savedEvent);
         notifyEventCreated(savedEvent, organization);
 
         eventPublisher.publishEvent(EventCreated.from(savedEvent.getId()));
 
         return savedEvent;
+    }
+
+    private List<OrganizationMember> getOrganizationMemberByIds(
+            final List<Long> organizationMemberIds
+    ) {
+        Set<Long> NonDuplicatedOrganizationMemberIds = new HashSet<>(organizationMemberIds);
+
+        if (NonDuplicatedOrganizationMemberIds.size() != organizationMemberIds.size()) {
+            throw new ForbiddenException("주최자는 중복될 수 없습니다.");
+        }
+
+        List<OrganizationMember> findOrganizationMembers =
+                organizationMemberRepository.findAllById(new ArrayList<>(NonDuplicatedOrganizationMemberIds));
+
+        if (findOrganizationMembers.size() != NonDuplicatedOrganizationMemberIds.size()) {
+            throw new NotFoundException("요청된 주최자 구성원 중 일부 구성원이 존재하지 않습니다.");
+        }
+
+        return findOrganizationMembers;
     }
 
     @Transactional
@@ -151,7 +178,7 @@ public class EventService {
         return event.isOrganizer(member);
     }
 
-    public List<Event> getPastEvent(
+    public List<Event> getPastEvents(
             final Long organizationId,
             final LoginMember loginMember,
             final LocalDateTime compareDateTime
@@ -212,11 +239,11 @@ public class EventService {
 
     private void validateReminderLimit(final Event event) {
         LocalDateTime now = LocalDateTime.now();
-        Long organizerId = event.getOrganizer()
-                .getId();
+
+        Long eventId = event.getId();
         LocalDateTime threshold = now.minusMinutes(REMINDER_LIMIT_DURATION_MINUTES);
 
-        List<ReminderHistory> recentReminderHistories = getRecentReminderHistories(organizerId, threshold);
+        List<ReminderHistory> recentReminderHistories = getRecentReminderHistories(eventId, threshold);
 
         if (recentReminderHistories.size() >= MAX_REMINDER_COUNT_IN_DURATION) {
             LocalDateTime oldestReminderTime = recentReminderHistories
@@ -236,9 +263,9 @@ public class EventService {
         }
     }
 
-    private List<ReminderHistory> getRecentReminderHistories(final Long organizerId, final LocalDateTime threshold) {
+    private List<ReminderHistory> getRecentReminderHistories(final Long eventId, final LocalDateTime threshold) {
         return reminderHistoryRepository
-                .findTop10ByEventOrganizerIdAndCreatedAtAfterOrderByCreatedAtDesc(organizerId, threshold);
+                .findTop10ByEventIdAndCreatedAtAfterOrderByCreatedAtDesc(eventId, threshold);
     }
 
     /**

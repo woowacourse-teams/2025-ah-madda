@@ -29,6 +29,7 @@ import org.jspecify.annotations.Nullable;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,6 +52,9 @@ public class Event extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Question> questions = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
+    private final List<EventOrganizer> eventOrganizers = new ArrayList<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id")
@@ -67,10 +71,6 @@ public class Event extends BaseEntity {
     private String place;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organizer_id", nullable = false)
-    private OrganizationMember organizer;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
 
@@ -84,32 +84,52 @@ public class Event extends BaseEntity {
             final String title,
             final String description,
             final String place,
-            final OrganizationMember organizer,
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
             final int maxCapacity,
+            final List<OrganizationMember> eventOrganizers,
             final List<Question> questions
     ) {
-        validateBelongToOrganization(organizer, organization);
         validateMaxCapacity(maxCapacity);
 
         this.title = title;
         this.description = description;
         this.place = place;
-        this.organizer = organizer;
         this.organization = organization;
         this.eventOperationPeriod = eventOperationPeriod;
         this.maxCapacity = maxCapacity;
 
         organization.addEvent(this);
         this.questions.addAll(questions);
+        this.eventOrganizers.addAll(createEventOrganizers(eventOrganizers));
     }
 
     public static Event create(
             final String title,
             final String description,
             final String place,
-            final OrganizationMember organizer,
+            final Organization organization,
+            final EventOperationPeriod eventOperationPeriod,
+            final List<OrganizationMember> eventOrganizers,
+            final int maxCapacity,
+            final Question... questions
+    ) {
+        return new Event(
+                title,
+                description,
+                place,
+                organization,
+                eventOperationPeriod,
+                maxCapacity,
+                eventOrganizers,
+                new ArrayList<>(List.of(questions))
+        );
+    }
+
+    public static Event create(
+            final String title,
+            final String description,
+            final String place,
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
             final int maxCapacity,
@@ -119,10 +139,10 @@ public class Event extends BaseEntity {
                 title,
                 description,
                 place,
-                organizer,
                 organization,
                 eventOperationPeriod,
                 maxCapacity,
+                List.of(),
                 new ArrayList<>(List.of(questions))
         );
     }
@@ -131,7 +151,28 @@ public class Event extends BaseEntity {
             final String title,
             final String description,
             final String place,
-            final OrganizationMember organizer,
+            final Organization organization,
+            final EventOperationPeriod eventOperationPeriod,
+            final int maxCapacity,
+            final List<OrganizationMember> eventOrganizers,
+            final List<Question> questions
+    ) {
+        return new Event(
+                title,
+                description,
+                place,
+                organization,
+                eventOperationPeriod,
+                maxCapacity,
+                eventOrganizers,
+                questions
+        );
+    }
+
+    public static Event create(
+            final String title,
+            final String description,
+            final String place,
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
             final int maxCapacity,
@@ -141,11 +182,76 @@ public class Event extends BaseEntity {
                 title,
                 description,
                 place,
-                organizer,
                 organization,
                 eventOperationPeriod,
                 maxCapacity,
+                List.of(),
                 questions
+        );
+    }
+
+    public static Event create(
+            String title,
+            String description,
+            String place,
+            OrganizationMember organizer,
+            Organization organization,
+            EventOperationPeriod eventOperationPeriod,
+            int maxCapacity
+    ) {
+        return new Event(
+                title,
+                description,
+                place,
+                organization,
+                eventOperationPeriod,
+                maxCapacity,
+                List.of(organizer),
+                List.of()
+        );
+    }
+
+    public static Event create(
+            String title,
+            String description,
+            String place,
+            OrganizationMember organizer,
+            Organization organization,
+            EventOperationPeriod eventOperationPeriod,
+            int maxCapacity,
+            List<Question> questions
+    ) {
+        return new Event(
+                title,
+                description,
+                place,
+                organization,
+                eventOperationPeriod,
+                maxCapacity,
+                List.of(organizer),
+                questions
+        );
+    }
+
+    public static Event create(
+            String title,
+            String description,
+            String place,
+            OrganizationMember organizer,
+            Organization organization,
+            EventOperationPeriod eventOperationPeriod,
+            int maxCapacity,
+            Question... questions
+    ) {
+        return new Event(
+                title,
+                description,
+                place,
+                organization,
+                eventOperationPeriod,
+                maxCapacity,
+                List.of(organizer),
+                new ArrayList<>(List.of(questions))
         );
     }
 
@@ -176,7 +282,12 @@ public class Event extends BaseEntity {
         Set<OrganizationMember> participants = guests.stream()
                 .map(Guest::getOrganizationMember)
                 .collect(Collectors.toSet());
-        participants.add(organizer);
+
+        List<OrganizationMember> eventOrganizerList = eventOrganizers.stream()
+                .map(EventOrganizer::getOrganizationMember)
+                .toList();
+
+        participants.addAll(eventOrganizerList);
 
         return allOrganizationMembers.stream()
                 .filter(organizationMember -> !participants.contains(organizationMember))
@@ -214,12 +325,14 @@ public class Event extends BaseEntity {
     }
 
     public boolean isOrganizer(final Member member) {
-        return organizer.getMember()
-                .equals(member);
+        return eventOrganizers.stream()
+                .anyMatch((eventOrganizer) -> eventOrganizer.isSameMember(member));
     }
 
     public boolean isOrganizer(final OrganizationMember organizationMember) {
-        return organizer.equals(organizationMember);
+        return eventOrganizers.stream()
+                .anyMatch((eventOrganizer) -> eventOrganizer.isSameOrganizationMember(
+                        organizationMember));
     }
 
     public void cancelParticipation(
@@ -241,6 +354,27 @@ public class Event extends BaseEntity {
         return guests.size() >= maxCapacity;
     }
 
+    private List<EventOrganizer> createEventOrganizers(final List<OrganizationMember> eventOrganizers) {
+        validateDuplicateEventOrganizers(eventOrganizers);
+
+        Set<OrganizationMember> organizationMembers = new HashSet<>(eventOrganizers);
+
+        return organizationMembers.stream()
+                .map(organizationMember -> new EventOrganizer(this, organizationMember))
+                .toList();
+    }
+
+    private void validateDuplicateEventOrganizers(
+            final List<OrganizationMember> eventOrganizers
+    ) {
+        Set<OrganizationMember> distinctOrganizationMembers = new HashSet<>(eventOrganizers);
+        List<OrganizationMember> organizerIncludeOrganizationMembers = new ArrayList<>(eventOrganizers);
+
+        if (organizerIncludeOrganizationMembers.size() != distinctOrganizationMembers.size()) {
+            throw new ForbiddenException("주최자는 중복될 수 없습니다.");
+        }
+    }
+
     private void validateCancelParticipation(final LocalDateTime cancelParticipationTime) {
         if (eventOperationPeriod.willStartWithin(
                 cancelParticipationTime,
@@ -257,7 +391,8 @@ public class Event extends BaseEntity {
         if (guests.size() >= maxCapacity) {
             throw new UnprocessableEntityException("수용 인원이 가득차 이벤트에 참여할 수 없습니다.");
         }
-        if (guest.isSameOrganizationMember(organizer)) {
+
+        if (isOrganizer(guest.getOrganizationMember())) {
             throw new UnprocessableEntityException("이벤트의 주최자는 게스트로 참여할 수 없습니다.");
         }
         if (hasGuest(guest.getOrganizationMember())) {
@@ -277,20 +412,12 @@ public class Event extends BaseEntity {
         }
     }
 
-    private void validateBelongToOrganization(
-            final OrganizationMember organizationMember,
-            final Organization organization
-    ) {
-        if (!organizationMember.isBelongTo(organization)) {
-            throw new ForbiddenException("자신이 속한 이벤트 스페이스가 아닙니다.");
-        }
-    }
-
     private void validateMaxCapacity(final int maxCapacity) {
         if (maxCapacity < MIN_CAPACITY || maxCapacity > MAX_CAPACITY) {
             throw new UnprocessableEntityException("최대 수용 인원은 1명보다 적거나 21억명 보다 클 수 없습니다.");
         }
     }
+
 
     private Guest getGuestByOrganizationMember(final OrganizationMember organizationMember) {
         return guests.stream()

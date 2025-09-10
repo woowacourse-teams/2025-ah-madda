@@ -1,20 +1,24 @@
 package com.ahmadda.domain.notification;
 
-import com.ahmadda.domain.event.Event;
-
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
+
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventOrganizer;
 
 public record EventEmailPayload(
         Subject subject,
         Body body
 ) {
 
+    private static final long MAX_PRESENT_NICKNAME = 3L;
+
     public static EventEmailPayload of(final Event event, final String content) {
+        String organizerNicknames = createOrganizerNicknames(event);
+
         Subject subject = new Subject(
                 event.getOrganization()
                         .getName(),
-                event.getOrganizer()
-                        .getNickname(),
                 event.getTitle()
         );
 
@@ -23,8 +27,7 @@ public record EventEmailPayload(
                 event.getOrganization()
                         .getName(),
                 event.getTitle(),
-                event.getOrganizer()
-                        .getNickname(),
+                organizerNicknames,
                 event.getPlace(),
                 event.getRegistrationStart(),
                 event.getRegistrationEnd(),
@@ -40,7 +43,6 @@ public record EventEmailPayload(
 
     public record Subject(
             String organizationName,
-            String organizerNickname,
             String eventTitle
     ) {
 
@@ -60,5 +62,22 @@ public record EventEmailPayload(
             Long eventId
     ) {
 
+
+    }
+
+    private static String createOrganizerNicknames(final Event event) {
+        boolean isTooLongOwners = event.getEventOrganizers()
+                .size() > MAX_PRESENT_NICKNAME;
+
+        String organizerNicknames = event.getEventOrganizers()
+                .stream()
+                .map(EventOrganizer::getNickname)
+                .limit(MAX_PRESENT_NICKNAME)
+                .collect(Collectors.joining(","));
+        if (isTooLongOwners) {
+            organizerNicknames += " 등";
+        }
+
+        return organizerNicknames;
     }
 }
