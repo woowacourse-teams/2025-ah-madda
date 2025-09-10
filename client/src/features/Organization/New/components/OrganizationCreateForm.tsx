@@ -11,6 +11,7 @@ import {
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
+import { RequiredMark } from '@/shared/components/RequiredMark/RequiredMark';
 import { Text } from '@/shared/components/Text';
 import { useModal } from '@/shared/hooks/useModal';
 
@@ -144,6 +145,7 @@ export const OrganizationCreateForm = () => {
           >
             <Text as="label" htmlFor="orgImage" type="Heading" weight="medium">
               이벤트 스페이스 이미지
+              <RequiredMark />
             </Text>
             <OrganizationImageInput
               onChange={onSelectLogo}
@@ -155,6 +157,7 @@ export const OrganizationCreateForm = () => {
           <Flex dir="column" gap="12px">
             <Text as="label" htmlFor="orgName" type="Heading" weight="medium">
               이벤트 스페이스 이름
+              <RequiredMark />
             </Text>
             <Input
               id="orgName"
@@ -172,6 +175,7 @@ export const OrganizationCreateForm = () => {
           <Flex dir="column" gap="12px">
             <Text as="label" htmlFor="orgDescription" type="Heading" weight="medium">
               한 줄 소개
+              <RequiredMark />
             </Text>
             <Input
               id="orgDescription"
