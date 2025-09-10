@@ -116,4 +116,4 @@ public class OrganizationMember extends BaseEntity {
             throw new ForbiddenException("관리자만 구성원의 권한을 변경할 수 있습니다.");
         }
     }
-  
+}
