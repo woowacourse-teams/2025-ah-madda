@@ -30,7 +30,7 @@ import org.hibernate.annotations.SQLRestriction;
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "uk_event_owner_event_id_organization_member_id",
-                        columnNames = {"event_id", "organization_member_id"}
+                        columnNames = {"event_id", "organization_member_id", "deleted_at"}
                 )
         }
 )
@@ -41,11 +41,11 @@ public class EventOwnerOrganizationMember extends BaseEntity {
     @Column(name = "event_owner_organization_member_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "organization_member_id", nullable = false)
     private OrganizationMember organizationMember;
 
