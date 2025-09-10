@@ -23,7 +23,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Getter
 @SQLDelete(sql = "UPDATE organization_group SET deleted_at = CURRENT_TIMESTAMP WHERE group_id = ?")
 @SQLRestriction("deleted_at IS NULL")
-public class Group extends BaseEntity {
+public class OrganizationGroup extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,12 +37,12 @@ public class Group extends BaseEntity {
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
 
-    private Group(final String name, final Organization organization) {
+    private OrganizationGroup(final String name, final Organization organization) {
         this.name = name;
         this.organization = organization;
     }
 
-    public static Group create(
+    public static OrganizationGroup create(
             final String name,
             final Organization organization,
             final OrganizationMember creator
@@ -54,6 +54,6 @@ public class Group extends BaseEntity {
             throw new ForbiddenException("어드민만 그룹을 만들 수 있습니다.");
         }
 
-        return new Group(name, organization);
+        return new OrganizationGroup(name, organization);
     }
 }

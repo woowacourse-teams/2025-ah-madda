@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class GroupTest {
+class OrganizationGroupTest {
 
     @Test
     void 이벤트_스페이스의_어드민은_그룹을_생성할_수_있다() {
@@ -18,7 +18,7 @@ class GroupTest {
                 OrganizationMember.create("서프", member, organization, OrganizationMemberRole.ADMIN);
 
         //when
-        var group = Group.create("backend", organization, organizationMember);
+        var group = OrganizationGroup.create("backend", organization, organizationMember);
 
         //then
         SoftAssertions.assertSoftly(softly -> {
@@ -38,7 +38,7 @@ class GroupTest {
                 OrganizationMember.create("서프", member, organization, OrganizationMemberRole.USER);
 
         //when //then
-        assertThatThrownBy(() -> Group.create("backend", organization, organizationMember))
+        assertThatThrownBy(() -> OrganizationGroup.create("backend", organization, organizationMember))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage("어드민만 그룹을 만들 수 있습니다.");
     }
@@ -53,7 +53,7 @@ class GroupTest {
                 OrganizationMember.create("서프", member, organization2, OrganizationMemberRole.USER);
 
         //when //then
-        assertThatThrownBy(() -> Group.create("backend", organization1, organizationMember))
+        assertThatThrownBy(() -> OrganizationGroup.create("backend", organization1, organizationMember))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage("이벤트 스페이스의 구성원만 그룹을 만들 수 있습니다.");
     }

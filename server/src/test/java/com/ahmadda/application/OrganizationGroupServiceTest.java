@@ -7,9 +7,9 @@ import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
-import com.ahmadda.domain.organization.Group;
 import com.ahmadda.domain.organization.GroupRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
@@ -22,10 +22,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @IntegrationTest
-class GroupServiceTest {
+class OrganizationGroupServiceTest {
 
     @Autowired
-    private GroupService sut;
+    private OrganizationGroupService sut;
 
     @Autowired
     private GroupRepository groupRepository;
@@ -58,13 +58,13 @@ class GroupServiceTest {
     }
 
     @Test
-    void 이벤트_스페이스에_이므_존재하는_이름의_그룹을_생성할때_예외가_발생한다() {
+    void 이벤트_스페이스에_이미_존재하는_이름의_그룹을_생성할때_예외가_발생한다() {
         //given
         var organization = createOrganizationAndSave("우테코");
         var member = createMemberAndSave("이재훈", "dlwogns3413@gmail.com");
         var organizationMember = createOrganizationMemberAndSave("서프", member, organization, ADMIN);
         var groupCreateRequest = new GroupCreateRequest("프론트");
-        groupRepository.save(Group.create("프론트", organization, organizationMember));
+        groupRepository.save(OrganizationGroup.create("프론트", organization, organizationMember));
 
         //when //then
         assertThatThrownBy(() -> sut.createGroup(
@@ -73,11 +73,11 @@ class GroupServiceTest {
                 new LoginMember(member.getId())
         ))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("그룹 이름이 이벤트 스페이이스에 이미 존재합니다.");
+                .hasMessage("그룹 이름이 이벤트 스페이스에 이미 존재합니다.");
     }
 
     @Test
-    void 그룹을_생성시_이벤트_스페이스가_없다면_예외가_발생한다() {
+    void 존재하지_않는_이벤트_스페이스에_그룹을_생성하려고하면_예외가_발생한다() {
         //given
         var organization = createOrganizationAndSave("우테코");
         var member = createMemberAndSave("이재훈", "dlwogns3413@gmail.com");
@@ -91,7 +91,7 @@ class GroupServiceTest {
     }
 
     @Test
-    void 그룹을_생성을_하는_구성원이_존재하지_않는다면_예외가_발생한다() {
+    void 존재하지_않는_구성원이_그룹을_생성하려_한다면_예외가_발생한다() {
         //given
         var organization = createOrganizationAndSave("우테코");
         var member = createMemberAndSave("이재훈", "dlwogns3413@gmail.com");

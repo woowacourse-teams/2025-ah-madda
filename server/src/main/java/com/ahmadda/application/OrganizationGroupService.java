@@ -4,9 +4,9 @@ import com.ahmadda.application.dto.GroupCreateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
-import com.ahmadda.domain.organization.Group;
 import com.ahmadda.domain.organization.GroupRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationRepository;
@@ -16,14 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class GroupService {
+public class OrganizationGroupService {
 
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
     private final GroupRepository groupRepository;
 
     @Transactional
-    public Group createGroup(
+    public OrganizationGroup createGroup(
             final Long organizationId,
             final GroupCreateRequest groupCreateRequest,
             final LoginMember loginMember
@@ -32,12 +32,13 @@ public class GroupService {
         OrganizationMember organizationMember = getOrganizationMember(organizationId, loginMember.memberId());
 
         if (groupRepository.existsByOrganizationAndName(organization, groupCreateRequest.name())) {
-            throw new UnprocessableEntityException("그룹 이름이 이벤트 스페이이스에 이미 존재합니다.");
+            throw new UnprocessableEntityException("그룹 이름이 이벤트 스페이스에 이미 존재합니다.");
         }
 
-        Group group = Group.create(groupCreateRequest.name(), organization, organizationMember);
+        OrganizationGroup organizationGroup =
+                OrganizationGroup.create(groupCreateRequest.name(), organization, organizationMember);
 
-        return groupRepository.save(group);
+        return groupRepository.save(organizationGroup);
     }
 
     private Organization getOrganization(final Long organizationId) {

@@ -1,9 +1,9 @@
 package com.ahmadda.presentation;
 
-import com.ahmadda.application.GroupService;
+import com.ahmadda.application.OrganizationGroupService;
 import com.ahmadda.application.dto.GroupCreateRequest;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.domain.organization.Group;
+import com.ahmadda.domain.organization.OrganizationGroup;
 import com.ahmadda.presentation.dto.GroupCreateResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class GroupController {
 
-    private final GroupService groupService;
+    private final OrganizationGroupService organizationGroupService;
 
     @Operation(summary = "신규 그룹 생성", description = "새로운 그룹을 생성합니다.")
     @ApiResponses(value = {
@@ -109,7 +109,7 @@ public class GroupController {
                                               "type": "about:blank",
                                               "title": "Unprocessable Entity",
                                               "status": 422,
-                                              "detail": "그룹 이름이 이벤트 스페이이스에 이미 존재합니다.",
+                                              "detail": "그룹 이름이 이벤트 스페이스에 이미 존재합니다.",
                                               "instance": "/api/organizations/{organizationId}/groups"
                                             }
                                             """
@@ -123,9 +123,10 @@ public class GroupController {
             @Valid @RequestBody final GroupCreateRequest groupCreateRequest,
             @AuthMember final LoginMember loginMember
     ) {
-        Group group = groupService.createGroup(organizationId, groupCreateRequest, loginMember);
+        OrganizationGroup organizationGroup =
+                organizationGroupService.createGroup(organizationId, groupCreateRequest, loginMember);
 
-        return ResponseEntity.ok(new GroupCreateResponse(group.getId()));
+        return ResponseEntity.ok(new GroupCreateResponse(organizationGroup.getId()));
     }
 
 }
