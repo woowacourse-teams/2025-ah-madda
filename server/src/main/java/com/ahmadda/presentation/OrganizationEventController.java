@@ -140,7 +140,7 @@ public class OrganizationEventController {
                                               "title": "Unauthorized",
                                               "status": 401,
                                               "detail": "유효하지 않은 인증 정보입니다.",
-                                              "instance": "/api/organizations/{organizationId}/events"
+                                              "instance": "/api/organizations/{organizationId}/events/past"
                                             }
                                             """
                             )
@@ -156,7 +156,7 @@ public class OrganizationEventController {
                                               "title": "Forbidden",
                                               "status": 403,
                                               "detail": "이벤트 스페이스에 참여하지 않아 권한이 없습니다.",
-                                              "instance": "/api/organizations/{organizationId}/events"
+                                              "instance": "/api/organizations/{organizationId}/events/past"
                                             }
                                             """
                             )
@@ -172,7 +172,7 @@ public class OrganizationEventController {
                                               "title": "Not Found",
                                               "status": 404,
                                               "detail": "존재하지 않는 이벤트 스페이스입니다.",
-                                              "instance": "/api/organizations/{organizationId}/events"
+                                              "instance": "/api/organizations/{organizationId}/events/past"
                                             }
                                             """
                             )
@@ -236,13 +236,7 @@ public class OrganizationEventController {
                                                       "instance": "/api/organizations/{organizationId}/events"
                                                     }
                                                     """
-                                    )}
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "403",
-                    content = @Content(
-                            examples = {
+                                    ),
                                     @ExampleObject(
                                             value = """
                                                     {
@@ -253,7 +247,8 @@ public class OrganizationEventController {
                                                       "instance": "/api/organizations/{organizationId}/events"
                                                     }
                                                     """
-                                    )}
+                                    )
+                            }
                     )
             ),
             @ApiResponse(
