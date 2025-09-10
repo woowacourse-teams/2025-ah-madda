@@ -22,8 +22,6 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
-import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
-import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
@@ -61,12 +59,6 @@ class EventNotificationServiceTest {
 
     @Autowired
     private EventNotificationOptOutRepository eventNotificationOptOutRepository;
-
-    @Autowired
-    private JwtAccessTokenProperties accessTokenProperties;
-
-    @Autowired
-    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 선택된_구성원에게_알람을_전송한다() {

@@ -8,8 +8,6 @@ import com.ahmadda.domain.event.EventTemplate;
 import com.ahmadda.domain.event.EventTemplateRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
-import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
-import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import com.ahmadda.presentation.dto.EventTemplateCreateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +27,6 @@ class EventEventTemplateServiceTest {
 
     @Autowired
     private EventTemplateRepository eventTemplateRepository;
-
-    @Autowired
-    private JwtAccessTokenProperties accessTokenProperties;
-
-    @Autowired
-    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 템플릿을_생성할_수_있다() {

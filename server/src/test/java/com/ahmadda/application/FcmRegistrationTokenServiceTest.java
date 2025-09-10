@@ -6,8 +6,6 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
-import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
-import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +25,6 @@ class FcmRegistrationTokenServiceTest {
 
     @Autowired
     private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
-
-    @Autowired
-    private JwtAccessTokenProperties accessTokenProperties;
-
-    @Autowired
-    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 푸시알림_수신자를_등록한다() {

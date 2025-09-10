@@ -13,8 +13,6 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
-import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
-import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,12 +35,6 @@ class OrganizationMemberServiceTest {
 
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
-
-    @Autowired
-    private JwtAccessTokenProperties accessTokenProperties;
-
-    @Autowired
-    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 자신의_구성원_정보를_조회한다() {

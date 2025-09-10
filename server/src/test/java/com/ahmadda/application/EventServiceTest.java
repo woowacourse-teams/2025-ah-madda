@@ -27,8 +27,6 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
-import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
-import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,12 +71,6 @@ class EventServiceTest {
 
     @Autowired
     private EventNotificationOptOutRepository eventNotificationOptOutRepository;
-
-    @Autowired
-    private JwtAccessTokenProperties accessTokenProperties;
-
-    @Autowired
-    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 이벤트를_생성할_수_있다() {
