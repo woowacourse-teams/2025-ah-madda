@@ -78,6 +78,7 @@ public class OrganizationService {
             final OrganizationParticipateRequest organizationParticipateRequest
     ) {
         validateAlreadyParticipationMember(organizationId, loginMember);
+        validateDuplicateNickname(organizationId, organizationParticipateRequest.nickname());
 
         Organization organization = getOrganization(organizationId);
         Member member = getMember(loginMember);
@@ -128,6 +129,12 @@ public class OrganizationService {
         validateAdmin(deletingMember);
 
         organizationRepository.delete(organization);
+    }
+
+    private void validateDuplicateNickname(final Long organizationId, final String nickname) {
+        if (organizationMemberRepository.existsByOrganizationIdAndNickname(organizationId, nickname)) {
+            throw new UnprocessableEntityException("이미 사용 중인 닉네임입니다.");
+        }
     }
 
     private void validateAdmin(final OrganizationMember organizationMember) {
