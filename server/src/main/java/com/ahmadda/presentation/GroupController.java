@@ -49,7 +49,7 @@ public class GroupController {
                                                       "title": "Not Found",
                                                       "status": 404,
                                                       "detail": "존재하지 않는 이벤트 스페이스 정보입니다.",
-                                                      "instance": "/api/organizations"
+                                                      "instance": "/api/organizations/{organizationId}/groups"
                                                     }
                                                     """
                                     ),
@@ -61,7 +61,7 @@ public class GroupController {
                                                       "title": "Not Found",
                                                       "status": 404,
                                                       "detail": "존재하지 않는 구성원입니다.",
-                                                      "instance": "/api/organizations"
+                                                      "instance": "/api/organizations/{organizationId}/groups"
                                                     }
                                                     """
                                     )
@@ -109,7 +109,7 @@ public class GroupController {
                                               "title": "Unprocessable Entity",
                                               "status": 422,
                                               "detail": "그룹 이름이 이벤트 스페이이스에 이미 존재합니다.",
-                                              "instance": "/api/events/{eventId}/notify-organization-members"
+                                              "instance": "/api/organizations/{organizationId}/groups"
                                             }
                                             """
                             )
