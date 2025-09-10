@@ -1,11 +1,11 @@
 name: BE Dev Deploy Closed Prs
 
 on:
-  push:
-    branches:
-      - be/dev
-    paths:
-      - 'server/**'
+    push:
+      branches:
+        - be/dev
+      paths:
+        - 'server/**'
 
 jobs:
   setup:
