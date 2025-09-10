@@ -341,7 +341,7 @@ public class OrganizationMemberController {
                     )
             )
     })
-    @PatchMapping("/organizations-members/rename")
+    @PatchMapping("/organization-members/rename")
     public ResponseEntity<Void> organizationMemberRenameNickname(
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember,
