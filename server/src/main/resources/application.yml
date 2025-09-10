@@ -3,7 +3,7 @@ server:
   tomcat:
     mbean-registry:
       enabled: true
-    max-http-form-post-size: 20MB
+    max-http-form-post-size: 2MB
 
 spring:
   servlet:
