@@ -1,9 +1,10 @@
 package com.ahmadda.application.dto;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 public record GroupCreateRequest(
-        @NotNull
+        @NotBlank
         String name
 ) {
+
 }
