@@ -236,7 +236,7 @@ class OrganizationMemberServiceTest {
     }
 
     @Test
-    void 자신의_이름을_변경할_수_있다() {
+    void 자신의_닉네임을_변경할_수_있다() {
         // given
         var org = createOrganization("우테코");
         var member = createMember("홍길동", "hong@email.com");
@@ -253,7 +253,7 @@ class OrganizationMemberServiceTest {
     }
 
     @Test
-    void 이미_사용_중인_이름으로_닉네임을_변경하면_예외가_발생한다() {
+    void 이미_사용_중인_닉네임으로_닉네임을_변경하면_예외가_발생한다() {
         // given
         var org = createOrganization("우테코");
         var member1 = createMember("홍길동1", "hong1@email.com");
@@ -269,23 +269,6 @@ class OrganizationMemberServiceTest {
         assertThatThrownBy(() -> sut.renameOrganizationMemberNickname(org.getId(), loginMember2, duplicateName))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("이미 사용 중인 닉네임입니다.");
-    }
-
-    @Test
-    void 자신의_닉네임을_변경할_수_있다() {
-        // given
-        var org = createOrganization("우테코");
-        var member = createMember("홍길동", "hong1@email.com");
-        var orgMember = createOrganizationMember("닉네임1", member, org, OrganizationMemberRole.USER);
-        var loginMember = new LoginMember(member.getId());
-
-        var newNickname = "새닉네임";
-
-        // when
-        sut.renameOrganizationMemberNickname(org.getId(), loginMember, newNickname);
-
-        //then
-        assertThat(orgMember.getNickname()).isEqualTo(newNickname);
     }
 
     @Test
