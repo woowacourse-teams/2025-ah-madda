@@ -169,6 +169,23 @@ public class OrganizationEventController {
                     )
             ),
             @ApiResponse(
+                    responseCode = "403",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Forbidden",
+                                                      "status": 403,
+                                                      "detail": "중복되는 공동 주최자가 존재합니다.",
+                                                      "instance": "/api/organizations/{organizationId}/events"
+                                                    }
+                                                    """
+                                    )}
+                    )
+            ),
+            @ApiResponse(
                     responseCode = "404",
                     content = @Content(
                             examples = {

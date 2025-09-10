@@ -360,6 +360,39 @@ class EventTest {
     }
 
     @Test
+    void 공동_주최자가_중복되면_예외가_발생한다() {
+        // given
+        var now = LocalDateTime.now();
+        var registrationPeriod = EventPeriod.create(
+                LocalDateTime.now()
+                        .plusDays(1),
+                LocalDateTime.now()
+                        .plusDays(2)
+        );
+        var duplicateCoOrganizer = baseOrganizer;
+
+        var eventOperationPeriod = EventOperationPeriod.create(
+                registrationPeriod.start(), registrationPeriod.end(),
+                now.plusDays(3), now.plusDays(4),
+                now
+        );
+
+        // when // then
+        assertThatThrownBy(() -> Event.create(
+                "title",
+                "description",
+                "place",
+                baseOrganizer,
+                baseOrganization,
+                eventOperationPeriod,
+                10,
+                List.of(duplicateCoOrganizer)
+        ))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage("공동 주최자는 중복될 수 없습니다.");
+    }
+
+    @Test
     void 필수_질문만_조회할_수_있다() {
         // given
         var requiredQuestion = Question.create("필수 질문", true, 0);

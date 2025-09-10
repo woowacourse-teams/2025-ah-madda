@@ -110,17 +110,6 @@ public class Event extends BaseEntity {
         this.eventOwnerOrganizationMembers.addAll(createEventOwnerOrganizationMembers(eventOwnerOrganizationMembers));
     }
 
-    private List<EventOwnerOrganizationMember> createEventOwnerOrganizationMembers(final List<OrganizationMember> eventOwnerOrganizationMembers) {
-        Set<OrganizationMember> organizationMembers = new HashSet<>(eventOwnerOrganizationMembers);
-        organizationMembers.add(organizer);
-
-        return organizationMembers.stream()
-                .toList()
-                .stream()
-                .map(organizationMember -> new EventOwnerOrganizationMember(this, organizationMember))
-                .toList();
-    }
-
     public static Event create(
             final String title,
             final String description,
@@ -309,6 +298,32 @@ public class Event extends BaseEntity {
         return guests.size() >= maxCapacity;
     }
 
+    private List<EventOwnerOrganizationMember> createEventOwnerOrganizationMembers(final List<OrganizationMember> eventOwnerOrganizationMembers) {
+        validateDuplicateEventOwnerOrganizationMembers(eventOwnerOrganizationMembers, organizer);
+
+        Set<OrganizationMember> organizationMembers = new HashSet<>(eventOwnerOrganizationMembers);
+        organizationMembers.add(organizer);
+
+        return organizationMembers.stream()
+                .map(organizationMember -> new EventOwnerOrganizationMember(this, organizationMember))
+                .toList();
+    }
+
+    private void validateDuplicateEventOwnerOrganizationMembers(
+            final List<OrganizationMember> eventOwnerOrganizationMembers,
+            final OrganizationMember organizer
+    ) {
+        Set<OrganizationMember> distinctOrganizationMembers = new HashSet<>(eventOwnerOrganizationMembers);
+        distinctOrganizationMembers.add(organizer);
+
+        List<OrganizationMember> organizerIncludeOrganizationMembers = new ArrayList<>(eventOwnerOrganizationMembers);
+        organizerIncludeOrganizationMembers.add(organizer);
+
+        if (organizerIncludeOrganizationMembers.size() != distinctOrganizationMembers.size()) {
+            throw new ForbiddenException("공동 주최자는 중복될 수 없습니다.");
+        }
+    }
+
     private void validateCancelParticipation(final LocalDateTime cancelParticipationTime) {
         if (eventOperationPeriod.willStartWithin(
                 cancelParticipationTime,
@@ -345,38 +360,12 @@ public class Event extends BaseEntity {
         }
     }
 
-    private void validateBelongToOrganization(
-            final EventOwnerOrganizationMember eventOwnerOrganizationMember,
-            final Organization organization
-    ) {
-        if (!eventOwnerOrganizationMember.isBelongTo(organization)) {
-            throw new ForbiddenException("이벤트 스페이스에 속하지 않은 구성원입니다.");
-        }
-    }
-
     private void validateMaxCapacity(final int maxCapacity) {
         if (maxCapacity < MIN_CAPACITY || maxCapacity > MAX_CAPACITY) {
             throw new UnprocessableEntityException("최대 수용 인원은 1명보다 적거나 21억명 보다 클 수 없습니다.");
         }
     }
 
-    private void validateOrganizerHasRole(
-            final List<EventOwnerOrganizationMember> eventOwnerOrganizationMembers,
-            final OrganizationMember organizer
-    ) {
-        if (!eventOwnerOrganizationMembers.contains(organizer)) {
-            throw new ForbiddenException("주최자는 공동 주최자에 포함되어야합니다.");
-        }
-    }
-
-    private void validateHasRoleMembersBelongToOrganization(
-            final List<EventOwnerOrganizationMember> hasRoleOrganizationMembers,
-            final Organization organization
-    ) {
-        for (EventOwnerOrganizationMember eventOwnerOrganizationMember : hasRoleOrganizationMembers) {
-            validateBelongToOrganization(eventOwnerOrganizationMember, organization);
-        }
-    }
 
     private Guest getGuestByOrganizationMember(final OrganizationMember organizationMember) {
         return guests.stream()
