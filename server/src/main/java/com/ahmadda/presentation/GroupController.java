@@ -98,6 +98,22 @@ public class GroupController {
                                     )
                             }
                     )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unprocessable Entity",
+                                              "status": 422,
+                                              "detail": "그룹 이름이 이벤트 스페이이스에 이미 존재합니다.",
+                                              "instance": "/api/events/{eventId}/notify-organization-members"
+                                            }
+                                            """
+                            )
+                    )
             )
     })
     @PostMapping("/{organizationId}/groups")

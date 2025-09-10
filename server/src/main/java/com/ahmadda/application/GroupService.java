@@ -3,6 +3,7 @@ package com.ahmadda.application;
 import com.ahmadda.application.dto.GroupCreateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.organization.Group;
 import com.ahmadda.domain.organization.GroupRepository;
 import com.ahmadda.domain.organization.Organization;
@@ -29,6 +30,10 @@ public class GroupService {
     ) {
         Organization organization = getOrganization(organizationId);
         OrganizationMember organizationMember = getOrganizationMember(organizationId, loginMember.memberId());
+
+        if (groupRepository.existsByOrganizationAndName(organization, groupCreateRequest.name())) {
+            throw new UnprocessableEntityException("그룹 이름이 이벤트 스페이이스에 이미 존재합니다.");
+        }
 
         Group group = Group.create(groupCreateRequest.name(), organization, organizationMember);
 

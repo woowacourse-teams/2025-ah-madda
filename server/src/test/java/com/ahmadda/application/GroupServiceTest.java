@@ -4,8 +4,10 @@ import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.GroupCreateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.organization.Group;
 import com.ahmadda.domain.organization.GroupRepository;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
@@ -53,6 +55,25 @@ class GroupServiceTest {
                 .hasValueSatisfying(g -> assertThat(g)
                         .extracting("name", "organization")
                         .containsExactly("프론트", organization));
+    }
+
+    @Test
+    void 이벤트_스페이스에_이므_존재하는_이름의_그룹을_생성할때_예외가_발생한다() {
+        //given
+        var organization = createOrganizationAndSave("우테코");
+        var member = createMemberAndSave("이재훈", "dlwogns3413@gmail.com");
+        var organizationMember = createOrganizationMemberAndSave("서프", member, organization, ADMIN);
+        var groupCreateRequest = new GroupCreateRequest("프론트");
+        groupRepository.save(Group.create("프론트", organization, organizationMember));
+
+        //when //then
+        assertThatThrownBy(() -> sut.createGroup(
+                organization.getId(),
+                groupCreateRequest,
+                new LoginMember(member.getId())
+        ))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("그룹 이름이 이벤트 스페이이스에 이미 존재합니다.");
     }
 
     @Test
