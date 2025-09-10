@@ -920,6 +920,34 @@ class EventServiceTest {
                 .containsExactlyInAnyOrder("EventA1", "EventA2");
     }
 
+    @Test
+    void 공동_주최자가_중복되면_이벤트_생성시_예외가_발생한다() {
+        // given
+        var member = createMember();
+        var organization = createOrganization();
+        var organizationMember = createOrganizationMember(organization, member);
+
+        var now = LocalDateTime.now();
+        var eventCreateRequest = new EventCreateRequest(
+                "UI/UX 이벤트",
+                "UI/UX 이벤트입니다",
+                "선릉",
+                now.plusDays(4),
+                now.plusDays(5),
+                now.plusDays(6),
+                100,
+                List.of(),
+                List.of(organizationMember.getId())
+        );
+
+        var loginMember = new LoginMember(member.getId());
+
+        // when & then
+        assertThatThrownBy(() -> sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage("공동 주최자는 중복될 수 없습니다.");
+    }
+
     private Organization createOrganization() {
         var organization = Organization.create("우테코", "우테코입니다.", "image");
 
