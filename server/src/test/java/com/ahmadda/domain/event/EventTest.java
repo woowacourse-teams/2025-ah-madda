@@ -40,7 +40,6 @@ class EventTest {
                 "이전 제목",
                 "이전 설명",
                 "이전 장소",
-                baseOrganizer,
                 baseOrganization,
                 EventOperationPeriod.create(
                         registrationPeriod.start(),
@@ -49,6 +48,7 @@ class EventTest {
                         eventPeriod.end(),
                         now
                 ),
+                List.of(baseOrganizer),
                 10
         );
 
@@ -64,8 +64,7 @@ class EventTest {
 
         // when
         sut.update(
-                sut.getOrganizer()
-                        .getMember(),
+                baseOrganizer.getMember(),
                 "수정된 제목",
                 "수정된 설명",
                 "수정된 장소",
@@ -98,7 +97,6 @@ class EventTest {
                 "이전 제목",
                 "이전 설명",
                 "이전 장소",
-                baseOrganizer,
                 baseOrganization,
                 EventOperationPeriod.create(
                         registrationPeriod.start(),
@@ -107,6 +105,7 @@ class EventTest {
                         eventPeriod.end(),
                         now
                 ),
+                List.of(baseOrganizer),
                 10
         );
 
@@ -122,7 +121,7 @@ class EventTest {
                 now
         );
 
-        // when & then
+        // when // then
         assertThatThrownBy(() -> sut.update(
                 notOrganizer.getMember(),
                 "수정된 제목",
@@ -203,7 +202,7 @@ class EventTest {
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization2))
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("자신이 속한 이벤트 스페이스가 아닙니다.");
+                .hasMessage("주최자는 동일한 이벤트 스페이스에 속해야 합니다.");
     }
 
     @ParameterizedTest
@@ -323,20 +322,72 @@ class EventTest {
                 LocalDateTime.now()
                         .plusDays(2)
         );
-        var sut = createEvent(now, registrationPeriod);
+        var coOrganizer =
+                createOrganizationMember("공동주최자", createMember("co-organizer", "co@email.com"), baseOrganization);
+
+        var eventOperationPeriod = EventOperationPeriod.create(
+                registrationPeriod.start(), registrationPeriod.end(),
+                now.plusDays(3), now.plusDays(4),
+                now
+        );
+        var sut = Event.create(
+                "title",
+                "description",
+                "place",
+                baseOrganization,
+                eventOperationPeriod,
+                List.of(baseOrganizer, coOrganizer),
+                10
+        );
+
         var nonOrganizer = createOrganizationMember("다른 구성원", createMember(), baseOrganization);
 
         // when
         var isOrganizer = sut.isOrganizer(baseOrganizer.getMember());
+        var isCoOrganizer = sut.isOrganizer(coOrganizer.getMember());
         var isNotOrganizer = sut.isOrganizer(nonOrganizer.getMember());
 
         // then
         assertSoftly(softly -> {
             softly.assertThat(isOrganizer)
                     .isTrue();
+            softly.assertThat(isCoOrganizer)
+                    .isTrue();
             softly.assertThat(isNotOrganizer)
                     .isFalse();
         });
+    }
+
+    @Test
+    void 공동_주최자가_중복되면_예외가_발생한다() {
+        // given
+        var now = LocalDateTime.now();
+        var registrationPeriod = EventPeriod.create(
+                LocalDateTime.now()
+                        .plusDays(1),
+                LocalDateTime.now()
+                        .plusDays(2)
+        );
+        var duplicateCoOrganizer = baseOrganizer;
+
+        var eventOperationPeriod = EventOperationPeriod.create(
+                registrationPeriod.start(), registrationPeriod.end(),
+                now.plusDays(3), now.plusDays(4),
+                now
+        );
+
+        // when // then
+        assertThatThrownBy(() -> Event.create(
+                "title",
+                "description",
+                "place",
+                baseOrganization,
+                eventOperationPeriod,
+                List.of(baseOrganizer, duplicateCoOrganizer),
+                10
+        ))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage("주최자는 중복될 수 없습니다.");
     }
 
     @Test
@@ -534,12 +585,12 @@ class EventTest {
 
     private Event createEvent(String title, int maxCapacity, Question... questions) {
         var organization = createOrganization("우테코");
+        var organizer = createOrganizationMember(createMember(), organization);
 
         return Event.create(
                 title,
                 "description",
                 "place",
-                createOrganizationMember(createMember(), organization),
                 organization,
                 EventOperationPeriod.create(
                         LocalDateTime.now()
@@ -552,6 +603,7 @@ class EventTest {
                                 .plusDays(4),
                         LocalDateTime.now()
                 ),
+                List.of(organizer),
                 maxCapacity,
                 questions
         );
@@ -562,13 +614,13 @@ class EventTest {
                 "title",
                 "description",
                 "place",
-                baseOrganizer,
                 baseOrganization,
                 EventOperationPeriod.create(
                         registrationEventPeriod.start(), registrationEventPeriod.end(),
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
+                List.of(baseOrganizer),
                 10
         );
     }
@@ -591,14 +643,15 @@ class EventTest {
 
     private Event createEvent(String title, EventOperationPeriod eventOperationPeriod) {
         var organization = createOrganization("우테코");
+        var organizer = createOrganizationMember(createMember(), organization);
 
         return Event.create(
                 title,
                 "description",
                 "place",
-                createOrganizationMember(createMember(), organization),
                 organization,
                 eventOperationPeriod,
+                List.of(organizer),
                 100
         );
     }
@@ -622,13 +675,13 @@ class EventTest {
                 "title",
                 "description",
                 "place",
-                organizationMember,
                 organization,
                 EventOperationPeriod.create(
                         now.plusDays(1), now.plusDays(2),
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
+                List.of(organizationMember),
                 10
         );
     }

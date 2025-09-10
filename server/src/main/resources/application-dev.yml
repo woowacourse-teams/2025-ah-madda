@@ -1,13 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${db.dev.host}:${db.dev.port}/${db.dev.name}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: ${db.dev.username}
-    password: ${db.dev.password}
-
-  flyway:
-    baseline-on-migrate: true
-    baseline-version: 1
+    url: jdbc:mysql://ahmadda-mysql:3306/ahmadda?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ahmadda
+    password: 1234
 
   jpa:
     show-sql: true
@@ -21,7 +17,7 @@ spring:
   cloud:
     aws:
       s3:
-        region: ${aws.prod.s3.region}
+        region: ${aws.dev.s3.region}
 
 jwt:
   access:
@@ -56,25 +52,3 @@ aws:
   s3:
     bucket: ${aws.dev.s3.bucket}
     folder: ${aws.dev.s3.folder}
-
-management:
-  metrics:
-    enable:
-      system.cpu.usage: true
-      jvm.memory.used: true
-      jvm.memory.max: true
-      http.server.requests: true
-      tomcat.threads: true
-      app.health.status: true
-      executor: true
-      hikaricp.connections.active: true
-      hikaricp.connections.pending: true
-      hikaricp.connections.max: true
-      hikaricp.connections.timeout: true
-      logback.events: true
-  cloudwatch:
-    metrics:
-      export:
-        enabled: true
-        step: 1m
-        namespace: EC2/ahmadda-api

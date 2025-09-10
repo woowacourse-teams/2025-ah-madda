@@ -108,7 +108,9 @@ class EventServiceTest {
                                 .isEqualTo("선릉");
                         softly.assertThat(savedEvent.getOrganization())
                                 .isEqualTo(organization);
-                        softly.assertThat(savedEvent.getOrganizer())
+                        softly.assertThat(savedEvent.getEventOrganizers()
+                                        .getFirst()
+                                        .getOrganizationMember())
                                 .isEqualTo(organizationMember);
                         softly.assertThat(savedEvent.getEventOperationPeriod())
                                 .isEqualTo(EventOperationPeriod.create(
@@ -200,51 +202,6 @@ class EventServiceTest {
     }
 
     @Test
-    void 이벤트_생성시_30분_내_리마인더_10회_초과하면_예외가_발생한다() {
-        // given
-        var organization = createOrganization();
-        var member = createMember("organizer", "organizer@mail.com");
-        var organizer = createOrganizationMember(organization, member);
-        var now = LocalDateTime.now();
-
-        var request = new EventCreateRequest(
-                "제한 테스트 이벤트",
-                "제한 테스트 설명",
-                "장소",
-                now.plusDays(4),
-                now.plusDays(5),
-                now.plusDays(6),
-                100,
-                new ArrayList<>()
-        );
-        var loginMember = new LoginMember(member.getId());
-
-        var existingEvent = eventRepository.save(Event.create(
-                "기존 이벤트", "설명", "장소",
-                organizer, organization,
-                EventOperationPeriod.create(
-                        now.plusDays(1), now.plusDays(2),
-                        now.plusDays(3), now.plusDays(4),
-                        now.minusDays(1)
-                ),
-                100
-        ));
-
-        for (int i = 0; i < 10; i++) {
-            reminderHistoryRepository.save(
-                    ReminderHistory.createNow(existingEvent, "테스트 알림", List.of(organizer))
-            );
-        }
-
-        // when // then
-        assertThatThrownBy(() ->
-                                   sut.createEvent(organization.getId(), loginMember, request, now)
-        )
-                .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessageStartingWith("리마인더는 30분 내 최대 10회까지만 발송할 수 있습니다.");
-    }
-
-    @Test
     void 이벤트를_조회할_수_있다() {
         //given
         var organization = createOrganization();
@@ -279,7 +236,7 @@ class EventServiceTest {
     }
 
     @Test
-    void 이벤트_스페이스에_속해_있지_않으면_이벤트를_조회할_수_없다() {
+    void 이벤트_스페이스에_속해_있지_않으면_이벤트를_생성할_수_없다() {
         //given
         var organization = createOrganization();
         var otherOrganization = createOrganization();
@@ -289,7 +246,7 @@ class EventServiceTest {
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization)).isInstanceOf(
                         ForbiddenException.class)
-                .hasMessage("자신이 속한 이벤트 스페이스가 아닙니다.");
+                .hasMessage("주최자는 동일한 이벤트 스페이스에 속해야 합니다.");
     }
 
     @Test
@@ -509,16 +466,16 @@ class EventServiceTest {
                                 .isEqualTo(200);
 
                         softly.assertThat(savedEvent.getEventOperationPeriod()
-                                                  .getRegistrationEventPeriod()
-                                                  .end())
+                                        .getRegistrationEventPeriod()
+                                        .end())
                                 .isEqualTo(now.plusDays(5));
                         softly.assertThat(savedEvent.getEventOperationPeriod()
-                                                  .getEventPeriod()
-                                                  .start())
+                                        .getEventPeriod()
+                                        .start())
                                 .isEqualTo(now.plusDays(6));
                         softly.assertThat(savedEvent.getEventOperationPeriod()
-                                                  .getEventPeriod()
-                                                  .end())
+                                        .getEventPeriod()
+                                        .end())
                                 .isEqualTo(now.plusDays(7));
                     });
                 });
@@ -626,7 +583,7 @@ class EventServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.updateEvent(event.getId(), loginMember, updateRequest, now)
+                sut.updateEvent(event.getId(), loginMember, updateRequest, now)
         )
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessageStartingWith("리마인더는 30분 내 최대 10회까지만 발송할 수 있습니다.");
@@ -828,7 +785,7 @@ class EventServiceTest {
         createEventWithDates(organizationMember, organization, now.plusDays(2), now.plusDays(3), now.plusDays(5));
 
         // when
-        var pastEvents = sut.getPastEvent(
+        var pastEvents = sut.getPastEvents(
                 organization.getId(),
                 loginMember,
                 LocalDateTime.now()
@@ -865,7 +822,7 @@ class EventServiceTest {
         var loginMember = createLoginMember(member);
 
         //when // then
-        assertThatThrownBy(() -> sut.getPastEvent(organization.getId(), loginMember, LocalDateTime.now()))
+        assertThatThrownBy(() -> sut.getPastEvents(organization.getId(), loginMember, LocalDateTime.now()))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage("이벤트 스페이스에 소속되지 않아 권한이 없습니다.");
     }
@@ -918,6 +875,34 @@ class EventServiceTest {
         assertThat(events).hasSize(2)
                 .extracting(Event::getTitle)
                 .containsExactlyInAnyOrder("EventA1", "EventA2");
+    }
+
+    @Test
+    void 공동_주최자가_중복되면_이벤트_생성시_예외가_발생한다() {
+        // given
+        var member = createMember();
+        var organization = createOrganization();
+        var organizationMember = createOrganizationMember(organization, member);
+
+        var now = LocalDateTime.now();
+        var eventCreateRequest = new EventCreateRequest(
+                "UI/UX 이벤트",
+                "UI/UX 이벤트입니다",
+                "선릉",
+                now.plusDays(4),
+                now.plusDays(5),
+                now.plusDays(6),
+                100,
+                List.of(),
+                List.of(organizationMember.getId())
+        );
+
+        var loginMember = new LoginMember(member.getId());
+
+        // when // then
+        assertThatThrownBy(() -> sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage("주최자는 중복될 수 없습니다.");
     }
 
     private Organization createOrganization() {

@@ -5,6 +5,7 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventOrganizerRepository;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.event.GuestRepository;
@@ -44,6 +45,9 @@ class OrganizationMemberEventServiceTest {
     @Autowired
     private OrganizationMemberEventService sut;
 
+    @Autowired
+    private EventOrganizerRepository eventOrganizerRepository;
+
     @Test
     void 구성원이_주최한_이벤트들을_조회한다() {
         // given
@@ -79,6 +83,7 @@ class OrganizationMemberEventServiceTest {
 
         var otherMember = createAndSaveMember("다른 주최자", "other@test.com");
         var otherOrganizer = createAndSaveOrganizationMember("다른주최자닉네임", otherMember, organization);
+
         createAndSaveEvent(
                 "다른 이벤트",
                 "다른 주최자의 이벤트",
@@ -268,7 +273,9 @@ class OrganizationMemberEventServiceTest {
                 maxCapacity
         );
 
-        return eventRepository.save(event);
+        Event savedEvent = eventRepository.save(event);
+        eventOrganizerRepository.saveAll(event.getEventOrganizers());
+        return savedEvent;
     }
 
     private Guest createAndSaveGuest(Event event, OrganizationMember participant) {
