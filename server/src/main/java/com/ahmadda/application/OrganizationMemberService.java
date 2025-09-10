@@ -43,6 +43,24 @@ public class OrganizationMemberService {
         updateRoles(operator, targets, request.role());
     }
 
+    @Transactional
+    public void renameOrganizationMemberNickname(final Long organizationId,
+                                                 final LoginMember loginMember,
+                                                 final String newNickName) {
+        OrganizationMember organizationMember = getOrganizationMember(organizationId, loginMember);
+
+        if (organizationMember.getNickname()
+                .equals(newNickName)) {
+            throw new UnprocessableEntityException("현재 닉네임과 동일하여 변경할 수 없습니다.");
+        }
+
+        if (organizationMemberRepository.existsByOrganizationIdAndNickname(organizationId, newNickName)) {
+            throw new UnprocessableEntityException("이미 사용 중인 닉네임입니다.");
+        }
+
+        organizationMember.rename(newNickName);
+    }
+
     public List<OrganizationMember> getAllOrganizationMembers(
             final Long organizationId,
             final LoginMember loginMember
