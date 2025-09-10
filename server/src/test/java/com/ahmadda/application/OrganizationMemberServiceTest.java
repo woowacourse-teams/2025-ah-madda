@@ -284,7 +284,7 @@ class OrganizationMemberServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.renameOrganizationMemberNickname(org.getId(), loginMember, myNickname))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("이미 사용 중인 닉네임입니다.");
+                .hasMessage("현재 닉네임과 동일하여 변경할 수 없습니다.");
     }
 
     private Organization createOrganization(String name) {

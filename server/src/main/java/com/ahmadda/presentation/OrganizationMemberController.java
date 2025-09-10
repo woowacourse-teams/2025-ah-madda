@@ -312,17 +312,31 @@ public class OrganizationMemberController {
             @ApiResponse(
                     responseCode = "422",
                     content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Unprocessable Entity",
-                                              "status": 422,
-                                              "detail": "이미 사용 중인 닉네임입니다.",
-                                              "instance": "/api/organizations/{organizationId}/organization-members/rename"
-                                            }
-                                            """
-                            )
+                            examples = {
+                                    @ExampleObject(
+                                            name = "중복 이름",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "이미 사용 중인 닉네임입니다.",
+                                                      "instance": "/api/organizations/{organizationId}/organization-members/rename"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "현재 같은 닉네임",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "현재 닉네임과 동일하여 변경할 수 없습니다.",
+                                                      "instance": "/api/organizations/{organizationId}/organization-members/rename"
+                                                    }
+                                                    """)
+                            }
                     )
             )
     })
