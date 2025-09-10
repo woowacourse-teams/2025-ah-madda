@@ -1,9 +1,11 @@
 package com.ahmadda.presentation.dto;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.event.Event;
-
-import java.time.LocalDateTime;
+import com.ahmadda.domain.event.EventOrganizer;
 
 public record MainEventResponse(
         Long eventId,
@@ -16,17 +18,14 @@ public record MainEventResponse(
         String place,
         LocalDateTime registrationStart,
         LocalDateTime registrationEnd,
-        String organizerName,
+        List<String> organizerNicknames,
         boolean isGuest
 ) {
 
     public static MainEventResponse from(final Event event, final LoginMember loginMember) {
-        boolean isGuest = event.getGuests()
-                .stream()
-                .anyMatch(guest -> guest.getOrganizationMember()
-                        .getMember()
-                        .getId()
-                        .equals(loginMember.memberId()));
+        boolean isGuest = getIsGuest(event, loginMember);
+
+        List<String> organizerNicknames = getOrganizerNicknames(event);
 
         return new MainEventResponse(
                 event.getId(),
@@ -40,9 +39,24 @@ public record MainEventResponse(
                 event.getPlace(),
                 event.getRegistrationStart(),
                 event.getRegistrationEnd(),
-                event.getOrganizer()
-                        .getNickname(),
+                organizerNicknames,
                 isGuest
         );
+    }
+
+    private static List<String> getOrganizerNicknames(Event event) {
+        return event.getEventOrganizers()
+                .stream()
+                .map(EventOrganizer::getNickname)
+                .toList();
+    }
+
+    private static boolean getIsGuest(Event event, LoginMember loginMember) {
+        return event.getGuests()
+                .stream()
+                .anyMatch(guest -> guest.getOrganizationMember()
+                        .getMember()
+                        .getId()
+                        .equals(loginMember.memberId()));
     }
 }

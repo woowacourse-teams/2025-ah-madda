@@ -58,9 +58,8 @@ public class SmtpEmailNotifier implements EmailNotifier {
     }
 
     private String createSubject(final EventEmailPayload.Subject subject) {
-        return "[%s] %s님의 이벤트 안내: %s".formatted(
+        return "[아맞다] %s의 이벤트 안내: %s".formatted(
                 subject.organizationName(),
-                subject.organizerNickname(),
                 subject.eventTitle()
         );
     }
