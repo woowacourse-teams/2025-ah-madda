@@ -102,9 +102,9 @@ public class GroupController {
     })
     @PostMapping("/{organizationId}/groups")
     public ResponseEntity<GroupCreateResponse> createGroup(
-            @PathVariable Long organizationId,
-            @RequestBody GroupCreateRequest groupCreateRequest,
-            @AuthMember LoginMember loginMember
+            @PathVariable final Long organizationId,
+            @RequestBody final GroupCreateRequest groupCreateRequest,
+            @AuthMember final LoginMember loginMember
     ) {
         Group group = groupService.createGroup(organizationId, groupCreateRequest, loginMember);
 

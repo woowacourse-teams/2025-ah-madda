@@ -18,7 +18,7 @@ class GroupTest {
                 OrganizationMember.create("서프", member, organization, OrganizationMemberRole.ADMIN);
 
         //when
-        Group group = Group.create("backend", organization, organizationMember);
+        var group = Group.create("backend", organization, organizationMember);
 
         //then
         SoftAssertions.assertSoftly(softly -> {
