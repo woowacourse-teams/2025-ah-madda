@@ -122,6 +122,77 @@ public class OrganizationEventController {
         return ResponseEntity.ok(eventResponses);
     }
 
+    @Operation(summary = "이벤트 스페이스의 과거 이벤트 조회", description = "특정 이벤트 스페이스에 속한 과거 이벤트를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            array = @ArraySchema(schema = @Schema(implementation = MainEventResponse.class))
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보입니다.",
+                                              "instance": "/api/organizations/{organizationId}/events"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Forbidden",
+                                              "status": 403,
+                                              "detail": "이벤트 스페이스에 참여하지 않아 권한이 없습니다.",
+                                              "instance": "/api/organizations/{organizationId}/events"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Not Found",
+                                              "status": 404,
+                                              "detail": "존재하지 않는 이벤트 스페이스입니다.",
+                                              "instance": "/api/organizations/{organizationId}/events"
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
+    @GetMapping("/{organizationId}/events/past")
+    public ResponseEntity<List<MainEventResponse>> getPastEvents(
+            @PathVariable final Long organizationId,
+            @AuthMember final LoginMember loginMember
+    ) {
+        List<Event> organizationEvents = eventService.getPastEvent(organizationId, loginMember, LocalDateTime.now());
+
+        List<MainEventResponse> eventResponses = organizationEvents.stream()
+                .map(event -> MainEventResponse.from(event, loginMember))
+                .toList();
+
+        return ResponseEntity.ok(eventResponses);
+    }
+
     @Operation(summary = "이벤트 생성", description = "이벤트 스페이스 ID에 속한 이벤트를 생성합니다. 해당 이벤트 스페이스 ID에 속한 구성원만 이벤트를 생성할 수 있습니다.")
     @ApiResponses(value = {
             @ApiResponse(
