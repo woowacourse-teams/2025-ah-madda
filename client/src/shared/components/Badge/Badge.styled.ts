@@ -20,6 +20,10 @@ export const BADGE_VARIANTS: Record<string, BadgeVariant> = {
     backgroundColor: `${theme.colors.red50}`,
     textColor: `${theme.colors.red600}`,
   },
+  yellow: {
+    backgroundColor: `${theme.colors.secondary200}`,
+    textColor: `${theme.colors.secondary900}`,
+  },
 };
 
 export const StyledBadge = styled.div<BadgeVariant>`
