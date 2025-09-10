@@ -4,6 +4,7 @@ import com.ahmadda.application.OrganizationMemberService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationMemberRoleUpdateRequest;
 import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.presentation.dto.OrganizationMemberRenameRequest;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
@@ -272,5 +273,83 @@ public class OrganizationMemberController {
                 .toList();
 
         return ResponseEntity.ok(response);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보입니다.",
+                                              "instance": "/api/organizations/{organizationId}/organization-members/rename"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "일부 구성원 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 선택된 구성원입니다.",
+                                                      "instance": "/api/organizations/{organizationId}/organization-members/rename"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "구성원 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 구성원입니다.",
+                                                      "instance": "/api/organizations/{organizationId}/organization-members/rename"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unprocessable Entity",
+                                              "status": 422,
+                                              "detail": "이미 사용 중인 닉네임입니다.",
+                                              "instance": "/api/organizations/{organizationId}/organization-members/rename"
+                                            }
+                                            """
+                            )
+                    )
+            )
+    })
+    @PatchMapping("/organizations-members/rename")
+    public ResponseEntity<Void> organizationMemberRenameNickname(
+            @PathVariable final Long organizationId,
+            @AuthMember final LoginMember loginMember,
+            @Valid @RequestBody final OrganizationMemberRenameRequest request
+    ) {
+        organizationMemberService.renameOrganizationMemberNickname(organizationId, loginMember, request.nickname());
+
+        return ResponseEntity.noContent()
+                .build();
     }
 }

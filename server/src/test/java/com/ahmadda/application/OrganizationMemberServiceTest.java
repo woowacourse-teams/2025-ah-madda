@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -52,10 +53,10 @@ class OrganizationMemberServiceTest {
             softly.assertThat(result.getId())
                     .isEqualTo(orgMember.getId());
             softly.assertThat(result.getMember()
-                            .getId())
+                                      .getId())
                     .isEqualTo(member.getId());
             softly.assertThat(result.getOrganization()
-                            .getId())
+                                      .getId())
                     .isEqualTo(org.getId());
         });
     }
@@ -232,6 +233,58 @@ class OrganizationMemberServiceTest {
         assertThatThrownBy(() -> sut.getAllOrganizationMembers(org1.getId(), loginMember))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage("이벤트 스페이스에 속한 구성원만 구성원의 목록을 조회할 수 있습니다.");
+    }
+
+    @Test
+    void 자신의_이름을_변경할_수_있다() {
+        // given
+        var org = createOrganization("우테코");
+        var member = createMember("홍길동", "hong@email.com");
+        var orgMember = createOrganizationMember("닉네임", member, org, OrganizationMemberRole.USER);
+        var loginMember = new LoginMember(member.getId());
+
+        var newName = "닉네임2";
+
+        // when
+        sut.renameOrganizationMemberNickname(org.getId(), loginMember, newName);
+
+        // then
+        assertThat(orgMember.getNickname()).isEqualTo(newName);
+    }
+
+    @Test
+    void 이미_사용_중인_이름으로_닉네임을_변경할_수_없다() {
+        // given
+        var org = createOrganization("우테코");
+        var member1 = createMember("홍길동1", "hong1@email.com");
+        var orgMember1 = createOrganizationMember("닉네임1", member1, org, OrganizationMemberRole.USER);
+
+        var member2 = createMember("홍길동2", "hong@email2.com");
+        var orgMember2 = createOrganizationMember("닉네임2", member2, org, OrganizationMemberRole.USER);
+        var loginMember2 = new LoginMember(member2.getId());
+
+        var duplicateName = "닉네임1";
+
+        // when // then
+        assertThatThrownBy(() -> sut.renameOrganizationMemberNickname(org.getId(), loginMember2, duplicateName))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("이미 사용 중인 닉네임입니다.");
+    }
+
+    @Test
+    void 자신의_이름으로_바꿀_수_없다() {
+        // given
+        var org = createOrganization("우테코");
+        var member = createMember("홍길동", "hong1@email.com");
+        var orgMember = createOrganizationMember("닉네임1", member, org, OrganizationMemberRole.USER);
+        var loginMember = new LoginMember(member.getId());
+
+        var myNickname = "닉네임1";
+
+        // when // then
+        assertThatThrownBy(() -> sut.renameOrganizationMemberNickname(org.getId(), loginMember, myNickname))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("이미 사용 중인 닉네임입니다.");
     }
 
     private Organization createOrganization(String name) {

@@ -103,6 +103,10 @@ public class OrganizationMember extends BaseEntity {
         }
     }
 
+    public void rename(final String newNickname) {
+        this.nickname = newNickname;
+    }
+
     private void validateRoleChangeBy(final OrganizationMember operator) {
         if (!operator.isBelongTo(this.organization)) {
             throw new ForbiddenException("같은 이벤트 스페이스에 속한 구성원만 권한을 변경할 수 있습니다.");
