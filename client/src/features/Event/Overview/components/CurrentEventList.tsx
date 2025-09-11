@@ -13,11 +13,11 @@ import { groupEventsByDate } from '../../utils/groupEventsByDate';
 
 import { EventSection } from './EventSection';
 
-type EventListProps = {
+type CurrentEventListProps = {
   events: Event[];
 };
 
-export const CurrentEventList = ({ events }: EventListProps) => {
+export const CurrentEventList = ({ events }: CurrentEventListProps) => {
   const groupedEvents = groupEventsByDate(events);
 
   return (
