@@ -4,8 +4,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { organizationQueryOptions } from '@/api/queries/organization';
 import { Button } from '@/shared/components/Button';
+import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
 import { Icon } from '@/shared/components/Icon';
+import { IconButton } from '@/shared/components/IconButton';
 import { PageLayout } from '@/shared/components/PageLayout';
 
 import { EventList } from '../components/EventList';
@@ -24,6 +26,7 @@ export const OverviewPage = () => {
 
   const goMyEvents = () => navigate(`/${organizationId}/event/my`);
   const goHome = () => navigate(`/${organizationId}/event`);
+  const goProfile = () => navigate(`/${organizationId}/profile`);
 
   // S.TODO 로딩 처리
 
@@ -42,9 +45,12 @@ export const OverviewPage = () => {
             />
           }
           right={
-            <Button size="sm" onClick={goMyEvents}>
-              내 이벤트
-            </Button>
+            <Flex gap="8px" alignItems="center">
+              <Button size="sm" onClick={goMyEvents}>
+                내 이벤트
+              </Button>
+              <IconButton name="user" size={24} onClick={goProfile} />
+            </Flex>
           }
         />
       }
