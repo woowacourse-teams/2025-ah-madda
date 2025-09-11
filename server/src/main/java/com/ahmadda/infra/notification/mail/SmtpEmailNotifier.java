@@ -58,9 +58,8 @@ public class SmtpEmailNotifier implements EmailNotifier {
     }
 
     private String createSubject(final EventEmailPayload.Subject subject) {
-        return "[%s] %s님의 이벤트 안내: %s".formatted(
+        return "[아맞다] %s의 이벤트 안내: %s".formatted(
                 subject.organizationName(),
-                subject.organizerNickname(),
                 subject.eventTitle()
         );
     }
@@ -101,7 +100,7 @@ public class SmtpEmailNotifier implements EmailNotifier {
         try {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
-            helper.setTo("amadda.team@gmail.com");
+            helper.setFrom("아맞다 <noreply@ahmadda.com>");
             // TODO. 추후 BCC 수신자가 100명 이상일 경우, 배치 처리 고려
             helper.setBcc(bccRecipients.toArray(String[]::new));
             helper.setSubject(subject);

@@ -9,8 +9,8 @@ public interface ReminderHistoryRepository extends JpaRepository<ReminderHistory
 
     List<ReminderHistory> findByEventId(final Long eventId);
 
-    List<ReminderHistory> findTop10ByEventOrganizerIdAndCreatedAtAfterOrderByCreatedAtDesc(
-            final Long organizerId,
+    List<ReminderHistory> findTop10ByEventIdAndCreatedAtAfterOrderByCreatedAtDesc(
+            final Long eventId,
             final LocalDateTime after
     );
 }

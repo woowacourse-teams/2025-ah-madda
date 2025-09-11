@@ -26,21 +26,6 @@ spring:
   application:
     name: ah-madda
 
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: amadda.mailbot
-    password: ${smtp.password}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-          connectiontimeout: 5000
-          timeout: 10000
-          writetimeout: 5000
-
 oauth:
   google:
     client-id: ${oauth.google.client-id}
@@ -49,6 +34,31 @@ oauth:
     user-uri: ${oauth.google.user-uri}
     connect-timeout: 3000
     read-timeout: 5000
+
+smtp:
+  google:
+    host: ${secrets.smtp.google.host}
+    port: 587
+    username: ${secrets.smtp.google.username}
+    password: ${secrets.smtp.google.password}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 10000
+      mail.smtp.writetimeout: 5000
+
+  aws:
+    host: ${secrets.smtp.aws.host}
+    port: 587
+    username: ${secrets.smtp.aws.username}
+    password: ${secrets.smtp.aws.password}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 10000
+      mail.smtp.writetimeout: 5000
 
 springdoc:
   default-consumes-media-type: application/json

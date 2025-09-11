@@ -30,9 +30,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrganizationService {
 
-    public static final String WOOWACOURSE_NAME = "우아한테크코스";
-    private static final String imageUrl = "techcourse-project-2025.s3.ap-northeast-2.amazonaws.com/ah-madda/woowa.png";
-
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
     private final MemberRepository memberRepository;
@@ -78,6 +75,7 @@ public class OrganizationService {
             final OrganizationParticipateRequest organizationParticipateRequest
     ) {
         validateAlreadyParticipationMember(organizationId, loginMember);
+        validateDuplicateNickname(organizationId, organizationParticipateRequest.nickname());
 
         Organization organization = getOrganization(organizationId);
         Member member = getMember(loginMember);
@@ -122,12 +120,20 @@ public class OrganizationService {
 
     @Transactional
     public void deleteOrganization(final Long organizationId, final LoginMember loginMember) {
-        Organization organization = getOrganization(organizationId);
+        if (!organizationRepository.existsById(organizationId)) {
+            throw new NotFoundException("존재하지 않는 이벤트 스페이스입니다.");
+        }
         OrganizationMember deletingMember = getOrganizationMember(organizationId, loginMember);
 
         validateAdmin(deletingMember);
 
-        organizationRepository.delete(organization);
+        organizationRepository.deleteById(organizationId);
+    }
+
+    private void validateDuplicateNickname(final Long organizationId, final String nickname) {
+        if (organizationMemberRepository.existsByOrganizationIdAndNickname(organizationId, nickname)) {
+            throw new UnprocessableEntityException("이미 사용 중인 닉네임입니다.");
+        }
     }
 
     private void validateAdmin(final OrganizationMember organizationMember) {

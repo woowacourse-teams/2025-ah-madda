@@ -378,6 +378,35 @@ class OrganizationServiceTest {
                 .hasMessage("이벤트 스페이스의 관리자만 삭제할 수 있습니다.");
     }
 
+    @Test
+    void 이미_같은_이름의_사용자가_존재한다면_가입하려하면_예외가_발생한다() {
+        // given
+        var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
+        var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
+        var inviter = createOrganizationMember("surf", member2, organization, OrganizationMemberRole.USER);
+        var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
+
+        var loginMember = new LoginMember(member1.getId());
+        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode());
+
+        sut.participateOrganization(organization.getId(), loginMember, request);
+
+        var duplicateNameMember =
+                memberRepository.save(Member.create("duplicateNameMember", "user3@test.com", "testPicture"));
+        var duplicateName = "surf";
+        var duplicateNameRequest = new OrganizationParticipateRequest(duplicateName, inviteCode.getCode());
+        var duplicateLoginMember = new LoginMember(duplicateNameMember.getId());
+
+        // when // then
+        assertThatThrownBy(() -> sut.participateOrganization(organization.getId(),
+                                                             duplicateLoginMember,
+                                                             duplicateNameRequest
+        ))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("이미 사용 중인 닉네임입니다.");
+    }
+
     private Organization createOrganization(String name) {
         var organization = createOrganization(name, "Desc", "img.png");
         return organizationRepository.save(organization);
