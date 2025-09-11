@@ -16,7 +16,6 @@ export const useEditNickname = () => {
     mutationFn: ({ organizationId, nickname }: { organizationId: number; nickname: string }) =>
       editNickname(organizationId, nickname),
     onSuccess: (_, { organizationId }) => {
-      // organizationProfile 쿼리 무효화
       queryClient.invalidateQueries({
         queryKey: [...profileQueryKeys.all(), organizationId],
       });
