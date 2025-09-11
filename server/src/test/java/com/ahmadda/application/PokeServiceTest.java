@@ -13,6 +13,7 @@ import com.ahmadda.domain.notification.EventNotificationOptOut;
 import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
 import com.ahmadda.domain.notification.Poke;
 import com.ahmadda.domain.notification.PokeHistoryRepository;
+import com.ahmadda.domain.notification.PokeMessage;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
@@ -69,10 +70,14 @@ class PokeServiceTest {
         var event = createEvent("테스트 이벤트", "이벤트 설명", "테스트 장소", organizer, organization);
 
         // when
-        sut.poke(event.getId(), new PokeRequest(participant.getId()), new LoginMember(member.getId()));
+        sut.poke(
+                event.getId(),
+                new PokeRequest(participant.getId(), PokeMessage.ARRIVED),
+                new LoginMember(member.getId())
+        );
 
         // then
-        verify(poke).doPoke(eq(organizer), eq(participant), eq(event), any());
+        verify(poke).doPoke(eq(organizer), eq(participant), eq(PokeMessage.ARRIVED), eq(event), any());
     }
 
     @Test
@@ -86,7 +91,7 @@ class PokeServiceTest {
         var event = createEvent("테스트 이벤트", "이벤트 설명", "테스트 장소", organizer, organization);
 
         var eventId = event.getId();
-        var request = new PokeRequest(participant.getId());
+        var request = new PokeRequest(participant.getId(), PokeMessage.HEART);
         var loginMember = new LoginMember(member.getId());
 
         // when
@@ -120,7 +125,7 @@ class PokeServiceTest {
         var participant = createOrganizationMember("참여자", participantMember, organization);
 
         var nonExistentEventId = 999L;
-        var request = new PokeRequest(participant.getId());
+        var request = new PokeRequest(participant.getId(), PokeMessage.HEART);
         var loginMember = new LoginMember(organizer.getId());
 
         // when // then
@@ -138,7 +143,7 @@ class PokeServiceTest {
         var event = createEvent("테스트 이벤트", "이벤트 설명", "테스트 장소", organizer, organization);
 
         var eventId = event.getId();
-        var request = new PokeRequest(999L);
+        var request = new PokeRequest(999L, PokeMessage.HEART);
         var loginMember = new LoginMember(organizer.getId());
 
         // when // then
@@ -158,7 +163,7 @@ class PokeServiceTest {
         var event = createEvent("테스트 이벤트", "이벤트 설명", "테스트 장소", organizer, organization);
 
         var eventId = event.getId();
-        var request = new PokeRequest(participant.getId());
+        var request = new PokeRequest(participant.getId(), PokeMessage.HEART);
         var loginMember = new LoginMember(999L);
 
         // when // then
@@ -182,7 +187,7 @@ class PokeServiceTest {
         var otherOrganizationMember = createOrganizationMember("다른 구성원", otherMember, otherOrganization);
 
         var eventId = event.getId();
-        var request = new PokeRequest(participant.getId());
+        var request = new PokeRequest(participant.getId(), PokeMessage.HEART);
         var loginMember = new LoginMember(otherMember.getId());
 
         // when // then
@@ -206,7 +211,7 @@ class PokeServiceTest {
         );
 
         var eventId = event.getId();
-        var request = new PokeRequest(participant.getId());
+        var request = new PokeRequest(participant.getId(), PokeMessage.HEART);
         var loginMember = new LoginMember(member.getId());
 
         // when // then

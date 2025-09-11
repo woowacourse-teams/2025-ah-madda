@@ -21,7 +21,6 @@ public class Poke {
 
     private static final int MAX_SENDABLE_COUNT = 3;
     private static final Duration DUPLICATE_POKE_COUNT_MINUTES = Duration.ofMinutes(30L);
-    private static final String POKE_MESSAGE_FORMAT = "%s님에게 포키가 왔습니다! 🎉";
 
     private final PushNotifier pushNotifier;
     private final PokeHistoryRepository pokeHistoryRepository;
@@ -30,13 +29,14 @@ public class Poke {
     public PokeHistory doPoke(
             final OrganizationMember sender,
             final OrganizationMember recipient,
+            final PokeMessage pokeMessage,
             final Event event,
             final LocalDateTime sentAt
     ) {
         validateDoPoke(sender, recipient, event, sentAt);
         validateDuplicateDoPoke(sender, recipient, event, sentAt);
 
-        pushPoke(sender, recipient, event);
+        pushPoke(sender, recipient, pokeMessage, event);
 
         return PokeHistory.create(sender, recipient, event, sentAt);
     }
@@ -98,9 +98,10 @@ public class Poke {
     private void pushPoke(
             final OrganizationMember sendOrganizationMember,
             final OrganizationMember receiveOrganizationMember,
+            final PokeMessage pokeMessage,
             final Event event
     ) {
-        String sendMessage = String.format(POKE_MESSAGE_FORMAT, sendOrganizationMember.getNickname());
+        String sendMessage = pokeMessage.getMessage(sendOrganizationMember.getNickname());
 
         pushNotifier.sendPush(
                 receiveOrganizationMember,

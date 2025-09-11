@@ -39,7 +39,8 @@ public class PokeService {
 
         validateRecipientOptInStatus(recipient, event);
 
-        PokeHistory pokeHistory = poke.doPoke(sender, recipient, event, LocalDateTime.now());
+        PokeHistory pokeHistory =
+                poke.doPoke(sender, recipient, notifyPokeRequest.pokeMessage(), event, LocalDateTime.now());
 
         return pokeHistoryRepository.save(pokeHistory);
     }

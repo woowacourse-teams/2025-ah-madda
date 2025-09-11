@@ -20,10 +20,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
@@ -63,10 +61,16 @@ class PokeTest {
         var sentAt = LocalDateTime.now();
 
         // when
-        sut.doPoke(sender, recipient, event, sentAt);
+        sut.doPoke(sender, recipient, PokeMessage.ARRIVED, event, sentAt);
 
         // then
-        verify(pushNotifier).sendPush(eq(recipient), argThat(Objects::nonNull));
+        verify(pushNotifier).sendPush(
+                eq(recipient),
+                eq(PushNotificationPayload.of(
+                        event,
+                        "nickname님에게 포키가 도착했어요! ✨"
+                ))
+        );
     }
 
     @Test
@@ -78,7 +82,7 @@ class PokeTest {
         var event = createEvent(organization, sender, LocalDateTime.now());
 
         // when // then
-        assertThatThrownBy(() -> sut.doPoke(sender, sender, event, LocalDateTime.now()))
+        assertThatThrownBy(() -> sut.doPoke(sender, sender, PokeMessage.ARRIVED, event, LocalDateTime.now()))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("스스로에게 포키를 보낼 수 없습니다");
     }
@@ -94,7 +98,7 @@ class PokeTest {
         var event = createEvent(organization, organizer, LocalDateTime.now());
 
         // when // then
-        assertThatThrownBy(() -> sut.doPoke(sender, organizer, event, LocalDateTime.now()))
+        assertThatThrownBy(() -> sut.doPoke(sender, organizer, PokeMessage.ARRIVED, event, LocalDateTime.now()))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("주최자에게 포키를 보낼 수 없습니다");
     }
@@ -119,7 +123,13 @@ class PokeTest {
         );
 
         // when // then
-        assertThatThrownBy(() -> sut.doPoke(sender, otherOrganizationMember, event, LocalDateTime.now()))
+        assertThatThrownBy(() -> sut.doPoke(
+                sender,
+                otherOrganizationMember,
+                PokeMessage.ARRIVED,
+                event,
+                LocalDateTime.now()
+        ))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("이미 이벤트에 참여한 구성원에게 포키를 보낼 수 없습니다.");
     }
@@ -136,7 +146,7 @@ class PokeTest {
         var event = createEvent(organization, recipient, LocalDateTime.now());
 
         // when // then
-        assertThatThrownBy(() -> sut.doPoke(sender, recipient, event, LocalDateTime.now()))
+        assertThatThrownBy(() -> sut.doPoke(sender, recipient, PokeMessage.ARRIVED, event, LocalDateTime.now()))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("포키를 보내려면 해당 이벤트 스페이스에 참여하고 있어야 합니다.");
     }
@@ -153,7 +163,7 @@ class PokeTest {
         var event = createEvent(organization, sender, LocalDateTime.now());
 
         // when // then
-        assertThatThrownBy(() -> sut.doPoke(sender, recipient, event, LocalDateTime.now()))
+        assertThatThrownBy(() -> sut.doPoke(sender, recipient, PokeMessage.ARRIVED, event, LocalDateTime.now()))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("포키 대상이 해당 이벤트 스페이스에 참여하고 있어야 합니다.");
     }
@@ -182,7 +192,7 @@ class PokeTest {
         var expectWaitingMinutes = ChronoUnit.MINUTES.between(duplicateCheckStart, firstSentAt);
 
         // when // then
-        assertThatThrownBy(() -> sut.doPoke(sender, recipient, event, sentAt))
+        assertThatThrownBy(() -> sut.doPoke(sender, recipient, PokeMessage.ARRIVED, event, sentAt))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage(String.format(
                         "%s님에게 너무 많은 포키를 보냈어요 🫠 %d분 뒤에 찌를 수 있어요!",
