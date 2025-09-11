@@ -357,9 +357,7 @@ public class Event extends BaseEntity {
     }
 
     private void validateEventOrganizersMaxCapacity(final List<OrganizationMember> eventOrganizers) {
-        int eventOrganizerSize = this.eventOrganizers.size() + eventOrganizers.size();
-
-        if (eventOrganizerSize > MAX_EVENT_ORGANIZERS_CAPACITY) {
+        if (eventOrganizers.size() > MAX_EVENT_ORGANIZERS_CAPACITY) {
             throw new UnprocessableEntityException("최대 주최자 수는 10명입니다.");
         }
     }
