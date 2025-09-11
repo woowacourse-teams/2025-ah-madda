@@ -21,13 +21,13 @@ import org.hibernate.annotations.SQLRestriction;
 @Table(name = "organization_group")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLDelete(sql = "UPDATE organization_group SET deleted_at = CURRENT_TIMESTAMP WHERE group_id = ?")
+@SQLDelete(sql = "UPDATE organization_group SET deleted_at = CURRENT_TIMESTAMP WHERE organization_group_id = ?")
 @SQLRestriction("deleted_at IS NULL")
 public class OrganizationGroup extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "group_id")
+    @Column(name = "organization_group_id")
     private Long id;
 
     @Column(nullable = false)
