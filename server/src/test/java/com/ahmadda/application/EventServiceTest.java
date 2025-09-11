@@ -901,7 +901,7 @@ class EventServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now))
-                .isInstanceOf(ForbiddenException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("주최자는 중복될 수 없습니다.");
     }
 

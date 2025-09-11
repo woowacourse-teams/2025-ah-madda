@@ -386,7 +386,7 @@ class EventTest {
                 List.of(baseOrganizer, duplicateCoOrganizer),
                 10
         ))
-                .isInstanceOf(ForbiddenException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("주최자는 중복될 수 없습니다.");
     }
 
