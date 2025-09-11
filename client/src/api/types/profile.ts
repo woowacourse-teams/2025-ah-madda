@@ -4,3 +4,9 @@ export type Profile = {
   email: string;
   picture: string | null;
 };
+
+export type OrganizationProfile = {
+  organizationMemberId: number;
+  nickname: string;
+  isAdmin: boolean;
+};
