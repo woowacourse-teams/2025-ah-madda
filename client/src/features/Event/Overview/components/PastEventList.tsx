@@ -21,7 +21,7 @@ export const PastEventList = ({ events }: PastEventListProps) => {
         justifyContent="flex-start"
         alignItems="center"
         gap="5px"
-        margin="10px 0 "
+        margin="10px 0"
         css={css`
           border-radius: 8px;
           background-color: ${theme.colors.primary50};
