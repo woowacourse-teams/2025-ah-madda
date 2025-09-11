@@ -102,20 +102,23 @@ export const Calendar = ({
       </WeekDayHeader>
 
       <DateContainer>
-        {calendarDays.map((date) => (
-          <DateButton
-            key={date.toISOString()}
-            onClick={() => handleDateClick(date)}
-            isToday={isToday(date)}
-            isSelected={isSelectedDate(date, selectedDate || null, selectedEndDate || null)}
-            isInRange={isInDateRange(date, selectedDate || null, selectedEndDate || null)}
-            isCurrentMonth={isCurrentMonth(date, month)}
-            isWeekend={isWeekend(date)}
-            disabled={isDisabled(date)}
-          >
-            {date.getDate()}
-          </DateButton>
-        ))}
+        {calendarDays.map((date) => {
+          const disabled = isDisabled(date);
+          return (
+            <DateButton
+              key={date.toISOString()}
+              onClick={() => !disabled && handleDateClick(date)}
+              isToday={isToday(date)}
+              isSelected={isSelectedDate(date, selectedDate || null, selectedEndDate || null)}
+              isInRange={isInDateRange(date, selectedDate || null, selectedEndDate || null)}
+              isCurrentMonth={isCurrentMonth(date, month)}
+              isWeekend={isWeekend(date)}
+              disabled={disabled}
+            >
+              {date.getDate()}
+            </DateButton>
+          );
+        })}
       </DateContainer>
     </Card>
   );
