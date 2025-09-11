@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS event_organizer
+CREATE TABLE event_organizer
 (
     event_organizer_id     BIGINT AUTO_INCREMENT NOT NULL,
     event_id               BIGINT                NOT NULL,
@@ -15,21 +15,25 @@ CREATE TABLE IF NOT EXISTS event_organizer
     CONSTRAINT fk_event_organizer_on_org_member
         FOREIGN KEY (organization_member_id) REFERENCES organization_member (organization_member_id),
 
-    CONSTRAINT uk_event_organizer_event_id_organization_member_id
-        UNIQUE (event_id, organization_member_id, deleted_at)
+    CONSTRAINT uk_event_organizer_per_event
+        UNIQUE (event_id, organization_member_id)
 );
 
 INSERT IGNORE INTO event_organizer (event_id,
                                     organization_member_id,
                                     created_at,
-                                    updated_at,
-                                    deleted_at)
+                                    updated_at)
 SELECT event_id,
-       organization_member_id,
+       organizer_id,
        created_at,
-       updated_at,
-       deleted_at
-FROM event_owner_organization_member;
+       COALESCE(updated_at, created_at)
+FROM event
+WHERE organizer_id IS NOT NULL;
 
-DROP TABLE IF EXISTS event_owner_organization_member;
 
+ALTER TABLE event
+    DROP FOREIGN KEY FK_event__org_member__organizer_id;
+
+
+ALTER TABLE event
+    DROP COLUMN organizer_id;
