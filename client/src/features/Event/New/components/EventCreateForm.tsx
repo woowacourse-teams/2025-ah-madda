@@ -401,6 +401,12 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 onSelect={handleRegistrationEndSelect}
                 initialDate={parseInputDate(basicEventForm.registrationEnd) || null}
                 initialTime={timeValueFromDate(parseInputDate(basicEventForm.registrationEnd))}
+                disabledDates={
+                  basicEventForm.eventStart
+                    ? ([parseInputDate(basicEventForm.eventStart)].filter(Boolean) as Date[])
+                    : []
+                }
+                minTime={parseInputDate(basicEventForm.eventStart) || undefined}
               />
             </Flex>
 

@@ -15,6 +15,8 @@ type TimePickerProps = {
   onTimeChange?: (time: Date) => void;
   label?: string;
   disabled?: boolean;
+  minTime?: Date;
+  selectedDate?: Date;
 };
 
 const HOUR_OPTIONS = generateHourOptions();
@@ -25,11 +27,34 @@ export const TimePicker = ({
   onTimeChange,
   label = '시간 선택',
   disabled = false,
+  minTime,
+  selectedDate,
 }: TimePickerProps) => {
   const currentHour = selectedTime?.getHours() ?? 0;
   const currentMinute = selectedTime?.getMinutes() ?? 0;
 
   const hasTime = selectedTime !== undefined;
+
+  const isSameDay = (() => {
+    if (!selectedDate || !minTime) return false;
+
+    const isSameYear = selectedDate.getFullYear() === minTime.getFullYear();
+    const isSameMonth = selectedDate.getMonth() === minTime.getMonth();
+    const isSameDate = selectedDate.getDate() === minTime.getDate();
+
+    return isSameYear && isSameMonth && isSameDate;
+  })();
+
+  const isHourDisabled = (hour: number) => {
+    if (!isSameDay || !minTime) return false;
+
+    return hour > minTime.getHours();
+  };
+
+  const isMinuteDisabled = (minute: number) => {
+    if (!isSameDay || !minTime) return false;
+    return currentHour === minTime.getHours() && minute > minTime.getMinutes();
+  };
 
   const handleHourChange = (hour: number) => {
     const newTime = createTimeFromHour(selectedTime, hour, currentMinute);
@@ -62,7 +87,7 @@ export const TimePicker = ({
             </option>
           )}
           {HOUR_OPTIONS.map((hour) => (
-            <option key={hour.value} value={hour.value}>
+            <option key={hour.value} value={hour.value} disabled={isHourDisabled(hour.value)}>
               {hour.label}
             </option>
           ))}
@@ -84,7 +109,11 @@ export const TimePicker = ({
             </option>
           )}
           {MINUTE_OPTIONS.map((minute) => (
-            <option key={minute.value} value={minute.value}>
+            <option
+              key={minute.value}
+              value={minute.value}
+              disabled={isMinuteDisabled(minute.value)}
+            >
               {minute.label}
             </option>
           ))}
