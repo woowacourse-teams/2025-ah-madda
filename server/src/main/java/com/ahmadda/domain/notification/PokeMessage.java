@@ -8,7 +8,7 @@ public enum PokeMessage {
 
     private final String messageFormat;
 
-    PokeMessage(String messageFormat) {
+    PokeMessage(final String messageFormat) {
         this.messageFormat = messageFormat;
     }
 
