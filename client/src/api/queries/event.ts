@@ -1,7 +1,7 @@
 import { queryOptions } from '@tanstack/react-query';
 
 import { Guest, NonGuest } from '../../features/Event/Manage/types';
-import { CreateEventAPIRequest, EventDetail } from '../../features/Event/types/Event';
+import { CreateEventAPIRequest, Event, EventDetail } from '../../features/Event/types/Event';
 import { fetcher } from '../fetcher';
 import { postAlarm } from '../mutations/useAddAlarm';
 import {
@@ -24,6 +24,8 @@ export type NotificationOptOutState = { optedOut: boolean };
 
 export const eventQueryKeys = {
   all: () => ['event'],
+  ongoing: () => [...eventQueryKeys.all(), 'ongoing'],
+  past: () => [...eventQueryKeys.all(), 'past'],
   detail: () => [...eventQueryKeys.all(), 'detail'],
   alarm: () => [...eventQueryKeys.all(), 'alarm'],
   guests: () => [...eventQueryKeys.all(), 'guests'],
@@ -46,6 +48,16 @@ export const eventQueryOptions = {
     queryOptions({
       queryKey: [...eventQueryKeys.detail(), eventId],
       queryFn: () => getEventDetailAPI(eventId),
+    }),
+  ongoing: (organizationId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.ongoing(), organizationId],
+      queryFn: () => getOngoingEventAPI({ organizationId }),
+    }),
+  past: (organizationId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.past(), organizationId],
+      queryFn: () => getPastEventAPI({ organizationId }),
     }),
   alarms: (eventId: number) => ({
     mutationKey: [...eventQueryKeys.alarm(), eventId],
@@ -112,6 +124,14 @@ export const eventQueryOptions = {
       queryKey: [...eventQueryKeys.templateDetail(), templateId],
       queryFn: () => getTemplateDetail(templateId),
     }),
+};
+
+const getOngoingEventAPI = ({ organizationId }: { organizationId: number }) => {
+  return fetcher.get<Event[]>(`organizations/${organizationId}/events`);
+};
+
+const getPastEventAPI = ({ organizationId }: { organizationId: number }) => {
+  return fetcher.get<Event[]>(`organizations/${organizationId}/events/past`);
 };
 
 const getGuests = async (eventId: number) => {

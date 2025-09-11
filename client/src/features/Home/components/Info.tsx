@@ -9,28 +9,20 @@ import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
-import { useModal } from '@/shared/hooks/useModal';
 
 import { useToast } from '../../../shared/components/Toast/ToastContext';
 
-import { GuideModal } from './GuideModal';
-
 export const Info = () => {
   const { error } = useToast();
-  const { isOpen, open, close } = useModal();
   const navigate = useNavigate();
 
-  const handelGuideOpenClick = () => {
+  const handleEnterOrganizationSpace = () => {
     if (!isAuthenticated()) {
       error(`로그인이 필요한 서비스입니다.\n먼저 로그인해 주세요.`, {
         duration: 3000,
       });
       return;
     }
-    open();
-  };
-
-  const handleEnterClick = () => {
     navigate(`/organization`);
   };
 
@@ -99,11 +91,10 @@ export const Info = () => {
             <PointIcon src={Point} alt="Point" className="point3" />
           </Flex>
         </Flex>
-        <Button size="full" onClick={handelGuideOpenClick}>
-          이벤트 보러가기
+        <Button size="full" onClick={handleEnterOrganizationSpace}>
+          이벤트 스페이스 보러가기
         </Button>
       </Flex>
-      <GuideModal isOpen={isOpen} onClose={close} onEnter={handleEnterClick} />
     </>
   );
 };

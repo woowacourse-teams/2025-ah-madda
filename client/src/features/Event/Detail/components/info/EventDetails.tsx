@@ -11,12 +11,12 @@ import { formatKoreanDateTime } from '../../utils/formatKoreanDateTime';
 
 type EventDetailProps = Pick<
   EventDetail,
-  'organizerName' | 'description' | 'currentGuestCount' | 'maxCapacity' | 'registrationEnd'
+  'organizerNicknames' | 'description' | 'currentGuestCount' | 'maxCapacity' | 'registrationEnd'
 >;
 
 export const EventDetails = ({
   description,
-  organizerName,
+  organizerNicknames,
   currentGuestCount,
   maxCapacity,
   registrationEnd,
@@ -25,6 +25,7 @@ export const EventDetails = ({
     maxCapacity,
     currentGuestCount
   );
+
   return (
     <Flex dir="column" gap="36px" margin="40px 0" padding="0 16px">
       <Flex dir="column" alignItems="flex-start" gap="12px">
@@ -66,7 +67,9 @@ export const EventDetails = ({
           <Text as="h2" type="Heading" weight="semibold">
             주최자
           </Text>
-          <Text>{organizerName}</Text>
+          <Text>
+            {organizerNicknames.length > 1 ? organizerNicknames.join(', ') : organizerNicknames[0]}
+          </Text>
         </Flex>
       </Flex>
       <Flex width="100%" dir="column" alignItems="flex-start" gap="12px">

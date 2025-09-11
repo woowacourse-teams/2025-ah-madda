@@ -52,6 +52,7 @@ const DesktopButtonContainer = styled(Flex)`
   justify-content: flex-end;
   align-items: center;
   gap: 10px;
+  padding: 0 20px;
 
   @media (max-width: 768px) {
     display: none;
