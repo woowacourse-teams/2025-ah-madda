@@ -98,7 +98,7 @@ public class EventService {
         Set<Long> NonDuplicatedOrganizationMemberIds = new HashSet<>(organizationMemberIds);
 
         if (NonDuplicatedOrganizationMemberIds.size() != organizationMemberIds.size()) {
-            throw new ForbiddenException("주최자는 중복될 수 없습니다.");
+            throw new UnprocessableEntityException("주최자는 중복될 수 없습니다.");
         }
 
         List<OrganizationMember> findOrganizationMembers =

@@ -3,7 +3,6 @@ package com.ahmadda.presentation;
 
 import com.ahmadda.application.EventService;
 import com.ahmadda.application.OrganizationMemberEventService;
-import com.ahmadda.application.OrganizationService;
 import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.LoginMember;
@@ -47,7 +46,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrganizationEventController {
 
-    private final OrganizationService organizationService;
     private final OrganizationMemberEventService organizationMemberEventService;
     private final EventService eventService;
 
@@ -227,25 +225,12 @@ public class OrganizationEventController {
                     content = @Content(
                             examples = {
                                     @ExampleObject(
-                                            name = "동일한 이벤트 스페이스 속하지 않음",
                                             value = """
                                                     {
                                                       "type": "about:blank",
                                                       "title": "Forbidden",
                                                       "status": 403,
                                                       "detail": "주최자는 동일한 이벤트 스페이스에 속해야 합니다.",
-                                                      "instance": "/api/organizations/{organizationId}/events"
-                                                    }
-                                                    """
-                                    ),
-                                    @ExampleObject(
-                                            name = "중복된 주최자",
-                                            value = """
-                                                    {
-                                                      "type": "about:blank",
-                                                      "title": "Forbidden",
-                                                      "status": 403,
-                                                      "detail": "중복되는 주최자가 존재합니다.",
                                                       "instance": "/api/organizations/{organizationId}/events"
                                                     }
                                                     """
@@ -344,6 +329,30 @@ public class OrganizationEventController {
                                                       "title": "Unprocessable Entity",
                                                       "status": 422,
                                                       "detail": "최대 수용 인원은 1명보다 적거나 21억명 보다 클 수 없습니다.",
+                                                      "instance": "/api/organizations/{organizationId}/events"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "중복된 주최자",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "주최자는 중복될 수 없습니다",
+                                                      "instance": "/api/organizations/{organizationId}/events"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "최대 주최자수 초과",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "최대 주최자 수는 10명입니다.",
                                                       "instance": "/api/organizations/{organizationId}/events"
                                                     }
                                                     """
