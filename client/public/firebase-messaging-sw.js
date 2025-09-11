@@ -27,6 +27,7 @@ messaging.onBackgroundMessage((payload) => {
     data: payload.data,
     tag: payload.data.eventId || 'default',
     requireInteraction: true,
+    renotify: false,
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
@@ -76,6 +77,7 @@ self.addEventListener('push', (event) => {
     data: resultData.data,
     tag: resultData.eventId || 'default',
     requireInteraction: true,
+    renotify: false,
   };
 
   event.waitUntil(self.registration.showNotification(notificationTitle, notificationOptions));

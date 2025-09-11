@@ -1,6 +1,5 @@
 import { queryOptions } from '@tanstack/react-query';
 
-import { Event } from '@/features/Event/types/Event';
 import { Organization } from '@/features/Organization/types/Organization';
 
 import { fetcher } from '../fetcher';
@@ -21,12 +20,6 @@ export const organizationQueryOptions = {
       queryFn: () => getOrganization({ organizationId }),
     }),
 
-  event: (organizationId: number) =>
-    queryOptions({
-      queryKey: [...organizationQueryKeys.event(), organizationId],
-      queryFn: () => getAllEventAPI({ organizationId }),
-    }),
-
   profile: (organizationId: number) =>
     queryOptions({
       queryKey: [...organizationQueryKeys.profile(), organizationId],
@@ -44,10 +37,6 @@ export const organizationQueryOptions = {
       queryKey: organizationQueryKeys.joined(),
       queryFn: getParticipatedOrganizations,
     }),
-};
-
-const getAllEventAPI = ({ organizationId }: { organizationId: number }) => {
-  return fetcher.get<Event[]>(`organizations/${organizationId}/events`);
 };
 
 export const getOrganization = ({ organizationId }: { organizationId: string }) => {

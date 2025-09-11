@@ -26,7 +26,7 @@ export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationPr
         <Flex
           justifyContent="space-between"
           alignItems="center"
-          padding="20px 10px"
+          padding="10px"
           css={css`
             @media (max-width: 481px) {
               flex-direction: column;

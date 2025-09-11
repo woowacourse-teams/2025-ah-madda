@@ -9,13 +9,13 @@ import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
 import { formatDateTime } from '../../My/utils/date';
-import type { Event } from '../../types/Event';
+import type { EventDetail } from '../../types/Event';
 import { getEventCapacityInfo } from '../utils/eventCapacity';
 
 import { Statistics } from './Statistics';
 
 type EventInfoSectionProps = {
-  event: Event;
+  event: EventDetail;
   profile?: Profile;
   statistics?: StatisticsAPIResponse[];
 };
