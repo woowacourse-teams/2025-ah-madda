@@ -68,7 +68,7 @@ class PokeTest {
                 eq(recipient),
                 eq(PushNotificationPayload.of(
                         event,
-                        "nickname님에게 포키가 도착했어요! ✨"
+                        "nickname님의 포키가 도착했어요! ✨"
                 ))
         );
     }
