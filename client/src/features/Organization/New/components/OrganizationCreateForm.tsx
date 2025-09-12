@@ -8,11 +8,16 @@ import {
   getOrganizationDetailAPI,
   useUpdateOrganization,
 } from '@/api/mutations/useUpdateOrganization';
+import { useUpdateOrganizationMemberRoles } from '@/api/mutations/useUpdateOrganizationMemberRoles';
+import { organizationQueryOptions } from '@/api/queries/organization';
+import { GuestList } from '@/features/Event/Manage/components/GuestList';
+import type { NonGuest } from '@/features/Event/Manage/types';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
 import { useModal } from '@/shared/hooks/useModal';
+import { theme } from '@/shared/styles/theme';
 
 import { MAX_LENGTH } from '../constants/validationRules';
 import { useCreateOrganizationProcess } from '../hooks/useCreateOrganizationProcess';
@@ -31,6 +36,7 @@ export const OrganizationCreateForm = () => {
 
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
   const objectUrlRef = useRef<string | undefined>(undefined);
+  const { mutateAsync: updateRoles } = useUpdateOrganizationMemberRoles();
 
   const { data: org } = useQuery({
     queryKey: ['organization', 'detail', organizationId],
@@ -91,11 +97,45 @@ export const OrganizationCreateForm = () => {
 
   const isSubmitting = isEdit ? isPatching : isCreating;
 
-  const handleEditButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleEditButtonClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (!isValid()) return;
 
     if (isEdit && organizationId) {
+      let nextAdminIds = adminList.filter((m) => m.isChecked).map((m) => m.organizationMemberId);
+
+      const myId = myProfile?.organizationMemberId;
+      if (myId) {
+        nextAdminIds = [...nextAdminIds, myId];
+      }
+
+      const prev = initialAdminIdsRef.current;
+      const next = new Set(nextAdminIds);
+      const added: number[] = [];
+      const removed: number[] = [];
+
+      next.forEach((id) => {
+        if (!prev.has(id)) added.push(id);
+      });
+      prev.forEach((id) => {
+        if (!next.has(id)) removed.push(id);
+      });
+
+      await Promise.all([
+        added.length
+          ? updateRoles({
+              organizationId,
+              payload: { organizationMemberIds: added, role: 'ADMIN' },
+            })
+          : Promise.resolve(),
+        removed.length
+          ? updateRoles({
+              organizationId,
+              payload: { organizationMemberIds: removed, role: 'USER' },
+            })
+          : Promise.resolve(),
+      ]);
+
       patchOrganization(
         {
           organizationId,
@@ -124,6 +164,55 @@ export const OrganizationCreateForm = () => {
     if (!trimmed || isSubmitting) return;
     handleCreate(trimmed);
   };
+
+  const { data: myProfile } = useQuery({
+    ...organizationQueryOptions.profile(Number(organizationId)),
+    enabled: isEdit && !!organizationId,
+  });
+
+  const { data: members } = useQuery({
+    ...organizationQueryOptions.members(Number(organizationId)),
+    enabled: !!organizationId,
+  });
+
+  const [adminList, setAdminList] = useState<NonGuest[]>([]);
+  const initialAdminIdsRef = useRef<Set<number>>(new Set());
+
+  useEffect(() => {
+    if (!members) return;
+
+    const myId = myProfile?.organizationMemberId;
+    const list = members
+      .filter((member) => (myId ? member.organizationMemberId !== myId : true))
+      .map((member) => ({
+        organizationMemberId: member.organizationMemberId,
+        nickname: member.nickname,
+        imageUrl: undefined,
+        isChecked: !!member.isAdmin,
+      }));
+
+    setAdminList(list);
+
+    initialAdminIdsRef.current = new Set(
+      members.filter((m) => m.isAdmin).map((m) => m.organizationMemberId)
+    );
+  }, [members, myProfile]);
+
+  const onAdminChecked = (organizationMemberId: number) => {
+    setAdminList((prev) =>
+      prev.map((m) =>
+        m.organizationMemberId === organizationMemberId ? { ...m, isChecked: !m.isChecked } : m
+      )
+    );
+  };
+  const onAdminAllChecked = () => {
+    setAdminList((prev) => {
+      const allChecked = prev.length > 0 && prev.every((m) => m.isChecked);
+      return prev.map((m) => ({ ...m, isChecked: !allChecked }));
+    });
+  };
+
+  const selectedAdminIds = adminList.filter((m) => m.isChecked).map((m) => m.organizationMemberId);
 
   return (
     <>
@@ -185,6 +274,26 @@ export const OrganizationCreateForm = () => {
               isRequired
             />
           </Flex>
+
+          {isEdit && (
+            <Flex dir="column" gap="12px">
+              <Text as="label" type="Heading" weight="medium">
+                관리자
+              </Text>
+
+              <GuestList
+                title={`관리자 지정 (${selectedAdminIds.length}명)`}
+                titleColor={theme.colors.gray700}
+                guests={adminList}
+                onGuestChecked={onAdminChecked}
+                onAllGuestChecked={onAdminAllChecked}
+              />
+
+              <Text type="Label" color={theme.colors.gray500}>
+                이벤트 스페이스 생성자는 자동으로 관리자 권한을 갖습니다.
+              </Text>
+            </Flex>
+          )}
 
           <Button
             type="submit"
