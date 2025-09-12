@@ -43,7 +43,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
         String accessToken = headerProvider.extractAccessToken(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
 
-        Boolean isExpired = jwtProvider.isTokenExpired(accessToken, jwtAccessTokenProperties.getAccessSecretKey())
+        boolean isExpired = jwtProvider.isTokenExpired(accessToken, jwtAccessTokenProperties.getAccessSecretKey())
                 .orElseThrow(() -> new UnauthorizedException("유효하지 않은 액세스 토큰입니다."));
 
         if (isExpired) {
