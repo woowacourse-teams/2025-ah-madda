@@ -44,6 +44,7 @@ public class Event extends BaseEntity {
     private static final int MIN_CAPACITY = 1;
     private static final int MAX_CAPACITY = 2_100_000_000;
     private static final Duration BEFORE_EVENT_STARTED_CANCEL_AVAILABLE_MINUTE = Duration.ofMinutes(10);
+    private static final int MAX_EVENT_ORGANIZERS_CAPACITY = 10;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
     private final List<Guest> guests = new ArrayList<>();
@@ -91,6 +92,7 @@ public class Event extends BaseEntity {
             final List<Question> questions
     ) {
         validateMaxCapacity(maxCapacity);
+        validateEventOrganizersMaxCapacity(eventOrganizers);
 
         this.title = title;
         this.description = description;
@@ -354,6 +356,12 @@ public class Event extends BaseEntity {
         return guests.size() >= maxCapacity;
     }
 
+    private void validateEventOrganizersMaxCapacity(final List<OrganizationMember> eventOrganizers) {
+        if (eventOrganizers.size() > MAX_EVENT_ORGANIZERS_CAPACITY) {
+            throw new UnprocessableEntityException("최대 주최자 수는 10명입니다.");
+        }
+    }
+
     private List<EventOrganizer> createEventOrganizers(final List<OrganizationMember> eventOrganizers) {
         validateDuplicateEventOrganizers(eventOrganizers);
 
@@ -371,7 +379,7 @@ public class Event extends BaseEntity {
         List<OrganizationMember> organizerIncludeOrganizationMembers = new ArrayList<>(eventOrganizers);
 
         if (organizerIncludeOrganizationMembers.size() != distinctOrganizationMembers.size()) {
-            throw new ForbiddenException("주최자는 중복될 수 없습니다.");
+            throw new UnprocessableEntityException("주최자는 중복될 수 없습니다.");
         }
     }
 

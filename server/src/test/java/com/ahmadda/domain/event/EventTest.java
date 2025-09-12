@@ -12,6 +12,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -386,8 +387,47 @@ class EventTest {
                 List.of(baseOrganizer, duplicateCoOrganizer),
                 10
         ))
-                .isInstanceOf(ForbiddenException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("주최자는 중복될 수 없습니다.");
+    }
+
+    @Test
+    void 주최자가_10명을_초과하면_예외가_발생한다() {
+        // given
+        var now = LocalDateTime.now();
+        var registrationPeriod = EventPeriod.create(
+                LocalDateTime.now()
+                        .plusDays(1),
+                LocalDateTime.now()
+                        .plusDays(2)
+        );
+
+        List<OrganizationMember> organizers = new ArrayList<>();
+        organizers.add(baseOrganizer);
+        for (int i = 0; i < 10; i++) {
+            var coOrganizerMail = "coOrganizer" + i + "@naver.com";
+            var member = createMember("공동주최자" + i, coOrganizerMail);
+            organizers.add(createOrganizationMember("공동주최자" + i, member, baseOrganization));
+        }
+
+        var eventOperationPeriod = EventOperationPeriod.create(
+                registrationPeriod.start(), registrationPeriod.end(),
+                now.plusDays(3), now.plusDays(4),
+                now
+        );
+
+        // when // then
+        assertThatThrownBy(() -> Event.create(
+                "title",
+                "description",
+                "place",
+                baseOrganization,
+                eventOperationPeriod,
+                organizers,
+                10
+        ))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("최대 주최자 수는 10명입니다.");
     }
 
     @Test

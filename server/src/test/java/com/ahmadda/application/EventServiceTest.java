@@ -901,8 +901,44 @@ class EventServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now))
-                .isInstanceOf(ForbiddenException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("주최자는 중복될 수 없습니다.");
+    }
+
+    @Test
+    void 주최자가_10명을_초과하면_이벤트_생성시_예외가_발생한다() {
+        // given
+        var organization = createOrganization();
+        var member = createMember();
+        createOrganizationMember(organization, member);
+
+        List<Long> coOrganizerIds = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            var coOrganizerMail = "coOrganizer" + i + "@naver.com";
+            var coOrganizer = createMember("공동주최자" + i, coOrganizerMail);
+            var coOrgMember = createOrganizationMember(organization, coOrganizer);
+            coOrganizerIds.add(coOrgMember.getId());
+        }
+
+        var now = LocalDateTime.now();
+        var eventCreateRequest = new EventCreateRequest(
+                "UI/UX 이벤트",
+                "UI/UX 이벤트입니다",
+                "선릉",
+                now.plusDays(4),
+                now.plusDays(5),
+                now.plusDays(6),
+                100,
+                List.of(),
+                coOrganizerIds
+        );
+
+        var loginMember = new LoginMember(member.getId());
+
+        // when // then
+        assertThatThrownBy(() -> sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("최대 주최자 수는 10명입니다.");
     }
 
     private Organization createOrganization() {
