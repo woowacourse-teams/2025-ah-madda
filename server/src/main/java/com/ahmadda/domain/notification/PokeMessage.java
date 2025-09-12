@@ -12,7 +12,7 @@ public enum PokeMessage {
         this.messageFormat = messageFormat;
     }
 
-    public String getMessage(final String from) {
-        return String.format(messageFormat, from);
+    public String getMessage(final String senderNickname) {
+        return String.format(messageFormat, senderNickname);
     }
 }
