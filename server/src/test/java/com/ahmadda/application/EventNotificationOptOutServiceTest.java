@@ -285,17 +285,17 @@ class EventNotificationOptOutServiceTest {
                     .hasSize(2);
 
             softly.assertThat(results.get(0)
-                            .getGuest())
+                                      .getGuest())
                     .isEqualTo(guest1);
             softly.assertThat(results.get(0)
-                            .isOptedOut())
+                                      .isOptedOut())
                     .isFalse();
 
             softly.assertThat(results.get(1)
-                            .getGuest())
+                                      .getGuest())
                     .isEqualTo(guest2);
             softly.assertThat(results.get(1)
-                            .isOptedOut())
+                                      .isOptedOut())
                     .isTrue();
         });
     }
@@ -323,17 +323,17 @@ class EventNotificationOptOutServiceTest {
                     .hasSize(2);
 
             softly.assertThat(results.get(0)
-                            .getOrganizationMember())
+                                      .getOrganizationMember())
                     .isEqualTo(orgMember1);
             softly.assertThat(results.get(0)
-                            .isOptedOut())
+                                      .isOptedOut())
                     .isFalse();
 
             softly.assertThat(results.get(1)
-                            .getOrganizationMember())
+                                      .getOrganizationMember())
                     .isEqualTo(orgMember2);
             softly.assertThat(results.get(1)
-                            .isOptedOut())
+                                      .isOptedOut())
                     .isTrue();
         });
     }

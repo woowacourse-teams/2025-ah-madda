@@ -3,14 +3,13 @@ package com.ahmadda.application;
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnauthorizedException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
-import com.ahmadda.domain.organization.OrganizationMemberRepository;
-import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.infra.auth.HashEncoder;
 import com.ahmadda.infra.auth.RefreshTokenRepository;
-import com.ahmadda.infra.auth.exception.InvalidTokenException;
-import com.ahmadda.infra.auth.jwt.config.JwtProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
 import com.ahmadda.infra.auth.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.auth.oauth.dto.OAuthUserInfoResponse;
@@ -42,13 +41,10 @@ class LoginServiceTest {
     private RefreshTokenRepository refreshTokenRepository;
 
     @Autowired
-    private OrganizationRepository organizationRepository;
+    private JwtAccessTokenProperties accessTokenProperties;
 
     @Autowired
-    private OrganizationMemberRepository organizationMemberRepository;
-
-    @Autowired
-    private JwtProperties jwtProperties;
+    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Autowired
     private HashEncoder hashEncoder;
@@ -83,16 +79,15 @@ class LoginServiceTest {
         var code = "code";
         var name = "홍길동";
         var email = "test@example.com";
+        var testPicture = "testPicture";
         var userAgent = createUserAgent();
 
         var redirectUri = "redirectUri";
-        var testPicture = "testPicture";
 
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
                 .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
 
-        var member = Member.create(name, email, testPicture);
-        memberRepository.save(member);
+        createMember();
 
         // when
         sut.login(code, redirectUri, userAgent);
@@ -136,8 +131,7 @@ class LoginServiceTest {
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
                 .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
 
-        var member = Member.create(name, email, testPicture);
-        memberRepository.save(member);
+        var member = createMember();
 
         sut.login(code, redirectUri, userAgent);
 
@@ -174,8 +168,7 @@ class LoginServiceTest {
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
                 .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
 
-        var member = Member.create(name, email, testPicture);
-        memberRepository.save(member);
+        var member = createMember();
 
         sut.login(code, redirectUri, userAgent);
         var expiredAccessToken = createExpiredAccessToken(member.getId());
@@ -200,7 +193,7 @@ class LoginServiceTest {
     }
 
     @Test
-    void 액세스토큰이_만료되지_않는_경우_재발급_받을_수_없다() {
+    void 액세스토큰이_만료되지_않는_경우_재발급_받으려하면_예외가_발생한다() {
         // given
         var code = "code";
         var name = "홍길동";
@@ -213,8 +206,7 @@ class LoginServiceTest {
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
                 .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
 
-        var member = Member.create(name, email, testPicture);
-        memberRepository.save(member);
+        createMember();
 
         var loginTokens = sut.login(code, redirectUri, userAgent);
 
@@ -224,17 +216,131 @@ class LoginServiceTest {
                 loginTokens.refreshToken(),
                 userAgent
         ))
-                .isInstanceOf(InvalidTokenException.class)
+                .isInstanceOf(UnauthorizedException.class)
                 .hasMessage("엑세스 토큰이 만료되지 않았습니다.");
+    }
+
+    @Test
+    void 액세스토큰이_올바르지_않은_경우_재발급_시_예외가_발생한다() {
+        // given
+        var code = "code";
+        var name = "홍길동";
+        var email = "test@example.com";
+        var userAgent = createUserAgent();
+
+        var redirectUri = "redirectUri";
+        var testPicture = "testPicture";
+
+        var invalidAccessToken = "invalidAccessToken";
+
+        given(googleOAuthProvider.getUserInfo(code, redirectUri))
+                .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
+
+        var member = createMember();
+
+        var loginTokens = sut.login(code, redirectUri, userAgent);
+
+        // when // then
+        assertThatThrownBy(() -> sut.renewMemberToken(
+                invalidAccessToken,
+                loginTokens.refreshToken(),
+                userAgent
+        ))
+                .isInstanceOf(UnauthorizedException.class)
+                .hasMessage("엑세스 토큰이 올바르지 않습니다.");
+    }
+
+    @Test
+    void 리프레시_토큰이_만료된_경우_재발급_시_예외가_발생한다() {
+        // given
+        var code = "code";
+        var name = "홍길동";
+        var email = "test@example.com";
+        var userAgent = createUserAgent();
+
+        var redirectUri = "redirectUri";
+        var testPicture = "testPicture";
+
+        given(googleOAuthProvider.getUserInfo(code, redirectUri))
+                .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
+
+        var member = createMember();
+
+        var expiredAccessToken = createExpiredAccessToken(member.getId());
+        var expiredRefreshToken = createExpiredRefreshToken(member.getId());
+
+        // when // then
+        assertThatThrownBy(() -> sut.renewMemberToken(
+                expiredAccessToken,
+                expiredRefreshToken,
+                userAgent
+        ))
+                .isInstanceOf(UnauthorizedException.class)
+                .hasMessage("리프레시 토큰이 만료되었습니다.");
+    }
+
+    @Test
+    void 리프레시_토큰이_없는_경우_재발급_시_예외가_발생한다() {
+        // given
+        var code = "code";
+        var name = "홍길동";
+        var email = "test@example.com";
+        var userAgent = createUserAgent();
+
+        var redirectUri = "redirectUri";
+        var testPicture = "testPicture";
+
+        given(googleOAuthProvider.getUserInfo(code, redirectUri))
+                .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
+
+        var member = createMember();
+
+        var expiredAccessToken = createExpiredAccessToken(member.getId());
+
+        // when // then
+        assertThatThrownBy(() -> sut.renewMemberToken(
+                expiredAccessToken,
+                null,
+                userAgent
+        ))
+                .isInstanceOf(UnauthorizedException.class)
+                .hasMessage("리프레시 토큰이 올바르지 않습니다.");
+    }
+
+    @Test
+    void 리프레시_토큰이_올바르지_않은_경우_재발급_시_예외가_발생한다() {
+        // given
+        var code = "code";
+        var name = "홍길동";
+        var email = "test@example.com";
+        var userAgent = createUserAgent();
+
+        var redirectUri = "redirectUri";
+        var testPicture = "testPicture";
+
+        var invalidRefreshToken = "InvalidRefreshToken";
+
+        given(googleOAuthProvider.getUserInfo(code, redirectUri))
+                .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
+
+        var member = createMember();
+
+        var expiredAccessToken = createExpiredAccessToken(member.getId());
+
+        // when // then
+        assertThatThrownBy(() -> sut.renewMemberToken(
+                expiredAccessToken,
+                invalidRefreshToken,
+                userAgent
+        ))
+                .isInstanceOf(UnauthorizedException.class)
+                .hasMessage("리프레시 토큰이 올바르지 않습니다.");
     }
 
     @Test
     void 존재하지_않는_회원을_로그아웃_하면_예외가_발생한다() {
         // given
-        var name = "홍길동";
-        var email = "test@example.com";
-        var picture = "pic";
-        memberRepository.save(Member.create(name, email, picture));
+        createMember();
 
         var userAgent = createUserAgent();
         var refresh = "raw_refresh_token";
@@ -260,8 +366,8 @@ class LoginServiceTest {
         given(googleOAuthProvider.getUserInfo(code, redirectUri))
                 .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
 
-        var member = Member.create(name, email, testPicture);
-        memberRepository.save(member);
+        var member = createMember();
+
         var loginMember = new LoginMember(member.getId());
 
         var newLoginToken = sut.login(code, redirectUri, userAgent);
@@ -279,6 +385,17 @@ class LoginServiceTest {
                 .toString();
     }
 
+    private Member createMember() {
+        var name = "홍길동";
+        var email = "test@example.com";
+        var testPicture = "testPicture";
+
+        Member member = Member.create(name, email, testPicture);
+        memberRepository.save(member);
+
+        return member;
+    }
+
     private String createExpiredAccessToken(Long memberId) {
         var now = Instant.now();
 
@@ -288,7 +405,20 @@ class LoginServiceTest {
                 .claims(claims)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.minus(Duration.ofDays(1))))
-                .signWith(jwtProperties.getAccessSecretKey())
+                .signWith(accessTokenProperties.getAccessSecretKey())
+                .compact();
+    }
+
+    private String createExpiredRefreshToken(Long memberId) {
+        var now = Instant.now();
+
+        var claims = JwtMemberPayload.toClaims(memberId);
+
+        return Jwts.builder()
+                .claims(claims)
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(now.minus(Duration.ofDays(1))))
+                .signWith(refreshTokenProperties.getRefreshSecretKey())
                 .compact();
     }
 }

@@ -16,8 +16,11 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,6 +48,12 @@ class EventReadListenerTest {
 
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
+
+    @MockitoBean
+    JwtAccessTokenProperties accessTokenProperties;
+
+    @MockitoBean
+    JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 해당_이벤트에_대한_통계가_존재하면_조회수가_1_증가한다() {

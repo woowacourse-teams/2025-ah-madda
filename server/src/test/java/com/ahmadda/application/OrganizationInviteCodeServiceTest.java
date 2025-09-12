@@ -30,12 +30,16 @@ class OrganizationInviteCodeServiceTest {
 
     @Autowired
     private OrganizationInviteCodeService sut;
+
     @Autowired
     private MemberRepository memberRepository;
+
     @Autowired
     private OrganizationRepository organizationRepository;
+
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
+
     @Autowired
     private InviteCodeRepository inviteCodeRepository;
 

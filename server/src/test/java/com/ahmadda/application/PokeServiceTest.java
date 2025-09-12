@@ -56,6 +56,7 @@ class PokeServiceTest {
 
     @Autowired
     private EventNotificationOptOutRepository eventNotificationOptOutRepository;
+
     @Autowired
     private PokeHistoryRepository pokeHistoryRepository;
 
@@ -104,13 +105,13 @@ class PokeServiceTest {
             var pokeHistory = pokeHistoryRepository.findAll()
                     .getFirst();
             softly.assertThat(pokeHistory
-                            .getRecipient())
+                                      .getRecipient())
                     .isEqualTo(participant);
             softly.assertThat(pokeHistory
-                            .getSender())
+                                      .getSender())
                     .isEqualTo(organizer);
             softly.assertThat(pokeHistory
-                            .getEvent())
+                                      .getEvent())
                     .isEqualTo(event);
         });
     }

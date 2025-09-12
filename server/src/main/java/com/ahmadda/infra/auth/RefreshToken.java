@@ -46,11 +46,11 @@ public class RefreshToken {
     }
 
     public static RefreshToken create(
-            final String encodedToken,
+            final String token,
             final Long memberId,
             final String deviceId,
             final LocalDateTime expiresAt
     ) {
-        return new RefreshToken(encodedToken, memberId, deviceId, expiresAt);
+        return new RefreshToken(token, memberId, deviceId, expiresAt);
     }
 }

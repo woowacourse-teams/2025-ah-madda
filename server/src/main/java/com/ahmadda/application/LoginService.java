@@ -4,29 +4,40 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.MemberCreateAlarmPayload;
 import com.ahmadda.application.dto.MemberToken;
 import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnauthorizedException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.infra.auth.HashEncoder;
 import com.ahmadda.infra.auth.RefreshToken;
 import com.ahmadda.infra.auth.RefreshTokenRepository;
-import com.ahmadda.infra.auth.TokenProvider;
+import com.ahmadda.infra.auth.jwt.JwtProvider;
+import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
+import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
 import com.ahmadda.infra.auth.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.auth.oauth.dto.OAuthUserInfoResponse;
 import com.ahmadda.infra.notification.slack.SlackAlarm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
+@EnableConfigurationProperties({JwtAccessTokenProperties.class, JwtRefreshTokenProperties.class})
 @RequiredArgsConstructor
 public class LoginService {
 
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final GoogleOAuthProvider googleOAuthProvider;
-    private final TokenProvider tokenProvider;
+    private final JwtProvider jwtProvider;
+    private final JwtAccessTokenProperties jwtAccessTokenProperties;
+    private final JwtRefreshTokenProperties jwtRefreshTokenProperties;
     private final SlackAlarm slackAlarm;
     private final HashEncoder hashEncoder;
 
@@ -35,7 +46,7 @@ public class LoginService {
         OAuthUserInfoResponse userInfo = googleOAuthProvider.getUserInfo(code, redirectUri);
 
         Member member = findOrCreateMember(userInfo.name(), userInfo.email(), userInfo.picture());
-        MemberToken memberToken = tokenProvider.createMemberToken(member.getId());
+        MemberToken memberToken = createMemberToken(member.getId());
 
         rotateRefreshToken(memberToken.refreshToken(), member.getId(), userAgent);
 
@@ -44,11 +55,14 @@ public class LoginService {
 
     @Transactional
     public MemberToken renewMemberToken(final String accessToken, final String refreshToken, final String userAgent) {
-        Long memberId = tokenProvider.parseRefreshTokenMemberId(refreshToken);
+        validateTokenExpired(accessToken, refreshToken);
 
+        Long memberId = parseRefreshTokenMemberId(refreshToken);
         RefreshToken savedRefreshToken = getRefreshToken(memberId, userAgent);
-        MemberToken refreshedMemberToken =
-                tokenProvider.refreshMemberToken(accessToken, refreshToken, savedRefreshToken.getToken());
+
+        validateTokenMatch(refreshToken, savedRefreshToken, memberId);
+
+        MemberToken refreshedMemberToken = createMemberToken(memberId);
 
         rotateRefreshToken(refreshedMemberToken.refreshToken(), memberId, userAgent);
 
@@ -60,9 +74,66 @@ public class LoginService {
         Member member = getMember(loginMember);
         RefreshToken savedRefreshToken = getRefreshToken(member.getId(), userAgent);
 
-        tokenProvider.validateRefreshTokenMatch(refreshToken, savedRefreshToken.getToken(), member.getId());
+        validateTokenMatch(refreshToken, savedRefreshToken, member.getId());
 
         refreshTokenRepository.delete(savedRefreshToken);
+    }
+
+    private void validateTokenExpired(final String accessToken, final String refreshToken) {
+        validateAccessTokenNotActive(accessToken);
+        validateRefreshTokenActive(refreshToken);
+    }
+
+    private void validateTokenMatch(final String refreshToken,
+                                    final RefreshToken savedRefreshToken,
+                                    final Long memberId) {
+        validateRefreshTokenMemberIdMatch(refreshToken, memberId);
+        validateSavedRefreshTokenMatch(refreshToken, savedRefreshToken);
+    }
+
+    private void validateRefreshTokenMemberIdMatch(final String refreshToken,
+                                                   final Long memberId) {
+        Long refreshTokenMemberId = parseRefreshTokenMemberId(refreshToken);
+
+        if (!Objects.equals(memberId, refreshTokenMemberId)) {
+            throw new UnauthorizedException("토큰 정보가 일치하지 않습니다.");
+        }
+    }
+
+    private void validateSavedRefreshTokenMatch(final String refreshToken, final RefreshToken savedRefreshToken) {
+        String encodedRefreshToken = hashEncoder.encodeSha256(refreshToken);
+
+        if (!encodedRefreshToken.equals(savedRefreshToken.getToken())) {
+            throw new UnauthorizedException("리프레시 토큰이 유효하지 않습니다.");
+        }
+    }
+
+    private void validateAccessTokenNotActive(final String accessToken) {
+        Optional<Boolean> accessTokenExpired = jwtProvider.isTokenExpired(accessToken,
+                                                                          jwtAccessTokenProperties.getAccessSecretKey()
+        );
+
+        if (accessTokenExpired.isEmpty()) {
+            throw new UnauthorizedException("엑세스 토큰이 올바르지 않습니다.");
+        }
+
+        if (Objects.equals(accessTokenExpired.get(), Boolean.FALSE)) {
+            throw new UnauthorizedException("엑세스 토큰이 만료되지 않았습니다.");
+        }
+    }
+
+    private void validateRefreshTokenActive(final String refreshToken) {
+        Optional<Boolean> refreshTokenExpired = jwtProvider.isTokenExpired(refreshToken,
+                                                                           jwtRefreshTokenProperties.getRefreshSecretKey()
+        );
+
+        if (refreshTokenExpired.isEmpty()) {
+            throw new UnauthorizedException("리프레시 토큰이 올바르지 않습니다.");
+        }
+
+        if (Objects.equals(refreshTokenExpired.get(), Boolean.TRUE)) {
+            throw new UnauthorizedException("리프레시 토큰이 만료되었습니다.");
+        }
     }
 
     private Member findOrCreateMember(final String name, final String email, final String profileImageUrl) {
@@ -105,11 +176,36 @@ public class LoginService {
     private RefreshToken issueEncodedRefreshToken(final String refreshToken,
                                                   final Long memberId,
                                                   final String userAgent) {
-        LocalDateTime expiresAt = tokenProvider.parseRefreshTokenExpiresAt(refreshToken);
+        LocalDateTime expiresAt = parseRefreshTokenExpiresAt(refreshToken);
 
         String encodedToken = hashEncoder.encodeSha256(refreshToken);
         String deviceId = hashEncoder.encodeSha256(userAgent);
 
         return RefreshToken.create(encodedToken, memberId, deviceId, expiresAt);
+    }
+
+    private MemberToken createMemberToken(final Long memberId) {
+        String accessToken = jwtProvider.createToken(memberId,
+                                                     jwtAccessTokenProperties.getAccessExpiration(),
+                                                     jwtAccessTokenProperties.getAccessSecretKey()
+        );
+        String refreshToken = jwtProvider.createToken(memberId,
+                                                      jwtRefreshTokenProperties.getRefreshExpiration(),
+                                                      jwtRefreshTokenProperties.getRefreshSecretKey()
+        );
+
+        return new MemberToken(accessToken, refreshToken);
+    }
+
+    private LocalDateTime parseRefreshTokenExpiresAt(final String refreshToken) {
+        return jwtProvider.parsePayload(refreshToken, jwtRefreshTokenProperties.getRefreshSecretKey())
+                .map(JwtMemberPayload::getExpiresAt)
+                .orElseThrow(() -> new UnauthorizedException("리프레시 토큰이 유효하지 않습니다."));
+    }
+
+    private Long parseRefreshTokenMemberId(final String refreshToken) {
+        return jwtProvider.parsePayload(refreshToken, jwtRefreshTokenProperties.getRefreshSecretKey())
+                .map(JwtMemberPayload::getMemberId)
+                .orElseThrow(() -> new UnauthorizedException("리프레시 토큰이 유효하지 않습니다."));
     }
 }

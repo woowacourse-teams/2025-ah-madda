@@ -797,7 +797,7 @@ class EventServiceTest {
             softly.assertThat(pastEvents)
                     .hasSize(1);
             softly.assertThat(pastEvents.get(0)
-                            .getId())
+                                      .getId())
                     .isEqualTo(pastEvent.getId());
         });
     }

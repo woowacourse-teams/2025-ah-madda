@@ -152,7 +152,7 @@ class EventNotificationServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.notifySelectedOrganizationMembers(999L, request, createLoginMember(organizer))
+                                   sut.notifySelectedOrganizationMembers(999L, request, createLoginMember(organizer))
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 이벤트입니다.");
@@ -185,11 +185,11 @@ class EventNotificationServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.notifySelectedOrganizationMembers(
-                        event.getId(),
-                        request,
-                        createLoginMember(other)
-                )
+                                   sut.notifySelectedOrganizationMembers(
+                                           event.getId(),
+                                           request,
+                                           createLoginMember(other)
+                                   )
         )
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage("이벤트 주최자가 아닙니다.");
@@ -227,11 +227,11 @@ class EventNotificationServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.notifySelectedOrganizationMembers(
-                        event.getId(),
-                        request,
-                        createLoginMember(organizer)
-                )
+                                   sut.notifySelectedOrganizationMembers(
+                                           event.getId(),
+                                           request,
+                                           createLoginMember(organizer)
+                                   )
         )
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("알림 메시지는 20자 이하여야 합니다.");
@@ -268,11 +268,11 @@ class EventNotificationServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.notifySelectedOrganizationMembers(
-                        event.getId(),
-                        request,
-                        createLoginMember(organizer)
-                )
+                                   sut.notifySelectedOrganizationMembers(
+                                           event.getId(),
+                                           request,
+                                           createLoginMember(organizer)
+                                   )
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 구성원입니다.");
@@ -311,11 +311,11 @@ class EventNotificationServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                sut.notifySelectedOrganizationMembers(
-                        event.getId(),
-                        request,
-                        createLoginMember(organizer)
-                )
+                                   sut.notifySelectedOrganizationMembers(
+                                           event.getId(),
+                                           request,
+                                           createLoginMember(organizer)
+                                   )
         )
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessageStartingWith("리마인더는 30분 내 최대 10회까지만 발송할 수 있습니다.");
@@ -348,10 +348,10 @@ class EventNotificationServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.notifySelectedOrganizationMembers(
-                        event.getId(),
-                        request,
-                        createLoginMember(organizer)
-                )
+                                   event.getId(),
+                                   request,
+                                   createLoginMember(organizer)
+                           )
         )
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("선택된 구성원 중 알림 수신 거부자가 존재합니다.");

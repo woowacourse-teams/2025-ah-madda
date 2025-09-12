@@ -18,12 +18,15 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.LocalDateTime;
@@ -60,6 +63,12 @@ class EventNotificationSchedulerTest {
 
     @MockitoSpyBean
     private Reminder reminder;
+
+    @MockitoBean
+    JwtAccessTokenProperties accessTokenProperties;
+
+    @MockitoBean
+    JwtRefreshTokenProperties refreshTokenProperties;
 
     @Autowired
     private ReminderHistoryRepository reminderHistoryRepository;
