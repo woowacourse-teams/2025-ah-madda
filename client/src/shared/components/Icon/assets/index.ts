@@ -11,6 +11,7 @@ import { Location } from './location';
 import { Logo } from './logo';
 import { Next } from './next';
 import { Plus } from './plus';
+import { Save } from './save';
 import { Share } from './share';
 import { User } from './user';
 
@@ -30,6 +31,7 @@ export const Icons = {
   dropdownDown: DropdownDown,
   dropdownUp: DropdownUp,
   next: Next,
+  save: Save,
 };
 
 export type IconName = keyof typeof Icons;
