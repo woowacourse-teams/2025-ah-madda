@@ -4,6 +4,8 @@ import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { HttpError } from '@/api/fetcher';
+import { useDeleteOrganization } from '@/api/mutations/useDeleteOrganization';
 import {
   getOrganizationDetailAPI,
   useUpdateOrganization,
@@ -16,6 +18,7 @@ import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
+import { useToast } from '@/shared/components/Toast/ToastContext';
 import { useModal } from '@/shared/hooks/useModal';
 import { theme } from '@/shared/styles/theme';
 
@@ -29,10 +32,12 @@ import { OrganizationImageInput } from './OrganizationImageInput';
 export const OrganizationCreateForm = () => {
   const navigate = useNavigate();
   const { organizationId: paramId } = useParams();
-  const organizationId = paramId ? Number(paramId) : undefined;
+  const organizationId = Number(paramId);
   const isEdit = !!organizationId;
 
   const { isOpen, open, close } = useModal();
+  const { error, success } = useToast();
+  const { mutate: deleteOrganization } = useDeleteOrganization();
 
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
   const objectUrlRef = useRef<string | undefined>(undefined);
@@ -159,6 +164,22 @@ export const OrganizationCreateForm = () => {
     open();
   };
 
+  const handleDeleteButtonClick = (orgnizationId: number) => {
+    if (!confirm('이벤트 스페이스를 삭제할까요? 삭제 후에는 되돌릴 수 없어요.')) return; // 모달로 대체하기
+    deleteOrganization(orgnizationId, {
+      onSuccess: () => {
+        success('이벤트 스페이스가 성공적으로 삭제되었습니다!');
+        close();
+        navigate('/organization');
+      },
+      onError: (err) => {
+        if (err instanceof HttpError) {
+          error(err.message || '이벤트 스페이스 삭제에 실패했어요.');
+        }
+      },
+    });
+  };
+
   const handleConfirmNickname = (nickname: string) => {
     const trimmed = nickname.trim();
     if (!trimmed || isSubmitting) return;
@@ -217,10 +238,27 @@ export const OrganizationCreateForm = () => {
   return (
     <>
       <Flex dir="column" padding="60px 0" gap="40px">
-        <Flex padding="40px 0">
+        <Flex justifyContent="space-between" alignItems="center" padding="40px 0">
           <Text as="h1" type="Display" weight="bold">
             {isEdit ? '이벤트 스페이스 수정하기' : '이벤트 스페이스 생성하기'}
           </Text>
+          {isEdit && (
+            <Button
+              size="sm"
+              onClick={() => handleDeleteButtonClick(organizationId)}
+              css={css`
+                background-color: ${theme.colors.red100};
+                color: ${theme.colors.red400};
+
+                &:hover {
+                  background-color: ${theme.colors.red400};
+                  color: ${theme.colors.white};
+                }
+              `}
+            >
+              삭제
+            </Button>
+          )}
         </Flex>
 
         <Flex dir="column" gap="40px" width="100%">
