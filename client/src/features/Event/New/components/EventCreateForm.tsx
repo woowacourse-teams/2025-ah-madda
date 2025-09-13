@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -12,7 +13,6 @@ import type { EventTemplateAPIResponse, TemplateDetailAPIResponse } from '@/api/
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
-import { RequiredMark } from '@/shared/components/RequiredMark/RequiredMark';
 import { Text } from '@/shared/components/Text';
 import { Textarea } from '@/shared/components/Textarea';
 import { useToast } from '@/shared/components/Toast/ToastContext';
@@ -277,7 +277,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
             <Flex justifyContent="space-between">
               <Text as="label" htmlFor="title" type="Heading" weight="medium">
                 이벤트 이름
-                <RequiredMark />
+                <StyledRequiredMark>*</StyledRequiredMark>
               </Text>
               <Flex
                 onClick={handleAddTemplate}
@@ -322,7 +322,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
             >
               <Text as="label" type="Heading" weight="medium" htmlFor="eventDateRange">
                 이벤트 기간
-                <RequiredMark />
+                <StyledRequiredMark>*</StyledRequiredMark>
               </Text>
               <Input
                 id="eventDateRange"
@@ -376,7 +376,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
             >
               <Text as="label" type="Heading" weight="medium" htmlFor="registrationEnd">
                 신청 종료일
-                <RequiredMark />
+                <StyledRequiredMark>*</StyledRequiredMark>
               </Text>
               <Input
                 id="registrationEnd"
@@ -551,3 +551,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     </Flex>
   );
 };
+
+const StyledRequiredMark = styled.span`
+  margin-left: 8px;
+  color: ${theme.colors.red600};
+`;

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -11,9 +12,9 @@ import {
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
-import { RequiredMark } from '@/shared/components/RequiredMark/RequiredMark';
 import { Text } from '@/shared/components/Text';
 import { useModal } from '@/shared/hooks/useModal';
+import { theme } from '@/shared/styles/theme';
 
 import { MAX_LENGTH } from '../constants/validationRules';
 import { useCreateOrganizationProcess } from '../hooks/useCreateOrganizationProcess';
@@ -145,7 +146,7 @@ export const OrganizationCreateForm = () => {
           >
             <Text as="label" htmlFor="orgImage" type="Heading" weight="medium">
               이벤트 스페이스 이미지
-              <RequiredMark />
+              <StyledRequiredMark>*</StyledRequiredMark>
             </Text>
             <OrganizationImageInput
               onChange={onSelectLogo}
@@ -157,7 +158,7 @@ export const OrganizationCreateForm = () => {
           <Flex dir="column" gap="12px">
             <Text as="label" htmlFor="orgName" type="Heading" weight="medium">
               이벤트 스페이스 이름
-              <RequiredMark />
+              <StyledRequiredMark>*</StyledRequiredMark>
             </Text>
             <Input
               id="orgName"
@@ -175,7 +176,7 @@ export const OrganizationCreateForm = () => {
           <Flex dir="column" gap="12px">
             <Text as="label" htmlFor="orgDescription" type="Heading" weight="medium">
               한 줄 소개
-              <RequiredMark />
+              <StyledRequiredMark>*</StyledRequiredMark>
             </Text>
             <Input
               id="orgDescription"
@@ -215,3 +216,8 @@ export const OrganizationCreateForm = () => {
     </>
   );
 };
+
+const StyledRequiredMark = styled.span`
+  margin-left: 8px;
+  color: ${theme.colors.red600};
+`;
