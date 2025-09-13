@@ -8,7 +8,7 @@ export type OrganizationParticipateAPIRequest = {
   inviteCode: string;
 };
 
-export type OrganizationProfileAPIResponse = {
+export type OrganizationMember = {
   organizationMemberId: number;
   nickname: string;
   isAdmin: boolean;
@@ -24,3 +24,13 @@ export type CreateOrganizationAPIRequest = {
 };
 
 export type CreateOrganizationAPIResponse = { organizationId: number };
+
+export type OrganizationRole = 'ADMIN' | 'USER';
+
+export type UpdateOrganizationMemberRolesAPIRequest = {
+  organizationId: number;
+  payload: {
+    organizationMemberIds: number[];
+    role: OrganizationRole;
+  };
+};
