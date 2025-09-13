@@ -27,6 +27,7 @@ import { useCreateOrganizationProcess } from '../hooks/useCreateOrganizationProc
 import { useOrganizationForm } from '../hooks/useOrganizationForm';
 
 import { CreatorNicknameModal } from './CreatorNicknameModal';
+import { OrganizationDeleteModal } from './OrganizationDeleteModal';
 import { OrganizationImageInput } from './OrganizationImageInput';
 
 export const OrganizationCreateForm = () => {
@@ -38,6 +39,10 @@ export const OrganizationCreateForm = () => {
   const { isOpen, open, close } = useModal();
   const { error, success } = useToast();
   const { mutate: deleteOrganization } = useDeleteOrganization();
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  const openDelete = () => setDeleteModalOpen(true);
+  const closeDelete = () => setDeleteModalOpen(false);
 
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
   const objectUrlRef = useRef<string | undefined>(undefined);
@@ -164,9 +169,8 @@ export const OrganizationCreateForm = () => {
     open();
   };
 
-  const handleDeleteButtonClick = (orgnizationId: number) => {
-    if (!confirm('이벤트 스페이스를 삭제할까요? 삭제 후에는 되돌릴 수 없어요.')) return; // 모달로 대체하기
-    deleteOrganization(orgnizationId, {
+  const handleDeleteButtonClick = () => {
+    deleteOrganization(organizationId, {
       onSuccess: () => {
         success('이벤트 스페이스가 성공적으로 삭제되었습니다!');
         close();
@@ -245,13 +249,13 @@ export const OrganizationCreateForm = () => {
           {isEdit && (
             <Button
               size="sm"
-              onClick={() => handleDeleteButtonClick(organizationId)}
+              onClick={openDelete}
               css={css`
                 background-color: ${theme.colors.red100};
                 color: ${theme.colors.red400};
 
                 &:hover {
-                  background-color: ${theme.colors.red400};
+                  background-color: ${theme.colors.red300};
                   color: ${theme.colors.white};
                 }
               `}
@@ -355,6 +359,12 @@ export const OrganizationCreateForm = () => {
           onConfirm={handleConfirmNickname}
         />
       )}
+
+      <OrganizationDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDelete}
+        onDeleteConfirm={handleDeleteButtonClick}
+      />
     </>
   );
 };
