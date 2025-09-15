@@ -67,6 +67,7 @@ management:
       hikaricp.connections.max: true
       hikaricp.connections.timeout: true
       logback.events: true
+      resilience4j.retry.calls: true
   cloudwatch:
     metrics:
       export:
