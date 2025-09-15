@@ -51,8 +51,6 @@ public class LoginService {
 
     @Transactional
     public MemberToken renewMemberToken(final String refreshToken, final String userAgent) {
-        validateRefreshTokenActive(refreshToken);
-
         Long memberId = parseRefreshTokenMemberId(refreshToken);
         RefreshToken savedRefreshToken = getRefreshToken(memberId, userAgent);
         validateSavedRefreshTokenMatch(refreshToken, savedRefreshToken);
@@ -70,14 +68,6 @@ public class LoginService {
         validateSavedRefreshTokenMatch(refreshToken, savedRefreshToken);
 
         refreshTokenRepository.delete(savedRefreshToken);
-    }
-
-    private void validateRefreshTokenActive(final String refreshToken) {
-        boolean expired = jwtProvider.isTokenExpired(refreshToken, jwtRefreshTokenProperties.getRefreshSecretKey());
-
-        if (expired) {
-            throw new UnauthorizedException("리프레시 토큰이 만료되었습니다.");
-        }
     }
 
     private void validateSavedRefreshTokenMatch(final String refreshToken, final RefreshToken savedRefreshToken) {

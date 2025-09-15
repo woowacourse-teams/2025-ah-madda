@@ -181,18 +181,6 @@ class LoginServiceTest {
     }
 
     @Test
-    void 리프레시토큰이_만료되면_재발급시_예외가_발생한다() {
-        // given
-        var member = createMember();
-        var expiredRefresh = createExpiredRefreshToken(member.getId());
-
-        // when // then
-        assertThatThrownBy(() -> sut.renewMemberToken(expiredRefresh, createUserAgent()))
-                .isInstanceOf(UnauthorizedException.class)
-                .hasMessage("리프레시 토큰이 만료되었습니다.");
-    }
-
-    @Test
     void 리프레시토큰이_저장된값과_불일치하면_예외가_발생한다() {
         // given
         var member = createMember();
