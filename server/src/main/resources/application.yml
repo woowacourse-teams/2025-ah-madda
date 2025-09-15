@@ -68,6 +68,17 @@ resilience4j:
         waitDuration: 2s
         enableExponentialBackoff: true
         exponentialBackoffMultiplier: 2
+
+  circuitbreaker:
+    instances:
+      primaryEmail:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 5
+        minimumNumberOfCalls: 3
+        failureRateThreshold: 50
+        waitDurationInOpenState: 6h
+        permittedNumberOfCallsInHalfOpenState: 1
+
 springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
