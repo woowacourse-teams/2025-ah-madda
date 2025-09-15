@@ -67,6 +67,10 @@ management:
       hikaricp.connections.max: true
       hikaricp.connections.timeout: true
       logback.events: true
+      resilience4j.circuitbreaker.state: true
+      resilience4j.circuitbreaker.failure.rate: true
+      resilience4j.circuitbreaker.slow.call.rate: true
+      resilience4j.circuitbreaker.not.permitted.calls: true
       resilience4j.retry.calls: true
   cloudwatch:
     metrics:
