@@ -52,9 +52,7 @@ public class LoginController {
         MemberToken memberToken = loginService.login(loginRequest.code(), loginRequest.redirectUri(), userAgent);
         AccessTokenResponse accessTokenResponse = new AccessTokenResponse(memberToken.accessToken());
 
-        ResponseCookie refreshTokenCookie = refreshCookieProvider.createRefreshTokenCookie(
-                memberToken.refreshToken()
-        );
+        ResponseCookie refreshTokenCookie = refreshCookieProvider.createRefreshTokenCookie(memberToken.refreshToken());
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
