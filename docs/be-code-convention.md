@@ -206,7 +206,8 @@ public List<ProductResponse> findAvailableProducts() {
             .stream()
             .filter(Product::isAvailable)
             .map(ProductResponse::from)
-            .sorted(Comparator.comparing(ProductRespons
+            .sorted(Comparator.comparing(ProductResponse::name))
+            .toList();
 ```  
 
 ## 4. 주석 규칙
@@ -390,7 +391,7 @@ CREATE TABLE member (
 );
 ```
 
-7.3 기본 키 이름을 단순히 id로 사용하지 않는다.
+### 7.3 기본 키 이름을 단순히 id로 사용하지 않는다.
 ```sql
 CREATE TABLE reservation (
     reservation_id BIGINT PRIMARY KEY,

@@ -6,19 +6,21 @@ tone_instructions: >
   관련 문서 추천과 위트 있는 칭찬, P1~P3 우선순위 표시를 지킵니다.
 
 reviews:
-  profile: chill                     
-  request_changes_workflow: false     
-  high_level_summary: true            
-  changed_files_summary: false      
-  sequence_diagrams: false          
-  assess_linked_issues: true         
-  related_issues: false             
-  related_prs: false                 
-  suggested_labels: false            
-  auto_apply_labels: false          
-  suggested_reviewers: false          
-  auto_assign_reviewers: false      
-  poem: true                        
+  profile: chill                      # 리뷰 스타일: 편안하고 친근한 톤
+  request_changes_workflow: false     # Request Change 요청시 병합 비활성화 해제
+  high_level_summary: true            # PR 전체 요약 제공
+  changed_files_summary: false        # 개별 파일 요약은 비활성화 (중복 방지)
+  sequence_diagrams: false            # 시퀀스 다이어그램 생성 비활성화
+  assess_linked_issues: true          # 연결된 이슈 분석 활성화
+  related_issues: false               # 관련 이슈 추천 비활성화
+  related_prs: false                  # 관련 PR 추천 비활성화
+  suggested_labels: false             # 라벨 추천 비활성화
+  auto_apply_labels: false            # 자동 라벨 적용 비활성화
+  suggested_reviewers: false          # 리뷰어 추천 비활성화
+  auto_assign_reviewers: false        # 자동 리뷰어 할당 비활성화
+  poem: true                          # 리뷰 완료 후 시 작성 활성화 (재미 요소)                
+  abort_on_close: true                # PR이 닫히면 리뷰 중지
+  disable_cache: false                # 빠르고 효율적인 리뷰를 위해 캐시 기능 활성화
 
   path_instructions:
     - path: backend/**
@@ -65,11 +67,10 @@ reviews:
            - 보안/성능 이슈 우선순위 P1 처리
 
 auto_review:
-  enabled: true
-  drafts: true
-  auto_incremental_review: false
-  base_branches: ["be\/dev"]
-  abort_on_close: true
+  enabled: true                     # 자동 리뷰 활성화
+  drafts: true                      # Draft PR도 리뷰할지 여부
+  auto_incremental_review: false    # 증분 리뷰 비활성화
+  base_branches: ["be\/dev"]        # 리뷰 활성화 브랜치
 
 chat:
   auto_reply: true
@@ -118,9 +119,9 @@ code_generation:
           - given-when-then, var, assertSoftly 적용
 
 tools:
-  hadolint:
+  hadolint:   # Dockerfile 분석
     enabled: true
-  gitleaks:
+  gitleaks:   # 민감정보 포함 여부 확인
     enabled: true
-  sqlfluff:
+  sqlfluff:   # SQL 분석
     enabled: true
