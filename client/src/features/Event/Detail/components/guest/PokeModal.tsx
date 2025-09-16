@@ -74,19 +74,18 @@ export const PokeModal = ({ eventId, receiverGuest, isOpen, onClose }: PokeModal
           {receiverGuest.nickname}에게 포키를 보낼 메시지를 선택해주세요.
         </Text>
 
+        <Flex width="100%" justifyContent="center">
+          <Text type="Body" weight="semibold" color={theme.colors.primary500}>
+            아맞다님이 {POKE_MESSAGES[selectedMessage]}
+          </Text>
+        </Flex>
+
         <Grid>
           {Object.entries(POKE_MESSAGES).map(([key, value]) => (
-            <Flex
+            <Segment
               key={key}
-              width="fit-content"
-              padding="8px 12px"
               onClick={() => handleClickMessage(key as POKE_MESSAGES_TYPE)}
-              css={css`
-                border: 1px solid
-                  ${selectedMessage === key ? theme.colors.primary500 : theme.colors.gray300};
-                border-radius: 16px;
-                cursor: pointer;
-              `}
+              isSelected={selectedMessage === key}
             >
               <Text
                 role="button"
@@ -94,7 +93,7 @@ export const PokeModal = ({ eventId, receiverGuest, isOpen, onClose }: PokeModal
               >
                 {value}
               </Text>
-            </Flex>
+            </Segment>
           ))}
         </Grid>
         <Flex justifyContent="space-between" gap="8px" width="100%">
@@ -110,13 +109,27 @@ export const PokeModal = ({ eventId, receiverGuest, isOpen, onClose }: PokeModal
   );
 };
 
+const Segment = styled.button<{ isSelected: boolean }>`
+  all: unset;
+  width: 100%;
+  max-width: 190px;
+  word-break: keep-all;
+  border: 1px solid
+    ${(props) => (props.isSelected ? theme.colors.primary500 : theme.colors.gray300)};
+  text-align: center;
+  border-radius: 12px;
+  cursor: pointer;
+  padding: 8px 12px;
+`;
+
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   width: 100%;
+  justify-items: center;
   gap: 8px;
 
-  @media (max-width: 400px) {
+  @media (max-width: 500px) {
     grid-template-columns: 1fr;
   }
 `;
