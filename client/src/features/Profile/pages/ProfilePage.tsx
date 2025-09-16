@@ -1,12 +1,12 @@
 import { css } from '@emotion/react';
 
-import { DEFAULT_AVATAR_URL } from '@/shared/components/Avatar/Avatar';
 import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
 import { Icon } from '@/shared/components/Icon';
 import { PageLayout } from '@/shared/components/PageLayout';
 import { Text } from '@/shared/components/Text';
+import { DEFAULT_AVATAR_URL } from '@/shared/constants';
 
 import { ProfileAvatar } from '../components/ProfileAvatar';
 import { ProfileForm } from '../components/ProfileForm';

@@ -1,5 +1,7 @@
 import { SyntheticEvent } from 'react';
 
+import { DEFAULT_AVATAR_URL } from '@/shared/constants';
+
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 
@@ -17,9 +19,6 @@ type AvatarProps = {
    */
   name: string;
 };
-
-export const DEFAULT_AVATAR_URL =
-  'https://ahmadda-dev.s3.ap-northeast-2.amazonaws.com/profile_avatar.png';
 
 export const Avatar = ({ picture, name }: AvatarProps) => {
   const handleImageError = (e: SyntheticEvent<HTMLImageElement, Event>) => {

@@ -1,8 +1,8 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
-import { DEFAULT_AVATAR_URL } from '@/shared/components/Avatar/Avatar';
 import { Flex } from '@/shared/components/Flex';
+import { DEFAULT_AVATAR_URL } from '@/shared/constants';
 
 type ProfileAvatarProps = {
   src?: string;
