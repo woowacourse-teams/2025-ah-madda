@@ -1,6 +1,7 @@
 package com.ahmadda.infra.auth.oauth;
 
 
+import com.ahmadda.common.exception.UnauthorizedException;
 import com.ahmadda.infra.auth.oauth.config.GoogleOAuthProperties;
 import com.ahmadda.infra.auth.oauth.dto.GoogleAccessTokenResponse;
 import com.ahmadda.infra.auth.oauth.dto.OAuthUserInfoResponse;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
+
+import java.util.Objects;
 
 @Component
 @EnableConfigurationProperties(GoogleOAuthProperties.class)
@@ -48,15 +51,19 @@ public class GoogleOAuthProvider {
 
     private String requestGoogleAccessToken(final String code, final String redirectUri) {
         MultiValueMap<String, String> tokenRequestParams = createTokenRequestParams(code, redirectUri);
+        try {
+            GoogleAccessTokenResponse response = restClient.post()
+                    .uri(googleOAuthProperties.getTokenUri())
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .body(tokenRequestParams)
+                    .retrieve()
+                    .body(GoogleAccessTokenResponse.class);
 
-        GoogleAccessTokenResponse response = restClient.post()
-                .uri(googleOAuthProperties.getTokenUri())
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(tokenRequestParams)
-                .retrieve()
-                .body(GoogleAccessTokenResponse.class);
-
-        return response.accessToken();
+            return Objects.requireNonNull(response)
+                    .accessToken();
+        } catch (Exception e) {
+            throw new UnauthorizedException("유효하지 않은 인증 정보입니다.", e);
+        }
     }
 
     private OAuthUserInfoResponse requestGoogleUserInfo(final String accessToken) {

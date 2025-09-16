@@ -8,6 +8,7 @@ import com.ahmadda.presentation.dto.AccessTokenResponse;
 import com.ahmadda.presentation.dto.LoginRequest;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -39,8 +40,25 @@ public class LoginController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
+                    headers = {@Header(name = "Set-Cookie", description = "RefreshToken")},
                     content = @Content(
                             schema = @Schema(implementation = AccessTokenResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보입니다.",
+                                              "instance": "/api/members/login"
+                                            }
+                                            """
+                            )
                     )
             )
     })
