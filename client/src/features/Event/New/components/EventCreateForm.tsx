@@ -24,6 +24,7 @@ import { useModal } from '@/shared/hooks/useModal';
 import { trackCreateEvent } from '@/shared/lib/gaEvents';
 import { theme } from '@/shared/styles/theme';
 
+import { EventDetail } from '../../types/Event';
 import { MAX_LENGTH, UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useBasicEventForm } from '../hooks/useBasicEventForm';
@@ -94,7 +95,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     errors,
     isValid: isBasicFormValid,
     loadFormData,
-  } = useBasicEventForm(isEdit ? eventDetail : undefined, { defaultCoHostId: myId });
+  } = useBasicEventForm(isEdit ? eventDetail : undefined);
 
   const {
     questions,
@@ -151,11 +152,39 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     error('네트워크 연결을 확인해주세요.');
   };
 
+  const hydratedFromDetailRef = useRef(false);
+  useEffect(() => {
+    if (!isEdit) return;
+    if (hydratedFromDetailRef.current) return;
+    if (!eventDetail) return;
+
+    const hasOtherThanMe = (basicEventForm.eventOrganizerIds ?? []).length > 0;
+    if (hasOtherThanMe) return;
+
+    let idsFromDetail: number[] | undefined = (eventDetail as EventDetail).eventOrganizerIds;
+
+    if (
+      (!idsFromDetail || idsFromDetail.length === 0) &&
+      eventDetail.organizerNicknames &&
+      members
+    ) {
+      const byNickname = new Map(members.map((m) => [m.nickname, m.organizationMemberId]));
+      idsFromDetail = eventDetail.organizerNicknames
+        .map((nick) => byNickname.get(nick))
+        .filter((id): id is number => typeof id === 'number');
+    }
+
+    if (Array.isArray(idsFromDetail) && idsFromDetail.length > 0) {
+      const othersOnly = myId ? idsFromDetail.filter((id) => id !== myId) : idsFromDetail;
+      updateAndValidate({ eventOrganizerIds: othersOnly });
+      hydratedFromDetailRef.current = true;
+    }
+  }, [isEdit, eventDetail, members, myId, basicEventForm.eventOrganizerIds, updateAndValidate]);
+
   const buildPayload = () => {
-    const cohostsWithoutMe = (basicEventForm.eventOrganizerIds ?? []).filter((id) => id !== myId);
     return {
       ...basicEventForm,
-      eventOrganizerIds: cohostsWithoutMe,
+      eventOrganizerIds: basicEventForm.eventOrganizerIds ?? [],
       questions,
       eventStart: convertDatetimeLocalToKSTISOString(basicEventForm.eventStart),
       eventEnd: convertDatetimeLocalToKSTISOString(basicEventForm.eventEnd),
@@ -537,8 +566,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               maxSelectable={10}
               onClose={cohostModalClose}
               onSubmit={(ids) => {
-                const cohost = myId ? Array.from(new Set([myId, ...ids])) : ids;
-                updateAndValidate({ eventOrganizerIds: cohost });
+                updateAndValidate({ eventOrganizerIds: ids });
               }}
             />
           </Flex>

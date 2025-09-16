@@ -19,6 +19,7 @@ export type EventDetail = {
   description: string;
   place: string;
   organizerNicknames: string[];
+  eventOrganizerIds: number[];
   eventStart: string;
   eventEnd: string;
   registrationStart: string;
