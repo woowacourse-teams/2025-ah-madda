@@ -21,7 +21,7 @@ export const OrganizationDeleteModal = ({
       isOpen={isOpen}
       onClose={onClose}
       css={css`
-        max-width: 400px;
+        max-width: 350px;
       `}
     >
       <Flex dir="column" gap="24px" padding="24px">
@@ -34,7 +34,7 @@ export const OrganizationDeleteModal = ({
               이벤트 스페이스를 삭제하시겠습니까?
             </Text>
             <Text type="Body" weight="regular" color={theme.colors.gray600}>
-              삭제된 이벤트 스페이스는 복구할 수 없습니다.
+              삭제 후에는 복구할 수 없습니다.
             </Text>
           </Flex>
         </Flex>
