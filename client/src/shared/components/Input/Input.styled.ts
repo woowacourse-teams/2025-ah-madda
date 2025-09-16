@@ -15,11 +15,6 @@ export const StyledLabel = styled.label`
   font-size: 14px;
 `;
 
-export const StyledRequiredMark = styled.span`
-  color: red;
-  font-size: 14px;
-`;
-
 export const StyledFieldWrapper = styled.div`
   position: relative;
 `;
