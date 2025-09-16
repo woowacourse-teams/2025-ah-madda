@@ -36,13 +36,10 @@ export const OrganizationCreateForm = () => {
   const organizationId = Number(paramId);
   const isEdit = !!organizationId;
 
-  const { isOpen, open, close } = useModal();
   const { error, success } = useToast();
   const { mutate: deleteOrganization } = useDeleteOrganization();
-  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-
-  const openDelete = () => setDeleteModalOpen(true);
-  const closeDelete = () => setDeleteModalOpen(false);
+  const createModal = useModal();
+  const deleteModal = useModal();
 
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
   const objectUrlRef = useRef<string | undefined>(undefined);
@@ -99,10 +96,10 @@ export const OrganizationCreateForm = () => {
     description: form.description.trim(),
     thumbnail: form.thumbnail,
     onSuccess: (newOrganizationId: number) => {
-      close();
+      createModal.close();
       navigate(`/${newOrganizationId}/event`);
     },
-    onClose: close,
+    onClose: createModal.close,
   });
 
   const isSubmitting = isEdit ? isPatching : isCreating;
@@ -166,14 +163,14 @@ export const OrganizationCreateForm = () => {
       return;
     }
 
-    open();
+    createModal.open();
   };
 
   const handleDeleteButtonClick = () => {
     deleteOrganization(organizationId, {
       onSuccess: () => {
         success('이벤트 스페이스가 성공적으로 삭제되었습니다!');
-        close();
+        deleteModal.close();
         navigate('/organization');
       },
       onError: (err) => {
@@ -249,7 +246,7 @@ export const OrganizationCreateForm = () => {
           {isEdit && (
             <Button
               size="sm"
-              onClick={openDelete}
+              onClick={deleteModal.open}
               css={css`
                 background-color: ${theme.colors.red100};
                 color: ${theme.colors.red400};
@@ -351,18 +348,18 @@ export const OrganizationCreateForm = () => {
 
       {!isEdit && (
         <CreatorNicknameModal
-          isOpen={isOpen}
+          isOpen={createModal.isOpen}
           orgName={form.name || '이벤트 스페이스'}
           previewUrl={previewUrl}
           isSubmitting={isSubmitting}
-          onClose={close}
+          onClose={createModal.close}
           onConfirm={handleConfirmNickname}
         />
       )}
 
       <OrganizationDeleteModal
-        isOpen={isDeleteModalOpen}
-        onClose={closeDelete}
+        isOpen={deleteModal.isOpen}
+        onClose={deleteModal.close}
         onDeleteConfirm={handleDeleteButtonClick}
       />
     </>
