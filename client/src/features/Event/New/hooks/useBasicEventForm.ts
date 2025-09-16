@@ -13,17 +13,37 @@ const makeInitialForm = (initialData?: Partial<CreateEventAPIRequest>): BasicEve
   place: '',
   description: '',
   maxCapacity: 10,
+  eventOrganizerIds: [],
   ...initialData,
 });
 
-export const useBasicEventForm = (initialData?: Partial<CreateEventAPIRequest>) => {
-  const initialForm = makeInitialForm(initialData);
+type UseBasicEventFormOptions = {
+  defaultCoHostId?: number;
+};
 
-  const [basicEventForm, setBasicEventForm] = useState<BasicEventFormFields>(initialForm);
+export const useBasicEventForm = (
+  initialData?: Partial<CreateEventAPIRequest>,
+  options?: UseBasicEventFormOptions
+) => {
+  const initialSnapshotRef = useRef<BasicEventFormFields | null>(null);
+
+  const [basicEventForm, setBasicEventForm] = useState<BasicEventFormFields>(() => {
+    const base = makeInitialForm(initialData);
+    const defaultCoHostId = options?.defaultCoHostId;
+
+    const hasIds = Array.isArray(base.eventOrganizerIds) && base.eventOrganizerIds.length > 0;
+
+    const init =
+      defaultCoHostId != null && !hasIds ? { ...base, eventOrganizerIds: [defaultCoHostId] } : base;
+
+    initialSnapshotRef.current = init;
+    return init;
+  });
+
   const [errors, setErrors] = useState<Partial<Record<keyof BasicEventFormFields, string>>>({});
 
   const everNonEmptyRef = useRef<Partial<Record<keyof BasicEventFormFields, boolean>>>(
-    computeEverNonEmpty(initialForm)
+    computeEverNonEmpty(initialSnapshotRef.current as BasicEventFormFields)
   );
 
   const updateAndValidate = (patch: Partial<BasicEventFormFields>) => {

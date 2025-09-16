@@ -8,7 +8,7 @@ export type OrganizationParticipateAPIRequest = {
   inviteCode: string;
 };
 
-export type OrganizationProfileAPIResponse = {
+export type OrganizationMember = {
   organizationMemberId: number;
   nickname: string;
   isAdmin: boolean;

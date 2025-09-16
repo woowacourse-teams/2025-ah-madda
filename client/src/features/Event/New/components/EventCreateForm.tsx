@@ -9,7 +9,9 @@ import { HttpError } from '@/api/fetcher';
 import { useAddTemplate } from '@/api/mutations/useAddTemplate';
 import { useUpdateEvent } from '@/api/mutations/useUpdateEvent';
 import { getEventDetailAPI } from '@/api/queries/event';
+import { organizationQueryOptions } from '@/api/queries/organization';
 import type { EventTemplateAPIResponse, TemplateDetailAPIResponse } from '@/api/types/event';
+import type { OrganizationMember } from '@/api/types/organizations';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { IconButton } from '@/shared/components/IconButton';
@@ -22,6 +24,7 @@ import { useModal } from '@/shared/hooks/useModal';
 import { trackCreateEvent } from '@/shared/lib/gaEvents';
 import { theme } from '@/shared/styles/theme';
 
+import { EventDetail } from '../../types/Event';
 import { MAX_LENGTH, UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useBasicEventForm } from '../hooks/useBasicEventForm';
@@ -37,6 +40,7 @@ import {
 } from '../utils/date';
 import { timeValueToDate, timeValueFromDate } from '../utils/time';
 
+import { CoHostSelectModal } from './CoHostSelectModal';
 import { DatePickerDropdown } from './DatePickerDropdown';
 import { MaxCapacityModal } from './MaxCapacityModal';
 import { MyPastEventModal } from './MyPastEventModal';
@@ -61,6 +65,14 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     queryFn: () => getEventDetailAPI(Number(eventId)),
     enabled: isEdit,
   });
+  const { data: myProfile } = useQuery({
+    ...organizationQueryOptions.profile(Number(organizationId)),
+    enabled: !!organizationId,
+  });
+  const { data: members } = useQuery({
+    ...organizationQueryOptions.members(Number(organizationId)),
+    enabled: !!organizationId,
+  });
   const { openDropdown, closeDropdown, isOpen } = useDropdownStates();
   const {
     isOpen: isTemplateModalOpen,
@@ -72,6 +84,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     open: capacityModalOpen,
     close: capacityModalClose,
   } = useModal();
+  const { isOpen: isCohostModalOpen, open: cohostModalOpen, close: cohostModalClose } = useModal();
+
+  const myId = myProfile?.organizationMemberId;
 
   const {
     basicEventForm,
@@ -92,6 +107,22 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   } = useQuestionForm();
 
   const isFormReady = isBasicFormValid && isQuestionValid;
+
+  const selectableMembers = (members ?? []).filter((m) => m.organizationMemberId !== myId);
+
+  const selectedNames = (() => {
+    const ids = basicEventForm.eventOrganizerIds ?? [];
+    const names = selectableMembers
+      .filter((m) => ids.includes(m.organizationMemberId))
+      .map((m) => m.nickname);
+
+    const selfName =
+      members?.find((m) => m.organizationMemberId === myId)?.nickname ??
+      myProfile?.nickname ??
+      '본인';
+
+    return [selfName, ...names];
+  })();
 
   const handleTemplateSelected = (
     templateDetail: Pick<TemplateDetailAPIResponse, 'description'>
@@ -121,13 +152,45 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     error('네트워크 연결을 확인해주세요.');
   };
 
-  const buildPayload = () => ({
-    ...basicEventForm,
-    questions,
-    eventStart: convertDatetimeLocalToKSTISOString(basicEventForm.eventStart),
-    eventEnd: convertDatetimeLocalToKSTISOString(basicEventForm.eventEnd),
-    registrationEnd: convertDatetimeLocalToKSTISOString(basicEventForm.registrationEnd),
-  });
+  const hydratedFromDetailRef = useRef(false);
+  useEffect(() => {
+    if (!isEdit) return;
+    if (hydratedFromDetailRef.current) return;
+    if (!eventDetail) return;
+
+    const hasOtherThanMe = (basicEventForm.eventOrganizerIds ?? []).length > 0;
+    if (hasOtherThanMe) return;
+
+    let idsFromDetail: number[] | undefined = (eventDetail as EventDetail).eventOrganizerIds;
+
+    if (
+      (!idsFromDetail || idsFromDetail.length === 0) &&
+      eventDetail.organizerNicknames &&
+      members
+    ) {
+      const byNickname = new Map(members.map((m) => [m.nickname, m.organizationMemberId]));
+      idsFromDetail = eventDetail.organizerNicknames
+        .map((nick) => byNickname.get(nick))
+        .filter((id): id is number => typeof id === 'number');
+    }
+
+    if (Array.isArray(idsFromDetail) && idsFromDetail.length > 0) {
+      const othersOnly = myId ? idsFromDetail.filter((id) => id !== myId) : idsFromDetail;
+      updateAndValidate({ eventOrganizerIds: othersOnly });
+      hydratedFromDetailRef.current = true;
+    }
+  }, [isEdit, eventDetail, members, myId, basicEventForm.eventOrganizerIds, updateAndValidate]);
+
+  const buildPayload = () => {
+    return {
+      ...basicEventForm,
+      eventOrganizerIds: basicEventForm.eventOrganizerIds ?? [],
+      questions,
+      eventStart: convertDatetimeLocalToKSTISOString(basicEventForm.eventStart),
+      eventEnd: convertDatetimeLocalToKSTISOString(basicEventForm.eventEnd),
+      registrationEnd: convertDatetimeLocalToKSTISOString(basicEventForm.registrationEnd),
+    };
+  };
 
   const autoSaveKey =
     isEdit && eventId ? `event-form:draft:edit:${eventId}` : 'event-form:draft:create';
@@ -459,6 +522,53 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 maxLength={MAX_LENGTH.PLACE}
               />
             </Flex>
+          </Flex>
+
+          <Flex dir="column" gap="8px" margin="10px 0">
+            <Button
+              type="button"
+              onClick={cohostModalOpen}
+              aria-label="공동 주최자 설정"
+              css={css`
+                width: 100%;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                gap: 12px;
+                padding: 4px 0;
+                border: 0;
+                background: transparent;
+                cursor: pointer;
+
+                &:hover {
+                  background: ${theme.colors.gray100};
+                }
+              `}
+            >
+              <Text type="Heading" weight="medium">
+                주최자
+              </Text>
+              <Text as="span" type="Body" color="#4b5563" data-role="value">
+                {selectedNames.length > 0
+                  ? `${selectedNames.slice(0, 2).join(', ')}${
+                      selectedNames.length > 2 ? ` 외 ${selectedNames.length - 2}명` : ''
+                    } ✎`
+                  : '미선택 ✎'}
+              </Text>
+            </Button>
+
+            <CoHostSelectModal
+              isOpen={isCohostModalOpen}
+              members={(selectableMembers as OrganizationMember[]) ?? []}
+              initialSelectedIds={(basicEventForm.eventOrganizerIds ?? []).filter(
+                (id) => id !== myId
+              )}
+              maxSelectable={10}
+              onClose={cohostModalClose}
+              onSubmit={(ids) => {
+                updateAndValidate({ eventOrganizerIds: ids });
+              }}
+            />
           </Flex>
 
           <Flex dir="column" gap="8px" margin="10px 0">
