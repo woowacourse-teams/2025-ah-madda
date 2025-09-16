@@ -27,7 +27,6 @@ public final class HashEncoder {
                 hexString.append(hex);
             }
             return hexString.toString();
-
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException(HASH_ALGORITHM + "는 지원하지 않습니다", e);
         }
