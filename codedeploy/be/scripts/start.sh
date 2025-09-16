@@ -7,4 +7,4 @@ LOG_FILE="/home/ubuntu/app/app.log"
 PROFILE="prod"
 
 echo "애플리케이션을 시작합니다..."
-nohup java -jar -Dspring.profiles.active=$PROFILE "$APP_DIR/$JAR_FILE" > "$LOG_FILE" 2>&1 &
+sudo java -Dspring.profiles.active=$PROFILE -jar $JAR_FILE
