@@ -34,6 +34,8 @@ public class MailCircuitBreakerEventConsumer implements RegistryEventConsumer<Ci
                                             .getMessage(),
                                     e.getThrowable()
                             ))
+                    .onSlowCallRateExceeded(e ->
+                            log.warn("mailCircuitBreakerSlowCallRateExceeded - breaker: {}", cb.getName()))
                     .onCallNotPermitted(e ->
                             log.warn("mailCircuitBreakerCallNotPermitted - breaker: {}", cb.getName()));
         }
