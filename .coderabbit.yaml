@@ -68,7 +68,7 @@ auto_review:
   enabled: true
   drafts: true
   auto_incremental_review: false
-  base_branches: ["be/dev"]
+  base_branches: ["be\/dev"]
   abort_on_close: true
 
 chat:
