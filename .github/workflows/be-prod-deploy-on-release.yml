@@ -49,7 +49,7 @@ jobs:
       - name: Create deployment package
         run: |
           mkdir deploy
-          cp server/build/libs/*.jar deploy/ahmadda-server-prod.jar
+          cp server/build/libs/*[!plain].jar deploy/ahmadda-server-prod.jar
           cp codedeploy/be/appspec.yml deploy/
           cp -r codedeploy/be/scripts/ deploy/
           cd deploy
