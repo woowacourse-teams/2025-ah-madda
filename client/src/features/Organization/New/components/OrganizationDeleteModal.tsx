@@ -3,12 +3,11 @@ import { css } from '@emotion/react';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Modal } from '@/shared/components/Modal';
+import { ModalProps } from '@/shared/components/Modal/Modal';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
-type OrganizationDeleteModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
+type OrganizationDeleteModalProps = Pick<ModalProps, 'isOpen' | 'onClose'> & {
   onDeleteConfirm: () => void;
 };
 
