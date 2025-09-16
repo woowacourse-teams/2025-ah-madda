@@ -80,7 +80,6 @@ knowledge_base:
     enabled: true
     filePatterns:
       - docs/be-code-convention.md
-      - docs/wooteco-java-style-guide.md
   issues:
     scope: local
   pull_requests:
