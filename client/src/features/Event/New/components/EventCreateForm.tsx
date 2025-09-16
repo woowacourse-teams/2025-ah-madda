@@ -12,6 +12,7 @@ import { getEventDetailAPI } from '@/api/queries/event';
 import type { EventTemplateAPIResponse, TemplateDetailAPIResponse } from '@/api/types/event';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
+import { IconButton } from '@/shared/components/IconButton';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
 import { Textarea } from '@/shared/components/Textarea';
@@ -131,9 +132,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const autoSaveKey =
     isEdit && eventId ? `event-form:draft:edit:${eventId}` : 'event-form:draft:create';
 
-  const { restore, clear } = useAutoSessionSave({
+  const { save, restore, clear } = useAutoSessionSave({
     key: autoSaveKey,
-    data: { basicEventForm, questions },
+    getData: () => ({ basicEventForm, questions }),
   });
 
   const restoredOnceRef = useRef(false);
@@ -266,6 +267,29 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
             {isEdit ? '이벤트 수정' : '이벤트 생성하기'}
           </Text>
           <Flex gap="8px">
+            <Button
+              size="sm"
+              onClick={save}
+              css={css`
+                @media (max-width: 480px) {
+                  display: none;
+                }
+              `}
+            >
+              임시저장
+            </Button>
+
+            <IconButton
+              name="save"
+              onClick={save}
+              aria-label="임시저장"
+              css={css`
+                display: none;
+                @media (max-width: 480px) {
+                  display: inline-flex;
+                }
+              `}
+            />
             <Button size="sm" onClick={templateModalOpen}>
               불러오기
             </Button>
