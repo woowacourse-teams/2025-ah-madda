@@ -1,5 +1,6 @@
 package com.ahmadda.infra.auth.jwt;
 
+import com.ahmadda.common.exception.UnauthorizedException;
 import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
-import java.util.Optional;
 import javax.crypto.SecretKey;
 
 @Slf4j
@@ -34,36 +34,36 @@ public class JwtProvider {
                 .compact();
     }
 
-    public Optional<JwtMemberPayload> parsePayload(final String token, final SecretKey secretKey) {
-        return parseClaims(token, secretKey)
-                .map(JwtMemberPayload::from);
+    public JwtMemberPayload parsePayload(final String token, final SecretKey secretKey) {
+        Claims claims = parseClaims(token, secretKey);
+        
+        return JwtMemberPayload.from(claims);
     }
 
-    public Optional<Boolean> isTokenExpired(final String token, final SecretKey secretKey) {
+    public boolean isTokenExpired(final String token, final SecretKey secretKey) {
         try {
             Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
-            return Optional.of(false);
+                    .parseSignedClaims(token);
+
+            return false;
         } catch (ExpiredJwtException e) {
-            return Optional.of(true);
+            return true;
         } catch (JwtException | IllegalArgumentException e) {
-            return Optional.empty();
+            throw new UnauthorizedException("유효하지 않은 인증 정보입니다.", e);
         }
     }
 
-    private Optional<Claims> parseClaims(final String token, final SecretKey secretKey) {
+    private Claims parseClaims(final String token, final SecretKey secretKey) {
         try {
-            Claims payload = Jwts.parser()
+            return Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
-            return Optional.of(payload);
-        } catch (Exception e) {
-            return Optional.empty();
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new UnauthorizedException("유효하지 않은 인증 정보입니다.", e);
         }
     }
 }
