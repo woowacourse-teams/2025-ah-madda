@@ -1,4 +1,4 @@
-name: BE Prod Deploy On Release
+name: BE Prod Deploy On Pull Request (Test)
 
 on:
   pull_request:
@@ -14,8 +14,8 @@ jobs:
       - prod
 
     outputs:
-      s3_key: ah-madda/codedeploy/ahmadda-server-prod-${{ steps.calc.outputs.version }}.zip
-      release_tag: ${{ steps.calc.outputs.version }}
+      s3_key: ah-madda/codedeploy/ahmadda-server-prod-${{ steps.set_version.outputs.version }}.zip
+      release_tag: ${{ steps.set_version.outputs.version }}
 
     steps:
       - name: Checkout with submodules
@@ -24,45 +24,9 @@ jobs:
           submodules: recursive
           token: ${{ secrets.BE_SUBMODULE_TOKEN }}
 
-      - name: Determine base version from release
-        id: base
-        run: |
-          base_tag="${{ github.event.release.tag_name }}"
-          base_version="${base_tag#v}" 
-
-          head=$(echo "$base_version" | cut -d'.' -f1)
-          yearweek=$(echo "$base_version" | cut -d'.' -f2)
-          common_build=$(echo "$base_version" | cut -d'.' -f3)
-
-          echo "head=$head" >> $GITHUB_OUTPUT
-          echo "yearweek=$yearweek" >> $GITHUB_OUTPUT
-          echo "common_build=$common_build" >> $GITHUB_OUTPUT
-
-      - name: Calculate and push next BE build version
-        id: calc
-        run: |
-          git fetch --tags
-
-          head="${{ steps.base.outputs.head }}"
-          yearweek="${{ steps.base.outputs.yearweek }}"
-          common="${{ steps.base.outputs.common_build }}"
-          prefix="v${head}.${yearweek}.${common}+be"
-
-          matching_tags=$(git tag -l "${prefix}.*")
-          if [[ -z "$matching_tags" ]]; then
-            next_be_build=1
-          else
-            last_be_build=$(echo "$matching_tags" | sed -E 's/.*\+be\.([0-9]+)/\1/' | sort -n | tail -n 1)
-            next_be_build=$((last_be_build + 1))
-          fi
-
-          version="${prefix}.${next_be_build}"
-          echo "version=$version" >> $GITHUB_OUTPUT
-
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag "$version"
-          git push origin "$version"
+      - name: Set temporary version for testing
+        id: set_version
+        run: echo "version=test-codedeploy" >> $GITHUB_OUTPUT
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -89,14 +53,14 @@ jobs:
           cp codedeploy/be/appspec.yml deploy/
           cp -r codedeploy/be/scripts/ deploy/
           cd deploy
-          zip -r ../ahmadda-server-prod-${{ steps.calc.outputs.version }}.zip .
+          zip -r ../ahmadda-server-prod-${{ steps.set_version.outputs.version }}.zip .
           cd ..
 
       - name: Upload to S3
         run: |
           aws s3 cp \
-            ahmadda-server-prod-${{ steps.calc.outputs.version }}.zip \
-            s3://techcourse-project-2025/ah-madda/codedeploy/ahmadda-server-prod-${{ steps.calc.outputs.version }}.zip
+            ahmadda-server-prod-${{ steps.set_version.outputs.version }}.zip \
+            s3://techcourse-project-2025/ah-madda/codedeploy/ahmadda-server-prod-${{ steps.set_version.outputs.version }}.zip
 
   deploy:
     needs: build
@@ -111,4 +75,4 @@ jobs:
             --application-name ahmadda-code-deploy-ec2 \
             --deployment-group-name ahmadda-code-deploy-alb \
             --s3-location bucket=techcourse-project-2025,key=${{ needs.build.outputs.s3_key }},bundleType=zip \
-            --description "Release ${{ needs.build.outputs.release_tag }} deployed via GitHub Actions"
+            --description "Test deployment ${{ needs.build.outputs.release_tag }} deployed via GitHub Actions"
