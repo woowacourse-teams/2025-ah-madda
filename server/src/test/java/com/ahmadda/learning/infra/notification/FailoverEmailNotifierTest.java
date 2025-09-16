@@ -69,7 +69,7 @@ class FailoverEmailNotifierTest {
     }
 
     @Test
-    void PrimarySMTP_실패시_SecondarySMTP로_Failover된다() {
+    void PrimarySMTP_실패시_SecondarySMTP로_Failover한다() {
         // given
         var organizationMember = createOrganizationMember("테스트 이벤트 스페이스", "주최자", "test@example.com", "닉네임");
         var payload = createPayload("테스트 이벤트 스페이스", "이벤트", "닉네임");
@@ -95,7 +95,7 @@ class FailoverEmailNotifierTest {
     }
 
     @Test
-    void PrimarySMTP가_여러번_실패하면_CircuitBreaker가_OPEN되어_바로_Fallback된다() {
+    void PrimarySMTP가_설정한_실패_횟수만큼_실패하면_CircuitBreaker가_OPEN되어_바로_Fallback한다() {
         // given
         var organizationMember = createOrganizationMember("테스트 이벤트 스페이스", "주최자", "test@example.com", "닉네임");
         var payload = createPayload("테스트 이벤트 스페이스", "이벤트", "닉네임");
@@ -130,7 +130,7 @@ class FailoverEmailNotifierTest {
     }
 
     @Test
-    void Primary와_SecondarySMTP모두_실패시_예외발생() {
+    void Primary와_SecondarySMTP모두_실패시_예외가_발생한다() {
         // given
         var organizationMember = createOrganizationMember("테스트 이벤트 스페이스", "주최자", "test@example.com", "닉네임");
         var payload = createPayload("테스트 이벤트 스페이스", "이벤트", "닉네임");
