@@ -118,6 +118,10 @@ class EventServiceTest {
                                         now.plusDays(5), now.plusDays(6),
                                         now
                                 ));
+                        softly.assertThat(event.getEventOrganizers()
+                                .getFirst()
+                                .getOrganizationMember()
+                                .equals(organizationMember));
                         List<Question> questions = savedEvent.getQuestions();
                         softly.assertThat(questions)
                                 .hasSize(2)
@@ -797,7 +801,7 @@ class EventServiceTest {
             softly.assertThat(pastEvents)
                     .hasSize(1);
             softly.assertThat(pastEvents.get(0)
-                                      .getId())
+                            .getId())
                     .isEqualTo(pastEvent.getId());
         });
     }
