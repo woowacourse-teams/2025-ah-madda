@@ -2,7 +2,7 @@ import { BasicEventFormFields } from '../../types/Event';
 
 type FieldConfig = {
   required: boolean;
-  type: 'string' | 'number';
+  type: 'string' | 'number' | 'number[]';
 };
 
 export const FIELD_CONFIG: Record<keyof BasicEventFormFields, FieldConfig> = {
@@ -13,4 +13,5 @@ export const FIELD_CONFIG: Record<keyof BasicEventFormFields, FieldConfig> = {
   eventStart: { required: true, type: 'string' },
   eventEnd: { required: true, type: 'string' },
   registrationEnd: { required: true, type: 'string' },
+  eventOrganizerIds: { required: false, type: 'number[]' },
 };
