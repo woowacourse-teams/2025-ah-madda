@@ -123,6 +123,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
 
   const buildPayload = () => ({
     ...basicEventForm,
+    eventOrganizerIds: [],
     questions,
     eventStart: convertDatetimeLocalToKSTISOString(basicEventForm.eventStart),
     eventEnd: convertDatetimeLocalToKSTISOString(basicEventForm.eventEnd),
@@ -573,6 +574,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         </Flex>
 
         <MyPastEventModal
+          organizationId={Number(organizationId)}
           isOpen={isTemplateModalOpen}
           onClose={templateModalClose}
           onEventSelected={handleEventSelected}
