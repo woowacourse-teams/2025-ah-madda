@@ -2,14 +2,16 @@ package com.ahmadda.infra.notification.mail.config;
 
 import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.infra.notification.config.NotificationProperties;
+import com.ahmadda.infra.notification.mail.FailoverEmailNotifier;
 import com.ahmadda.infra.notification.mail.MockEmailNotifier;
 import com.ahmadda.infra.notification.mail.SmtpEmailNotifier;
 import jakarta.persistence.EntityManager;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.Primary;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.thymeleaf.TemplateEngine;
@@ -25,33 +27,41 @@ public class MailConfig {
     }
 
     @Bean
+    @Primary
     @ConditionalOnProperty(name = "mail.mock", havingValue = "false", matchIfMissing = true)
-    public EmailNotifier smtpEmailNotifier(
-            final JavaMailSender javaMailSender,
-            final TemplateEngine templateEngine,
-            final NotificationProperties notificationProperties,
-            final EntityManager em
+    public EmailNotifier failoverEmailNotifier(
+            @Qualifier("gmailSmtpEmailNotifier") final SmtpEmailNotifier primaryNotifier,
+            @Qualifier("awsSmtpEmailNotifier") final SmtpEmailNotifier secondaryNotifier,
+            EntityManager em
     ) {
-        return new SmtpEmailNotifier(javaMailSender, templateEngine, notificationProperties, em);
+        return new FailoverEmailNotifier(primaryNotifier, secondaryNotifier, em);
     }
 
     @Bean
-    @Profile("prod")
-    public JavaMailSender awsMailSender(final SmtpProperties smtpProperties) {
-        SmtpProperties.Account account = smtpProperties.getAws();
+    @ConditionalOnProperty(name = "mail.mock", havingValue = "false", matchIfMissing = true)
+    public SmtpEmailNotifier gmailSmtpEmailNotifier(
+            final SmtpProperties smtpProperties,
+            final TemplateEngine templateEngine,
+            final NotificationProperties notificationProperties
+    ) {
+        JavaMailSender gmailMailSender = createJavaMailSender(smtpProperties.getGoogle());
 
-        return getJavaMailSender(account);
+        return new SmtpEmailNotifier(gmailMailSender, templateEngine, notificationProperties);
     }
 
     @Bean
-    @Profile("!prod")
-    public JavaMailSender gmailMailSender(final SmtpProperties smtpProperties) {
-        SmtpProperties.Account account = smtpProperties.getGoogle();
+    @ConditionalOnProperty(name = "mail.mock", havingValue = "false", matchIfMissing = true)
+    public SmtpEmailNotifier awsSmtpEmailNotifier(
+            final SmtpProperties smtpProperties,
+            final TemplateEngine templateEngine,
+            final NotificationProperties notificationProperties
+    ) {
+        JavaMailSender awsMailSender = createJavaMailSender(smtpProperties.getAws());
 
-        return getJavaMailSender(account);
+        return new SmtpEmailNotifier(awsMailSender, templateEngine, notificationProperties);
     }
 
-    private JavaMailSender getJavaMailSender(final SmtpProperties.Account acc) {
+    private JavaMailSender createJavaMailSender(final SmtpProperties.Account acc) {
         JavaMailSenderImpl sender = new JavaMailSenderImpl();
         sender.setHost(acc.getHost());
         sender.setPort(acc.getPort());

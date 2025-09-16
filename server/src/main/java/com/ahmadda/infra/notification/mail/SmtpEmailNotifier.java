@@ -4,15 +4,13 @@ import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.domain.notification.EventEmailPayload;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.infra.notification.config.NotificationProperties;
+import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -27,17 +25,11 @@ public class SmtpEmailNotifier implements EmailNotifier {
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
     private final NotificationProperties notificationProperties;
-    private final EntityManager em;
 
-    @Async
-    @Transactional(readOnly = true)
     @Override
+    @Retry(name = "smtpEmail")
     public void sendEmails(final List<OrganizationMember> recipients, final EventEmailPayload eventEmailPayload) {
-        List<OrganizationMember> mergedRecipients = recipients.stream()
-                .map(em::merge)
-                .toList();
-
-        List<String> recipientEmails = getRecipientEmails(mergedRecipients);
+        List<String> recipientEmails = getRecipientEmails(recipients);
         if (recipientEmails.isEmpty()) {
             return;
         }
@@ -46,7 +38,6 @@ public class SmtpEmailNotifier implements EmailNotifier {
         String text = createText(eventEmailPayload.body());
 
         MimeMessage mimeMessage = createMimeMessageWithBcc(recipientEmails, subject, text);
-        // TODO: 추후 지수 백오프를 이용한 재시도 로직 구현
         javaMailSender.send(mimeMessage);
     }
 
