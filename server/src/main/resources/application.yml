@@ -78,7 +78,8 @@ resilience4j:
         failureRateThreshold: 50
         waitDurationInOpenState: 6h
         permittedNumberOfCallsInHalfOpenState: 1
-
+        slowCallDurationThreshold: 5s
+        slowCallRateThreshold: 100
 springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
