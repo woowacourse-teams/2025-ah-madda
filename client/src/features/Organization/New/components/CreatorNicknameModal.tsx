@@ -6,15 +6,14 @@ import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Modal } from '@/shared/components/Modal';
+import { ModalProps } from '@/shared/components/Modal/Modal';
 import { Text } from '@/shared/components/Text';
 
-type CreatorNicknameModalProps = {
-  isOpen: boolean;
+type CreatorNicknameModalProps = Pick<ModalProps, 'isOpen' | 'onClose'> & {
   orgName: string;
   previewUrl?: string;
   isSubmitting?: boolean;
   onConfirm: (nickname: string) => void;
-  onClose: () => void;
 };
 
 export const CreatorNicknameModal = ({
