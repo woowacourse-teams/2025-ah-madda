@@ -70,7 +70,7 @@ auto_review:
   enabled: true                     # 자동 리뷰 활성화
   drafts: true                      # Draft PR도 리뷰할지 여부
   auto_incremental_review: false    # 증분 리뷰 비활성화
-  base_branches: ["be\/dev"]        # 리뷰 활성화 브랜치
+  base_branches: [".*"]             # 리뷰 활성화 브랜치
 
 chat:
   auto_reply: true

@@ -14,7 +14,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.time.Duration;
 import java.util.ArrayDeque;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -52,8 +51,9 @@ class SlidingWindowRateLimitFilterTest {
                 accessSecretKey, accessExpiration
         );
 
-        filter = new SlidingWindowRateLimitFilter(headerProvider,
-                                                  jwtAccessTokenProperties, jwtProvider, rateLimitExceededHandler
+        filter = new SlidingWindowRateLimitFilter(
+                headerProvider,
+                jwtAccessTokenProperties, jwtProvider, rateLimitExceededHandler
         );
 
         request = new MockHttpServletRequest();
@@ -85,10 +85,9 @@ class SlidingWindowRateLimitFilterTest {
         request.setRequestURI("/api/test");
 
         var payload = mock(JwtMemberPayload.class);
-        when(payload.getMemberId()).thenReturn(memberId);
+        when(payload.memberId()).thenReturn(memberId);
         when(headerProvider.extractAccessToken(bearerToken)).thenReturn(token);
-        when(jwtProvider.parsePayload(token, jwtAccessTokenProperties.getAccessSecretKey())).thenReturn(Optional.of(
-                payload));
+        when(jwtProvider.parsePayload(token, jwtAccessTokenProperties.getAccessSecretKey())).thenReturn(payload);
 
         for (int i = 0; i < 100; i++) {
             filter.doFilterInternal(request, response, chain);

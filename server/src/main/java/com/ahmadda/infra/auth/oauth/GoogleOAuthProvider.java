@@ -1,10 +1,10 @@
 package com.ahmadda.infra.auth.oauth;
 
 
+import com.ahmadda.common.exception.UnauthorizedException;
 import com.ahmadda.infra.auth.oauth.config.GoogleOAuthProperties;
 import com.ahmadda.infra.auth.oauth.dto.GoogleAccessTokenResponse;
 import com.ahmadda.infra.auth.oauth.dto.OAuthUserInfoResponse;
-import com.ahmadda.infra.auth.oauth.exception.InvalidOauthTokenException;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
+
+import java.util.Objects;
 
 @Component
 @EnableConfigurationProperties(GoogleOAuthProperties.class)
@@ -49,19 +51,19 @@ public class GoogleOAuthProvider {
 
     private String requestGoogleAccessToken(final String code, final String redirectUri) {
         MultiValueMap<String, String> tokenRequestParams = createTokenRequestParams(code, redirectUri);
+        try {
+            GoogleAccessTokenResponse response = restClient.post()
+                    .uri(googleOAuthProperties.getTokenUri())
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .body(tokenRequestParams)
+                    .retrieve()
+                    .body(GoogleAccessTokenResponse.class);
 
-        GoogleAccessTokenResponse googleAccessTokenResponse = restClient.post()
-                .uri(googleOAuthProperties.getTokenUri())
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(tokenRequestParams)
-                .retrieve()
-                .body(GoogleAccessTokenResponse.class);
-
-        if (googleAccessTokenResponse == null) {
-            throw new InvalidOauthTokenException("유효하지 않은 인증 정보입니다. 인가 코드가 만료되었거나, 잘못되었습니다.");
+            return Objects.requireNonNull(response)
+                    .accessToken();
+        } catch (Exception e) {
+            throw new UnauthorizedException("유효하지 않은 인증 정보입니다.", e);
         }
-
-        return googleAccessTokenResponse.accessToken();
     }
 
     private OAuthUserInfoResponse requestGoogleUserInfo(final String accessToken) {
