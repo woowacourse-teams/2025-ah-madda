@@ -1,8 +1,11 @@
 name: BE Prod Deploy On Release
 
 on:
-  release:
-    types: [published]
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
   build:
