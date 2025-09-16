@@ -1,11 +1,7 @@
 package com.ahmadda.presentation.filter.ratelimit;
 
-import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.common.exception.UnauthorizedException;
-import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.infra.auth.jwt.JwtProvider;
 import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
-import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
 import com.ahmadda.presentation.header.HeaderProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -144,8 +140,7 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
             String accessToken = headerProvider.extractAccessToken(authorizationHeader);
 
             return jwtProvider.parsePayload(accessToken, jwtAccessTokenProperties.getAccessSecretKey())
-                    .map(JwtMemberPayload::getMemberId)
-                    .orElseThrow(() -> new UnauthorizedException("유효하지 않은 액세스 토큰입니다."));
+                    .memberId();
         } catch (Exception e) {
             return null;
         }

@@ -49,8 +49,8 @@ public class Event extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
     private final List<Guest> guests = new ArrayList<>();
 
-    // TODO. FlyWay 도입 이후 JoinColumn 사용 고려
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "event_id", nullable = false)
     private final List<Question> questions = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
