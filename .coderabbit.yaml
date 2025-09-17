@@ -6,21 +6,24 @@ tone_instructions: >
   관련 문서 추천과 위트 있는 칭찬, P1~P3 우선순위 표시를 지킵니다.
 
 reviews:
-  profile: chill                      # 리뷰 스타일: 편안하고 친근한 톤
-  request_changes_workflow: false     # Request Change 요청시 병합 비활성화 해제
-  high_level_summary: true            # PR 전체 요약 제공
-  changed_files_summary: false        # 개별 파일 요약은 비활성화 (중복 방지)
-  sequence_diagrams: false            # 시퀀스 다이어그램 생성 비활성화
-  assess_linked_issues: true          # 연결된 이슈 분석 활성화
-  related_issues: false               # 관련 이슈 추천 비활성화
-  related_prs: false                  # 관련 PR 추천 비활성화
-  suggested_labels: false             # 라벨 추천 비활성화
-  auto_apply_labels: false            # 자동 라벨 적용 비활성화
-  suggested_reviewers: false          # 리뷰어 추천 비활성화
-  auto_assign_reviewers: false        # 자동 리뷰어 할당 비활성화
-  poem: true                          # 리뷰 완료 후 시 작성 활성화 (재미 요소)                
-  abort_on_close: true                # PR이 닫히면 리뷰 중지
-  disable_cache: false                # 빠르고 효율적인 리뷰를 위해 캐시 기능 활성화
+  profile: chill
+  high_level_summary: true
+  high_level_summary_placeholder: "🤖 Code Rabbit PR 요약"
+  review_status: true
+  commit_status: true
+
+  # 워크스루/자동화/부가 기능
+  collapse_walkthrough: false
+  changed_files_summary: false
+  sequence_diagrams: false
+  assess_linked_issues: true
+  related_issues: false
+  related_prs: false
+  suggested_labels: false
+  auto_apply_labels: false
+  suggested_reviewers: false
+  auto_assign_reviewers: false
+  poem: false
 
   path_instructions:
     - path: backend/**
@@ -28,7 +31,7 @@ reviews:
         **아맞다 백엔드 리뷰 가이드라인**
 
         1. **컨벤션 준수**
-           - BE 코드 컨벤션(docs/be-code-convention.md) 기반
+           - BE 코드 컨벤션(server/docs/be-code-convention.md) 기반
            - final 불필요한 남용 금지
            - @DisplayName 대신 한글 메서드명 사용
            - var 적극 활용
@@ -65,12 +68,21 @@ reviews:
            - 불필요한 코드/경고 제거
            - 가독성·유지보수성 우선
            - 보안/성능 이슈 우선순위 P1 처리
+  
+  abort_on_close: true
+  disable_cache: false
 
-auto_review:
-  enabled: true                     # 자동 리뷰 활성화
-  drafts: true                      # Draft PR도 리뷰할지 여부
-  auto_incremental_review: false    # 증분 리뷰 비활성화
-  base_branches: [".*"]             # 리뷰 활성화 브랜치
+  auto_review:
+    enabled: true
+    drafts: true
+    auto_incremental_review: false
+    base_branches: [ "fe/dev", "be/dev" ]
+
+  finishing_touches:
+    docstrings:
+      enabled: true
+    unit_tests:
+      enabled: true
 
 chat:
   auto_reply: true
@@ -80,7 +92,7 @@ knowledge_base:
   code_guidelines:
     enabled: true
     filePatterns:
-      - docs/be-code-convention.md
+      - /server/docs/be-code-convention.md
   issues:
     scope: local
   pull_requests:
