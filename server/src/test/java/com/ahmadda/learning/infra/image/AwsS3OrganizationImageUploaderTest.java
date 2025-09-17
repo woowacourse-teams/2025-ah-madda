@@ -1,6 +1,6 @@
 package com.ahmadda.learning.infra.image;
 
-import com.ahmadda.annotation.IntegrationTest;
+import com.ahmadda.annotation.LearningTest;
 import com.ahmadda.domain.organization.OrganizationImageFile;
 import com.ahmadda.infra.image.AwsS3OrganizationImageUploader;
 import org.junit.jupiter.api.Disabled;
@@ -12,7 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 @Disabled
-@IntegrationTest
+@LearningTest
 @TestPropertySource(properties = {
         "aws.s3.mock=false",
         "aws.s3.region=${aws.dev.s3.region}",

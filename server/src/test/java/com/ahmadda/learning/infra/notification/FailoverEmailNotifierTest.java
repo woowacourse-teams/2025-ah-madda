@@ -1,6 +1,6 @@
 package com.ahmadda.learning.infra.notification;
 
-import com.ahmadda.annotation.IntegrationTest;
+import com.ahmadda.annotation.LearningTest;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.notification.EmailNotifier;
@@ -11,7 +11,6 @@ import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.infra.notification.mail.SmtpEmailNotifier;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSendException;
@@ -29,8 +28,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@Disabled
-@IntegrationTest
+@LearningTest
 @TestPropertySource(properties = "mail.mock=false")
 class FailoverEmailNotifierTest {
 
