@@ -18,8 +18,9 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
-import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
-import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
+import net.javacrumbs.shedlock.core.LockProvider;
+import net.javacrumbs.shedlock.core.SimpleLock;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -31,11 +32,14 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @IntegrationTest
 class EventNotificationSchedulerTest {
@@ -65,13 +69,15 @@ class EventNotificationSchedulerTest {
     private Reminder reminder;
 
     @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
-
-    @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
+    private LockProvider lockProvider;
 
     @Autowired
     private ReminderHistoryRepository reminderHistoryRepository;
+
+    @BeforeEach
+    void setUp() {
+        when(lockProvider.lock(any())).thenReturn(Optional.of(mock(SimpleLock.class)));
+    }
 
     @ParameterizedTest
     @MethodSource("registrationEndOffsets")
