@@ -48,7 +48,9 @@ public class FcmPushNotifier implements PushNotifier {
     @Transactional
     @Override
     public void sendPush(final OrganizationMember recipient, final PushNotificationPayload pushNotificationPayload) {
-        List<String> registrationTokens = getRegistrationTokens(recipient);
+        OrganizationMember mergedRecipient = em.merge(recipient);
+
+        List<String> registrationTokens = getRegistrationTokens(mergedRecipient);
         sendMulticast(pushNotificationPayload, registrationTokens);
     }
 
