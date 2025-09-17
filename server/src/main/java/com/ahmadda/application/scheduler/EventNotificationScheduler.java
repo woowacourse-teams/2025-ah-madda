@@ -37,7 +37,7 @@ public class EventNotificationScheduler {
     @Scheduled(fixedRate = 180_000)
     @SchedulerLock(
             name = "notifyRegistrationClosingIn30Minutes",
-            lockAtMostFor = "4m",
+            lockAtMostFor = "2m",
             lockAtLeastFor = "30s"
     )
     @Transactional
