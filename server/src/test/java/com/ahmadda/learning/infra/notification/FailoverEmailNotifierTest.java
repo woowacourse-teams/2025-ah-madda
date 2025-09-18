@@ -1,6 +1,6 @@
 package com.ahmadda.learning.infra.notification;
 
-import com.ahmadda.annotation.IntegrationTest;
+import com.ahmadda.annotation.LearningTest;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.notification.EmailNotifier;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @Disabled
-@IntegrationTest
+@LearningTest
 @TestPropertySource(properties = "mail.mock=false")
 class FailoverEmailNotifierTest {
 
