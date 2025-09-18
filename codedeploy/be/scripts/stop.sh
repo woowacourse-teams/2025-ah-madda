@@ -1,7 +1,8 @@
 #!/bin/bash
 # scripts/stop.sh
 
-PID=$(pgrep -f "ahmadda-server-prod.jar")
+PORT=8080
+PID=$(lsof -ti tcp:$PORT)
 
 if [ -z "$PID" ]; then
   echo "애플리케이션이 실행 중이지 않습니다."
