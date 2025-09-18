@@ -6,12 +6,17 @@ import com.ahmadda.domain.notification.EventEmailPayload;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.infra.notification.config.NotificationProperties;
 import com.ahmadda.infra.notification.mail.SmtpEmailNotifier;
+import com.ahmadda.infra.notification.mail.config.SmtpProperties;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.context.TestPropertySource;
+import org.thymeleaf.TemplateEngine;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,9 +27,47 @@ import java.util.List;
 @TestPropertySource(properties = "mail.mock=false")
 class SmtpEmailNotifierTest {
 
-    @Autowired
-    @Qualifier("gmailSmtpEmailNotifier")
     private SmtpEmailNotifier smtpEmailNotifier;
+
+    @Autowired
+    private SmtpProperties smtpProperties;
+
+    @Autowired
+    private TemplateEngine templateEngine;
+
+    @Autowired
+    private NotificationProperties notificationProperties;
+
+    @BeforeEach
+    void setUp() {
+        smtpEmailNotifier = createSmtpEmailNotifier("google");
+    }
+
+    private SmtpEmailNotifier createSmtpEmailNotifier(String provider) {
+        SmtpProperties.Account acc =
+                switch (provider.toLowerCase()) {
+                    case "google" -> smtpProperties.getGoogle();
+                    case "aws" -> smtpProperties.getAws();
+                    default -> throw new IllegalArgumentException("지원하지 않는 provider: " + provider);
+                };
+
+        JavaMailSender sender = createJavaMailSender(acc);
+        return new SmtpEmailNotifier(sender, templateEngine, notificationProperties);
+    }
+
+    private JavaMailSender createJavaMailSender(SmtpProperties.Account acc) {
+        var sender = new JavaMailSenderImpl();
+        sender.setHost(acc.getHost());
+        sender.setPort(acc.getPort());
+        sender.setUsername(acc.getUsername());
+        sender.setPassword(acc.getPassword());
+        sender.setDefaultEncoding("UTF-8");
+        if (acc.getProperties() != null) {
+            sender.getJavaMailProperties()
+                    .putAll(acc.getProperties());
+        }
+        return sender;
+    }
 
     @Test
     void 실제_SMTP로_메일을_발송한다() {

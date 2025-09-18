@@ -2,6 +2,7 @@ package com.ahmadda.infra.notification.mail.config;
 
 import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.infra.notification.config.NotificationProperties;
+import com.ahmadda.infra.notification.mail.BccChunkingEmailNotifier;
 import com.ahmadda.infra.notification.mail.FailoverEmailNotifier;
 import com.ahmadda.infra.notification.mail.MockEmailNotifier;
 import com.ahmadda.infra.notification.mail.SmtpEmailNotifier;
@@ -30,35 +31,39 @@ public class MailConfig {
     @Primary
     @ConditionalOnProperty(name = "mail.mock", havingValue = "false", matchIfMissing = true)
     public EmailNotifier failoverEmailNotifier(
-            @Qualifier("gmailSmtpEmailNotifier") final SmtpEmailNotifier primaryNotifier,
-            @Qualifier("awsSmtpEmailNotifier") final SmtpEmailNotifier secondaryNotifier,
-            EntityManager em
+            @Qualifier("googleEmailNotifier") final EmailNotifier primaryNotifier,
+            @Qualifier("awsEmailNotifier") final EmailNotifier secondaryNotifier,
+            final EntityManager em
     ) {
         return new FailoverEmailNotifier(primaryNotifier, secondaryNotifier, em);
     }
 
     @Bean
     @ConditionalOnProperty(name = "mail.mock", havingValue = "false", matchIfMissing = true)
-    public SmtpEmailNotifier gmailSmtpEmailNotifier(
+    public EmailNotifier googleEmailNotifier(
             final SmtpProperties smtpProperties,
             final TemplateEngine templateEngine,
             final NotificationProperties notificationProperties
     ) {
-        JavaMailSender gmailMailSender = createJavaMailSender(smtpProperties.getGoogle());
+        JavaMailSender googleMailSender = createJavaMailSender(smtpProperties.getGoogle());
+        EmailNotifier googleEmailNotifier =
+                new SmtpEmailNotifier(googleMailSender, templateEngine, notificationProperties);
 
-        return new SmtpEmailNotifier(gmailMailSender, templateEngine, notificationProperties);
+        return new BccChunkingEmailNotifier(googleEmailNotifier, 100);
     }
 
     @Bean
     @ConditionalOnProperty(name = "mail.mock", havingValue = "false", matchIfMissing = true)
-    public SmtpEmailNotifier awsSmtpEmailNotifier(
+    public EmailNotifier awsEmailNotifier(
             final SmtpProperties smtpProperties,
             final TemplateEngine templateEngine,
             final NotificationProperties notificationProperties
     ) {
         JavaMailSender awsMailSender = createJavaMailSender(smtpProperties.getAws());
+        EmailNotifier awsEmailNotifier =
+                new SmtpEmailNotifier(awsMailSender, templateEngine, notificationProperties);
 
-        return new SmtpEmailNotifier(awsMailSender, templateEngine, notificationProperties);
+        return new BccChunkingEmailNotifier(awsEmailNotifier, 50);
     }
 
     private JavaMailSender createJavaMailSender(final SmtpProperties.Account acc) {

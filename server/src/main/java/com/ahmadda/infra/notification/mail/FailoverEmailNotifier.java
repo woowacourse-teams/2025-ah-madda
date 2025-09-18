@@ -16,8 +16,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FailoverEmailNotifier implements EmailNotifier {
 
-    private final SmtpEmailNotifier primaryNotifier;
-    private final SmtpEmailNotifier secondaryNotifier;
+    private final EmailNotifier primaryNotifier;
+    private final EmailNotifier secondaryNotifier;
     private final EntityManager em;
 
     @Override
