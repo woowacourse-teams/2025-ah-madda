@@ -34,11 +34,11 @@ public class EventNotificationScheduler {
     private final Reminder reminder;
     private final ReminderHistoryRepository reminderHistoryRepository;
 
-    @Scheduled(fixedRate = 180_000)
+    @Scheduled(cron = "0 */3 * * * *")
     @SchedulerLock(
             name = "notifyRegistrationClosingIn30Minutes",
             lockAtMostFor = "2m",
-            lockAtLeastFor = "30s"
+            lockAtLeastFor = "1m"
     )
     @Transactional
     public void notifyRegistrationClosingIn30Minutes() {
@@ -59,11 +59,11 @@ public class EventNotificationScheduler {
                 });
     }
 
-    @Scheduled(fixedRate = 180_000)
+    @Scheduled(cron = "0 */3 * * * *")
     @SchedulerLock(
             name = "notifyEventStartIn24Hours",
-            lockAtMostFor = "4m",
-            lockAtLeastFor = "30s"
+            lockAtMostFor = "2m",
+            lockAtLeastFor = "1m"
     )
     @Transactional
     public void notifyEventStartIn24Hours() {

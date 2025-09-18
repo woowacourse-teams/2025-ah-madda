@@ -11,11 +11,11 @@ public class SlidingWindowRequestLogCleaner {
 
     private final SlidingWindowRateLimitFilter rateLimitFilter;
 
-    @Scheduled(fixedDelay = 10 * 60 * 1000)
+    @Scheduled(cron = "0 */10 * * * *")
     @SchedulerLock(
             name = "cleanUpStaleRequestLogs",
-            lockAtMostFor = "2m",
-            lockAtLeastFor = "10s"
+            lockAtMostFor = "6m",
+            lockAtLeastFor = "3m"
     )
     public void cleanUpStaleRequestLogs() {
         rateLimitFilter.cleanUpStaleRequestLogsInternal();
