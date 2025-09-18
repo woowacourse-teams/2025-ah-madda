@@ -50,8 +50,8 @@ dependencies {
     implementation 'ca.pjer:logback-awslogs-appender:1.6.0'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
 
-    implementation 'net.javacrumbs.shedlock:shedlock-spring:4.42.0'
-    implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.42.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-spring:6.10.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.10.0'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
