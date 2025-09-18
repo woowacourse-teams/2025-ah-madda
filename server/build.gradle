@@ -45,10 +45,13 @@ dependencies {
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.4.0'
     implementation 'com.google.firebase:firebase-admin:9.5.0'
     implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.3.0'
-    
+
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-metrics:3.4.0'
     implementation 'ca.pjer:logback-awslogs-appender:1.6.0'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
+
+    implementation 'net.javacrumbs.shedlock:shedlock-spring:6.10.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.10.0'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
