@@ -1,7 +1,7 @@
 package com.ahmadda.learning.infra.notification;
 
 
-import com.ahmadda.annotation.IntegrationTest;
+import com.ahmadda.annotation.LearningTest;
 import com.ahmadda.application.dto.MemberCreateAlarmPayload;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.infra.notification.slack.SlackAlarm;
@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 
 @Disabled
-@IntegrationTest
+@LearningTest
 @TestPropertySource(properties = "slack.mock=false")
 class SlackAlarmTest {
 

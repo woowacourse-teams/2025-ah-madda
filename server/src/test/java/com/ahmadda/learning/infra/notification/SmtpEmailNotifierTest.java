@@ -1,6 +1,6 @@
 package com.ahmadda.learning.infra.notification;
 
-import com.ahmadda.annotation.IntegrationTest;
+import com.ahmadda.annotation.LearningTest;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.notification.EventEmailPayload;
 import com.ahmadda.domain.organization.Organization;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Disabled
-@IntegrationTest
+@LearningTest
 @TestPropertySource(properties = "mail.mock=false")
 class SmtpEmailNotifierTest {
 
@@ -66,8 +66,10 @@ class SmtpEmailNotifierTest {
         smtpEmailNotifier.sendEmails(List.of(organizationMember), emailPayload);
     }
 
+    // Gmail: BCC 최대 100명
+    // AWS: BCC 최대 50명
     @Test
-    void BCC_수신자가_100명_이상이면_예외가_발생한다() {
+    void BCC_수신자_허용_범위를_초과하면_예외가_발생한다() {
         // given
         var organizationName = "테스트 이벤트 스페이스";
         var eventTitle = "테스트 이벤트";
