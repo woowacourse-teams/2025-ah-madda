@@ -34,11 +34,11 @@ jobs:
           distribution: 'temurin'
           java-version: 21
 
-#      - name: Run tests
-#        working-directory: ./server
-#        run: |
-#          chmod +x ./gradlew
-#          ./gradlew test
+      #      - name: Run tests
+      #        working-directory: ./server
+      #        run: |
+      #          chmod +x ./gradlew
+      #          ./gradlew test
 
       - name: Build with Gradle
         working-directory: ./server
