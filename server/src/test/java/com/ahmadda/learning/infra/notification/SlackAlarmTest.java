@@ -16,11 +16,11 @@ import org.springframework.test.context.TestPropertySource;
 class SlackAlarmTest {
 
     @Autowired
-    SlackAlarm slackAlarm;
+    SlackAlarm sut;
 
     @Test
     void 실제_슬랙으로_알람을_전송한다() {
-        slackAlarm.alarmMemberCreation(
+        sut.alarmMemberCreation(
                 MemberCreateAlarmPayload.from(Member.create(
                         "asdf",
                         "asdf@naver.com",
