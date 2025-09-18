@@ -22,7 +22,7 @@ import java.io.InputStream;
 public class AwsS3OrganizationImageUploaderTest {
 
     @Autowired
-    private AwsS3OrganizationImageUploader awsS3ImageUploader;
+    private AwsS3OrganizationImageUploader sut;
 
     @Test
     void 실제_AWS_S3로_이미지를_업로드한다() {
@@ -38,7 +38,7 @@ public class AwsS3OrganizationImageUploaderTest {
         );
 
         // when
-        String url = awsS3ImageUploader.upload(organizationImageFile);
+        String url = sut.upload(organizationImageFile);
 
         //then
         System.out.println(url);

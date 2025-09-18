@@ -24,7 +24,7 @@ import java.util.List;
 class FcmPushNotifierTest {
 
     @Autowired
-    private FcmPushNotifier fcmPushNotifier;
+    private FcmPushNotifier sut;
 
     @Autowired
     private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
@@ -56,7 +56,7 @@ class FcmPushNotifierTest {
         );
 
         // when // then
-        fcmPushNotifier.sendPushs(List.of(organizationMember), payload);
+        sut.sendPushs(List.of(organizationMember), payload);
     }
 
     @Test
@@ -84,6 +84,6 @@ class FcmPushNotifierTest {
         );
 
         // when // then
-        fcmPushNotifier.sendPush(organizationMember, payload);
+        sut.sendPush(organizationMember, payload);
     }
 }

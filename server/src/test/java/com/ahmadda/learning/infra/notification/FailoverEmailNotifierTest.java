@@ -10,6 +10,7 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.infra.notification.mail.FailoverEmailNotifier;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ import static org.mockito.Mockito.verify;
 class FailoverEmailNotifierTest {
 
     @Autowired
-    private EmailNotifier sut;
+    private FailoverEmailNotifier sut;
 
     @MockitoSpyBean(name = "googleEmailNotifier")
     private EmailNotifier gmailNotifier;

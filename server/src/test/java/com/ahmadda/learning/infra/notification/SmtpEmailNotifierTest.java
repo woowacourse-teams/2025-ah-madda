@@ -27,7 +27,7 @@ import java.util.List;
 @TestPropertySource(properties = "mail.mock=false")
 class SmtpEmailNotifierTest {
 
-    private SmtpEmailNotifier smtpEmailNotifier;
+    private SmtpEmailNotifier sut;
 
     @Autowired
     private SmtpProperties smtpProperties;
@@ -40,7 +40,7 @@ class SmtpEmailNotifierTest {
 
     @BeforeEach
     void setUp() {
-        smtpEmailNotifier = createSmtpEmailNotifier("google");
+        sut = createSmtpEmailNotifier("google");
     }
 
     private SmtpEmailNotifier createSmtpEmailNotifier(String provider) {
@@ -106,7 +106,7 @@ class SmtpEmailNotifierTest {
         );
 
         // when // then
-        smtpEmailNotifier.sendEmails(List.of(organizationMember), emailPayload);
+        sut.sendEmails(List.of(organizationMember), emailPayload);
     }
 
     // Gmail: BCC 최대 100명
@@ -154,6 +154,6 @@ class SmtpEmailNotifierTest {
         );
 
         // when
-        smtpEmailNotifier.sendEmails(recipients, emailPayload);
+        sut.sendEmails(recipients, emailPayload);
     }
 }
