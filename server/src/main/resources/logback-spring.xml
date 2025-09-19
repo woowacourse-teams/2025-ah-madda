@@ -10,6 +10,6 @@
         <include resource="logger/logback-spring-dev.xml"/>
     </springProfile>
     <springProfile name="prod">
-        <include resource="logger/logback-spring-prod.xml"/>
+        <include resource="logger/logback-spring-local.xml"/>
     </springProfile>
 </configuration>
