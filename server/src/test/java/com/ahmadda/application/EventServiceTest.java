@@ -76,7 +76,7 @@ class EventServiceTest {
     void 이벤트를_생성할_수_있다() {
         //given
         var member = createMember();
-        var organization = createOrganization();
+        var organization = createOrganization("우테코");
         var organizationMember = createOrganizationMember(organization, member);
 
         var now = LocalDateTime.now();
@@ -156,7 +156,7 @@ class EventServiceTest {
     @Test
     void 이벤트_생성시_구성원_id에_해당하는_구성원이_없다면_예외가_발생한다() {
         //given
-        var organization = createOrganization();
+        var organization = createOrganization("우테코");
 
         var now = LocalDateTime.now();
         var eventCreateRequest = new EventCreateRequest(
@@ -181,8 +181,8 @@ class EventServiceTest {
     @Test
     void 이벤트_생성시_요청한_이벤트_스페이스에_소속되지_않았다면_예외가_발생한다() {
         //given
-        var organization1 = createOrganization();
-        var organization2 = createOrganization();
+        var organization1 = createOrganization("우테코");
+        var organization2 = createOrganization("우테코");
         var member = createMember();
         createOrganizationMember(organization2, member);
 
@@ -208,7 +208,7 @@ class EventServiceTest {
     @Test
     void 이벤트를_조회할_수_있다() {
         //given
-        var organization = createOrganization();
+        var organization = createOrganization("우테코");
         var member = createMember();
         var organizationMember = createOrganizationMember(organization, member);
 
@@ -242,8 +242,8 @@ class EventServiceTest {
     @Test
     void 이벤트_스페이스에_속해_있지_않으면_이벤트를_생성할_수_없다() {
         //given
-        var organization = createOrganization();
-        var otherOrganization = createOrganization();
+        var organization = createOrganization("우테코");
+        var otherOrganization = createOrganization("우테코");
         var member = createMember();
         var organizationMember = createOrganizationMember(otherOrganization, member);
 
@@ -268,7 +268,7 @@ class EventServiceTest {
     @Test
     void 이벤트_마감_시_구성원_id에_해당하는_구성원이_없다면_예외가_발생한다() {
         // given
-        var organization = createOrganization();
+        var organization = createOrganization("우테코");
         var member = createMember();
         var organizationMember = createOrganizationMember(organization, member);
         var event = createEvent(organizationMember, organization);
@@ -287,8 +287,8 @@ class EventServiceTest {
     @Test
     void 이벤트_마감_시_요청한_이벤트_스페이스에_소속되지_않았다면_예외가_발생한다() {
         // given
-        var organization1 = createOrganization();
-        var organization2 = createOrganization();
+        var organization1 = createOrganization("우테코");
+        var organization2 = createOrganization("우테코");
 
         var om1Member = createMember("m1", "m1@mail.com");
         var notBelongingOrgMember = createOrganizationMember(organization1, om1Member);
@@ -312,7 +312,7 @@ class EventServiceTest {
     @Test
     void 주최자는_이벤트를_수동으로_마감할_수_있다() {
         // given
-        var organization = createOrganization();
+        var organization = createOrganization("우테코");
         var member = createMember();
         var orgMember = createOrganizationMember(organization, member);
         var event = createEvent(orgMember, organization);
@@ -330,7 +330,7 @@ class EventServiceTest {
     @Test
     void 이벤트_생성_시_구성원에게_알림을_보낸다() {
         // given
-        var organization = createOrganization();
+        var organization = createOrganization("우테코");
 
         var organizerMember = createMember("organizer", "organizer@mail.com");
         var om1Member = createMember("m1", "m1@mail.com");
@@ -368,7 +368,7 @@ class EventServiceTest {
     @Test
     void 이벤트_생성_후_리마인더_히스토리가_저장된다() {
         // given
-        var organization = createOrganization();
+        var organization = createOrganization("우테코");
 
         var organizerMember = createMember("organizer", "organizer@mail.com");
         var om1Member = createMember("m1", "m1@mail.com");
@@ -420,7 +420,7 @@ class EventServiceTest {
     @Test
     void 이벤트를_수정할_수_있다() {
         // given
-        var organization = createOrganization();
+        var organization = createOrganization("우테코");
         var member = createMember("organizer", "organizer@email.com");
         var organizationMember = createOrganizationMember(organization, member);
 
@@ -511,7 +511,7 @@ class EventServiceTest {
     @Test
     void 존재하지_않는_회원으로_수정하면_예외가_발생한다() {
         // given
-        var organization = createOrganization();
+        var organization = createOrganization("우테코");
         var organizer = createMember("organizer", "organizer@email.com");
         var organizationMember = createOrganizationMember(organization, organizer);
 
@@ -551,7 +551,7 @@ class EventServiceTest {
     @Test
     void 이벤트_수정시_30분_내_리마인더_10회_초과하면_예외가_발생한다() {
         // given
-        var organization = createOrganization();
+        var organization = createOrganization("우테코");
         var member = createMember("organizer", "organizer@mail.com");
         var organizer = createOrganizationMember(organization, member);
         var now = LocalDateTime.now();
@@ -596,7 +596,7 @@ class EventServiceTest {
     @Test
     void 이벤트_수정_시_수신_거부_하지_않는_게스트들에게_알림을_보낸다() {
         // given
-        var organization = createOrganization();
+        var organization = createOrganization("우테코");
         var organizerMember = createMember("organizer", "organizer@email.com");
         var guestMember1 = createMember("guest1", "guest1@email.com");
         var guestMember2 = createMember("guest2", "guest2@email.com");
@@ -652,7 +652,7 @@ class EventServiceTest {
     @Test
     void 이벤트_수정_후_리마인더_히스토리가_저장된다() {
         // given
-        var organization = createOrganization();
+        var organization = createOrganization("우테코");
 
         var organizerMember = createMember("organizer", "organizer@mail.com");
         var om1Member = createMember("m1", "m1@mail.com");
@@ -720,7 +720,7 @@ class EventServiceTest {
     @Test
     void 로그인한_회원이_이벤트의_주최자인지_확인할_수_있다() {
         //given
-        var organization = createOrganization();
+        var organization = createOrganization("우테코");
         var organizerMember = createMember("surf", "surf@ahmadda.com");
         var nonOrganizerMember = createMember("tuda", "tuda@ahmadda.com");
         var organizer = createOrganizationMember(organization, organizerMember);
@@ -745,7 +745,7 @@ class EventServiceTest {
     @Test
     void 이벤트의_주최자인지_확인할때_존재하지_않는_이벤트라면_예외가_발생한다() {
         //given
-        var organization = createOrganization();
+        var organization = createOrganization("우테코");
         var member = createMember("surf", "surf@ahmadda.com");
         var loginMember = createLoginMember(member);
 
@@ -758,7 +758,7 @@ class EventServiceTest {
     @Test
     void 이벤트의_주최자인지_확인할때_존재하지_않는_회원이라면_예외가_발생한다() {
         //given
-        var organization = createOrganization();
+        var organization = createOrganization("우테코");
         var organizerMember = createMember("surf", "surf@ahmadda.com");
         var organizer = createOrganizationMember(organization, organizerMember);
         var event = createEvent(organizer, organization);
@@ -770,11 +770,13 @@ class EventServiceTest {
     }
 
     @Test
-    void 과거_이벤트를_조회할_수_있다() {
+    void 특정_이벤트_스페이스의_과거_이벤트를_조회할_수_있다() {
         // given
         var member = createMember();
-        var organization = createOrganization();
+        var organization = createOrganization("우테코");
+        var organization2 = createOrganization("아맞다");
         var organizationMember = createOrganizationMember(organization, member);
+        var organizationMember2 = createOrganizationMember(organization2, member);
         var loginMember = createLoginMember(member);
 
         var now = LocalDateTime.now();
@@ -782,18 +784,29 @@ class EventServiceTest {
         var pastEvent = createEventWithDates(
                 organizationMember,
                 organization,
-                now.plusDays(1),
-                now.plusDays(2),
-                now.plusDays(4)
+                now.minusDays(4),
+                now.minusDays(2),
+                now.minusDays(1),
+                now.minusDays(4)
         );
-        createEventWithDates(organizationMember, organization, now.plusDays(2), now.plusDays(3), now.plusDays(5));
+        var otherOrganizationPastEvent = createEventWithDates(
+                organizationMember2,
+                organization2,
+                now.minusDays(4),
+                now.minusDays(2),
+                now.minusDays(1),
+                now.minusDays(4)
+        );
+        createEventWithDates(
+                organizationMember, organization, now.plusDays(2), now.plusDays(3), now.plusDays(5),
+                LocalDateTime.now()
+        );
 
         // when
         var pastEvents = sut.getPastEvents(
                 organization.getId(),
                 loginMember,
-                LocalDateTime.now()
-                        .plusDays(4L)
+                now
         );
 
         // then
@@ -822,7 +835,7 @@ class EventServiceTest {
     void 과거_이벤트_조회시_이벤트_스페이스에_속하지_않으면_예외가_발생한다() {
         // given
         var member = createMember();
-        var organization = createOrganization();
+        var organization = createOrganization("우테코");
         var loginMember = createLoginMember(member);
 
         //when // then
@@ -885,7 +898,7 @@ class EventServiceTest {
     void 공동_주최자가_중복되면_이벤트_생성시_예외가_발생한다() {
         // given
         var member = createMember();
-        var organization = createOrganization();
+        var organization = createOrganization("우테코");
         var organizationMember = createOrganizationMember(organization, member);
 
         var now = LocalDateTime.now();
@@ -912,7 +925,7 @@ class EventServiceTest {
     @Test
     void 주최자가_10명을_초과하면_이벤트_생성시_예외가_발생한다() {
         // given
-        var organization = createOrganization();
+        var organization = createOrganization("우테코");
         var member = createMember();
         createOrganizationMember(organization, member);
 
@@ -945,8 +958,8 @@ class EventServiceTest {
                 .hasMessage("최대 주최자 수는 10명입니다.");
     }
 
-    private Organization createOrganization() {
-        var organization = Organization.create("우테코", "우테코입니다.", "image");
+    private Organization createOrganization(String name) {
+        var organization = Organization.create(name, "우테코입니다.", "image");
 
         return organizationRepository.save(organization);
     }
@@ -998,9 +1011,9 @@ class EventServiceTest {
             final Organization organization,
             final LocalDateTime registrationEnd,
             final LocalDateTime eventStart,
-            final LocalDateTime eventEnd
+            final LocalDateTime eventEnd,
+            final LocalDateTime now
     ) {
-        var now = LocalDateTime.now();
         var event = Event.create(
                 "title",
                 "description",
@@ -1008,7 +1021,7 @@ class EventServiceTest {
                 organizationMember,
                 organization,
                 EventOperationPeriod.create(
-                        now,
+                        registrationEnd.minusDays(1),
                         registrationEnd,
                         eventStart,
                         eventEnd,

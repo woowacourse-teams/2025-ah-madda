@@ -1,5 +1,6 @@
 package com.ahmadda.domain.event;
 
+import com.ahmadda.domain.organization.Organization;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
@@ -12,7 +13,10 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             final LocalDateTime to
     );
 
-    List<Event> findAllByEventOperationPeriodEventPeriodEndBefore(final LocalDateTime now);
+    List<Event> findAllByOrganizationAndEventOperationPeriodEventPeriodEndBefore(
+            final Organization organization,
+            final LocalDateTime now
+    );
 
     List<Event> findAllByEventOperationPeriodEventPeriodStartBetween(
             final LocalDateTime from,
