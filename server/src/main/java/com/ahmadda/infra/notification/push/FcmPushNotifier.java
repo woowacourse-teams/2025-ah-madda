@@ -27,7 +27,7 @@ public class FcmPushNotifier implements PushNotifier {
     private final EntityManager em;
 
     @Async
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public void sendPushs(
             final List<OrganizationMember> recipients,
@@ -44,9 +44,13 @@ public class FcmPushNotifier implements PushNotifier {
         sendMulticast(pushNotificationPayload, registrationTokens);
     }
 
+    @Async
+    @Transactional
     @Override
     public void sendPush(final OrganizationMember recipient, final PushNotificationPayload pushNotificationPayload) {
-        List<String> registrationTokens = getRegistrationTokens(recipient);
+        OrganizationMember mergedRecipient = em.merge(recipient);
+
+        List<String> registrationTokens = getRegistrationTokens(mergedRecipient);
         sendMulticast(pushNotificationPayload, registrationTokens);
     }
 

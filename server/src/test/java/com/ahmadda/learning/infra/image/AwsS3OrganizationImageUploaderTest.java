@@ -1,6 +1,6 @@
 package com.ahmadda.learning.infra.image;
 
-import com.ahmadda.annotation.IntegrationTest;
+import com.ahmadda.annotation.LearningTest;
 import com.ahmadda.domain.organization.OrganizationImageFile;
 import com.ahmadda.infra.image.AwsS3OrganizationImageUploader;
 import org.junit.jupiter.api.Disabled;
@@ -12,7 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 @Disabled
-@IntegrationTest
+@LearningTest
 @TestPropertySource(properties = {
         "aws.s3.mock=false",
         "aws.s3.region=${aws.dev.s3.region}",
@@ -22,7 +22,7 @@ import java.io.InputStream;
 public class AwsS3OrganizationImageUploaderTest {
 
     @Autowired
-    private AwsS3OrganizationImageUploader awsS3ImageUploader;
+    private AwsS3OrganizationImageUploader sut;
 
     @Test
     void 실제_AWS_S3로_이미지를_업로드한다() {
@@ -38,7 +38,7 @@ public class AwsS3OrganizationImageUploaderTest {
         );
 
         // when
-        String url = awsS3ImageUploader.upload(organizationImageFile);
+        String url = sut.upload(organizationImageFile);
 
         //then
         System.out.println(url);

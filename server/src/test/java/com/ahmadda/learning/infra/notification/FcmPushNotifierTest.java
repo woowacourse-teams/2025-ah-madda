@@ -1,6 +1,6 @@
 package com.ahmadda.learning.infra.notification;
 
-import com.ahmadda.annotation.IntegrationTest;
+import com.ahmadda.annotation.LearningTest;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.notification.PushNotificationPayload;
@@ -19,12 +19,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Disabled
-@IntegrationTest
+@LearningTest
 @TestPropertySource(properties = "push.mock=false")
 class FcmPushNotifierTest {
 
     @Autowired
-    private FcmPushNotifier fcmPushNotifier;
+    private FcmPushNotifier sut;
 
     @Autowired
     private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
@@ -56,7 +56,7 @@ class FcmPushNotifierTest {
         );
 
         // when // then
-        fcmPushNotifier.sendPushs(List.of(organizationMember), payload);
+        sut.sendPushs(List.of(organizationMember), payload);
     }
 
     @Test
@@ -84,6 +84,6 @@ class FcmPushNotifierTest {
         );
 
         // when // then
-        fcmPushNotifier.sendPush(organizationMember, payload);
+        sut.sendPush(organizationMember, payload);
     }
 }

@@ -53,7 +53,7 @@ public class Event extends BaseEntity {
     @JoinColumn(name = "event_id", nullable = false)
     private final List<Question> questions = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<EventOrganizer> eventOrganizers = new ArrayList<>();
 
     @Id
