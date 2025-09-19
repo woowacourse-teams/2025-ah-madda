@@ -64,10 +64,9 @@ resilience4j:
   retry:
     instances:
       smtpEmail:
-        maxAttempts: 3
-        waitDuration: 2s
-        enableExponentialBackoff: true
-        exponentialBackoffMultiplier: 2
+        maxAttempts: 2
+        waitDuration: 1s
+        enableExponentialBackoff: false
 
   circuitbreaker:
     instances:
