@@ -183,9 +183,13 @@ public class EventService {
             final LoginMember loginMember,
             final LocalDateTime compareDateTime
     ) {
+        Organization organization = getOrganization(organizationId);
         validateOrganizationAccess(organizationId, loginMember.memberId());
 
-        return eventRepository.findAllByEventOperationPeriodEventPeriodEndBefore(compareDateTime);
+        return eventRepository.findAllByOrganizationAndEventOperationPeriodEventPeriodEndBefore(
+                organization,
+                compareDateTime
+        );
     }
 
     private Member getMember(final Long loginMember) {
