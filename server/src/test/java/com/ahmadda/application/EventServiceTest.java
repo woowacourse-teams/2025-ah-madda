@@ -770,7 +770,7 @@ class EventServiceTest {
     }
 
     @Test
-    void 특정_조직의_과거_이벤트를_조회할_수_있다() {
+    void 특정_이벤트_스페이스의_과거_이벤트를_조회할_수_있다() {
         // given
         var member = createMember();
         var organization = createOrganization("우테코");
