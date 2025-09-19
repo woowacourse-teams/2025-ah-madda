@@ -76,6 +76,6 @@ jobs:
         run: |
           aws deploy create-deployment \
             --application-name ahmadda-code-deploy-ec2 \
-            --deployment-group-name ahmadda-code-deploy-alb \
+            --deployment-group-name ahmadda-auto-scaling-group-lb \
             --s3-location bucket=techcourse-project-2025,key=${{ needs.build.outputs.s3_key }},bundleType=zip \
             --description "Test deployment ${{ needs.build.outputs.release_tag }} deployed via GitHub Actions"
