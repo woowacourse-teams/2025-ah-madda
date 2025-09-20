@@ -64,10 +64,9 @@ resilience4j:
   retry:
     instances:
       smtpEmail:
-        maxAttempts: 3
-        waitDuration: 2s
-        enableExponentialBackoff: true
-        exponentialBackoffMultiplier: 2
+        maxAttempts: 2
+        waitDuration: 1s
+        enableExponentialBackoff: false
 
   circuitbreaker:
     instances:
@@ -77,9 +76,10 @@ resilience4j:
         minimumNumberOfCalls: 3
         failureRateThreshold: 50
         waitDurationInOpenState: 6h
-        permittedNumberOfCallsInHalfOpenState: 1
+        permittedNumberOfCallsInHalfOpenState: 3
         slowCallDurationThreshold: 5s
-        slowCallRateThreshold: 100
+        slowCallRateThreshold: 50
+
 springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
