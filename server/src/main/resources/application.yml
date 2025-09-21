@@ -61,13 +61,6 @@ smtp:
       mail.smtp.writetimeout: 5000
 
 resilience4j:
-  retry:
-    instances:
-      smtpEmail:
-        maxAttempts: 2
-        waitDuration: 1s
-        enableExponentialBackoff: false
-
   circuitbreaker:
     instances:
       primaryEmail:
