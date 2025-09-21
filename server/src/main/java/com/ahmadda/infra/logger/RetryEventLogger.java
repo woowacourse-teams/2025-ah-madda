@@ -18,11 +18,12 @@ public class RetryEventLogger implements RegistryEventConsumer<Retry> {
         retry.getEventPublisher()
                 .onRetry(e ->
                         log.warn(
-                                "retry - name: {}, attempt: {}, lastThrowable: {}",
+                                "retry - name: {}, attempt: {}, cause: {}",
                                 retry.getName(),
                                 e.getNumberOfRetryAttempts(),
                                 e.getLastThrowable()
-                                        .toString()
+                                        .getMessage(),
+                                e.getLastThrowable()
                         ))
                 .onSuccess(e ->
                         log.info(
@@ -32,11 +33,11 @@ public class RetryEventLogger implements RegistryEventConsumer<Retry> {
                         ))
                 .onError(e ->
                         log.error(
-                                "retryError - name: {}, attempts: {}, lastThrowable: {}",
+                                "retryError - name: {}, attempts: {}, cause: {}",
                                 retry.getName(),
                                 e.getNumberOfRetryAttempts(),
                                 e.getLastThrowable()
-                                        .toString(),
+                                        .getMessage(),
                                 e.getLastThrowable()
                         ));
     }
