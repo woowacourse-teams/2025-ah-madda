@@ -57,7 +57,7 @@ class FailoverEmailNotifierTest {
         var organizationMember = createOrganizationMember(
                 "테스트 이벤트 스페이스",
                 "주최자",
-                "joon6093@naver.com",
+                "test@example.com",
                 "주최자닉네임"
         );
 
