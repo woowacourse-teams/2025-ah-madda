@@ -5,7 +5,9 @@ import com.ahmadda.infra.notification.config.NotificationProperties;
 import com.ahmadda.infra.notification.mail.BccChunkingEmailNotifier;
 import com.ahmadda.infra.notification.mail.FailoverEmailNotifier;
 import com.ahmadda.infra.notification.mail.MockEmailNotifier;
+import com.ahmadda.infra.notification.mail.RetryableEmailNotifier;
 import com.ahmadda.infra.notification.mail.SmtpEmailNotifier;
+import io.github.resilience4j.retry.RetryRegistry;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -43,13 +45,18 @@ public class MailConfig {
     public EmailNotifier googleEmailNotifier(
             final SmtpProperties smtpProperties,
             final TemplateEngine templateEngine,
-            final NotificationProperties notificationProperties
+            final NotificationProperties notificationProperties,
+            final RetryRegistry retryRegistry
     ) {
-        JavaMailSender googleMailSender = createJavaMailSender(smtpProperties.getGoogle());
-        EmailNotifier googleEmailNotifier =
-                new SmtpEmailNotifier(googleMailSender, templateEngine, notificationProperties);
-
-        return new BccChunkingEmailNotifier(googleEmailNotifier, 100);
+        return createEmailNotifier(
+                smtpProperties.getGoogle(),
+                100,
+                templateEngine,
+                notificationProperties,
+                retryRegistry,
+                "googleEmail",
+                1
+        );
     }
 
     @Bean
@@ -57,13 +64,34 @@ public class MailConfig {
     public EmailNotifier awsEmailNotifier(
             final SmtpProperties smtpProperties,
             final TemplateEngine templateEngine,
-            final NotificationProperties notificationProperties
+            final NotificationProperties notificationProperties,
+            final RetryRegistry retryRegistry
     ) {
-        JavaMailSender awsMailSender = createJavaMailSender(smtpProperties.getAws());
-        EmailNotifier awsEmailNotifier =
-                new SmtpEmailNotifier(awsMailSender, templateEngine, notificationProperties);
+        return createEmailNotifier(
+                smtpProperties.getAws(),
+                50,
+                templateEngine,
+                notificationProperties,
+                retryRegistry,
+                "awsEmail",
+                3
+        );
+    }
 
-        return new BccChunkingEmailNotifier(awsEmailNotifier, 50);
+    private EmailNotifier createEmailNotifier(
+            final SmtpProperties.Account account,
+            final int maxBcc,
+            final TemplateEngine templateEngine,
+            final NotificationProperties notificationProperties,
+            final RetryRegistry retryRegistry,
+            final String retryName,
+            final int maxAttempts
+    ) {
+        JavaMailSender sender = createJavaMailSender(account);
+        SmtpEmailNotifier smtp = new SmtpEmailNotifier(sender, templateEngine, notificationProperties);
+        RetryableEmailNotifier retryable =
+                new RetryableEmailNotifier(retryRegistry, retryName, smtp, maxAttempts, 1000);
+        return new BccChunkingEmailNotifier(retryable, maxBcc);
     }
 
     private JavaMailSender createJavaMailSender(final SmtpProperties.Account acc) {

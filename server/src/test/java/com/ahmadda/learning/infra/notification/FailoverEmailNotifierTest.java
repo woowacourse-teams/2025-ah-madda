@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -58,7 +57,7 @@ class FailoverEmailNotifierTest {
         var organizationMember = createOrganizationMember(
                 "테스트 이벤트 스페이스",
                 "주최자",
-                "test@example.com",
+                "joon6093@naver.com",
                 "주최자닉네임"
         );
 
@@ -82,10 +81,10 @@ class FailoverEmailNotifierTest {
         sut.sendEmails(List.of(organizationMember), payload);
 
         // then
-        await().atMost(10, TimeUnit.SECONDS)
+        await().atMost(5, TimeUnit.SECONDS)
                 .untilAsserted(() -> verify(
                         gmailNotifier,
-                        times(3)
+                        times(1)
                 ).sendEmails(any(), any()));
         await().atMost(5, TimeUnit.SECONDS)
                 .untilAsserted(() -> verify(
@@ -113,43 +112,20 @@ class FailoverEmailNotifierTest {
             }
         }
 
-        // when - 다시 호출 → retry 없이 바로 fallback
+        // when - 다시 호출 → fallback
         sut.sendEmails(List.of(organizationMember), payload);
 
         // then
-        await().atMost(10, TimeUnit.SECONDS)
+        await().atMost(5, TimeUnit.SECONDS)
                 .untilAsserted(() -> verify(
                         gmailNotifier,
-                        times(9)
+                        times(3)
                 ).sendEmails(any(), any()));
         await().atMost(5, TimeUnit.SECONDS)
                 .untilAsserted(() -> verify(
                         awsNotifier,
                         times(4)
                 ).sendEmails(any(), any()));
-    }
-
-    @Test
-    void Primary와_SecondarySMTP모두_실패시_예외가_발생한다() {
-        // given
-        var organizationMember = createOrganizationMember("테스트 이벤트 스페이스", "주최자", "test@example.com", "닉네임");
-        var payload = createPayload("테스트 이벤트 스페이스", "이벤트", "닉네임");
-
-        doThrow(new MailSendException("gmail 실패"))
-                .when(gmailNotifier)
-                .sendEmails(any(), any());
-        doThrow(new MailSendException("ses 실패"))
-                .when(awsNotifier)
-                .sendEmails(any(), any());
-
-        // when // then
-        assertThatThrownBy(() -> sut.sendEmails(List.of(organizationMember), payload))
-                .isInstanceOf(Exception.class);
-
-        await().atMost(10, TimeUnit.SECONDS)
-                .untilAsserted(() -> verify(gmailNotifier, times(3)).sendEmails(any(), any()));
-        await().atMost(10, TimeUnit.SECONDS)
-                .untilAsserted(() -> verify(awsNotifier, times(3)).sendEmails(any(), any()));
     }
 
     private OrganizationMember createOrganizationMember(

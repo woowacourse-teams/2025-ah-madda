@@ -41,8 +41,9 @@ public class FailoverEmailNotifier implements EmailNotifier {
             final Throwable cause
     ) {
         log.warn(
-                "failoverEmailNotifierFallback - switching to secondary. recipients: {}, cause: {}",
+                "failoverEmailNotifierFallback - recipients: {},  subject: {}, cause: {}",
                 recipients.size(),
+                payload.subject(),
                 cause.getMessage(),
                 cause
         );

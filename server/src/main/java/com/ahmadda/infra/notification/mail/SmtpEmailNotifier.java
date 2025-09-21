@@ -4,7 +4,6 @@ import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.domain.notification.EventEmailPayload;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.infra.notification.config.NotificationProperties;
-import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,6 @@ public class SmtpEmailNotifier implements EmailNotifier {
     private final NotificationProperties notificationProperties;
 
     @Override
-    @Retry(name = "smtpEmail")
     public void sendEmails(final List<OrganizationMember> recipients, final EventEmailPayload eventEmailPayload) {
         List<String> recipientEmails = getRecipientEmails(recipients);
         if (recipientEmails.isEmpty()) {
