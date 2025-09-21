@@ -14,18 +14,12 @@ import { Text } from '@/shared/components/Text';
 import { useToast } from '@/shared/components/Toast/ToastContext';
 import { theme } from '@/shared/styles/theme';
 
+import { POKE_MESSAGES } from '../../constants/poke';
+
 type PokeModalProps = {
   eventId: number;
   receiverGuest: NonGuest;
 } & ModalProps;
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const POKE_MESSAGES = {
-  RECOMMEND: '이벤트 참여를 추천했어요! 🌈',
-  WAITING: '참여를 기다려요 ⏰',
-  ARRIVED: '포키가 도착했어요! ✨',
-  HEART: '당신을 포키했어요! ❤️',
-};
 
 export const PokeModal = ({ eventId, receiverGuest, isOpen, onClose }: PokeModalProps) => {
   const { success, error } = useToast();

@@ -1,12 +1,12 @@
 import { useMutation } from '@tanstack/react-query';
 
 import { fetcher } from '../fetcher';
-import { PokeAPIRequest } from '../types/notification';
+import { POKE_MESSAGES_TYPE, PokeAPIRequest } from '../types/notification';
 
 export const createPoke = async (
   eventId: number,
   receiptOrganizationMemberId: number,
-  pokeMessage: string
+  pokeMessage: POKE_MESSAGES_TYPE
 ) => {
   await fetcher.post<void>(`events/${eventId}/poke`, { receiptOrganizationMemberId, pokeMessage });
 };

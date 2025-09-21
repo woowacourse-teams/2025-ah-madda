@@ -1,4 +1,4 @@
-import { POKE_MESSAGES } from '@/features/Event/Detail/components/guest/PokeModal';
+import { POKE_MESSAGES } from '@/features/Event/Detail/constants/poke';
 
 export type NotificationAPIRequest = {
   organizationMemberIds: number[];
