@@ -75,7 +75,7 @@ jobs:
             const { pull_request: pr, repository } = context.payload;
             const author = pr.user.login;
 
-            const feTeam = ['keemsebin', 'ExceptAnyone', 'yeji0214'];
+            const feTeam = ['keemsebin', 'yeji0214'];
             const beTeam = ['joon6093', 'abc5259', 'praisebak', 'jumdo12'];
 
             const isAuthorFE = feTeam.includes(author);
