@@ -78,11 +78,11 @@ export const PokeModal = ({ eventId, receiverGuest, isOpen, onClose }: PokeModal
           {Object.entries(POKE_MESSAGES).map(([key, value]) => (
             <Segment
               key={key}
+              type="button"
               onClick={() => handleClickMessage(key as POKE_MESSAGES_TYPE)}
               isSelected={selectedMessage === key}
             >
               <Text
-                role="button"
                 color={selectedMessage === key ? theme.colors.primary500 : theme.colors.gray300}
               >
                 {value}
