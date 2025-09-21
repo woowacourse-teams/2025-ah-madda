@@ -7,7 +7,6 @@ import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.MailException;
 
 import java.net.SocketTimeoutException;
 import java.time.Duration;
@@ -61,8 +60,7 @@ public class RetryableEmailNotifier implements EmailNotifier {
     }
 
     private boolean isRetryable(final Throwable ex) {
-        return unwrap(ex, SocketTimeoutException.class) != null
-                || unwrap(ex, MailException.class) != null;
+        return unwrap(ex, SocketTimeoutException.class) != null;
     }
 
     private <T extends Throwable> T unwrap(final Throwable ex, final Class<T> target) {

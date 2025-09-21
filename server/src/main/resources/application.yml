@@ -68,10 +68,10 @@ resilience4j:
         slidingWindowSize: 5
         minimumNumberOfCalls: 3
         failureRateThreshold: 50
-        waitDurationInOpenState: 6h
-        permittedNumberOfCallsInHalfOpenState: 3
         slowCallDurationThreshold: 5s
         slowCallRateThreshold: 50
+        waitDurationInOpenState: 2m
+        permittedNumberOfCallsInHalfOpenState: 3
 
 springdoc:
   default-consumes-media-type: application/json

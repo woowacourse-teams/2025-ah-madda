@@ -4,9 +4,11 @@ import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.infra.notification.config.NotificationProperties;
 import com.ahmadda.infra.notification.mail.BccChunkingEmailNotifier;
 import com.ahmadda.infra.notification.mail.FailoverEmailNotifier;
+import com.ahmadda.infra.notification.mail.GmailQuotaCircuitBreakerHandler;
 import com.ahmadda.infra.notification.mail.MockEmailNotifier;
 import com.ahmadda.infra.notification.mail.RetryableEmailNotifier;
 import com.ahmadda.infra.notification.mail.SmtpEmailNotifier;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.retry.RetryRegistry;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -42,6 +44,12 @@ public class MailConfig {
 
     @Bean
     @ConditionalOnProperty(name = "mail.mock", havingValue = "false", matchIfMissing = true)
+    public GmailQuotaCircuitBreakerHandler gmailQuotaCircuitBreakerHandler(final CircuitBreakerRegistry circuitBreakerRegistry) {
+        return new GmailQuotaCircuitBreakerHandler(circuitBreakerRegistry);
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "mail.mock", havingValue = "false", matchIfMissing = true)
     public EmailNotifier googleEmailNotifier(
             final SmtpProperties smtpProperties,
             final TemplateEngine templateEngine,
@@ -55,7 +63,7 @@ public class MailConfig {
                 notificationProperties,
                 retryRegistry,
                 "googleEmail",
-                1
+                2
         );
     }
 
