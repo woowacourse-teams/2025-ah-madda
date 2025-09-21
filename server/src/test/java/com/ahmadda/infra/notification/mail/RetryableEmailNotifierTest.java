@@ -23,8 +23,9 @@ import static org.mockito.Mockito.verify;
 
 class RetryableEmailNotifierTest {
 
+    private RetryableEmailNotifier sut;
+
     private EmailNotifier delegate;
-    private RetryableEmailNotifier retryableNotifier;
     private EventEmailPayload payload;
     private List<OrganizationMember> recipients;
 
@@ -32,7 +33,7 @@ class RetryableEmailNotifierTest {
     void setUp() {
         delegate = mock(EmailNotifier.class);
         var retryRegistry = RetryRegistry.ofDefaults();
-        retryableNotifier = new RetryableEmailNotifier(
+        sut = new RetryableEmailNotifier(
                 retryRegistry,
                 "testRetry",
                 delegate,
@@ -69,7 +70,7 @@ class RetryableEmailNotifierTest {
     @Test
     void 첫번째_시도에_성공하면_재시도하지_않는다() {
         // when
-        retryableNotifier.sendEmails(recipients, payload);
+        sut.sendEmails(recipients, payload);
 
         // then
         verify(delegate, times(1)).sendEmails(recipients, payload);
@@ -87,7 +88,7 @@ class RetryableEmailNotifierTest {
                 .sendEmails(recipients, payload);
 
         // when
-        retryableNotifier.sendEmails(recipients, payload);
+        sut.sendEmails(recipients, payload);
 
         // then
         verify(delegate, times(2)).sendEmails(recipients, payload);
@@ -104,7 +105,7 @@ class RetryableEmailNotifierTest {
                 .sendEmails(recipients, payload);
 
         // when & then
-        assertThatThrownBy(() -> retryableNotifier.sendEmails(recipients, payload))
+        assertThatThrownBy(() -> sut.sendEmails(recipients, payload))
                 .isInstanceOf(MailSendException.class);
 
         verify(delegate, times(3)).sendEmails(recipients, payload);

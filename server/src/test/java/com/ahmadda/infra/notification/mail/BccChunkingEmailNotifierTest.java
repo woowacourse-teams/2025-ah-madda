@@ -21,14 +21,15 @@ import static org.mockito.Mockito.verify;
 
 class BccChunkingEmailNotifierTest {
 
+    private BccChunkingEmailNotifier sut;
+
     private EmailNotifier delegate;
-    private BccChunkingEmailNotifier chunkingNotifier;
     private EventEmailPayload payload;
 
     @BeforeEach
     void setUp() {
         delegate = mock(EmailNotifier.class);
-        chunkingNotifier = new BccChunkingEmailNotifier(delegate, 50);
+        sut = new BccChunkingEmailNotifier(delegate, 50);
 
         payload = new EventEmailPayload(
                 new EventEmailPayload.Subject("이벤트 스페이스", "이벤트"),
@@ -57,7 +58,7 @@ class BccChunkingEmailNotifierTest {
         var recipients = createRecipients(30);
 
         // when
-        chunkingNotifier.sendEmails(recipients, payload);
+        sut.sendEmails(recipients, payload);
 
         // then
         verify(delegate, times(1)).sendEmails(recipients, payload);
@@ -69,7 +70,7 @@ class BccChunkingEmailNotifierTest {
         var recipients = createRecipients(120);
 
         // when
-        chunkingNotifier.sendEmails(recipients, payload);
+        sut.sendEmails(recipients, payload);
 
         // then
         verify(delegate, times(3)).sendEmails(anyList(), eq(payload));
@@ -82,7 +83,7 @@ class BccChunkingEmailNotifierTest {
             var member = Member.create("닉네임" + i, "user" + i + "@example.com", "pic.png");
             members.add(OrganizationMember.create("닉네임" + i, member, org, OrganizationMemberRole.USER));
         }
-        
+
         return members;
     }
 }
