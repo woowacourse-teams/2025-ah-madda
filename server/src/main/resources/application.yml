@@ -61,14 +61,6 @@ smtp:
       mail.smtp.writetimeout: 5000
 
 resilience4j:
-  retry:
-    instances:
-      smtpEmail:
-        maxAttempts: 3
-        waitDuration: 2s
-        enableExponentialBackoff: true
-        exponentialBackoffMultiplier: 2
-
   circuitbreaker:
     instances:
       primaryEmail:
@@ -76,10 +68,11 @@ resilience4j:
         slidingWindowSize: 5
         minimumNumberOfCalls: 3
         failureRateThreshold: 50
-        waitDurationInOpenState: 6h
-        permittedNumberOfCallsInHalfOpenState: 1
         slowCallDurationThreshold: 5s
-        slowCallRateThreshold: 100
+        slowCallRateThreshold: 50
+        waitDurationInOpenState: 2m
+        permittedNumberOfCallsInHalfOpenState: 3
+
 springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
