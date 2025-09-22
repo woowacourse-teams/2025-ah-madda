@@ -44,9 +44,11 @@ public class OrganizationMemberService {
     }
 
     @Transactional
-    public void renameOrganizationMemberNickname(final Long organizationId,
-                                                 final LoginMember loginMember,
-                                                 final String newNickName) {
+    public void renameOrganizationMemberNickname(
+            final Long organizationId,
+            final LoginMember loginMember,
+            final String newNickName
+    ) {
         OrganizationMember organizationMember = getOrganizationMember(organizationId, loginMember);
 
         if (organizationMember.getNickname()
@@ -59,6 +61,10 @@ public class OrganizationMemberService {
         }
 
         organizationMember.rename(newNickName);
+    }
+
+    public boolean isMemberOfOrganization(final Long organizationId, final LoginMember loginMember) {
+        return organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId());
     }
 
     public List<OrganizationMember> getAllOrganizationMembers(

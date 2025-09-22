@@ -53,10 +53,10 @@ class OrganizationMemberServiceTest {
             softly.assertThat(result.getId())
                     .isEqualTo(orgMember.getId());
             softly.assertThat(result.getMember()
-                                      .getId())
+                            .getId())
                     .isEqualTo(member.getId());
             softly.assertThat(result.getOrganization()
-                                      .getId())
+                            .getId())
                     .isEqualTo(org.getId());
         });
     }
@@ -285,6 +285,38 @@ class OrganizationMemberServiceTest {
         assertThatThrownBy(() -> sut.renameOrganizationMemberNickname(org.getId(), loginMember, myNickname))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("현재 닉네임과 동일하여 변경할 수 없습니다.");
+    }
+
+    @Test
+    void 자신이_속한_조직인_경우_가입_체크_시_참을_반환한다() {
+        // given
+        var org = createOrganization("우테코");
+        var member = createMember("홍길동", "hong1@email.com");
+        var orgMember = createOrganizationMember("닉네임1", member, org, OrganizationMemberRole.USER);
+        var loginMember = new LoginMember(member.getId());
+
+        // when
+        boolean memberOfOrganization = sut.isMemberOfOrganization(org.getId(), loginMember);
+
+        // then
+        assertThat(memberOfOrganization).isTrue();
+    }
+
+    @Test
+    void 자신이_속하지_않은_조직인_경우_가입_체크_시_거짓을_반환한다() {
+        // given
+        var org1 = createOrganization("우테코1");
+        var org2 = createOrganization("우테코2");
+        var member = createMember("홍길동", "hong1@email.com");
+        var notMember = createOrganizationMember("닉네임1", member, org2, OrganizationMemberRole.USER);
+
+        var loginMember = new LoginMember(member.getId());
+
+        // when
+        boolean falseMemberOfOrganization = sut.isMemberOfOrganization(org1.getId(), loginMember);
+
+        // then
+        assertThat(falseMemberOfOrganization).isFalse();
     }
 
     private Organization createOrganization(String name) {

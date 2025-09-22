@@ -6,6 +6,7 @@ import com.ahmadda.application.dto.OrganizationMemberRoleUpdateRequest;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.presentation.dto.OrganizationMemberRenameRequest;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
+import com.ahmadda.presentation.dto.OrganizationMembershipResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -271,6 +272,43 @@ public class OrganizationMemberController {
         List<OrganizationMemberResponse> response = organizationMembers.stream()
                 .map(OrganizationMemberResponse::from)
                 .toList();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "이벤트 스페이스의 가입 확인", description = "이벤트 스페이스에 속해 있는지 확인합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            schema = @Schema(implementation = OrganizationMembershipResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보입니다.",
+                                              "instance": "/api/organizations/{organizationId}/organization-members/rename"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+    })
+    @GetMapping("/membership")
+    public ResponseEntity<OrganizationMembershipResponse> checkOrganizationMembership(
+            @PathVariable final Long organizationId,
+            @AuthMember final LoginMember loginMember
+    ) {
+        boolean isMember = organizationMemberService.isMemberOfOrganization(organizationId, loginMember);
+
+        OrganizationMembershipResponse response = new OrganizationMembershipResponse(isMember);
 
         return ResponseEntity.ok(response);
     }
