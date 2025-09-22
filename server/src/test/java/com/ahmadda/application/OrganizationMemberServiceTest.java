@@ -296,7 +296,7 @@ class OrganizationMemberServiceTest {
         var loginMember = new LoginMember(member.getId());
 
         // when
-        boolean memberOfOrganization = sut.isMemberOfOrganization(org.getId(), loginMember);
+        boolean memberOfOrganization = sut.isMember(org.getId(), loginMember);
 
         // then
         assertThat(memberOfOrganization).isTrue();
@@ -313,7 +313,7 @@ class OrganizationMemberServiceTest {
         var loginMember = new LoginMember(member.getId());
 
         // when
-        boolean falseMemberOfOrganization = sut.isMemberOfOrganization(org1.getId(), loginMember);
+        boolean falseMemberOfOrganization = sut.isMember(org1.getId(), loginMember);
 
         // then
         assertThat(falseMemberOfOrganization).isFalse();

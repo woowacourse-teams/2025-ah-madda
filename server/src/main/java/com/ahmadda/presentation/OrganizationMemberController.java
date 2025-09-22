@@ -306,7 +306,7 @@ public class OrganizationMemberController {
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember
     ) {
-        boolean isMember = organizationMemberService.isMemberOfOrganization(organizationId, loginMember);
+        boolean isMember = organizationMemberService.isMember(organizationId, loginMember);
 
         OrganizationMembershipResponse response = new OrganizationMembershipResponse(isMember);
 
