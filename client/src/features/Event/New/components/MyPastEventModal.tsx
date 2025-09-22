@@ -15,15 +15,19 @@ import { theme } from '@/shared/styles/theme';
 
 import { EventList } from './EventList';
 
-type TemplateModalProps = Pick<ModalProps, 'isOpen' | 'onClose'> & {
-  onEventSelected: (eventData: Omit<EventTemplateAPIResponse, 'eventId'>) => void;
-};
+type TemplateModalProps = { organizationId: number } & Pick<ModalProps, 'isOpen' | 'onClose'> & {
+    onEventSelected: (eventData: Omit<EventTemplateAPIResponse, 'eventId'>) => void;
+  };
 
-export const MyPastEventModal = ({ isOpen, onClose, onEventSelected }: TemplateModalProps) => {
+export const MyPastEventModal = ({
+  organizationId,
+  isOpen,
+  onClose,
+  onEventSelected,
+}: TemplateModalProps) => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
-  // E.TODO organizationId 받아오기
-  const { data: eventTitles } = useQuery(eventQueryOptions.titles(1));
+  const { data: eventTitles } = useQuery(eventQueryOptions.titles(Number(organizationId)));
 
   const { data: selectedEventData } = useQuery({
     ...eventQueryOptions.pastEventList(selectedId!),
