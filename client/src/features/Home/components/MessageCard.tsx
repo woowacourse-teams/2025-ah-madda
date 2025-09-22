@@ -30,7 +30,7 @@ export const MessageCard = ({ message, image, index }: MessageCardProps) => {
         alt={image}
         width={600}
         height={300}
-        loading={index > 1 ? 'lazy' : 'eager'}
+        loading={index > 2 ? 'lazy' : 'eager'}
         sizes="(max-width: 768px) 50vw, 60vw"
       />
     </Flex>

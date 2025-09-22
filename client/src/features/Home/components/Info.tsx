@@ -85,10 +85,10 @@ export const Info = () => {
               position: relative;
             `}
           >
-            <Logo src={Ahmadda} alt="아마다 로고" />
-            <PointIcon src={Point} alt="Point" className="point1" />
-            <PointIcon src={Point} alt="Point" className="point2" />
-            <PointIcon src={Point} alt="Point" className="point3" />
+            <Logo src={Ahmadda} alt="아마다 로고" width={150} height={100} />
+            <PointIcon src={Point} alt="Point" className="point1" width={40} height={100} />
+            <PointIcon src={Point} alt="Point" className="point2" width={40} height={100} />
+            <PointIcon src={Point} alt="Point" className="point3" width={40} height={100} />
           </Flex>
         </Flex>
         <Button size="full" onClick={handleEnterOrganizationSpace}>
