@@ -8,10 +8,7 @@ RUN ./gradlew bootJar
 
 RUN cp $(ls -t build/libs/*.jar | head -n 1) app.jar
 
-ADD https://repo1.maven.org/maven2/com/navercorp/pinpoint/pinpoint-agent/3.0.3/pinpoint-agent-3.0.3.tar.gz /tmp/pinpoint-agent.tar.gz
-
-RUN tar -xvzf /tmp/pinpoint-agent.tar.gz -C / \
-    && rm /tmp/pinpoint-agent.tar.gz
+ADD https://repo1.maven.org/maven2/com/navercorp/pinpoint/pinpoint-agent/3.0.3/pinpoint-agent-3.0.3.tar.gz /
 
 ENV TZ=Asia/Seoul
 
