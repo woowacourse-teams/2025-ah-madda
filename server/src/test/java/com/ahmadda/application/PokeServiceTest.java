@@ -15,6 +15,8 @@ import com.ahmadda.domain.notification.Poke;
 import com.ahmadda.domain.notification.PokeHistoryRepository;
 import com.ahmadda.domain.notification.PokeMessage;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
@@ -60,14 +62,18 @@ class PokeServiceTest {
     @Autowired
     private PokeHistoryRepository pokeHistoryRepository;
 
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
+
     @Test
     void 포키를_할_수_있다() {
         // given
         var organization = createOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "test-image.png");
         var member = createMember("테스트 회원", "test@example.com", "test-profile.png");
-        var organizer = createOrganizationMember("주최자", member, organization);
+        var group = createGroup();
+        var organizer = createOrganizationMember("주최자", member, organization, group);
         var participantMember = createMember("참여자", "participant@example.com", "participant-profile.png");
-        var participant = createOrganizationMember("참여자", participantMember, organization);
+        var participant = createOrganizationMember("참여자", participantMember, organization, group);
         var event = createEvent("테스트 이벤트", "이벤트 설명", "테스트 장소", organizer, organization);
 
         // when
@@ -86,9 +92,10 @@ class PokeServiceTest {
         // given
         var organization = createOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "test-image.png");
         var member = createMember("테스트 회원", "test@example.com", "test-profile.png");
-        var organizer = createOrganizationMember("주최자", member, organization);
+        var group = createGroup();
+        var organizer = createOrganizationMember("주최자", member, organization, group);
         var participantMember = createMember("참여자", "participant@example.com", "participant-profile.png");
-        var participant = createOrganizationMember("참여자", participantMember, organization);
+        var participant = createOrganizationMember("참여자", participantMember, organization, group);
         var event = createEvent("테스트 이벤트", "이벤트 설명", "테스트 장소", organizer, organization);
 
         var eventId = event.getId();
@@ -105,13 +112,13 @@ class PokeServiceTest {
             var pokeHistory = pokeHistoryRepository.findAll()
                     .getFirst();
             softly.assertThat(pokeHistory
-                                      .getRecipient())
+                            .getRecipient())
                     .isEqualTo(participant);
             softly.assertThat(pokeHistory
-                                      .getSender())
+                            .getSender())
                     .isEqualTo(organizer);
             softly.assertThat(pokeHistory
-                                      .getEvent())
+                            .getEvent())
                     .isEqualTo(event);
         });
     }
@@ -121,9 +128,10 @@ class PokeServiceTest {
         // given
         var organization = createOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "test-image.png");
         var member = createMember("테스트 회원", "test@example.com", "test-profile.png");
-        var organizer = createOrganizationMember("주최자", member, organization);
+        var group = createGroup();
+        var organizer = createOrganizationMember("주최자", member, organization, group);
         var participantMember = createMember("참여자", "participant@example.com", "participant-profile.png");
-        var participant = createOrganizationMember("참여자", participantMember, organization);
+        var participant = createOrganizationMember("참여자", participantMember, organization, group);
 
         var nonExistentEventId = 999L;
         var request = new PokeRequest(participant.getId(), PokeMessage.HEART);
@@ -140,7 +148,8 @@ class PokeServiceTest {
         // given
         var organization = createOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "test-image.png");
         var member = createMember("테스트 회원", "test@example.com", "test-profile.png");
-        var organizer = createOrganizationMember("주최자", member, organization);
+        var group = createGroup();
+        var organizer = createOrganizationMember("주최자", member, organization, group);
         var event = createEvent("테스트 이벤트", "이벤트 설명", "테스트 장소", organizer, organization);
 
         var eventId = event.getId();
@@ -158,9 +167,10 @@ class PokeServiceTest {
         // given
         var organization = createOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "test-image.png");
         var member = createMember("테스트 회원", "test@example.com", "test-profile.png");
-        var organizer = createOrganizationMember("주최자", member, organization);
+        var group = createGroup();
+        var organizer = createOrganizationMember("주최자", member, organization, group);
         var participantMember = createMember("참여자", "participant@example.com", "participant-profile.png");
-        var participant = createOrganizationMember("참여자", participantMember, organization);
+        var participant = createOrganizationMember("참여자", participantMember, organization, group);
         var event = createEvent("테스트 이벤트", "이벤트 설명", "테스트 장소", organizer, organization);
 
         var eventId = event.getId();
@@ -178,14 +188,15 @@ class PokeServiceTest {
         // given
         var organization = createOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "test-image.png");
         var member = createMember("테스트 회원", "test@example.com", "test-profile.png");
-        var organizer = createOrganizationMember("주최자", member, organization);
+        var group = createGroup();
+        var organizer = createOrganizationMember("주최자", member, organization, group);
         var participantMember = createMember("참여자", "participant@example.com", "participant-profile.png");
-        var participant = createOrganizationMember("참여자", participantMember, organization);
+        var participant = createOrganizationMember("참여자", participantMember, organization, group);
         var event = createEvent("테스트 이벤트", "이벤트 설명", "테스트 장소", organizer, organization);
 
         var otherOrganization = createOrganization("다른 이벤트 스페이스", "다른 이벤트 스페이스 설명", "other-image.png");
         var otherMember = createMember("다른 이벤트 스페이스 회원", "other@example.com", "other-profile.png");
-        var otherOrganizationMember = createOrganizationMember("다른 구성원", otherMember, otherOrganization);
+        var otherOrganizationMember = createOrganizationMember("다른 구성원", otherMember, otherOrganization, group);
 
         var eventId = event.getId();
         var request = new PokeRequest(participant.getId(), PokeMessage.HEART);
@@ -202,9 +213,10 @@ class PokeServiceTest {
         // given
         var organization = createOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "test-image.png");
         var member = createMember("테스트 회원", "test@example.com", "test-profile.png");
-        var organizer = createOrganizationMember("주최자", member, organization);
+        var group = createGroup();
+        var organizer = createOrganizationMember("주최자", member, organization, group);
         var participantMember = createMember("참여자", "participant@example.com", "participant-profile.png");
-        var participant = createOrganizationMember("참여자", participantMember, organization);
+        var participant = createOrganizationMember("참여자", participantMember, organization, group);
         var event = createEvent("테스트 이벤트", "이벤트 설명", "테스트 장소", organizer, organization);
 
         eventNotificationOptOutRepository.save(
@@ -233,8 +245,14 @@ class PokeServiceTest {
         return memberRepository.save(member);
     }
 
-    private OrganizationMember createOrganizationMember(String nickname, Member member, Organization organization) {
-        var organizationMember = OrganizationMember.create(nickname, member, organization, OrganizationMemberRole.USER);
+    private OrganizationMember createOrganizationMember(
+            String nickname,
+            Member member,
+            Organization organization,
+            OrganizationGroup group
+    ) {
+        var organizationMember =
+                OrganizationMember.create(nickname, member, organization, OrganizationMemberRole.USER, group);
 
         return organizationMemberRepository.save(organizationMember);
     }
@@ -253,5 +271,9 @@ class PokeServiceTest {
         var event = Event.create(title, description, place, organizer, organization, period, 100, new ArrayList<>());
 
         return eventRepository.save(event);
+    }
+
+    private OrganizationGroup createGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
     }
 }

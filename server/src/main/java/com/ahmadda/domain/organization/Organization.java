@@ -82,6 +82,7 @@ public class Organization extends BaseEntity {
             final Member member,
             final String nickname,
             final InviteCode inviteCode,
+            final OrganizationGroup group,
             final LocalDateTime now
     ) {
         if (!inviteCode.matchesOrganization(this)) {
@@ -91,7 +92,7 @@ public class Organization extends BaseEntity {
             throw new UnprocessableEntityException("초대코드가 만료되었습니다.");
         }
 
-        return OrganizationMember.create(nickname, member, this, OrganizationMemberRole.USER);
+        return OrganizationMember.create(nickname, member, this, OrganizationMemberRole.USER, group);
     }
 
     public boolean isExistOrganizationMember(final OrganizationMember otherOrganizationMember) {

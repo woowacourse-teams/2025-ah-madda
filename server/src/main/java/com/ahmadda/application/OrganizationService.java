@@ -11,6 +11,8 @@ import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.InviteCode;
 import com.ahmadda.domain.organization.InviteCodeRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationImageFile;
 import com.ahmadda.domain.organization.OrganizationImageUploader;
 import com.ahmadda.domain.organization.OrganizationMember;
@@ -35,6 +37,7 @@ public class OrganizationService {
     private final MemberRepository memberRepository;
     private final InviteCodeRepository inviteCodeRepository;
     private final OrganizationImageUploader organizationImageUploader;
+    private final OrganizationGroupRepository organizationGroupRepository;
 
     @Transactional
     public Organization createOrganization(
@@ -43,6 +46,7 @@ public class OrganizationService {
             final LoginMember loginMember
     ) {
         Member member = getMember(loginMember);
+        OrganizationGroup group = getOrganizationGroup(organizationCreateRequest.groupId());
 
         String uploadImageUrl = organizationImageUploader.upload(thumbnailOrganizationImageFile);
         Organization organization = Organization.create(
@@ -57,7 +61,8 @@ public class OrganizationService {
                         organizationCreateRequest.nickname(),
                         member,
                         organization,
-                        OrganizationMemberRole.ADMIN
+                        OrganizationMemberRole.ADMIN,
+                        group
                 );
         organizationMemberRepository.save(organizationMember);
 
@@ -80,12 +85,14 @@ public class OrganizationService {
         Organization organization = getOrganization(organizationId);
         Member member = getMember(loginMember);
         InviteCode inviteCode = getInviteCode(organizationParticipateRequest.inviteCode());
+        OrganizationGroup group = getOrganizationGroup(organizationParticipateRequest.groupId());
 
         OrganizationMember organizationMember =
                 organization.participate(
                         member,
                         organizationParticipateRequest.nickname(),
                         inviteCode,
+                        group,
                         LocalDateTime.now()
                 );
 
@@ -179,5 +186,10 @@ public class OrganizationService {
     private OrganizationMember getOrganizationMember(final Long organizationId, final LoginMember loginMember) {
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, loginMember.memberId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 구성원입니다."));
+    }
+
+    private OrganizationGroup getOrganizationGroup(final Long groupId) {
+        return organizationGroupRepository.findById(groupId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 그룹입니다."));
     }
 }

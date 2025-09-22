@@ -9,6 +9,8 @@ import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
@@ -47,6 +49,9 @@ class PokeTest {
 
     @Autowired
     private PokeHistoryRepository pokeHistoryRepository;
+
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
 
     @MockitoBean
     private PushNotifier pushNotifier;
@@ -228,7 +233,13 @@ class PokeTest {
         }
 
         var organizationMember =
-                OrganizationMember.create("nickname", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "nickname",
+                        member,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        createOrganizationGroup()
+                );
         return organizationMemberRepository.save(organizationMember);
     }
 
@@ -248,5 +259,9 @@ class PokeTest {
                 List.of()
         );
         return eventRepository.save(event);
+    }
+
+    private OrganizationGroup createOrganizationGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("프론트"));
     }
 }
