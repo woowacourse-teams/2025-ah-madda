@@ -13,7 +13,6 @@ type PastEventListProps = {
 
 export const PastEventList = ({ events }: PastEventListProps) => {
   const groupedEvents = groupEventsByDate(events);
-  console.log('groupedEvents', groupedEvents);
 
   return (
     <Flex dir="column" width="100%" gap="20px">
