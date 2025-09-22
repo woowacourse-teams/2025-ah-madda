@@ -14,7 +14,6 @@ ALTER TABLE organization_member
     ADD CONSTRAINT FK_org_member__org_group__group_id
         FOREIGN KEY (organization_group_id) REFERENCES organization_group (organization_group_id);
 
--- 모든 기존 조직원을 group_id = 5 (기타)로 업데이트
 UPDATE organization_member
 SET organization_group_id = 5;
 
