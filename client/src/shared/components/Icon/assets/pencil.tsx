@@ -1,8 +1,6 @@
 import { SVGProps } from 'react';
 
-type Props = SVGProps<SVGSVGElement> & { strokeWidth?: number };
-
-export const Pencil = ({ width, height, strokeWidth = 2, ...props }: Props) => (
+export const Pencil = ({ width, height, ...props }: SVGProps<SVGSVGElement>) => (
   <svg
     width={width ?? 24}
     height={height ?? 24}
@@ -15,7 +13,7 @@ export const Pencil = ({ width, height, strokeWidth = 2, ...props }: Props) => (
     <g
       transform="rotate(-45 12 12)"
       stroke="currentColor"
-      strokeWidth={strokeWidth}
+      strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
       vectorEffect="non-scaling-stroke"
