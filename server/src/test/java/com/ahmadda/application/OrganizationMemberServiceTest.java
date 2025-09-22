@@ -305,15 +305,15 @@ class OrganizationMemberServiceTest {
     @Test
     void 자신이_속하지_않은_조직인_경우_가입_체크_시_거짓을_반환한다() {
         // given
-        var org1 = createOrganization("우테코1");
-        var org2 = createOrganization("우테코2");
+        var notEnrolled = createOrganization("우테코1");
+        var enrolled = createOrganization("우테코2");
         var member = createMember("홍길동", "hong1@email.com");
-        var notMember = createOrganizationMember("닉네임1", member, org2, OrganizationMemberRole.USER);
+        var notMember = createOrganizationMember("닉네임1", member, enrolled, OrganizationMemberRole.USER);
 
         var loginMember = new LoginMember(member.getId());
 
         // when
-        boolean falseMemberOfOrganization = sut.isMember(org1.getId(), loginMember);
+        boolean falseMemberOfOrganization = sut.isMember(notEnrolled.getId(), loginMember);
 
         // then
         assertThat(falseMemberOfOrganization).isFalse();
