@@ -20,10 +20,10 @@ export const EventActionButton = ({ onEditEvent, onShareEvent }: EventActionButt
         </Button>
       </DesktopButtonContainer>
 
-      <MobileFButtonContainer alignItems="center" gap="8px">
+      <MobileButtonContainer alignItems="center" gap="8px">
         <IconButton name="share" onClick={onShareEvent} />
         <IconButton name="edit" onClick={onEditEvent} />
-      </MobileFButtonContainer>
+      </MobileButtonContainer>
     </>
   );
 };
@@ -34,7 +34,7 @@ const DesktopButtonContainer = styled(Flex)`
   }
 `;
 
-const MobileFButtonContainer = styled(Flex)`
+const MobileButtonContainer = styled(Flex)`
   display: none;
 
   @media (max-width: 768px) {
