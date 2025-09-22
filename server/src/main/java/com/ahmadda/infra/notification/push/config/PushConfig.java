@@ -33,8 +33,8 @@ public class PushConfig {
 
     @Bean
     @Primary
-    @ConditionalOnProperty(name = "push.noob", havingValue = "true")
-    public PushNotifier noobPushNotifier() {
+    @ConditionalOnProperty(name = "push.noop", havingValue = "true")
+    public PushNotifier noopPushNotifier() {
         return new NoopPushNotifier();
     }
 }

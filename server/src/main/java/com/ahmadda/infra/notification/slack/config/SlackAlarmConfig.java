@@ -24,8 +24,8 @@ public class SlackAlarmConfig {
 
     @Bean
     @Primary
-    @ConditionalOnProperty(name = "slack.noob", havingValue = "true")
-    public SlackAlarm noobSlackAlarm() {
+    @ConditionalOnProperty(name = "slack.noop", havingValue = "true")
+    public SlackAlarm noopSlackAlarm() {
         return new NoopSlackAlarm();
     }
 }

@@ -63,8 +63,8 @@ public class MailConfig {
 
     @Bean
     @Primary
-    @ConditionalOnProperty(name = "mail.noob", havingValue = "true")
-    public EmailNotifier noobEmailNotifier() {
+    @ConditionalOnProperty(name = "mail.noop", havingValue = "true")
+    public EmailNotifier noopEmailNotifier() {
         return new NoopEmailNotifier();
     }
 

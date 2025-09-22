@@ -38,16 +38,16 @@ notification:
   redirect-url-prefix: http://localhost:5173/
 
 mail:
-  noob: true
+  noop: true
 
 push:
-  noob: true
+  noop: true
 
 slack:
-  noob: true
+  noop: true
 
 aws:
   s3:
-    noob: true
+    noop: true
     bucket: ${aws.local.s3.bucket}
     folder: ${aws.local.s3.folder}

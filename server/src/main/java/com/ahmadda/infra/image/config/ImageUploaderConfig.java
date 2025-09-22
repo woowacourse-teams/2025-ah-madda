@@ -21,8 +21,8 @@ public class ImageUploaderConfig {
 
     @Bean
     @Primary
-    @ConditionalOnProperty(name = "aws.s3.noob", havingValue = "true")
-    public OrganizationImageUploader noobImageUploader() {
+    @ConditionalOnProperty(name = "aws.s3.noop", havingValue = "true")
+    public OrganizationImageUploader noopImageUploader() {
         return new NoopOrganizationImageUploader();
     }
 }

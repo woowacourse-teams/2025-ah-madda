@@ -12,7 +12,7 @@ import org.springframework.test.context.TestPropertySource;
 
 @Disabled
 @LearningTest
-@TestPropertySource(properties = "slack.noob=false")
+@TestPropertySource(properties = "slack.noop=false")
 class SlackAlarmTest {
 
     @Autowired
