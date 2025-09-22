@@ -20,7 +20,7 @@ import java.util.List;
 
 @Disabled
 @LearningTest
-@TestPropertySource(properties = "push.mock=false")
+@TestPropertySource(properties = "push.noob=false")
 class FcmPushNotifierTest {
 
     @Autowired

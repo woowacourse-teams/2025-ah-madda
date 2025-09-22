@@ -5,7 +5,7 @@ import com.ahmadda.infra.notification.config.NotificationProperties;
 import com.ahmadda.infra.notification.mail.BccChunkingEmailNotifier;
 import com.ahmadda.infra.notification.mail.FailoverEmailNotifier;
 import com.ahmadda.infra.notification.mail.GmailQuotaCircuitBreakerHandler;
-import com.ahmadda.infra.notification.mail.MockEmailNotifier;
+import com.ahmadda.infra.notification.mail.NoopEmailNotifier;
 import com.ahmadda.infra.notification.mail.RetryableEmailNotifier;
 import com.ahmadda.infra.notification.mail.SmtpEmailNotifier;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
@@ -26,14 +26,14 @@ import org.thymeleaf.TemplateEngine;
 public class MailConfig {
 
     @Bean
-    @ConditionalOnProperty(name = "mail.mock", havingValue = "true")
-    public EmailNotifier mockEmailNotifier() {
-        return new MockEmailNotifier();
+    @ConditionalOnProperty(name = "mail.noob", havingValue = "true")
+    public EmailNotifier noobEmailNotifier() {
+        return new NoopEmailNotifier();
     }
 
     @Bean
     @Primary
-    @ConditionalOnProperty(name = "mail.mock", havingValue = "false", matchIfMissing = true)
+    @ConditionalOnProperty(name = "mail.noob", havingValue = "false", matchIfMissing = true)
     public EmailNotifier failoverEmailNotifier(
             @Qualifier("googleEmailNotifier") final EmailNotifier primaryNotifier,
             @Qualifier("awsEmailNotifier") final EmailNotifier secondaryNotifier,
@@ -43,13 +43,13 @@ public class MailConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(name = "mail.mock", havingValue = "false", matchIfMissing = true)
+    @ConditionalOnProperty(name = "mail.noob", havingValue = "false", matchIfMissing = true)
     public GmailQuotaCircuitBreakerHandler gmailQuotaCircuitBreakerHandler(final CircuitBreakerRegistry circuitBreakerRegistry) {
         return new GmailQuotaCircuitBreakerHandler(circuitBreakerRegistry);
     }
 
     @Bean
-    @ConditionalOnProperty(name = "mail.mock", havingValue = "false", matchIfMissing = true)
+    @ConditionalOnProperty(name = "mail.noob", havingValue = "false", matchIfMissing = true)
     public EmailNotifier googleEmailNotifier(
             final SmtpProperties smtpProperties,
             final TemplateEngine templateEngine,
@@ -68,7 +68,7 @@ public class MailConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(name = "mail.mock", havingValue = "false", matchIfMissing = true)
+    @ConditionalOnProperty(name = "mail.noob", havingValue = "false", matchIfMissing = true)
     public EmailNotifier awsEmailNotifier(
             final SmtpProperties smtpProperties,
             final TemplateEngine templateEngine,
