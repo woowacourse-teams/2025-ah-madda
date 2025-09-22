@@ -302,7 +302,7 @@ public class OrganizationMemberController {
             ),
     })
     @GetMapping("/membership")
-    public ResponseEntity<OrganizationMembershipResponse> checkOrganizationMembership(
+    public ResponseEntity<OrganizationMembershipResponse> getMembership(
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember
     ) {
