@@ -20,11 +20,11 @@ VOLUME ["/app/logs"]
 
 EXPOSE 8080
 
-CMD ["java",
-     "-javaagent:/pinpoint-agent-3.0.3/pinpoint-bootstrap-3.0.3.jar",
-     "-Dpinpoint.agentId=ahmadda_server-${HOSTNAME}",
-     "-Dpinpoint.applicationName=ahmadda_server",
-     "-Dpinpoint.config=/pinpoint-agent-3.0.3/pinpoint-root.config",
-     "-Dpinpoint.profiler.transport.grpc.collector.ip=${COLLECTOR_IP}",
-     "-Dspring.profiles.active=${PROFILE}",
+CMD ["java", \
+     "-javaagent:/pinpoint-agent-3.0.3/pinpoint-bootstrap-3.0.3.jar", \
+     "-Dpinpoint.agentId=ahmadda_server-${HOSTNAME}", \
+     "-Dpinpoint.applicationName=ahmadda_server", \
+     "-Dpinpoint.config=/pinpoint-agent-3.0.3/pinpoint-root.config", \
+     "-Dpinpoint.profiler.transport.grpc.collector.ip=${COLLECTOR_IP}", \
+     "-Dspring.profiles.active=${PROFILE}", \
      "-jar", "/app/app.jar"]
