@@ -8,9 +8,9 @@ RUN ./gradlew bootJar
 
 RUN cp $(ls -t build/libs/*.jar | head -n 1) app.jar
 
-
-RUN curl -L https://repo1.maven.org/maven2/com/navercorp/pinpoint/pinpoint-agent/3.0.3/pinpoint-agent-3.0.3.tar.gz \
-    -o /tmp/pinpoint-agent.tar.gz \
+RUN yum update -y && yum install -y curl tar gzip \
+    && curl -L https://repo1.maven.org/maven2/com/navercorp/pinpoint/pinpoint-agent/3.0.3/pinpoint-agent-3.0.3.tar.gz \
+        -o /tmp/pinpoint-agent.tar.gz \
     && tar -xvzf /tmp/pinpoint-agent.tar.gz -C / \
     && rm /tmp/pinpoint-agent.tar.gz
 
