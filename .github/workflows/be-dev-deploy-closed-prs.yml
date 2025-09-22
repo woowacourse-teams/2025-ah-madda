@@ -87,7 +87,7 @@ jobs:
             --network ahmadda-net \
             -p 8080:8080 \
             -e PROFILE=dev \
-            -e COLLECTOR_IP=10.0.6.7 \
+            -v /home/ubuntu/pinpoint-agent-3.0.3:/pinpoint-agent-3.0.3 \
             -d ahmadda1234/ahmadda_server:$TAG
             # --log-driver=awslogs \
             # --log-opt awslogs-group=ahmadda-dev-server \
