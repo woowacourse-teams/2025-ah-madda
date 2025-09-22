@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import software.amazon.awssdk.services.s3.S3Client;
 
 @Configuration
@@ -14,13 +15,12 @@ import software.amazon.awssdk.services.s3.S3Client;
 public class ImageUploaderConfig {
 
     @Bean
-    @ConditionalOnProperty(name = "aws.s3.noob", havingValue = "false", matchIfMissing = true)
-    public OrganizationImageUploader awsS3ImageUploader(final S3Client s3Client,
-                                                        final AwsS3Properties awsS3Properties) {
+    public OrganizationImageUploader awsS3ImageUploader(final S3Client s3Client, final AwsS3Properties awsS3Properties) {
         return new AwsS3OrganizationImageUploader(s3Client, awsS3Properties);
     }
 
     @Bean
+    @Primary
     @ConditionalOnProperty(name = "aws.s3.noob", havingValue = "true")
     public OrganizationImageUploader noobImageUploader() {
         return new NoopOrganizationImageUploader();

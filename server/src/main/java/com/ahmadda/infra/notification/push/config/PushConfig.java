@@ -11,19 +11,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @EnableConfigurationProperties(NotificationProperties.class)
 @Configuration
 public class PushConfig {
 
     @Bean
-    @ConditionalOnProperty(name = "push.noob", havingValue = "true")
-    public PushNotifier noobPushNotifier() {
-        return new NoopPushNotifier();
-    }
-
-    @Bean
-    @ConditionalOnProperty(name = "push.noob", havingValue = "false", matchIfMissing = true)
     public PushNotifier fcmPushNotifier(
             final FcmRegistrationTokenRepository fcmRegistrationTokenRepository,
             final NotificationProperties notificationProperties,
@@ -35,5 +29,12 @@ public class PushConfig {
                 notificationProperties,
                 em
         );
+    }
+
+    @Bean
+    @Primary
+    @ConditionalOnProperty(name = "push.noob", havingValue = "true")
+    public PushNotifier noobPushNotifier() {
+        return new NoopPushNotifier();
     }
 }
