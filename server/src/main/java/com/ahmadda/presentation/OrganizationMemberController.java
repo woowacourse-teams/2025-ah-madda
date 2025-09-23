@@ -6,7 +6,7 @@ import com.ahmadda.application.dto.OrganizationMemberRoleUpdateRequest;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.presentation.dto.OrganizationMemberRenameRequest;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
-import com.ahmadda.presentation.dto.OrganizationMembershipResponse;
+import com.ahmadda.presentation.dto.OrganizationMemberStatusResponse;
 import com.ahmadda.presentation.resolver.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -281,7 +281,7 @@ public class OrganizationMemberController {
             @ApiResponse(
                     responseCode = "200",
                     content = @Content(
-                            schema = @Schema(implementation = OrganizationMembershipResponse.class)
+                            schema = @Schema(implementation = OrganizationMemberStatusResponse.class)
                     )
             ),
             @ApiResponse(
@@ -302,13 +302,13 @@ public class OrganizationMemberController {
             ),
     })
     @GetMapping("/organization-member-status")
-    public ResponseEntity<OrganizationMembershipResponse> getOrganizationMemberStatus(
+    public ResponseEntity<OrganizationMemberStatusResponse> getOrganizationMemberStatus(
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember
     ) {
         boolean isMember = organizationMemberService.isOrganizationMember(organizationId, loginMember);
 
-        OrganizationMembershipResponse response = new OrganizationMembershipResponse(isMember);
+        OrganizationMemberStatusResponse response = new OrganizationMemberStatusResponse(isMember);
 
         return ResponseEntity.ok(response);
     }
