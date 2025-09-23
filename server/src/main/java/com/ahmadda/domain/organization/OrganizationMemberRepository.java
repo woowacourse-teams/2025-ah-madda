@@ -3,6 +3,7 @@ package com.ahmadda.domain.organization;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface OrganizationMemberRepository extends JpaRepository<OrganizationMember, Long> {
@@ -18,4 +19,9 @@ public interface OrganizationMemberRepository extends JpaRepository<Organization
     boolean existsByOrganizationIdAndMemberId(final Long organizationId, final Long memberId);
 
     boolean existsByOrganizationIdAndNickname(final Long organizationId, final String nickname);
+
+    List<OrganizationMember> findALlByOrganizationAndGroupIn(
+            final Organization organization,
+            final List<OrganizationGroup> groups
+    );
 }

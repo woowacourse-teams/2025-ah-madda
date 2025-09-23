@@ -366,7 +366,9 @@ class EventServiceTest {
                 List.of(
                         new QuestionCreateRequest("1번 질문", true),
                         new QuestionCreateRequest("2번 질문", false)
-                )
+                ),
+                List.of(),
+                List.of(group.getId())
         );
 
         var loginMember = new LoginMember(organizerMember.getId());
@@ -404,7 +406,9 @@ class EventServiceTest {
                 List.of(
                         new QuestionCreateRequest("1번 질문", true),
                         new QuestionCreateRequest("2번 질문", false)
-                )
+                ),
+                List.of(),
+                List.of(group.getId())
         );
         var loginMember = new LoginMember(organizerMember.getId());
 
@@ -937,7 +941,8 @@ class EventServiceTest {
                 now.plusDays(6),
                 100,
                 List.of(),
-                List.of(organizationMember.getId())
+                List.of(organizationMember.getId()),
+                List.of(group.getId())
         );
 
         var loginMember = new LoginMember(member.getId());
@@ -974,7 +979,8 @@ class EventServiceTest {
                 now.plusDays(6),
                 100,
                 List.of(),
-                coOrganizerIds
+                coOrganizerIds,
+                List.of(group.getId())
         );
 
         var loginMember = new LoginMember(member.getId());

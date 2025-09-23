@@ -34,5 +34,14 @@ public class EventReminderGroup extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_group_id", nullable = false)
-    private OrganizationGroup organizationGroup;
+    private OrganizationGroup group;
+
+    private EventReminderGroup(final Event event, final OrganizationGroup group) {
+        this.event = event;
+        this.group = group;
+    }
+
+    public static EventReminderGroup create(final Event event, final OrganizationGroup group) {
+        return new EventReminderGroup(event, group);
+    }
 }

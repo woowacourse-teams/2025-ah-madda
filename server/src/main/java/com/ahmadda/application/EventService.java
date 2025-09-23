@@ -12,6 +12,8 @@ import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventReminderGroup;
+import com.ahmadda.domain.event.EventReminderGroupRepository;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.GuestWithOptStatus;
 import com.ahmadda.domain.event.Question;
@@ -22,6 +24,8 @@ import com.ahmadda.domain.notification.Reminder;
 import com.ahmadda.domain.notification.ReminderHistory;
 import com.ahmadda.domain.notification.ReminderHistoryRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationRepository;
@@ -54,7 +58,9 @@ public class EventService {
     private final Reminder reminder;
     private final ReminderHistoryRepository reminderHistoryRepository;
     private final EventNotificationOptOutRepository eventNotificationOptOutRepository;
+    private final EventReminderGroupRepository eventReminderGroupRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final OrganizationGroupRepository organizationGroupRepository;
 
     @Transactional
     public Event createEvent(
@@ -85,30 +91,15 @@ public class EventService {
         Event savedEvent = eventRepository.save(event);
 
         validateReminderLimit(savedEvent);
-        notifyEventCreated(savedEvent, organization);
+
+        List<OrganizationGroup> groups = organizationGroupRepository.findAllById(eventCreateRequest.groupIds());
+        createEventReminderGroups(groups, event);
+
+        notifyEventCreated(savedEvent, organization, groups);
 
         eventPublisher.publishEvent(EventCreated.from(savedEvent.getId()));
 
         return savedEvent;
-    }
-
-    private List<OrganizationMember> getOrganizationMemberByIds(
-            final List<Long> organizationMemberIds
-    ) {
-        Set<Long> NonDuplicatedOrganizationMemberIds = new HashSet<>(organizationMemberIds);
-
-        if (NonDuplicatedOrganizationMemberIds.size() != organizationMemberIds.size()) {
-            throw new UnprocessableEntityException("주최자는 중복될 수 없습니다.");
-        }
-
-        List<OrganizationMember> findOrganizationMembers =
-                organizationMemberRepository.findAllById(new ArrayList<>(NonDuplicatedOrganizationMemberIds));
-
-        if (findOrganizationMembers.size() != NonDuplicatedOrganizationMemberIds.size()) {
-            throw new NotFoundException("요청된 주최자 구성원 중 일부 구성원이 존재하지 않습니다.");
-        }
-
-        return findOrganizationMembers;
     }
 
     @Transactional
@@ -190,6 +181,16 @@ public class EventService {
                 organization,
                 compareDateTime
         );
+    }
+
+    public List<Event> getActiveEvents(final Long organizationId, final LoginMember loginMember) {
+        Organization organization = getOrganization(organizationId);
+
+        if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId())) {
+            throw new ForbiddenException("이벤트 스페이스에 참여하지 않아 권한이 없습니다.");
+        }
+
+        return organization.getActiveEvents(LocalDateTime.now());
     }
 
     private Member getMember(final Long loginMember) {
@@ -288,10 +289,35 @@ public class EventService {
         return Math.max(0, (remaining.getSeconds() + 59) / 60);
     }
 
-    private void notifyEventCreated(final Event event, final Organization organization) {
+    private List<OrganizationMember> getOrganizationMemberByIds(
+            final List<Long> organizationMemberIds
+    ) {
+        Set<Long> NonDuplicatedOrganizationMemberIds = new HashSet<>(organizationMemberIds);
+
+        if (NonDuplicatedOrganizationMemberIds.size() != organizationMemberIds.size()) {
+            throw new UnprocessableEntityException("주최자는 중복될 수 없습니다.");
+        }
+
+        List<OrganizationMember> findOrganizationMembers =
+                organizationMemberRepository.findAllById(new ArrayList<>(NonDuplicatedOrganizationMemberIds));
+
+        if (findOrganizationMembers.size() != NonDuplicatedOrganizationMemberIds.size()) {
+            throw new NotFoundException("요청된 주최자 구성원 중 일부 구성원이 존재하지 않습니다.");
+        }
+
+        return findOrganizationMembers;
+    }
+
+    private void notifyEventCreated(
+            final Event event,
+            final Organization organization,
+            final List<OrganizationGroup> groups
+    ) {
         String content = "새로운 이벤트가 등록되었습니다.";
-        List<OrganizationMember> recipients =
-                event.getNonGuestOrganizationMembers(organization.getOrganizationMembers());
+
+        List<OrganizationMember> organizationMembers =
+                organizationMemberRepository.findALlByOrganizationAndGroupIn(organization, groups);
+        List<OrganizationMember> recipients = event.getNonGuestOrganizationMembers(organizationMembers);
 
         sendAndRecordReminder(event, recipients, content);
     }
@@ -316,13 +342,11 @@ public class EventService {
         reminderHistoryRepository.save(reminderHistory);
     }
 
-    public List<Event> getActiveEvents(final Long organizationId, final LoginMember loginMember) {
-        Organization organization = getOrganization(organizationId);
+    private void createEventReminderGroups(List<OrganizationGroup> groups, Event event) {
+        List<EventReminderGroup> eventReminderGroups = groups.stream()
+                .map(group -> EventReminderGroup.create(event, group))
+                .toList();
 
-        if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId())) {
-            throw new ForbiddenException("이벤트 스페이스에 참여하지 않아 권한이 없습니다.");
-        }
-
-        return organization.getActiveEvents(LocalDateTime.now());
+        eventReminderGroupRepository.saveAll(eventReminderGroups);
     }
 }
