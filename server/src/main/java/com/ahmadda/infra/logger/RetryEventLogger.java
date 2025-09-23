@@ -18,7 +18,7 @@ public class RetryEventLogger implements RegistryEventConsumer<Retry> {
         retry.getEventPublisher()
                 .onRetry(e ->
                         log.warn(
-                                "retry - name: {}, attempt: {}, cause: {}",
+                                "retryAttempt - name: {}, attempt: {}, cause: {}",
                                 retry.getName(),
                                 e.getNumberOfRetryAttempts(),
                                 e.getLastThrowable()
