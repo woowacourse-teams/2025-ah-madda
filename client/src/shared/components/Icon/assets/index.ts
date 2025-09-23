@@ -11,7 +11,6 @@ import { Edit } from './edit';
 import { Location } from './location';
 import { Logo } from './logo';
 import { Next } from './next';
-import { Pencil } from './pencil';
 import { Plus } from './plus';
 import { Save } from './save';
 import { Setting } from './setting';
@@ -37,7 +36,6 @@ export const Icons = {
   next: Next,
   save: Save,
   setting: Setting,
-  pencil: Pencil,
 };
 
 export type IconName = keyof typeof Icons;

@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import { useState } from 'react';
 
 import { useNavigate, useParams } from 'react-router-dom';
@@ -7,10 +6,8 @@ import { createInviteCode } from '@/api/mutations/useCreateInviteCode';
 import { useEventNotificationToggle } from '@/api/mutations/useEventNotificationToggle';
 import { InviteCodeModal } from '@/features/Event/Overview/components/InviteCodeModal';
 import { Badge } from '@/shared/components/Badge';
-import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
-import { IconButton } from '@/shared/components/IconButton';
 import { Switch } from '@/shared/components/Switch';
 import { Text } from '@/shared/components/Text';
 import { useToast } from '@/shared/components/Toast/ToastContext';
@@ -49,6 +46,10 @@ export const EventHeader = ({
 
   const goEditPage = () => {
     navigate(`/${organizationId}/event/edit/${eventId}`);
+  };
+
+  const goManagePage = () => {
+    navigate(`/${organizationId}/event/manage/${eventId}`);
   };
 
   const handleInviteCodeClick = async () => {
@@ -90,7 +91,11 @@ export const EventHeader = ({
           </Flex>
         </Flex>
         {isOrganizer ? (
-          <EventActionButton onEditEvent={goEditPage} onShareEvent={handleInviteCodeClick} />
+          <EventActionButton
+            onEditEvent={goEditPage}
+            onShareEvent={handleInviteCodeClick}
+            onManageEvent={goManagePage}
+          />
         ) : (
           <Flex alignItems="center" gap="8px">
             <Text type="Body">알림 받기</Text>

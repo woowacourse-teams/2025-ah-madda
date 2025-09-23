@@ -7,8 +7,13 @@ import { IconButton } from '@/shared/components/IconButton';
 type EventActionButtonProps = {
   onEditEvent: VoidFunction;
   onShareEvent: VoidFunction;
+  onManageEvent: VoidFunction;
 };
-export const EventActionButton = ({ onEditEvent, onShareEvent }: EventActionButtonProps) => {
+export const EventActionButton = ({
+  onEditEvent,
+  onShareEvent,
+  onManageEvent,
+}: EventActionButtonProps) => {
   return (
     <>
       <DesktopButtonContainer alignItems="center" gap="8px">
@@ -18,11 +23,13 @@ export const EventActionButton = ({ onEditEvent, onShareEvent }: EventActionButt
         <Button color="primary" onClick={onEditEvent}>
           수정
         </Button>
+        <IconButton name="setting" onClick={onManageEvent} />
       </DesktopButtonContainer>
 
       <MobileButtonContainer alignItems="center" gap="8px">
         <IconButton name="share" onClick={onShareEvent} />
         <IconButton name="edit" onClick={onEditEvent} />
+        <IconButton name="setting" onClick={onManageEvent} />
       </MobileButtonContainer>
     </>
   );
