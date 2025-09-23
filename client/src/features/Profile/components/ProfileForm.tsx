@@ -1,71 +1,109 @@
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 
+import { OrganizationGroupAPIResponse } from '@/api/types/organizations';
+import { OrganizationProfile } from '@/api/types/profile';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
-import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
+import { theme } from '@/shared/styles/theme';
+
+import { useProfileForm } from '../hooks/useProfileForm';
 
 type ProfileFormProps = {
-  nickname: string;
-  email: string;
-  hasChanges: boolean;
-  isLoading: boolean;
-  onNicknameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onSave: () => void;
+  organizationId: number;
+  organizationProfile: OrganizationProfile;
+  organizationGroups: OrganizationGroupAPIResponse[];
 };
 
 export const ProfileForm = ({
-  nickname,
-  email,
-  hasChanges,
-  isLoading,
-  onNicknameChange,
-  onSave,
+  organizationId,
+  organizationGroups,
+  organizationProfile,
 }: ProfileFormProps) => {
+  const {
+    nickname,
+    selectGroup,
+    handleNicknameChange,
+    handleGroupChange,
+    handleSaveProfile,
+    hasChanges,
+    isLoading,
+  } = useProfileForm({
+    organizationId,
+    initialNickname: organizationProfile.nickname,
+    initialGroupID: organizationProfile.group.groupId,
+  });
+
   return (
     <>
-      <Flex dir="column" gap="8px">
-        <Text type="Body" weight="medium" color="gray700">
-          닉네임
-        </Text>
-        <Input
-          id="nickname"
-          value={nickname}
-          onChange={onNicknameChange}
-          placeholder="닉네임을 입력하세요"
-        />
+      <Flex dir="column" gap="24px" width="100%">
+        <Flex dir="column" gap="8px">
+          <Text type="Heading" weight="semibold" color="gray700">
+            포지션
+          </Text>
+          <Flex
+            gap="8px"
+            width="100%"
+            justifyContent="flex-start"
+            css={css`
+              flex-wrap: wrap;
+            `}
+          >
+            {organizationGroups.map((group) => (
+              <Segment
+                key={group.groupId}
+                type="button"
+                onClick={() => handleGroupChange(group.groupId)}
+                isSelected={selectGroup === group.groupId}
+              >
+                <Text
+                  weight={selectGroup === group.groupId ? 'bold' : 'regular'}
+                  color={
+                    selectGroup === group.groupId ? theme.colors.primary500 : theme.colors.gray300
+                  }
+                >
+                  {group.name}
+                </Text>
+              </Segment>
+            ))}
+          </Flex>
+        </Flex>
+        <Flex dir="column" gap="8px">
+          <Text type="Heading" weight="semibold" color="gray700">
+            닉네임
+          </Text>
+          <Input
+            id="nickname"
+            value={nickname}
+            onChange={handleNicknameChange}
+            placeholder="닉네임을 입력하세요"
+          />
+        </Flex>
       </Flex>
 
-      <Flex dir="column" gap="8px">
-        <Text type="Body" weight="medium" color="gray700">
-          이메일
-        </Text>
-        <Input
-          id="email"
-          value={email}
-          disabled
-          css={css`
-            cursor: not-allowed;
-          `}
-        />
-      </Flex>
-
-      <Spacing height="24px" />
-
-      <Flex padding="0 16px">
-        <Button
-          type="button"
-          size="lg"
-          disabled={!hasChanges || isLoading}
-          css={css`
-            width: 100%;
-          `}
-          onClick={onSave}
-        >
-          {isLoading ? '저장 중...' : '변경사항 저장'}
-        </Button>
-      </Flex>
+      <Button
+        type="button"
+        size="full"
+        disabled={!hasChanges || isLoading}
+        onClick={handleSaveProfile}
+      >
+        {isLoading ? '저장 중...' : '변경사항 저장'}
+      </Button>
     </>
   );
 };
+
+const Segment = styled.button<{ isSelected: boolean }>`
+  all: unset;
+  flex: 0 0 auto;
+  word-break: keep-all;
+  border: 1.5px solid
+    ${(props) => (props.isSelected ? theme.colors.primary500 : theme.colors.gray300)};
+  text-align: center;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 4px 8px;
+  white-space: nowrap;
+`;
