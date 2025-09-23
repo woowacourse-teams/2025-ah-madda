@@ -1,10 +1,8 @@
-import { css } from '@emotion/react';
-
 import { Flex } from '@/shared/components/Flex';
-import { theme } from '@/shared/styles/theme';
 
 import { EventCard } from '../../components/EventCard';
 import { Event } from '../../types/Event';
+import { groupEventsByDate } from '../../utils/groupEventsByDate';
 
 import { EventGrid } from './CurrentEventList';
 import { EventSection } from './EventSection';
@@ -14,21 +12,14 @@ type PastEventListProps = {
 };
 
 export const PastEventList = ({ events }: PastEventListProps) => {
+  const groupedEvents = groupEventsByDate(events);
+
   return (
-    <>
-      <Flex
-        width="100%"
-        justifyContent="flex-start"
-        alignItems="center"
-        gap="5px"
-        margin="10px 0"
-        css={css`
-          border-radius: 8px;
-          background-color: ${theme.colors.primary50};
-        `}
-      >
-        {events.map((event) => (
-          <EventSection key={event.eventId} title={event.title}>
+    <Flex dir="column" width="100%" gap="20px">
+      {groupedEvents
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .map(({ label, events }) => (
+          <EventSection key={label} title={label}>
             <EventGrid>
               {events.map((event, index) => (
                 <EventCard key={index} {...event} cardType="default" />
@@ -36,7 +27,6 @@ export const PastEventList = ({ events }: PastEventListProps) => {
             </EventGrid>
           </EventSection>
         ))}
-      </Flex>
-    </>
+    </Flex>
   );
 };
