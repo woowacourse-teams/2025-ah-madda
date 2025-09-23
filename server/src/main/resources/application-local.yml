@@ -45,16 +45,16 @@ notification:
   redirect-url-prefix: http://localhost:5173/
 
 mail:
-  mock: true
+  noop: true
 
 push:
-  mock: true
+  noop: true
 
 slack:
-  mock: true
+  noop: true
 
 aws:
   s3:
-    mock: true
+    noop: true
     bucket: ${aws.local.s3.bucket}
     folder: ${aws.local.s3.folder}

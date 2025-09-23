@@ -14,7 +14,7 @@ import java.io.InputStream;
 @Disabled
 @LearningTest
 @TestPropertySource(properties = {
-        "aws.s3.mock=false",
+        "aws.s3.noop=false",
         "aws.s3.region=${aws.dev.s3.region}",
         "aws.s3.bucket=${aws.dev.s3.bucket}",
         "aws.s3.folder=${aws.dev.s3.folder}"

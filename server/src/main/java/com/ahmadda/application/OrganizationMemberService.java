@@ -85,6 +85,10 @@ public class OrganizationMemberService {
 
         organizationMember.update(request.nickname(), organizationGroup);
     }
+  
+    public boolean isOrganizationMember(final Long organizationId, final LoginMember loginMember) {
+        return organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId());
+    }
 
     public List<OrganizationMember> getAllOrganizationMembers(
             final Long organizationId,

@@ -5,7 +5,7 @@ import com.ahmadda.infra.notification.config.NotificationProperties;
 import com.ahmadda.infra.notification.mail.BccChunkingEmailNotifier;
 import com.ahmadda.infra.notification.mail.FailoverEmailNotifier;
 import com.ahmadda.infra.notification.mail.GmailQuotaCircuitBreakerHandler;
-import com.ahmadda.infra.notification.mail.MockEmailNotifier;
+import com.ahmadda.infra.notification.mail.NoopEmailNotifier;
 import com.ahmadda.infra.notification.mail.RetryableEmailNotifier;
 import com.ahmadda.infra.notification.mail.SmtpEmailNotifier;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
@@ -26,37 +26,14 @@ import org.thymeleaf.TemplateEngine;
 public class MailConfig {
 
     @Bean
-    @ConditionalOnProperty(name = "mail.mock", havingValue = "true")
-    public EmailNotifier mockEmailNotifier() {
-        return new MockEmailNotifier();
-    }
-
-    @Bean
-    @Primary
-    @ConditionalOnProperty(name = "mail.mock", havingValue = "false", matchIfMissing = true)
     public EmailNotifier failoverEmailNotifier(
-            @Qualifier("googleEmailNotifier") final EmailNotifier primaryNotifier,
-            @Qualifier("awsEmailNotifier") final EmailNotifier secondaryNotifier,
-            final EntityManager em
-    ) {
-        return new FailoverEmailNotifier(primaryNotifier, secondaryNotifier, em);
-    }
-
-    @Bean
-    @ConditionalOnProperty(name = "mail.mock", havingValue = "false", matchIfMissing = true)
-    public GmailQuotaCircuitBreakerHandler gmailQuotaCircuitBreakerHandler(final CircuitBreakerRegistry circuitBreakerRegistry) {
-        return new GmailQuotaCircuitBreakerHandler(circuitBreakerRegistry);
-    }
-
-    @Bean
-    @ConditionalOnProperty(name = "mail.mock", havingValue = "false", matchIfMissing = true)
-    public EmailNotifier googleEmailNotifier(
             final SmtpProperties smtpProperties,
             final TemplateEngine templateEngine,
             final NotificationProperties notificationProperties,
-            final RetryRegistry retryRegistry
+            final RetryRegistry retryRegistry,
+            final EntityManager em
     ) {
-        return createEmailNotifier(
+        EmailNotifier googleEmailNotifier = createEmailNotifier(
                 smtpProperties.getGoogle(),
                 100,
                 templateEngine,
@@ -65,17 +42,8 @@ public class MailConfig {
                 "googleEmail",
                 2
         );
-    }
 
-    @Bean
-    @ConditionalOnProperty(name = "mail.mock", havingValue = "false", matchIfMissing = true)
-    public EmailNotifier awsEmailNotifier(
-            final SmtpProperties smtpProperties,
-            final TemplateEngine templateEngine,
-            final NotificationProperties notificationProperties,
-            final RetryRegistry retryRegistry
-    ) {
-        return createEmailNotifier(
+        EmailNotifier awsEmailNotifier = createEmailNotifier(
                 smtpProperties.getAws(),
                 50,
                 templateEngine,
@@ -84,6 +52,20 @@ public class MailConfig {
                 "awsEmail",
                 3
         );
+
+        return new FailoverEmailNotifier(googleEmailNotifier, awsEmailNotifier, em);
+    }
+
+    @Bean
+    public GmailQuotaCircuitBreakerHandler gmailQuotaCircuitBreakerHandler(final CircuitBreakerRegistry circuitBreakerRegistry) {
+        return new GmailQuotaCircuitBreakerHandler(circuitBreakerRegistry);
+    }
+
+    @Bean
+    @Primary
+    @ConditionalOnProperty(name = "mail.noop", havingValue = "true")
+    public EmailNotifier noopEmailNotifier() {
+        return new NoopEmailNotifier();
     }
 
     private EmailNotifier createEmailNotifier(

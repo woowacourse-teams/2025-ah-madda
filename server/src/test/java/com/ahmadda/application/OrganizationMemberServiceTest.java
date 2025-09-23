@@ -368,6 +368,24 @@ class OrganizationMemberServiceTest {
                 .hasMessage("존재하지 않는 그룹입니다.");
     }
 
+    void 조직_가입_여부를_확인한다() {
+        // given
+        var enrolledOrg = createOrganization("우테코_가입됨");
+        var notEnrolledOrg = createOrganization("우테코_가입안됨");
+        var member = createMember("홍길동", "hong1@email.com");
+        var group = createGroup();
+        var orgMember = createOrganizationMember("닉네임1", member, enrolledOrg, OrganizationMemberRole.USER, group);
+        var loginMember = new LoginMember(member.getId());
+
+        // when & then
+        assertSoftly(softly -> {
+            softly.assertThat(sut.isOrganizationMember(enrolledOrg.getId(), loginMember))
+                    .isTrue();
+            softly.assertThat(sut.isOrganizationMember(notEnrolledOrg.getId(), loginMember))
+                    .isFalse();
+        });
+    }
+
     private Organization createOrganization(String name) {
         return organizationRepository.save(Organization.create(name, "설명", "img.png"));
     }

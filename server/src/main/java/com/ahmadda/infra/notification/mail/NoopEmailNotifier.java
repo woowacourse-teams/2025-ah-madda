@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 @Slf4j
-public class MockEmailNotifier implements EmailNotifier {
+public class NoopEmailNotifier implements EmailNotifier {
 
     @Override
     public void sendEmails(
@@ -16,7 +16,7 @@ public class MockEmailNotifier implements EmailNotifier {
             final EventEmailPayload eventEmailPayload
     ) {
         log.info(
-                "[Mock Email] To: {} | Subject: {} | Body: {}",
+                "[Noop Email] To: {} | Subject: {} | Body: {}",
                 recipients,
                 eventEmailPayload.subject(),
                 eventEmailPayload.body()
