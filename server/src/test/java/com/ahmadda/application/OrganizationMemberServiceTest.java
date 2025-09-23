@@ -9,6 +9,8 @@ import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
@@ -37,12 +39,16 @@ class OrganizationMemberServiceTest {
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
 
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
+
     @Test
     void 자신의_구성원_정보를_조회한다() {
         // given
         var org = createOrganization("우테코");
         var member = createMember("홍길동", "hong@email.com");
-        var orgMember = createOrganizationMember("닉네임", member, org, OrganizationMemberRole.USER);
+        var group = createGroup();
+        var orgMember = createOrganizationMember("닉네임", member, org, OrganizationMemberRole.USER, group);
         var loginMember = new LoginMember(member.getId());
 
         // when
@@ -53,10 +59,10 @@ class OrganizationMemberServiceTest {
             softly.assertThat(result.getId())
                     .isEqualTo(orgMember.getId());
             softly.assertThat(result.getMember()
-                                      .getId())
+                            .getId())
                     .isEqualTo(member.getId());
             softly.assertThat(result.getOrganization()
-                                      .getId())
+                            .getId())
                     .isEqualTo(org.getId());
         });
     }
@@ -81,9 +87,10 @@ class OrganizationMemberServiceTest {
         var user1 = createMember("user1", "user1@email.com");
         var user2 = createMember("user2", "user2@email.com");
 
-        var adminOrgMember = createOrganizationMember("admin", admin, org, OrganizationMemberRole.ADMIN);
-        var user1OrgMember = createOrganizationMember("user1", user1, org, OrganizationMemberRole.USER);
-        var user2OrgMember = createOrganizationMember("user2", user2, org, OrganizationMemberRole.USER);
+        var group = createGroup();
+        var adminOrgMember = createOrganizationMember("admin", admin, org, OrganizationMemberRole.ADMIN, group);
+        var user1OrgMember = createOrganizationMember("user1", user1, org, OrganizationMemberRole.USER, group);
+        var user2OrgMember = createOrganizationMember("user2", user2, org, OrganizationMemberRole.USER, group);
 
         var request = new OrganizationMemberRoleUpdateRequest(
                 List.of(user1OrgMember.getId(), user2OrgMember.getId()),
@@ -123,7 +130,8 @@ class OrganizationMemberServiceTest {
         var outsider = createMember("outsider", "out@email.com");
         var user = createMember("user", "user@email.com");
 
-        var userOrgMember = createOrganizationMember("user", user, org, OrganizationMemberRole.USER);
+        var group = createGroup();
+        var userOrgMember = createOrganizationMember("user", user, org, OrganizationMemberRole.USER, group);
         var loginMember = new LoginMember(outsider.getId());
 
         var request =
@@ -140,8 +148,9 @@ class OrganizationMemberServiceTest {
         var admin = createMember("admin", "admin@email.com");
         var user = createMember("user", "user@email.com");
 
-        var adminOrgMember = createOrganizationMember("admin", admin, org, OrganizationMemberRole.ADMIN);
-        var userOrgMember = createOrganizationMember("user", user, org, OrganizationMemberRole.USER);
+        var group = createGroup();
+        var adminOrgMember = createOrganizationMember("admin", admin, org, OrganizationMemberRole.ADMIN, group);
+        var userOrgMember = createOrganizationMember("user", user, org, OrganizationMemberRole.USER, group);
 
         var invalidId = -999L;
         var request = new OrganizationMemberRoleUpdateRequest(
@@ -163,9 +172,10 @@ class OrganizationMemberServiceTest {
         var user1 = createMember("user1", "user1@email.com");
         var user2 = createMember("user2", "user2@email.com");
 
-        createOrganizationMember("admin", admin, org1, OrganizationMemberRole.ADMIN);
-        var user1OrgMember = createOrganizationMember("user1", user1, org1, OrganizationMemberRole.USER);
-        var user2OrgMember = createOrganizationMember("user2", user2, org2, OrganizationMemberRole.USER);
+        var group = createGroup();
+        createOrganizationMember("admin", admin, org1, OrganizationMemberRole.ADMIN, group);
+        var user1OrgMember = createOrganizationMember("user1", user1, org1, OrganizationMemberRole.USER, group);
+        var user2OrgMember = createOrganizationMember("user2", user2, org2, OrganizationMemberRole.USER, group);
 
         var request = new OrganizationMemberRoleUpdateRequest(
                 List.of(user1OrgMember.getId(), user2OrgMember.getId()),
@@ -185,8 +195,9 @@ class OrganizationMemberServiceTest {
         var member1 = createMember("홍길동", "hong@email.com");
         var member2 = createMember("박찬호", "chanho@email.com");
 
-        createOrganizationMember("길동", member1, org, OrganizationMemberRole.USER);
-        createOrganizationMember("찬호", member2, org, OrganizationMemberRole.USER);
+        var group = createGroup();
+        createOrganizationMember("길동", member1, org, OrganizationMemberRole.USER, group);
+        createOrganizationMember("찬호", member2, org, OrganizationMemberRole.USER, group);
 
         var loginMember = new LoginMember(member1.getId());
 
@@ -225,7 +236,8 @@ class OrganizationMemberServiceTest {
         var org2 = createOrganization("다른 이벤트 스페이스");
 
         var member = createMember("홍길동", "hong@email.com");
-        createOrganizationMember("길동", member, org2, OrganizationMemberRole.USER); // 다른 이벤트 스페이스 소속
+        var group = createGroup();
+        createOrganizationMember("길동", member, org2, OrganizationMemberRole.USER, group); // 다른 이벤트 스페이스 소속
 
         var loginMember = new LoginMember(member.getId());
 
@@ -240,7 +252,8 @@ class OrganizationMemberServiceTest {
         // given
         var org = createOrganization("우테코");
         var member = createMember("홍길동", "hong@email.com");
-        var orgMember = createOrganizationMember("닉네임", member, org, OrganizationMemberRole.USER);
+        var group = createGroup();
+        var orgMember = createOrganizationMember("닉네임", member, org, OrganizationMemberRole.USER, group);
         var loginMember = new LoginMember(member.getId());
 
         var newName = "닉네임2";
@@ -257,10 +270,11 @@ class OrganizationMemberServiceTest {
         // given
         var org = createOrganization("우테코");
         var member1 = createMember("홍길동1", "hong1@email.com");
-        var orgMember1 = createOrganizationMember("닉네임1", member1, org, OrganizationMemberRole.USER);
+        var group = createGroup();
+        var orgMember1 = createOrganizationMember("닉네임1", member1, org, OrganizationMemberRole.USER, group);
 
         var member2 = createMember("홍길동2", "hong@email2.com");
-        var orgMember2 = createOrganizationMember("닉네임2", member2, org, OrganizationMemberRole.USER);
+        var orgMember2 = createOrganizationMember("닉네임2", member2, org, OrganizationMemberRole.USER, group);
         var loginMember2 = new LoginMember(member2.getId());
 
         var duplicateName = "닉네임1";
@@ -276,7 +290,8 @@ class OrganizationMemberServiceTest {
         // given
         var org = createOrganization("우테코");
         var member = createMember("홍길동", "hong1@email.com");
-        var orgMember = createOrganizationMember("닉네임1", member, org, OrganizationMemberRole.USER);
+        var group = createGroup();
+        var orgMember = createOrganizationMember("닉네임1", member, org, OrganizationMemberRole.USER, group);
         var loginMember = new LoginMember(member.getId());
 
         var myNickname = "닉네임1";
@@ -299,10 +314,15 @@ class OrganizationMemberServiceTest {
             String nickname,
             Member member,
             Organization org,
-            OrganizationMemberRole role
+            OrganizationMemberRole role,
+            OrganizationGroup group
     ) {
         return organizationMemberRepository.save(
-                OrganizationMember.create(nickname, member, org, role)
+                OrganizationMember.create(nickname, member, org, role, group)
         );
+    }
+
+    private OrganizationGroup createGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
     }
 }

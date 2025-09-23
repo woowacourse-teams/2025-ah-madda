@@ -6,6 +6,8 @@ import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.domain.notification.EventEmailPayload;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
@@ -50,6 +52,9 @@ class FailoverEmailNotifierTest {
 
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
+
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
 
     @Test
     void 실제_Failover_구조에서_메일을_발송한다() {
@@ -134,6 +139,7 @@ class FailoverEmailNotifierTest {
             final String memberEmail,
             final String nickname
     ) {
+        var group = organizationGroupRepository.save(OrganizationGroup.create("그룹"));
         var organization = organizationRepository.save(
                 Organization.create(organizationName, "설명", "logo.png")
         );
@@ -141,7 +147,13 @@ class FailoverEmailNotifierTest {
                 Member.create(memberName, memberEmail, "testPicture")
         );
         return organizationMemberRepository.save(
-                OrganizationMember.create(nickname, member, organization, OrganizationMemberRole.USER)
+                OrganizationMember.create(
+                        nickname,
+                        member,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        group
+                )
         );
     }
 

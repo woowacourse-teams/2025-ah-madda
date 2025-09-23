@@ -4,6 +4,7 @@ import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.domain.notification.EventEmailPayload;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.BeforeEach;
@@ -77,11 +78,12 @@ class BccChunkingEmailNotifierTest {
     }
 
     private List<OrganizationMember> createRecipients(int count) {
+        OrganizationGroup group = OrganizationGroup.create("기타");
         var org = Organization.create("이벤트 스페이스", "설명", "logo.png");
         List<OrganizationMember> members = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             var member = Member.create("닉네임" + i, "user" + i + "@example.com", "pic.png");
-            members.add(OrganizationMember.create("닉네임" + i, member, org, OrganizationMemberRole.USER));
+            members.add(OrganizationMember.create("닉네임" + i, member, org, OrganizationMemberRole.USER, group));
         }
 
         return members;

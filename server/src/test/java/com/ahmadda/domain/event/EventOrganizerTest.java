@@ -3,6 +3,7 @@ package com.ahmadda.domain.event;
 import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.Test;
@@ -138,7 +139,13 @@ class EventOrganizerTest {
     }
 
     private OrganizationMember createOrganizationMember(Member member, Organization organization) {
-        return OrganizationMember.create("테스트 닉네임", member, organization, OrganizationMemberRole.USER);
+        return OrganizationMember.create(
+                "테스트 닉네임",
+                member,
+                organization,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
+        );
     }
 
     private Event createEvent(OrganizationMember organizer, Organization organization) {
