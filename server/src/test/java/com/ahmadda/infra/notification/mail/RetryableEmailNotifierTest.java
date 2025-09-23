@@ -4,6 +4,7 @@ import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.domain.notification.EventEmailPayload;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import io.github.resilience4j.retry.RetryRegistry;
@@ -64,7 +65,13 @@ class RetryableEmailNotifierTest {
 
         var org = Organization.create("이벤트 스페이스", "설명", "logo.png");
         var member = Member.create("닉네임", "user@example.com", "pic.png");
-        recipients = List.of(OrganizationMember.create("닉네임", member, org, OrganizationMemberRole.USER));
+        recipients = List.of(OrganizationMember.create(
+                "닉네임",
+                member,
+                org,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("그룹")
+        ));
     }
 
     @Test

@@ -13,6 +13,8 @@ import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.InviteCode;
 import com.ahmadda.domain.organization.InviteCodeRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationImageFile;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
@@ -51,6 +53,9 @@ class OrganizationServiceTest {
     @Autowired
     private OrganizationService sut;
 
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
+
     @Test
     void 이벤트_스페이스를_ID로_조회한다() {
         // given
@@ -74,7 +79,8 @@ class OrganizationServiceTest {
     void 이벤트_스페이스를_생성한다() {
         // given
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
-        var request = createOrganizationCreateRequest("이벤트 스페이스명", "이벤트 스페이스 설명", "서프");
+        var group = createGroup();
+        var request = createOrganizationCreateRequest("이벤트 스페이스명", "이벤트 스페이스 설명", "서프", group.getId());
         var thumbnailImageFile = createImageFile("test.png");
 
         // when
@@ -105,7 +111,22 @@ class OrganizationServiceTest {
                     .isEqualTo("서프");
             softly.assertThat(organizationMember.getRole())
                     .isEqualTo(OrganizationMemberRole.ADMIN);
+            softly.assertThat(organizationMember.getGroup())
+                    .isEqualTo(group);
         });
+    }
+
+    @Test
+    void 이벤트_스페이스를_생성시_존재하지_않는_그룹으로_생성하면_예외가_발생한다() {
+        // given
+        var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        var request = createOrganizationCreateRequest("이벤트 스페이스명", "이벤트 스페이스 설명", "서프", 999L);
+        var thumbnailImageFile = createImageFile("test.png");
+
+        // when // then
+        assertThatThrownBy(() -> sut.createOrganization(request, thumbnailImageFile, new LoginMember(member.getId())))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 그룹입니다.");
     }
 
     @Test
@@ -122,11 +143,12 @@ class OrganizationServiceTest {
         var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        var inviter = createOrganizationMember("surf", member2, organization, OrganizationMemberRole.USER);
+        var group = createGroup();
+        var inviter = createOrganizationMember("surf", member2, organization, OrganizationMemberRole.USER, group);
         var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(member1.getId());
-        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode());
+        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode(), group.getId());
 
         // when
         var organizationMember = sut.participateOrganization(organization.getId(), loginMember, request);
@@ -143,13 +165,14 @@ class OrganizationServiceTest {
         var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
+        var group = createGroup();
         var organizationMember =
-                createOrganizationMember("surf", member1, organization, OrganizationMemberRole.USER);
-        var inviter = createOrganizationMember("tuda", member2, organization, OrganizationMemberRole.USER);
+                createOrganizationMember("surf", member1, organization, OrganizationMemberRole.USER, group);
+        var inviter = createOrganizationMember("tuda", member2, organization, OrganizationMemberRole.USER, group);
         var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(member1.getId());
-        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode());
+        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode(), group.getId());
 
         // when // then
         assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
@@ -158,16 +181,36 @@ class OrganizationServiceTest {
     }
 
     @Test
+    void 존재하지_않는_그룹으로_이벤트_스페이스에_참여한다면_예외가_발생한다() {
+        // given
+        var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
+        var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
+        var group = createGroup();
+        var inviter = createOrganizationMember("tuda", member2, organization, OrganizationMemberRole.USER, group);
+        var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
+
+        var loginMember = new LoginMember(member1.getId());
+        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode(), 999L);
+
+        // when // then
+        assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 그룹입니다.");
+    }
+
+    @Test
     void 존재하지_않는_이벤트_스페이스에_참여한다면_예외가_발생한다() {
         // given
         var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        var inviter = createOrganizationMember("surf", member2, organization, OrganizationMemberRole.USER);
+        var group = createGroup();
+        var inviter = createOrganizationMember("surf", member2, organization, OrganizationMemberRole.USER, group);
         var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(member1.getId());
-        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode());
+        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode(), group.getId());
 
         // when // then
         assertThatThrownBy(() -> sut.participateOrganization(999L, loginMember, request))
@@ -180,11 +223,12 @@ class OrganizationServiceTest {
         // given
         var member = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        var inviter = createOrganizationMember("surf", member, organization, OrganizationMemberRole.USER);
+        var group = createGroup();
+        var inviter = createOrganizationMember("surf", member, organization, OrganizationMemberRole.USER, group);
         var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(999L);
-        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode());
+        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode(), group.getId());
 
         // when // then
         assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
@@ -198,8 +242,9 @@ class OrganizationServiceTest {
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
 
+        var group = createGroup();
         var loginMember = new LoginMember(member.getId());
-        var request = new OrganizationParticipateRequest("new_nickname", "notFoundCode");
+        var request = new OrganizationParticipateRequest("new_nickname", "notFoundCode", group.getId());
 
         // when // then
         assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
@@ -212,8 +257,9 @@ class OrganizationServiceTest {
         //given
         var organization = createOrganization("Org");
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        var group = createGroup();
         var organizationMember =
-                createOrganizationMember("surf", member, organization, OrganizationMemberRole.ADMIN);
+                createOrganizationMember("surf", member, organization, OrganizationMemberRole.ADMIN, group);
         var request = new OrganizationUpdateRequest("새 이름", "새 설명");
         var imageFile = createImageFile("new.png");
 
@@ -238,8 +284,9 @@ class OrganizationServiceTest {
         //given
         var organization = createOrganization("Org");
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        var group = createGroup();
         var organizationMember =
-                createOrganizationMember("surf", member, organization, OrganizationMemberRole.ADMIN);
+                createOrganizationMember("surf", member, organization, OrganizationMemberRole.ADMIN, group);
         var request = new OrganizationUpdateRequest("새 이름", "새 설명");
 
         //when
@@ -296,9 +343,10 @@ class OrganizationServiceTest {
         var organization3 = createOrganization("서프의 이벤트 스페이스");
         var organization4 = createOrganization("프론트 이벤트 스페이스");
         var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
-        createOrganizationMember("surf", member, organization1, OrganizationMemberRole.USER);
-        createOrganizationMember("surf", member, organization2, OrganizationMemberRole.ADMIN);
-        createOrganizationMember("surf", member, organization3, OrganizationMemberRole.USER);
+        var group = createGroup();
+        createOrganizationMember("surf", member, organization1, OrganizationMemberRole.USER, group);
+        createOrganizationMember("surf", member, organization2, OrganizationMemberRole.ADMIN, group);
+        createOrganizationMember("surf", member, organization3, OrganizationMemberRole.USER, group);
 
         //when
         var participatingOrganizations =
@@ -327,7 +375,8 @@ class OrganizationServiceTest {
         // given
         var organization = createOrganization("삭제될 이벤트 스페이스");
         var admin = memberRepository.save(Member.create("admin", "admin@test.com", "pic"));
-        createOrganizationMember("관리자", admin, organization, OrganizationMemberRole.ADMIN);
+        var group = createGroup();
+        createOrganizationMember("관리자", admin, organization, OrganizationMemberRole.ADMIN, group);
 
         var loginMember = new LoginMember(admin.getId());
 
@@ -368,7 +417,8 @@ class OrganizationServiceTest {
         // given
         var organization = createOrganization("삭제 불가 이벤트 스페이스");
         var user = memberRepository.save(Member.create("user", "user@test.com", "pic"));
-        createOrganizationMember("사용자", user, organization, OrganizationMemberRole.USER);
+        var group = createGroup();
+        createOrganizationMember("사용자", user, organization, OrganizationMemberRole.USER, group);
 
         var loginMember = new LoginMember(user.getId());
 
@@ -384,24 +434,27 @@ class OrganizationServiceTest {
         var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
         var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        var inviter = createOrganizationMember("surf", member2, organization, OrganizationMemberRole.USER);
+        var group = createGroup();
+        var inviter = createOrganizationMember("surf", member2, organization, OrganizationMemberRole.USER, group);
         var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(member1.getId());
-        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode());
+        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode(), group.getId());
 
         sut.participateOrganization(organization.getId(), loginMember, request);
 
         var duplicateNameMember =
                 memberRepository.save(Member.create("duplicateNameMember", "user3@test.com", "testPicture"));
         var duplicateName = "surf";
-        var duplicateNameRequest = new OrganizationParticipateRequest(duplicateName, inviteCode.getCode());
+        var duplicateNameRequest =
+                new OrganizationParticipateRequest(duplicateName, inviteCode.getCode(), group.getId());
         var duplicateLoginMember = new LoginMember(duplicateNameMember.getId());
 
         // when // then
-        assertThatThrownBy(() -> sut.participateOrganization(organization.getId(),
-                                                             duplicateLoginMember,
-                                                             duplicateNameRequest
+        assertThatThrownBy(() -> sut.participateOrganization(
+                organization.getId(),
+                duplicateLoginMember,
+                duplicateNameRequest
         ))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("이미 사용 중인 닉네임입니다.");
@@ -419,18 +472,20 @@ class OrganizationServiceTest {
     private OrganizationCreateRequest createOrganizationCreateRequest(
             String name,
             String description,
-            String nickname
+            String nickname,
+            Long groupId
     ) {
-        return new OrganizationCreateRequest(name, description, nickname);
+        return new OrganizationCreateRequest(name, description, nickname, groupId);
     }
 
     private OrganizationMember createOrganizationMember(
             String nickname,
             Member member,
             Organization organization,
-            OrganizationMemberRole role
+            OrganizationMemberRole role,
+            OrganizationGroup group
     ) {
-        var organizationMember = OrganizationMember.create(nickname, member, organization, role);
+        var organizationMember = OrganizationMember.create(nickname, member, organization, role, group);
         return organizationMemberRepository.save(organizationMember);
     }
 
@@ -456,5 +511,9 @@ class OrganizationServiceTest {
                     }
                 }
         );
+    }
+
+    private OrganizationGroup createGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
     }
 }

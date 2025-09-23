@@ -4,6 +4,7 @@ import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +29,13 @@ class GuestTest {
     void setUp() {
         var organizerMember = Member.create("주최자 회원", "organizer@example.com", "testPicture");
         var organization = Organization.create("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "image.png");
-        var organizer = OrganizationMember.create("주최자", organizerMember, organization, OrganizationMemberRole.USER);
+        var organizer = OrganizationMember.create(
+                "주최자",
+                organizerMember,
+                organization,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
+        );
         var now = LocalDateTime.now();
         event = Event.create(
                 "테스트 이벤트", "설명", "장소", organizer, organization,
@@ -40,13 +47,20 @@ class GuestTest {
                 50
         );
         member = Member.create("참가자 회원", "guest@example.com", "testPicture");
-        participant = OrganizationMember.create("참가자", member, organization, OrganizationMemberRole.USER);
+        participant = OrganizationMember.create(
+                "참가자",
+                member,
+                organization,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
+        );
         otherParticipant =
                 OrganizationMember.create(
                         "다른 참가자",
                         Member.create("다른 회원", "other@example.com", "testPicture"),
                         organization,
-                        OrganizationMemberRole.USER
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
                 );
     }
 
@@ -91,9 +105,21 @@ class GuestTest {
         var organization2 = Organization.create("테스트 이벤트 스페이스2", "이벤트 스페이스 설명", "image.png");
 
         var organizationMember1 =
-                OrganizationMember.create("테스트 닉네임", member, organization1, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "테스트 닉네임",
+                        member,
+                        organization1,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
         var organizationMember2 =
-                OrganizationMember.create("테스트 닉네임", member, organization2, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "테스트 닉네임",
+                        member,
+                        organization2,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
 
         var now = LocalDateTime.now();
         var event = Event.create(
@@ -117,7 +143,13 @@ class GuestTest {
         //given
         var organization = Organization.create("테스트 이벤트 스페이스1", "이벤트 스페이스 설명", "image.png");
         var organizationMember =
-                OrganizationMember.create("테스트 닉네임", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "테스트 닉네임",
+                        member,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
 
         var now = LocalDateTime.now();
         var event = Event.create(
@@ -141,11 +173,29 @@ class GuestTest {
         //given
         var organization = Organization.create("테스트 이벤트 스페이스1", "이벤트 스페이스 설명", "image.png");
         var organizationMember1 =
-                OrganizationMember.create("테스트 닉네임1", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "테스트 닉네임1",
+                        member,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
         var organizationMember2 =
-                OrganizationMember.create("테스트 닉네임2", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "테스트 닉네임2",
+                        member,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
         var organizationMember3 =
-                OrganizationMember.create("테스트 닉네임3", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "테스트 닉네임3",
+                        member,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
 
         var now = LocalDateTime.now();
         var event = Event.create(
@@ -323,7 +373,8 @@ class GuestTest {
                         "다른 게스트",
                         otherMember,
                         participant.getOrganization(),
-                        OrganizationMemberRole.USER
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
                 );
         var guest = Guest.create(event, otherParticipant, now);
         var answers = Map.of(question, "답변");
