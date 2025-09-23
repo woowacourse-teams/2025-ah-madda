@@ -316,7 +316,7 @@ public class EventService {
         String content = "새로운 이벤트가 등록되었습니다.";
 
         List<OrganizationMember> organizationMembers =
-                organizationMemberRepository.findALlByOrganizationAndGroupIn(organization, groups);
+                organizationMemberRepository.findAllByOrganizationAndGroupIn(organization, groups);
         List<OrganizationMember> recipients = event.getNonGuestOrganizationMembers(organizationMembers);
 
         sendAndRecordReminder(event, recipients, content);

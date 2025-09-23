@@ -3,6 +3,8 @@ package com.ahmadda.application.scheduler;
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventReminderGroup;
+import com.ahmadda.domain.event.EventReminderGroupRepository;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.event.GuestRepository;
@@ -67,6 +69,9 @@ class EventNotificationSchedulerTest {
     @Autowired
     private EventNotificationOptOutRepository eventNotificationOptOutRepository;
 
+    @Autowired
+    private EventReminderGroupRepository eventReminderGroupRepository;
+
     @MockitoSpyBean
     private Reminder reminder;
 
@@ -86,7 +91,7 @@ class EventNotificationSchedulerTest {
 
     @ParameterizedTest
     @MethodSource("registrationEndOffsets")
-    void 등록_마감_30분_전_수신_거부하지_않는_비게스트에게만_알람을_전송한다(
+    void 등록_마감_30분전_리마인더그룹의_수신가능한_참여자에게만_알람을_보낸다(
             int minutesUntilRegistrationEnds,
             boolean expectToSend
     ) {
@@ -114,7 +119,7 @@ class EventNotificationSchedulerTest {
                 ),
                 100
         ));
-
+        eventReminderGroupRepository.save(EventReminderGroup.create(event, group));
         var ng2OptOut =
                 eventNotificationOptOutRepository.save(EventNotificationOptOut.create(ng2, event));
         eventNotificationOptOutRepository.save(ng2OptOut);
@@ -152,6 +157,7 @@ class EventNotificationSchedulerTest {
                 ),
                 100
         ));
+        eventReminderGroupRepository.save(EventReminderGroup.create(event, group));
 
         // when
         sut.notifyRegistrationClosingIn30Minutes();

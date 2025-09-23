@@ -1,6 +1,7 @@
 package com.ahmadda.application.scheduler;
 
 import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventReminderGroupRepository;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.event.GuestWithOptStatus;
@@ -8,7 +9,9 @@ import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
 import com.ahmadda.domain.notification.Reminder;
 import com.ahmadda.domain.notification.ReminderHistory;
 import com.ahmadda.domain.notification.ReminderHistoryRepository;
+import com.ahmadda.domain.organization.OrganizationGroup;
 import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberWithOptStatus;
 import lombok.RequiredArgsConstructor;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -33,6 +36,8 @@ public class EventNotificationScheduler {
     private final EventNotificationOptOutRepository eventNotificationOptOutRepository;
     private final Reminder reminder;
     private final ReminderHistoryRepository reminderHistoryRepository;
+    private final EventReminderGroupRepository eventReminderGroupRepository;
+    private final OrganizationMemberRepository organizationMemberRepository;
 
     @Scheduled(cron = "0 */3 * * * *")
     @SchedulerLock(
@@ -83,9 +88,12 @@ public class EventNotificationScheduler {
     }
 
     private List<OrganizationMember> getOptInNonGuestOrganizationMembers(final Event event) {
+        List<OrganizationGroup> reminderGroups = eventReminderGroupRepository.findGroupsByEvent(event);
+        List<OrganizationMember> groupOrganizationMembers =
+                organizationMemberRepository.findAllByOrganizationAndGroupIn(event.getOrganization(), reminderGroups);
+
         List<OrganizationMember> nonGuestOrganizationMembers =
-                event.getNonGuestOrganizationMembers(event.getOrganization()
-                        .getOrganizationMembers());
+                event.getNonGuestOrganizationMembers(groupOrganizationMembers);
 
         return OrganizationMemberWithOptStatus.extractOptInOrganizationMembers(
                 nonGuestOrganizationMembers

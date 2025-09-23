@@ -20,7 +20,7 @@ public interface OrganizationMemberRepository extends JpaRepository<Organization
 
     boolean existsByOrganizationIdAndNickname(final Long organizationId, final String nickname);
 
-    List<OrganizationMember> findALlByOrganizationAndGroupIn(
+    List<OrganizationMember> findAllByOrganizationAndGroupIn(
             final Organization organization,
             final List<OrganizationGroup> groups
     );
