@@ -3,6 +3,7 @@ package com.ahmadda.presentation;
 import com.ahmadda.application.OrganizationMemberService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationMemberRoleUpdateRequest;
+import com.ahmadda.application.dto.OrganizationMemberUpdateRequest;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.presentation.dto.OrganizationMemberRenameRequest;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
@@ -349,6 +350,88 @@ public class OrganizationMemberController {
         organizationMemberService.renameOrganizationMemberNickname(organizationId, loginMember, request.nickname());
 
         return ResponseEntity.noContent()
+                .build();
+    }
+
+    @Operation(summary = "구성원 정보 업데이트", description = "구성원의 정보를 업데이트합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보입니다.",
+                                              "instance": "/api/organizations/{organizationId}/organization-members"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "구성원이 아님",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 구성원입니다.",
+                                                      "instance": "/api/organizations/{organizationId}/organization-members"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "그룹이 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 그룹입니다.",
+                                                      "instance": "/api/organizations/{organizationId}/organization-members"
+                                                    }
+                                                    """
+                                    ),
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "중복 이름",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "이미 사용 중인 닉네임입니다.",
+                                                      "instance": "/api/organizations/{organizationId}/organization-members"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            )
+    })
+    @PatchMapping("/organization-members")
+    public ResponseEntity<Void> updateOrganizationMember(
+            @PathVariable final Long organizationId,
+            @AuthMember final LoginMember loginMember,
+            @Valid @RequestBody final OrganizationMemberUpdateRequest request
+    ) {
+        organizationMemberService.updateOrganizationMember(organizationId, loginMember, request);
+
+        return ResponseEntity.ok()
                 .build();
     }
 }
