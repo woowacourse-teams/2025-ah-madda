@@ -86,7 +86,13 @@ class InviteCodeTest {
     }
 
     private OrganizationMember createOrganizationMember(Member member, Organization organization) {
-        return OrganizationMember.create("nickname", member, organization, OrganizationMemberRole.USER);
+        return OrganizationMember.create(
+                "nickname",
+                member,
+                organization,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
+        );
     }
 
     private Member createMember() {

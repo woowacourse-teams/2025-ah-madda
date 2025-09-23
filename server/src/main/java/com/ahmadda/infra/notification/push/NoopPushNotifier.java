@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 @Slf4j
-public class MockPushNotifier implements PushNotifier {
+public class NoopPushNotifier implements PushNotifier {
 
     @Override
     public void sendPushs(
@@ -28,7 +28,7 @@ public class MockPushNotifier implements PushNotifier {
             final PushNotificationPayload pushNotificationPayload
     ) {
         log.info(
-                "[Mock Push] To: {} | Title: {} | Body: {} | Event ID: {}",
+                "[Noop Push] To: {} | Title: {} | Body: {} | Event ID: {}",
                 recipients,
                 pushNotificationPayload.title(),
                 pushNotificationPayload.body(),
