@@ -342,7 +342,7 @@ class OrganizationMemberServiceTest {
         var orgMember2 = createOrganizationMember("닉네임2", member2, org, OrganizationMemberRole.USER, group);
 
         var loginMember = new LoginMember(member2.getId());
-        var request = new OrganizationMemberUpdateRequest("닉네임1", group.getId()); // 이미 사용 중인 닉네임
+        var request = new OrganizationMemberUpdateRequest("닉네임1", group.getId());
 
         // when // then
         assertThatThrownBy(() -> sut.updateOrganizationMember(org.getId(), loginMember, request))
