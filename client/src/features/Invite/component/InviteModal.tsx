@@ -1,8 +1,11 @@
 import { useEffect } from 'react';
 
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 import { getGoogleAuthUrl, isAuthenticated } from '@/api/auth';
+import { organizationQueryOptions } from '@/api/queries/organization';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
@@ -11,13 +14,12 @@ import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
 import { useInviteOrganizationProcess } from '../hooks/useInviteOrganizationProcess';
-import { useNickNameForm } from '../hooks/useNickNameForm';
-
-import { OrganizationInfo } from './OrganizationInfo';
+import { useSpaceJoinForm } from '../hooks/useSpaceJoinForm';
 
 export const InviteModal = () => {
-  const { nickname, handleNicknameChange } = useNickNameForm();
+  const { nickname, selectedGroup, handleNicknameChange, handleSelectGroup } = useSpaceJoinForm();
   const { organizationData, handleJoin, handleClose, inviteCode } = useInviteOrganizationProcess();
+  const { data: organizationGroups } = useSuspenseQuery(organizationQueryOptions.group());
 
   const handleGoogleLogin = () => {
     const authUrl = getGoogleAuthUrl();
@@ -47,15 +49,53 @@ export const InviteModal = () => {
         <>
           <Flex justifyContent="space-between" alignItems="baseline">
             <Text type="Heading" weight="bold" color="#333">
-              닉네임 설정
+              멤버 정보 설정
             </Text>
           </Flex>
 
-          <Flex dir="column" alignItems="center">
-            <OrganizationInfo
-              name={organizationData?.name ?? ''}
-              imageUrl={organizationData?.imageUrl ?? ''}
-            />
+          <Flex dir="column" alignItems="flex-start" gap="14px">
+            <Img src={organizationData?.imageUrl} alt={organizationData?.name} />
+            <Text type="Body" weight="regular" color="#666">
+              <Text as="span" type="Body" weight="bold" color={theme.colors.primary700}>
+                포지션
+              </Text>
+              을 선택해주세요.
+            </Text>
+
+            <Flex
+              css={css`
+                flex-wrap: wrap;
+              `}
+              gap="8px"
+              width="100%"
+              justifyContent="center"
+            >
+              {organizationGroups.map((group) => (
+                <Segment
+                  key={group.groupId}
+                  type="button"
+                  onClick={() => handleSelectGroup(group.groupId)}
+                  isSelected={selectedGroup === group.groupId}
+                >
+                  <Text
+                    weight={selectedGroup === group.groupId ? 'bold' : 'regular'}
+                    color={
+                      selectedGroup === group.groupId
+                        ? theme.colors.primary500
+                        : theme.colors.gray300
+                    }
+                  >
+                    {group.name}
+                  </Text>
+                </Segment>
+              ))}
+            </Flex>
+            <Text type="Body" weight="regular" color="#666">
+              <Text as="span" type="Body" weight="bold" color={theme.colors.primary700}>
+                {organizationData?.name}
+              </Text>
+              에서 사용할 닉네임을 입력해주세요.
+            </Text>
             <Input
               autoFocus
               id="nickname"
@@ -70,7 +110,14 @@ export const InviteModal = () => {
             <Button variant="outline" size="full" onClick={handleClose}>
               취소
             </Button>
-            <Button size="full" disabled={!nickname.trim()} onClick={() => handleJoin(nickname)}>
+            <Button
+              size="full"
+              disabled={!nickname.trim()}
+              onClick={() => {
+                if (!selectedGroup) return;
+                handleJoin(nickname, selectedGroup);
+              }}
+            >
               참가하기
             </Button>
           </Flex>
@@ -88,3 +135,24 @@ export const InviteModal = () => {
     </Modal>
   );
 };
+
+const Segment = styled.button<{ isSelected: boolean }>`
+  all: unset;
+  flex: 0 0 auto;
+  word-break: keep-all;
+  border: 1.5px solid
+    ${(props) => (props.isSelected ? theme.colors.primary500 : theme.colors.gray300)};
+  text-align: center;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 4px 8px;
+  white-space: nowrap;
+`;
+
+const Img = styled.img`
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+  margin: 0 auto;
+  padding: 20px 0;
+`;
