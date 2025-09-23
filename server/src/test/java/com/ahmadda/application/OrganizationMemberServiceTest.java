@@ -373,7 +373,7 @@ class OrganizationMemberServiceTest {
         var enrolledOrg = createOrganization("우테코_가입됨");
         var notEnrolledOrg = createOrganization("우테코_가입안됨");
         var member = createMember("홍길동", "hong1@email.com");
-        var group = createGroup();
+        var group = createGroup("그룹");
         var orgMember = createOrganizationMember("닉네임1", member, enrolledOrg, OrganizationMemberRole.USER, group);
         var loginMember = new LoginMember(member.getId());
 
