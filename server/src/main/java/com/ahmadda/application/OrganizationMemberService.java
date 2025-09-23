@@ -63,7 +63,7 @@ public class OrganizationMemberService {
         organizationMember.rename(newNickName);
     }
 
-    public boolean isMember(final Long organizationId, final LoginMember loginMember) {
+    public boolean isOrganizationMember(final Long organizationId, final LoginMember loginMember) {
         return organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId());
     }
 

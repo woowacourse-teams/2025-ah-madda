@@ -294,19 +294,19 @@ public class OrganizationMemberController {
                                               "title": "Unauthorized",
                                               "status": 401,
                                               "detail": "유효하지 않은 인증 정보입니다.",
-                                              "instance": "/api/organizations/{organizationId}/organization-members/rename"
+                                              "instance": "/api/organizations/{organizationId}/organization-member-status"
                                             }
                                             """
                             )
                     )
             ),
     })
-    @GetMapping("/membership")
-    public ResponseEntity<OrganizationMembershipResponse> getMembership(
+    @GetMapping("/organization-member-status")
+    public ResponseEntity<OrganizationMembershipResponse> getOrganizationMemberStatus(
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember
     ) {
-        boolean isMember = organizationMemberService.isMember(organizationId, loginMember);
+        boolean isMember = organizationMemberService.isOrganizationMember(organizationId, loginMember);
 
         OrganizationMembershipResponse response = new OrganizationMembershipResponse(isMember);
 

@@ -288,35 +288,21 @@ class OrganizationMemberServiceTest {
     }
 
     @Test
-    void 자신이_속한_조직인_경우_가입_체크_시_참을_반환한다() {
+    void 조직_가입_여부를_확인한다() {
         // given
-        var org = createOrganization("우테코");
+        var enrolledOrg = createOrganization("우테코_가입됨");
+        var notEnrolledOrg = createOrganization("우테코_가입안됨");
         var member = createMember("홍길동", "hong1@email.com");
-        var orgMember = createOrganizationMember("닉네임1", member, org, OrganizationMemberRole.USER);
+        var orgMember = createOrganizationMember("닉네임1", member, enrolledOrg, OrganizationMemberRole.USER);
         var loginMember = new LoginMember(member.getId());
 
-        // when
-        boolean memberOfOrganization = sut.isMember(org.getId(), loginMember);
-
-        // then
-        assertThat(memberOfOrganization).isTrue();
-    }
-
-    @Test
-    void 자신이_속하지_않은_조직인_경우_가입_체크_시_거짓을_반환한다() {
-        // given
-        var notEnrolled = createOrganization("우테코1");
-        var enrolled = createOrganization("우테코2");
-        var member = createMember("홍길동", "hong1@email.com");
-        var notMember = createOrganizationMember("닉네임1", member, enrolled, OrganizationMemberRole.USER);
-
-        var loginMember = new LoginMember(member.getId());
-
-        // when
-        boolean falseMemberOfOrganization = sut.isMember(notEnrolled.getId(), loginMember);
-
-        // then
-        assertThat(falseMemberOfOrganization).isFalse();
+        // when & then
+        assertSoftly(softly -> {
+            softly.assertThat(sut.isOrganizationMember(enrolledOrg.getId(), loginMember))
+                    .isTrue();
+            softly.assertThat(sut.isOrganizationMember(notEnrolledOrg.getId(), loginMember))
+                    .isFalse();
+        });
     }
 
     private Organization createOrganization(String name) {
