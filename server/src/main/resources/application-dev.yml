@@ -52,15 +52,3 @@ aws:
   s3:
     bucket: ${aws.dev.s3.bucket}
     folder: ${aws.dev.s3.folder}
-
-management:
-  metrics:
-    enable:
-      all: true
-  endpoints:
-    jmx:
-      exposure:
-        include:
-          - health
-          - info
-          - metrics
