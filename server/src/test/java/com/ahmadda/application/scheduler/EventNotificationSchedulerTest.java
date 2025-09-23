@@ -91,7 +91,7 @@ class EventNotificationSchedulerTest {
 
     @ParameterizedTest
     @MethodSource("registrationEndOffsets")
-    void 등록_마감_30분전_리마인더그룹의_수신가능한_참여자에게만_알람을_보낸다(
+    void 등록_마감_30분전_리마인더그룹의_수신가능한_비게스에게만_알람을_보낸다(
             int minutesUntilRegistrationEnds,
             boolean expectToSend
     ) {
