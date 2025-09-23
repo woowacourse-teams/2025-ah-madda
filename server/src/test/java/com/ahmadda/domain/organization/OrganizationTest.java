@@ -155,6 +155,25 @@ class OrganizationTest {
                 .hasMessage("이벤트 스페이스에 속한 구성원만 수정이 가능합니다.");
     }
 
+    @Test
+    void 이벤트_스페이스에_참여시_이미_정원이_찬_경우_예외가_발생한다() {
+        // given
+        var inviteCode = InviteCode.create("code", sut, organizer, LocalDateTime.now());
+
+        for (int i = 0; i < 299; i++) {
+            var member = Member.create("일반회원" + i, "email" + i + "@gmail.com", "profile.img");
+            sut.participate(member, "membername" + i, inviteCode, LocalDateTime.now());
+        }
+
+        // when // then
+        assertThatThrownBy(() -> {
+            var cannotParticipateMember = Member.create("참여불가능한회원", "email300@gmail.com", "profile.img");
+            sut.participate(cannotParticipateMember, "cannotparticipate", inviteCode, LocalDateTime.now());
+        })
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("이벤트 스페이스에 이미 정원이 가득차 참여할 수 없어요.");
+    }
+
     private Event createEventForTest(
             String title,
             LocalDateTime registrationStart,

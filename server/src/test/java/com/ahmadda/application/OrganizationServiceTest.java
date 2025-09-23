@@ -379,6 +379,47 @@ class OrganizationServiceTest {
     }
 
     @Test
+    void 이벤트_스페이스에_참여시_이미_정원이_가득_찼으면_예외가_발생한다() {
+        // given
+        var organization = createOrganization("이벤트 스페이스");
+        var organizer = memberRepository.save(Member.create("organizer", "organizer@test.com", "pic"));
+
+        var organizationMember = OrganizationMember.create(
+                "organizer",
+                organizer,
+                organization,
+                OrganizationMemberRole.ADMIN
+        );
+        organizationMemberRepository.save(organizationMember);
+
+        var inviteCode = createInviteCode("code", organization, organizationMember, LocalDateTime.now());
+
+        for (int i = 0; i < 299; i++) {
+            var user = memberRepository.save(Member.create("user", i + "user@test.com", "pic"));
+            var loginMember = new LoginMember(user.getId());
+
+            sut.participateOrganization(
+                    organization.getId(),
+                    loginMember,
+                    new OrganizationParticipateRequest("participate" + i, inviteCode.getCode())
+            );
+        }
+
+        var cannotParticipateUser =
+                memberRepository.save(Member.create("cannotparticipate", "cannotparticiapteuser@test.com", "pic"));
+        var loginMember = new LoginMember(cannotParticipateUser.getId());
+
+        // when // then
+        assertThatThrownBy(() -> sut.participateOrganization(
+                organization.getId(),
+                loginMember,
+                new OrganizationParticipateRequest("cannotpar", inviteCode.getCode())
+        ))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("이벤트 스페이스에 이미 정원이 가득차 참여할 수 없어요.");
+    }
+
+    @Test
     void 이미_같은_이름의_사용자가_존재한다면_가입하려하면_예외가_발생한다() {
         // given
         var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
@@ -399,9 +440,10 @@ class OrganizationServiceTest {
         var duplicateLoginMember = new LoginMember(duplicateNameMember.getId());
 
         // when // then
-        assertThatThrownBy(() -> sut.participateOrganization(organization.getId(),
-                                                             duplicateLoginMember,
-                                                             duplicateNameRequest
+        assertThatThrownBy(() -> sut.participateOrganization(
+                organization.getId(),
+                duplicateLoginMember,
+                duplicateNameRequest
         ))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("이미 사용 중인 닉네임입니다.");
