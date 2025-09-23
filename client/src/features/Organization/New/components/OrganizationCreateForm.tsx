@@ -104,6 +104,12 @@ export const OrganizationCreateForm = () => {
 
   const isSubmitting = isEdit ? isPatching : isCreating;
 
+  const setEquals = (next: Set<number>, prev: Set<number>) => {
+    if (next.size !== prev.size) return false;
+    for (const v of next) if (!prev.has(v)) return false;
+    return true;
+  };
+
   const handleEditButtonClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (!isValid()) return;
@@ -118,9 +124,26 @@ export const OrganizationCreateForm = () => {
 
       const prev = initialAdminIdsRef.current;
       const next = new Set(nextAdminIds);
+
+      if ((!next.size && !prev.size) || setEquals(next, prev)) {
+        patchOrganization(
+          {
+            organizationId,
+            payload: {
+              organization: {
+                name: form.name.trim(),
+                description: form.description.trim(),
+              },
+              thumbnail: form.thumbnail ?? null,
+            },
+          },
+          { onSuccess: () => navigate(`/${organizationId}/event`) }
+        );
+        return;
+      }
+
       const added: number[] = [];
       const removed: number[] = [];
-
       next.forEach((id) => {
         if (!prev.has(id)) added.push(id);
       });
@@ -128,38 +151,47 @@ export const OrganizationCreateForm = () => {
         if (!next.has(id)) removed.push(id);
       });
 
-      await Promise.all([
-        added.length
-          ? updateRoles({
-              organizationId,
-              payload: { organizationMemberIds: added, role: 'ADMIN' },
-            })
-          : Promise.resolve(),
-        removed.length
-          ? updateRoles({
-              organizationId,
-              payload: { organizationMemberIds: removed, role: 'USER' },
-            })
-          : Promise.resolve(),
-      ]);
+      try {
+        await Promise.all([
+          added.length
+            ? updateRoles({
+                organizationId,
+                payload: { organizationMemberIds: added, role: 'ADMIN' },
+              })
+            : Promise.resolve(),
+          removed.length
+            ? updateRoles({
+                organizationId,
+                payload: { organizationMemberIds: removed, role: 'USER' },
+              })
+            : Promise.resolve(),
+        ]);
 
-      patchOrganization(
-        {
-          organizationId,
-          payload: {
-            organization: {
-              name: form.name.trim(),
-              description: form.description.trim(),
+        success(`관리자 권한이 업데이트되었습니다.`);
+
+        initialAdminIdsRef.current = new Set(next);
+
+        patchOrganization(
+          {
+            organizationId,
+            payload: {
+              organization: {
+                name: form.name.trim(),
+                description: form.description.trim(),
+              },
+              thumbnail: form.thumbnail ?? null,
             },
-            thumbnail: form.thumbnail ?? null,
           },
-        },
-        {
-          onSuccess: () => {
-            navigate(`/${organizationId}/event`);
-          },
-        }
-      );
+          {
+            onSuccess: () => {
+              navigate(`/${organizationId}/event`);
+            },
+          }
+        );
+      } catch (e) {
+        error('권한 업데이트에 실패했습니다.');
+      }
+
       return;
     }
 
