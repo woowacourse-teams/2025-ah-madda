@@ -25,7 +25,7 @@ import java.util.List;
 
 @Disabled
 @LearningTest
-@TestPropertySource(properties = "mail.mock=false")
+@TestPropertySource(properties = "mail.noop=false")
 class SmtpEmailNotifierTest {
 
     private SmtpEmailNotifier sut;
