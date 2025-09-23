@@ -302,6 +302,25 @@ class OrganizationMemberServiceTest {
                 .hasMessage("현재 닉네임과 동일하여 변경할 수 없습니다.");
     }
 
+    @Test
+    void 조직_가입_여부를_확인한다() {
+        // given
+        var enrolledOrg = createOrganization("우테코_가입됨");
+        var notEnrolledOrg = createOrganization("우테코_가입안됨");
+        var member = createMember("홍길동", "hong1@email.com");
+        var group = createGroup();
+        var orgMember = createOrganizationMember("닉네임1", member, enrolledOrg, OrganizationMemberRole.USER, group);
+        var loginMember = new LoginMember(member.getId());
+
+        // when & then
+        assertSoftly(softly -> {
+            softly.assertThat(sut.isOrganizationMember(enrolledOrg.getId(), loginMember))
+                    .isTrue();
+            softly.assertThat(sut.isOrganizationMember(notEnrolledOrg.getId(), loginMember))
+                    .isFalse();
+        });
+    }
+
     private Organization createOrganization(String name) {
         return organizationRepository.save(Organization.create(name, "설명", "img.png"));
     }
