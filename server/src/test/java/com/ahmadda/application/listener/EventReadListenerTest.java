@@ -12,6 +12,8 @@ import com.ahmadda.domain.event.EventStatisticRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
@@ -49,6 +51,9 @@ class EventReadListenerTest {
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
 
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
+
     @MockitoBean
     JwtAccessTokenProperties accessTokenProperties;
 
@@ -61,7 +66,8 @@ class EventReadListenerTest {
         var organization = createOrganization();
         var organizer = createMember("organizer", "organizer@mail.com");
         var reader = createMember("reader", "reader@mail.com");
-        var organizationMember = createOrganizationMember(organization, organizer);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, organizer, group);
         var event = createEvent(organizationMember, organization);
         eventStatisticRepository.save(EventStatistic.create(event));
 
@@ -89,7 +95,8 @@ class EventReadListenerTest {
         var organization = createOrganization();
         var organizer = createMember("organizer", "organizer@mail.com");
         var reader = createMember("reader", "reader@mail.com");
-        var organizationMember = createOrganizationMember(organization, organizer);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, organizer, group);
         var event = createEvent(organizationMember, organization);
 
         var eventRead = new EventRead(event.getId(), new LoginMember(reader.getId()));
@@ -114,7 +121,8 @@ class EventReadListenerTest {
         // given
         var organization = createOrganization();
         var organizer = createMember("organizer", "organizer@mail.com");
-        var organizationMember = createOrganizationMember(organization, organizer);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, organizer, group);
         var event = createEvent(organizationMember, organization);
 
         var eventRead = new EventRead(event.getId(), new LoginMember(999L));
@@ -147,8 +155,13 @@ class EventReadListenerTest {
         return memberRepository.save(member);
     }
 
-    private OrganizationMember createOrganizationMember(Organization organization, Member member) {
-        var organizationMember = OrganizationMember.create("surf", member, organization, OrganizationMemberRole.USER);
+    private OrganizationMember createOrganizationMember(
+            Organization organization,
+            Member member,
+            OrganizationGroup group
+    ) {
+        var organizationMember =
+                OrganizationMember.create("surf", member, organization, OrganizationMemberRole.USER, group);
         return organizationMemberRepository.save(organizationMember);
     }
 
@@ -158,5 +171,9 @@ class EventReadListenerTest {
         var event = Event.create("title", "description", "place", organizer, organization, period, 100);
 
         return eventRepository.save(event);
+    }
+
+    private OrganizationGroup createGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
     }
 }

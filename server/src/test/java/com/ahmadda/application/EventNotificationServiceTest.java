@@ -18,6 +18,8 @@ import com.ahmadda.domain.notification.ReminderHistory;
 import com.ahmadda.domain.notification.ReminderHistoryRepository;
 import com.ahmadda.domain.notification.ReminderRecipient;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
@@ -60,11 +62,15 @@ class EventNotificationServiceTest {
     @Autowired
     private EventNotificationOptOutRepository eventNotificationOptOutRepository;
 
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
+
     @Test
     void 선택된_구성원에게_알람을_전송한다() {
         // given
         var organization = organizationRepository.save(Organization.create("이벤트 스페이스명", "설명", "img.png"));
-        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
+        var group = createGroup();
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization, group);
         var now = LocalDateTime.now();
 
         var event = eventRepository.save(Event.create(
@@ -81,9 +87,9 @@ class EventNotificationServiceTest {
                 100
         ));
 
-        var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization);
-        var om2 = saveOrganizationMember("선택2", "sel2@email.com", organization);
-        saveOrganizationMember("비선택", "nsel@email.com", organization);
+        var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization, group);
+        var om2 = saveOrganizationMember("선택2", "sel2@email.com", organization, group);
+        saveOrganizationMember("비선택", "nsel@email.com", organization, group);
 
         var request = createSelectedMembersRequest(List.of(om1.getId(), om2.getId()));
 
@@ -98,7 +104,8 @@ class EventNotificationServiceTest {
     void 선택된_구성원에게_알람_전송_후_히스토리가_저장된다() {
         // given
         var organization = organizationRepository.save(Organization.create("이벤트 스페이스명", "설명", "img.png"));
-        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
+        var group = createGroup();
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization, group);
         var now = LocalDateTime.now();
 
         var event = eventRepository.save(Event.create(
@@ -112,9 +119,9 @@ class EventNotificationServiceTest {
                 100
         ));
 
-        var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization);
-        var om2 = saveOrganizationMember("선택2", "sel2@email.com", organization);
-        var notSelected = saveOrganizationMember("비선택", "nsel@email.com", organization);
+        var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization, group);
+        var om2 = saveOrganizationMember("선택2", "sel2@email.com", organization, group);
+        var notSelected = saveOrganizationMember("비선택", "nsel@email.com", organization, group);
 
         var request = createSelectedMembersRequest(List.of(om1.getId(), om2.getId()));
         var content = request.content();
@@ -146,13 +153,14 @@ class EventNotificationServiceTest {
     void 존재하지_않는_이벤트로_알람_전송시_예외가_발생한다() {
         // given
         var organization = organizationRepository.save(Organization.create("이벤트 스페이스명", "설명", "img.png"));
-        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
-        var om = saveOrganizationMember("대상자", "target@email.com", organization);
+        var group = createGroup();
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization, group);
+        var om = saveOrganizationMember("대상자", "target@email.com", organization, group);
         var request = createSelectedMembersRequest(java.util.List.of(om.getId()));
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.notifySelectedOrganizationMembers(999L, request, createLoginMember(organizer))
+                sut.notifySelectedOrganizationMembers(999L, request, createLoginMember(organizer))
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 이벤트입니다.");
@@ -162,8 +170,9 @@ class EventNotificationServiceTest {
     void 주최자가_아닌_회원이_전송하면_예외가_발생한다() {
         // given
         var organization = organizationRepository.save(Organization.create("이벤트 스페이스명", "설명", "img.png"));
-        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
-        var other = saveOrganizationMember("다른사람", "other@email.com", organization);
+        var group = createGroup();
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization, group);
+        var other = saveOrganizationMember("다른사람", "other@email.com", organization, group);
 
         var now = LocalDateTime.now();
         var event = eventRepository.save(Event.create(
@@ -180,16 +189,16 @@ class EventNotificationServiceTest {
                 100
         ));
 
-        var om = saveOrganizationMember("대상자", "target@email.com", organization);
+        var om = saveOrganizationMember("대상자", "target@email.com", organization, group);
         var request = createSelectedMembersRequest(java.util.List.of(om.getId()));
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.notifySelectedOrganizationMembers(
-                                           event.getId(),
-                                           request,
-                                           createLoginMember(other)
-                                   )
+                sut.notifySelectedOrganizationMembers(
+                        event.getId(),
+                        request,
+                        createLoginMember(other)
+                )
         )
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage("이벤트 주최자가 아닙니다.");
@@ -199,7 +208,8 @@ class EventNotificationServiceTest {
     void 알림_내용이_20자를_초과하면_예외가_발생한다() {
         // given
         var organization = organizationRepository.save(Organization.create("이벤트 스페이스명", "설명", "img.png"));
-        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
+        var group = createGroup();
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization, group);
         var now = LocalDateTime.now();
 
         var event = eventRepository.save(Event.create(
@@ -216,8 +226,8 @@ class EventNotificationServiceTest {
                 100
         ));
 
-        var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization);
-        var om2 = saveOrganizationMember("선택2", "sel2@email.com", organization);
+        var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization, group);
+        var om2 = saveOrganizationMember("선택2", "sel2@email.com", organization, group);
 
         var overLengthContent = "이 메시지는 20자를 초과합니다. 예외를 발생시켜야 합니다.";
         var request = new SelectedOrganizationMembersNotificationRequest(
@@ -227,11 +237,11 @@ class EventNotificationServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.notifySelectedOrganizationMembers(
-                                           event.getId(),
-                                           request,
-                                           createLoginMember(organizer)
-                                   )
+                sut.notifySelectedOrganizationMembers(
+                        event.getId(),
+                        request,
+                        createLoginMember(organizer)
+                )
         )
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("알림 메시지는 20자 이하여야 합니다.");
@@ -242,7 +252,8 @@ class EventNotificationServiceTest {
     void 요청에_존재하지_않는_구성원_ID가_포함되면_예외가_발생한다() {
         // given
         var organization = organizationRepository.save(Organization.create("이벤트 스페이스명", "설명", "img.png"));
-        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
+        var group = createGroup();
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization, group);
 
         var now = LocalDateTime.now();
         var event = eventRepository.save(Event.create(
@@ -259,20 +270,20 @@ class EventNotificationServiceTest {
                 100
         ));
 
-        var validOm = saveOrganizationMember("유효", "valid@email.com", organization);
+        var validOm = saveOrganizationMember("유효", "valid@email.com", organization, group);
 
         var otherOrg = organizationRepository.save(Organization.create("다른 이벤트 스페이스", "설명", "img2.png"));
-        var otherOm = saveOrganizationMember("다른구성원", "otherorg@email.com", otherOrg);
+        var otherOm = saveOrganizationMember("다른구성원", "otherorg@email.com", otherOrg, group);
 
         var request = createSelectedMembersRequest(java.util.List.of(validOm.getId(), otherOm.getId()));
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.notifySelectedOrganizationMembers(
-                                           event.getId(),
-                                           request,
-                                           createLoginMember(organizer)
-                                   )
+                sut.notifySelectedOrganizationMembers(
+                        event.getId(),
+                        request,
+                        createLoginMember(organizer)
+                )
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 구성원입니다.");
@@ -282,7 +293,8 @@ class EventNotificationServiceTest {
     void 리마인더를_30분_내에_10번_보냈다면_11번째_요청은_예외가_발생한다() {
         // given
         var organization = organizationRepository.save(Organization.create("이벤트 스페이스명", "설명", "img.png"));
-        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
+        var group = createGroup();
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization, group);
         var now = LocalDateTime.now();
 
         var event = eventRepository.save(Event.create(
@@ -299,8 +311,8 @@ class EventNotificationServiceTest {
                 100
         ));
 
-        var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization);
-        var om2 = saveOrganizationMember("선택2", "sel2@email.com", organization);
+        var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization, group);
+        var om2 = saveOrganizationMember("선택2", "sel2@email.com", organization, group);
         var request = createSelectedMembersRequest(List.of(om1.getId(), om2.getId()));
 
         for (int i = 0; i < 10; i++) {
@@ -311,11 +323,11 @@ class EventNotificationServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.notifySelectedOrganizationMembers(
-                                           event.getId(),
-                                           request,
-                                           createLoginMember(organizer)
-                                   )
+                sut.notifySelectedOrganizationMembers(
+                        event.getId(),
+                        request,
+                        createLoginMember(organizer)
+                )
         )
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessageStartingWith("리마인더는 30분 내 최대 10회까지만 발송할 수 있습니다.");
@@ -325,7 +337,8 @@ class EventNotificationServiceTest {
     void 선택된_구성원중_수신_거부한_구성원이_있으면_예외가_발생한다() {
         // given
         var organization = organizationRepository.save(Organization.create("이벤트 스페이스명", "설명", "img.png"));
-        var organizer = saveOrganizationMember("주최자", "host@email.com", organization);
+        var group = createGroup();
+        var organizer = saveOrganizationMember("주최자", "host@email.com", organization, group);
         var now = LocalDateTime.now();
 
         var event = eventRepository.save(Event.create(
@@ -339,8 +352,8 @@ class EventNotificationServiceTest {
                 100
         ));
 
-        var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization);
-        var om2 = saveOrganizationMember("선택2", "sel2@email.com", organization);
+        var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization, group);
+        var om2 = saveOrganizationMember("선택2", "sel2@email.com", organization, group);
 
         eventNotificationOptOutRepository.save(EventNotificationOptOut.create(om2, event));
 
@@ -348,10 +361,10 @@ class EventNotificationServiceTest {
 
         // when // then
         assertThatThrownBy(() -> sut.notifySelectedOrganizationMembers(
-                                   event.getId(),
-                                   request,
-                                   createLoginMember(organizer)
-                           )
+                        event.getId(),
+                        request,
+                        createLoginMember(organizer)
+                )
         )
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("선택된 구성원 중 알림 수신 거부자가 존재합니다.");
@@ -364,7 +377,8 @@ class EventNotificationServiceTest {
     private OrganizationMember saveOrganizationMember(
             String nickname,
             String email,
-            Organization organization
+            Organization organization,
+            OrganizationGroup group
     ) {
         var member = memberRepository.save(Member.create(nickname, email, "testPicture"));
 
@@ -372,7 +386,8 @@ class EventNotificationServiceTest {
                 nickname,
                 member,
                 organization,
-                OrganizationMemberRole.USER
+                OrganizationMemberRole.USER,
+                group
         ));
     }
 
@@ -380,5 +395,9 @@ class EventNotificationServiceTest {
         var member = organizationMember.getMember();
 
         return new LoginMember(member.getId());
+    }
+
+    private OrganizationGroup createGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
     }
 }

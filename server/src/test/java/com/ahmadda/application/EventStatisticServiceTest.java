@@ -12,6 +12,8 @@ import com.ahmadda.domain.event.EventStatisticRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
@@ -45,12 +47,16 @@ class EventStatisticServiceTest {
     @Autowired
     private EventStatisticRepository eventStatisticRepository;
 
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
+
     @Test
     void 주최자는_이벤트_조회수를_가지고_올_수_있다() {
         // given
         var organization = createOrganization();
         var member = createMember();
-        var organizationMember = createOrganizationMember(organization, member);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, member, group);
         var event = createEvent(organization, organizationMember);
         createEventStatistic(event);
 
@@ -67,8 +73,9 @@ class EventStatisticServiceTest {
         var organization = createOrganization();
         var member = createMember();
         var nonCreateMember = createMember("test", "test@naver.com");
-        var organizationMember = createOrganizationMember(organization, member);
-        var nonCreateOrganizationMember = createOrganizationMember(organization, nonCreateMember);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, member, group);
+        var nonCreateOrganizationMember = createOrganizationMember(organization, nonCreateMember, group);
         var event = createEvent(organization, organizationMember);
         createEventStatistic(event);
 
@@ -83,7 +90,8 @@ class EventStatisticServiceTest {
         // given
         var organization = createOrganization();
         var member = createMember();
-        var organizationMember = createOrganizationMember(organization, member);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, member, group);
         var event = createEvent(organization, organizationMember);
         createEventStatistic(event);
 
@@ -100,7 +108,8 @@ class EventStatisticServiceTest {
         // given
         var organization = createOrganization();
         var member = createMember();
-        createOrganizationMember(organization, member);
+        var group = createGroup();
+        createOrganizationMember(organization, member, group);
 
         var loginMember = new LoginMember(member.getId());
         var nonExistentEventId = 999L;
@@ -116,7 +125,8 @@ class EventStatisticServiceTest {
         // given
         var organization = createOrganization();
         var member = createMember();
-        var organizationMember = createOrganizationMember(organization, member);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, member, group);
         var event = createEvent(organization, organizationMember);
 
         var loginMember = new LoginMember(member.getId());
@@ -142,9 +152,13 @@ class EventStatisticServiceTest {
         return memberRepository.save(member);
     }
 
-    private OrganizationMember createOrganizationMember(Organization organization, Member member) {
+    private OrganizationMember createOrganizationMember(
+            Organization organization,
+            Member member,
+            OrganizationGroup group
+    ) {
         OrganizationMember organizationMember =
-                OrganizationMember.create("테스트닉네임", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create("테스트닉네임", member, organization, OrganizationMemberRole.USER, group);
         return organizationMemberRepository.save(organizationMember);
     }
 
@@ -174,5 +188,9 @@ class EventStatisticServiceTest {
     private void createEventStatistic(Event event) {
         EventStatistic eventStatistic = EventStatistic.create(event);
         eventStatisticRepository.save(eventStatistic);
+    }
+
+    private OrganizationGroup createGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
     }
 }

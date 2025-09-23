@@ -4,6 +4,7 @@ import com.ahmadda.annotation.LearningTest;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.notification.EventEmailPayload;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.infra.notification.config.NotificationProperties;
@@ -79,7 +80,13 @@ class SmtpEmailNotifierTest {
         var member = Member.create("주최자", "amadda.team@gmail.com", "testPicture");
         var organization = Organization.create(organizationName, "설명", "logo.png");
         var organizationMember =
-                OrganizationMember.create(organizerNickname, member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        organizerNickname,
+                        member,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("그룹")
+                );
 
         var emailPayload = new EventEmailPayload(
                 new EventEmailPayload.Subject(
@@ -125,7 +132,13 @@ class SmtpEmailNotifierTest {
             var email = "dummy" + i + "@example.com";
             var dummyMember = Member.create("유저" + i, email, "profile.png");
             var orgMember =
-                    OrganizationMember.create("닉네임" + i, dummyMember, organization, OrganizationMemberRole.USER);
+                    OrganizationMember.create(
+                            "닉네임" + i,
+                            dummyMember,
+                            organization,
+                            OrganizationMemberRole.USER,
+                            OrganizationGroup.create("그룹")
+                    );
             recipients.add(orgMember);
         }
 

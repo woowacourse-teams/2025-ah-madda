@@ -50,16 +50,22 @@ public class OrganizationMember extends BaseEntity {
     @Column(nullable = false)
     private OrganizationMemberRole role;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_group_id", nullable = false)
+    private OrganizationGroup group;
+
     private OrganizationMember(
             final String nickname,
             final Member member,
             final Organization organization,
-            final OrganizationMemberRole role
+            final OrganizationMemberRole role,
+            final OrganizationGroup group
     ) {
         this.nickname = nickname;
         this.member = member;
         this.organization = organization;
         this.role = role;
+        this.group = group;
 
         organization.getOrganizationMembers()
                 .add(this);
@@ -69,9 +75,10 @@ public class OrganizationMember extends BaseEntity {
             final String nickname,
             final Member member,
             final Organization organization,
-            final OrganizationMemberRole role
+            final OrganizationMemberRole role,
+            final OrganizationGroup group
     ) {
-        return new OrganizationMember(nickname, member, organization, role);
+        return new OrganizationMember(nickname, member, organization, role, group);
     }
 
     public boolean isBelongTo(final Organization organization) {
