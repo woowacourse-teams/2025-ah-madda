@@ -9,8 +9,7 @@ import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
-
-import { useToast } from '../../../shared/components/Toast/ToastContext';
+import { useToast } from '@/shared/components/Toast/ToastContext';
 
 export const Info = () => {
   const { error } = useToast();
@@ -85,7 +84,7 @@ export const Info = () => {
               position: relative;
             `}
           >
-            <Logo src={Ahmadda} alt="아마다 로고" width={150} height={100} />
+            <Logo src={Ahmadda} alt="아마다 로고" width={150} height={220} />
             <PointIcon src={Point} alt="Point" className="point1" width={40} height={100} />
             <PointIcon src={Point} alt="Point" className="point2" width={40} height={100} />
             <PointIcon src={Point} alt="Point" className="point3" width={40} height={100} />

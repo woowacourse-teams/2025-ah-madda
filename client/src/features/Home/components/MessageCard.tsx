@@ -31,7 +31,6 @@ export const MessageCard = ({ message, image, index }: MessageCardProps) => {
         width={600}
         height={300}
         loading={index > 2 ? 'lazy' : 'eager'}
-        sizes="(max-width: 768px) 50vw, 60vw"
       />
     </Flex>
   );
@@ -41,7 +40,6 @@ const LandingImage = styled.img`
   width: 60%;
   height: auto;
   align-self: flex-end;
-  aspect-ratio: 3 / 2;
 
   @media (max-width: 768px) {
     width: 50%;
