@@ -118,4 +118,8 @@ public class OrganizationMember extends BaseEntity {
         this.nickname = nickname;
         this.group = group;
     }
+
+    public boolean isEqualNickname(final String nickname) {
+        return this.nickname.equals(nickname);
+    }
 }

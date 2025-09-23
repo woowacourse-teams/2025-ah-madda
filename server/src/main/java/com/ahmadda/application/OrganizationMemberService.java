@@ -76,7 +76,10 @@ public class OrganizationMemberService {
         OrganizationMember organizationMember = getOrganizationMember(organizationId, loginMember);
         OrganizationGroup organizationGroup = getOrganizationGroup(request.groupId());
 
-        if (organizationMemberRepository.existsByOrganizationIdAndNickname(organizationId, request.nickname())) {
+        if (!organizationMember.isEqualNickname(request.nickname()) && organizationMemberRepository.existsByOrganizationIdAndNickname(
+                organizationId,
+                request.nickname()
+        )) {
             throw new UnprocessableEntityException("이미 사용 중인 닉네임입니다.");
         }
 
