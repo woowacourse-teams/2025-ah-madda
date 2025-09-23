@@ -21,9 +21,8 @@ public class GmailQuotaCircuitBreakerHandler {
         circuitBreaker.getEventPublisher()
                 .onError(event -> {
                     Throwable cause = event.getThrowable();
-                    if (cause != null && cause.getMessage() != null &&
-                            cause.getMessage()
-                                    .contains(DAILY_LIMIT_EXCEEDED_CODE)) {
+                    if (cause.getMessage() != null && cause.getMessage()
+                            .contains(DAILY_LIMIT_EXCEEDED_CODE)) {
                         circuitBreaker.transitionToOpenStateFor(Duration.ofHours(6));
                     }
                 });
