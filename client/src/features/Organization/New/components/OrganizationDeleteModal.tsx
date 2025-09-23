@@ -21,7 +21,7 @@ export const OrganizationDeleteModal = ({
       isOpen={isOpen}
       onClose={onClose}
       css={css`
-        max-width: 350px;
+        width: clamp(280px, 92vw, 350px);
       `}
     >
       <Flex dir="column" gap="24px" padding="24px">
