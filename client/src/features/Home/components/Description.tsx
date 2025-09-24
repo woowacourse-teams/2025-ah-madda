@@ -30,7 +30,7 @@ export const Description = () => {
       </Flex>
       <GridContainer>
         {LANDING.map((landing, index) => (
-          <MessageCard key={index} {...landing} />
+          <MessageCard key={index} index={index} {...landing} />
         ))}
       </GridContainer>
     </Flex>
