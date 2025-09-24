@@ -177,7 +177,6 @@ const OrganizationSelectBody = () => {
             @media (max-width: 480px) {
               display: flex;
               gap: 8px;
-
               width: 100%;
               max-width: 100%;
               overflow-y: auto;

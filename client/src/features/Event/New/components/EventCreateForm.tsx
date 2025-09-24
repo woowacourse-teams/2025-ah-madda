@@ -683,6 +683,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         </Flex>
 
         <MyPastEventModal
+          organizationId={Number(organizationId)}
           isOpen={isTemplateModalOpen}
           onClose={templateModalClose}
           onEventSelected={handleEventSelected}

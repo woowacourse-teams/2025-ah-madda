@@ -71,12 +71,9 @@ export const OverviewPage = () => {
               />
             }
             right={
-              <Flex gap="8px" alignItems="center">
-                <Button size="sm" onClick={goMyEvents}>
-                  내 이벤트
-                </Button>
-                <IconButton name="user" size={24} onClick={goProfile} />
-              </Flex>
+              <Button size="sm" onClick={goMyEvents}>
+                내 이벤트
+              </Button>
             }
           />
         }

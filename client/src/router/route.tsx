@@ -14,6 +14,7 @@ import { OrganizationSelectPage } from '@/features/Organization/Select/pages/Sel
 import { ProfilePage } from '@/features/Profile/pages/ProfilePage';
 
 import { AuthCallback } from './AuthCallback';
+import { InviteRedirect } from './InviteRedirect';
 import { ProtectRoute } from './ProtectRoute';
 
 export const router = createBrowserRouter(
@@ -61,6 +62,10 @@ export const router = createBrowserRouter(
             {
               path: 'manage/:eventId',
               Component: EventManagePage,
+            },
+            {
+              path: ':eventId/invite',
+              Component: InviteRedirect,
             },
           ],
         },

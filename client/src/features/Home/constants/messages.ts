@@ -1,7 +1,7 @@
-import LANDING_IMAGE_1 from '@/assets/icon/landing-1.png';
-import LANDING_IMAGE_2 from '@/assets/icon/landing-2.png';
-import LANDING_IMAGE_3 from '@/assets/icon/landing-3.png';
-import LANDING_IMAGE_4 from '@/assets/icon/landing-4.png';
+import LANDING_IMAGE_1 from '@/assets/icon/landing-1.webp';
+import LANDING_IMAGE_2 from '@/assets/icon/landing-2.webp';
+import LANDING_IMAGE_3 from '@/assets/icon/landing-3.webp';
+import LANDING_IMAGE_4 from '@/assets/icon/landing-4.webp';
 
 export const LANDING = [
   {
