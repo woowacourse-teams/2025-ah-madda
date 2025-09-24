@@ -47,7 +47,14 @@ export const Footer = () => {
             target="_blank"
             href="https://github.com/woowacourse-teams/2025-ah-madda"
           >
-            <img src={GithubIcon} alt="github" width="30" height="30" />
+            <img
+              src={GithubIcon}
+              alt="github"
+              width="30"
+              height="30"
+              loading="lazy"
+              decoding="async"
+            />
           </StyledLinkButton>
         </Flex>
       </Flex>
