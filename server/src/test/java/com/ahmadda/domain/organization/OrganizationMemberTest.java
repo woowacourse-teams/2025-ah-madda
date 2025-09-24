@@ -25,7 +25,13 @@ class OrganizationMemberTest {
     void setUp() {
         member = Member.create("테스트 회원", "test@example.com", "testPicture");
         organization = Organization.create("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "image.png");
-        sut = OrganizationMember.create("주최자", member, organization, OrganizationMemberRole.USER);
+        sut = OrganizationMember.create(
+                "주최자",
+                member,
+                organization,
+                OrganizationMemberRole.USER,
+                createGroup()
+        );
     }
 
     @Test
@@ -33,7 +39,13 @@ class OrganizationMemberTest {
         // given
         var participantMember = Member.create("참여자", "participant@example.com", "testPicture");
         var participant =
-                OrganizationMember.create("참여자 구성원", participantMember, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "참여자 구성원",
+                        participantMember,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        createGroup()
+                );
 
         var event1 = createEvent("이벤트 1");
         var event2 = createEvent("이벤트 2");
@@ -56,8 +68,20 @@ class OrganizationMemberTest {
         // given
         var targetMember = Member.create("user-m", "user@example.com", "pic");
         var adminMember = Member.create("admin-m", "admin@example.com", "pic");
-        var target = OrganizationMember.create("user", targetMember, organization, OrganizationMemberRole.USER);
-        var admin = OrganizationMember.create("admin", adminMember, organization, OrganizationMemberRole.ADMIN);
+        var target = OrganizationMember.create(
+                "user",
+                targetMember,
+                organization,
+                OrganizationMemberRole.USER,
+                createGroup()
+        );
+        var admin = OrganizationMember.create(
+                "admin",
+                adminMember,
+                organization,
+                OrganizationMemberRole.ADMIN,
+                createGroup()
+        );
 
         // when
         admin.changeRolesOf(List.of(target), OrganizationMemberRole.ADMIN);
@@ -71,8 +95,20 @@ class OrganizationMemberTest {
         // given
         var targetMember = Member.create("user-m", "user@example.com", "pic");
         var nonAdminMember = Member.create("non-admin-m", "non-admin@example.com", "pic");
-        var target = OrganizationMember.create("user", targetMember, organization, OrganizationMemberRole.USER);
-        var notAdmin = OrganizationMember.create("notAdmin", nonAdminMember, organization, OrganizationMemberRole.USER);
+        var target = OrganizationMember.create(
+                "user",
+                targetMember,
+                organization,
+                OrganizationMemberRole.USER,
+                createGroup()
+        );
+        var notAdmin = OrganizationMember.create(
+                "notAdmin",
+                nonAdminMember,
+                organization,
+                OrganizationMemberRole.USER,
+                createGroup()
+        );
 
         // when // then
         assertThatThrownBy(() -> notAdmin.changeRolesOf(List.of(target), OrganizationMemberRole.ADMIN))
@@ -84,12 +120,24 @@ class OrganizationMemberTest {
     void 권한_변경시_다른_이벤트_스페이스의_관리자라면_예외가_발생한다() {
         // given
         var targetMember = Member.create("user-m", "user@example.com", "pic");
-        var target = OrganizationMember.create("user", targetMember, organization, OrganizationMemberRole.USER);
+        var target = OrganizationMember.create(
+                "user",
+                targetMember,
+                organization,
+                OrganizationMemberRole.USER,
+                createGroup()
+        );
 
         var otherOrg = Organization.create("다른 이벤트 스페이스", "desc", "image.png");
         var outsiderAdminMember = Member.create("outsider-admin-m", "outsider-admin@example.com", "pic");
         var outsiderAdmin =
-                OrganizationMember.create("outsider", outsiderAdminMember, otherOrg, OrganizationMemberRole.ADMIN);
+                OrganizationMember.create(
+                        "outsider",
+                        outsiderAdminMember,
+                        otherOrg,
+                        OrganizationMemberRole.ADMIN,
+                        createGroup()
+                );
 
         // when // then
         assertThatThrownBy(() -> outsiderAdmin.changeRolesOf(List.of(target), OrganizationMemberRole.ADMIN))
@@ -105,11 +153,14 @@ class OrganizationMemberTest {
         var org = Organization.create("이벤트 스페이스", "desc", "image.png");
 
         // when // then
-        assertThatThrownBy(() -> OrganizationMember.create(nickname, targetMember, org, OrganizationMemberRole.ADMIN))
+        assertThatThrownBy(() -> OrganizationMember.create(
+                nickname, targetMember, org, OrganizationMemberRole.ADMIN,
+                createGroup()
+        ))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("최대 닉네임 길이는 10자입니다.");
-
     }
+
 
     @Test
     void 닉네임_변경을_할_수_있다() {
@@ -117,7 +168,8 @@ class OrganizationMemberTest {
         var targetMember = Member.create("user-m", "user@example.com", "pic");
         var nickname = "정상닉네임";
         var org = Organization.create("이벤트 스페이스", "desc", "image.png");
-        var organizationMember = OrganizationMember.create(nickname, targetMember, org, OrganizationMemberRole.ADMIN);
+        var organizationMember =
+                OrganizationMember.create(nickname, targetMember, org, OrganizationMemberRole.ADMIN, createGroup());
         var newNickname = "변경 닉네임";
 
         //when
@@ -133,7 +185,8 @@ class OrganizationMemberTest {
         var targetMember = Member.create("user-m", "user@example.com", "pic");
         var nickname = "정상닉네임";
         var org = Organization.create("이벤트 스페이스", "desc", "image.png");
-        var organizationMember = OrganizationMember.create(nickname, targetMember, org, OrganizationMemberRole.ADMIN);
+        var organizationMember =
+                OrganizationMember.create(nickname, targetMember, org, OrganizationMemberRole.ADMIN, createGroup());
         var invalidNickname = "10자를 넘어서는 닉네임입니다.";
 
         // when // then
@@ -153,5 +206,9 @@ class OrganizationMemberTest {
                 ),
                 50
         );
+    }
+
+    private OrganizationGroup createGroup() {
+        return OrganizationGroup.create("백엔드");
     }
 }

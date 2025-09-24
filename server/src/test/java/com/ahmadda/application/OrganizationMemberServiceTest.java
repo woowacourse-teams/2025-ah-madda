@@ -292,7 +292,8 @@ class OrganizationMemberServiceTest {
         // given
         var org = createOrganization("우테코");
         var member = createMember("홍길동", "hong1@email.com");
-        var orgMember1 = createOrganizationMember("닉네임1", member, org, OrganizationMemberRole.USER);
+        var group = createGroup("백엔드");
+        var orgMember1 = createOrganizationMember("닉네임1", member, org, OrganizationMemberRole.USER, group);
 
         var loginMember = new LoginMember(member.getId());
         var newNickname = "10자를 벗어나는 닉네임";
