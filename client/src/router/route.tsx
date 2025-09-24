@@ -11,8 +11,10 @@ import { HomePage } from '@/features/Home/page/HomePage';
 import { InvitePage } from '@/features/Invite/page/InvitePage';
 import { NewOrganizationPage } from '@/features/Organization/New/pages/NewOrganizationPage';
 import { OrganizationSelectPage } from '@/features/Organization/Select/pages/SelectOrganizationPage';
+import { ProfilePage } from '@/features/Profile/pages/ProfilePage';
 
 import { AuthCallback } from './AuthCallback';
+import { InviteRedirect } from './InviteRedirect';
 import { ProtectRoute } from './ProtectRoute';
 
 export const router = createBrowserRouter(
@@ -61,6 +63,10 @@ export const router = createBrowserRouter(
               path: 'manage/:eventId',
               Component: EventManagePage,
             },
+            {
+              path: ':eventId/invite',
+              Component: InviteRedirect,
+            },
           ],
         },
         {
@@ -78,6 +84,16 @@ export const router = createBrowserRouter(
             {
               path: 'edit/:organizationId',
               Component: NewOrganizationPage,
+            },
+          ],
+        },
+        {
+          path: '/:organizationId/profile',
+          Component: ProtectRoute,
+          children: [
+            {
+              index: true,
+              Component: ProfilePage,
             },
           ],
         },

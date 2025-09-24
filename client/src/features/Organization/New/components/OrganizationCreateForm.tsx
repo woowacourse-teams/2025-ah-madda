@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -26,7 +27,7 @@ import { MAX_LENGTH } from '../constants/validationRules';
 import { useCreateOrganizationProcess } from '../hooks/useCreateOrganizationProcess';
 import { useOrganizationForm } from '../hooks/useOrganizationForm';
 
-import { CreatorNicknameModal } from './CreatorNicknameModal';
+import { CreateSpaceFormModal } from './CreateSpaceFormModal';
 import { OrganizationDeleteModal } from './OrganizationDeleteModal';
 import { OrganizationImageInput } from './OrganizationImageInput';
 
@@ -213,10 +214,9 @@ export const OrganizationCreateForm = () => {
     });
   };
 
-  const handleConfirmNickname = (nickname: string) => {
-    const trimmed = nickname.trim();
-    if (!trimmed || isSubmitting) return;
-    handleCreate(trimmed);
+  const handleSpaceOneForm = (data: { nickname: string; groupId: number }) => {
+    if (!data.nickname.trim() || isSubmitting) return;
+    handleCreate(data);
   };
 
   const { data: myProfile } = useQuery({
@@ -304,6 +304,7 @@ export const OrganizationCreateForm = () => {
           >
             <Text as="label" htmlFor="orgImage" type="Heading" weight="medium">
               이벤트 스페이스 이미지
+              <StyledRequiredMark>*</StyledRequiredMark>
             </Text>
             <OrganizationImageInput
               onChange={onSelectLogo}
@@ -315,6 +316,7 @@ export const OrganizationCreateForm = () => {
           <Flex dir="column" gap="12px">
             <Text as="label" htmlFor="orgName" type="Heading" weight="medium">
               이벤트 스페이스 이름
+              <StyledRequiredMark>*</StyledRequiredMark>
             </Text>
             <Input
               id="orgName"
@@ -332,6 +334,7 @@ export const OrganizationCreateForm = () => {
           <Flex dir="column" gap="12px">
             <Text as="label" htmlFor="orgDescription" type="Heading" weight="medium">
               한 줄 소개
+              <StyledRequiredMark>*</StyledRequiredMark>
             </Text>
             <Input
               id="orgDescription"
@@ -379,13 +382,13 @@ export const OrganizationCreateForm = () => {
       </Flex>
 
       {!isEdit && (
-        <CreatorNicknameModal
+        <CreateSpaceFormModal
           isOpen={createModal.isOpen}
           orgName={form.name || '이벤트 스페이스'}
           previewUrl={previewUrl}
           isSubmitting={isSubmitting}
-          onClose={createModal.close}
-          onConfirm={handleConfirmNickname}
+          onClose={close}
+          onConfirm={handleSpaceOneForm}
         />
       )}
 
@@ -397,3 +400,8 @@ export const OrganizationCreateForm = () => {
     </>
   );
 };
+
+const StyledRequiredMark = styled.span`
+  margin-left: 8px;
+  color: ${theme.colors.red600};
+`;

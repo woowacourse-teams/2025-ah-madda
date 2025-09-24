@@ -19,7 +19,7 @@ export const EventBody = ({
   description,
   questions,
   isGuest,
-  organizerName,
+  organizerNicknames,
 }: EventBodyProps) => {
   const { answers, handleChangeAnswer, resetAnswers, isRequiredAnswerComplete } =
     useAnswers(questions);
@@ -27,7 +27,7 @@ export const EventBody = ({
   return (
     <Flex dir="column" gap="24px" width="100%">
       <EventDetails
-        organizerName={organizerName}
+        organizerNicknames={organizerNicknames}
         description={description}
         currentGuestCount={currentGuestCount}
         maxCapacity={maxCapacity}

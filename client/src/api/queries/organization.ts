@@ -1,10 +1,10 @@
 import { queryOptions } from '@tanstack/react-query';
 
-import { Event } from '@/features/Event/types/Event';
 import { Organization } from '@/features/Organization/types/Organization';
 
 import { fetcher } from '../fetcher';
 import { OrganizationMember } from '../types/organizations';
+import { OrganizationGroupAPIResponse } from '../types/organizations';
 
 export const organizationQueryKeys = {
   all: () => ['organization'],
@@ -13,6 +13,7 @@ export const organizationQueryKeys = {
   preview: () => [...organizationQueryKeys.all(), 'preview'],
   joined: () => [...organizationQueryKeys.all(), 'participated'],
   members: () => [...organizationQueryKeys.all(), 'organization-members'],
+  group: () => [...organizationQueryKeys.all(), 'group'],
 };
 export const organizationQueryOptions = {
   // S.TODO : 추후 수정 ':organizationId' : number
@@ -20,12 +21,6 @@ export const organizationQueryOptions = {
     queryOptions({
       queryKey: [...organizationQueryKeys.event(), organizationId],
       queryFn: () => getOrganization({ organizationId }),
-    }),
-
-  event: (organizationId: number) =>
-    queryOptions({
-      queryKey: [...organizationQueryKeys.event(), organizationId],
-      queryFn: () => getAllEventAPI({ organizationId }),
     }),
 
   profile: (organizationId: number) =>
@@ -45,10 +40,17 @@ export const organizationQueryOptions = {
       queryKey: organizationQueryKeys.joined(),
       queryFn: getParticipatedOrganizations,
     }),
+
   members: (organizationId: number) =>
     queryOptions({
       queryKey: [...organizationQueryKeys.members(), organizationId],
       queryFn: () => getOrganizationMembers({ organizationId }),
+    }),
+
+  group: () =>
+    queryOptions({
+      queryKey: organizationQueryKeys.group(),
+      queryFn: getOrganizationGroups,
     }),
 };
 
@@ -74,4 +76,8 @@ export const getParticipatedOrganizations = () => {
 
 const getOrganizationMembers = ({ organizationId }: { organizationId: number }) => {
   return fetcher.get<OrganizationMember[]>(`organizations/${organizationId}/organization-members`);
+};
+
+export const getOrganizationGroups = () => {
+  return fetcher.get<OrganizationGroupAPIResponse[]>(`organization-groups`);
 };

@@ -1,15 +1,16 @@
+import { useState } from 'react';
+
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
-import { HttpError } from '@/api/fetcher';
-import { usePoke } from '@/api/mutations/usePoke';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
-import { useToast } from '@/shared/components/Toast/ToastContext';
+import { useModal } from '@/shared/hooks/useModal';
 import { theme } from '@/shared/styles/theme';
 
 import { Guest, NonGuest } from '../../../Manage/types';
-import { useBouncingMessages } from '../../hooks/useBouncingMessages';
+
+import { PokeModal } from './PokeModal';
 
 type GuestListProps = {
   eventId: number;
@@ -19,25 +20,12 @@ type GuestListProps = {
 };
 
 export const GuestList = ({ eventId, title, titleColor, guests }: GuestListProps) => {
-  const { error } = useToast();
-  const { mutate: pokeMutate } = usePoke(eventId);
-  const { bouncingMessages, addBouncingMessage } = useBouncingMessages();
+  const { isOpen, open, close } = useModal();
+  const [receiverGuest, setReceiverGuest] = useState<NonGuest | null>(null);
 
-  const handlePokeAlarm = (memberId: number, event: React.MouseEvent) => {
-    pokeMutate(
-      { receiptOrganizationMemberId: memberId },
-
-      {
-        onSuccess: () => {
-          addBouncingMessage(event);
-        },
-        onError: (err) => {
-          if (err instanceof HttpError) {
-            error(err.message);
-          }
-        },
-      }
-    );
+  const handleGuestClick = (guest: NonGuest) => {
+    setReceiverGuest(guest);
+    open();
   };
 
   return (
@@ -59,29 +47,20 @@ export const GuestList = ({ eventId, title, titleColor, guests }: GuestListProps
           `}
         >
           {guests.map((guest) => (
-            <GuestBadge
-              key={guest.organizationMemberId}
-              onClick={(e) => handlePokeAlarm(guest.organizationMemberId, e)}
-            >
+            <GuestBadge key={guest.organizationMemberId} onClick={() => handleGuestClick(guest)}>
               {guest.nickname}
             </GuestBadge>
           ))}
         </Flex>
       </Flex>
-
-      {bouncingMessages.map((msg) => (
-        <BouncingMessageElement
-          key={msg.id}
-          css={css`
-            left: ${msg.x}px;
-            top: ${msg.y}px;
-            --move-x: ${msg.moveX}px;
-            --move-y: ${msg.moveY}px;
-          `}
-        >
-          {msg.message}
-        </BouncingMessageElement>
-      ))}
+      {receiverGuest && (
+        <PokeModal
+          eventId={eventId}
+          receiverGuest={receiverGuest}
+          isOpen={isOpen}
+          onClose={close}
+        />
+      )}
     </>
   );
 };
@@ -98,30 +77,4 @@ const GuestBadge = styled.li`
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
-`;
-
-const BouncingMessageElement = styled.span`
-  position: fixed;
-  font-size: 16px;
-  font-weight: bold;
-  color: ${theme.colors.gray900};
-  z-index: 1000;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  animation: shootStraight 0.5s ease-out forwards;
-
-  @keyframes shootStraight {
-    0% {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-    }
-    20% {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1.2);
-    }
-    100% {
-      opacity: 0;
-      transform: translate(calc(-50% + var(--move-x)), calc(-50% + var(--move-y))) scale(0.5);
-    }
-  }
 `;

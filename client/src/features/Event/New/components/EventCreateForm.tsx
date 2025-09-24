@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -11,6 +12,7 @@ import { getEventDetailAPI } from '@/api/queries/event';
 import type { EventTemplateAPIResponse, TemplateDetailAPIResponse } from '@/api/types/event';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
+import { IconButton } from '@/shared/components/IconButton';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
 import { Textarea } from '@/shared/components/Textarea';
@@ -121,6 +123,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
 
   const buildPayload = () => ({
     ...basicEventForm,
+    eventOrganizerIds: [],
     questions,
     eventStart: convertDatetimeLocalToKSTISOString(basicEventForm.eventStart),
     eventEnd: convertDatetimeLocalToKSTISOString(basicEventForm.eventEnd),
@@ -130,9 +133,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const autoSaveKey =
     isEdit && eventId ? `event-form:draft:edit:${eventId}` : 'event-form:draft:create';
 
-  const { restore, clear } = useAutoSessionSave({
+  const { save, restore, clear } = useAutoSessionSave({
     key: autoSaveKey,
-    data: { basicEventForm, questions },
+    getData: () => ({ basicEventForm, questions }),
   });
 
   const restoredOnceRef = useRef(false);
@@ -265,6 +268,29 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
             {isEdit ? '이벤트 수정' : '이벤트 생성하기'}
           </Text>
           <Flex gap="8px">
+            <Button
+              size="sm"
+              onClick={save}
+              css={css`
+                @media (max-width: 480px) {
+                  display: none;
+                }
+              `}
+            >
+              임시저장
+            </Button>
+
+            <IconButton
+              name="save"
+              onClick={save}
+              aria-label="임시저장"
+              css={css`
+                display: none;
+                @media (max-width: 480px) {
+                  display: inline-flex;
+                }
+              `}
+            />
             <Button size="sm" onClick={templateModalOpen}>
               불러오기
             </Button>
@@ -276,6 +302,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
             <Flex justifyContent="space-between">
               <Text as="label" htmlFor="title" type="Heading" weight="medium">
                 이벤트 이름
+                <StyledRequiredMark>*</StyledRequiredMark>
               </Text>
               <Flex
                 onClick={handleAddTemplate}
@@ -320,6 +347,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
             >
               <Text as="label" type="Heading" weight="medium" htmlFor="eventDateRange">
                 이벤트 기간
+                <StyledRequiredMark>*</StyledRequiredMark>
               </Text>
               <Input
                 id="eventDateRange"
@@ -373,6 +401,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
             >
               <Text as="label" type="Heading" weight="medium" htmlFor="registrationEnd">
                 신청 종료일
+                <StyledRequiredMark>*</StyledRequiredMark>
               </Text>
               <Input
                 id="registrationEnd"
@@ -401,6 +430,12 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 onSelect={handleRegistrationEndSelect}
                 initialDate={parseInputDate(basicEventForm.registrationEnd) || null}
                 initialTime={timeValueFromDate(parseInputDate(basicEventForm.registrationEnd))}
+                disabledDates={
+                  basicEventForm.eventStart
+                    ? ([parseInputDate(basicEventForm.eventStart)].filter(Boolean) as Date[])
+                    : []
+                }
+                minTime={parseInputDate(basicEventForm.eventStart) || undefined}
               />
             </Flex>
 
@@ -539,6 +574,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         </Flex>
 
         <MyPastEventModal
+          organizationId={Number(organizationId)}
           isOpen={isTemplateModalOpen}
           onClose={templateModalClose}
           onEventSelected={handleEventSelected}
@@ -547,3 +583,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     </Flex>
   );
 };
+
+const StyledRequiredMark = styled.span`
+  margin-left: 8px;
+  color: ${theme.colors.red600};
+`;

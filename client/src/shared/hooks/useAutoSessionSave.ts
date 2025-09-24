@@ -1,32 +1,21 @@
-import { useCallback, useEffect, useRef } from 'react';
-
 import { safeSessionStorage } from '@/shared/utils/safeSessionStorage';
+
+import { useToast } from '../components/Toast/ToastContext';
 
 type UseAutoSessionSaveParams<T> = {
   key: string;
-  data: T;
-  delay?: number;
+  getData: () => T;
 };
 
-export function useAutoSessionSave<T>({ key, data, delay = 800 }: UseAutoSessionSaveParams<T>) {
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastSavedRef = useRef('');
+export function useAutoSessionSave<T>({ key, getData }: UseAutoSessionSaveParams<T>) {
+  const { success, error } = useToast();
 
-  const payloadStr = JSON.stringify(data);
-
-  const saveNow = useCallback(() => {
-    if (lastSavedRef.current === payloadStr) return;
-    safeSessionStorage.set(key, data);
-    lastSavedRef.current = payloadStr;
-  }, [key, data, payloadStr]);
-
-  useEffect(() => {
-    if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(saveNow, delay);
-    return () => {
-      if (timer.current) clearTimeout(timer.current);
-    };
-  }, [saveNow, delay]);
+  const save = () => {
+    const draft = getData();
+    const ok = safeSessionStorage.set(key, draft);
+    if (ok) success('😀 임시 저장에 성공했어요!');
+    else error('❌ 임시 저장에 실패했어요!');
+  };
 
   const restore = (): T | null => {
     return safeSessionStorage.get<T>(key);
@@ -34,8 +23,7 @@ export function useAutoSessionSave<T>({ key, data, delay = 800 }: UseAutoSession
 
   const clear = () => {
     safeSessionStorage.remove(key);
-    lastSavedRef.current = '';
   };
 
-  return { restore, clear };
+  return { save, restore, clear };
 }
