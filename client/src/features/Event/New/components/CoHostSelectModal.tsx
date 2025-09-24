@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 
 import type { OrganizationMember } from '@/api/types/organizations';
 import { GuestList } from '@/features/Event/Manage/components/GuestList';
@@ -22,6 +23,9 @@ export type CoHostSelectModalProps = {
   title?: string;
 };
 
+type GroupKey = 'ALL' | number;
+type GroupSegment = { id: GroupKey; name: string };
+
 export const CoHostSelectModal = ({
   isOpen,
   members,
@@ -33,6 +37,7 @@ export const CoHostSelectModal = ({
 }: CoHostSelectModalProps) => {
   const { error } = useToast();
   const [cohostList, setCohostList] = useState<NonGuest[]>([]);
+  const [activeGroup, setActiveGroup] = useState<GroupKey>('ALL');
 
   useEffect(() => {
     const init = (members || []).map<NonGuest>((m) => ({
@@ -44,7 +49,42 @@ export const CoHostSelectModal = ({
     setCohostList(init);
   }, [isOpen, members, initialSelectedIds]);
 
-  const selectedCount = cohostList.filter((m) => m.isChecked).length;
+  const memberIdToGroupId = useMemo(() => {
+    const map = new Map<number, number>();
+    (members || []).forEach((m) => {
+      map.set(m.organizationMemberId, m.group.groupId);
+    });
+    return map;
+  }, [members]);
+
+  const groupSegments = useMemo<GroupSegment[]>(() => {
+    const groups = new Map<number, string>();
+    (members || []).forEach((m) => {
+      const { groupId, name } = m.group;
+      if (!groups.has(groupId)) groups.set(groupId, name);
+    });
+
+    const entries: Array<[number, string]> = Array.from(groups.entries()).sort(([a], [b]) => a - b);
+
+    return [{ id: 'ALL', name: '전체' }, ...entries.map(([id, name]) => ({ id, name }))];
+  }, [members]);
+
+  const visibleIds = useMemo(() => {
+    if (activeGroup === 'ALL') return cohostList.map((m) => m.organizationMemberId);
+    return cohostList
+      .map((m) => m.organizationMemberId)
+      .filter((id) => memberIdToGroupId.get(id) === activeGroup);
+  }, [cohostList, activeGroup, memberIdToGroupId]);
+
+  const filteredGuests = useMemo<NonGuest[]>(
+    () =>
+      cohostList.filter((m) =>
+        activeGroup === 'ALL' ? true : memberIdToGroupId.get(m.organizationMemberId) === activeGroup
+      ),
+    [cohostList, activeGroup, memberIdToGroupId]
+  );
+
+  const selectedTotalCount = cohostList.filter((m) => m.isChecked).length;
 
   const onGuestChecked = (organizationMemberId: number) => {
     setCohostList((prev) => {
@@ -65,9 +105,13 @@ export const CoHostSelectModal = ({
   };
 
   const onAllGuestChecked = () => {
-    const allChecked = cohostList.length > 0 && cohostList.every((m) => m.isChecked);
+    const allVisibleChecked = filteredGuests.length > 0 && filteredGuests.every((m) => m.isChecked);
+
     setCohostList((prev) => {
-      const toggled = prev.map((m) => ({ ...m, isChecked: !allChecked }));
+      const toggled = prev.map((m) =>
+        visibleIds.includes(m.organizationMemberId) ? { ...m, isChecked: !allVisibleChecked } : m
+      );
+
       if (maxSelectable != null && maxSelectable > 0) {
         const count = toggled.filter((m) => m.isChecked).length;
         if (count > maxSelectable) {
@@ -91,7 +135,7 @@ export const CoHostSelectModal = ({
         dir="column"
         gap="12px"
         css={css`
-          width: 560px;
+          width: 640px;
           max-width: 92vw;
         `}
       >
@@ -99,10 +143,32 @@ export const CoHostSelectModal = ({
           {title}
         </Text>
 
+        <Flex css={{ flexWrap: 'wrap' }} gap="8px">
+          {groupSegments.map((g) => {
+            const isSelected = activeGroup === g.id;
+            return (
+              <Segment
+                key={`${g.id}`}
+                type="button"
+                isSelected={isSelected}
+                onClick={() => setActiveGroup(g.id)}
+                aria-pressed={isSelected}
+              >
+                <Text
+                  weight={isSelected ? 'bold' : 'regular'}
+                  color={isSelected ? theme.colors.primary500 : theme.colors.gray300}
+                >
+                  {g.name}
+                </Text>
+              </Segment>
+            );
+          })}
+        </Flex>
+
         <GuestList
-          title={`${title} (${selectedCount}명)`}
+          title={`${title} (${selectedTotalCount}명)`}
           titleColor={theme.colors.gray700}
-          guests={cohostList}
+          guests={filteredGuests}
           onGuestChecked={onGuestChecked}
           onAllGuestChecked={onAllGuestChecked}
         />
@@ -123,3 +189,20 @@ export const CoHostSelectModal = ({
     </Modal>
   );
 };
+
+const Segment = styled.button<{ isSelected: boolean }>`
+  all: unset;
+  flex: 0 0 auto;
+  word-break: keep-all;
+  border: 1.5px solid
+    ${(props) => (props.isSelected ? theme.colors.primary500 : theme.colors.gray300)};
+  text-align: center;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 6px 10px;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: ${theme.colors.primary500};
+  }
+`;

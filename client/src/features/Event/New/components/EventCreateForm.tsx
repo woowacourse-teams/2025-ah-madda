@@ -210,9 +210,10 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     };
 
     if (!isEdit) {
-      base.groupIds = basicEventForm.groupIds ?? [];
-    } else if ((basicEventForm.groupIds?.length ?? 0) > 0) {
-      base.groupIds = basicEventForm.groupIds;
+      return { ...base, groupIds: basicEventForm.groupIds ?? [] };
+    }
+    if ((basicEventForm.groupIds?.length ?? 0) > 0) {
+      return { ...base, groupIds: basicEventForm.groupIds };
     }
     return base;
   };
@@ -396,53 +397,55 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         </Flex>
 
         <Flex dir="column" gap="30px">
-          <Flex dir="column" gap="8px" margin="10px 0">
-            <Button
-              type="button"
-              onClick={cohostModalOpen}
-              aria-label="공동 주최자 설정"
-              css={css`
-                width: 100%;
-                display: flex;
-                justify-content: flex-start;
-                align-items: center;
-                gap: 12px;
-                padding: 4px 0;
-                margin-bottom: 10px;
-                border: 0;
-                background: transparent;
-                cursor: pointer;
+          {!isEdit && (
+            <Flex dir="column" gap="8px" margin="10px 0">
+              <Button
+                type="button"
+                onClick={cohostModalOpen}
+                aria-label="공동 주최자 설정"
+                css={css`
+                  width: 100%;
+                  display: flex;
+                  justify-content: flex-start;
+                  align-items: center;
+                  gap: 12px;
+                  padding: 4px 0;
+                  margin-bottom: 10px;
+                  border: 0;
+                  background: transparent;
+                  cursor: pointer;
 
-                &:hover {
-                  background: ${theme.colors.gray100};
-                }
-              `}
-            >
-              <Text type="Heading" weight="medium">
-                주최자
-              </Text>
-              <Text as="span" type="Body" color="#4b5563" data-role="value">
-                {selectedNames.length > 0
-                  ? `${selectedNames.slice(0, 2).join(', ')}${
-                      selectedNames.length > 2 ? ` 외 ${selectedNames.length - 2}명` : ''
-                    } ✎`
-                  : '미선택 ✎'}
-              </Text>
-            </Button>
+                  &:hover {
+                    background: ${theme.colors.gray100};
+                  }
+                `}
+              >
+                <Text type="Heading" weight="medium">
+                  주최자
+                </Text>
+                <Text as="span" type="Body" color="#4b5563" data-role="value">
+                  {selectedNames.length > 0
+                    ? `${selectedNames.slice(0, 2).join(', ')}${
+                        selectedNames.length > 2 ? ` 외 ${selectedNames.length - 2}명` : ''
+                      } ✎`
+                    : '미선택 ✎'}
+                </Text>
+              </Button>
 
-            <CoHostSelectModal
-              isOpen={isCohostModalOpen}
-              members={(selectableMembers as OrganizationMember[]) ?? []}
-              initialSelectedIds={(basicEventForm.eventOrganizerIds ?? []).filter(
-                (id) => id !== myId
-              )}
-              maxSelectable={10}
-              onClose={cohostModalClose}
-              onSubmit={(ids) => {
-                updateAndValidate({ eventOrganizerIds: ids });
-              }}
-            />
-          </Flex>
+              <CoHostSelectModal
+                isOpen={isCohostModalOpen}
+                members={(selectableMembers as OrganizationMember[]) ?? []}
+                initialSelectedIds={(basicEventForm.eventOrganizerIds ?? []).filter(
+                  (id) => id !== myId
+                )}
+                maxSelectable={10}
+                onClose={cohostModalClose}
+                onSubmit={(ids) => {
+                  updateAndValidate({ eventOrganizerIds: ids });
+                }}
+              />
+            </Flex>
+          )}
 
           {!isEdit && (
             <Flex dir="column" gap="8px">
@@ -459,7 +462,6 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 gap="8px"
                 width="100%"
               >
-                {/* 전체 */}
                 <Segment
                   type="button"
                   onClick={toggleAllGroups}
