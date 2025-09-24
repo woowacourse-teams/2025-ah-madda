@@ -425,8 +425,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 </Text>
                 <Text as="span" type="Body" color="#4b5563" data-role="value">
                   {selectedNames.length > 0
-                    ? `${selectedNames.slice(0, 2).join(', ')}${
-                        selectedNames.length > 2 ? ` 외 ${selectedNames.length - 2}명` : ''
+                    ? `${selectedNames.slice(0, 1).join(', ')}${
+                        selectedNames.length > 1 ? ` 외 ${selectedNames.length - 1}명` : ''
                       } ✎`
                     : '미선택 ✎'}
                 </Text>
