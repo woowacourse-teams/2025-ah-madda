@@ -16,7 +16,7 @@ export const useProfileForm = ({
 }: UseProfileFormProps) => {
   const { success: successToast, error: errorToast } = useToast();
   const [nickname, setNickname] = useState(initialNickname);
-  const [selectGroup, setSelectGroup] = useState<number>(initialGroupID);
+  const [selectedGroup, setSelectedGroup] = useState<number>(initialGroupID);
   const { mutate: editProfile, isPending } = useEditProfile();
 
   const handleNicknameChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -24,12 +24,12 @@ export const useProfileForm = ({
   };
 
   const handleGroupChange = (groupId: number) => {
-    setSelectGroup(groupId);
+    setSelectedGroup(groupId);
   };
 
   const handleSaveProfile = () => {
     editProfile(
-      { organizationId, nickname, groupId: selectGroup },
+      { organizationId, nickname, groupId: selectedGroup },
       {
         onSuccess: () => {
           successToast('프로필이 성공적으로 변경되었어요.');
@@ -41,11 +41,11 @@ export const useProfileForm = ({
     );
   };
 
-  const hasChanges = nickname !== initialNickname || selectGroup !== initialGroupID;
+  const hasChanges = nickname !== initialNickname || selectedGroup !== initialGroupID;
 
   return {
     nickname,
-    selectGroup,
+    selectedGroup,
     handleNicknameChange,
     handleGroupChange,
     handleSaveProfile,
