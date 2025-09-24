@@ -14,4 +14,5 @@ export const FIELD_CONFIG: Record<keyof BasicEventFormFields, FieldConfig> = {
   eventEnd: { required: true, type: 'string' },
   registrationEnd: { required: true, type: 'string' },
   eventOrganizerIds: { required: false, type: 'number[]' },
+  groupIds: { required: false, type: 'number[]' },
 };
