@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
@@ -30,6 +30,9 @@ import { useOrganizationForm } from '../hooks/useOrganizationForm';
 import { CreateSpaceFormModal } from './CreateSpaceFormModal';
 import { OrganizationDeleteModal } from './OrganizationDeleteModal';
 import { OrganizationImageInput } from './OrganizationImageInput';
+
+type GroupKey = 'ALL' | number;
+type GroupSegment = { id: GroupKey; name: string };
 
 export const OrganizationCreateForm = () => {
   const navigate = useNavigate();
@@ -84,9 +87,7 @@ export const OrganizationCreateForm = () => {
 
   useEffect(() => {
     return () => {
-      if (objectUrlRef.current) {
-        URL.revokeObjectURL(objectUrlRef.current);
-      }
+      if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
     };
   }, []);
 
@@ -119,9 +120,7 @@ export const OrganizationCreateForm = () => {
       let nextAdminIds = adminList.filter((m) => m.isChecked).map((m) => m.organizationMemberId);
 
       const myId = myProfile?.organizationMemberId;
-      if (myId) {
-        nextAdminIds = [...nextAdminIds, myId];
-      }
+      if (myId) nextAdminIds = [...nextAdminIds, myId];
 
       const prev = initialAdminIdsRef.current;
       const next = new Set(nextAdminIds);
@@ -169,7 +168,6 @@ export const OrganizationCreateForm = () => {
         ]);
 
         success(`관리자 권한이 업데이트되었습니다.`);
-
         initialAdminIdsRef.current = new Set(next);
 
         patchOrganization(
@@ -232,6 +230,39 @@ export const OrganizationCreateForm = () => {
   const [adminList, setAdminList] = useState<NonGuest[]>([]);
   const initialAdminIdsRef = useRef<Set<number>>(new Set());
 
+  const [activeGroup, setActiveGroup] = useState<GroupKey>('ALL');
+
+  const memberIdToGroupId = useMemo(() => {
+    const map = new Map<number, number>();
+    (members || []).forEach((m) => map.set(m.organizationMemberId, m.group.groupId));
+    return map;
+  }, [members]);
+
+  const groupSegments = useMemo<GroupSegment[]>(() => {
+    const groups = new Map<number, string>();
+    (members || []).forEach((m) => {
+      const { groupId, name } = m.group;
+      if (!groups.has(groupId)) groups.set(groupId, name);
+    });
+    const entries: Array<[number, string]> = Array.from(groups.entries()).sort(([a], [b]) => a - b);
+    return [{ id: 'ALL', name: '전체' }, ...entries.map(([id, name]) => ({ id, name }))];
+  }, [members]);
+
+  const visibleIds = useMemo(() => {
+    if (activeGroup === 'ALL') return adminList.map((m) => m.organizationMemberId);
+    return adminList
+      .map((m) => m.organizationMemberId)
+      .filter((id) => memberIdToGroupId.get(id) === activeGroup);
+  }, [adminList, activeGroup, memberIdToGroupId]);
+
+  const filteredAdmins = useMemo(
+    () =>
+      adminList.filter((m) =>
+        activeGroup === 'ALL' ? true : memberIdToGroupId.get(m.organizationMemberId) === activeGroup
+      ),
+    [adminList, activeGroup, memberIdToGroupId]
+  );
+
   useEffect(() => {
     if (!members) return;
 
@@ -259,11 +290,14 @@ export const OrganizationCreateForm = () => {
       )
     );
   };
+
   const onAdminAllChecked = () => {
-    setAdminList((prev) => {
-      const allChecked = prev.length > 0 && prev.every((m) => m.isChecked);
-      return prev.map((m) => ({ ...m, isChecked: !allChecked }));
-    });
+    const allVisibleChecked = filteredAdmins.length > 0 && filteredAdmins.every((m) => m.isChecked);
+    setAdminList((prev) =>
+      prev.map((m) =>
+        visibleIds.includes(m.organizationMemberId) ? { ...m, isChecked: !allVisibleChecked } : m
+      )
+    );
   };
 
   const selectedAdminIds = adminList.filter((m) => m.isChecked).map((m) => m.organizationMemberId);
@@ -355,13 +389,37 @@ export const OrganizationCreateForm = () => {
                 관리자
               </Text>
 
-              <GuestList
-                title={`관리자 지정 (${selectedAdminIds.length}명)`}
-                titleColor={theme.colors.gray700}
-                guests={adminList}
-                onGuestChecked={onAdminChecked}
-                onAllGuestChecked={onAdminAllChecked}
-              />
+              <Flex css={{ flexWrap: 'wrap' }} gap="8px">
+                {groupSegments.map((g) => {
+                  const isSelected = activeGroup === g.id;
+                  return (
+                    <Segment
+                      key={`${g.id}`}
+                      type="button"
+                      isSelected={isSelected}
+                      onClick={() => setActiveGroup(g.id)}
+                      aria-pressed={isSelected}
+                    >
+                      <Text
+                        weight={isSelected ? 'bold' : 'regular'}
+                        color={isSelected ? theme.colors.primary500 : theme.colors.gray300}
+                      >
+                        {g.name}
+                      </Text>
+                    </Segment>
+                  );
+                })}
+              </Flex>
+
+              <ScrollArea>
+                <GuestList
+                  title={`관리자 지정 (${selectedAdminIds.length}명)`}
+                  titleColor={theme.colors.gray700}
+                  guests={filteredAdmins}
+                  onGuestChecked={onAdminChecked}
+                  onAllGuestChecked={onAdminAllChecked}
+                />
+              </ScrollArea>
 
               <Text type="Label" color={theme.colors.gray500}>
                 이벤트 스페이스 생성자는 자동으로 관리자 권한을 갖습니다.
@@ -387,7 +445,7 @@ export const OrganizationCreateForm = () => {
           orgName={form.name || '이벤트 스페이스'}
           previewUrl={previewUrl}
           isSubmitting={isSubmitting}
-          onClose={close}
+          onClose={createModal.close}
           onConfirm={handleSpaceOneForm}
         />
       )}
@@ -404,4 +462,37 @@ export const OrganizationCreateForm = () => {
 const StyledRequiredMark = styled.span`
   margin-left: 8px;
   color: ${theme.colors.red600};
+`;
+
+const ScrollArea = styled.div`
+  min-height: 150px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px;
+
+  scrollbar-width: thin;
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: ${theme.colors.gray300};
+    border-radius: 8px;
+  }
+`;
+
+const Segment = styled.button<{ isSelected: boolean }>`
+  all: unset;
+  flex: 0 0 auto;
+  word-break: keep-all;
+  border: 1.5px solid
+    ${(props) => (props.isSelected ? theme.colors.primary500 : theme.colors.gray300)};
+  text-align: center;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 6px 10px;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: ${theme.colors.primary500};
+  }
 `;

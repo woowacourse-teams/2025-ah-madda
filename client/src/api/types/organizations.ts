@@ -9,10 +9,16 @@ export type OrganizationParticipateAPIRequest = {
   inviteCode: string;
 };
 
+export type OrganizationGroup = {
+  groupId: number;
+  name: string;
+};
+
 export type OrganizationMember = {
   organizationMemberId: number;
   nickname: string;
   isAdmin: boolean;
+  group: OrganizationGroup;
 };
 
 export type CreateOrganizationAPIRequest = {
