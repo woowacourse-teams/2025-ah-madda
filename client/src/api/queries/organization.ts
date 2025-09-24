@@ -4,10 +4,7 @@ import { Organization } from '@/features/Organization/types/Organization';
 
 import { fetcher } from '../fetcher';
 import { OrganizationMember } from '../types/organizations';
-import {
-  OrganizationGroupAPIResponse,
-  OrganizationProfileAPIResponse,
-} from '../types/organizations';
+import { OrganizationGroupAPIResponse } from '../types/organizations';
 
 export const organizationQueryKeys = {
   all: () => ['organization'],
@@ -48,8 +45,8 @@ export const organizationQueryOptions = {
     queryOptions({
       queryKey: [...organizationQueryKeys.members(), organizationId],
       queryFn: () => getOrganizationMembers({ organizationId }),
-    });
-  
+    }),
+
   group: () =>
     queryOptions({
       queryKey: organizationQueryKeys.group(),
@@ -76,7 +73,7 @@ export const getParticipatedOrganizations = () => {
 const getOrganizationMembers = ({ organizationId }: { organizationId: number }) => {
   return fetcher.get<OrganizationMember[]>(`organizations/${organizationId}/organization-members`);
 };
-  
+
 export const getOrganizationGroups = () => {
   return fetcher.get<OrganizationGroupAPIResponse[]>(`organization-groups`);
 };
