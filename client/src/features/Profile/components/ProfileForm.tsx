@@ -24,7 +24,7 @@ export const ProfileForm = ({
 }: ProfileFormProps) => {
   const {
     nickname,
-    selectGroup,
+    selectedGroup,
     handleNicknameChange,
     handleGroupChange,
     handleSaveProfile,
@@ -41,7 +41,7 @@ export const ProfileForm = ({
       <Flex dir="column" gap="24px" width="100%">
         <Flex dir="column" gap="8px">
           <Text type="Heading" weight="semibold" color="gray700">
-            포지션
+            그룹
           </Text>
           <Flex
             gap="8px"
@@ -56,12 +56,13 @@ export const ProfileForm = ({
                 key={group.groupId}
                 type="button"
                 onClick={() => handleGroupChange(group.groupId)}
-                isSelected={selectGroup === group.groupId}
+                isSelected={selectedGroup === group.groupId}
+                aria-pressed={selectedGroup === group.groupId}
               >
                 <Text
-                  weight={selectGroup === group.groupId ? 'bold' : 'regular'}
+                  weight={selectedGroup === group.groupId ? 'bold' : 'regular'}
                   color={
-                    selectGroup === group.groupId ? theme.colors.primary500 : theme.colors.gray300
+                    selectedGroup === group.groupId ? theme.colors.primary500 : theme.colors.gray300
                   }
                 >
                   {group.name}

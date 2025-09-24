@@ -35,7 +35,7 @@ export const CreateSpaceFormModal = ({
 
   const submit = () => {
     if (!selectedGroup) {
-      error('포지션을 선택해주세요.');
+      error('그룹을 선택해주세요.');
       return;
     }
 
@@ -60,7 +60,7 @@ export const CreateSpaceFormModal = ({
         <Img src={previewUrl} alt={orgName} />
         <Text type="Body" weight="regular" color="#666">
           <Text as="span" type="Body" weight="bold" color={theme.colors.primary700}>
-            포지션
+            그룹
           </Text>
           을 선택해주세요.
         </Text>
@@ -78,6 +78,7 @@ export const CreateSpaceFormModal = ({
               type="button"
               onClick={() => handleSelectGroup(group.groupId)}
               isSelected={selectedGroup === group.groupId}
+              aria-pressed={selectedGroup === group.groupId}
             >
               <Text
                 weight={selectedGroup === group.groupId ? 'bold' : 'regular'}

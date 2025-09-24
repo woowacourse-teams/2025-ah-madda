@@ -40,7 +40,7 @@ export const useInviteOrganizationProcess = () => {
 
   const handleJoin = (nickname: string, groupId: number) => {
     if (!groupId) {
-      error('포지션을 선택해주세요.');
+      error('그룹을 선택해주세요.');
       return;
     }
 

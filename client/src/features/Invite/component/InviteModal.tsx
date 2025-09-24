@@ -57,7 +57,7 @@ export const InviteModal = () => {
             <Img src={organizationData?.imageUrl} alt={organizationData?.name} />
             <Text type="Body" weight="regular" color="#666">
               <Text as="span" type="Body" weight="bold" color={theme.colors.primary700}>
-                포지션
+                그룹
               </Text>
               을 선택해주세요.
             </Text>
@@ -76,6 +76,7 @@ export const InviteModal = () => {
                   type="button"
                   onClick={() => handleSelectGroup(group.groupId)}
                   isSelected={selectedGroup === group.groupId}
+                  aria-pressed={selectedGroup === group.groupId}
                 >
                   <Text
                     weight={selectedGroup === group.groupId ? 'bold' : 'regular'}
@@ -112,7 +113,7 @@ export const InviteModal = () => {
             </Button>
             <Button
               size="full"
-              disabled={!nickname.trim()}
+              disabled={!nickname.trim() || selectedGroup == null}
               onClick={() => {
                 if (!selectedGroup) return;
                 handleJoin(nickname, selectedGroup);
