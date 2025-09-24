@@ -21,7 +21,7 @@ export const ActionButton = ({ organizationId }: ActionButtonProps) => {
         </Button>
 
         <Button size="md" onClick={goEditProfile}>
-          정보 수정
+          프로필 수정
         </Button>
       </DesktopButtonContainer>
 
