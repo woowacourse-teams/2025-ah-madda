@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 import type { OrganizationMember } from '@/api/types/organizations';
@@ -131,14 +130,7 @@ export const CoHostSelectModal = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <Flex
-        dir="column"
-        gap="12px"
-        css={css`
-          width: 640px;
-          max-width: 92vw;
-        `}
-      >
+      <ModalBody dir="column" gap="12px">
         <Text as="label" type="Heading" weight="medium">
           {title}
         </Text>
@@ -165,13 +157,15 @@ export const CoHostSelectModal = ({
           })}
         </Flex>
 
-        <GuestList
-          title={`${title} (${selectedTotalCount}명)`}
-          titleColor={theme.colors.gray700}
-          guests={filteredGuests}
-          onGuestChecked={onGuestChecked}
-          onAllGuestChecked={onAllGuestChecked}
-        />
+        <ScrollArea>
+          <GuestList
+            title={`${title} (${selectedTotalCount}명)`}
+            titleColor={theme.colors.gray700}
+            guests={filteredGuests}
+            onGuestChecked={onGuestChecked}
+            onAllGuestChecked={onAllGuestChecked}
+          />
+        </ScrollArea>
 
         <Text type="Label" color={theme.colors.gray500}>
           공동 주최자는 이벤트 편집 권한을 공유합니다.
@@ -185,10 +179,32 @@ export const CoHostSelectModal = ({
             적용
           </Button>
         </Flex>
-      </Flex>
+      </ModalBody>
     </Modal>
   );
 };
+
+const ModalBody = styled(Flex)`
+  width: clamp(200px, 92vw, 320px);
+  height: clamp(300px, 80vh, 450px);
+  min-height: 0;
+`;
+
+const ScrollArea = styled.div`
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+
+  scrollbar-width: thin;
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: ${theme.colors.gray300};
+    border-radius: 8px;
+  }
+`;
 
 const Segment = styled.button<{ isSelected: boolean }>`
   all: unset;
