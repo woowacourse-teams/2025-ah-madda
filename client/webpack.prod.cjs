@@ -17,8 +17,14 @@ module.exports = merge(common, {
       minSize: 20000,
       cacheGroups: {
         react: {
+          test: /[\\/]node_modules[\\/](react|react-dom|react-router-dom)[\\/]/,
+          name: 'react-vendors',
+          priority: 40,
+          chunks: 'all',
+        },
+        vendor: {
           test: /[\\/]node_modules[\\/]/,
-          name: 'vendor',
+          name: 'vendors',
           priority: 30,
           chunks: 'all',
         },
