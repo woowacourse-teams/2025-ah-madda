@@ -20,7 +20,7 @@ import { MAX_LENGTH } from '../constants/validationRules';
 import { useCreateOrganizationProcess } from '../hooks/useCreateOrganizationProcess';
 import { useOrganizationForm } from '../hooks/useOrganizationForm';
 
-import { CreatorNicknameModal } from './CreatorNicknameModal';
+import { CreateSpaceFormModal } from './CreateSpaceFormModal';
 import { OrganizationImageInput } from './OrganizationImageInput';
 
 export const OrganizationCreateForm = () => {
@@ -121,10 +121,9 @@ export const OrganizationCreateForm = () => {
     open();
   };
 
-  const handleConfirmNickname = (nickname: string) => {
-    const trimmed = nickname.trim();
-    if (!trimmed || isSubmitting) return;
-    handleCreate(trimmed);
+  const handleSpaceOneForm = (data: { nickname: string; groupId: number }) => {
+    if (!data.nickname.trim() || isSubmitting) return;
+    handleCreate(data);
   };
 
   return (
@@ -204,13 +203,13 @@ export const OrganizationCreateForm = () => {
       </Flex>
 
       {!isEdit && (
-        <CreatorNicknameModal
+        <CreateSpaceFormModal
           isOpen={isOpen}
           orgName={form.name || '이벤트 스페이스'}
           previewUrl={previewUrl}
           isSubmitting={isSubmitting}
           onClose={close}
-          onConfirm={handleConfirmNickname}
+          onConfirm={handleSpaceOneForm}
         />
       )}
     </>

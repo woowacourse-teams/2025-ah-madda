@@ -1,12 +1,12 @@
 import { css } from '@emotion/react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
-import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 
+import { ActionButton } from './ActionButton';
+
 export const Info = () => {
-  const navigate = useNavigate();
   const { organizationId } = useParams();
   return (
     <Flex
@@ -17,13 +17,6 @@ export const Info = () => {
       padding="20px 0"
       gap="16px"
       width="100%"
-      css={css`
-        @media (max-width: 768px) {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 24px;
-        }
-      `}
     >
       <Flex dir="column" gap="8px">
         <Text as="h1" type="Display" weight="bold" color="gray900">
@@ -33,9 +26,7 @@ export const Info = () => {
           내가 주최하고, 참여한 이벤트를 확인해보세요.
         </Text>
       </Flex>
-      <Button size="md" variant="outline" onClick={() => navigate(`/${organizationId}/event/new`)}>
-        + 이벤트 만들기
-      </Button>
+      <ActionButton organizationId={Number(organizationId)} />
     </Flex>
   );
 };

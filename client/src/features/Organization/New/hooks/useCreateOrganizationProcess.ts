@@ -17,7 +17,7 @@ export const useCreateOrganizationProcess = ({
 }: CreateOrganizationProcessArgs) => {
   const { mutate, isPending } = useCreateOrganization();
 
-  const handleCreate = (nickname: string) => {
+  const handleCreate = (data: { nickname: string; groupId: number }) => {
     if (!thumbnail) {
       return;
     }
@@ -27,7 +27,8 @@ export const useCreateOrganizationProcess = ({
         organization: {
           name: name.trim(),
           description: description.trim(),
-          nickname: nickname.trim(),
+          nickname: data.nickname.trim(),
+          groupId: data.groupId,
         },
         thumbnail,
       },

@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
+import { useNavigate } from 'react-router-dom';
 
-import { Card } from '@/shared/components/Card';
+import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
 import { Icon } from '@/shared/components/Icon';
@@ -10,18 +11,13 @@ import { DEFAULT_AVATAR_URL } from '@/shared/constants';
 
 import { ProfileAvatar } from '../components/ProfileAvatar';
 import { ProfileForm } from '../components/ProfileForm';
-import { useNicknameForm } from '../hooks/useNicknameForm';
 import { useProfile } from '../hooks/useProfile';
 import { useProfileNavigation } from '../hooks/useProfileNavigation';
 
 export const ProfilePage = () => {
-  const { organizationId, goBack } = useProfileNavigation();
-  const { profile, organizationProfile } = useProfile(organizationId);
-  const { nickname, handleNicknameChange, handleSaveNickname, hasChanges, isLoading } =
-    useNicknameForm({
-      organizationId,
-      initialNickname: organizationProfile.nickname,
-    });
+  const navigate = useNavigate();
+  const { organizationId } = useProfileNavigation();
+  const { profile, organizationProfile, organizationGroups } = useProfile(organizationId);
 
   return (
     <PageLayout
@@ -29,40 +25,36 @@ export const ProfilePage = () => {
         <Header
           left={
             <Icon
-              name="back"
-              size={24}
-              onClick={goBack}
+              name="logo"
+              size={55}
+              onClick={() => navigate(`/${organizationId}/event`)}
               css={css`
                 cursor: pointer;
               `}
             />
           }
+          right={
+            <Button size="sm" onClick={() => navigate(`/${organizationId}/event/my`)}>
+              내 이벤트
+            </Button>
+          }
         />
       }
     >
-      <Card
-        css={css`
-          padding: 24px;
-          margin-top: 80px;
-        `}
-      >
-        <Flex dir="column" gap="24px">
-          <Text type="Heading" weight="bold" color="gray900">
+      <Flex width="100%" margin="0px auto" padding="120px 20px 10px ">
+        <Flex dir="column" gap="24px" width="100%">
+          <Text as="h1" type="Display" weight="bold" color="gray900">
             프로필 정보
           </Text>
 
-          <ProfileAvatar src={profile.picture || DEFAULT_AVATAR_URL} />
-
+          <ProfileAvatar email={profile.email} src={profile.picture || DEFAULT_AVATAR_URL} />
           <ProfileForm
-            nickname={nickname}
-            email={profile.email}
-            hasChanges={hasChanges}
-            isLoading={isLoading}
-            onNicknameChange={handleNicknameChange}
-            onSave={handleSaveNickname}
+            organizationProfile={organizationProfile}
+            organizationGroups={organizationGroups}
+            organizationId={organizationId}
           />
         </Flex>
-      </Card>
+      </Flex>
     </PageLayout>
   );
 };
