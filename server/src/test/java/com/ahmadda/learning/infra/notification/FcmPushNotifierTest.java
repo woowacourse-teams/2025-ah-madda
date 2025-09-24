@@ -5,6 +5,7 @@ import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.notification.PushNotificationPayload;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.infra.notification.push.FcmPushNotifier;
@@ -20,7 +21,7 @@ import java.util.List;
 
 @Disabled
 @LearningTest
-@TestPropertySource(properties = "push.mock=false")
+@TestPropertySource(properties = "push.noop=false")
 class FcmPushNotifierTest {
 
     @Autowired
@@ -37,7 +38,13 @@ class FcmPushNotifierTest {
         // given
         var member = Member.create("테스트 회원", "amadda.team@gmail.com", "testPicture");
         var organization = Organization.create("테스트 이벤트 스페이스", "설명", "logo.png");
-        var organizationMember = OrganizationMember.create("푸시대상", member, organization, OrganizationMemberRole.USER);
+        var organizationMember = OrganizationMember.create(
+                "푸시대상",
+                member,
+                organization,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("그룹")
+        );
 
         memberRepository.save(member);
 
@@ -64,7 +71,13 @@ class FcmPushNotifierTest {
         // given
         var member = Member.create("테스트 회원", "amadda.team@gmail.com", "testPicture");
         var organization = Organization.create("테스트 이벤트 스페이스", "설명", "logo.png");
-        var organizationMember = OrganizationMember.create("푸시대상", member, organization, OrganizationMemberRole.USER);
+        var organizationMember = OrganizationMember.create(
+                "푸시대상",
+                member,
+                organization,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("그룹")
+        );
 
         memberRepository.save(member);
 

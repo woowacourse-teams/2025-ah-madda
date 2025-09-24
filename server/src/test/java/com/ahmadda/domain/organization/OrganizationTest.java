@@ -22,7 +22,13 @@ class OrganizationTest {
     void setUp() {
         sut = Organization.create("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "image.png");
         var member = Member.create("주최자 회원", "organizer@example.com", "testPicture");
-        organizer = OrganizationMember.create("주최자", member, sut, OrganizationMemberRole.USER);
+        organizer = OrganizationMember.create(
+                "주최자",
+                member,
+                sut,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
+        );
     }
 
     @Test
@@ -65,7 +71,8 @@ class OrganizationTest {
         var inviteCode = InviteCode.create("code", sut, organizer, LocalDateTime.now());
 
         //when
-        var organizationMember = sut.participate(member, "surf", inviteCode, LocalDateTime.now());
+        var organizationMember =
+                sut.participate(member, "surf", inviteCode, OrganizationGroup.create("백엔드"), LocalDateTime.now());
 
         //then
         assertSoftly(softly -> {
@@ -83,11 +90,23 @@ class OrganizationTest {
         //given
         var organization = Organization.create("테스트 이벤트 스페이스2", "이벤트 스페이스 설명", "image.png");
         var member = Member.create("주최자 회원", "organizer@example.com", "testPicture");
-        var inviter = OrganizationMember.create("test", member, organization, OrganizationMemberRole.USER);
+        var inviter = OrganizationMember.create(
+                "test",
+                member,
+                organization,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
+        );
         var inviteCode = InviteCode.create("code", organization, inviter, LocalDateTime.now());
 
         //when //then
-        assertThatThrownBy(() -> sut.participate(member, "surf", inviteCode, LocalDateTime.now()))
+        assertThatThrownBy(() -> sut.participate(
+                member,
+                "surf",
+                inviteCode,
+                OrganizationGroup.create("백엔드"),
+                LocalDateTime.now()
+        ))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("잘못된 초대코드입니다.");
     }
@@ -99,7 +118,13 @@ class OrganizationTest {
         var inviteCode = InviteCode.create("code", sut, organizer, LocalDateTime.of(2000, 1, 1, 0, 0));
 
         //when //then
-        assertThatThrownBy(() -> sut.participate(member, "surf", inviteCode, LocalDateTime.now()))
+        assertThatThrownBy(() -> sut.participate(
+                member,
+                "surf",
+                inviteCode,
+                OrganizationGroup.create("백엔드"),
+                LocalDateTime.now()
+        ))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("초대코드가 만료되었습니다.");
     }
@@ -107,7 +132,13 @@ class OrganizationTest {
     @Test
     void 관리자가_이벤트_스페이스_정보를_수정할_수_있다() {
         // given
-        var admin = OrganizationMember.create("관리자", organizer.getMember(), sut, OrganizationMemberRole.ADMIN);
+        var admin = OrganizationMember.create(
+                "관리자",
+                organizer.getMember(),
+                sut,
+                OrganizationMemberRole.ADMIN,
+                OrganizationGroup.create("백엔드")
+        );
 
         // when
         sut.update(admin, "새 이벤트 스페이스명", "새 설명", "newImage.png");
@@ -126,7 +157,13 @@ class OrganizationTest {
     @Test
     void 관리자가_아니면_이벤트_스페이스_정보를_수정하면_예외가_발생한다() {
         // given
-        var user = OrganizationMember.create("일반회원", organizer.getMember(), sut, OrganizationMemberRole.USER);
+        var user = OrganizationMember.create(
+                "일반회원",
+                organizer.getMember(),
+                sut,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
+        );
 
         // when // then
         assertThatThrownBy(() ->
@@ -144,7 +181,8 @@ class OrganizationTest {
                 "일반회원",
                 organizer.getMember(),
                 otherOrganization,
-                OrganizationMemberRole.USER
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
         );
 
         // when // then

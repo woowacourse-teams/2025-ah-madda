@@ -16,6 +16,7 @@ public class AsyncTraceLoggingDecorator implements TaskDecorator {
                 if (contextMap != null) {
                     MDC.setContextMap(contextMap);
                 }
+
                 runnable.run();
             } finally {
                 MDC.clear();

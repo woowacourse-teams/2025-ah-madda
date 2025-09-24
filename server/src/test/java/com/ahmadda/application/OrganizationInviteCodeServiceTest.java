@@ -9,6 +9,8 @@ import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.InviteCode;
 import com.ahmadda.domain.organization.InviteCodeRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
@@ -43,12 +45,16 @@ class OrganizationInviteCodeServiceTest {
     @Autowired
     private InviteCodeRepository inviteCodeRepository;
 
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
+
     @Test
     void 여섯_글자의_초대코드를_생성한다() {
         //given
         var organization = createAndSaveOrganization("우테코");
         var member = createAndSaveMember("surf", "surf@ahmadda.com");
-        var organizationMember = createAndSaveOrganizationMember("surf", member, organization);
+        var group = createAndSaveGroup();
+        var organizationMember = createAndSaveOrganizationMember("surf", member, organization, group);
         var now = LocalDateTime.now();
 
         //when
@@ -73,7 +79,8 @@ class OrganizationInviteCodeServiceTest {
         //given
         var organization = createAndSaveOrganization("우테코");
         var member = createAndSaveMember("surf", "surf@ahmadda.com");
-        var organizationMember = createAndSaveOrganizationMember("surf", member, organization);
+        var group = createAndSaveGroup();
+        var organizationMember = createAndSaveOrganizationMember("surf", member, organization, group);
         var prevInviteCodeCreateDateTime = LocalDateTime.of(2025, 7, 1, 0, 0);
         var prevInviteCode =
                 createAndSaveInviteCode("ahmada", organization, organizationMember, prevInviteCodeCreateDateTime);
@@ -91,7 +98,8 @@ class OrganizationInviteCodeServiceTest {
         //given
         var organization = createAndSaveOrganization("우테코");
         var member = createAndSaveMember("surf", "surf@ahmadda.com");
-        var organizationMember = createAndSaveOrganizationMember("surf", member, organization);
+        var group = createAndSaveGroup();
+        var organizationMember = createAndSaveOrganizationMember("surf", member, organization, group);
         var prevInviteCodeCreateDateTime = LocalDateTime.of(2025, 7, 1, 0, 0);
         var prevInviteCode =
                 createAndSaveInviteCode("ahmada", organization, organizationMember, prevInviteCodeCreateDateTime);
@@ -121,7 +129,8 @@ class OrganizationInviteCodeServiceTest {
         //given
         var organization = createAndSaveOrganization("우테코");
         var member = createAndSaveMember("surf", "surf@ahmadda.com");
-        var organizationMember = createAndSaveOrganizationMember("surf", member, organization);
+        var group = createAndSaveGroup();
+        var organizationMember = createAndSaveOrganizationMember("surf", member, organization, group);
         var now = LocalDateTime.now();
 
         //when //then
@@ -148,7 +157,8 @@ class OrganizationInviteCodeServiceTest {
         //given
         var organization = createAndSaveOrganization("우테코");
         var member = createAndSaveMember("surf", "surf@ahmadda.com");
-        var organizationMember = createAndSaveOrganizationMember("surf", member, organization);
+        var group = createAndSaveGroup();
+        var organizationMember = createAndSaveOrganizationMember("surf", member, organization, group);
         var inviteCode = createAndSaveInviteCode("ahmada", organization, organizationMember, LocalDateTime.now());
 
         //when
@@ -171,7 +181,8 @@ class OrganizationInviteCodeServiceTest {
         //given
         var organization = createAndSaveOrganization("우테코");
         var member = createAndSaveMember("surf", "surf@ahmadda.com");
-        var organizationMember = createAndSaveOrganizationMember("surf", member, organization);
+        var group = createAndSaveGroup();
+        var organizationMember = createAndSaveOrganizationMember("surf", member, organization, group);
         var prevInviteCodeCreateDateTime = LocalDateTime.of(2025, 7, 1, 0, 0);
         var inviteCode =
                 createAndSaveInviteCode("ahmada", organization, organizationMember, prevInviteCodeCreateDateTime);
@@ -195,9 +206,11 @@ class OrganizationInviteCodeServiceTest {
     private OrganizationMember createAndSaveOrganizationMember(
             String nickname,
             Member member,
-            Organization organization
+            Organization organization,
+            OrganizationGroup group
     ) {
-        var organizationMember = OrganizationMember.create(nickname, member, organization, OrganizationMemberRole.USER);
+        var organizationMember =
+                OrganizationMember.create(nickname, member, organization, OrganizationMemberRole.USER, group);
         return organizationMemberRepository.save(organizationMember);
     }
 
@@ -209,6 +222,10 @@ class OrganizationInviteCodeServiceTest {
     ) {
         InviteCode prevInviteCode = InviteCode.create(code, organization, organizationMember, now);
         return inviteCodeRepository.save(prevInviteCode);
+    }
+
+    private OrganizationGroup createAndSaveGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
     }
 
     @TestConfiguration

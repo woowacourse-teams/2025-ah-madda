@@ -23,6 +23,8 @@ import com.ahmadda.domain.notification.ReminderHistory;
 import com.ahmadda.domain.notification.ReminderHistoryRepository;
 import com.ahmadda.domain.notification.ReminderRecipient;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
@@ -72,12 +74,16 @@ class EventServiceTest {
     @Autowired
     private EventNotificationOptOutRepository eventNotificationOptOutRepository;
 
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
+
     @Test
     void 이벤트를_생성할_수_있다() {
         //given
         var member = createMember();
         var organization = createOrganization("우테코");
-        var organizationMember = createOrganizationMember(organization, member);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, member, group);
 
         var now = LocalDateTime.now();
         var eventCreateRequest = new EventCreateRequest(
@@ -184,7 +190,8 @@ class EventServiceTest {
         var organization1 = createOrganization("우테코");
         var organization2 = createOrganization("우테코");
         var member = createMember();
-        createOrganizationMember(organization2, member);
+        var group = createGroup();
+        createOrganizationMember(organization2, member, group);
 
         var now = LocalDateTime.now();
         var eventCreateRequest = new EventCreateRequest(
@@ -210,7 +217,8 @@ class EventServiceTest {
         //given
         var organization = createOrganization("우테코");
         var member = createMember();
-        var organizationMember = createOrganizationMember(organization, member);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, member, group);
 
         var now = LocalDateTime.now();
 
@@ -245,7 +253,8 @@ class EventServiceTest {
         var organization = createOrganization("우테코");
         var otherOrganization = createOrganization("우테코");
         var member = createMember();
-        var organizationMember = createOrganizationMember(otherOrganization, member);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(otherOrganization, member, group);
 
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization)).isInstanceOf(
@@ -270,7 +279,8 @@ class EventServiceTest {
         // given
         var organization = createOrganization("우테코");
         var member = createMember();
-        var organizationMember = createOrganizationMember(organization, member);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, member, group);
         var event = createEvent(organizationMember, organization);
         var now = LocalDateTime.now();
 
@@ -291,10 +301,11 @@ class EventServiceTest {
         var organization2 = createOrganization("우테코");
 
         var om1Member = createMember("m1", "m1@mail.com");
-        var notBelongingOrgMember = createOrganizationMember(organization1, om1Member);
+        var group = createGroup();
+        var notBelongingOrgMember = createOrganizationMember(organization1, om1Member, group);
 
         var om2Member = createMember("m2", "m2@mail.com");
-        var hostOrgMember = createOrganizationMember(organization2, om2Member);
+        var hostOrgMember = createOrganizationMember(organization2, om2Member, group);
 
         var event = createEvent(hostOrgMember, organization2);
         var now = LocalDateTime.now();
@@ -314,7 +325,8 @@ class EventServiceTest {
         // given
         var organization = createOrganization("우테코");
         var member = createMember();
-        var orgMember = createOrganizationMember(organization, member);
+        var group = createGroup();
+        var orgMember = createOrganizationMember(organization, member, group);
         var event = createEvent(orgMember, organization);
         var now = LocalDateTime.now();
 
@@ -336,9 +348,10 @@ class EventServiceTest {
         var om1Member = createMember("m1", "m1@mail.com");
         var om2Member = createMember("m2", "m2@mail.com");
 
-        createOrganizationMember(organization, organizerMember);
-        var om1 = createOrganizationMember(organization, om1Member);
-        var om2 = createOrganizationMember(organization, om2Member);
+        var group = createGroup();
+        createOrganizationMember(organization, organizerMember, group);
+        var om1 = createOrganizationMember(organization, om1Member, group);
+        var om2 = createOrganizationMember(organization, om2Member, group);
 
         var now = LocalDateTime.now();
         var request = new EventCreateRequest(
@@ -374,9 +387,10 @@ class EventServiceTest {
         var om1Member = createMember("m1", "m1@mail.com");
         var om2Member = createMember("m2", "m2@mail.com");
 
-        createOrganizationMember(organization, organizerMember);
-        var om1 = createOrganizationMember(organization, om1Member);
-        var om2 = createOrganizationMember(organization, om2Member);
+        var group = createGroup();
+        createOrganizationMember(organization, organizerMember, group);
+        var om1 = createOrganizationMember(organization, om1Member, group);
+        var om2 = createOrganizationMember(organization, om2Member, group);
 
         var now = LocalDateTime.now();
         var request = new EventCreateRequest(
@@ -422,7 +436,8 @@ class EventServiceTest {
         // given
         var organization = createOrganization("우테코");
         var member = createMember("organizer", "organizer@email.com");
-        var organizationMember = createOrganizationMember(organization, member);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, member, group);
 
         var now = LocalDateTime.now();
         var event = Event.create(
@@ -513,7 +528,8 @@ class EventServiceTest {
         // given
         var organization = createOrganization("우테코");
         var organizer = createMember("organizer", "organizer@email.com");
-        var organizationMember = createOrganizationMember(organization, organizer);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, organizer, group);
 
         var now = LocalDateTime.now();
         var event = Event.create(
@@ -553,7 +569,8 @@ class EventServiceTest {
         // given
         var organization = createOrganization("우테코");
         var member = createMember("organizer", "organizer@mail.com");
-        var organizer = createOrganizationMember(organization, member);
+        var group = createGroup();
+        var organizer = createOrganizationMember(organization, member, group);
         var now = LocalDateTime.now();
 
         var event = eventRepository.save(Event.create(
@@ -601,9 +618,10 @@ class EventServiceTest {
         var guestMember1 = createMember("guest1", "guest1@email.com");
         var guestMember2 = createMember("guest2", "guest2@email.com");
 
-        var organizerOrgMember = createOrganizationMember(organization, organizerMember);
-        var guestOrgMember1 = createOrganizationMember(organization, guestMember1);
-        var guestOrgMember2 = createOrganizationMember(organization, guestMember2);
+        var group = createGroup();
+        var organizerOrgMember = createOrganizationMember(organization, organizerMember, group);
+        var guestOrgMember1 = createOrganizationMember(organization, guestMember1, group);
+        var guestOrgMember2 = createOrganizationMember(organization, guestMember2, group);
 
         var now = LocalDateTime.now();
         var event = Event.create(
@@ -658,9 +676,10 @@ class EventServiceTest {
         var om1Member = createMember("m1", "m1@mail.com");
         var om2Member = createMember("m2", "m2@mail.com");
 
-        var organizer = createOrganizationMember(organization, organizerMember);
-        var om1 = createOrganizationMember(organization, om1Member);
-        var om2 = createOrganizationMember(organization, om2Member);
+        var group = createGroup();
+        var organizer = createOrganizationMember(organization, organizerMember, group);
+        var om1 = createOrganizationMember(organization, om1Member, group);
+        var om2 = createOrganizationMember(organization, om2Member, group);
 
         var now = LocalDateTime.now();
         var savedEvent = eventRepository.save(Event.create(
@@ -723,8 +742,9 @@ class EventServiceTest {
         var organization = createOrganization("우테코");
         var organizerMember = createMember("surf", "surf@ahmadda.com");
         var nonOrganizerMember = createMember("tuda", "tuda@ahmadda.com");
-        var organizer = createOrganizationMember(organization, organizerMember);
-        var nonOrganizer = createOrganizationMember(organization, nonOrganizerMember);
+        var group = createGroup();
+        var organizer = createOrganizationMember(organization, organizerMember, group);
+        var nonOrganizer = createOrganizationMember(organization, nonOrganizerMember, group);
         var event = createEvent(organizer, organization);
         var organizerLoginMember = createLoginMember(organizerMember);
         var nonOrganizerLoginMember = createLoginMember(nonOrganizerMember);
@@ -760,7 +780,8 @@ class EventServiceTest {
         //given
         var organization = createOrganization("우테코");
         var organizerMember = createMember("surf", "surf@ahmadda.com");
-        var organizer = createOrganizationMember(organization, organizerMember);
+        var group = createGroup();
+        var organizer = createOrganizationMember(organization, organizerMember, group);
         var event = createEvent(organizer, organization);
 
         //when //then
@@ -775,8 +796,9 @@ class EventServiceTest {
         var member = createMember();
         var organization = createOrganization("우테코");
         var organization2 = createOrganization("아맞다");
-        var organizationMember = createOrganizationMember(organization, member);
-        var organizationMember2 = createOrganizationMember(organization2, member);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, member, group);
+        var organizationMember2 = createOrganizationMember(organization2, member, group);
         var loginMember = createLoginMember(member);
 
         var now = LocalDateTime.now();
@@ -864,19 +886,22 @@ class EventServiceTest {
         var loginMember = new LoginMember(member.getId());
         var orgA = organizationRepository.save(createOrganization("OrgA", "DescA", "a.png"));
         var orgB = organizationRepository.save(createOrganization("OrgB", "DescB", "b.png"));
+        var group = createGroup();
         var orgMemberA =
                 organizationMemberRepository.save(OrganizationMember.create(
                         "nickname",
                         member,
                         orgA,
-                        OrganizationMemberRole.USER
+                        OrganizationMemberRole.USER,
+                        group
                 ));
         var orgMemberB =
                 organizationMemberRepository.save(OrganizationMember.create(
                         "nickname",
                         member,
                         orgB,
-                        OrganizationMemberRole.USER
+                        OrganizationMemberRole.USER,
+                        group
                 ));
 
         var now = LocalDateTime.now();
@@ -899,7 +924,8 @@ class EventServiceTest {
         // given
         var member = createMember();
         var organization = createOrganization("우테코");
-        var organizationMember = createOrganizationMember(organization, member);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, member, group);
 
         var now = LocalDateTime.now();
         var eventCreateRequest = new EventCreateRequest(
@@ -927,13 +953,14 @@ class EventServiceTest {
         // given
         var organization = createOrganization("우테코");
         var member = createMember();
-        createOrganizationMember(organization, member);
+        var group = createGroup();
+        createOrganizationMember(organization, member, group);
 
         List<Long> coOrganizerIds = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             var coOrganizerMail = "coOrganizer" + i + "@naver.com";
             var coOrganizer = createMember("공동주최자" + i, coOrganizerMail);
-            var coOrgMember = createOrganizationMember(organization, coOrganizer);
+            var coOrgMember = createOrganizationMember(organization, coOrganizer, group);
             coOrganizerIds.add(coOrgMember.getId());
         }
 
@@ -976,8 +1003,13 @@ class EventServiceTest {
         return memberRepository.save(Member.create(name, email, "testPicture"));
     }
 
-    private OrganizationMember createOrganizationMember(Organization organization, Member member) {
-        var organizationMember = OrganizationMember.create("surf", member, organization, OrganizationMemberRole.USER);
+    private OrganizationMember createOrganizationMember(
+            Organization organization,
+            Member member,
+            OrganizationGroup group
+    ) {
+        var organizationMember =
+                OrganizationMember.create("surf", member, organization, OrganizationMemberRole.USER, group);
 
         return organizationMemberRepository.save(organizationMember);
     }
@@ -1053,5 +1085,9 @@ class EventServiceTest {
                 ),
                 100
         );
+    }
+
+    private OrganizationGroup createGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
     }
 }

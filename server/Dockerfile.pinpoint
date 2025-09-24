@@ -1,0 +1,21 @@
+FROM amazoncorretto:21
+
+COPY . .
+
+RUN chmod +x ./gradlew
+
+RUN ./gradlew bootJar
+
+RUN cp $(ls -t build/libs/*.jar | head -n 1) app.jar
+
+ENV TZ=Asia/Seoul
+
+EXPOSE 8080
+
+CMD ["sh", "-c", "java \
+  -javaagent:/pinpoint-agent-2.5.3/pinpoint-bootstrap-2.5.3.jar \
+  -Dpinpoint.agentId=ahmadda_server-${HOSTNAME} \
+  -Dpinpoint.applicationName=ahmadda_server \
+  -Dpinpoint.config=/pinpoint-agent-2.5.3/pinpoint-root.config \
+  -Dspring.profiles.active=${PROFILE} \
+  -jar /app.jar"]

@@ -1,13 +1,11 @@
-package com.ahmadda.presentation.dto;
+package com.ahmadda.application.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record OrganizationParticipateRequest(
+public record OrganizationMemberUpdateRequest(
         @NotBlank
         String nickname,
-        @NotBlank
-        String inviteCode,
         @NotNull
         Long groupId
 ) {

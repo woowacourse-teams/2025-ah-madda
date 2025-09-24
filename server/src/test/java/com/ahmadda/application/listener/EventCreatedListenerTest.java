@@ -10,6 +10,8 @@ import com.ahmadda.domain.event.EventStatisticRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
@@ -46,6 +48,9 @@ class EventCreatedListenerTest {
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
 
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
+
     @MockitoBean
     JwtAccessTokenProperties accessTokenProperties;
 
@@ -57,7 +62,8 @@ class EventCreatedListenerTest {
         // given
         var organization = createOrganization();
         var member = createMember();
-        var organizationMember = createOrganizationMember(organization, member);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, member, group);
         var event = createEvent(organizationMember, organization);
         var eventCreated = new EventCreated(event.getId());
 
@@ -71,7 +77,7 @@ class EventCreatedListenerTest {
             softly.assertThat(eventStatistic)
                     .isPresent();
             softly.assertThat(eventStatistic.get()
-                                      .getEvent())
+                            .getEvent())
                     .isEqualTo(event);
         });
     }
@@ -97,8 +103,13 @@ class EventCreatedListenerTest {
         return memberRepository.save(Member.create("name", "ahmadda@ahmadda.com", "testPicture"));
     }
 
-    private OrganizationMember createOrganizationMember(Organization organization, Member member) {
-        var organizationMember = OrganizationMember.create("surf", member, organization, OrganizationMemberRole.USER);
+    private OrganizationMember createOrganizationMember(
+            Organization organization,
+            Member member,
+            OrganizationGroup group
+    ) {
+        var organizationMember =
+                OrganizationMember.create("surf", member, organization, OrganizationMemberRole.USER, group);
 
         return organizationMemberRepository.save(organizationMember);
     }
@@ -120,5 +131,9 @@ class EventCreatedListenerTest {
         );
 
         return eventRepository.save(event);
+    }
+
+    private OrganizationGroup createGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
     }
 }

@@ -83,12 +83,13 @@ public class Organization extends BaseEntity {
             final Member member,
             final String nickname,
             final InviteCode inviteCode,
+            final OrganizationGroup group,
             final LocalDateTime now
     ) {
         validateInviteCode(inviteCode, now);
         validateOrganizationMemberSize();
 
-        return OrganizationMember.create(nickname, member, this, OrganizationMemberRole.USER);
+        return OrganizationMember.create(nickname, member, this, OrganizationMemberRole.USER, group);
     }
 
     public boolean isExistOrganizationMember(final OrganizationMember otherOrganizationMember) {

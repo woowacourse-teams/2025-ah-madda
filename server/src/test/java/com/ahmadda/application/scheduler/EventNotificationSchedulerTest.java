@@ -14,6 +14,8 @@ import com.ahmadda.domain.notification.Reminder;
 import com.ahmadda.domain.notification.ReminderHistoryRepository;
 import com.ahmadda.domain.notification.ReminderRecipient;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
@@ -74,6 +76,9 @@ class EventNotificationSchedulerTest {
     @Autowired
     private ReminderHistoryRepository reminderHistoryRepository;
 
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
+
     @BeforeEach
     void setUp() {
         when(lockProvider.lock(any())).thenReturn(Optional.of(mock(SimpleLock.class)));
@@ -87,9 +92,10 @@ class EventNotificationSchedulerTest {
     ) {
         // given
         var organization = organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
-        var host = saveOrganizationMember("주최자", "host@email.com", organization);
-        var ng1 = saveOrganizationMember("비게스트1", "ng1@email.com", organization);
-        var ng2 = saveOrganizationMember("비게스트2", "ng2@email.com", organization);
+        var group = createGroup();
+        var host = saveOrganizationMember("주최자", "host@email.com", organization, group);
+        var ng1 = saveOrganizationMember("비게스트1", "ng1@email.com", organization, group);
+        var ng2 = saveOrganizationMember("비게스트2", "ng2@email.com", organization, group);
 
         var now = LocalDateTime.now();
 
@@ -128,9 +134,10 @@ class EventNotificationSchedulerTest {
     void 등록_마감_30분_전_리마인더_호출_후_히스토리가_저장된다() {
         // given
         var org = organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
-        var host = saveOrganizationMember("주최자", "host@email.com", org);
-        var ng1 = saveOrganizationMember("비게스트1", "ng1@email.com", org);
-        var ng2 = saveOrganizationMember("비게스트2", "ng2@email.com", org);
+        var group = createGroup();
+        var host = saveOrganizationMember("주최자", "host@email.com", org, group);
+        var ng1 = saveOrganizationMember("비게스트1", "ng1@email.com", org, group);
+        var ng2 = saveOrganizationMember("비게스트2", "ng2@email.com", org, group);
 
         var now = LocalDateTime.now();
         var event = eventRepository.save(Event.create(
@@ -173,10 +180,11 @@ class EventNotificationSchedulerTest {
     void 정원이_다_찼다면_알림을_전송하지_않는다() {
         // given
         var organization = organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
-        var host = saveOrganizationMember("주최자", "host@email.com", organization);
+        var group = createGroup();
+        var host = saveOrganizationMember("주최자", "host@email.com", organization, group);
 
-        saveOrganizationMember("비게스트1", "ng1@email.com", organization);
-        saveOrganizationMember("비게스트2", "ng2@email.com", organization);
+        saveOrganizationMember("비게스트1", "ng1@email.com", organization, group);
+        saveOrganizationMember("비게스트2", "ng2@email.com", organization, group);
 
         var now = LocalDateTime.now();
         var registrationEnd = now.plusMinutes(4);
@@ -194,8 +202,8 @@ class EventNotificationSchedulerTest {
                 2
         ));
 
-        saveGuest(event, saveOrganizationMember("게스트1", "g1@email.com", organization));
-        saveGuest(event, saveOrganizationMember("게스트2", "g2@email.com", organization));
+        saveGuest(event, saveOrganizationMember("게스트1", "g1@email.com", organization, group));
+        saveGuest(event, saveOrganizationMember("게스트2", "g2@email.com", organization, group));
 
         // when
         sut.notifyRegistrationClosingIn30Minutes();
@@ -212,7 +220,8 @@ class EventNotificationSchedulerTest {
     ) {
         // given
         var org = organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
-        var host = saveOrganizationMember("주최자", "host@email.com", org);
+        var group = createGroup();
+        var host = saveOrganizationMember("주최자", "host@email.com", org, group);
 
         var now = LocalDateTime.now();
         var eventStart = now.plusHours(24)
@@ -231,11 +240,11 @@ class EventNotificationSchedulerTest {
                 100
         ));
 
-        var guest1 = saveOrganizationMember("게스트1", "g1@email.com", org);
-        var guest2 = saveOrganizationMember("게스트2", "g2@email.com", org);
+        var guest1 = saveOrganizationMember("게스트1", "g1@email.com", org, group);
+        var guest2 = saveOrganizationMember("게스트2", "g2@email.com", org, group);
         saveGuest(event, guest1);
         saveGuest(event, guest2);
-        saveOrganizationMember("비게스트", "ng@email.com", org);
+        saveOrganizationMember("비게스트", "ng@email.com", org, group);
 
         // when
         sut.notifyEventStartIn24Hours();
@@ -256,7 +265,8 @@ class EventNotificationSchedulerTest {
     void 이벤트_시작_24시간_전_리마인더_호출_후_히스토리가_저장된다() {
         // given
         var org = organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
-        var host = saveOrganizationMember("주최자", "host@email.com", org);
+        var group = createGroup();
+        var host = saveOrganizationMember("주최자", "host@email.com", org, group);
 
         var now = LocalDateTime.now();
         var eventStart = now.plusHours(24)
@@ -275,8 +285,8 @@ class EventNotificationSchedulerTest {
                 100
         ));
 
-        var g1 = saveOrganizationMember("게스트1", "g1@email.com", org);
-        var g2 = saveOrganizationMember("게스트2", "g2@email.com", org);
+        var g1 = saveOrganizationMember("게스트1", "g1@email.com", org, group);
+        var g2 = saveOrganizationMember("게스트2", "g2@email.com", org, group);
         saveGuest(event, g1);
         saveGuest(event, g2);
 
@@ -330,7 +340,8 @@ class EventNotificationSchedulerTest {
     private OrganizationMember saveOrganizationMember(
             String nickname,
             String email,
-            Organization organization
+            Organization organization,
+            OrganizationGroup group
     ) {
         var member = memberRepository.save(Member.create(nickname, email, "testPicture"));
 
@@ -338,7 +349,8 @@ class EventNotificationSchedulerTest {
                 nickname,
                 member,
                 organization,
-                OrganizationMemberRole.USER
+                OrganizationMemberRole.USER,
+                group
         ));
     }
 
@@ -346,5 +358,9 @@ class EventNotificationSchedulerTest {
         var guest = Guest.create(event, participant, event.getRegistrationStart());
 
         return guestRepository.save(guest);
+    }
+
+    private OrganizationGroup createGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
     }
 }

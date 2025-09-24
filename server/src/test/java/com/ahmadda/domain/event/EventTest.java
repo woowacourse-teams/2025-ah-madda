@@ -4,6 +4,7 @@ import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.BeforeEach;
@@ -455,12 +456,24 @@ class EventTest {
         var organization = Organization.create("우아한 테크코스", "woowahan-tech-course", "우아한 테크코스 6기");
         var member = Member.create("박미참여", "not.participant.park@woowahan.com", "testPicture");
         var organizationMember =
-                OrganizationMember.create("참여안한_구성원", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "참여안한_구성원",
+                        member,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
 
 
         var member2 = Member.create("김참가", "participant.kim@woowahan.com", "testPicture");
         var organizationMember2 =
-                OrganizationMember.create("실제_참가자", member2, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "실제_참가자",
+                        member2,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
 
         var sut = createEvent(organizationMember, organization);
         var participate = Guest.create(sut, organizationMember2, sut.getRegistrationStart());
@@ -476,12 +489,24 @@ class EventTest {
         var organization = Organization.create("우아한 테크코스", "woowahan-tech-course", "우아한 테크코스 6기");
         var member = Member.create("박찬양", "creator.chanyang@woowahan.com", "testPicture");
         var organizationMember =
-                OrganizationMember.create("개설자_닉네임", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "이벤트_개설자_닉네임",
+                        member,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
 
 
         var member2 = Member.create("김참가", "participant.kim@woowahan.com", "testPicture");
         var organizationMember2 =
-                OrganizationMember.create("참가자A_닉네임", member2, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "참가자A_닉네임",
+                        member2,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
 
         var sut = createEvent(organizationMember, organization);
         var participate = Guest.create(sut, organizationMember2, sut.getRegistrationStart());
@@ -678,7 +703,13 @@ class EventTest {
             Member member,
             Organization organization
     ) {
-        return OrganizationMember.create(nickname, member, organization, OrganizationMemberRole.USER);
+        return OrganizationMember.create(
+                nickname,
+                member,
+                organization,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
+        );
     }
 
     private Event createEvent(String title, EventOperationPeriod eventOperationPeriod) {
@@ -697,7 +728,13 @@ class EventTest {
     }
 
     private OrganizationMember createOrganizationMember(Member member, Organization organization) {
-        return OrganizationMember.create("nickname", member, organization, OrganizationMemberRole.USER);
+        return OrganizationMember.create(
+                "nickname",
+                member,
+                organization,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
+        );
     }
 
     private Member createMember() {
