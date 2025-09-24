@@ -93,11 +93,6 @@ management:
     jmx:
       exposure:
         exclude: '*'
-  health:
-    db:
-      enabled: false
-    mail:
-      enabled: false
 
 slack:
   bot-token: ${slack.bot-token}

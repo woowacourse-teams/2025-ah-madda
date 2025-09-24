@@ -10,8 +10,6 @@ RUN cp $(ls -t build/libs/*.jar | head -n 1) app.jar
 
 ENV TZ=Asia/Seoul
 
-VOLUME ["/app/logs"]
-
 EXPOSE 8080
 
-CMD ["java", "-Dspring.profiles.active=${PROFILE}", "-jar", "/app.jar"]
+CMD ["sh", "-c", "java -Dspring.profiles.active=${PROFILE} -jar /app.jar"]
