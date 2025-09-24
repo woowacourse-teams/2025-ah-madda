@@ -1,6 +1,7 @@
 package com.ahmadda.domain.organization;
 
 import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
 import com.ahmadda.domain.event.Guest;
@@ -94,6 +95,51 @@ class OrganizationMemberTest {
         assertThatThrownBy(() -> outsiderAdmin.changeRolesOf(List.of(target), OrganizationMemberRole.ADMIN))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage("같은 이벤트 스페이스에 속한 구성원만 권한을 변경할 수 있습니다.");
+    }
+
+    @Test
+    void 닉네임이_10자를_넘어서면_예외가_발생한다() {
+        // given
+        var targetMember = Member.create("user-m", "user@example.com", "pic");
+        var nickname = "10자를 넘어서는 닉네임입니다.";
+        var org = Organization.create("이벤트 스페이스", "desc", "image.png");
+
+        // when // then
+        assertThatThrownBy(() -> OrganizationMember.create(nickname, targetMember, org, OrganizationMemberRole.ADMIN))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("최대 닉네임 길이는 10자입니다.");
+
+    }
+
+    @Test
+    void 닉네임_변경을_할_수_있다() {
+        // given
+        var targetMember = Member.create("user-m", "user@example.com", "pic");
+        var nickname = "정상닉네임";
+        var org = Organization.create("이벤트 스페이스", "desc", "image.png");
+        var organizationMember = OrganizationMember.create(nickname, targetMember, org, OrganizationMemberRole.ADMIN);
+        var newNickname = "변경 닉네임";
+
+        //when
+        organizationMember.rename(newNickname);
+
+        // then
+        assertThat(organizationMember.getNickname()).isEqualTo(newNickname);
+    }
+
+    @Test
+    void 닉네임_변경은_10자를_넘어서는_닉네임으로_변경시_예외가_발생한다() {
+        // given
+        var targetMember = Member.create("user-m", "user@example.com", "pic");
+        var nickname = "정상닉네임";
+        var org = Organization.create("이벤트 스페이스", "desc", "image.png");
+        var organizationMember = OrganizationMember.create(nickname, targetMember, org, OrganizationMemberRole.ADMIN);
+        var invalidNickname = "10자를 넘어서는 닉네임입니다.";
+
+        // when // then
+        assertThatThrownBy(() -> organizationMember.rename(invalidNickname))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("최대 닉네임 길이는 10자입니다.");
     }
 
     private Event createEvent(String title) {

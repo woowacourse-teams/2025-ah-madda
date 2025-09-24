@@ -2,6 +2,7 @@ package com.ahmadda.domain.organization;
 
 
 import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.BaseEntity;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.member.Member;
@@ -30,6 +31,8 @@ import java.util.List;
 @SQLRestriction("deleted_at IS NULL")
 public class OrganizationMember extends BaseEntity {
 
+    private static final int MAX_NICKNAME_LENGTH = 10;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "organization_member_id")
@@ -56,6 +59,8 @@ public class OrganizationMember extends BaseEntity {
             final Organization organization,
             final OrganizationMemberRole role
     ) {
+        validateNickname(nickname);
+
         this.nickname = nickname;
         this.member = member;
         this.organization = organization;
@@ -104,6 +109,7 @@ public class OrganizationMember extends BaseEntity {
     }
 
     public void rename(final String newNickname) {
+        validateNickname(newNickname);
         this.nickname = newNickname;
     }
 
@@ -114,6 +120,12 @@ public class OrganizationMember extends BaseEntity {
 
         if (!operator.isAdmin()) {
             throw new ForbiddenException("관리자만 구성원의 권한을 변경할 수 있습니다.");
+        }
+    }
+
+    private void validateNickname(final String nickname) {
+        if (nickname.length() > MAX_NICKNAME_LENGTH) {
+            throw new UnprocessableEntityException("최대 닉네임 길이는 10자입니다.");
         }
     }
 }

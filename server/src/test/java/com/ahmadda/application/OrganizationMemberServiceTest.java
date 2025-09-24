@@ -53,10 +53,10 @@ class OrganizationMemberServiceTest {
             softly.assertThat(result.getId())
                     .isEqualTo(orgMember.getId());
             softly.assertThat(result.getMember()
-                                      .getId())
+                            .getId())
                     .isEqualTo(member.getId());
             softly.assertThat(result.getOrganization()
-                                      .getId())
+                            .getId())
                     .isEqualTo(org.getId());
         });
     }
@@ -285,6 +285,21 @@ class OrganizationMemberServiceTest {
         assertThatThrownBy(() -> sut.renameOrganizationMemberNickname(org.getId(), loginMember, myNickname))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("현재 닉네임과 동일하여 변경할 수 없습니다.");
+    }
+
+    @Test
+    void 닉네임_변경시_새_닉네임의_길이가_10자를_초과하면_예외가_발생한다() {
+        // given
+        var org = createOrganization("우테코");
+        var member = createMember("홍길동", "hong1@email.com");
+        var loginMember = new LoginMember(member.getId());
+
+        var newNickname = "10자를 벗어나는 닉네임";
+
+        // when // then
+        assertThatThrownBy(() -> sut.renameOrganizationMemberNickname(org.getId(), loginMember, newNickname))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("최대 닉네임 길이는 10자입니다.");
     }
 
     private Organization createOrganization(String name) {
