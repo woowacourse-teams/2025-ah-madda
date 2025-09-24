@@ -116,7 +116,7 @@ public class Organization extends BaseEntity {
         }
     }
 
-    private void validateInviteCode(InviteCode inviteCode, LocalDateTime now) {
+    private void validateInviteCode(final InviteCode inviteCode, final LocalDateTime now) {
         if (!inviteCode.matchesOrganization(this)) {
             throw new UnprocessableEntityException("잘못된 초대코드입니다.");
         }
