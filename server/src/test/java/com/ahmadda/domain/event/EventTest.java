@@ -476,7 +476,7 @@ class EventTest {
         var organization = Organization.create("우아한 테크코스", "woowahan-tech-course", "우아한 테크코스 6기");
         var member = Member.create("박찬양", "creator.chanyang@woowahan.com", "testPicture");
         var organizationMember =
-                OrganizationMember.create("이벤트_개설자_닉네임", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create("개설자_닉네임", member, organization, OrganizationMemberRole.USER);
 
 
         var member2 = Member.create("김참가", "participant.kim@woowahan.com", "testPicture");

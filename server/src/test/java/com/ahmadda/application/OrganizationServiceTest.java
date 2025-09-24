@@ -126,7 +126,7 @@ class OrganizationServiceTest {
         var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(member1.getId());
-        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode());
+        var request = new OrganizationParticipateRequest("nickname", inviteCode.getCode());
 
         // when
         var organizationMember = sut.participateOrganization(organization.getId(), loginMember, request);
@@ -401,7 +401,7 @@ class OrganizationServiceTest {
             sut.participateOrganization(
                     organization.getId(),
                     loginMember,
-                    new OrganizationParticipateRequest("participate" + i, inviteCode.getCode())
+                    new OrganizationParticipateRequest("parti" + i, inviteCode.getCode())
             );
         }
 
@@ -416,7 +416,7 @@ class OrganizationServiceTest {
                 new OrganizationParticipateRequest("cannotpar", inviteCode.getCode())
         ))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("이벤트 스페이스에 이미 정원이 가득차 참여할 수 없어요.");
+                .hasMessage("이벤트 스페이스에 이미 정원이 가득차 참여할 수 없습니다.");
     }
 
     @Test
@@ -429,12 +429,12 @@ class OrganizationServiceTest {
         var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(member1.getId());
-        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode());
+        var request = new OrganizationParticipateRequest("newname", inviteCode.getCode());
 
         sut.participateOrganization(organization.getId(), loginMember, request);
 
         var duplicateNameMember =
-                memberRepository.save(Member.create("duplicateNameMember", "user3@test.com", "testPicture"));
+                memberRepository.save(Member.create("dupliName", "user3@test.com", "testPicture"));
         var duplicateName = "surf";
         var duplicateNameRequest = new OrganizationParticipateRequest(duplicateName, inviteCode.getCode());
         var duplicateLoginMember = new LoginMember(duplicateNameMember.getId());

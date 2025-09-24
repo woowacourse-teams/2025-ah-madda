@@ -162,16 +162,16 @@ class OrganizationTest {
 
         for (int i = 0; i < 299; i++) {
             var member = Member.create("일반회원" + i, "email" + i + "@gmail.com", "profile.img");
-            sut.participate(member, "membername" + i, inviteCode, LocalDateTime.now());
+            sut.participate(member, "nick" + i, inviteCode, LocalDateTime.now());
         }
 
         // when // then
         assertThatThrownBy(() -> {
-            var cannotParticipateMember = Member.create("참여불가능한회원", "email300@gmail.com", "profile.img");
-            sut.participate(cannotParticipateMember, "cannotparticipate", inviteCode, LocalDateTime.now());
+            var cannotParticipateMember = Member.create("참여불가능한회원", "cannotpart@gmail.com", "profile.img");
+            sut.participate(cannotParticipateMember, "cannotpart", inviteCode, LocalDateTime.now());
         })
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("이벤트 스페이스에 이미 정원이 가득차 참여할 수 없어요.");
+                .hasMessage("이벤트 스페이스에 이미 정원이 가득차 참여할 수 없습니다.");
     }
 
     private Event createEventForTest(

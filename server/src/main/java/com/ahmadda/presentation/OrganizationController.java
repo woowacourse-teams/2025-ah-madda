@@ -262,7 +262,7 @@ public class OrganizationController {
                                                       "type": "about:blank",
                                                       "title": "Unprocessable Entity",
                                                       "status": 422,
-                                                      "detail": "이벤트 스페이스에 이미 정원이 가득차 참여할 수 없어요.",
+                                                      "detail": "이벤트 스페이스에 이미 정원이 가득차 참여할 수 없습니다.",
                                                       "instance": "/api/organizations/{organizationId}/participation"
                                                     }
                                                     """

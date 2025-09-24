@@ -206,7 +206,7 @@ class EventGuestServiceTest {
         var member1 = createAndSaveMember("name1", "email1@ahmadda.com");
         var member2 = createAndSaveMember("name2", "email2@ahmadda.com");
         var organizer = createAndSaveOrganizationMember("organizer", member1, organization);
-        var participant = createAndSaveOrganizationMember("participant", member2, organization);
+        var participant = createAndSaveOrganizationMember("parti", member2, organization);
 
         var question1 = Question.create("필수 질문", true, 0);
         var question2 = Question.create("선택 질문", false, 1);
@@ -240,7 +240,7 @@ class EventGuestServiceTest {
         var member1 = createAndSaveMember("name1", "email1@ahmadda.com");
         var member2 = createAndSaveMember("name2", "email2@ahmadda.com");
         var organizer = createAndSaveOrganizationMember("organizer", member1, organization);
-        var participant = createAndSaveOrganizationMember("participant", member2, organization);
+        var participant = createAndSaveOrganizationMember("parti", member2, organization);
 
         Question question1 = Question.create("필수 질문", true, 0);
         Question question2 = Question.create("선택 질문", false, 1);
@@ -257,12 +257,12 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.participantEvent(
-                                           event.getId(),
-                                           new LoginMember(member2.getId()),
-                                           event.getRegistrationStart(),
-                                           request
-                                   )
+                sut.participantEvent(
+                        event.getId(),
+                        new LoginMember(member2.getId()),
+                        event.getRegistrationStart(),
+                        request
+                )
         )
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessageContaining("필수 질문에 대한 답변이 누락되었습니다");
@@ -275,7 +275,7 @@ class EventGuestServiceTest {
         var member1 = createAndSaveMember("name1", "email1@ahmadda.com");
         var member2 = createAndSaveMember("name2", "email2@ahmadda.com");
         var organizer = createAndSaveOrganizationMember("organizer", member1, organization);
-        var participant = createAndSaveOrganizationMember("participant", member2, organization);
+        var participant = createAndSaveOrganizationMember("parti", member2, organization);
         var event = createAndSaveEvent(organizer, organization);
 
         var invalidQuestionId = 999L;
@@ -286,12 +286,12 @@ class EventGuestServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                                   sut.participantEvent(
-                                           event.getId(),
-                                           new LoginMember(member2.getId()),
-                                           event.getRegistrationStart(),
-                                           request
-                                   )
+                sut.participantEvent(
+                        event.getId(),
+                        new LoginMember(member2.getId()),
+                        event.getRegistrationStart(),
+                        request
+                )
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("존재하지 않는 질문입니다.");
@@ -305,11 +305,11 @@ class EventGuestServiceTest {
         var member2 = createAndSaveMember("test2", "ahmadda2@ahmadda.com");
         var member3 = createAndSaveMember("test3", "ahmadda3@ahmadda.com");
         var organizationMember1 =
-                createAndSaveOrganizationMember("organizationMember1", member1, organization);
+                createAndSaveOrganizationMember("orgMem1", member1, organization);
         var organizationMember2 =
-                createAndSaveOrganizationMember("organizationMember2", member2, organization);
+                createAndSaveOrganizationMember("orgMem2", member2, organization);
         var organizationMember3 =
-                createAndSaveOrganizationMember("organizationMember2", member3, organization);
+                createAndSaveOrganizationMember("orgMem2", member3, organization);
 
         var event = createAndSaveEvent(organizationMember1, organization);
         createAndSaveGuest(event, organizationMember2);
@@ -331,9 +331,9 @@ class EventGuestServiceTest {
         var member2 = createAndSaveMember("test2", "ahmadda2@ahmadda.com");
         var member3 = createAndSaveMember("test3", "ahmadda3@ahmadda.com");
         var organizationMember1 =
-                createAndSaveOrganizationMember("organizationMember1", member1, organization);
+                createAndSaveOrganizationMember("orgMem1", member1, organization);
         var organizationMember2 =
-                createAndSaveOrganizationMember("organizationMember2", member2, organization);
+                createAndSaveOrganizationMember("orgMem2", member2, organization);
 
         var event = createAndSaveEvent(organizationMember1, organization);
         createAndSaveGuest(event, organizationMember2);
