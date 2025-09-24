@@ -335,6 +335,17 @@ public class OrganizationMemberController {
                                                       "detail": "현재 닉네임과 동일하여 변경할 수 없습니다.",
                                                       "instance": "/api/organizations/{organizationId}/organization-members/rename"
                                                     }
+                                                    """),
+                                    @ExampleObject(
+                                            name = "변경 닉네임 10자 초과",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "최대 닉네임 길이는 10자입니다.",
+                                                      "instance": "/api/organizations/{organizationId}/organization-members/rename"
+                                                    }
                                                     """)
                             }
                     )
