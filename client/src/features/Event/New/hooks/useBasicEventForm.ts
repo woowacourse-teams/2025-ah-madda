@@ -14,11 +14,13 @@ const makeInitialForm = (initialData?: Partial<CreateEventAPIRequest>): BasicEve
   description: '',
   maxCapacity: 10,
   eventOrganizerIds: [],
+  groupIds: [],
   ...initialData,
 });
 
 type UseBasicEventFormOptions = {
   defaultCoHostId?: number;
+  requireGroupSelection?: boolean;
 };
 
 export const useBasicEventForm = (
@@ -77,21 +79,30 @@ export const useBasicEventForm = (
     } as Partial<BasicEventFormFields>);
   };
 
+  const isFilled = (v: unknown) => {
+    if (typeof v === 'string') return v.trim() !== '';
+    if (typeof v === 'number') return v > 0;
+    if (Array.isArray(v)) return v.length > 0;
+    return true;
+  };
+
+  const requireGroup = options?.requireGroupSelection ?? true;
+
   const isValid = useMemo(() => {
     const hasNoErrors = Object.values(errors).every((value) => !value);
 
     const allRequiredFieldsFilled = Object.entries(basicEventForm).every(([key, value]) => {
       const isRequired = FIELD_CONFIG[key as keyof BasicEventFormFields]?.required;
       if (!isRequired) return true;
-
-      if (typeof value === 'string') return value.trim() !== '';
-      if (typeof value === 'number') return value > 0;
-
-      return true;
+      return isFilled(value);
     });
 
-    return hasNoErrors && allRequiredFieldsFilled;
-  }, [basicEventForm, errors]);
+    const hasGroup =
+      !requireGroup ||
+      (Array.isArray(basicEventForm.groupIds) && basicEventForm.groupIds.length > 0);
+
+    return hasNoErrors && allRequiredFieldsFilled && hasGroup;
+  }, [basicEventForm, errors, requireGroup]);
 
   const loadFormData = (data: Partial<CreateEventAPIRequest>) => {
     updateAndValidate(data as Partial<BasicEventFormFields>);

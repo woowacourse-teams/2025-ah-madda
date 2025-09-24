@@ -39,6 +39,7 @@ export type CreateEventAPIRequest = {
   registrationEnd: string;
   questions: QuestionRequest[];
   eventOrganizerIds: number[];
+  groupIds: number[];
 };
 
 export type EventFormData = Omit<CreateEventAPIRequest, 'organizerNickname'>;
