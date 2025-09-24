@@ -88,7 +88,7 @@ class OrganizationServiceTest {
 
         // then
         var organizations = organizationRepository.findAll();
-        var organizationMembes = organizationMemberRepository.findAll();
+        var organizationMembers = organizationMemberRepository.findAll();
         assertSoftly(softly -> {
             var organization = organizations.get(0);
             softly.assertThat(organizations)
@@ -100,8 +100,8 @@ class OrganizationServiceTest {
             softly.assertThat(organization.getImageUrl())
                     .isEqualTo("test.png");
 
-            var organizationMember = organizationMembes.getFirst();
-            softly.assertThat(organizationMembes)
+            var organizationMember = organizationMembers.getFirst();
+            softly.assertThat(organizationMembers)
                     .hasSize(1);
             softly.assertThat(organizationMember.getMember())
                     .isEqualTo(member);
@@ -148,7 +148,7 @@ class OrganizationServiceTest {
         var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(member1.getId());
-        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode(), group.getId());
+        var request = new OrganizationParticipateRequest("nickname", inviteCode.getCode(), group.getId());
 
         // when
         var organizationMember = sut.participateOrganization(organization.getId(), loginMember, request);
@@ -429,6 +429,48 @@ class OrganizationServiceTest {
     }
 
     @Test
+    void 이벤트_스페이스에_참여시_이미_정원이_가득_찼으면_예외가_발생한다() {
+        // given
+        var organization = createOrganization("이벤트 스페이스");
+        var organizer = memberRepository.save(Member.create("organizer", "organizer@test.com", "pic"));
+        var group = createGroup();
+        var organizationMember = OrganizationMember.create(
+                "organizer",
+                organizer,
+                organization,
+                OrganizationMemberRole.ADMIN,
+                group
+        );
+        organizationMemberRepository.save(organizationMember);
+
+        var inviteCode = createInviteCode("code", organization, organizationMember, LocalDateTime.now());
+
+        for (int i = 0; i < 299; i++) {
+            var user = memberRepository.save(Member.create("user", i + "user@test.com", "pic"));
+            var loginMember = new LoginMember(user.getId());
+
+            sut.participateOrganization(
+                    organization.getId(),
+                    loginMember,
+                    new OrganizationParticipateRequest("parti" + i, inviteCode.getCode(), group.getId())
+            );
+        }
+
+        var cannotParticipateUser =
+                memberRepository.save(Member.create("cannotparticipate", "cannotparticiapteuser@test.com", "pic"));
+        var loginMember = new LoginMember(cannotParticipateUser.getId());
+
+        // when // then
+        assertThatThrownBy(() -> sut.participateOrganization(
+                organization.getId(),
+                loginMember,
+                new OrganizationParticipateRequest("cannotpar", inviteCode.getCode(), group.getId())
+        ))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("이벤트 스페이스에 이미 정원이 가득차 참여할 수 없습니다.");
+    }
+
+    @Test
     void 이미_같은_이름의_사용자가_존재한다면_가입하려하면_예외가_발생한다() {
         // given
         var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
@@ -439,12 +481,12 @@ class OrganizationServiceTest {
         var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(member1.getId());
-        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode(), group.getId());
+        var request = new OrganizationParticipateRequest("newname", inviteCode.getCode(), group.getId());
 
         sut.participateOrganization(organization.getId(), loginMember, request);
 
         var duplicateNameMember =
-                memberRepository.save(Member.create("duplicateNameMember", "user3@test.com", "testPicture"));
+                memberRepository.save(Member.create("dupliName", "user3@test.com", "testPicture"));
         var duplicateName = "surf";
         var duplicateNameRequest =
                 new OrganizationParticipateRequest(duplicateName, inviteCode.getCode(), group.getId());

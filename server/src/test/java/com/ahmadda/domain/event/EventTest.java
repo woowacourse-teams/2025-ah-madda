@@ -490,7 +490,7 @@ class EventTest {
         var member = Member.create("박찬양", "creator.chanyang@woowahan.com", "testPicture");
         var organizationMember =
                 OrganizationMember.create(
-                        "이벤트_개설자_닉네임",
+                        "개설자_닉네임",
                         member,
                         organization,
                         OrganizationMemberRole.USER,

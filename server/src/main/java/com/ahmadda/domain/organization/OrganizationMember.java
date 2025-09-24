@@ -117,7 +117,7 @@ public class OrganizationMember extends BaseEntity {
 
     public void rename(final String newNickname) {
         validateNickname(newNickname);
-        
+
         this.nickname = newNickname;
     }
 
