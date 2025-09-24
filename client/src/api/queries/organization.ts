@@ -3,7 +3,10 @@ import { queryOptions } from '@tanstack/react-query';
 import { Organization } from '@/features/Organization/types/Organization';
 
 import { fetcher } from '../fetcher';
-import { OrganizationProfileAPIResponse } from '../types/organizations';
+import {
+  OrganizationGroupAPIResponse,
+  OrganizationProfileAPIResponse,
+} from '../types/organizations';
 
 export const organizationQueryKeys = {
   all: () => ['organization'],
@@ -11,6 +14,7 @@ export const organizationQueryKeys = {
   profile: () => [...organizationQueryKeys.all(), 'profile'],
   preview: () => [...organizationQueryKeys.all(), 'preview'],
   joined: () => [...organizationQueryKeys.all(), 'participated'],
+  group: () => [...organizationQueryKeys.all(), 'group'],
 };
 export const organizationQueryOptions = {
   // S.TODO : 추후 수정 ':organizationId' : number
@@ -37,6 +41,11 @@ export const organizationQueryOptions = {
       queryKey: organizationQueryKeys.joined(),
       queryFn: getParticipatedOrganizations,
     }),
+  group: () =>
+    queryOptions({
+      queryKey: organizationQueryKeys.group(),
+      queryFn: getOrganizationGroups,
+    }),
 };
 
 export const getOrganization = ({ organizationId }: { organizationId: string }) => {
@@ -53,4 +62,8 @@ export const getOrganizationPreview = (inviteCode: string) => {
 
 export const getParticipatedOrganizations = () => {
   return fetcher.get<Organization[]>(`organizations/participated`);
+};
+
+export const getOrganizationGroups = () => {
+  return fetcher.get<OrganizationGroupAPIResponse[]>(`organization-groups`);
 };

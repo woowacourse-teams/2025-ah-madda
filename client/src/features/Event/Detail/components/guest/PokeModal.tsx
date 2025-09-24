@@ -81,6 +81,7 @@ export const PokeModal = ({ eventId, receiverGuest, isOpen, onClose }: PokeModal
               type="button"
               onClick={() => handleClickMessage(key as POKE_MESSAGES_TYPE)}
               isSelected={selectedMessage === key}
+              aria-pressed={selectedMessage === key}
             >
               <Text
                 color={selectedMessage === key ? theme.colors.primary500 : theme.colors.gray300}
