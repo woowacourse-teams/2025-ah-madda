@@ -1,13 +1,14 @@
 package com.ahmadda.learning.infra.notification;
 
-import com.ahmadda.annotation.IntegrationTest;
+import com.ahmadda.annotation.LearningTest;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.notification.PushNotificationPayload;
-import com.ahmadda.domain.notification.PushNotifier;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.infra.notification.push.FcmPushNotifier;
 import com.ahmadda.infra.notification.push.FcmRegistrationToken;
 import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
 import org.junit.jupiter.api.Disabled;
@@ -19,12 +20,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Disabled
-@IntegrationTest
-@TestPropertySource(properties = "push.mock=false")
+@LearningTest
+@TestPropertySource(properties = "push.noop=false")
 class FcmPushNotifierTest {
 
     @Autowired
-    private PushNotifier fcmPushNotifier;
+    private FcmPushNotifier sut;
 
     @Autowired
     private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
@@ -36,8 +37,14 @@ class FcmPushNotifierTest {
     void 실제_FCM으로_푸시를_전송한다() {
         // given
         var member = Member.create("테스트 회원", "amadda.team@gmail.com", "testPicture");
-        var organization = Organization.create("테스트 조직", "설명", "logo.png");
-        var organizationMember = OrganizationMember.create("푸시대상", member, organization, OrganizationMemberRole.USER);
+        var organization = Organization.create("테스트 이벤트 스페이스", "설명", "logo.png");
+        var organizationMember = OrganizationMember.create(
+                "푸시대상",
+                member,
+                organization,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("그룹")
+        );
 
         memberRepository.save(member);
 
@@ -56,15 +63,21 @@ class FcmPushNotifierTest {
         );
 
         // when // then
-        fcmPushNotifier.sendPushs(List.of(organizationMember), payload);
+        sut.sendPushs(List.of(organizationMember), payload);
     }
 
     @Test
     void 실제_FCM으로_한명에게_푸시알람을_전송한다() {
         // given
         var member = Member.create("테스트 회원", "amadda.team@gmail.com", "testPicture");
-        var organization = Organization.create("테스트 조직", "설명", "logo.png");
-        var organizationMember = OrganizationMember.create("푸시대상", member, organization, OrganizationMemberRole.USER);
+        var organization = Organization.create("테스트 이벤트 스페이스", "설명", "logo.png");
+        var organizationMember = OrganizationMember.create(
+                "푸시대상",
+                member,
+                organization,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("그룹")
+        );
 
         memberRepository.save(member);
 
@@ -84,6 +97,6 @@ class FcmPushNotifierTest {
         );
 
         // when // then
-        fcmPushNotifier.sendPush(organizationMember, payload);
+        sut.sendPush(organizationMember, payload);
     }
 }

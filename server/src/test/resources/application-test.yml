@@ -13,10 +13,12 @@ spring:
         region: ap-northeast-2
 
 jwt:
-  access-secret-key: ${jwt.local.access-secret-key}
-  access-expiration: ${jwt.local.access-expiration}
-  refresh-secret-key: ${jwt.local.refresh-secret-key}
-  refresh-expiration: ${jwt.local.refresh-expiration}
+  access:
+    secret-key: ${jwt.local.access.secret-key}
+    expiration: ${jwt.local.access.expiration}
+  refresh:
+    secret-key: ${jwt.local.refresh.secret-key}
+    expiration: ${jwt.local.refresh.expiration}
 
 cookie:
   refresh-token:
@@ -36,16 +38,16 @@ notification:
   redirect-url-prefix: http://localhost:5173/
 
 mail:
-  mock: true
+  noop: true
 
 push:
-  mock: true
+  noop: true
 
 slack:
-  mock: true
+  noop: true
 
 aws:
   s3:
-    mock: true
+    noop: true
     bucket: ${aws.local.s3.bucket}
     folder: ${aws.local.s3.folder}

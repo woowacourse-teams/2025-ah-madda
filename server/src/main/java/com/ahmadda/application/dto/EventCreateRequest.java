@@ -23,7 +23,34 @@ public record EventCreateRequest(
         LocalDateTime eventEnd,
         int maxCapacity,
         @Valid
-        List<QuestionCreateRequest> questions
+        List<QuestionCreateRequest> questions,
+        @NotNull
+        List<Long> eventOrganizerIds,
+        @NotNull
+        List<Long> groupIds
 ) {
 
+    public EventCreateRequest(
+            final String title,
+            final String description,
+            final String place,
+            final LocalDateTime registrationEnd,
+            final LocalDateTime eventStart,
+            final LocalDateTime eventEnd,
+            final int maxCapacity,
+            final List<QuestionCreateRequest> questions
+    ) {
+        this(
+                title,
+                description,
+                place,
+                registrationEnd,
+                eventStart,
+                eventEnd,
+                maxCapacity,
+                questions,
+                List.of(),
+                List.of()
+        );
+    }
 }

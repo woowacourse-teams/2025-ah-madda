@@ -7,13 +7,8 @@ import java.time.Duration;
 
 @ConfigurationProperties(prefix = "cookie.refresh-token")
 @Getter
-public class RefreshTokenCookieProperties {
+public class RefreshTokenCookieProperties extends CookieProperties {
 
-    private final String path;
-    private final String domain;
-    private final String sameSite;
-    private final boolean secure;
-    private final boolean httpOnly;
     private final Duration ttl;
 
     public RefreshTokenCookieProperties(
@@ -24,34 +19,16 @@ public class RefreshTokenCookieProperties {
             final boolean httpOnly,
             final Duration ttl
     ) {
-        validateProperties(path, domain, sameSite, ttl);
+        super(path, domain, sameSite, secure, httpOnly);
 
-        this.path = path;
-        this.domain = domain;
-        this.sameSite = sameSite;
-        this.secure = secure;
-        this.httpOnly = httpOnly;
+        validateRefreshProperties(ttl);
+
         this.ttl = ttl;
     }
 
-    private void validateProperties(
-            final String path,
-            final String domain,
-            final String sameSite,
+    private void validateRefreshProperties(
             final Duration ttl
     ) {
-        if (path == null || path.isBlank()) {
-            throw new IllegalArgumentException("쿠키 Path가 비어있습니다.");
-        }
-
-        if (domain == null || domain.isBlank()) {
-            throw new IllegalArgumentException("쿠키 Domain이 비어있습니다.");
-        }
-
-        if (sameSite == null || sameSite.isBlank()) {
-            throw new IllegalArgumentException("쿠키 SameSite가 비어있습니다.");
-        }
-
         if (ttl == null) {
             throw new IllegalArgumentException("쿠키 만료 시간이 지정되지 않았습니다.");
         }

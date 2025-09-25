@@ -1,17 +1,18 @@
 package com.ahmadda.presentation.dto;
 
-import com.ahmadda.domain.event.Event;
-import com.ahmadda.domain.event.Question;
-
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventOrganizer;
+import com.ahmadda.domain.event.Question;
 
 public record EventDetailResponse(
         Long eventId,
         String title,
         String description,
         String place,
-        String organizerName,
+        List<String> organizerNicknames,
         LocalDateTime eventStart,
         LocalDateTime eventEnd,
         LocalDateTime registrationStart,
@@ -39,13 +40,17 @@ public record EventDetailResponse(
     }
 
     public static EventDetailResponse from(final Event event) {
+        List<String> organizerNicknames = event.getEventOrganizers()
+                .stream()
+                .map(EventOrganizer::getNickname)
+                .toList();
+
         return new EventDetailResponse(
                 event.getId(),
                 event.getTitle(),
                 event.getDescription(),
                 event.getPlace(),
-                event.getOrganizer()
-                        .getNickname(),
+                organizerNicknames,
                 event.getEventStart(),
                 event.getEventEnd(),
                 event.getRegistrationStart(),

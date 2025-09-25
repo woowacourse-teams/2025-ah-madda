@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -26,7 +25,6 @@ public class SmtpEmailNotifier implements EmailNotifier {
     private final TemplateEngine templateEngine;
     private final NotificationProperties notificationProperties;
 
-    @Async
     @Override
     public void sendEmails(final List<OrganizationMember> recipients, final EventEmailPayload eventEmailPayload) {
         List<String> recipientEmails = getRecipientEmails(recipients);
@@ -38,7 +36,6 @@ public class SmtpEmailNotifier implements EmailNotifier {
         String text = createText(eventEmailPayload.body());
 
         MimeMessage mimeMessage = createMimeMessageWithBcc(recipientEmails, subject, text);
-        // TODO: 추후 지수 백오프를 이용한 재시도 로직 구현
         javaMailSender.send(mimeMessage);
     }
 
@@ -50,9 +47,8 @@ public class SmtpEmailNotifier implements EmailNotifier {
     }
 
     private String createSubject(final EventEmailPayload.Subject subject) {
-        return "[%s] %s님의 이벤트 안내: %s".formatted(
+        return "[아맞다] %s의 이벤트 안내: %s".formatted(
                 subject.organizationName(),
-                subject.organizerNickname(),
                 subject.eventTitle()
         );
     }
@@ -93,8 +89,7 @@ public class SmtpEmailNotifier implements EmailNotifier {
         try {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
-            helper.setTo("amadda.team@gmail.com");
-            // TODO. 추후 BCC 수신자가 100명 이상일 경우, 배치 처리 고려
+            helper.setFrom("아맞다 <noreply@ahmadda.com>");
             helper.setBcc(bccRecipients.toArray(String[]::new));
             helper.setSubject(subject);
             helper.setText(text, true);

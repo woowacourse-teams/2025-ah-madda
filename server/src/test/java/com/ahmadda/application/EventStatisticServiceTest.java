@@ -2,25 +2,26 @@ package com.ahmadda.application;
 
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
+import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.EventStatistic;
 import com.ahmadda.domain.event.EventStatisticRepository;
-import com.ahmadda.domain.event.EventViewMetric;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
-import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.domain.organization.OrganizationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -46,28 +47,51 @@ class EventStatisticServiceTest {
     @Autowired
     private EventStatisticRepository eventStatisticRepository;
 
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
+
     @Test
-    void 이벤트_조회수를_가지고_올_수_있다() {
+    void 주최자는_이벤트_조회수를_가지고_올_수_있다() {
         // given
         var organization = createOrganization();
         var member = createMember();
-        var organizationMember = createOrganizationMember(organization, member);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, member, group);
         var event = createEvent(organization, organizationMember);
         createEventStatistic(event);
 
         //when
-        List<EventViewMetric> eventStatistics = sut.getEventStatistic(event.getId(), new LoginMember(member.getId()));
+        var eventStatistics = sut.getEventStatistic(event.getId(), new LoginMember(member.getId()));
 
         // then
         assertThat(eventStatistics).isEmpty();
     }
 
     @Test
-    void 존재하지_않는_조직원일시_예외가_발생한다() {
+    void 주최자에_속하지_않으면_이벤트_조회수를_요청시_예외가_발생한다() {
         // given
         var organization = createOrganization();
         var member = createMember();
-        var organizationMember = createOrganizationMember(organization, member);
+        var nonCreateMember = createMember("test", "test@naver.com");
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, member, group);
+        var nonCreateOrganizationMember = createOrganizationMember(organization, nonCreateMember, group);
+        var event = createEvent(organization, organizationMember);
+        createEventStatistic(event);
+
+        // when //then
+        assertThatThrownBy(() -> sut.getEventStatistic(event.getId(), new LoginMember(nonCreateMember.getId())))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage("이벤트의 조회수는 이벤트의 주최자만 조회할 수 있습니다.");
+    }
+
+    @Test
+    void 존재하지_않는_구성원일시_예외가_발생한다() {
+        // given
+        var organization = createOrganization();
+        var member = createMember();
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, member, group);
         var event = createEvent(organization, organizationMember);
         createEventStatistic(event);
 
@@ -76,7 +100,7 @@ class EventStatisticServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getEventStatistic(event.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원입니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
@@ -84,7 +108,8 @@ class EventStatisticServiceTest {
         // given
         var organization = createOrganization();
         var member = createMember();
-        createOrganizationMember(organization, member);
+        var group = createGroup();
+        createOrganizationMember(organization, member, group);
 
         var loginMember = new LoginMember(member.getId());
         var nonExistentEventId = 999L;
@@ -92,7 +117,7 @@ class EventStatisticServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getEventStatistic(nonExistentEventId, loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("요청한 이벤트 조회수 정보가 존재하지 않습니다.");
+                .hasMessage("존재하지 않는 요청한 이벤트 조회수 정보입니다.");
     }
 
     @Test
@@ -100,7 +125,8 @@ class EventStatisticServiceTest {
         // given
         var organization = createOrganization();
         var member = createMember();
-        var organizationMember = createOrganizationMember(organization, member);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, member, group);
         var event = createEvent(organization, organizationMember);
 
         var loginMember = new LoginMember(member.getId());
@@ -108,11 +134,11 @@ class EventStatisticServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getEventStatistic(event.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("요청한 이벤트 조회수 정보가 존재하지 않습니다.");
+                .hasMessage("존재하지 않는 요청한 이벤트 조회수 정보입니다.");
     }
 
     private Organization createOrganization() {
-        Organization organization = Organization.create("테스트 조직", "테스트 설명", "test-image-url");
+        Organization organization = Organization.create("테스트 이벤트 스페이스", "테스트 설명", "test-image-url");
         return organizationRepository.save(organization);
     }
 
@@ -121,9 +147,18 @@ class EventStatisticServiceTest {
         return memberRepository.save(member);
     }
 
-    private OrganizationMember createOrganizationMember(Organization organization, Member member) {
+    private Member createMember(String name, String email) {
+        Member member = Member.create(name, email, "testPicture");
+        return memberRepository.save(member);
+    }
+
+    private OrganizationMember createOrganizationMember(
+            Organization organization,
+            Member member,
+            OrganizationGroup group
+    ) {
         OrganizationMember organizationMember =
-                OrganizationMember.create("테스트닉네임", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create("테스트닉네임", member, organization, OrganizationMemberRole.USER, group);
         return organizationMemberRepository.save(organizationMember);
     }
 
@@ -153,5 +188,9 @@ class EventStatisticServiceTest {
     private void createEventStatistic(Event event) {
         EventStatistic eventStatistic = EventStatistic.create(event);
         eventStatisticRepository.save(eventStatistic);
+    }
+
+    private OrganizationGroup createGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
     }
 }

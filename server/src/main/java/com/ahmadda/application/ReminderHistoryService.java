@@ -33,7 +33,7 @@ public class ReminderHistoryService {
                         event.getOrganization()
                                 .getId(), loginMember.memberId()
                 )
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직원 정보입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 구성원 정보입니다."));
 
         validateIsOrganizer(event, organizationMember);
 

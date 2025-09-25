@@ -106,7 +106,7 @@ public class EventGuestService {
                 organization.getId(),
                 loginMember.memberId()
         )) {
-            throw new ForbiddenException("조직의 조직원만 접근할 수 있습니다.");
+            throw new ForbiddenException("이벤트 스페이스의 구성원만 접근할 수 있습니다.");
         }
     }
 
@@ -117,7 +117,7 @@ public class EventGuestService {
 
     private OrganizationMember getOrganizationMember(final Long organizationId, final Long memberId) {
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직원입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 구성원입니다."));
     }
 
     private Map<Question, String> getQuestionAnswers(final List<AnswerCreateRequest> answerCreateRequests) {

@@ -6,12 +6,13 @@ import com.ahmadda.application.dto.OrganizationUpdateRequest;
 import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
-import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.InviteCode;
 import com.ahmadda.domain.organization.InviteCodeRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationImageFile;
 import com.ahmadda.domain.organization.OrganizationImageUploader;
 import com.ahmadda.domain.organization.OrganizationMember;
@@ -26,20 +27,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class OrganizationService {
-
-    public static final String WOOWACOURSE_NAME = "우아한테크코스";
-    private static final String imageUrl = "techcourse-project-2025.s3.ap-northeast-2.amazonaws.com/ah-madda/woowa.png";
 
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
     private final MemberRepository memberRepository;
     private final InviteCodeRepository inviteCodeRepository;
     private final OrganizationImageUploader organizationImageUploader;
+    private final OrganizationGroupRepository organizationGroupRepository;
 
     @Transactional
     public Organization createOrganization(
@@ -48,6 +46,7 @@ public class OrganizationService {
             final LoginMember loginMember
     ) {
         Member member = getMember(loginMember);
+        OrganizationGroup group = getOrganizationGroup(organizationCreateRequest.groupId());
 
         String uploadImageUrl = organizationImageUploader.upload(thumbnailOrganizationImageFile);
         Organization organization = Organization.create(
@@ -62,7 +61,8 @@ public class OrganizationService {
                         organizationCreateRequest.nickname(),
                         member,
                         organization,
-                        OrganizationMemberRole.ADMIN
+                        OrganizationMemberRole.ADMIN,
+                        group
                 );
         organizationMemberRepository.save(organizationMember);
 
@@ -73,30 +73,6 @@ public class OrganizationService {
         return getOrganization(organizationId);
     }
 
-    public List<Event> getOrganizationEvents(final Long organizationId, final LoginMember loginMember) {
-        Organization organization = getOrganizationById(organizationId);
-
-        if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId())) {
-            throw new ForbiddenException("조직에 참여하지 않아 권한이 없습니다.");
-        }
-
-        return organization.getActiveEvents(LocalDateTime.now());
-    }
-
-    //TODO 07.25 이후 리팩터링 및 제거하기
-    @Transactional
-    @Deprecated
-    public Organization alwaysGetWoowacourse() {
-        Optional<Organization> organization = organizationRepository.findByName(WOOWACOURSE_NAME);
-
-        return organization.orElseGet(() -> organizationRepository.save(
-                Organization.create(
-                        WOOWACOURSE_NAME,
-                        "우아한테크코스입니다",
-                        imageUrl
-                )));
-    }
-
     @Transactional
     public OrganizationMember participateOrganization(
             final Long organizationId,
@@ -104,16 +80,19 @@ public class OrganizationService {
             final OrganizationParticipateRequest organizationParticipateRequest
     ) {
         validateAlreadyParticipationMember(organizationId, loginMember);
+        validateDuplicateNickname(organizationId, organizationParticipateRequest.nickname());
 
         Organization organization = getOrganization(organizationId);
         Member member = getMember(loginMember);
         InviteCode inviteCode = getInviteCode(organizationParticipateRequest.inviteCode());
+        OrganizationGroup group = getOrganizationGroup(organizationParticipateRequest.groupId());
 
         OrganizationMember organizationMember =
                 organization.participate(
                         member,
                         organizationParticipateRequest.nickname(),
                         inviteCode,
+                        group,
                         LocalDateTime.now()
                 );
 
@@ -146,6 +125,30 @@ public class OrganizationService {
         return organizationRepository.findMemberOrganizations(member);
     }
 
+    @Transactional
+    public void deleteOrganization(final Long organizationId, final LoginMember loginMember) {
+        if (!organizationRepository.existsById(organizationId)) {
+            throw new NotFoundException("존재하지 않는 이벤트 스페이스입니다.");
+        }
+        OrganizationMember deletingMember = getOrganizationMember(organizationId, loginMember);
+
+        validateAdmin(deletingMember);
+
+        organizationRepository.deleteById(organizationId);
+    }
+
+    private void validateDuplicateNickname(final Long organizationId, final String nickname) {
+        if (organizationMemberRepository.existsByOrganizationIdAndNickname(organizationId, nickname)) {
+            throw new UnprocessableEntityException("이미 사용 중인 닉네임입니다.");
+        }
+    }
+
+    private void validateAdmin(final OrganizationMember organizationMember) {
+        if (!organizationMember.isAdmin()) {
+            throw new ForbiddenException("이벤트 스페이스의 관리자만 삭제할 수 있습니다.");
+        }
+    }
+
     private String resolveUpdateImageUrl(
             final String imageUrl,
             final OrganizationImageFile thumbnailOrganizationImageFile
@@ -161,7 +164,7 @@ public class OrganizationService {
 
     private void validateAlreadyParticipationMember(final Long organizationId, final LoginMember loginMember) {
         if (organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId())) {
-            throw new UnprocessableEntityException("이미 참여한 조직입니다.");
+            throw new UnprocessableEntityException("이미 참여한 이벤트 스페이스입니다.");
         }
     }
 
@@ -177,11 +180,16 @@ public class OrganizationService {
 
     private Organization getOrganization(final Long organizationId) {
         return organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 이벤트 스페이스입니다."));
     }
 
     private OrganizationMember getOrganizationMember(final Long organizationId, final LoginMember loginMember) {
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, loginMember.memberId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 조직원입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 구성원입니다."));
+    }
+
+    private OrganizationGroup getOrganizationGroup(final Long groupId) {
+        return organizationGroupRepository.findById(groupId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 그룹입니다."));
     }
 }

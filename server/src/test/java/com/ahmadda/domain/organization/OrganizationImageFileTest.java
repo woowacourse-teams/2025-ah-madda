@@ -46,7 +46,7 @@ class OrganizationImageFileTest {
     }
 
     @Test
-    void 허용되지_않은_확장자를_사용하면_예외가_발생한다() {
+    void 허용되지_않는_확장자를_사용하면_예외가_발생한다() {
         // when // then
         assertThatThrownBy(() ->
                 OrganizationImageFile.create("test.gif", "image/gif", 1024, validInputStream)

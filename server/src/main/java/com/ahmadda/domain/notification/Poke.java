@@ -19,9 +19,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class Poke {
 
-    private static final int MAX_SENDABLE_COUNT = 10;
+    private static final int MAX_SENDABLE_COUNT = 3;
     private static final Duration DUPLICATE_POKE_COUNT_MINUTES = Duration.ofMinutes(30L);
-    private static final String POKE_MESSAGE_FORMAT = "%s님에게 포키가 왔습니다! 🎉";
 
     private final PushNotifier pushNotifier;
     private final PokeHistoryRepository pokeHistoryRepository;
@@ -30,13 +29,14 @@ public class Poke {
     public PokeHistory doPoke(
             final OrganizationMember sender,
             final OrganizationMember recipient,
+            final PokeMessage pokeMessage,
             final Event event,
             final LocalDateTime sentAt
     ) {
         validateDoPoke(sender, recipient, event, sentAt);
         validateDuplicateDoPoke(sender, recipient, event, sentAt);
 
-        pushPoke(sender, recipient, event);
+        pushPoke(sender, recipient, pokeMessage, event);
 
         return PokeHistory.create(sender, recipient, event, sentAt);
     }
@@ -98,9 +98,10 @@ public class Poke {
     private void pushPoke(
             final OrganizationMember sendOrganizationMember,
             final OrganizationMember receiveOrganizationMember,
+            final PokeMessage pokeMessage,
             final Event event
     ) {
-        String sendMessage = String.format(POKE_MESSAGE_FORMAT, sendOrganizationMember.getNickname());
+        String sendMessage = pokeMessage.getMessage(sendOrganizationMember.getNickname());
 
         pushNotifier.sendPush(
                 receiveOrganizationMember,
@@ -116,7 +117,7 @@ public class Poke {
             final OrganizationMember receiveOrganizationMember
     ) {
         if (event.hasGuest(receiveOrganizationMember)) {
-            throw new UnprocessableEntityException("이미 이벤트에 참여한 조직원에게 포키를 보낼 수 없습니다.");
+            throw new UnprocessableEntityException("이미 이벤트에 참여한 구성원에게 포키를 보낼 수 없습니다.");
         }
 
         if (event.isOrganizer(receiveOrganizationMember)) {
@@ -140,12 +141,12 @@ public class Poke {
     ) {
         Organization organization = event.getOrganization();
 
-        if (!organization.isExistOrganizationMember(sendOrganizationMember)) {
-            throw new UnprocessableEntityException("포키를 보내려면 해당 조직에 참여하고 있어야 합니다.");
+        if (!sendOrganizationMember.isBelongTo(organization)) {
+            throw new UnprocessableEntityException("포키를 보내려면 해당 이벤트 스페이스에 참여하고 있어야 합니다.");
         }
 
-        if (!organization.isExistOrganizationMember(receiveOrganizationMember)) {
-            throw new UnprocessableEntityException("포키 대상이 해당 조직에 참여하고 있어야 합니다.");
+        if (!receiveOrganizationMember.isBelongTo(organization)) {
+            throw new UnprocessableEntityException("포키 대상이 해당 이벤트 스페이스에 참여하고 있어야 합니다.");
         }
     }
 }

@@ -6,6 +6,7 @@ import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventOrganizerRepository;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.event.GuestRepository;
@@ -14,6 +15,8 @@ import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.notification.EventNotificationOptOut;
 import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
@@ -52,12 +55,19 @@ class EventNotificationOptOutServiceTest {
     @Autowired
     private GuestRepository guestRepository;
 
+    @Autowired
+    private EventOrganizerRepository eventOrganizerRepository;
+
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
+
     @Test
     void 이벤트에_대한_알림_수신_거부를_설정할_수_있다() {
         // given
         var organization = createOrganization();
         var member = createMember("user", "user@mail.com");
-        var organizationMember = createOrganizationMember("닉네임", member, organization);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember("닉네임", member, organization, group);
         var event = createEvent(organizationMember, organization);
         var loginMember = new LoginMember(member.getId());
 
@@ -91,11 +101,12 @@ class EventNotificationOptOutServiceTest {
     }
 
     @Test
-    void 조직의_구성원이_아니면_수신거부_설정시_예외가_발생한다() {
+    void 이벤트_스페이스의_구성원이_아니면_수신거부_설정시_예외가_발생한다() {
         // given
         var org = createOrganization();
+        var group = createGroup();
         var event = createEvent(
-                createOrganizationMember("닉네임", createMember("user", "user@mail.com"), org),
+                createOrganizationMember("닉네임", createMember("user", "user@mail.com"), org, group),
                 org
         );
         var nonExistentMemberId = Long.MAX_VALUE;
@@ -104,7 +115,7 @@ class EventNotificationOptOutServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.optOut(event.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원입니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
@@ -112,7 +123,8 @@ class EventNotificationOptOutServiceTest {
         // given
         var org = createOrganization();
         var member = createMember("user", "user@mail.com");
-        var orgMember = createOrganizationMember("닉네임", member, org);
+        var group = createGroup();
+        var orgMember = createOrganizationMember("닉네임", member, org, group);
         var event = createEvent(orgMember, org);
 
         var loginMember = new LoginMember(member.getId());
@@ -129,7 +141,8 @@ class EventNotificationOptOutServiceTest {
         // given
         var org = createOrganization();
         var member = createMember("user", "user@mail.com");
-        var orgMember = createOrganizationMember("닉네임", member, org);
+        var group = createGroup();
+        var orgMember = createOrganizationMember("닉네임", member, org, group);
         var event = createEvent(orgMember, org);
 
         var loginMember = new LoginMember(member.getId());
@@ -156,11 +169,12 @@ class EventNotificationOptOutServiceTest {
     }
 
     @Test
-    void 조직의_구성원이_아니면_수신거부_취소시_예외가_발생한다() {
+    void 이벤트_스페이스의_구성원이_아니면_수신거부_취소시_예외가_발생한다() {
         // given
         var org = createOrganization();
+        var group = createGroup();
         var event = createEvent(
-                createOrganizationMember("닉네임", createMember("user", "user@mail.com"), org),
+                createOrganizationMember("닉네임", createMember("user", "user@mail.com"), org, group),
                 org
         );
         var nonExistentMemberId = Long.MAX_VALUE;
@@ -169,7 +183,7 @@ class EventNotificationOptOutServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.cancelOptOut(event.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원입니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
@@ -177,7 +191,8 @@ class EventNotificationOptOutServiceTest {
         // given
         var org = createOrganization();
         var member = createMember("user", "user@mail.com");
-        var orgMember = createOrganizationMember("닉네임", member, org);
+        var group = createGroup();
+        var orgMember = createOrganizationMember("닉네임", member, org, group);
         var event = createEvent(orgMember, org);
 
         var loginMember = new LoginMember(member.getId());
@@ -185,7 +200,7 @@ class EventNotificationOptOutServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.cancelOptOut(event.getId(), loginMember))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("수신 거부 설정이 존재하지 않습니다.");
+                .hasMessage("존재하지 않는 수신 거부 설정입니다.");
     }
 
     @Test
@@ -193,9 +208,10 @@ class EventNotificationOptOutServiceTest {
         // given
         var organization = createOrganization();
 
-        var organizer = createOrganizationMember("주최자", createMember("host", "host@mail.com"), organization);
+        var group = createGroup();
+        var organizer = createOrganizationMember("주최자", createMember("host", "host@mail.com"), organization, group);
         var member = createMember("user", "user@mail.com");
-        var orgMember = createOrganizationMember("닉네임", member, organization);
+        var orgMember = createOrganizationMember("닉네임", member, organization, group);
 
         var event = createEvent(organizer, organization);
         var loginMember = new LoginMember(member.getId());
@@ -227,11 +243,12 @@ class EventNotificationOptOutServiceTest {
     }
 
     @Test
-    void 수신_거부_여부_정보를_조회시_조직의_구성원이_아니면_예외가_발생한다() {
+    void 수신_거부_여부_정보를_조회시_이벤트_스페이스의_구성원이_아니면_예외가_발생한다() {
         // given
         var org = createOrganization();
+        var group = createGroup();
         var event = createEvent(
-                createOrganizationMember("닉네임", createMember("user", "user@mail.com"), org),
+                createOrganizationMember("닉네임", createMember("user", "user@mail.com"), org, group),
                 org
         );
         var loginMember = new LoginMember(Long.MAX_VALUE);
@@ -239,7 +256,7 @@ class EventNotificationOptOutServiceTest {
         // when // then
         assertThatThrownBy(() -> sut.getMemberWithOptStatus(event.getId(), loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 조직원입니다.");
+                .hasMessage("존재하지 않는 구성원입니다.");
     }
 
     @Test
@@ -250,9 +267,10 @@ class EventNotificationOptOutServiceTest {
         var member2 = createMember("user2", "user2@mail.com");
         var member3 = createMember("user3", "user3@mail.com");
 
-        var organizer = createOrganizationMember("닉네임1", member1, organization);
-        var orgMember1 = createOrganizationMember("닉네임2", member2, organization);
-        var orgMember2 = createOrganizationMember("닉네임3", member3, organization);
+        var group = createGroup();
+        var organizer = createOrganizationMember("닉네임1", member1, organization, group);
+        var orgMember1 = createOrganizationMember("닉네임2", member2, organization, group);
+        var orgMember2 = createOrganizationMember("닉네임3", member3, organization, group);
 
         var event = createEvent(organizer, organization);
 
@@ -297,14 +315,15 @@ class EventNotificationOptOutServiceTest {
     }
 
     @Test
-    void 조직원_목록에_알람_수신_거부_정보를_매핑할_수_있다() {
+    void 구성원_목록에_알람_수신_거부_정보를_매핑할_수_있다() {
         // given
         var organization = createOrganization();
         var member1 = createMember("user1", "user1@mail.com");
         var member2 = createMember("user2", "user2@mail.com");
 
-        var orgMember1 = createOrganizationMember("닉네임1", member1, organization);
-        var orgMember2 = createOrganizationMember("닉네임2", member2, organization);
+        var group = createGroup();
+        var orgMember1 = createOrganizationMember("닉네임1", member1, organization, group);
+        var orgMember2 = createOrganizationMember("닉네임2", member2, organization, group);
 
         var event = createEvent(orgMember1, organization);
 
@@ -335,11 +354,12 @@ class EventNotificationOptOutServiceTest {
     }
 
     @Test
-    void 이벤트가_없으면_조직원_수신거부_정보_매핑시_예외가_발생한다() {
+    void 이벤트가_없으면_구성원_수신거부_정보_매핑시_예외가_발생한다() {
         // given
         var member = createMember("user", "user@mail.com");
         var org = createOrganization();
-        var orgMember = createOrganizationMember("닉네임", member, org);
+        var group = createGroup();
+        var orgMember = createOrganizationMember("닉네임", member, org, group);
         var nonExistentEventId = Long.MAX_VALUE;
 
         // when // then
@@ -349,26 +369,32 @@ class EventNotificationOptOutServiceTest {
     }
 
     private Organization createOrganization() {
-        return organizationRepository.save(Organization.create("조직", "설명", "image.png"));
+        return organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "image.png"));
     }
 
     private Member createMember(String name, String email) {
         return memberRepository.save(Member.create(name, email, "picture"));
     }
 
-    private OrganizationMember createOrganizationMember(String nickname, Member member, Organization org) {
+    private OrganizationMember createOrganizationMember(
+            String nickname,
+            Member member,
+            Organization org,
+            OrganizationGroup group
+    ) {
         return organizationMemberRepository.save(OrganizationMember.create(
                 nickname,
                 member,
                 org,
-                OrganizationMemberRole.USER
+                OrganizationMemberRole.USER,
+                group
         ));
     }
 
     private Event createEvent(OrganizationMember organizer, Organization organization) {
         var now = LocalDateTime.now();
 
-        return eventRepository.save(Event.create(
+        var event = Event.create(
                 "이벤트 제목",
                 "설명",
                 "장소",
@@ -382,6 +408,13 @@ class EventNotificationOptOutServiceTest {
                         now.minusDays(5)
                 ),
                 100
-        ));
+        );
+        eventRepository.save(event);
+        eventOrganizerRepository.saveAll(event.getEventOrganizers());
+        return event;
+    }
+
+    private OrganizationGroup createGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
     }
 }
