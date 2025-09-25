@@ -1,13 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
 
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useQuery } from '@tanstack/react-query';
+import { useParams } from 'react-router-dom';
 
+import { organizationQueryOptions } from '@/api/queries/organization';
 import type { OrganizationMember } from '@/api/types/organizations';
 import { GuestList } from '@/features/Event/Manage/components/GuestList';
 import type { NonGuest } from '@/features/Event/Manage/types';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Modal } from '@/shared/components/Modal';
+import { Tabs } from '@/shared/components/Tabs/Tabs';
 import { Text } from '@/shared/components/Text';
 import { useToast } from '@/shared/components/Toast/ToastContext';
 import { theme } from '@/shared/styles/theme';
@@ -22,8 +27,8 @@ export type CoHostSelectModalProps = {
   title?: string;
 };
 
-type GroupKey = 'ALL' | number;
-type GroupSegment = { id: GroupKey; name: string };
+type TabId = 'HOST' | number;
+type GroupTab = { id: TabId; name: string };
 
 export const CoHostSelectModal = ({
   isOpen,
@@ -34,9 +39,14 @@ export const CoHostSelectModal = ({
   maxSelectable,
   title = '공동 주최자 지정',
 }: CoHostSelectModalProps) => {
+  const { organizationId } = useParams();
   const { error } = useToast();
   const [cohostList, setCohostList] = useState<NonGuest[]>([]);
-  const [activeGroup, setActiveGroup] = useState<GroupKey>('ALL');
+
+  const { data: organizationGroups } = useQuery({
+    ...organizationQueryOptions.group(),
+    enabled: !!organizationId,
+  });
 
   useEffect(() => {
     const init = (members || []).map<NonGuest>((m) => ({
@@ -50,47 +60,41 @@ export const CoHostSelectModal = ({
 
   const memberIdToGroupId = useMemo(() => {
     const map = new Map<number, number>();
-    (members || []).forEach((m) => {
-      map.set(m.organizationMemberId, m.group.groupId);
-    });
+    (members || []).forEach((m) => map.set(m.organizationMemberId, m.group.groupId));
     return map;
   }, [members]);
 
-  const groupSegments = useMemo<GroupSegment[]>(() => {
-    const groups = new Map<number, string>();
-    (members || []).forEach((m) => {
-      const { groupId, name } = m.group;
-      if (!groups.has(groupId)) groups.set(groupId, name);
-    });
+  const tabs: GroupTab[] = useMemo(() => {
+    const groupTabs =
+      (organizationGroups || [])
+        .map((g: { groupId: number; name: string }) => ({
+          id: g.groupId as TabId,
+          name: g.name,
+        }))
+        .sort((a, b) => Number(a.id) - Number(b.id)) ?? [];
+    return [{ id: 'HOST' as TabId, name: '주최자' }, ...groupTabs];
+  }, [organizationGroups]);
 
-    const entries: Array<[number, string]> = Array.from(groups.entries()).sort(([a], [b]) => a - b);
-
-    return [{ id: 'ALL', name: '전체' }, ...entries.map(([id, name]) => ({ id, name }))];
-  }, [members]);
-
-  const visibleIds = useMemo(() => {
-    if (activeGroup === 'ALL') return cohostList.map((m) => m.organizationMemberId);
+  const idsOfTab = (tabId: TabId) => {
+    if (tabId === 'HOST')
+      return cohostList.filter((m) => m.isChecked).map((m) => m.organizationMemberId);
     return cohostList
-      .map((m) => m.organizationMemberId)
-      .filter((id) => memberIdToGroupId.get(id) === activeGroup);
-  }, [cohostList, activeGroup, memberIdToGroupId]);
+      .filter((m) => memberIdToGroupId.get(m.organizationMemberId) === tabId)
+      .map((m) => m.organizationMemberId);
+  };
 
-  const filteredGuests = useMemo<NonGuest[]>(
-    () =>
-      cohostList.filter((m) =>
-        activeGroup === 'ALL' ? true : memberIdToGroupId.get(m.organizationMemberId) === activeGroup
-      ),
-    [cohostList, activeGroup, memberIdToGroupId]
-  );
+  const guestsOfTab = (tabId: TabId) => {
+    if (tabId === 'HOST') return cohostList.filter((m) => m.isChecked);
+    return cohostList.filter((m) => memberIdToGroupId.get(m.organizationMemberId) === tabId);
+  };
 
-  const selectedTotalCount = cohostList.filter((m) => m.isChecked).length;
+  const totalSelected = cohostList.filter((m) => m.isChecked).length;
 
   const onGuestChecked = (organizationMemberId: number) => {
     setCohostList((prev) => {
       const next = prev.map((m) =>
         m.organizationMemberId === organizationMemberId ? { ...m, isChecked: !m.isChecked } : m
       );
-
       if (maxSelectable != null && maxSelectable > 0) {
         const count = next.filter((m) => m.isChecked).length;
         if (count > maxSelectable) {
@@ -98,19 +102,17 @@ export const CoHostSelectModal = ({
           return prev;
         }
       }
-
       return next;
     });
   };
 
-  const onAllGuestChecked = () => {
-    const allVisibleChecked = filteredGuests.length > 0 && filteredGuests.every((m) => m.isChecked);
-
+  const onAllGuestCheckedFor = (visibleIds: number[]) => {
     setCohostList((prev) => {
+      const visible = prev.filter((m) => visibleIds.includes(m.organizationMemberId));
+      const allChecked = visible.length > 0 && visible.every((m) => m.isChecked);
       const toggled = prev.map((m) =>
-        visibleIds.includes(m.organizationMemberId) ? { ...m, isChecked: !allVisibleChecked } : m
+        visibleIds.includes(m.organizationMemberId) ? { ...m, isChecked: !allChecked } : m
       );
-
       if (maxSelectable != null && maxSelectable > 0) {
         const count = toggled.filter((m) => m.isChecked).length;
         if (count > maxSelectable) {
@@ -135,57 +137,91 @@ export const CoHostSelectModal = ({
           {title}
         </Text>
 
-        <Flex css={{ flexWrap: 'wrap' }} gap="8px">
-          {groupSegments.map((g) => {
-            const isSelected = activeGroup === g.id;
-            return (
-              <Segment
-                key={`${g.id}`}
-                type="button"
-                isSelected={isSelected}
-                onClick={() => setActiveGroup(g.id)}
-                aria-pressed={isSelected}
+        <Tabs defaultValue={String(tabs[0]?.id ?? '')}>
+          <Tabs.List
+            css={css`
+              --tabs-gap: 12px;
+              display: flex;
+              overflow-x: auto;
+              white-space: nowrap;
+              padding: 0 4px;
+              column-gap: var(--tabs-gap);
+              margin-top: 12px;
+
+              @media (max-width: 480px) {
+                --tabs-gap: 8px;
+                padding: 0 2px;
+              }
+            `}
+          >
+            {tabs.map((t) => (
+              <Tabs.Trigger
+                key={t.id}
+                value={String(t.id)}
+                css={css`
+                  margin: 0;
+                  padding: 6px 10px;
+
+                  @media (max-width: 500px) {
+                    padding: 3px 6px;
+                    font-size: 13px;
+                  }
+                `}
               >
-                <Text
-                  weight={isSelected ? 'bold' : 'regular'}
-                  color={isSelected ? theme.colors.primary500 : theme.colors.gray300}
-                >
-                  {g.name}
-                </Text>
-              </Segment>
+                {t.name}
+              </Tabs.Trigger>
+            ))}
+          </Tabs.List>
+
+          {tabs.map((t) => {
+            const guests = guestsOfTab(t.id);
+            const ids = idsOfTab(t.id);
+            const emptyMsg =
+              t.id === 'HOST'
+                ? '선택된 공동 주최자가 없어요.'
+                : '이 그룹에 속해있는 구성원이 없어요.';
+
+            return (
+              <Tabs.Content key={`${t.id}`} value={String(t.id)}>
+                <ScrollArea>
+                  {guests.length === 0 ? (
+                    <EmptyState>{emptyMsg}</EmptyState>
+                  ) : (
+                    <GuestList
+                      title={`${title} (${totalSelected}명)`}
+                      titleColor={theme.colors.gray700}
+                      guests={guests}
+                      onGuestChecked={onGuestChecked}
+                      onAllGuestChecked={() => onAllGuestCheckedFor(ids)}
+                    />
+                  )}
+                </ScrollArea>
+              </Tabs.Content>
             );
           })}
-        </Flex>
+        </Tabs>
 
-        <ScrollArea>
-          <GuestList
-            title={`${title} (${selectedTotalCount}명)`}
-            titleColor={theme.colors.gray700}
-            guests={filteredGuests}
-            onGuestChecked={onGuestChecked}
-            onAllGuestChecked={onAllGuestChecked}
-          />
-        </ScrollArea>
+        <StickyFooter>
+          <Text type="Label" color={theme.colors.gray500} css={{ marginBottom: 12 }}>
+            공동 주최자는 이벤트 편집 권한을 공유합니다.
+          </Text>
 
-        <Text type="Label" color={theme.colors.gray500}>
-          공동 주최자는 이벤트 편집 권한을 공유합니다.
-        </Text>
-
-        <Flex justifyContent="space-between" gap="12px">
-          <Button onClick={onClose} size="full" variant="outline">
-            취소
-          </Button>
-          <Button onClick={handleApply} size="full" color="secondary">
-            적용
-          </Button>
-        </Flex>
+          <Flex justifyContent="space-between" gap="12px">
+            <Button onClick={onClose} size="full" variant="outline">
+              취소
+            </Button>
+            <Button onClick={handleApply} size="full" color="secondary">
+              적용
+            </Button>
+          </Flex>
+        </StickyFooter>
       </ModalBody>
     </Modal>
   );
 };
 
 const ModalBody = styled(Flex)`
-  width: clamp(200px, 92vw, 320px);
+  width: clamp(200px, 85vw, 500px);
   height: clamp(300px, 80vh, 450px);
   min-height: 0;
 `;
@@ -195,6 +231,7 @@ const ScrollArea = styled.div`
   min-height: 0;
   overflow-y: auto;
   padding-right: 4px;
+  margin-top: 12px;
 
   scrollbar-width: thin;
   &::-webkit-scrollbar {
@@ -206,19 +243,18 @@ const ScrollArea = styled.div`
   }
 `;
 
-const Segment = styled.button<{ isSelected: boolean }>`
-  all: unset;
-  flex: 0 0 auto;
-  word-break: keep-all;
-  border: 1.5px solid
-    ${(props) => (props.isSelected ? theme.colors.primary500 : theme.colors.gray300)};
-  text-align: center;
-  border-radius: 10px;
-  cursor: pointer;
-  padding: 6px 10px;
-  white-space: nowrap;
+const StickyFooter = styled.div`
+  margin-top: auto;
+  background: ${theme.colors.white};
+  padding-top: 8px;
+`;
 
-  &:hover {
-    border-color: ${theme.colors.primary500};
-  }
+const EmptyState = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${theme.colors.gray400};
+  font-size: 14px;
+  height: 250px;
+  text-align: center;
 `;
