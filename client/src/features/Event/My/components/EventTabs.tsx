@@ -50,9 +50,11 @@ export const EventTabs = () => {
           </Flex>
         ) : (
           <Flex dir="column" width="100%" gap="20px">
-            {groupedHostEvents.map(({ label, events }) => (
-              <EventSection key={label} date={label} events={events} cardType={TAB_VALUES.HOST} />
-            ))}
+            {groupedHostEvents
+              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+              .map(({ label, events }) => (
+                <EventSection key={label} date={label} events={events} cardType={TAB_VALUES.HOST} />
+              ))}
           </Flex>
         )}
       </Tabs.Content>
@@ -71,14 +73,16 @@ export const EventTabs = () => {
           </Flex>
         ) : (
           <Flex dir="column" width="100%" gap="20px">
-            {groupedParticipateEvents.map(({ label, events }) => (
-              <EventSection
-                key={label}
-                date={label}
-                events={events}
-                cardType={TAB_VALUES.PARTICIPATE}
-              />
-            ))}
+            {groupedParticipateEvents
+              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+              .map(({ label, events }) => (
+                <EventSection
+                  key={label}
+                  date={label}
+                  events={events}
+                  cardType={TAB_VALUES.PARTICIPATE}
+                />
+              ))}
           </Flex>
         )}
       </Tabs.Content>
