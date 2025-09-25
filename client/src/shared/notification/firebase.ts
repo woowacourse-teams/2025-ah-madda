@@ -52,10 +52,10 @@ export const setupForegroundMessage = () => {
 
       notification.onclick = (event) => {
         const data = (event.target as Notification).data;
-        const url = data?.redirectUrl;
+        const redirectUrl = data?.redirectUrl;
 
-        if (url) {
-          window.open(url, '_blank');
+        if (redirectUrl) {
+          window.location.href = redirectUrl;
         }
         notification.close();
       };

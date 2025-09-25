@@ -8,7 +8,7 @@ const fontTypes = {
     font-size: 2.25rem;
 
     @media (max-width: 768px) {
-      font-size: 2rem;
+      font-size: 1.75rem;
     }
   `,
   Title: css`

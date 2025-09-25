@@ -4,6 +4,7 @@ import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +42,6 @@ class EventTest {
                 "이전 제목",
                 "이전 설명",
                 "이전 장소",
-                baseOrganizer,
                 baseOrganization,
                 EventOperationPeriod.create(
                         registrationPeriod.start(),
@@ -49,6 +50,7 @@ class EventTest {
                         eventPeriod.end(),
                         now
                 ),
+                List.of(baseOrganizer),
                 10
         );
 
@@ -64,8 +66,7 @@ class EventTest {
 
         // when
         sut.update(
-                sut.getOrganizer()
-                        .getMember(),
+                baseOrganizer.getMember(),
                 "수정된 제목",
                 "수정된 설명",
                 "수정된 장소",
@@ -98,7 +99,6 @@ class EventTest {
                 "이전 제목",
                 "이전 설명",
                 "이전 장소",
-                baseOrganizer,
                 baseOrganization,
                 EventOperationPeriod.create(
                         registrationPeriod.start(),
@@ -107,10 +107,11 @@ class EventTest {
                         eventPeriod.end(),
                         now
                 ),
+                List.of(baseOrganizer),
                 10
         );
 
-        var notOrganizer = createOrganizationMember("조직원", createMember("일반유저", "user@email.com"), baseOrganization);
+        var notOrganizer = createOrganizationMember("구성원", createMember("일반유저", "user@email.com"), baseOrganization);
 
         var updatedRegistrationPeriod = EventPeriod.create(now.plusDays(2), now.plusDays(3));
         var updatedEventPeriod = EventPeriod.create(now.plusDays(4), now.plusDays(5));
@@ -122,7 +123,7 @@ class EventTest {
                 now
         );
 
-        // when & then
+        // when // then
         assertThatThrownBy(() -> sut.update(
                 notOrganizer.getMember(),
                 "수정된 제목",
@@ -146,8 +147,8 @@ class EventTest {
                         .plusDays(2)
         );
         var sut = createEvent(now, registrationPeriod);
-        var guest = createOrganizationMember("조직원", createMember("참가자1", "guest1@example.com"), baseOrganization);
-        var notGuest = createOrganizationMember("다른 조직원", createMember("참가자2", "guest2@example.com"), baseOrganization);
+        var guest = createOrganizationMember("구성원", createMember("참가자1", "guest1@example.com"), baseOrganization);
+        var notGuest = createOrganizationMember("다른 구성원", createMember("참가자2", "guest2@example.com"), baseOrganization);
         Guest.create(sut, guest, registrationPeriod.start());
 
         // when
@@ -194,7 +195,7 @@ class EventTest {
     }
 
     @Test
-    void 주최자는_자신의_조직이_아닌_다른_조직의_이벤트를_생성한다면_예외가_발생한다() {
+    void 주최자는_자신의_이벤트_스페이스가_아닌_다른_이벤트_스페이스의_이벤트를_생성한다면_예외가_발생한다() {
         //given
         var organization1 = createOrganization("우테코1");
         var organization2 = createOrganization("우테코2");
@@ -203,7 +204,7 @@ class EventTest {
         //when //then
         assertThatThrownBy(() -> createEvent(organizationMember, organization2))
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("자신이 속한 조직이 아닙니다.");
+                .hasMessage("주최자는 동일한 이벤트 스페이스에 속해야 합니다.");
     }
 
     @ParameterizedTest
@@ -242,7 +243,7 @@ class EventTest {
 
 
     @Test
-    void 이벤트에_참여하지_않은_조직원을_조회할_수_있다() {
+    void 이벤트에_참여하지_않는_구성원을_조회할_수_있다() {
         // given
         var now = LocalDateTime.now();
         var registrationPeriod = EventPeriod.create(
@@ -271,7 +272,7 @@ class EventTest {
     }
 
     @Test
-    void 이벤트에_참여중인_게스트가_또_참여한다면_예외가_발생한다() {
+    void 이벤트에_참여_중인_게스트가_또_참여한다면_예외가_발생한다() {
         //given
         var now = LocalDateTime.now();
         var registrationPeriod = EventPeriod.create(
@@ -288,7 +289,7 @@ class EventTest {
         //when //then
         assertThatThrownBy(() -> sut.participate(guest, registrationPeriod.start()))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("이미 해당 이벤트에 참여중인 게스트입니다.");
+                .hasMessage("이미 해당 이벤트에 참여 중인 게스트입니다.");
     }
 
     @Test
@@ -323,20 +324,111 @@ class EventTest {
                 LocalDateTime.now()
                         .plusDays(2)
         );
-        var sut = createEvent(now, registrationPeriod);
-        var nonOrganizer = createOrganizationMember("다른 조직원", createMember(), baseOrganization);
+        var coOrganizer =
+                createOrganizationMember("공동주최자", createMember("co-organizer", "co@email.com"), baseOrganization);
+
+        var eventOperationPeriod = EventOperationPeriod.create(
+                registrationPeriod.start(), registrationPeriod.end(),
+                now.plusDays(3), now.plusDays(4),
+                now
+        );
+        var sut = Event.create(
+                "title",
+                "description",
+                "place",
+                baseOrganization,
+                eventOperationPeriod,
+                List.of(baseOrganizer, coOrganizer),
+                10
+        );
+
+        var nonOrganizer = createOrganizationMember("다른 구성원", createMember(), baseOrganization);
 
         // when
         var isOrganizer = sut.isOrganizer(baseOrganizer.getMember());
+        var isCoOrganizer = sut.isOrganizer(coOrganizer.getMember());
         var isNotOrganizer = sut.isOrganizer(nonOrganizer.getMember());
 
         // then
         assertSoftly(softly -> {
             softly.assertThat(isOrganizer)
                     .isTrue();
+            softly.assertThat(isCoOrganizer)
+                    .isTrue();
             softly.assertThat(isNotOrganizer)
                     .isFalse();
         });
+    }
+
+    @Test
+    void 공동_주최자가_중복되면_예외가_발생한다() {
+        // given
+        var now = LocalDateTime.now();
+        var registrationPeriod = EventPeriod.create(
+                LocalDateTime.now()
+                        .plusDays(1),
+                LocalDateTime.now()
+                        .plusDays(2)
+        );
+        var duplicateCoOrganizer = baseOrganizer;
+
+        var eventOperationPeriod = EventOperationPeriod.create(
+                registrationPeriod.start(), registrationPeriod.end(),
+                now.plusDays(3), now.plusDays(4),
+                now
+        );
+
+        // when // then
+        assertThatThrownBy(() -> Event.create(
+                "title",
+                "description",
+                "place",
+                baseOrganization,
+                eventOperationPeriod,
+                List.of(baseOrganizer, duplicateCoOrganizer),
+                10
+        ))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("주최자는 중복될 수 없습니다.");
+    }
+
+    @Test
+    void 주최자가_10명을_초과하면_예외가_발생한다() {
+        // given
+        var now = LocalDateTime.now();
+        var registrationPeriod = EventPeriod.create(
+                LocalDateTime.now()
+                        .plusDays(1),
+                LocalDateTime.now()
+                        .plusDays(2)
+        );
+
+        List<OrganizationMember> organizers = new ArrayList<>();
+        organizers.add(baseOrganizer);
+        for (int i = 0; i < 10; i++) {
+            var coOrganizerMail = "coOrganizer" + i + "@naver.com";
+            var member = createMember("공동주최자" + i, coOrganizerMail);
+            organizers.add(createOrganizationMember("공동주최자" + i, member, baseOrganization));
+        }
+
+        var eventOperationPeriod = EventOperationPeriod.create(
+                registrationPeriod.start(), registrationPeriod.end(),
+                now.plusDays(3), now.plusDays(4),
+                now
+        );
+
+        // when // then
+        assertThatThrownBy(() -> Event.create(
+                "title",
+                "description",
+                "place",
+                baseOrganization,
+                eventOperationPeriod,
+                organizers,
+                10
+        ))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("최대 주최자 수는 10명입니다.");
     }
 
     @Test
@@ -364,12 +456,24 @@ class EventTest {
         var organization = Organization.create("우아한 테크코스", "woowahan-tech-course", "우아한 테크코스 6기");
         var member = Member.create("박미참여", "not.participant.park@woowahan.com", "testPicture");
         var organizationMember =
-                OrganizationMember.create("참여안한_조직원", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "참여안한_구성원",
+                        member,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
 
 
         var member2 = Member.create("김참가", "participant.kim@woowahan.com", "testPicture");
         var organizationMember2 =
-                OrganizationMember.create("실제_참가자", member2, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "실제_참가자",
+                        member2,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
 
         var sut = createEvent(organizationMember, organization);
         var participate = Guest.create(sut, organizationMember2, sut.getRegistrationStart());
@@ -385,12 +489,24 @@ class EventTest {
         var organization = Organization.create("우아한 테크코스", "woowahan-tech-course", "우아한 테크코스 6기");
         var member = Member.create("박찬양", "creator.chanyang@woowahan.com", "testPicture");
         var organizationMember =
-                OrganizationMember.create("이벤트_개설자_닉네임", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "주최자_닉네임",
+                        member,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
 
 
         var member2 = Member.create("김참가", "participant.kim@woowahan.com", "testPicture");
         var organizationMember2 =
-                OrganizationMember.create("참가자A_닉네임", member2, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "참가자A_닉네임",
+                        member2,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
 
         var sut = createEvent(organizationMember, organization);
         var participate = Guest.create(sut, organizationMember2, sut.getRegistrationStart());
@@ -534,12 +650,12 @@ class EventTest {
 
     private Event createEvent(String title, int maxCapacity, Question... questions) {
         var organization = createOrganization("우테코");
+        var organizer = createOrganizationMember(createMember(), organization);
 
         return Event.create(
                 title,
                 "description",
                 "place",
-                createOrganizationMember(createMember(), organization),
                 organization,
                 EventOperationPeriod.create(
                         LocalDateTime.now()
@@ -552,6 +668,7 @@ class EventTest {
                                 .plusDays(4),
                         LocalDateTime.now()
                 ),
+                List.of(organizer),
                 maxCapacity,
                 questions
         );
@@ -562,13 +679,13 @@ class EventTest {
                 "title",
                 "description",
                 "place",
-                baseOrganizer,
                 baseOrganization,
                 EventOperationPeriod.create(
                         registrationEventPeriod.start(), registrationEventPeriod.end(),
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
+                List.of(baseOrganizer),
                 10
         );
     }
@@ -578,7 +695,7 @@ class EventTest {
     }
 
     private Organization createOrganization() {
-        return Organization.create("테스트 조직", "설명", "image.png");
+        return Organization.create("테스트 이벤트 스페이스", "설명", "image.png");
     }
 
     private OrganizationMember createOrganizationMember(
@@ -586,25 +703,38 @@ class EventTest {
             Member member,
             Organization organization
     ) {
-        return OrganizationMember.create(nickname, member, organization, OrganizationMemberRole.USER);
+        return OrganizationMember.create(
+                nickname,
+                member,
+                organization,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
+        );
     }
 
     private Event createEvent(String title, EventOperationPeriod eventOperationPeriod) {
         var organization = createOrganization("우테코");
+        var organizer = createOrganizationMember(createMember(), organization);
 
         return Event.create(
                 title,
                 "description",
                 "place",
-                createOrganizationMember(createMember(), organization),
                 organization,
                 eventOperationPeriod,
+                List.of(organizer),
                 100
         );
     }
 
     private OrganizationMember createOrganizationMember(Member member, Organization organization) {
-        return OrganizationMember.create("nickname", member, organization, OrganizationMemberRole.USER);
+        return OrganizationMember.create(
+                "nickname",
+                member,
+                organization,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
+        );
     }
 
     private Member createMember() {
@@ -622,13 +752,13 @@ class EventTest {
                 "title",
                 "description",
                 "place",
-                organizationMember,
                 organization,
                 EventOperationPeriod.create(
                         now.plusDays(1), now.plusDays(2),
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
+                List.of(organizationMember),
                 10
         );
     }

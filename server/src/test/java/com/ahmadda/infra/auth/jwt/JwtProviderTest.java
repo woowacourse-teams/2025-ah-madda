@@ -1,215 +1,90 @@
 package com.ahmadda.infra.auth.jwt;
 
-import com.ahmadda.infra.auth.jwt.config.JwtProperties;
-import com.ahmadda.infra.auth.jwt.exception.InvalidJwtException;
+import com.ahmadda.common.exception.UnauthorizedException;
+import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
+import javax.crypto.SecretKey;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class JwtProviderTest {
 
-    static JwtProperties jwtProperties;
-    static JwtProvider sut;
+    private JwtProvider sut;
+    private SecretKey secretKey;
 
-    @BeforeAll
-    static void setUpAll() {
-        String accessSecretKey = UUID.randomUUID()
-                .toString();
-        String refreshSecretKey = UUID.randomUUID()
-                .toString();
-        Duration accessExpiration = Duration.ofHours(1);
-        Duration refreshExpiration = Duration.ofHours(1);
-
-        jwtProperties = new JwtProperties(
-                accessSecretKey, accessExpiration,
-                refreshSecretKey, refreshExpiration
-        );
-        sut = new JwtProvider(jwtProperties);
+    @BeforeEach
+    void setUp() {
+        sut = new JwtProvider();
+        secretKey = Keys.hmacShaKeyFor(UUID.randomUUID()
+                .toString()
+                .repeat(2)
+                .getBytes());
     }
 
     @Test
-    void JWT_토큰을_정상적으로_생성_및_검증_할_수_있다() {
+    void 정상적으로_토큰을_생성하고_파싱할_수_있다() {
         // given
-        var memberId = 1L;
-        var token = sut.createAccessToken(memberId);
+        Long memberId = 1L;
+        var token = sut.createToken(memberId, Duration.ofHours(1), secretKey);
 
         // when
-        var memberPayload = sut.parseAccessPayload(token);
+        JwtMemberPayload payload = sut.parsePayload(token, secretKey);
 
         // then
-        assertThat(memberPayload.getMemberId()).isEqualTo(memberId);
+        assertThat(payload.memberId()).isEqualTo(memberId);
     }
 
     @Test
-    void 페이로드_변환시_토큰을_정상적으로_파싱한다() {
+    void 유효하지_않은_토큰은_파싱시_예외가_발생한다() {
         // given
-        var memberId = 2L;
-        var token = sut.createAccessToken(memberId);
+        var otherKey = Keys.hmacShaKeyFor(UUID.randomUUID()
+                .toString()
+                .repeat(2)
+                .getBytes());
+        var token = sut.createToken(3L, Duration.ofHours(1), otherKey);
 
-        // when
-        var payload = sut.parseAccessPayload(token);
-
-        // then
-        assertThat(payload.getMemberId()).isEqualTo(memberId);
+        // when // then
+        assertThatThrownBy(() -> sut.parsePayload(token, secretKey))
+                .isInstanceOf(UnauthorizedException.class)
+                .hasMessage("유효하지 않은 인증 정보입니다.");
     }
 
     @Test
-    void 페이로드_변환시_만료된_토큰일_경우_예외가_발생한다() {
+    void 만료된_토큰은_만료여부를_확인할_수_있다() {
         // given
         var now = Instant.now();
-        var token = Jwts.builder()
+        var expiredToken = Jwts.builder()
                 .claims(Jwts.claims()
-                                .add("memberId", 3L)
-                                .issuedAt(Date.from(now.minus(Duration.ofHours(2))))
-                                .expiration(Date.from(now.minus(Duration.ofMinutes(1))))
-                                .build())
-                .signWith(jwtProperties.getAccessSecretKey())
+                        .add("memberId", 2L)
+                        .issuedAt(Date.from(now.minus(Duration.ofHours(2))))
+                        .expiration(Date.from(now.minus(Duration.ofMinutes(1))))
+                        .build())
+                .signWith(secretKey)
                 .compact();
 
         // when // then
-        assertThatThrownBy(() -> sut.parseAccessPayload(token))
-                .isInstanceOf(InvalidJwtException.class)
-                .hasMessage("만료기한이 지난 토큰입니다.");
+        assertThat(sut.isTokenExpired(expiredToken, secretKey)).isTrue();
     }
 
     @Test
-    void 페이로드_변환시_잘못된_서명일_경우_예외가_발생한다() {
-        // given
-        var forgedKey = Keys.hmacShaKeyFor(UUID.randomUUID()
-                                                   .toString()
-                                                   .getBytes());
+    void 유효하지_않은_토큰은_만료여부_검증시_예외가_발생한다() {
+        var otherKey = Keys.hmacShaKeyFor(UUID.randomUUID()
+                .toString()
+                .repeat(2)
+                .getBytes());
+        var token = sut.createToken(4L, Duration.ofHours(1), otherKey);
 
-        var expiration = Duration.ofHours(1);
-
-        var claims = Jwts.claims()
-                .add("memberId", 4L)
-                .issuedAt(Date.from(Instant.now()))
-                .expiration(Date.from(Instant.now()
-                                              .plus(expiration)))
-                .build();
-
-        var token = Jwts.builder()
-                .claims(claims)
-                .signWith(forgedKey)
-                .compact();
-
-        // when // then
-        assertThatThrownBy(() -> sut.parseAccessPayload(token))
-                .isInstanceOf(InvalidJwtException.class)
-                .hasMessage("인증 토큰을 파싱하는데 실패하였습니다.");
-    }
-
-    @Test
-    void 페이로드_변환시_빈_토큰이면_예외가_발생한다() {
-        assertThatThrownBy(() -> sut.parseAccessPayload(""))
-                .isInstanceOf(InvalidJwtException.class)
-                .hasMessage("인증 토큰을 파싱하는데 실패하였습니다.");
-    }
-
-    @Test
-    void 페이로드_변환시_null_토큰이면_예외가_발생한다() {
-        assertThatThrownBy(() -> sut.parseAccessPayload(null))
-                .isInstanceOf(InvalidJwtException.class)
-                .hasMessage("인증 토큰을 파싱하는데 실패하였습니다.");
-    }
-
-    @Test
-    void 페이로드_변환시_형식이_잘못된_토큰이면_예외가_발생한다() {
-        assertThatThrownBy(() -> sut.parseAccessPayload("this.is.not.jwt"))
-                .isInstanceOf(InvalidJwtException.class)
-                .hasMessage("잘못된 형식의 토큰입니다.");
-    }
-
-    @Test
-    void 리프레시토큰을_정상적으로_생성_할_수_있다() {
-        // given
-        var memberId = 10L;
-        var token = sut.createRefreshToken(memberId);
-
-        // when
-        var payload = sut.parseRefreshPayload(token);
-
-        // then
-        assertThat(payload.getMemberId()).isEqualTo(memberId);
-    }
-
-    @Test
-    void 만료된_리프레시토큰은_예외가_발생한다() {
-        // given
-        var now = Instant.now();
-        var expiredRefreshToken = Jwts.builder()
-                .claims(Jwts.claims()
-                                .add("memberId", 20L)
-                                .issuedAt(Date.from(now.minus(Duration.ofHours(2))))
-                                .expiration(Date.from(now.minus(Duration.ofMinutes(1))))
-                                .build())
-                .signWith(jwtProperties.getRefreshSecretKey())
-                .compact();
-
-        // when // then
-        assertThatThrownBy(() -> sut.parseRefreshPayload(expiredRefreshToken))
-                .isInstanceOf(InvalidJwtException.class)
-                .hasMessage("만료기한이 지난 토큰입니다.");
-    }
-
-    @Test
-    void 잘못된_서명의_리프레시토큰은_예외가_발생한다() {
-        // given
-        var forgedKey = Keys.hmacShaKeyFor(UUID.randomUUID()
-                                                   .toString()
-                                                   .getBytes());
-        var expiration = Duration.ofHours(1);
-
-        var token = Jwts.builder()
-                .claims(Jwts.claims()
-                                .add("memberId", 30L)
-                                .issuedAt(Date.from(Instant.now()))
-                                .expiration(Date.from(Instant.now()
-                                                              .plus(expiration)))
-                                .build())
-                .signWith(forgedKey)
-                .compact();
-
-        // when // then
-        assertThatThrownBy(() -> sut.parseRefreshPayload(token))
-                .isInstanceOf(InvalidJwtException.class)
-                .hasMessage("인증 토큰을 파싱하는데 실패하였습니다.");
-    }
-
-    @Test
-    void 액세스토큰_만료_여부를_확인할_수_있다() {
-        // given
-        var now = Instant.now();
-        var expiredAccessToken = Jwts.builder()
-                .claims(Jwts.claims()
-                                .add("memberId", 50L)
-                                .issuedAt(Date.from(now.minus(Duration.ofHours(2))))
-                                .expiration(Date.from(now.minus(Duration.ofMinutes(1))))
-                                .build())
-                .signWith(jwtProperties.getAccessSecretKey())
-                .compact();
-
-        //when // then
-        assertThat(sut.isAccessTokenExpired(expiredAccessToken)).isTrue();
-    }
-
-    @Test
-    void 액세스토큰을_리프레시로_검증시_예외가_발생한다() {
-        // given
-        var accessToken = sut.createAccessToken(60L);
-
-        // when // then
-        assertThatThrownBy(() -> sut.parseRefreshPayload(accessToken))
-                .isInstanceOf(InvalidJwtException.class)
-                .hasMessage("인증 토큰을 파싱하는데 실패하였습니다.");
+        assertThatThrownBy(() -> sut.isTokenExpired(token, secretKey))
+                .isInstanceOf(UnauthorizedException.class)
+                .hasMessage("유효하지 않은 인증 정보입니다.");
     }
 }

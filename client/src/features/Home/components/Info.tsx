@@ -9,28 +9,19 @@ import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
-import { useModal } from '@/shared/hooks/useModal';
-
-import { useToast } from '../../../shared/components/Toast/ToastContext';
-
-import { GuideModal } from './GuideModal';
+import { useToast } from '@/shared/components/Toast/ToastContext';
 
 export const Info = () => {
   const { error } = useToast();
-  const { isOpen, open, close } = useModal();
   const navigate = useNavigate();
 
-  const handelGuideOpenClick = () => {
+  const handleEnterOrganizationSpace = () => {
     if (!isAuthenticated()) {
       error(`로그인이 필요한 서비스입니다.\n먼저 로그인해 주세요.`, {
         duration: 3000,
       });
       return;
     }
-    open();
-  };
-
-  const handleEnterClick = () => {
     navigate(`/organization`);
   };
 
@@ -75,8 +66,15 @@ export const Info = () => {
                 height: 100px;
               `}
             />
-            <Text as="h2" type="Heading" weight="medium">
-              조직 내 이벤트를 더 잘 참여하게!
+            <Text
+              as="h2"
+              type="Heading"
+              weight="medium"
+              css={css`
+                word-break: keep-all;
+              `}
+            >
+              이벤트 스페이스 내 이벤트를 더 잘 참여하게!
             </Text>
           </Flex>
           <Flex
@@ -86,17 +84,16 @@ export const Info = () => {
               position: relative;
             `}
           >
-            <Logo src={Ahmadda} alt="아마다 로고" />
-            <PointIcon src={Point} alt="Point" className="point1" />
-            <PointIcon src={Point} alt="Point" className="point2" />
-            <PointIcon src={Point} alt="Point" className="point3" />
+            <Logo src={Ahmadda} alt="아마다 로고" width={150} height={220} />
+            <PointIcon src={Point} alt="Point" className="point1" width={40} height={100} />
+            <PointIcon src={Point} alt="Point" className="point2" width={40} height={100} />
+            <PointIcon src={Point} alt="Point" className="point3" width={40} height={100} />
           </Flex>
         </Flex>
-        <Button size="full" onClick={handelGuideOpenClick}>
-          이벤트 보러가기
+        <Button size="full" onClick={handleEnterOrganizationSpace}>
+          이벤트 스페이스 보러가기
         </Button>
       </Flex>
-      <GuideModal isOpen={isOpen} onClose={close} onEnter={handleEnterClick} />
     </>
   );
 };

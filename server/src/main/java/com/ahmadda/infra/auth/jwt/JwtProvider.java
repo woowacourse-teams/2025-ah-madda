@@ -1,33 +1,28 @@
 package com.ahmadda.infra.auth.jwt;
 
-import com.ahmadda.infra.auth.jwt.config.JwtProperties;
+import com.ahmadda.common.exception.UnauthorizedException;
 import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
-import com.ahmadda.infra.auth.jwt.exception.InvalidJwtException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import javax.crypto.SecretKey;
 
 @Slf4j
-@EnableConfigurationProperties(JwtProperties.class)
 @Component
 @RequiredArgsConstructor
 public class JwtProvider {
 
-    private final JwtProperties jwtProperties;
-
-    public String createAccessToken(final Long memberId) {
+    public String createToken(final Long memberId, final Duration duration, final SecretKey secretKey) {
         Instant now = Instant.now();
-        Instant expire = now.plus(jwtProperties.getAccessExpiration());
+        Instant expire = now.plus(duration);
 
         Claims claims = JwtMemberPayload.toClaims(memberId);
 
@@ -35,63 +30,28 @@ public class JwtProvider {
                 .claims(claims)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expire))
-                .signWith(jwtProperties.getAccessSecretKey())
+                .signWith(secretKey)
                 .compact();
     }
 
-    public String createRefreshToken(final Long memberId) {
-        Instant now = Instant.now();
-        Instant expire = now.plus(jwtProperties.getRefreshExpiration());
-
-        Claims claims = JwtMemberPayload.toClaims(memberId);
-
-        return Jwts.builder()
-                .claims(claims)
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(expire))
-                .signWith(jwtProperties.getRefreshSecretKey())
-                .compact();
-    }
-
-    public JwtMemberPayload parseAccessPayload(final String accessToken) {
-        Claims claims = parseClaims(accessToken, jwtProperties.getAccessSecretKey());
-
+    public JwtMemberPayload parsePayload(final String token, final SecretKey secretKey) {
+        Claims claims = parseClaims(token, secretKey);
+        
         return JwtMemberPayload.from(claims);
     }
 
-    public JwtMemberPayload parseRefreshPayload(final String refreshToken) {
-        Claims claims = parseClaims(refreshToken, jwtProperties.getRefreshSecretKey());
-
-        return JwtMemberPayload.from(claims);
-    }
-
-    public boolean isAccessTokenExpired(final String accessToken) {
+    public boolean isTokenExpired(final String token, final SecretKey secretKey) {
         try {
             Jwts.parser()
-                    .verifyWith(jwtProperties.getAccessSecretKey())
+                    .verifyWith(secretKey)
                     .build()
-                    .parseSignedClaims(accessToken)
-                    .getPayload();
+                    .parseSignedClaims(token);
+
             return false;
         } catch (ExpiredJwtException e) {
             return true;
-        } catch (JwtException e) {
-            throw new InvalidJwtException("인증 토큰을 파싱하는데 실패했습니다.", e);
-        }
-    }
-
-    public boolean isRefreshTokenExpired(final String refreshToken) {
-        try {
-            Jwts.parser()
-                    .verifyWith(jwtProperties.getRefreshSecretKey())
-                    .build()
-                    .parseSignedClaims(refreshToken)
-                    .getPayload();
-            return false;
-        } catch (ExpiredJwtException e) {
-            return true;
-        } catch (JwtException e) {
-            throw new InvalidJwtException("인증 토큰을 파싱하는데 실패했습니다.", e);
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new UnauthorizedException("유효하지 않은 인증 정보입니다.", e);
         }
     }
 
@@ -102,12 +62,8 @@ public class JwtProvider {
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
-        } catch (MalformedJwtException e) {
-            throw new InvalidJwtException("잘못된 형식의 토큰입니다.", e);
-        } catch (ExpiredJwtException e) {
-            throw new InvalidJwtException("만료기한이 지난 토큰입니다.", e);
         } catch (JwtException | IllegalArgumentException e) {
-            throw new InvalidJwtException("인증 토큰을 파싱하는데 실패하였습니다.", e);
+            throw new UnauthorizedException("유효하지 않은 인증 정보입니다.", e);
         }
     }
 }

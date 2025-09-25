@@ -7,10 +7,14 @@ import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -41,23 +45,34 @@ class ReminderTest {
     @Autowired
     private EventRepository eventRepository;
 
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
+
     @MockitoBean
     private PushNotifier pushNotifier;
 
     @MockitoBean
     private EmailNotifier emailNotifier;
 
+    @MockitoBean
+    JwtAccessTokenProperties accessTokenProperties;
+
+    @MockitoBean
+    JwtRefreshTokenProperties refreshTokenProperties;
+
     @Test
     void 수신자들에게_이메일과_푸시를_발송한다() {
         // given
         var organization = organizationRepository.save(Organization.create("우테코", "설명", "img.png"));
         var organizerMember = memberRepository.save(Member.create("주최자", "host@example.com", "pic"));
+        var group = createOrganizationGroup();
         var organizer =
                 organizationMemberRepository.save(OrganizationMember.create(
                         "host",
                         organizerMember,
                         organization,
-                        OrganizationMemberRole.USER
+                        OrganizationMemberRole.USER,
+                        group
                 ));
 
         var now = LocalDateTime.now();
@@ -73,15 +88,19 @@ class ReminderTest {
 
         var m1 = memberRepository.save(Member.create("게스트1", "g1@example.com", "pic"));
         var m2 = memberRepository.save(Member.create("게스트2", "g2@example.com", "pic"));
-        var om1 = organizationMemberRepository.save(OrganizationMember.create("g1",
-                                                                              m1,
-                                                                              organization,
-                                                                              OrganizationMemberRole.USER
+        var om1 = organizationMemberRepository.save(OrganizationMember.create(
+                "g1",
+                m1,
+                organization,
+                OrganizationMemberRole.USER,
+                group
         ));
-        var om2 = organizationMemberRepository.save(OrganizationMember.create("g2",
-                                                                              m2,
-                                                                              organization,
-                                                                              OrganizationMemberRole.USER
+        var om2 = organizationMemberRepository.save(OrganizationMember.create(
+                "g2",
+                m2,
+                organization,
+                OrganizationMemberRole.USER,
+                group
         ));
         var recipients = List.of(om1, om2);
         var content = "이벤트 알림입니다.";
@@ -113,7 +132,8 @@ class ReminderTest {
                         "host",
                         organizerMember,
                         organization,
-                        OrganizationMemberRole.USER
+                        OrganizationMemberRole.USER,
+                        createOrganizationGroup()
                 ));
 
         var now = LocalDateTime.now();
@@ -129,15 +149,20 @@ class ReminderTest {
 
         var m1 = memberRepository.save(Member.create("게스트1", "g1@example.com", "pic"));
         var m2 = memberRepository.save(Member.create("게스트2", "g2@example.com", "pic"));
-        var om1 = organizationMemberRepository.save(OrganizationMember.create("g1",
-                                                                              m1,
-                                                                              organization,
-                                                                              OrganizationMemberRole.USER
+        var group = createOrganizationGroup();
+        var om1 = organizationMemberRepository.save(OrganizationMember.create(
+                "g1",
+                m1,
+                organization,
+                OrganizationMemberRole.USER,
+                group
         ));
-        var om2 = organizationMemberRepository.save(OrganizationMember.create("g2",
-                                                                              m2,
-                                                                              organization,
-                                                                              OrganizationMemberRole.USER
+        var om2 = organizationMemberRepository.save(OrganizationMember.create(
+                "g2",
+                m2,
+                organization,
+                OrganizationMemberRole.USER,
+                group
         ));
         var recipients = List.of(om1, om2);
         var content = "이벤트 알림입니다.";
@@ -158,5 +183,9 @@ class ReminderTest {
                     .extracting(ReminderRecipient::getOrganizationMember)
                     .containsExactlyInAnyOrder(om1, om2);
         });
+    }
+
+    private OrganizationGroup createOrganizationGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("프론트"));
     }
 }

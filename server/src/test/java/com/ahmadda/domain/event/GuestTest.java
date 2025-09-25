@@ -4,6 +4,7 @@ import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,8 +28,14 @@ class GuestTest {
     @BeforeEach
     void setUp() {
         var organizerMember = Member.create("주최자 회원", "organizer@example.com", "testPicture");
-        var organization = Organization.create("테스트 조직", "조직 설명", "image.png");
-        var organizer = OrganizationMember.create("주최자", organizerMember, organization, OrganizationMemberRole.USER);
+        var organization = Organization.create("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "image.png");
+        var organizer = OrganizationMember.create(
+                "주최자",
+                organizerMember,
+                organization,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
+        );
         var now = LocalDateTime.now();
         event = Event.create(
                 "테스트 이벤트", "설명", "장소", organizer, organization,
@@ -40,13 +47,20 @@ class GuestTest {
                 50
         );
         member = Member.create("참가자 회원", "guest@example.com", "testPicture");
-        participant = OrganizationMember.create("참가자", member, organization, OrganizationMemberRole.USER);
+        participant = OrganizationMember.create(
+                "참가자",
+                member,
+                organization,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
+        );
         otherParticipant =
                 OrganizationMember.create(
                         "다른 참가자",
                         Member.create("다른 회원", "other@example.com", "testPicture"),
                         organization,
-                        OrganizationMemberRole.USER
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
                 );
     }
 
@@ -85,15 +99,27 @@ class GuestTest {
     }
 
     @Test
-    void 같은_조직이_아닌_이벤트의_조직원이_참여한다면_예외가_발생한다() {
+    void 같은_이벤트_스페이스가_아닌_이벤트의_구성원이_참여한다면_예외가_발생한다() {
         //given
-        var organization1 = Organization.create("테스트 조직1", "조직 설명", "image.png");
-        var organization2 = Organization.create("테스트 조직2", "조직 설명", "image.png");
+        var organization1 = Organization.create("테스트 이벤트 스페이스1", "이벤트 스페이스 설명", "image.png");
+        var organization2 = Organization.create("테스트 이벤트 스페이스2", "이벤트 스페이스 설명", "image.png");
 
         var organizationMember1 =
-                OrganizationMember.create("테스트 닉네임", member, organization1, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "테스트 닉네임",
+                        member,
+                        organization1,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
         var organizationMember2 =
-                OrganizationMember.create("테스트 닉네임", member, organization2, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "테스트 닉네임",
+                        member,
+                        organization2,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
 
         var now = LocalDateTime.now();
         var event = Event.create(
@@ -109,15 +135,21 @@ class GuestTest {
         //when //then
         assertThatThrownBy(() -> Guest.create(event, organizationMember2, event.getRegistrationStart()))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("같은 조직의 이벤트에만 게스트로 참여가능합니다.");
+                .hasMessage("같은 이벤트 스페이스의 이벤트에만 게스트로 참여할 수 있습니다합니다.");
     }
 
     @Test
     void 이벤트의_주최자가_게스트가_된다면_예외가_발생한다() {
         //given
-        var organization = Organization.create("테스트 조직1", "조직 설명", "image.png");
+        var organization = Organization.create("테스트 이벤트 스페이스1", "이벤트 스페이스 설명", "image.png");
         var organizationMember =
-                OrganizationMember.create("테스트 닉네임", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "테스트 닉네임",
+                        member,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
 
         var now = LocalDateTime.now();
         var event = Event.create(
@@ -139,13 +171,31 @@ class GuestTest {
     @Test
     void 이벤트_수용인원이_가득찼다면_게스트를_생성할_경우_예외가_발생한다() {
         //given
-        var organization = Organization.create("테스트 조직1", "조직 설명", "image.png");
+        var organization = Organization.create("테스트 이벤트 스페이스1", "이벤트 스페이스 설명", "image.png");
         var organizationMember1 =
-                OrganizationMember.create("테스트 닉네임1", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "테스트 닉네임1",
+                        member,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
         var organizationMember2 =
-                OrganizationMember.create("테스트 닉네임2", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "테스트 닉네임2",
+                        member,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
         var organizationMember3 =
-                OrganizationMember.create("테스트 닉네임3", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "테스트 닉네임3",
+                        member,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
 
         var now = LocalDateTime.now();
         var event = Event.create(
@@ -263,7 +313,7 @@ class GuestTest {
         // when // then
         assertThatThrownBy(() -> guest.submitAnswers(answers))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessageContaining("이벤트에 포함되지 않은 질문입니다");
+                .hasMessageContaining("이벤트에 포함되지 않는 질문입니다");
     }
 
     @Test
@@ -323,7 +373,8 @@ class GuestTest {
                         "다른 게스트",
                         otherMember,
                         participant.getOrganization(),
-                        OrganizationMemberRole.USER
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
                 );
         var guest = Guest.create(event, otherParticipant, now);
         var answers = Map.of(question, "답변");

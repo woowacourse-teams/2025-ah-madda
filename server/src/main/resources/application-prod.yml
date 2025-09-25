@@ -21,10 +21,12 @@ spring:
         static: ap-northeast-2
 
 jwt:
-  access-secret-key: ${jwt.prod.access-secret-key}
-  access-expiration: ${jwt.prod.access-expiration}
-  refresh-secret-key: ${jwt.prod.refresh-secret-key}
-  refresh-expiration: ${jwt.prod.refresh-expiration}
+  access:
+    secret-key: ${jwt.prod.access.secret-key}
+    expiration: ${jwt.prod.access.expiration}
+  refresh:
+    secret-key: ${jwt.prod.refresh.secret-key}
+    expiration: ${jwt.prod.refresh.expiration}
 
 cookie:
   refresh-token:
@@ -65,6 +67,11 @@ management:
       hikaricp.connections.max: true
       hikaricp.connections.timeout: true
       logback.events: true
+      resilience4j.circuitbreaker.state: true
+      resilience4j.circuitbreaker.failure.rate: true
+      resilience4j.circuitbreaker.slow.call.rate: true
+      resilience4j.circuitbreaker.not.permitted.calls: true
+      resilience4j.retry.calls: true
   cloudwatch:
     metrics:
       export:

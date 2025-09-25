@@ -39,8 +39,15 @@ export const OrganizationSelectPage = () => {
             />
           }
           right={
-            <Button color="secondary" onClick={() => navigate('/organization/new')}>
-              조직 생성하기
+            <Button
+              color="secondary"
+              css={css`
+                width: fit-content;
+                padding: 10px;
+              `}
+              onClick={() => navigate('/organization/new')}
+            >
+              이벤트 스페이스 생성하기
             </Button>
           }
         />
@@ -88,22 +95,29 @@ const OrganizationSelectBody = () => {
       gap="32px"
       padding="28px 20px"
     >
-      <Flex
-        dir="column"
-        alignItems="center"
-        width="100%"
-        gap="4px"
-        margin="0 auto"
-        css={css`
-          @media (max-width: 720px) {
-            width: 312px;
-          }
-        `}
-      >
-        <Text as="h1" type="Display" weight="bold">
-          조직에 참여하고,
+      <Flex dir="column" alignItems="center" width="100%" gap="4px" margin="0 auto">
+        <Text
+          as="h1"
+          type="Display"
+          weight="bold"
+          css={css`
+            @media (max-width: 720px) {
+              font-size: 1.7rem;
+            }
+          `}
+        >
+          이벤트 스페이스에 참여하고,
         </Text>
-        <Text as="h1" type="Display" weight="bold">
+        <Text
+          as="h1"
+          type="Display"
+          weight="bold"
+          css={css`
+            @media (max-width: 720px) {
+              font-size: 1.7rem;
+            }
+          `}
+        >
           이벤트를 놓치지 마세요.
         </Text>
       </Flex>
@@ -163,7 +177,6 @@ const OrganizationSelectBody = () => {
             @media (max-width: 480px) {
               display: flex;
               gap: 8px;
-
               width: 100%;
               max-width: 100%;
               overflow-y: auto;
@@ -239,7 +252,7 @@ const OrganizationSelectBody = () => {
 
       {orgs.length === 0 && (
         <Text type="Body" color="#6b7280">
-          아직 소속된 조직이 없어요. 새로운 조직을 만들어보세요!
+          아직 소속된 이벤트 스페이스가 없어요. 새로운 이벤트 스페이스를 만들어보세요!
         </Text>
       )}
     </Flex>

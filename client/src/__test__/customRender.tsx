@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import { ThemeProvider } from '@emotion/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -33,15 +33,21 @@ export const RouterWithQueryClient = ({
     <ThemeProvider theme={theme}>
       <QueryClientProviderWrapper queryClient={queryClient}>
         <MemoryRouter initialEntries={[initialRoute]}>
-          <ToastProvider>
-            <Routes>
-              {routes.map((route, index) => (
-                <Route key={index} path={route.path} element={route.element} />
-              ))}
-            </Routes>
-          </ToastProvider>
+          <Suspense fallback={<div>Loading...</div>}>
+            <ToastProvider>
+              <Routes>
+                {routes.map((route, index) => (
+                  <Route key={index} path={route.path} element={route.element} />
+                ))}
+              </Routes>
+            </ToastProvider>
+          </Suspense>
         </MemoryRouter>
       </QueryClientProviderWrapper>
     </ThemeProvider>
   );
+};
+
+export const ThemeProviderWrapper = ({ children }: { children: React.ReactNode }) => {
+  return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 };

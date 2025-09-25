@@ -9,10 +9,14 @@ import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
+import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -20,10 +24,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
@@ -48,8 +50,17 @@ class PokeTest {
     @Autowired
     private PokeHistoryRepository pokeHistoryRepository;
 
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
+
     @MockitoBean
     private PushNotifier pushNotifier;
+
+    @MockitoBean
+    JwtAccessTokenProperties accessTokenProperties;
+
+    @MockitoBean
+    JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 포키를_성공적으로_전송한다() {
@@ -63,10 +74,16 @@ class PokeTest {
         var sentAt = LocalDateTime.now();
 
         // when
-        sut.doPoke(sender, recipient, event, sentAt);
+        sut.doPoke(sender, recipient, PokeMessage.ARRIVED, event, sentAt);
 
         // then
-        verify(pushNotifier).sendPush(eq(recipient), argThat(Objects::nonNull));
+        verify(pushNotifier).sendPush(
+                eq(recipient),
+                eq(PushNotificationPayload.of(
+                        event,
+                        "nickname님의 포키가 도착했어요! ✨"
+                ))
+        );
     }
 
     @Test
@@ -78,7 +95,7 @@ class PokeTest {
         var event = createEvent(organization, sender, LocalDateTime.now());
 
         // when // then
-        assertThatThrownBy(() -> sut.doPoke(sender, sender, event, LocalDateTime.now()))
+        assertThatThrownBy(() -> sut.doPoke(sender, sender, PokeMessage.ARRIVED, event, LocalDateTime.now()))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("스스로에게 포키를 보낼 수 없습니다");
     }
@@ -94,13 +111,13 @@ class PokeTest {
         var event = createEvent(organization, organizer, LocalDateTime.now());
 
         // when // then
-        assertThatThrownBy(() -> sut.doPoke(sender, organizer, event, LocalDateTime.now()))
+        assertThatThrownBy(() -> sut.doPoke(sender, organizer, PokeMessage.ARRIVED, event, LocalDateTime.now()))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("주최자에게 포키를 보낼 수 없습니다");
     }
 
     @Test
-    void 이미_이벤트에_참여한_조직원에게_포키를_보낼_때_예외가_발생한다() {
+    void 이미_이벤트에_참여한_구성원에게_포키를_보낼_때_예외가_발생한다() {
         // given
         var organization = createOrganization("ahmadda");
         var senderMember = createMember("sender");
@@ -119,13 +136,19 @@ class PokeTest {
         );
 
         // when // then
-        assertThatThrownBy(() -> sut.doPoke(sender, otherOrganizationMember, event, LocalDateTime.now()))
+        assertThatThrownBy(() -> sut.doPoke(
+                sender,
+                otherOrganizationMember,
+                PokeMessage.ARRIVED,
+                event,
+                LocalDateTime.now()
+        ))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("이미 이벤트에 참여한 조직원에게 포키를 보낼 수 없습니다.");
+                .hasMessage("이미 이벤트에 참여한 구성원에게 포키를 보낼 수 없습니다.");
     }
 
     @Test
-    void 보내는_사람이_조직에_참여하고_있지_않을_때_예외가_발생한다() {
+    void 보내는_사람이_이벤트_스페이스에_참여하고_있지_않을_때_예외가_발생한다() {
         // given
         var organization = createOrganization("ahmadda");
         var anotherOrganization = createOrganization("another");
@@ -136,13 +159,13 @@ class PokeTest {
         var event = createEvent(organization, recipient, LocalDateTime.now());
 
         // when // then
-        assertThatThrownBy(() -> sut.doPoke(sender, recipient, event, LocalDateTime.now()))
+        assertThatThrownBy(() -> sut.doPoke(sender, recipient, PokeMessage.ARRIVED, event, LocalDateTime.now()))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("포키를 보내려면 해당 조직에 참여하고 있어야 합니다.");
+                .hasMessage("포키를 보내려면 해당 이벤트 스페이스에 참여하고 있어야 합니다.");
     }
 
     @Test
-    void 받는_사람이_조직에_참여하고_있지_않을_때_예외가_발생한다() {
+    void 받는_사람이_이벤트_스페이스에_참여하고_있지_않을_때_예외가_발생한다() {
         // given
         var organization = createOrganization("ahmadda");
         var anotherOrganization = createOrganization("another");
@@ -153,13 +176,13 @@ class PokeTest {
         var event = createEvent(organization, sender, LocalDateTime.now());
 
         // when // then
-        assertThatThrownBy(() -> sut.doPoke(sender, recipient, event, LocalDateTime.now()))
+        assertThatThrownBy(() -> sut.doPoke(sender, recipient, PokeMessage.ARRIVED, event, LocalDateTime.now()))
                 .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("포키 대상이 해당 조직에 참여하고 있어야 합니다.");
+                .hasMessage("포키 대상이 해당 이벤트 스페이스에 참여하고 있어야 합니다.");
     }
 
     @Test
-    void 포키_30분내_10번_전송_횟수_제한을_초과할_때_예외가_발생한다() {
+    void 포키_30분내_3번_전송_횟수_제한을_초과할_때_예외가_발생한다() {
         // given
         var organization = createOrganization("ahmadda");
         var senderMember = createMember("sender");
@@ -170,7 +193,7 @@ class PokeTest {
         var sentAt = LocalDateTime.now();
 
         var firstSentAt = sentAt;
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 3; i++) {
             if (i == 1) {
                 firstSentAt = sentAt.plusMinutes(i);
             }
@@ -182,7 +205,7 @@ class PokeTest {
         var expectWaitingMinutes = ChronoUnit.MINUTES.between(duplicateCheckStart, firstSentAt);
 
         // when // then
-        assertThatThrownBy(() -> sut.doPoke(sender, recipient, event, sentAt))
+        assertThatThrownBy(() -> sut.doPoke(sender, recipient, PokeMessage.ARRIVED, event, sentAt))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage(String.format(
                         "%s님에게 너무 많은 포키를 보냈어요 🫠 %d분 뒤에 찌를 수 있어요!",
@@ -210,7 +233,13 @@ class PokeTest {
         }
 
         var organizationMember =
-                OrganizationMember.create("nickname", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "nickname",
+                        member,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        createOrganizationGroup()
+                );
         return organizationMemberRepository.save(organizationMember);
     }
 
@@ -230,5 +259,9 @@ class PokeTest {
                 List.of()
         );
         return eventRepository.save(event);
+    }
+
+    private OrganizationGroup createOrganizationGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("프론트"));
     }
 }

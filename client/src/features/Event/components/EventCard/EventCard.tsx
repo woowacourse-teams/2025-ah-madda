@@ -31,9 +31,10 @@ export const EventCard = ({
   eventStart,
   eventEnd,
   place,
-  organizerName,
+  organizerNicknames,
   currentGuestCount,
   maxCapacity,
+  isGuest,
   cardType = 'default',
 }: EventCardProps) => {
   const navigate = useNavigate();
@@ -55,8 +56,13 @@ export const EventCard = ({
 
   return (
     <CardWrapper onClick={handleClickCard}>
-      <Flex dir="column" gap="8px">
-        <Badge variant={badgeText(registrationEnd).color}>{badgeText(registrationEnd).text}</Badge>
+      <Flex dir="column" justifyContent={description ? 'flex-start' : 'space-between'} gap="8px">
+        <Flex justifyContent="space-between" alignItems="center" width="100%">
+          <Badge variant={badgeText(registrationEnd).color}>
+            {badgeText(registrationEnd).text}
+          </Badge>
+          {isGuest && <Badge variant="yellow">참여</Badge>}
+        </Flex>
         <Flex justifyContent="space-between" alignItems="center" gap="8px">
           <Text as="h2" type="Heading" color={theme.colors.gray900} weight="semibold">
             {title.length > 17 ? `${title.slice(0, 19)}...` : title}
@@ -64,6 +70,7 @@ export const EventCard = ({
         </Flex>
         {/* S.TODO: 추후 구조 개선 */}
         <Flex
+          height="20px"
           css={css`
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -92,7 +99,7 @@ export const EventCard = ({
         <Flex alignItems="center" gap="4px" height="100%">
           <Icon name="user" size={16} color="gray500" />
           <Text type="Label" color={theme.colors.gray500}>
-            {organizerName} 주최
+            {organizerNicknames ? organizerNicknames.join(', ') : ''} 주최
           </Text>
         </Flex>
         <Spacing height="2px" />

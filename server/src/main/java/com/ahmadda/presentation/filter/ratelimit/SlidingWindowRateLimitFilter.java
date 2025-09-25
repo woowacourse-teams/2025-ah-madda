@@ -1,6 +1,7 @@
 package com.ahmadda.presentation.filter.ratelimit;
 
 import com.ahmadda.infra.auth.jwt.JwtProvider;
+import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
 import com.ahmadda.presentation.header.HeaderProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -9,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 @Getter
 @Slf4j
 @Component
+@EnableConfigurationProperties(JwtAccessTokenProperties.class)
 @Order(Ordered.HIGHEST_PRECEDENCE + 2)
 @RequiredArgsConstructor
 public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
@@ -33,6 +36,7 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
     private static final int MAX_REQUESTS = 100;
 
     private final HeaderProvider headerProvider;
+    private final JwtAccessTokenProperties jwtAccessTokenProperties;
     private final JwtProvider jwtProvider;
     private final RateLimitExceededHandler rateLimitExceededHandler;
 
@@ -135,8 +139,8 @@ public class SlidingWindowRateLimitFilter extends OncePerRequestFilter {
         try {
             String accessToken = headerProvider.extractAccessToken(authorizationHeader);
 
-            return jwtProvider.parseAccessPayload(accessToken)
-                    .getMemberId();
+            return jwtProvider.parsePayload(accessToken, jwtAccessTokenProperties.getAccessSecretKey())
+                    .memberId();
         } catch (Exception e) {
             return null;
         }

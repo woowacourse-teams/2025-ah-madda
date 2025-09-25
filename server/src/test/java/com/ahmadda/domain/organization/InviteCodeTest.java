@@ -13,7 +13,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 class InviteCodeTest {
 
     @Test
-    void 조직에_속한_조직원이_아닌데_초대코드를_만든다면_예외가_발생한다() {
+    void 이벤트_스페이스에_속한_구성원이_아닌데_초대코드를_만든다면_예외가_발생한다() {
         //given
         var organization1 = createOrganization("우테코");
         var organization2 = createOrganization("아맞다");
@@ -23,7 +23,7 @@ class InviteCodeTest {
         //when //then
         assertThatThrownBy(() -> InviteCode.create("code", organization2, inviter, LocalDateTime.now()))
                 .isInstanceOf(ForbiddenException.class)
-                .hasMessage("조직에 참여중인 조직원만 해당 조직의 초대코드를 만들 수 있습니다.");
+                .hasMessage("이벤트 스페이스에 참여 중인 구성원만 해당 이벤트 스페이스의 초대코드를 만들 수 있습니다.");
     }
 
     @Test
@@ -64,7 +64,7 @@ class InviteCodeTest {
     }
 
     @Test
-    void 특정_조직의_초대코드인지_확인할_수_있다() {
+    void 특정_이벤트_스페이스의_초대코드인지_확인할_수_있다() {
         //given
         var wooteco = createOrganization("우테코");
         var ahmadda = createOrganization("아맞다");
@@ -86,7 +86,13 @@ class InviteCodeTest {
     }
 
     private OrganizationMember createOrganizationMember(Member member, Organization organization) {
-        return OrganizationMember.create("nickname", member, organization, OrganizationMemberRole.USER);
+        return OrganizationMember.create(
+                "nickname",
+                member,
+                organization,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
+        );
     }
 
     private Member createMember() {

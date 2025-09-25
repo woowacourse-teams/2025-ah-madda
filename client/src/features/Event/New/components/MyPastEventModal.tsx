@@ -15,15 +15,19 @@ import { theme } from '@/shared/styles/theme';
 
 import { EventList } from './EventList';
 
-type TemplateModalProps = Pick<ModalProps, 'isOpen' | 'onClose'> & {
-  onEventSelected: (eventData: Omit<EventTemplateAPIResponse, 'eventId'>) => void;
-};
+type TemplateModalProps = { organizationId: number } & Pick<ModalProps, 'isOpen' | 'onClose'> & {
+    onEventSelected: (eventData: Omit<EventTemplateAPIResponse, 'eventId'>) => void;
+  };
 
-export const MyPastEventModal = ({ isOpen, onClose, onEventSelected }: TemplateModalProps) => {
+export const MyPastEventModal = ({
+  organizationId,
+  isOpen,
+  onClose,
+  onEventSelected,
+}: TemplateModalProps) => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
-  // E.TODO organizationId 받아오기
-  const { data: eventTitles } = useQuery(eventQueryOptions.titles(1));
+  const { data: eventTitles } = useQuery(eventQueryOptions.titles(Number(organizationId)));
 
   const { data: selectedEventData } = useQuery({
     ...eventQueryOptions.pastEventList(selectedId!),
@@ -62,7 +66,7 @@ export const MyPastEventModal = ({ isOpen, onClose, onEventSelected }: TemplateM
         width: 400px;
       `}
     >
-      <Flex dir="column" gap="24px" width="100%">
+      <Flex dir="column" width="100%">
         <Text type="Title" weight="bold" color={theme.colors.gray900}>
           나의 이벤트 불러오기
         </Text>

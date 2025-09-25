@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { useQueries } from '@tanstack/react-query';
+import { useSuspenseQueries } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { HttpError } from '@/api/fetcher';
@@ -20,11 +20,12 @@ import { EventDetailContainer } from '../containers/EventDetailContainer';
 export const EventDetailPage = () => {
   const navigate = useNavigate();
   const { eventId, organizationId } = useParams();
+
   const [
     { data: event },
     { data: guestStatus, isError: guestStatusError, error: guestStatusErrorData },
     { data: organizerStatus },
-  ] = useQueries({
+  ] = useSuspenseQueries({
     queries: [
       eventQueryOptions.detail(Number(eventId)),
       eventQueryOptions.guestStatus(Number(eventId)),
@@ -34,7 +35,9 @@ export const EventDetailPage = () => {
 
   if (guestStatusError) {
     if (guestStatusErrorData instanceof HttpError && guestStatusErrorData.status === 404) {
-      alert('해당 조직의 멤버가 아닙니다. 조직에 가입 후 다시 시도해주세요.');
+      alert(
+        '해당 이벤트 스페이스의 구성원이 아닙니다. 이벤트 스페이스에 가입 후 다시 시도해주세요.'
+      );
       navigate('/');
       return null;
     }

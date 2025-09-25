@@ -11,8 +11,27 @@ module.exports = merge(common, {
   },
   devtool: 'source-map',
   optimization: {
-    splitChunks: { chunks: 'all' },
+    minimize: true,
+    splitChunks: {
+      chunks: 'all',
+      minSize: 20000,
+      cacheGroups: {
+        react: {
+          test: /[\\/]node_modules[\\/](react|react-dom|react-router-dom)[\\/]/,
+          name: 'react-vendors',
+          priority: 40,
+          chunks: 'all',
+        },
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          priority: 30,
+          chunks: 'all',
+        },
+      },
+    },
     minimizer: [
+      '...',
       new TerserPlugin({
         terserOptions: {
           compress: {
@@ -22,5 +41,7 @@ module.exports = merge(common, {
         },
       }),
     ],
+    usedExports: true,
+    mangleExports: 'size',
   },
 });

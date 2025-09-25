@@ -1,45 +1,96 @@
 package com.ahmadda.learning.infra.notification;
 
-import com.ahmadda.annotation.IntegrationTest;
+import com.ahmadda.annotation.LearningTest;
 import com.ahmadda.domain.member.Member;
-import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.domain.notification.EventEmailPayload;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.infra.notification.config.NotificationProperties;
+import com.ahmadda.infra.notification.mail.SmtpEmailNotifier;
+import com.ahmadda.infra.notification.mail.config.SmtpProperties;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.context.TestPropertySource;
+import org.thymeleaf.TemplateEngine;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Disabled
-@IntegrationTest
-@TestPropertySource(properties = "mail.mock=false")
+@LearningTest
+@TestPropertySource(properties = "mail.noop=false")
 class SmtpEmailNotifierTest {
 
+    private SmtpEmailNotifier sut;
+
     @Autowired
-    private EmailNotifier smtpEmailNotifier;
+    private SmtpProperties smtpProperties;
+
+    @Autowired
+    private TemplateEngine templateEngine;
+
+    @Autowired
+    private NotificationProperties notificationProperties;
+
+    @BeforeEach
+    void setUp() {
+        sut = createSmtpEmailNotifier("google");
+    }
+
+    private SmtpEmailNotifier createSmtpEmailNotifier(String provider) {
+        SmtpProperties.Account acc =
+                switch (provider.toLowerCase()) {
+                    case "google" -> smtpProperties.getGoogle();
+                    case "aws" -> smtpProperties.getAws();
+                    default -> throw new IllegalArgumentException("지원하지 않는 provider: " + provider);
+                };
+
+        JavaMailSender sender = createJavaMailSender(acc);
+        return new SmtpEmailNotifier(sender, templateEngine, notificationProperties);
+    }
+
+    private JavaMailSender createJavaMailSender(SmtpProperties.Account acc) {
+        var sender = new JavaMailSenderImpl();
+        sender.setHost(acc.getHost());
+        sender.setPort(acc.getPort());
+        sender.setUsername(acc.getUsername());
+        sender.setPassword(acc.getPassword());
+        sender.setDefaultEncoding("UTF-8");
+        if (acc.getProperties() != null) {
+            sender.getJavaMailProperties()
+                    .putAll(acc.getProperties());
+        }
+        return sender;
+    }
 
     @Test
     void 실제_SMTP로_메일을_발송한다() {
         // given
-        var organizationName = "테스트 조직";
+        var organizationName = "테스트 이벤트 스페이스";
         var eventTitle = "테스트 이벤트";
         var organizerNickname = "주최자";
 
         var member = Member.create("주최자", "amadda.team@gmail.com", "testPicture");
         var organization = Organization.create(organizationName, "설명", "logo.png");
         var organizationMember =
-                OrganizationMember.create(organizerNickname, member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        organizerNickname,
+                        member,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("그룹")
+                );
 
         var emailPayload = new EventEmailPayload(
                 new EventEmailPayload.Subject(
                         organizationName,
-                        organizerNickname,
                         eventTitle
                 ),
                 new EventEmailPayload.Body(
@@ -62,13 +113,15 @@ class SmtpEmailNotifierTest {
         );
 
         // when // then
-        smtpEmailNotifier.sendEmails(List.of(organizationMember), emailPayload);
+        sut.sendEmails(List.of(organizationMember), emailPayload);
     }
 
+    // Gmail: BCC 최대 100명
+    // AWS: BCC 최대 50명
     @Test
-    void BCC_수신자가_100명_이상이면_예외가_발생한다() {
+    void BCC_수신자_허용_범위를_초과하면_예외가_발생한다() {
         // given
-        var organizationName = "테스트 조직";
+        var organizationName = "테스트 이벤트 스페이스";
         var eventTitle = "테스트 이벤트";
         var organizerNickname = "주최자";
 
@@ -79,14 +132,19 @@ class SmtpEmailNotifierTest {
             var email = "dummy" + i + "@example.com";
             var dummyMember = Member.create("유저" + i, email, "profile.png");
             var orgMember =
-                    OrganizationMember.create("닉네임" + i, dummyMember, organization, OrganizationMemberRole.USER);
+                    OrganizationMember.create(
+                            "닉네임" + i,
+                            dummyMember,
+                            organization,
+                            OrganizationMemberRole.USER,
+                            OrganizationGroup.create("그룹")
+                    );
             recipients.add(orgMember);
         }
 
         var emailPayload = new EventEmailPayload(
                 new EventEmailPayload.Subject(
                         organizationName,
-                        organizerNickname,
                         eventTitle
                 ),
                 new EventEmailPayload.Body(
@@ -109,6 +167,6 @@ class SmtpEmailNotifierTest {
         );
 
         // when
-        smtpEmailNotifier.sendEmails(recipients, emailPayload);
+        sut.sendEmails(recipients, emailPayload);
     }
 }

@@ -5,13 +5,15 @@ export type InviteCodeAPIResponse = {
 
 export type OrganizationParticipateAPIRequest = {
   nickname: string;
+  groupId: number;
   inviteCode: string;
 };
 
-export type OrganizationProfileAPIResponse = {
+export type OrganizationMember = {
   organizationMemberId: number;
   nickname: string;
   isAdmin: boolean;
+  group: OrganizationGroupAPIResponse;
 };
 
 export type CreateOrganizationAPIRequest = {
@@ -19,8 +21,24 @@ export type CreateOrganizationAPIRequest = {
     name: string;
     description: string;
     nickname: string;
+    groupId: number;
   };
   thumbnail: File;
 };
 
 export type CreateOrganizationAPIResponse = { organizationId: number };
+
+export type OrganizationRole = 'ADMIN' | 'USER';
+
+export type UpdateOrganizationMemberRolesAPIRequest = {
+  organizationId: number;
+  payload: {
+    organizationMemberIds: number[];
+    role: OrganizationRole;
+  };
+};
+
+export type OrganizationGroupAPIResponse = {
+  groupId: number;
+  name: string;
+};

@@ -10,15 +10,17 @@ export const safeSessionStorage = {
   set<T>(key: string, value: T) {
     try {
       sessionStorage.setItem(key, JSON.stringify(value));
+      return true;
     } catch {
-      return;
+      return false;
     }
   },
   remove(key: string) {
     try {
       sessionStorage.removeItem(key);
+      return true;
     } catch {
-      return;
+      return false;
     }
   },
 };

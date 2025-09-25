@@ -1,11 +1,10 @@
 import { css } from '@emotion/react';
-import { useQuery, useSuspenseQueries } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { HttpError } from '@/api/fetcher';
 import { useCloseEventRegistration } from '@/api/mutations/useCloseEventRegistration';
 import { eventQueryOptions } from '@/api/queries/event';
-import { profileQueryOptions } from '@/api/queries/profile';
 import { Badge } from '@/shared/components/Badge';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
@@ -33,9 +32,7 @@ export const EventManagePage = () => {
   const { success, error } = useToast();
   const { isOpen, open, close } = useModal();
   const { data: event, refetch } = useQuery(eventQueryOptions.detail(eventId));
-  const [{ data: profile }, { data: statistics = [] }] = useSuspenseQueries({
-    queries: [profileQueryOptions.profile(), eventQueryOptions.statistic(eventId)],
-  });
+  const { data: statistics = [] } = useQuery(eventQueryOptions.statistic(eventId));
   const { mutate: closeEventRegistration } = useCloseEventRegistration();
 
   const isClosed = event?.registrationEnd ? new Date(event.registrationEnd) < new Date() : false;
@@ -133,7 +130,7 @@ export const EventManagePage = () => {
             </Tabs.List>
 
             <Tabs.Content value="detail">
-              <EventInfoSection event={event} profile={profile} statistics={statistics} />
+              <EventInfoSection event={event} statistics={statistics} />
             </Tabs.Content>
 
             <Tabs.Content value="applications">

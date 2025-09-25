@@ -1,15 +1,139 @@
-language: "ko-KR"
-early_access: false
+language: ko-KR
+
+tone_instructions: >
+  우아한테크코스 코치처럼 문제의 원인과 개선 방법을 명확히 제시하고,
+  교육적 관점에서 리뷰하세요. 비판보다 개선 중심이며,
+  관련 문서 추천과 위트 있는 칭찬, P1~P3 우선순위 표시를 지킵니다.
+
 reviews:
-  profile: "assertive"
-  request_changes_workflow: false
+  profile: chill
   high_level_summary: true
-  poem: false
-  review_status: false
+  high_level_summary_placeholder: "🤖 Code Rabbit PR 요약"
+  review_status: true
+  commit_status: true
+
+  # 워크스루/자동화/부가 기능
   collapse_walkthrough: false
+  changed_files_summary: false
+  sequence_diagrams: false
+  assess_linked_issues: true
+  related_issues: false
+  related_prs: false
+  suggested_labels: false
+  auto_apply_labels: false
+  suggested_reviewers: false
+  auto_assign_reviewers: false
+  poem: false
+
+  path_instructions:
+    - path: backend/**
+      instructions: |
+        **아맞다 백엔드 리뷰 가이드라인**
+
+        1. **컨벤션 준수**
+           - BE 코드 컨벤션(server/docs/be-code-convention.md) 기반
+           - final 불필요한 남용 금지
+           - @DisplayName 대신 한글 메서드명 사용
+           - var 적극 활용
+
+        2. **아키텍처**
+           - 계층형 아키텍처(Presentation, Application, Domain, Infrastructure) 유지
+           - 서비스와 도메인 책임 분리
+           - infra 계층은 예외 던지고, application에서 처리
+
+        3. **테스트**
+           - JUnit 5 기반
+           - given-when-then 패턴
+           - 통합 테스트는 @SpringBootTest, @Transactional
+           - assertSoftly 적극 활용
+           - fixture 헬퍼 메서드 활용
+           - 단위 테스트 중심으로 작성
+
+        4. **데이터/DB**
+           - Flyway 기반 마이그레이션 관리
+           - 엔티티에 equals/hashCode/toString 남발 금지
+           - 테이블명/컬럼명 단수형, pk는 단순 id 지양
+
+        5. **로깅/모니터링**
+           - SLF4J(Logback) 사용
+           - CloudWatch 로그/메트릭 전략 준수
+           - MDC traceId, 운영 환경에선 파일+CloudWatch 이중 기록
+
+        6. **예외/안정성**
+           - 공통 예외 설계 (ForbiddenException, UnprocessableEntityException 등)
+           - NPE 방지, 방어적 코드
+           - 장애 대응 원칙: 1차 응급 대응 → 2차 근본 개선 → 기록/공유
+
+        7. **코드 품질**
+           - 불필요한 코드/경고 제거
+           - 가독성·유지보수성 우선
+           - 보안/성능 이슈 우선순위 P1 처리
+  
+  abort_on_close: true
+  disable_cache: false
+
   auto_review:
     enabled: true
     drafts: true
-    base_branches: [".*"]
+    auto_incremental_review: false
+    base_branches: [ "fe/dev", "be/dev" ]
+
+  finishing_touches:
+    docstrings:
+      enabled: true
+    unit_tests:
+      enabled: true
+
 chat:
   auto_reply: true
+
+knowledge_base:
+  opt_out: false
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - /server/docs/be-code-convention.md
+  issues:
+    scope: local
+  pull_requests:
+    scope: local
+
+common_ground_rules:
+  priority_system:
+    P1:
+      description: "꼭 반영해주세요"
+      criteria: "앱 크래시, 보안 이슈, 중대한 오류"
+      action: "반영하거나 합리적 반박 필요"
+    P2:
+      description: "웬만하면 반영해주세요"
+      criteria: "성능 저하, 아키텍처 위반, 유지보수성 저해"
+      action: "수용 또는 토론"
+    P3:
+      description: "사소한 의견입니다"
+      criteria: "컨벤션, 가독성, 리팩토링"
+      action: "무시 가능"
+
+code_generation:
+  docstrings:
+    language: ko-KR
+    path_instructions:
+      - path: backend/**
+        instructions: |
+          - JavaDoc 공식 형식 (한글)
+          - 목적, 파라미터, 반환값, 예외 명확히
+          - 공개 API는 상세, 내부 메서드는 요약
+
+  unit_tests:
+    path_instructions:
+      - path: backend/**
+        instructions: |
+          - Service/Domain: 단위 테스트
+          - given-when-then, var, assertSoftly 적용
+
+tools:
+  hadolint:   # Dockerfile 분석
+    enabled: true
+  gitleaks:   # 민감정보 포함 여부 확인
+    enabled: true
+  sqlfluff:   # SQL 분석
+    enabled: true
