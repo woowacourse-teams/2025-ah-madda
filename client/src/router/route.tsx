@@ -64,7 +64,7 @@ const ProfilePage = lazy(() =>
 const withSuspense = (Component: React.ComponentType) => (
   <Suspense
     fallback={
-      <Flex width="100%" height="100vh" alignItems="center" justifyContent="center">
+      <Flex width="100%" height="100dvh" alignItems="center" justifyContent="center">
         <Loading />
       </Flex>
     }
@@ -85,7 +85,7 @@ export const router = createBrowserRouter(
         },
         {
           path: '/invite',
-          Component: InvitePage,
+          element: withSuspense(InvitePage),
         },
         {
           path: '/auth',
@@ -121,7 +121,7 @@ export const router = createBrowserRouter(
             },
             {
               path: ':eventId/invite',
-              element: withSuspense(InviteRedirect),
+              Component: InviteRedirect,
             },
           ],
         },
