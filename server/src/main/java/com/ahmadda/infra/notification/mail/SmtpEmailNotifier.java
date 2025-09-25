@@ -90,7 +90,6 @@ public class SmtpEmailNotifier implements EmailNotifier {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
             helper.setFrom("아맞다 <noreply@ahmadda.com>");
-            // TODO. 추후 BCC 수신자가 100명 이상일 경우, 배치 처리 고려
             helper.setBcc(bccRecipients.toArray(String[]::new));
             helper.setSubject(subject);
             helper.setText(text, true);
