@@ -10,6 +10,7 @@ import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventReminderGroupRepository;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.event.GuestRepository;
@@ -77,6 +78,9 @@ class EventServiceTest {
     @Autowired
     private OrganizationGroupRepository organizationGroupRepository;
 
+    @Autowired
+    private EventReminderGroupRepository eventReminderGroupRepository;
+
     @Test
     void 이벤트를_생성할_수_있다() {
         //given
@@ -93,7 +97,9 @@ class EventServiceTest {
                 now.plusDays(4),
                 now.plusDays(5), now.plusDays(6),
                 100,
-                List.of(new QuestionCreateRequest("1번 질문", true), new QuestionCreateRequest("2번 질문", false))
+                List.of(new QuestionCreateRequest("1번 질문", true), new QuestionCreateRequest("2번 질문", false)),
+                List.of(),
+                List.of(group.getId())
         );
 
         var loginMember = new LoginMember(member.getId());
@@ -101,11 +107,11 @@ class EventServiceTest {
         //when
         var event = sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now);
 
-        //then
-        assertThat(eventRepository.findById(event.getId()))
-                .isPresent()
-                .hasValueSatisfying(savedEvent -> {
-                    assertSoftly(softly -> {
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(eventRepository.findById(event.getId()))
+                    .isPresent()
+                    .hasValueSatisfying(savedEvent -> {
                         softly.assertThat(savedEvent.getTitle())
                                 .isEqualTo("UI/UX 이벤트");
                         softly.assertThat(savedEvent.getDescription())
@@ -124,17 +130,27 @@ class EventServiceTest {
                                         now.plusDays(5), now.plusDays(6),
                                         now
                                 ));
-                        softly.assertThat(event.getEventOrganizers()
-                                .getFirst()
-                                .getOrganizationMember()
-                                .equals(organizationMember));
+                        softly.assertThat(savedEvent.getEventOrganizers()
+                                        .getFirst()
+                                        .getOrganizationMember()
+                                        .equals(organizationMember))
+                                .isTrue();
+
                         List<Question> questions = savedEvent.getQuestions();
                         softly.assertThat(questions)
                                 .hasSize(2)
                                 .extracting("questionText", "isRequired", "orderIndex")
-                                .containsExactly(Tuple.tuple("1번 질문", true, 0), Tuple.tuple("2번 질문", false, 1));
+                                .containsExactly(
+                                        Tuple.tuple("1번 질문", true, 0),
+                                        Tuple.tuple("2번 질문", false, 1)
+                                );
                     });
-                });
+
+            softly.assertThat(eventReminderGroupRepository.findAll())
+                    .hasSize(1)
+                    .extracting("event", "group")
+                    .containsExactly(Tuple.tuple(event, group));
+        });
     }
 
     @Test
@@ -340,7 +356,7 @@ class EventServiceTest {
     }
 
     @Test
-    void 이벤트_생성_시_구성원에게_알림을_보낸다() {
+    void 이벤트_생성_시_요청한_그룹_구성원에게_알림을_보낸다() {
         // given
         var organization = createOrganization("우테코");
 
@@ -366,7 +382,9 @@ class EventServiceTest {
                 List.of(
                         new QuestionCreateRequest("1번 질문", true),
                         new QuestionCreateRequest("2번 질문", false)
-                )
+                ),
+                List.of(),
+                List.of(group.getId())
         );
 
         var loginMember = new LoginMember(organizerMember.getId());
@@ -404,7 +422,9 @@ class EventServiceTest {
                 List.of(
                         new QuestionCreateRequest("1번 질문", true),
                         new QuestionCreateRequest("2번 질문", false)
-                )
+                ),
+                List.of(),
+                List.of(group.getId())
         );
         var loginMember = new LoginMember(organizerMember.getId());
 
@@ -937,7 +957,8 @@ class EventServiceTest {
                 now.plusDays(6),
                 100,
                 List.of(),
-                List.of(organizationMember.getId())
+                List.of(organizationMember.getId()),
+                List.of(group.getId())
         );
 
         var loginMember = new LoginMember(member.getId());
@@ -974,7 +995,8 @@ class EventServiceTest {
                 now.plusDays(6),
                 100,
                 List.of(),
-                coOrganizerIds
+                coOrganizerIds,
+                List.of(group.getId())
         );
 
         var loginMember = new LoginMember(member.getId());
