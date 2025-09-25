@@ -112,7 +112,7 @@ public class Organization extends BaseEntity {
     }
 
     private void validateOrganizationMemberSize() {
-        if (organizationMembers.size() == MAX_ORGANIZATION_MEMBER_LENGTH) {
+        if (organizationMembers.size() >= MAX_ORGANIZATION_MEMBER_LENGTH) {
             throw new UnprocessableEntityException("이벤트 스페이스에 이미 정원이 가득차 참여할 수 없습니다.");
         }
     }
