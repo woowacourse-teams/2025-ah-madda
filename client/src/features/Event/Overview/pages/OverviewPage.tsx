@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 
 import { css } from '@emotion/react';
-import { useSuspenseQueries } from '@tanstack/react-query';
+import { useSuspenseQuery, useSuspenseQueries } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { createInviteCode } from '@/api/mutations/useCreateInviteCode';
@@ -19,21 +19,13 @@ import { useModal } from '@/shared/hooks/useModal';
 import { ActionButtons } from '../components/ActionButtons';
 import { InviteCodeModal } from '../components/InviteCodeModal';
 import { OrganizationInfo } from '../components/OrganizationInfo';
+import { OrganizationInfoSkeleton, TabsSkeleton } from '../components/OverviewSkeletons';
 import { OverviewTabs } from '../components/OverviewTabs';
 
 export const OverviewPage = () => {
   const navigate = useNavigate();
   const { organizationId } = useParams();
   const { error } = useToast();
-
-  const [{ data: organizationData }, { data: currentEventData }, { data: pastEventData }] =
-    useSuspenseQueries({
-      queries: [
-        organizationQueryOptions.organizations(String(organizationId)),
-        eventQueryOptions.ongoing(Number(organizationId)),
-        eventQueryOptions.past(Number(organizationId)),
-      ],
-    });
 
   const goMyEvents = () => navigate(`/${organizationId}/event/my`);
   const goHome = () => navigate(`/${organizationId}/event`);
@@ -42,9 +34,11 @@ export const OverviewPage = () => {
   const [inviteCode, setInviteCode] = useState('');
   const { isOpen, open, close } = useModal();
 
+  const orgIdNum = Number(organizationId);
+
   const handleCreateInviteCode = async () => {
     try {
-      const data = await createInviteCode(Number(organizationId));
+      const data = await createInviteCode(orgIdNum);
       const baseUrl =
         process.env.NODE_ENV === 'production' ? 'https://ahmadda.com' : 'http://localhost:5173';
       const inviteUrl = `${baseUrl}/invite?code=${data.inviteCode}`;
@@ -81,15 +75,49 @@ export const OverviewPage = () => {
           />
         }
       >
-        <OrganizationInfo
-          name={organizationData?.name ?? ''}
-          description={organizationData?.description ?? ''}
-          imageUrl={organizationData?.imageUrl ?? ''}
-        />
+        <Suspense fallback={<OrganizationInfoSkeleton />}>
+          <OrganizationInfoSection organizationId={organizationId!} />
+        </Suspense>
+
         <ActionButtons onIssueInviteCode={handleCreateInviteCode} />
-        <OverviewTabs currentEventData={currentEventData} pastEventData={pastEventData} />
+
+        <Suspense fallback={<TabsSkeleton />}>
+          <OverviewTabsSection organizationId={orgIdNum} />
+        </Suspense>
       </PageLayout>
+
       <InviteCodeModal inviteCode={inviteCode} isOpen={isOpen} onClose={close} />
     </>
   );
+};
+
+const OrganizationInfoSection = ({ organizationId }: { organizationId: string }) => {
+  const { data: organizationData } = useSuspenseQuery({
+    ...organizationQueryOptions.organizations(String(organizationId)),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  return (
+    <OrganizationInfo
+      name={organizationData?.name ?? ''}
+      description={organizationData?.description ?? ''}
+      imageUrl={organizationData?.imageUrl ?? ''}
+    />
+  );
+};
+
+const OverviewTabsSection = ({ organizationId }: { organizationId: number }) => {
+  const [{ data: currentEventData }, { data: pastEventData }] = useSuspenseQueries({
+    queries: [
+      {
+        ...eventQueryOptions.ongoing(organizationId),
+      },
+      {
+        ...eventQueryOptions.past(organizationId),
+        staleTime: 5 * 60 * 1000,
+      },
+    ],
+  });
+
+  return <OverviewTabs currentEventData={currentEventData} pastEventData={pastEventData} />;
 };
