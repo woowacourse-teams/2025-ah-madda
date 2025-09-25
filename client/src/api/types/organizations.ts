@@ -9,16 +9,11 @@ export type OrganizationParticipateAPIRequest = {
   inviteCode: string;
 };
 
-export type OrganizationGroup = {
-  groupId: number;
-  name: string;
-};
-
 export type OrganizationMember = {
   organizationMemberId: number;
   nickname: string;
   isAdmin: boolean;
-  group: OrganizationGroup;
+  group: OrganizationGroupAPIResponse;
 };
 
 export type CreateOrganizationAPIRequest = {
@@ -32,6 +27,16 @@ export type CreateOrganizationAPIRequest = {
 };
 
 export type CreateOrganizationAPIResponse = { organizationId: number };
+
+export type OrganizationRole = 'ADMIN' | 'USER';
+
+export type UpdateOrganizationMemberRolesAPIRequest = {
+  organizationId: number;
+  payload: {
+    organizationMemberIds: number[];
+    role: OrganizationRole;
+  };
+};
 
 export type OrganizationGroupAPIResponse = {
   groupId: number;

@@ -26,7 +26,7 @@ export const GuestList = ({
   const isAllChecked = guests.length > 0 && guests.every((guest) => guest.isChecked);
 
   return (
-    <Flex dir="column" gap="16px">
+    <Flex dir="column" gap="16px" margin="12px 0 0 0">
       <Flex alignItems="center" gap="8px">
         {guests.length > 0 && (
           <CheckBox checked={isAllChecked} size="md" onChange={onAllGuestChecked} />

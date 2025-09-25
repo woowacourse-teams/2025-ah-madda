@@ -54,6 +54,10 @@ export const organizationQueryOptions = {
     }),
 };
 
+const getAllEventAPI = ({ organizationId }: { organizationId: number }) => {
+  return fetcher.get<Event[]>(`organizations/${organizationId}/events`);
+};
+
 export const getOrganization = ({ organizationId }: { organizationId: string }) => {
   return fetcher.get<Organization>(`organizations/${organizationId}`);
 };
