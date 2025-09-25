@@ -9,7 +9,9 @@ import { HttpError } from '@/api/fetcher';
 import { useAddTemplate } from '@/api/mutations/useAddTemplate';
 import { useUpdateEvent } from '@/api/mutations/useUpdateEvent';
 import { getEventDetailAPI } from '@/api/queries/event';
+import { organizationQueryOptions } from '@/api/queries/organization';
 import type { EventTemplateAPIResponse, TemplateDetailAPIResponse } from '@/api/types/event';
+import type { OrganizationMember } from '@/api/types/organizations';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { IconButton } from '@/shared/components/IconButton';
@@ -22,6 +24,7 @@ import { useModal } from '@/shared/hooks/useModal';
 import { trackCreateEvent } from '@/shared/lib/gaEvents';
 import { theme } from '@/shared/styles/theme';
 
+import { EventDetail } from '../../types/Event';
 import { MAX_LENGTH, UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useBasicEventForm } from '../hooks/useBasicEventForm';
@@ -37,6 +40,7 @@ import {
 } from '../utils/date';
 import { timeValueToDate, timeValueFromDate } from '../utils/time';
 
+import { CoHostSelectModal } from './CoHostSelectModal';
 import { DatePickerDropdown } from './DatePickerDropdown';
 import { MaxCapacityModal } from './MaxCapacityModal';
 import { MyPastEventModal } from './MyPastEventModal';
@@ -61,6 +65,19 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     queryFn: () => getEventDetailAPI(Number(eventId)),
     enabled: isEdit,
   });
+  const { data: myProfile } = useQuery({
+    ...organizationQueryOptions.profile(Number(organizationId)),
+    enabled: !!organizationId,
+  });
+  const { data: members } = useQuery({
+    ...organizationQueryOptions.members(Number(organizationId)),
+    enabled: !!organizationId,
+  });
+  const { data: organizationGroups } = useQuery({
+    ...organizationQueryOptions.group(),
+    enabled: !!organizationId && !isEdit,
+  });
+
   const { openDropdown, closeDropdown, isOpen } = useDropdownStates();
   const {
     isOpen: isTemplateModalOpen,
@@ -72,6 +89,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     open: capacityModalOpen,
     close: capacityModalClose,
   } = useModal();
+  const { isOpen: isCohostModalOpen, open: cohostModalOpen, close: cohostModalClose } = useModal();
+
+  const myId = myProfile?.organizationMemberId;
 
   const {
     basicEventForm,
@@ -80,7 +100,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     errors,
     isValid: isBasicFormValid,
     loadFormData,
-  } = useBasicEventForm(isEdit ? eventDetail : undefined);
+  } = useBasicEventForm(isEdit ? eventDetail : undefined, {
+    requireGroupSelection: !isEdit,
+  });
 
   const {
     questions,
@@ -92,6 +114,22 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   } = useQuestionForm();
 
   const isFormReady = isBasicFormValid && isQuestionValid;
+
+  const selectableMembers = (members ?? []).filter((m) => m.organizationMemberId !== myId);
+
+  const selectedNames = (() => {
+    const ids = basicEventForm.eventOrganizerIds ?? [];
+    const names = selectableMembers
+      .filter((m) => ids.includes(m.organizationMemberId))
+      .map((m) => m.nickname);
+
+    const selfName =
+      members?.find((m) => m.organizationMemberId === myId)?.nickname ??
+      myProfile?.nickname ??
+      '본인';
+
+    return [selfName, ...names];
+  })();
 
   const handleTemplateSelected = (
     templateDetail: Pick<TemplateDetailAPIResponse, 'description'>
@@ -121,14 +159,64 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     error('네트워크 연결을 확인해주세요.');
   };
 
-  const buildPayload = () => ({
-    ...basicEventForm,
-    eventOrganizerIds: [],
-    questions,
-    eventStart: convertDatetimeLocalToKSTISOString(basicEventForm.eventStart),
-    eventEnd: convertDatetimeLocalToKSTISOString(basicEventForm.eventEnd),
-    registrationEnd: convertDatetimeLocalToKSTISOString(basicEventForm.registrationEnd),
-  });
+  const hydratedFromDetailRef = useRef(false);
+  useEffect(() => {
+    if (!isEdit) return;
+    if (hydratedFromDetailRef.current) return;
+    if (!eventDetail) return;
+
+    const hasOtherThanMe = (basicEventForm.eventOrganizerIds ?? []).length > 0;
+    if (hasOtherThanMe) return;
+
+    let idsFromDetail: number[] | undefined = (eventDetail as EventDetail).eventOrganizerIds;
+
+    if ((!idsFromDetail || idsFromDetail.length === 0) && members) {
+      const organizerNicknames: string[] =
+        (eventDetail as { organizerNicknames?: string[] }).organizerNicknames ?? [];
+
+      const byNickname = new Map<string, number>(
+        members.map((m) => [m.nickname, m.organizationMemberId])
+      );
+
+      const mappedIds: Array<number | undefined> = organizerNicknames.map((nick: string) =>
+        byNickname.get(nick)
+      );
+
+      idsFromDetail = mappedIds.filter(
+        (id: number | undefined): id is number => typeof id === 'number'
+      );
+    }
+
+    if (Array.isArray(idsFromDetail) && idsFromDetail.length > 0) {
+      const othersOnly = myId ? idsFromDetail.filter((id) => id !== myId) : idsFromDetail;
+      updateAndValidate({ eventOrganizerIds: othersOnly });
+      hydratedFromDetailRef.current = true;
+    }
+  }, [isEdit, eventDetail, members, myId, basicEventForm.eventOrganizerIds, updateAndValidate]);
+
+  const allGroupIds = (organizationGroups ?? []).map((g: { groupId: number }) => g.groupId);
+  const areAllSelected =
+    allGroupIds.length > 0 &&
+    allGroupIds.every((id) => (basicEventForm.groupIds ?? []).includes(id));
+
+  const buildPayload = () => {
+    const base = {
+      ...basicEventForm,
+      eventOrganizerIds: basicEventForm.eventOrganizerIds ?? [],
+      questions,
+      eventStart: convertDatetimeLocalToKSTISOString(basicEventForm.eventStart),
+      eventEnd: convertDatetimeLocalToKSTISOString(basicEventForm.eventEnd),
+      registrationEnd: convertDatetimeLocalToKSTISOString(basicEventForm.registrationEnd),
+    };
+
+    if (!isEdit) {
+      return { ...base, groupIds: basicEventForm.groupIds ?? [] };
+    }
+    if ((basicEventForm.groupIds?.length ?? 0) > 0) {
+      return { ...base, groupIds: basicEventForm.groupIds };
+    }
+    return base;
+  };
 
   const autoSaveKey =
     isEdit && eventId ? `event-form:draft:edit:${eventId}` : 'event-form:draft:create';
@@ -260,6 +348,17 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     updateAndValidate({ registrationEnd: formatDateForInput(finalTime) });
   };
 
+  const toggleGroup = (id: number) => {
+    const curr = basicEventForm.groupIds ?? [];
+    const has = curr.includes(id);
+    const next = has ? curr.filter((g) => g !== id) : [...curr, id];
+    updateAndValidate({ groupIds: next });
+  };
+  const toggleAllGroups = () => {
+    if (!organizationGroups || organizationGroups.length === 0) return;
+    updateAndValidate({ groupIds: areAllSelected ? [] : allGroupIds });
+  };
+
   return (
     <Flex>
       <Flex dir="column" gap="40px" padding="60px 0" width="100%">
@@ -298,6 +397,108 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         </Flex>
 
         <Flex dir="column" gap="30px">
+          {!isEdit && (
+            <Flex dir="column" gap="8px" margin="10px 0">
+              <Button
+                type="button"
+                onClick={cohostModalOpen}
+                aria-label="공동 주최자 설정"
+                css={css`
+                  width: 100%;
+                  display: flex;
+                  justify-content: flex-start;
+                  align-items: center;
+                  gap: 12px;
+                  padding: 4px 0;
+                  margin-bottom: 10px;
+                  border: 0;
+                  background: transparent;
+                  cursor: pointer;
+
+                  &:hover {
+                    background: ${theme.colors.gray100};
+                  }
+                `}
+              >
+                <Text type="Heading" weight="medium">
+                  주최자
+                </Text>
+                <Text as="span" type="Body" color="#4b5563" data-role="value">
+                  {selectedNames.length > 0
+                    ? `${selectedNames.slice(0, 1).join(', ')}${
+                        selectedNames.length > 1 ? ` 외 ${selectedNames.length - 1}명` : ''
+                      } ✎`
+                    : '미선택 ✎'}
+                </Text>
+              </Button>
+
+              <CoHostSelectModal
+                isOpen={isCohostModalOpen}
+                members={(selectableMembers as OrganizationMember[]) ?? []}
+                initialSelectedIds={(basicEventForm.eventOrganizerIds ?? []).filter(
+                  (id) => id !== myId
+                )}
+                maxSelectable={10}
+                onClose={cohostModalClose}
+                onSubmit={(ids) => {
+                  updateAndValidate({ eventOrganizerIds: ids });
+                }}
+              />
+            </Flex>
+          )}
+
+          {!isEdit && (
+            <Flex dir="column" gap="8px">
+              <Text as="label" type="Heading" weight="medium">
+                알림 보낼 그룹
+                <StyledRequiredMark>*</StyledRequiredMark>
+              </Text>
+
+              <Flex
+                margin="0 0 30px 0"
+                css={css`
+                  flex-wrap: wrap;
+                `}
+                gap="8px"
+                width="100%"
+              >
+                <Segment
+                  type="button"
+                  onClick={toggleAllGroups}
+                  isSelected={areAllSelected}
+                  aria-pressed={areAllSelected}
+                >
+                  <Text
+                    weight={areAllSelected ? 'bold' : 'regular'}
+                    color={areAllSelected ? theme.colors.primary500 : theme.colors.gray300}
+                  >
+                    전체
+                  </Text>
+                </Segment>
+
+                {organizationGroups?.map((group: { groupId: number; name: string }) => {
+                  const selected = basicEventForm.groupIds?.includes(group.groupId) ?? false;
+                  return (
+                    <Segment
+                      key={group.groupId}
+                      type="button"
+                      onClick={() => toggleGroup(group.groupId)}
+                      isSelected={selected}
+                      aria-pressed={selected}
+                    >
+                      <Text
+                        weight={selected ? 'bold' : 'regular'}
+                        color={selected ? theme.colors.primary500 : theme.colors.gray300}
+                      >
+                        {group.name}
+                      </Text>
+                    </Segment>
+                  );
+                })}
+              </Flex>
+            </Flex>
+          )}
+
           <Flex dir="column" gap="8px">
             <Flex justifyContent="space-between">
               <Text as="label" htmlFor="title" type="Heading" weight="medium">
@@ -587,4 +788,21 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
 const StyledRequiredMark = styled.span`
   margin-left: 8px;
   color: ${theme.colors.red600};
+`;
+
+const Segment = styled.button<{ isSelected: boolean }>`
+  all: unset;
+  flex: 0 0 auto;
+  word-break: keep-all;
+  border: 1.5px solid
+    ${(props) => (props.isSelected ? theme.colors.primary500 : theme.colors.gray300)};
+  text-align: center;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 4px 8px;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: ${theme.colors.primary500};
+  }
 `;

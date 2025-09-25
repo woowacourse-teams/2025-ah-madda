@@ -19,6 +19,7 @@ export type EventDetail = {
   description: string;
   place: string;
   organizerNicknames: string[];
+  eventOrganizerIds: number[];
   eventStart: string;
   eventEnd: string;
   registrationStart: string;
@@ -37,6 +38,8 @@ export type CreateEventAPIRequest = {
   eventEnd: string;
   registrationEnd: string;
   questions: QuestionRequest[];
+  eventOrganizerIds: number[];
+  groupIds: number[];
 };
 
 export type EventFormData = Omit<CreateEventAPIRequest, 'organizerNickname'>;
