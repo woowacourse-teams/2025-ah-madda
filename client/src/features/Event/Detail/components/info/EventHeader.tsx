@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { createInviteCode } from '@/api/mutations/useCreateInviteCode';
@@ -9,6 +11,7 @@ import { Badge } from '@/shared/components/Badge';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
+import { IconButton } from '@/shared/components/IconButton';
 import { Switch } from '@/shared/components/Switch';
 import { Text } from '@/shared/components/Text';
 import { useToast } from '@/shared/components/Toast/ToastContext';
@@ -17,8 +20,6 @@ import { useModal } from '../../../../../shared/hooks/useModal';
 import type { EventDetail } from '../../../types/Event';
 import { badgeText } from '../../../utils/badgeText';
 import { formatDateTime } from '../../../utils/formatDateTime';
-
-import { EventActionButton } from './EventActionButton';
 
 type EventHeaderProps = { eventId: number; isOrganizer: boolean } & Pick<
   EventDetail,
@@ -42,11 +43,14 @@ export const EventHeader = ({
   const { error } = useToast();
 
   const [inviteCode, setInviteCode] = useState('');
-
   const checked = !data.optedOut;
 
   const goEditPage = () => {
     navigate(`/${organizationId}/event/edit/${eventId}`);
+  };
+
+  const goManagePage = () => {
+    navigate(`/${organizationId}/event/manage/${eventId}`);
   };
 
   const handleInviteCodeClick = async () => {
@@ -72,8 +76,15 @@ export const EventHeader = ({
 
   return (
     <>
-      <Flex width="100%" justifyContent="space-between" alignItems="center">
-        <Flex dir="column" gap="8px">
+      <Flex width="100%" justifyContent="space-between" alignItems="flex-start" gap="16px">
+        <Flex
+          dir="column"
+          gap="8px"
+          css={css`
+            flex: 1;
+            min-width: 0;
+          `}
+        >
           <Badge variant={status.color}>{status.text}</Badge>
           <Text as="h1" type="Display" weight="bold">
             {title}
@@ -84,24 +95,96 @@ export const EventHeader = ({
           </Flex>
           <Flex alignItems="center" gap="4px">
             <Icon name="clock" color="gray500" size={18} />
-            <Text type="Label">{`${formatDateTime(eventStart, eventEnd)}`}</Text>
+            <Text type="Label">{formatDateTime(eventStart, eventEnd)}</Text>
           </Flex>
         </Flex>
-        {isOrganizer ? (
-          <EventActionButton onEditEvent={goEditPage} onShareEvent={handleInviteCodeClick} />
-        ) : (
-          <Flex alignItems="center" gap="8px">
-            <Text type="Body">알림 받기</Text>
-            <Switch
-              aria-label="이벤트 알림 수신 설정"
-              checked={checked}
-              onCheckedChange={handleSwitch}
-              disabled={isLoading}
-            />
-          </Flex>
+
+        <DesktopRight>
+          {isOrganizer ? (
+            <>
+              <IconButton name="setting" onClick={goManagePage} aria-label="관리" />
+              <Flex alignItems="center" gap="8px">
+                <Button color="secondary" onClick={handleInviteCodeClick}>
+                  공유하기
+                </Button>
+                <Button color="primary" onClick={goEditPage}>
+                  수정
+                </Button>
+              </Flex>
+            </>
+          ) : (
+            <Flex alignItems="center" gap="8px">
+              <Text type="Body">알림 받기</Text>
+              <Switch
+                aria-label="이벤트 알림 수신 설정"
+                checked={checked}
+                onCheckedChange={handleSwitch}
+                disabled={isLoading}
+              />
+            </Flex>
+          )}
+        </DesktopRight>
+
+        {isOrganizer && (
+          <MobileTopRight>
+            <Button color="secondary" onClick={handleInviteCodeClick}>
+              공유하기
+            </Button>
+          </MobileTopRight>
         )}
       </Flex>
+
+      {isOrganizer && (
+        <MobileFixedCTA>
+          <Button size="md" iconName="edit" variant="outline" onClick={goEditPage}>
+            수정
+          </Button>
+          <Button size="md" iconName="setting" onClick={goManagePage}>
+            관리
+          </Button>
+        </MobileFixedCTA>
+      )}
+
       <InviteCodeModal inviteCode={inviteCode} isOpen={isOpen} onClose={close} />
     </>
   );
 };
+
+const DesktopRight = styled(Flex)`
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  min-width: fit-content;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const MobileTopRight = styled.div`
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+    min-width: fit-content;
+  }
+`;
+
+const MobileFixedCTA = styled.div`
+  display: none;
+
+  @media (max-width: 768px) {
+    display: flex;
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 0 20px;
+    gap: 12px;
+
+    > button {
+      flex: 1;
+    }
+  }
+`;

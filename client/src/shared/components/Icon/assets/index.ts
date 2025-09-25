@@ -13,6 +13,7 @@ import { Logo } from './logo';
 import { Next } from './next';
 import { Plus } from './plus';
 import { Save } from './save';
+import { Setting } from './setting';
 import { Share } from './share';
 import { User } from './user';
 
@@ -34,6 +35,7 @@ export const Icons = {
   dropdownUp: DropdownUp,
   next: Next,
   save: Save,
+  setting: Setting,
 };
 
 export type IconName = keyof typeof Icons;

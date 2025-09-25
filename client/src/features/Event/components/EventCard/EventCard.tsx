@@ -99,7 +99,7 @@ export const EventCard = ({
         <Flex alignItems="center" gap="4px" height="100%">
           <Icon name="user" size={16} color="gray500" />
           <Text type="Label" color={theme.colors.gray500}>
-            {organizerNicknames.join(', ')} 주최
+            {organizerNicknames ? organizerNicknames.join(', ') : ''} 주최
           </Text>
         </Flex>
         <Spacing height="2px" />
