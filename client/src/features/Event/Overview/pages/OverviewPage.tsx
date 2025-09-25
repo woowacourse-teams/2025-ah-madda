@@ -66,7 +66,7 @@ export const OverviewPage = () => {
             }
             right={
               <Button size="sm" onClick={goMyEvents}>
-                내 이벤트
+                마이 페이지
               </Button>
             }
           />
