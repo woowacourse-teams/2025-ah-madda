@@ -292,16 +292,16 @@ public class EventService {
     private List<OrganizationMember> getOrganizationMemberByIds(
             final List<Long> organizationMemberIds
     ) {
-        Set<Long> NonDuplicatedOrganizationMemberIds = new HashSet<>(organizationMemberIds);
+        Set<Long> nonDuplicatedOrganizationMemberIds = new HashSet<>(organizationMemberIds);
 
-        if (NonDuplicatedOrganizationMemberIds.size() != organizationMemberIds.size()) {
+        if (nonDuplicatedOrganizationMemberIds.size() != organizationMemberIds.size()) {
             throw new UnprocessableEntityException("주최자는 중복될 수 없습니다.");
         }
 
         List<OrganizationMember> findOrganizationMembers =
-                organizationMemberRepository.findAllById(new ArrayList<>(NonDuplicatedOrganizationMemberIds));
+                organizationMemberRepository.findAllById(new ArrayList<>(nonDuplicatedOrganizationMemberIds));
 
-        if (findOrganizationMembers.size() != NonDuplicatedOrganizationMemberIds.size()) {
+        if (findOrganizationMembers.size() != nonDuplicatedOrganizationMemberIds.size()) {
             throw new NotFoundException("요청된 주최자 구성원 중 일부 구성원이 존재하지 않습니다.");
         }
 
