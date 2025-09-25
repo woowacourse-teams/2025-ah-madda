@@ -34,6 +34,7 @@ public class Organization extends BaseEntity {
     private static final int MAX_NAME_LENGTH = 30;
     private static final int MIN_DESCRIPTION_LENGTH = 1;
     private static final int MIN_NAME_LENGTH = 1;
+    private static final int MAX_ORGANIZATION_MEMBER_LENGTH = 300;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -85,12 +86,8 @@ public class Organization extends BaseEntity {
             final OrganizationGroup group,
             final LocalDateTime now
     ) {
-        if (!inviteCode.matchesOrganization(this)) {
-            throw new UnprocessableEntityException("잘못된 초대코드입니다.");
-        }
-        if (inviteCode.isExpired(now)) {
-            throw new UnprocessableEntityException("초대코드가 만료되었습니다.");
-        }
+        validateInviteCode(inviteCode, now);
+        validateOrganizationMemberSize();
 
         return OrganizationMember.create(nickname, member, this, OrganizationMemberRole.USER, group);
     }
@@ -112,6 +109,21 @@ public class Organization extends BaseEntity {
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
+    }
+
+    private void validateOrganizationMemberSize() {
+        if (organizationMembers.size() >= MAX_ORGANIZATION_MEMBER_LENGTH) {
+            throw new UnprocessableEntityException("이벤트 스페이스에 이미 정원이 가득차 참여할 수 없습니다.");
+        }
+    }
+
+    private void validateInviteCode(final InviteCode inviteCode, final LocalDateTime now) {
+        if (!inviteCode.matchesOrganization(this)) {
+            throw new UnprocessableEntityException("잘못된 초대코드입니다.");
+        }
+        if (inviteCode.isExpired(now)) {
+            throw new UnprocessableEntityException("초대코드가 만료되었습니다.");
+        }
     }
 
     private void validateUpdatableBy(final OrganizationMember updatingOrganizationMember) {

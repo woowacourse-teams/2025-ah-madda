@@ -267,7 +267,7 @@ class EventGuestServiceTest {
         var member2 = createAndSaveMember("name2", "email2@ahmadda.com");
         var group = createGroup();
         var organizer = createAndSaveOrganizationMember("organizer", member1, organization, group);
-        var participant = createAndSaveOrganizationMember("participant", member2, organization, group);
+        var participant = createAndSaveOrganizationMember("parti", member2, organization, group);
 
         var question1 = Question.create("필수 질문", true, 0);
         var question2 = Question.create("선택 질문", false, 1);
@@ -302,7 +302,7 @@ class EventGuestServiceTest {
         var member2 = createAndSaveMember("name2", "email2@ahmadda.com");
         var group = createGroup();
         var organizer = createAndSaveOrganizationMember("organizer", member1, organization, group);
-        var participant = createAndSaveOrganizationMember("participant", member2, organization, group);
+        var participant = createAndSaveOrganizationMember("parti", member2, organization, group);
 
         Question question1 = Question.create("필수 질문", true, 0);
         Question question2 = Question.create("선택 질문", false, 1);
@@ -338,7 +338,7 @@ class EventGuestServiceTest {
         var member2 = createAndSaveMember("name2", "email2@ahmadda.com");
         var group = createGroup();
         var organizer = createAndSaveOrganizationMember("organizer", member1, organization, group);
-        var participant = createAndSaveOrganizationMember("participant", member2, organization, group);
+        var participant = createAndSaveOrganizationMember("parti", member2, organization, group);
         var event = createAndSaveEvent(organizer, organization);
 
         var invalidQuestionId = 999L;
@@ -369,11 +369,11 @@ class EventGuestServiceTest {
         var member3 = createAndSaveMember("test3", "ahmadda3@ahmadda.com");
         var group = createGroup();
         var organizationMember1 =
-                createAndSaveOrganizationMember("organizationMember1", member1, organization, group);
+                createAndSaveOrganizationMember("om1", member1, organization, group);
         var organizationMember2 =
-                createAndSaveOrganizationMember("organizationMember2", member2, organization, group);
+                createAndSaveOrganizationMember("om2", member2, organization, group);
         var organizationMember3 =
-                createAndSaveOrganizationMember("organizationMember2", member3, organization, group);
+                createAndSaveOrganizationMember("om2", member3, organization, group);
 
         var event = createAndSaveEvent(organizationMember1, organization);
         createAndSaveGuest(event, organizationMember2);
@@ -396,9 +396,9 @@ class EventGuestServiceTest {
         var member3 = createAndSaveMember("test3", "ahmadda3@ahmadda.com");
         var group = createGroup();
         var organizationMember1 =
-                createAndSaveOrganizationMember("organizationMember1", member1, organization, group);
+                createAndSaveOrganizationMember("om1", member1, organization, group);
         var organizationMember2 =
-                createAndSaveOrganizationMember("organizationMember2", member2, organization, group);
+                createAndSaveOrganizationMember("om2", member2, organization, group);
 
         var event = createAndSaveEvent(organizationMember1, organization);
         createAndSaveGuest(event, organizationMember2);
