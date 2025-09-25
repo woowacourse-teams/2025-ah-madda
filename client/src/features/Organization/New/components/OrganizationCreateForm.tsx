@@ -18,6 +18,7 @@ import type { NonGuest } from '@/features/Event/Manage/types';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
+import { Tabs } from '@/shared/components/Tabs/Tabs';
 import { Text } from '@/shared/components/Text';
 import { useToast } from '@/shared/components/Toast/ToastContext';
 import { useModal } from '@/shared/hooks/useModal';
@@ -31,8 +32,8 @@ import { CreateSpaceFormModal } from './CreateSpaceFormModal';
 import { OrganizationDeleteModal } from './OrganizationDeleteModal';
 import { OrganizationImageInput } from './OrganizationImageInput';
 
-type GroupKey = 'ALL' | number;
-type GroupSegment = { id: GroupKey; name: string };
+type TabId = 'ADMIN' | number;
+type UITab = { id: TabId; name: string };
 
 export const OrganizationCreateForm = () => {
   const navigate = useNavigate();
@@ -73,7 +74,6 @@ export const OrganizationCreateForm = () => {
       URL.revokeObjectURL(objectUrlRef.current);
       objectUrlRef.current = undefined;
     }
-
     if (file) {
       const url = URL.createObjectURL(file);
       objectUrlRef.current = url;
@@ -81,7 +81,6 @@ export const OrganizationCreateForm = () => {
     } else {
       setPreviewUrl(isEdit ? (org?.imageUrl ?? undefined) : undefined);
     }
-
     handleLogoChange(file);
   };
 
@@ -118,7 +117,6 @@ export const OrganizationCreateForm = () => {
 
     if (isEdit && organizationId) {
       let nextAdminIds = adminList.filter((m) => m.isChecked).map((m) => m.organizationMemberId);
-
       const myId = myProfile?.organizationMemberId;
       if (myId) nextAdminIds = [...nextAdminIds, myId];
 
@@ -187,10 +185,9 @@ export const OrganizationCreateForm = () => {
             },
           }
         );
-      } catch (e) {
+      } catch {
         error('권한 업데이트에 실패했습니다.');
       }
-
       return;
     }
 
@@ -227,41 +224,13 @@ export const OrganizationCreateForm = () => {
     enabled: !!organizationId,
   });
 
+  const { data: organizationGroups } = useQuery({
+    ...organizationQueryOptions.group(),
+    enabled: !!organizationId,
+  });
+
   const [adminList, setAdminList] = useState<NonGuest[]>([]);
   const initialAdminIdsRef = useRef<Set<number>>(new Set());
-
-  const [activeGroup, setActiveGroup] = useState<GroupKey>('ALL');
-
-  const memberIdToGroupId = useMemo(() => {
-    const map = new Map<number, number>();
-    (members || []).forEach((m) => map.set(m.organizationMemberId, m.group.groupId));
-    return map;
-  }, [members]);
-
-  const groupSegments = useMemo<GroupSegment[]>(() => {
-    const groups = new Map<number, string>();
-    (members || []).forEach((m) => {
-      const { groupId, name } = m.group;
-      if (!groups.has(groupId)) groups.set(groupId, name);
-    });
-    const entries: Array<[number, string]> = Array.from(groups.entries()).sort(([a], [b]) => a - b);
-    return [{ id: 'ALL', name: '전체' }, ...entries.map(([id, name]) => ({ id, name }))];
-  }, [members]);
-
-  const visibleIds = useMemo(() => {
-    if (activeGroup === 'ALL') return adminList.map((m) => m.organizationMemberId);
-    return adminList
-      .map((m) => m.organizationMemberId)
-      .filter((id) => memberIdToGroupId.get(id) === activeGroup);
-  }, [adminList, activeGroup, memberIdToGroupId]);
-
-  const filteredAdmins = useMemo(
-    () =>
-      adminList.filter((m) =>
-        activeGroup === 'ALL' ? true : memberIdToGroupId.get(m.organizationMemberId) === activeGroup
-      ),
-    [adminList, activeGroup, memberIdToGroupId]
-  );
 
   useEffect(() => {
     if (!members) return;
@@ -277,11 +246,40 @@ export const OrganizationCreateForm = () => {
       }));
 
     setAdminList(list);
-
     initialAdminIdsRef.current = new Set(
       members.filter((m) => m.isAdmin).map((m) => m.organizationMemberId)
     );
   }, [members, myProfile]);
+
+  const memberIdToGroupId = useMemo(() => {
+    const map = new Map<number, number>();
+    (members || []).forEach((m) => map.set(m.organizationMemberId, m.group.groupId));
+    return map;
+  }, [members]);
+
+  const tabs: UITab[] = useMemo(() => {
+    const groupTabs =
+      (organizationGroups || [])
+        .map((g: { groupId: number; name: string }) => ({ id: g.groupId as TabId, name: g.name }))
+        .sort((a, b) => Number(a.id) - Number(b.id)) ?? [];
+    return [{ id: 'ADMIN' as TabId, name: '관리자' }, ...groupTabs];
+  }, [organizationGroups]);
+
+  const idsOfTab = (tabId: TabId) => {
+    if (tabId === 'ADMIN') {
+      return adminList.filter((m) => m.isChecked).map((m) => m.organizationMemberId);
+    }
+    return adminList
+      .filter((m) => memberIdToGroupId.get(m.organizationMemberId) === tabId)
+      .map((m) => m.organizationMemberId);
+  };
+
+  const guestsOfTab = (tabId: TabId) => {
+    if (tabId === 'ADMIN') {
+      return adminList.filter((m) => m.isChecked);
+    }
+    return adminList.filter((m) => memberIdToGroupId.get(m.organizationMemberId) === tabId);
+  };
 
   const onAdminChecked = (organizationMemberId: number) => {
     setAdminList((prev) =>
@@ -291,13 +289,14 @@ export const OrganizationCreateForm = () => {
     );
   };
 
-  const onAdminAllChecked = () => {
-    const allVisibleChecked = filteredAdmins.length > 0 && filteredAdmins.every((m) => m.isChecked);
-    setAdminList((prev) =>
-      prev.map((m) =>
+  const onAllCheckedFor = (visibleIds: number[]) => {
+    setAdminList((prev) => {
+      const visible = prev.filter((m) => visibleIds.includes(m.organizationMemberId));
+      const allVisibleChecked = visible.length > 0 && visible.every((m) => m.isChecked);
+      return prev.map((m) =>
         visibleIds.includes(m.organizationMemberId) ? { ...m, isChecked: !allVisibleChecked } : m
-      )
-    );
+      );
+    });
   };
 
   const selectedAdminIds = adminList.filter((m) => m.isChecked).map((m) => m.organizationMemberId);
@@ -389,37 +388,69 @@ export const OrganizationCreateForm = () => {
                 관리자
               </Text>
 
-              <Flex css={{ flexWrap: 'wrap' }} gap="8px">
-                {groupSegments.map((g) => {
-                  const isSelected = activeGroup === g.id;
-                  return (
-                    <Segment
-                      key={`${g.id}`}
-                      type="button"
-                      isSelected={isSelected}
-                      onClick={() => setActiveGroup(g.id)}
-                      aria-pressed={isSelected}
+              <Tabs defaultValue={String(tabs[0]?.id ?? '')}>
+                <Tabs.List
+                  css={css`
+                    --tabs-gap: 12px;
+
+                    display: flex;
+                    overflow-x: auto;
+                    white-space: nowrap;
+                    padding: 0 4px;
+                    column-gap: var(--tabs-gap);
+
+                    @media (max-width: 480px) {
+                      --tabs-gap: 8px;
+                      padding: 0 2px;
+                    }
+                  `}
+                >
+                  {tabs.map((t) => (
+                    <Tabs.Trigger
+                      key={t.id}
+                      value={String(t.id)}
+                      css={css`
+                        margin: 0;
+                        padding: 6px 10px;
+
+                        @media (max-width: 500px) {
+                          padding: 3px 6px;
+                          font-size: 13px;
+                        }
+                      `}
                     >
-                      <Text
-                        weight={isSelected ? 'bold' : 'regular'}
-                        color={isSelected ? theme.colors.primary500 : theme.colors.gray300}
-                      >
-                        {g.name}
-                      </Text>
-                    </Segment>
+                      {t.name}
+                    </Tabs.Trigger>
+                  ))}
+                </Tabs.List>
+
+                {tabs.map((t) => {
+                  const guests = guestsOfTab(t.id);
+                  const ids = idsOfTab(t.id);
+                  const emptyMsg =
+                    t.id === 'ADMIN'
+                      ? '관리자 권한을 가진 사용자가 없어요.'
+                      : '이 그룹에 속해있는 구성원이 없어요.';
+
+                  return (
+                    <Tabs.Content key={`${t.id}`} value={String(t.id)}>
+                      <ScrollArea>
+                        {guests.length === 0 ? (
+                          <EmptyState>{emptyMsg}</EmptyState>
+                        ) : (
+                          <GuestList
+                            title={`관리자 지정 (${selectedAdminIds.length}명)`}
+                            titleColor={theme.colors.gray700}
+                            guests={guests}
+                            onGuestChecked={onAdminChecked}
+                            onAllGuestChecked={() => onAllCheckedFor(ids)}
+                          />
+                        )}
+                      </ScrollArea>
+                    </Tabs.Content>
                   );
                 })}
-              </Flex>
-
-              <ScrollArea>
-                <GuestList
-                  title={`관리자 지정 (${selectedAdminIds.length}명)`}
-                  titleColor={theme.colors.gray700}
-                  guests={filteredAdmins}
-                  onGuestChecked={onAdminChecked}
-                  onAllGuestChecked={onAdminAllChecked}
-                />
-              </ScrollArea>
+              </Tabs>
 
               <Text type="Label" color={theme.colors.gray500}>
                 이벤트 스페이스 생성자는 자동으로 관리자 권한을 갖습니다.
@@ -465,7 +496,7 @@ const StyledRequiredMark = styled.span`
 `;
 
 const ScrollArea = styled.div`
-  min-height: 150px;
+  min-height: 200px;
   max-height: 320px;
   overflow-y: auto;
   padding-right: 4px;
@@ -480,19 +511,12 @@ const ScrollArea = styled.div`
   }
 `;
 
-const Segment = styled.button<{ isSelected: boolean }>`
-  all: unset;
-  flex: 0 0 auto;
-  word-break: keep-all;
-  border: 1.5px solid
-    ${(props) => (props.isSelected ? theme.colors.primary500 : theme.colors.gray300)};
+const EmptyState = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${theme.colors.gray400};
+  font-size: 14px;
+  height: 180px;
   text-align: center;
-  border-radius: 10px;
-  cursor: pointer;
-  padding: 6px 10px;
-  white-space: nowrap;
-
-  &:hover {
-    border-color: ${theme.colors.primary500};
-  }
 `;
