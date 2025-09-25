@@ -30,6 +30,8 @@ export const OrgCard = ({ organization, onJoin, isAdmin, onEdit }: OrgCardProps)
         onError={(e) => {
           e.currentTarget.src = '/icon-512x512.png';
         }}
+        width={120}
+        height={120}
       />
 
       <StyledOverlay data-overlay>

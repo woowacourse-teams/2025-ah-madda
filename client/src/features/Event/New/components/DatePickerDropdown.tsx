@@ -23,6 +23,8 @@ type DatePickerProps = {
 
 type SingleDatePickerDropdownProps = DatePickerProps & {
   mode: 'single';
+  disabledDates?: Date[];
+  minTime?: Date;
 } & Omit<UseSingleDatePickerProps, 'onClose'>;
 
 type RangeDatePickerDropdownProps = DatePickerProps & {
@@ -54,6 +56,8 @@ export const DatePickerDropdown = ({
         onSelect={singleProps.onSelect}
         initialDate={singleProps.initialDate}
         initialTime={singleProps.initialTime}
+        disabledDates={singleProps.disabledDates}
+        minTime={singleProps.minTime}
         dropdownRef={dropdownRef}
       />
     );
@@ -81,6 +85,8 @@ const SingleDatePickerContent = ({
   onSelect,
   initialDate,
   initialTime,
+  disabledDates,
+  minTime,
   dropdownRef,
 }: SingleDatePickerDropdownProps & { dropdownRef: RefObject<HTMLDivElement | null> }) => {
   const {
@@ -121,6 +127,7 @@ const SingleDatePickerContent = ({
             selectedDate={selectedDate || null}
             onSelectDate={handleDateSelect}
             mode="single"
+            disabledDates={disabledDates}
           />
 
           <Flex
@@ -140,6 +147,8 @@ const SingleDatePickerContent = ({
                   date ? { hours: date.getHours(), minutes: date.getMinutes() } : null
                 )
               }
+              minTime={minTime}
+              selectedDate={selectedDate || undefined}
             />
           </Flex>
         </Flex>

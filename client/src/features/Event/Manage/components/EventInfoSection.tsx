@@ -1,26 +1,23 @@
 import { css } from '@emotion/react';
 
 import type { StatisticsAPIResponse } from '@/api/types/event';
-import type { Profile } from '@/api/types/profile';
-import { Avatar } from '@/shared/components/Avatar';
 import { Flex } from '@/shared/components/Flex';
 import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
 import { formatDateTime } from '../../My/utils/date';
-import type { Event } from '../../types/Event';
+import type { EventDetail } from '../../types/Event';
 import { getEventCapacityInfo } from '../utils/eventCapacity';
 
 import { Statistics } from './Statistics';
 
 type EventInfoSectionProps = {
-  event: Event;
-  profile?: Profile;
+  event: EventDetail;
   statistics?: StatisticsAPIResponse[];
 };
 
-export const EventInfoSection = ({ event, profile, statistics }: EventInfoSectionProps) => {
+export const EventInfoSection = ({ event, statistics }: EventInfoSectionProps) => {
   const capacityInfo = getEventCapacityInfo(event.maxCapacity, event.currentGuestCount);
 
   return (
@@ -70,7 +67,7 @@ export const EventInfoSection = ({ event, profile, statistics }: EventInfoSectio
           <Text type="Heading" weight="bold" color={theme.colors.gray800}>
             주최자
           </Text>
-          <Avatar picture={profile?.picture ?? ''} name={profile?.name ?? ''} />
+          <Text>{event.organizerNicknames}</Text>
         </Flex>
       </Flex>
 

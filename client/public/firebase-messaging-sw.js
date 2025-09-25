@@ -27,6 +27,7 @@ messaging.onBackgroundMessage((payload) => {
     data: payload.data,
     tag: payload.data.eventId || 'default',
     requireInteraction: true,
+    renotify: false,
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
@@ -68,7 +69,7 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('push', (event) => {
   if (!event.data) return;
 
-  const resultData = e.data.json().notification;
+  const resultData = event.data.json().notification;
   const notificationTitle = resultData.title;
   const notificationOptions = {
     body: resultData.body,
@@ -76,6 +77,7 @@ self.addEventListener('push', (event) => {
     data: resultData.data,
     tag: resultData.eventId || 'default',
     requireInteraction: true,
+    renotify: false,
   };
 
   event.waitUntil(self.registration.showNotification(notificationTitle, notificationOptions));

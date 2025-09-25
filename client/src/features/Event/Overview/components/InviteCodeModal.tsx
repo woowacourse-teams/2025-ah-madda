@@ -30,7 +30,7 @@ export const InviteCodeModal = ({ inviteCode, isOpen, onClose }: InviteCodeProps
         <Text type="Heading" weight="semibold">
           초대 코드가 생성됐어요.
         </Text>
-        <Text type="Body">초대 코드를 복사해 조직원과 공유하세요!</Text>
+        <Text type="Body">초대 코드를 복사해 구성원과 공유하세요!</Text>
         <Text
           type="Body"
           color="primary"

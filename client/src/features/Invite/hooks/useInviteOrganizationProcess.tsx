@@ -33,22 +33,28 @@ export const useInviteOrganizationProcess = () => {
     ...organizationQueryOptions.preview(inviteCode!),
     enabled: !!inviteCode && isAuthenticated(),
   });
+
   const { mutate: joinOrganization } = useParticipateOrganization(
     organizationData?.organizationId ?? 0
   );
 
-  const handleJoin = (nickname: string) => {
+  const handleJoin = (nickname: string, groupId: number) => {
+    if (!groupId) {
+      error('그룹을 선택해주세요.');
+      return;
+    }
+
     joinOrganization(
-      { nickname, inviteCode: inviteCode ?? '' },
+      { nickname, groupId, inviteCode: inviteCode ?? '' },
       {
         onSuccess: () => {
-          success('조직 참가가 완료되었습니다!');
+          success('이벤트 스페이스 참가가 완료되었습니다!');
           close();
           navigate(`/${organizationData?.organizationId}/event`);
         },
         onError: (err) => {
           error(err.message, { duration: 3000 });
-          if (err.message === '이미 참여한 조직입니다.') {
+          if (err.message === '이미 참여한 이벤트 스페이스입니다.') {
             navigate(`/${organizationData?.organizationId}/event`);
             return;
           }

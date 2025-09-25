@@ -9,7 +9,8 @@ export type Event = {
   place: string;
   registrationStart: string;
   registrationEnd: string;
-  organizerName: string;
+  organizerNicknames: string[];
+  isGuest: boolean;
 };
 
 export type EventDetail = {
@@ -17,7 +18,8 @@ export type EventDetail = {
   title: string;
   description: string;
   place: string;
-  organizerName: string;
+  organizerNicknames: string[];
+  eventOrganizerIds: number[];
   eventStart: string;
   eventEnd: string;
   registrationStart: string;
@@ -36,6 +38,8 @@ export type CreateEventAPIRequest = {
   eventEnd: string;
   registrationEnd: string;
   questions: QuestionRequest[];
+  eventOrganizerIds: number[];
+  groupIds: number[];
 };
 
 export type EventFormData = Omit<CreateEventAPIRequest, 'organizerNickname'>;

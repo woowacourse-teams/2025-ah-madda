@@ -8,7 +8,12 @@ import { Text } from '@/shared/components/Text';
 
 type OrganizationProps = Omit<Organization, 'organizationId'>;
 
+const THUMB_MAX_PX = 160;
+
 export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationProps) => {
+  const src = imageUrl || DefaultImage;
+  const alt = imageUrl ? `${name} 썸네일` : '기본 이벤트 스페이스 이미지';
+
   return (
     <Flex
       dir="column"
@@ -26,7 +31,7 @@ export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationPr
         <Flex
           justifyContent="space-between"
           alignItems="center"
-          padding="20px 10px"
+          padding="10px"
           css={css`
             @media (max-width: 481px) {
               flex-direction: column;
@@ -34,14 +39,19 @@ export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationPr
             }
           `}
         >
-          <Img
-            src={imageUrl || DefaultImage}
-            alt={imageUrl ? `${name} 썸네일` : '기본 조직 이미지'}
-            onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = DefaultImage;
-            }}
-          />
+          <ThumbWrap>
+            <ThumbImg
+              src={src}
+              alt={alt}
+              decoding="async"
+              fetchPriority="high"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = DefaultImage;
+              }}
+            />
+          </ThumbWrap>
+
           <Flex dir="column" gap="8px">
             <Text type="Display" weight="bold">
               {name}
@@ -56,10 +66,26 @@ export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationPr
   );
 };
 
-const Img = styled.img`
-  width: 100%;
-  max-width: clamp(140px, 30vw, 160px);
-  height: auto;
+const ThumbWrap = styled.div`
+  position: relative;
+  width: clamp(140px, 30vw, ${THUMB_MAX_PX}px);
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
   margin-right: 20px;
-  padding: 20px 0;
+  background: #f2f3f5;
+
+  @media (max-width: 481px) {
+    margin-right: 0;
+    margin-bottom: 8px;
+  }
+`;
+
+const ThumbImg = styled.img`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 `;

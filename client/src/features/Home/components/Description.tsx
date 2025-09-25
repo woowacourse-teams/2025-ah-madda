@@ -1,3 +1,4 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 import { Flex } from '@/shared/components/Flex';
@@ -12,7 +13,14 @@ export const Description = () => {
   return (
     <Flex dir="column" justifyContent="center" alignItems="center" padding="30px 20px">
       <Flex dir="row" alignItems="center" gap="2px">
-        <Text as="h2" type="Title" weight="semibold">
+        <Text
+          as="h2"
+          type="Title"
+          weight="semibold"
+          css={css`
+            word-break: keep-all;
+          `}
+        >
           저희는 이런 문제를 해결하려고
           <Text as="span" type="Title" weight="semibold" color={theme.colors.primary700}>
             {` `}등장
@@ -22,7 +30,7 @@ export const Description = () => {
       </Flex>
       <GridContainer>
         {LANDING.map((landing, index) => (
-          <MessageCard key={index} {...landing} />
+          <MessageCard key={index} index={index} {...landing} />
         ))}
       </GridContainer>
     </Flex>
