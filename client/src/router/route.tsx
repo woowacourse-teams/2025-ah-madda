@@ -8,6 +8,7 @@ import { MyEventPage } from '@/features/Event/My/pages/MyEventPage';
 import { OverviewPage } from '@/features/Event/Overview/pages/OverviewPage';
 import { HomePage } from '@/features/Home/page/HomePage';
 import { OrganizationSelectPage } from '@/features/Organization/Select/pages/SelectOrganizationPage';
+import { Flex } from '@/shared/components/Flex';
 import { Loading } from '@/shared/components/Loading';
 
 import { AuthCallback } from './AuthCallback';
@@ -61,7 +62,13 @@ const ProfilePage = lazy(() =>
 );
 
 const withSuspense = (Component: React.ComponentType) => (
-  <Suspense fallback={<Loading />}>
+  <Suspense
+    fallback={
+      <Flex width="100%" height="100vh" alignItems="center" justifyContent="center">
+        <Loading />
+      </Flex>
+    }
+  >
     <Component />
   </Suspense>
 );
