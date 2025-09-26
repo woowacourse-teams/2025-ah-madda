@@ -136,7 +136,6 @@ export const CoHostSelectModal = ({
         dir="column"
         gap="12px"
         width="clamp(200px, 85vw, 500px)"
-        height="height: clamp(300px, 80vh, 450px)"
         css={css`
           min-height: 0;
         `}
