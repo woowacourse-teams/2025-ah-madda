@@ -71,7 +71,7 @@ export const EventManagePage = () => {
             }
             right={
               <Button size="sm" onClick={() => navigate(`/${organizationId}/event/my`)}>
-                내 이벤트
+                마이 페이지
               </Button>
             }
           />

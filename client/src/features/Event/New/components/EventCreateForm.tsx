@@ -397,108 +397,6 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
         </Flex>
 
         <Flex dir="column" gap="30px">
-          {!isEdit && (
-            <Flex dir="column" gap="8px" margin="10px 0">
-              <Button
-                type="button"
-                onClick={cohostModalOpen}
-                aria-label="공동 주최자 설정"
-                css={css`
-                  width: 100%;
-                  display: flex;
-                  justify-content: flex-start;
-                  align-items: center;
-                  gap: 12px;
-                  padding: 4px 0;
-                  margin-bottom: 10px;
-                  border: 0;
-                  background: transparent;
-                  cursor: pointer;
-
-                  &:hover {
-                    background: ${theme.colors.gray100};
-                  }
-                `}
-              >
-                <Text type="Heading" weight="medium">
-                  주최자
-                </Text>
-                <Text as="span" type="Body" color="#4b5563" data-role="value">
-                  {selectedNames.length > 0
-                    ? `${selectedNames.slice(0, 1).join(', ')}${
-                        selectedNames.length > 1 ? ` 외 ${selectedNames.length - 1}명` : ''
-                      } ✎`
-                    : '미선택 ✎'}
-                </Text>
-              </Button>
-
-              <CoHostSelectModal
-                isOpen={isCohostModalOpen}
-                members={(selectableMembers as OrganizationMember[]) ?? []}
-                initialSelectedIds={(basicEventForm.eventOrganizerIds ?? []).filter(
-                  (id) => id !== myId
-                )}
-                maxSelectable={10}
-                onClose={cohostModalClose}
-                onSubmit={(ids) => {
-                  updateAndValidate({ eventOrganizerIds: ids });
-                }}
-              />
-            </Flex>
-          )}
-
-          {!isEdit && (
-            <Flex dir="column" gap="8px">
-              <Text as="label" type="Heading" weight="medium">
-                알림 보낼 그룹
-                <StyledRequiredMark>*</StyledRequiredMark>
-              </Text>
-
-              <Flex
-                margin="0 0 30px 0"
-                css={css`
-                  flex-wrap: wrap;
-                `}
-                gap="8px"
-                width="100%"
-              >
-                <Segment
-                  type="button"
-                  onClick={toggleAllGroups}
-                  isSelected={areAllSelected}
-                  aria-pressed={areAllSelected}
-                >
-                  <Text
-                    weight={areAllSelected ? 'bold' : 'regular'}
-                    color={areAllSelected ? theme.colors.primary500 : theme.colors.gray300}
-                  >
-                    전체
-                  </Text>
-                </Segment>
-
-                {organizationGroups?.map((group: { groupId: number; name: string }) => {
-                  const selected = basicEventForm.groupIds?.includes(group.groupId) ?? false;
-                  return (
-                    <Segment
-                      key={group.groupId}
-                      type="button"
-                      onClick={() => toggleGroup(group.groupId)}
-                      isSelected={selected}
-                      aria-pressed={selected}
-                    >
-                      <Text
-                        weight={selected ? 'bold' : 'regular'}
-                        color={selected ? theme.colors.primary500 : theme.colors.gray300}
-                      >
-                        {group.name}
-                      </Text>
-                    </Segment>
-                  );
-                })}
-              </Flex>
-            </Flex>
-          )}
-
           <Flex dir="column" gap="8px">
             <Flex justifyContent="space-between">
               <Text as="label" htmlFor="title" type="Heading" weight="medium">
@@ -662,6 +560,128 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               />
             </Flex>
           </Flex>
+
+          {!isEdit && (
+            <Flex
+              width="100%"
+              gap="8px"
+              css={css`
+                @media (max-width: 768px) {
+                  flex-direction: column;
+                }
+              `}
+            >
+              <Flex
+                dir="column"
+                gap="8px"
+                css={css`
+                  flex: 1;
+                `}
+              >
+                <Text as="label" type="Heading" weight="medium">
+                  알림 보낼 그룹
+                  <StyledRequiredMark>*</StyledRequiredMark>
+                </Text>
+
+                <Flex
+                  width="100%"
+                  margin="0 0 30px 0"
+                  gap="8px"
+                  css={css`
+                    flex-wrap: wrap;
+                  `}
+                >
+                  <Segment
+                    type="button"
+                    onClick={toggleAllGroups}
+                    isSelected={areAllSelected}
+                    aria-pressed={areAllSelected}
+                  >
+                    <Text
+                      weight={areAllSelected ? 'bold' : 'regular'}
+                      color={areAllSelected ? theme.colors.primary500 : theme.colors.gray300}
+                    >
+                      전체
+                    </Text>
+                  </Segment>
+
+                  {organizationGroups?.map((group: { groupId: number; name: string }) => {
+                    const selected = basicEventForm.groupIds?.includes(group.groupId) ?? false;
+                    return (
+                      <Segment
+                        key={group.groupId}
+                        type="button"
+                        onClick={() => toggleGroup(group.groupId)}
+                        isSelected={selected}
+                        aria-pressed={selected}
+                      >
+                        <Text
+                          weight={selected ? 'bold' : 'regular'}
+                          color={selected ? theme.colors.primary500 : theme.colors.gray300}
+                        >
+                          {group.name}
+                        </Text>
+                      </Segment>
+                    );
+                  })}
+                </Flex>
+              </Flex>
+
+              <Flex
+                dir="column"
+                gap="8px"
+                width="100%"
+                css={css`
+                  flex: 1;
+                `}
+              >
+                <Button
+                  type="button"
+                  onClick={cohostModalOpen}
+                  aria-label="공동 주최자 설정"
+                  css={css`
+                    width: 100%;
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 4px 0;
+                    border: 0;
+                    background: transparent;
+                    cursor: pointer;
+
+                    &:hover {
+                      background: ${theme.colors.gray100};
+                    }
+                  `}
+                >
+                  <Text type="Heading" weight="medium">
+                    주최자
+                  </Text>
+                  <Text as="span" type="Body" color="#4b5563" data-role="value">
+                    {selectedNames.length > 0
+                      ? `${selectedNames.slice(0, 1).join(', ')}${
+                          selectedNames.length > 1 ? ` 외 ${selectedNames.length - 1}명` : ''
+                        } ✎`
+                      : '미선택 ✎'}
+                  </Text>
+                </Button>
+
+                <CoHostSelectModal
+                  isOpen={isCohostModalOpen}
+                  members={(selectableMembers as OrganizationMember[]) ?? []}
+                  initialSelectedIds={(basicEventForm.eventOrganizerIds ?? []).filter(
+                    (id) => id !== myId
+                  )}
+                  maxSelectable={10}
+                  onClose={cohostModalClose}
+                  onSubmit={(ids) => {
+                    updateAndValidate({ eventOrganizerIds: ids });
+                  }}
+                />
+              </Flex>
+            </Flex>
+          )}
 
           <Flex dir="column" gap="8px" margin="10px 0">
             <Button

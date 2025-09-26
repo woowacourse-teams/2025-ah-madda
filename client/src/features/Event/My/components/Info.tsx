@@ -20,7 +20,7 @@ export const Info = () => {
     >
       <Flex dir="column" gap="8px">
         <Text as="h1" type="Display" weight="bold" color="gray900">
-          내 이벤트
+          마이 페이지
         </Text>
         <Text as="h2" type="Body" weight="medium" color="gray700">
           내가 주최하고, 참여한 이벤트를 확인해보세요.

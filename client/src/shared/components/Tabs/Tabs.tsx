@@ -7,8 +7,6 @@ import {
   Children,
   ReactElement,
   isValidElement,
-  useEffect,
-  useLayoutEffect,
   useRef,
 } from 'react';
 
@@ -82,38 +80,6 @@ export const TabsList = ({ children, ...props }: TabsListProps) => {
   const activeTabIndex = Math.max(0, tabValues.indexOf(activeTab));
   const tabCount = tabValues.length;
 
-  const updateUnderline = () => {
-    const listEl = listRef.current;
-    if (!listEl) return;
-    const btn = listEl.querySelector<HTMLButtonElement>(`#tab-${activeTab}`);
-    if (!btn) return;
-
-    const x = btn.offsetLeft - listEl.scrollLeft;
-    const w = btn.offsetWidth;
-
-    listEl.style.setProperty('--underline-x', `${x}px`);
-    listEl.style.setProperty('--underline-w', `${w}px`);
-  };
-
-  useLayoutEffect(updateUnderline, [activeTab, children]);
-  useEffect(() => {
-    const listEl = listRef.current;
-    if (!listEl) return;
-
-    const onResize = () => updateUnderline();
-    const onScroll = () => updateUnderline();
-
-    window.addEventListener('resize', onResize);
-    listEl.addEventListener('scroll', onScroll, { passive: true });
-
-    requestAnimationFrame(updateUnderline);
-
-    return () => {
-      window.removeEventListener('resize', onResize);
-      listEl.removeEventListener('scroll', onScroll);
-    };
-  }, [activeTab, children]);
-
   return (
     <StyledTabsList
       ref={listRef}
@@ -140,6 +106,7 @@ export const TabsTrigger = ({ value, children, ...props }: TabsTriggerProps) => 
       id={`tab-${value}`}
       onClick={() => setActiveTab(value)}
       data-active={isActive}
+      isActive={isActive}
       {...props}
     >
       {children}

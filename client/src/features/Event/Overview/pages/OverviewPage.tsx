@@ -8,10 +8,8 @@ import { createInviteCode } from '@/api/mutations/useCreateInviteCode';
 import { eventQueryOptions } from '@/api/queries/event';
 import { organizationQueryOptions } from '@/api/queries/organization';
 import { Button } from '@/shared/components/Button';
-import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
 import { Icon } from '@/shared/components/Icon';
-import { IconButton } from '@/shared/components/IconButton';
 import { PageLayout } from '@/shared/components/PageLayout';
 import { useToast } from '@/shared/components/Toast/ToastContext';
 import { useModal } from '@/shared/hooks/useModal';
@@ -29,7 +27,6 @@ export const OverviewPage = () => {
 
   const goMyEvents = () => navigate(`/${organizationId}/event/my`);
   const goHome = () => navigate(`/${organizationId}/event`);
-  const goProfile = () => navigate(`/${organizationId}/profile`);
 
   const [inviteCode, setInviteCode] = useState('');
   const { isOpen, open, close } = useModal();
@@ -66,7 +63,7 @@ export const OverviewPage = () => {
             }
             right={
               <Button size="sm" onClick={goMyEvents}>
-                내 이벤트
+                마이 페이지
               </Button>
             }
           />

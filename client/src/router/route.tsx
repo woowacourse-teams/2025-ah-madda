@@ -3,8 +3,13 @@ import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 
 import { App } from '@/App';
+import { EventDetailPage } from '@/features/Event/Detail/pages/EventDetailPage';
+import { MyEventPage } from '@/features/Event/My/pages/MyEventPage';
 import { OverviewPage } from '@/features/Event/Overview/pages/OverviewPage';
 import { HomePage } from '@/features/Home/page/HomePage';
+import { OrganizationSelectPage } from '@/features/Organization/Select/pages/SelectOrganizationPage';
+import { Flex } from '@/shared/components/Flex';
+import { Loading } from '@/shared/components/Loading';
 
 import { AuthCallback } from './AuthCallback';
 import { InviteRedirect } from './InviteRedirect';
@@ -17,48 +22,26 @@ const ErrorPage = lazy(() =>
 );
 
 const InvitePage = lazy(() =>
-  import('@/features/Invite/page/InvitePage').then((module) => ({
-    default: module.InvitePage,
-  }))
+  import(/* webpackChunkName: "invite-pages" */ '@/features/Invite/page/InvitePage').then(
+    (module) => ({
+      default: module.InvitePage,
+    })
+  )
 );
 
 const NewEventPage = lazy(() =>
-  import(/* webpackChunkName: "event-pages" */ '@/features/Event/New/pages/NewEventPage').then(
+  import(/* webpackChunkName: "new-event-pages" */ '@/features/Event/New/pages/NewEventPage').then(
     (module) => ({
       default: module.NewEventPage,
     })
   )
 );
 
-const EventDetailPage = lazy(() =>
-  import(
-    /* webpackChunkName: "event-pages" */ '@/features/Event/Detail/pages/EventDetailPage'
-  ).then((module) => ({
-    default: module.EventDetailPage,
-  }))
-);
-
-const MyEventPage = lazy(() =>
-  import(/* webpackChunkName: "event-pages" */ '@/features/Event/My/pages/MyEventPage').then(
-    (module) => ({
-      default: module.MyEventPage,
-    })
-  )
-);
-
 const EventManagePage = lazy(() =>
   import(
-    /* webpackChunkName: "event-pages" */ '@/features/Event/Manage/pages/EventManagePage'
+    /* webpackChunkName: "event-manage-pages" */ '@/features/Event/Manage/pages/EventManagePage'
   ).then((module) => ({
     default: module.EventManagePage,
-  }))
-);
-
-const OrganizationSelectPage = lazy(() =>
-  import(
-    /* webpackChunkName: "organization-pages" */ '@/features/Organization/Select/pages/SelectOrganizationPage'
-  ).then((module) => ({
-    default: module.OrganizationSelectPage,
   }))
 );
 
@@ -79,7 +62,13 @@ const ProfilePage = lazy(() =>
 );
 
 const withSuspense = (Component: React.ComponentType) => (
-  <Suspense>
+  <Suspense
+    fallback={
+      <Flex width="100%" height="100dvh" alignItems="center" justifyContent="center">
+        <Loading />
+      </Flex>
+    }
+  >
     <Component />
   </Suspense>
 );
@@ -120,11 +109,11 @@ export const router = createBrowserRouter(
             },
             {
               path: 'my',
-              element: withSuspense(MyEventPage),
+              Component: MyEventPage,
             },
             {
               path: ':eventId',
-              element: withSuspense(EventDetailPage),
+              Component: EventDetailPage,
             },
             {
               path: 'manage/:eventId',
@@ -142,7 +131,7 @@ export const router = createBrowserRouter(
           children: [
             {
               index: true,
-              element: withSuspense(OrganizationSelectPage),
+              Component: OrganizationSelectPage,
             },
             {
               path: 'new',
