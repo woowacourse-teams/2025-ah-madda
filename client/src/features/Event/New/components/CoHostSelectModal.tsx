@@ -143,7 +143,6 @@ export const CoHostSelectModal = ({
         <Text as="label" type="Heading" weight="medium">
           {title}
         </Text>
-
         <Tabs defaultValue={String(tabs[0]?.id ?? '')}>
           <Tabs.List>
             {tabs.map((t) => (
@@ -164,14 +163,13 @@ export const CoHostSelectModal = ({
             ))}
           </Tabs.List>
 
-          {tabs.map((t) => {
-            const guests = guestsOfTab(t.id);
-            const ids = idsOfTab(t.id);
-            const emptyMsg =
-              t.id === 'HOST'
-                ? '선택된 공동 주최자가 없어요.'
-                : '이 그룹에 속해있는 구성원이 없어요.';
-
+            {tabs.map((t) => {
+              const guests = guestsOfTab(t.id);
+              const ids = idsOfTab(t.id);
+              const emptyMsg =
+                t.id === 'HOST'
+                  ? '선택된 공동 주최자가 없어요.'
+                  : '이 그룹에 속해있는 구성원이 없어요.';
             return (
               <Tabs.Content
                 key={`${t.id}`}
@@ -199,7 +197,13 @@ export const CoHostSelectModal = ({
         </Tabs>
 
         <StickyFooter>
-          <Text type="Label" color={theme.colors.gray500} css={{ marginBottom: 12 }}>
+          <Text
+            type="Label"
+            color={theme.colors.gray500}
+            css={css`
+              margin-bottom: 12px;
+            `}
+          >
             공동 주최자는 이벤트 편집 권한을 공유합니다.
           </Text>
 
