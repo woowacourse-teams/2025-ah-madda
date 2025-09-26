@@ -17,7 +17,6 @@ const pulse = keyframes`
 
 export const StyledSkeleton = styled.div<SkeletonProps>`
   display: inline-block;
-  min-height: 16px;
   width: ${({ width }) => width ?? '100%'};
   height: ${({ height }) => height ?? '12px'};
   border-radius: ${({ borderRadius }) => borderRadius ?? '4px'};

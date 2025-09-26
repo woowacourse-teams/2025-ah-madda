@@ -30,7 +30,7 @@ export const Basic: Story = {
     height: { control: 'text' },
     borderRadius: { control: 'text' },
   },
-  render: () => <Skeleton {...Basic.args} />,
+  render: (args) => <Skeleton {...args} />,
 };
 
 export const ImageSkeleton: Story = {
@@ -44,5 +44,5 @@ export const ImageSkeleton: Story = {
     height: { control: 'text' },
     borderRadius: { control: 'text' },
   },
-  render: () => <Skeleton {...ImageSkeleton.args} />,
+  render: (args) => <Skeleton {...args} />,
 };
