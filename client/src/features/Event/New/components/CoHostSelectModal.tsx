@@ -132,38 +132,28 @@ export const CoHostSelectModal = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalBody dir="column" gap="12px">
+      <Flex
+        dir="column"
+        gap="12px"
+        width="clamp(200px, 85vw, 500px)"
+        css={css`
+          min-height: 0;
+        `}
+      >
         <Text as="label" type="Heading" weight="medium">
           {title}
         </Text>
-
         <Tabs defaultValue={String(tabs[0]?.id ?? '')}>
-          <Tabs.List
-            css={css`
-              --tabs-gap: 12px;
-              display: flex;
-              overflow-x: auto;
-              white-space: nowrap;
-              padding: 0 4px;
-              column-gap: var(--tabs-gap);
-              margin-top: 12px;
-
-              @media (max-width: 480px) {
-                --tabs-gap: 8px;
-                padding: 0 2px;
-              }
-            `}
-          >
+          <Tabs.List>
             {tabs.map((t) => (
               <Tabs.Trigger
                 key={t.id}
                 value={String(t.id)}
                 css={css`
                   margin: 0;
-                  padding: 6px 10px;
+                  padding: 6px;
 
                   @media (max-width: 500px) {
-                    padding: 3px 6px;
                     font-size: 13px;
                   }
                 `}
@@ -173,16 +163,21 @@ export const CoHostSelectModal = ({
             ))}
           </Tabs.List>
 
-          {tabs.map((t) => {
-            const guests = guestsOfTab(t.id);
-            const ids = idsOfTab(t.id);
-            const emptyMsg =
-              t.id === 'HOST'
-                ? '선택된 공동 주최자가 없어요.'
-                : '이 그룹에 속해있는 구성원이 없어요.';
-
+            {tabs.map((t) => {
+              const guests = guestsOfTab(t.id);
+              const ids = idsOfTab(t.id);
+              const emptyMsg =
+                t.id === 'HOST'
+                  ? '선택된 공동 주최자가 없어요.'
+                  : '이 그룹에 속해있는 구성원이 없어요.';
             return (
-              <Tabs.Content key={`${t.id}`} value={String(t.id)}>
+              <Tabs.Content
+                key={`${t.id}`}
+                value={String(t.id)}
+                css={css`
+                  height: clamp(300px, 30vh, 400px);
+                `}
+              >
                 <ScrollArea>
                   {guests.length === 0 ? (
                     <EmptyState>{emptyMsg}</EmptyState>
@@ -202,7 +197,13 @@ export const CoHostSelectModal = ({
         </Tabs>
 
         <StickyFooter>
-          <Text type="Label" color={theme.colors.gray500} css={{ marginBottom: 12 }}>
+          <Text
+            type="Label"
+            color={theme.colors.gray500}
+            css={css`
+              margin-bottom: 12px;
+            `}
+          >
             공동 주최자는 이벤트 편집 권한을 공유합니다.
           </Text>
 
@@ -215,20 +216,14 @@ export const CoHostSelectModal = ({
             </Button>
           </Flex>
         </StickyFooter>
-      </ModalBody>
+      </Flex>
     </Modal>
   );
 };
 
-const ModalBody = styled(Flex)`
-  width: clamp(200px, 85vw, 500px);
-  height: clamp(300px, 80vh, 450px);
-  min-height: 0;
-`;
-
 const ScrollArea = styled.div`
   flex: 1 1 auto;
-  min-height: 0;
+
   overflow-y: auto;
   padding-right: 4px;
   margin-top: 12px;

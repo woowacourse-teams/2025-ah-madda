@@ -43,6 +43,8 @@ export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationPr
             <ThumbImg
               src={src}
               alt={alt}
+              width={THUMB_MAX_PX}
+              height={THUMB_MAX_PX}
               decoding="async"
               fetchPriority="high"
               onError={(e) => {

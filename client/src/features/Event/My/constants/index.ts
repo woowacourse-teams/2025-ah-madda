@@ -1,5 +1,5 @@
 export const UI_LABELS = {
-  PAGE_TITLE: '내 이벤트',
+  PAGE_TITLE: '마이 페이지',
 
   HOST_TAB: '주최 이벤트',
   PARTICIPATE_TAB: '참여 이벤트',
