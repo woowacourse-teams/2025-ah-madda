@@ -21,18 +21,13 @@ export const StyledTabsList = styled.div<StyledTabsListProps>`
     bottom: 0;
     height: 3px;
     background-color: ${({ theme }) => theme.colors.primary600};
-
-    left: var(--underline-x, 0px);
-    width: var(--underline-w, calc(100% / ${({ tabCount }) => tabCount}));
-
-    transition:
-      left 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-      width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    width: ${({ tabCount }) => `${100 / tabCount}%`};
+    left: ${({ activeTabIndex, tabCount }) => `${(activeTabIndex * 100) / tabCount}%`};
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 `;
 
-export const StyledTabsTrigger = styled.button`
-  border-radius: 0;
+export const StyledTabsTrigger = styled.button<{ isActive: boolean }>`
   padding: 16px 20px;
   font-size: 16px;
   font-weight: 600;

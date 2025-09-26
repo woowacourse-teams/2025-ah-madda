@@ -132,58 +132,36 @@ export const CoHostSelectModal = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalBody dir="column" gap="12px">
+      <Flex
+        dir="column"
+        gap="12px"
+        width="clamp(200px, 85vw, 500px)"
+        css={css`
+          min-height: 0;
+        `}
+      >
         <Text as="label" type="Heading" weight="medium">
           {title}
         </Text>
+        <Tabs defaultValue={String(tabs[0]?.id ?? '')}>
+          <Tabs.List>
+            {tabs.map((t) => (
+              <Tabs.Trigger
+                key={t.id}
+                value={String(t.id)}
+                css={css`
+                  margin: 0;
+                  padding: 6px;
 
-        <Flex
-          dir="column"
-          css={css`
-            min-height: 0;
-          `}
-        >
-          <Tabs
-            defaultValue={String(tabs[0]?.id ?? '')}
-            css={css`
-              min-height: 0;
-            `}
-          >
-            <Tabs.List
-              css={css`
-                --tabs-gap: 12px;
-                display: flex;
-                overflow-x: auto;
-                white-space: nowrap;
-                padding: 0 4px;
-                column-gap: var(--tabs-gap);
-                margin-top: 12px;
-                min-height: 35px;
-
-                @media (max-width: 480px) {
-                  --tabs-gap: 8px;
-                  padding: 0 2px;
-                }
-              `}
-            >
-              {tabs.map((t) => (
-                <Tabs.Trigger
-                  key={t.id}
-                  value={String(t.id)}
-                  css={css`
-                    margin: 0;
-                    padding: 6px 10px;
-
-                    @media (max-width: 500px) {
-                      padding: 3px 6px;
-                      font-size: 13px;
-                    }
-                  `}
-                >
-                  {t.name}
-                </Tabs.Trigger>
-              ))}
-            </Tabs.List>
+                  @media (max-width: 500px) {
+                    font-size: 13px;
+                  }
+                `}
+              >
+                {t.name}
+              </Tabs.Trigger>
+            ))}
+          </Tabs.List>
 
             {tabs.map((t) => {
               const guests = guestsOfTab(t.id);
@@ -192,27 +170,31 @@ export const CoHostSelectModal = ({
                 t.id === 'HOST'
                   ? '선택된 공동 주최자가 없어요.'
                   : '이 그룹에 속해있는 구성원이 없어요.';
-
-              return (
-                <TabPanel key={`${t.id}`} value={String(t.id)}>
-                  <ScrollArea>
-                    {guests.length === 0 ? (
-                      <EmptyState>{emptyMsg}</EmptyState>
-                    ) : (
-                      <GuestList
-                        title={`${title} (${totalSelected}명)`}
-                        titleColor={theme.colors.gray700}
-                        guests={guests}
-                        onGuestChecked={onGuestChecked}
-                        onAllGuestChecked={() => onAllGuestCheckedFor(ids)}
-                      />
-                    )}
-                  </ScrollArea>
-                </TabPanel>
-              );
-            })}
-          </Tabs>
-        </Flex>
+            return (
+              <Tabs.Content
+                key={`${t.id}`}
+                value={String(t.id)}
+                css={css`
+                  height: clamp(300px, 30vh, 400px);
+                `}
+              >
+                <ScrollArea>
+                  {guests.length === 0 ? (
+                    <EmptyState>{emptyMsg}</EmptyState>
+                  ) : (
+                    <GuestList
+                      title={`${title} (${totalSelected}명)`}
+                      titleColor={theme.colors.gray700}
+                      guests={guests}
+                      onGuestChecked={onGuestChecked}
+                      onAllGuestChecked={() => onAllGuestCheckedFor(ids)}
+                    />
+                  )}
+                </ScrollArea>
+              </Tabs.Content>
+            );
+          })}
+        </Tabs>
 
         <StickyFooter>
           <Text
@@ -234,26 +216,14 @@ export const CoHostSelectModal = ({
             </Button>
           </Flex>
         </StickyFooter>
-      </ModalBody>
+      </Flex>
     </Modal>
   );
 };
 
-const ModalBody = styled(Flex)`
-  width: clamp(200px, 85vw, 500px);
-  height: clamp(300px, 80vh, 450px);
-  min-height: 0;
-`;
-
-const TabPanel = styled(Tabs.Content)`
-  display: flex;
-  flex: 1 1 auto;
-  min-height: 0;
-`;
-
 const ScrollArea = styled.div`
   flex: 1 1 auto;
-  min-height: 0;
+
   overflow-y: auto;
   padding-right: 4px;
   margin-top: 12px;
