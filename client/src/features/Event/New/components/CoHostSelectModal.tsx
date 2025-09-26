@@ -143,6 +143,7 @@ export const CoHostSelectModal = ({
         <Text as="label" type="Heading" weight="medium">
           {title}
         </Text>
+
         <Tabs defaultValue={String(tabs[0]?.id ?? '')}>
           <Tabs.List>
             {tabs.map((t) => (
@@ -163,19 +164,21 @@ export const CoHostSelectModal = ({
             ))}
           </Tabs.List>
 
-            {tabs.map((t) => {
-              const guests = guestsOfTab(t.id);
-              const ids = idsOfTab(t.id);
-              const emptyMsg =
-                t.id === 'HOST'
-                  ? '선택된 공동 주최자가 없어요.'
-                  : '이 그룹에 속해있는 구성원이 없어요.';
+          {tabs.map((t) => {
+            const guests = guestsOfTab(t.id);
+            const ids = idsOfTab(t.id);
+            const emptyMsg =
+              t.id === 'HOST'
+                ? '선택된 공동 주최자가 없어요.'
+                : '이 그룹에 속해있는 구성원이 없어요.';
             return (
               <Tabs.Content
                 key={`${t.id}`}
                 value={String(t.id)}
                 css={css`
                   height: clamp(300px, 30vh, 400px);
+                  display: flex;
+                  min-height: 0;
                 `}
               >
                 <ScrollArea>
@@ -223,7 +226,7 @@ export const CoHostSelectModal = ({
 
 const ScrollArea = styled.div`
   flex: 1 1 auto;
-
+  min-height: 0;
   overflow-y: auto;
   padding-right: 4px;
   margin-top: 12px;
