@@ -145,23 +145,7 @@ export const CoHostSelectModal = ({
         </Text>
 
         <Tabs defaultValue={String(tabs[0]?.id ?? '')}>
-          <Tabs.List
-            css={css`
-              --tabs-gap: 12px;
-              display: flex;
-              overflow-x: auto;
-              white-space: nowrap;
-              padding: 0 4px;
-              column-gap: var(--tabs-gap);
-              margin-top: 12px;
-              min-height: 35px;
-
-              @media (max-width: 480px) {
-                --tabs-gap: 8px;
-                padding: 0 2px;
-              }
-            `}
-          >
+          <Tabs.List>
             {tabs.map((t) => (
               <Tabs.Trigger
                 key={t.id}
