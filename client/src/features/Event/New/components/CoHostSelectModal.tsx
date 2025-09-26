@@ -139,11 +139,16 @@ export const CoHostSelectModal = ({
 
         <Flex
           dir="column"
-          css={{
-            minHeight: 0,
-          }}
+          css={css`
+            min-height: 0;
+          `}
         >
-          <Tabs defaultValue={String(tabs[0]?.id ?? '')} css={{ minHeight: 0 }}>
+          <Tabs
+            defaultValue={String(tabs[0]?.id ?? '')}
+            css={css`
+              min-height: 0;
+            `}
+          >
             <Tabs.List
               css={css`
                 --tabs-gap: 12px;
@@ -210,7 +215,13 @@ export const CoHostSelectModal = ({
         </Flex>
 
         <StickyFooter>
-          <Text type="Label" color={theme.colors.gray500} css={{ marginBottom: 12 }}>
+          <Text
+            type="Label"
+            color={theme.colors.gray500}
+            css={css`
+              margin-bottom: 12px;
+            `}
+          >
             공동 주최자는 이벤트 편집 권한을 공유합니다.
           </Text>
 
