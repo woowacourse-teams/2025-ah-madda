@@ -128,7 +128,7 @@ type DateRangeFormatInput = {
  * formatDate({
  *   start: new Date('2025-01-15'),
  *   end: new Date('2025-01-20'),
- *   options: { pattern: 'YYYY-MM-DD', rangeSeparator: ' ~ ' }
+ *   options: { pattern: 'YYYY-MM-DD', rangeSeparator: '~' }
  * })
  * // '2025-01-15 ~ 2025-01-20'
  */
