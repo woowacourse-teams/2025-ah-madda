@@ -142,23 +142,24 @@ const PointIcon = styled.img`
     top: 20px;
     right: -30px;
     animation-delay: 0.6s;
-
-    @media (max-width: 768px) {
-      right: -25px;
-    }
   }
 
   &.point3 {
     top: 35px;
     right: -60px;
     animation-delay: 1.2s;
-    @media (max-width: 768px) {
-      right: -45px;
-    }
   }
 
   @media (max-width: 768px) {
     width: 30px;
     height: 70px;
+
+    &.point2 {
+      right: -25px;
+    }
+
+    &.point3 {
+      right: -50px;
+    }
   }
 `;
