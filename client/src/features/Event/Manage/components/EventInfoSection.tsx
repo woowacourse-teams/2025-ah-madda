@@ -5,7 +5,7 @@ import { Flex } from '@/shared/components/Flex';
 import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
-import { formatDateRange } from '@/shared/utils/dateUtils';
+import { formatDate } from '@/shared/utils/dateUtils';
 
 import type { EventDetail } from '../../types/Event';
 import { getEventCapacityInfo } from '../utils/eventCapacity';
@@ -53,7 +53,7 @@ export const EventInfoSection = ({ event, statistics }: EventInfoSectionProps) =
             신청기간
           </Text>
           <Text type="Label" weight="medium" color={theme.colors.gray800}>
-            {formatDateRange({
+            {formatDate({
               start: event.registrationEnd,
               options: {
                 pattern: 'YYYY. MM. DD E A h시',

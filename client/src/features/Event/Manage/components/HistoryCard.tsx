@@ -5,7 +5,7 @@ import { Badge } from '@/shared/components/Badge';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
-import { formatDateRange } from '@/shared/utils/dateUtils';
+import { formatDate } from '@/shared/utils/dateUtils';
 
 export const HistoryCard = ({ recipientCount, content, sentAt }: NotifyHistoryAPIResponse) => {
   return (
@@ -22,7 +22,7 @@ export const HistoryCard = ({ recipientCount, content, sentAt }: NotifyHistoryAP
         <Badge variant="blue">{recipientCount}명</Badge>
       </Flex>
       <Text type="Label" color={theme.colors.gray500}>
-        {formatDateRange({
+        {formatDate({
           start: sentAt,
           options: { pattern: 'YYYY년 MM월 DD일 E A HH:mm', dayOfWeekFormat: 'long' },
         })}

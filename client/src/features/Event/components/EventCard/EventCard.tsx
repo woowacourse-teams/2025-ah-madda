@@ -10,7 +10,7 @@ import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 import { trackClickEventCard } from '@/shared/lib/gaEvents';
 import { theme } from '@/shared/styles/theme';
-import { formatDateRange } from '@/shared/utils/dateUtils';
+import { formatDate } from '@/shared/utils/dateUtils';
 
 import { Event } from '../../types/Event';
 import { badgeText } from '../../utils/badgeText';
@@ -93,8 +93,9 @@ export const EventCard = ({
         <Flex alignItems="center" gap="4px" height="100%">
           <Icon name="clock" size={16} color="gray500" />
           <Text type="Label" color={theme.colors.gray500}>
-            {formatDateRange({
+            {formatDate({
               start: eventStart,
+              end: eventEnd,
               options: {
                 pattern: 'MM.DD E HH:mm',
                 dayOfWeekFormat: 'shortParen',

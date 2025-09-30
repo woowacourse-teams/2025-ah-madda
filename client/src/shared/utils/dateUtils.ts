@@ -117,7 +117,7 @@ type DateRangeFormatInput = {
  *
  * @example
  * // 단일 날짜
- * formatDateRange({
+ * formatDate({
  *   start: new Date('2025-01-15'),
  *   options: { pattern: 'YYYY-MM-DD' }
  * })
@@ -125,14 +125,14 @@ type DateRangeFormatInput = {
  *
  * @example
  * // 날짜 범위
- * formatDateRange({
+ * formatDate({
  *   start: new Date('2025-01-15'),
  *   end: new Date('2025-01-20'),
  *   options: { pattern: 'YYYY-MM-DD', rangeSeparator: ' ~ ' }
  * })
  * // '2025-01-15 ~ 2025-01-20'
  */
-export const formatDateRange = ({ start, end, options = {} }: DateRangeFormatInput): string => {
+export const formatDate = ({ start, end, options = {} }: DateRangeFormatInput): string => {
   const {
     pattern = 'YYYY.MM.DD HH:mm',
     dayOfWeekFormat = 'none',
@@ -143,8 +143,8 @@ export const formatDateRange = ({ start, end, options = {} }: DateRangeFormatInp
   const startDate = typeof start === 'string' ? new Date(start) : start;
   const endDate = end ? (typeof end === 'string' ? new Date(end) : end) : null;
 
-  const startStr = formatDate(startDate, pattern, locale, dayOfWeekFormat);
-  const endStr = endDate ? formatDate(endDate, pattern, locale, dayOfWeekFormat) : null;
+  const startStr = applyDatePattern(startDate, pattern, locale, dayOfWeekFormat);
+  const endStr = endDate ? applyDatePattern(endDate, pattern, locale, dayOfWeekFormat) : null;
 
   return endStr ? `${startStr} ${rangeSeparator} ${endStr}` : startStr;
 };
@@ -174,7 +174,7 @@ const extractDateComponents = (date: Date) => {
  * @param dayOfWeekFormat 요일 형식
  * @returns 포맷팅된 날짜 문자열
  */
-const formatDate = (
+const applyDatePattern = (
   date: Date,
   pattern: DatePattern,
   locale: LocaleOption,

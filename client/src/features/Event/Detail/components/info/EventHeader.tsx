@@ -15,7 +15,7 @@ import { IconButton } from '@/shared/components/IconButton';
 import { Switch } from '@/shared/components/Switch';
 import { Text } from '@/shared/components/Text';
 import { useToast } from '@/shared/components/Toast/ToastContext';
-import { formatDateRange } from '@/shared/utils/dateUtils';
+import { formatDate } from '@/shared/utils/dateUtils';
 
 import { useModal } from '../../../../../shared/hooks/useModal';
 import type { EventDetail } from '../../../types/Event';
@@ -96,7 +96,7 @@ export const EventHeader = ({
           <Flex alignItems="center" gap="4px">
             <Icon name="clock" color="gray500" size={18} />
             <Text type="Label">
-              {formatDateRange({
+              {formatDate({
                 start: eventStart,
                 end: eventEnd,
                 options: {

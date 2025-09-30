@@ -23,7 +23,7 @@ import { useAutoSessionSave } from '@/shared/hooks/useAutoSessionSave';
 import { useModal } from '@/shared/hooks/useModal';
 import { trackCreateEvent } from '@/shared/lib/gaEvents';
 import { theme } from '@/shared/styles/theme';
-import { formatDateRange } from '@/shared/utils/dateUtils';
+import { formatDate } from '@/shared/utils/dateUtils';
 
 import { EventDetail } from '../../types/Event';
 import { MAX_LENGTH, UNLIMITED_CAPACITY } from '../constants/errorMessages';
@@ -448,7 +448,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 name="eventDateRange"
                 value={
                   basicEventForm.eventStart && basicEventForm.eventEnd
-                    ? formatDateRange({
+                    ? formatDate({
                         start: basicEventForm.eventStart,
                         end: basicEventForm.eventEnd,
                         options: {
@@ -508,7 +508,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 name="registrationEnd"
                 value={
                   basicEventForm.registrationEnd
-                    ? formatDateRange({
+                    ? formatDate({
                         start: basicEventForm.registrationEnd,
                         options: {
                           pattern: 'YYYY.MM.DD HH:mm',
