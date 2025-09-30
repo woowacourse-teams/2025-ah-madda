@@ -9,8 +9,6 @@ import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
-import type { OrganizationWithRole } from '../../Organization/types/Organization';
-
 import { OrgCard } from './OrgCard';
 
 const GAP = 80;
@@ -24,7 +22,7 @@ export const OrgSection = () => {
     queries: joinedOrgs.map((org) => organizationQueryOptions.profile(org.organizationId)),
   });
 
-  const orgs: OrganizationWithRole[] = joinedOrgs.map((org, idx) => ({
+  const orgs = joinedOrgs.map((org, idx) => ({
     ...org,
     isAdmin: profileQueries[idx]?.data?.isAdmin ?? false,
   }));
@@ -118,7 +116,7 @@ export const OrgSection = () => {
       </Flex>
 
       {orgs.length === 0 && (
-        <Text type="Body" color="#6b7280">
+        <Text type="Body" color={theme.colors.gray500}>
           아직 소속된 이벤트 스페이스가 없어요. 새로운 이벤트 스페이스를 만들어보세요!
         </Text>
       )}
