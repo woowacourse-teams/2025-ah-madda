@@ -4,8 +4,7 @@ import { StatisticsAPIResponse } from '@/api/types/event';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
-
-import { formatDate } from '../utils/formatDate';
+import { formatDateRange } from '@/shared/utils/dateUtils';
 
 type ChartProps = {
   statistics: StatisticsAPIResponse[];
@@ -47,7 +46,10 @@ export const Chart = ({ statistics, maxViews, hoveredIndex, onChangeHover }: Cha
       <XAxisLabels gap="4px" padding="20px 0 0 0">
         {statistics.map((item) => (
           <Text key={item.date} type="Body" weight="regular" color={theme.colors.black}>
-            {formatDate(item.date)}
+            {formatDateRange({
+              start: item.date,
+              options: { pattern: 'MM/DD' },
+            })}
           </Text>
         ))}
       </XAxisLabels>
