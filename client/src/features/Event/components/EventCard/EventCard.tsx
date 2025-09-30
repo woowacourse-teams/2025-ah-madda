@@ -99,6 +99,7 @@ export const EventCard = ({
               options: {
                 pattern: 'MM.DD E HH:mm',
                 dayOfWeekFormat: 'shortParen',
+                smartRange: true,
               },
             })}
           </Text>
