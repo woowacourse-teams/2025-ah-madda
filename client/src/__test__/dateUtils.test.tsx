@@ -92,7 +92,7 @@ describe('날짜 유틸리티 함수 테스트', () => {
         start: new Date('2025-01-15T10:00:00'),
         end: new Date('2025-01-17T18:00:00'),
         options: {
-          pattern: 'YYYY.MM.DD (E) HH:mm',
+          pattern: 'YYYY.MM.DD E HH:mm',
           dayOfWeekFormat: 'shortParen',
           locale: 'ko',
         },
