@@ -84,6 +84,14 @@ type FormatOptions = {
    * - 'zh-CN': 중국어 (간체)
    */
   locale?: LocaleOption;
+  /**
+   * @default false
+   * @type {boolean}
+   * 시작일과 종료일이 같은 날인 경우, 날짜는 한 번만 표시하고 시간 범위만 표시
+   * - true: '2025-09-24 18:00 ~ 19:41'
+   * - false: '2025-09-24 18:00 ~ 2025-09-24 19:41'
+   */
+  smartRange?: boolean;
 };
 
 type DateRangeFormatInput = {
@@ -131,6 +139,15 @@ type DateRangeFormatInput = {
  *   options: { pattern: 'YYYY-MM-DD', rangeSeparator: '~' }
  * })
  * // '2025-01-15 ~ 2025-01-20'
+ *
+ *  @example
+ * // 같은 날 시간 범위 (smartRange 사용)
+ * formatDate({
+ *   start: new Date('2025-09-24T18:00:00'),
+ *   end: new Date('2025-09-24T19:41:00'),
+ *   options: { pattern: 'YYYY-MM-DD HH:mm', smartRange: true }
+ * })
+ * // '2025-09-24 18:00 ~ 19:41'
  */
 export const formatDate = ({ start, end, options = {} }: DateRangeFormatInput): string => {
   const {
@@ -138,15 +155,87 @@ export const formatDate = ({ start, end, options = {} }: DateRangeFormatInput): 
     dayOfWeekFormat = 'none',
     rangeSeparator = '~',
     locale = 'ko',
+    smartRange = false,
   } = options;
 
   const startDate = typeof start === 'string' ? new Date(start) : start;
   const endDate = end ? (typeof end === 'string' ? new Date(end) : end) : null;
 
+  if (!end) {
+    return applyDatePattern(startDate, pattern, locale, dayOfWeekFormat);
+  }
+  if (smartRange && endDate && isSameDay(startDate, endDate)) {
+    return formatSameDayRange(startDate, endDate, pattern, locale, dayOfWeekFormat, rangeSeparator);
+  }
   const startStr = applyDatePattern(startDate, pattern, locale, dayOfWeekFormat);
-  const endStr = endDate ? applyDatePattern(endDate, pattern, locale, dayOfWeekFormat) : null;
+  const endStr = applyDatePattern(endDate!, pattern, locale, dayOfWeekFormat);
 
-  return endStr ? `${startStr} ${rangeSeparator} ${endStr}` : startStr;
+  return `${startStr} ${rangeSeparator} ${endStr}`;
+};
+
+/**
+ * 두 날짜가 같은 날인지 확인합니다.
+ * @param date1 첫 번째 Date 객체
+ * @param date2 두 번째 Date 객체
+ * @returns 같은 날이면 true, 아니면 false
+ */
+const isSameDay = (date1: Date, date2: Date) => {
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
+};
+
+/**
+ * 같은 날의 시간 범위를 포맷팅합니다.
+ * 날짜는 한 번만 표시하고 시간만 범위로 표시합니다.
+ * @param startDate 시작 Date 객체
+ * @param endDate 종료 Date 객체
+ * @param options 날짜 형식 패턴, 로케일, 요일 형식, 범위 구분자
+ * @returns 포맷팅된 날짜 문자열
+ * @example "2025-09-24 18:00 ~ 19:41"
+ */
+const formatSameDayRange = (
+  startDate: Date,
+  endDate: Date,
+  pattern: DatePattern,
+  locale: LocaleOption,
+  dayOfWeekFormat: DayOfWeekFormat,
+  rangeSeparator: string
+): string => {
+  const timePattern = extractTimePattern(pattern);
+
+  const startTimeStr = applyDatePattern(startDate, timePattern, locale, 'none');
+  const endTimeStr = applyDatePattern(endDate, timePattern, locale, 'none');
+
+  const fullStartStr = applyDatePattern(startDate, pattern, locale, dayOfWeekFormat);
+  const dateOnlyStr = fullStartStr.replace(startTimeStr, '').trim();
+
+  return `${dateOnlyStr} ${startTimeStr} ${rangeSeparator} ${endTimeStr}`;
+};
+
+/**
+ * 패턴에서 시간 부분만 추출합니다.
+ * @param pattern 전체 날짜 패턴
+ * @returns 시간 패턴만 포함된 문자열
+ */
+const extractTimePattern = (pattern: DatePattern): DatePattern => {
+  // A h:mm 형태 (오전/오후 포함 12시간제) - 가장 구체적인 패턴 우선
+  if (pattern.includes('A') && pattern.includes('h:mm')) {
+    return 'A h:mm' as DatePattern;
+  }
+  // HH:mm 형태 (24시간제)
+  if (pattern.includes('HH:mm')) {
+    return 'HH:mm' as DatePattern;
+  }
+  // h:mm 형태 (12시간제, 오전/오후 없음)
+  if (pattern.includes('h:mm')) {
+    return 'h:mm' as DatePattern;
+  }
+
+  // 시간 패턴이 없으면 기본값 반환
+  return 'HH:mm' as DatePattern;
 };
 
 /**
@@ -217,14 +306,14 @@ const getLocalizedDayName = (date: Date, locale: string, format: DayOfWeekFormat
   }).format(date);
 
   if (format === 'short') {
-    return ` ${shortDayName}`;
+    return `${shortDayName}`;
   }
 
   if (format === 'shortParen') {
-    return ` ${shortDayName}`;
+    return `(${shortDayName})`;
   }
   if (format === 'long') {
-    return ` ${fullDayName}`;
+    return `${fullDayName}`;
   }
 
   return '';
