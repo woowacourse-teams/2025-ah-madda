@@ -38,6 +38,7 @@ public class EventTemplateService {
         return eventTemplate;
     }
 
+    @Transactional(readOnly = true)
     public EventTemplate getTemplate(final LoginMember loginMember, final Long templateId) {
         Member member = getMember(loginMember);
 
@@ -46,6 +47,7 @@ public class EventTemplateService {
         return getTemplate(templateId);
     }
 
+    @Transactional(readOnly = true)
     public List<EventTemplate> getTemplates(final LoginMember loginMember) {
         Member member = getMember(loginMember);
 

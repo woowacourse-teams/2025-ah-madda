@@ -60,6 +60,7 @@ public class EventNotificationOptOutService {
         optOutRepository.delete(optOut);
     }
 
+    @Transactional(readOnly = true)
     public OrganizationMemberWithOptStatus getMemberWithOptStatus(final Long eventId, final LoginMember loginMember) {
         Event event = getEvent(eventId);
         OrganizationMember organizationMember = getOrganizationMember(
@@ -75,6 +76,7 @@ public class EventNotificationOptOutService {
         );
     }
 
+    @Transactional(readOnly = true)
     public List<GuestWithOptStatus> mapGuests(final List<Guest> guests) {
         return guests.stream()
                 .map(guest -> {
@@ -88,6 +90,7 @@ public class EventNotificationOptOutService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<OrganizationMemberWithOptStatus> mapOrganizationMembers(
             final Long eventId,
             final List<OrganizationMember> members
