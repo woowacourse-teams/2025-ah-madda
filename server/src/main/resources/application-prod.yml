@@ -16,7 +16,7 @@ spring:
       password: ${db.prod.reader.password}
 
   flyway:
-    url: jdbc:mysql://${db.prod.writer.host}:${db.prod.writer.port}/${db.prod.name}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://${db.prod.writer.host}:${db.prod.writer.port}/${db.prod.writer.name}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     user: ${db.prod.writer.username}
     password: ${db.prod.writer.password}
 
