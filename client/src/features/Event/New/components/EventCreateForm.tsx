@@ -23,6 +23,7 @@ import { useAutoSessionSave } from '@/shared/hooks/useAutoSessionSave';
 import { useModal } from '@/shared/hooks/useModal';
 import { trackCreateEvent } from '@/shared/lib/gaEvents';
 import { theme } from '@/shared/styles/theme';
+import { formatDate } from '@/shared/utils/dateUtils';
 
 import { EventDetail } from '../../types/Event';
 import { MAX_LENGTH, UNLIMITED_CAPACITY } from '../constants/errorMessages';
@@ -31,13 +32,7 @@ import { useBasicEventForm } from '../hooks/useBasicEventForm';
 import { useDropdownStates } from '../hooks/useDropdownStates';
 import { useQuestionForm } from '../hooks/useQuestionForm';
 import type { TimeValue } from '../types/time';
-import { convertDatetimeLocalToKSTISOString } from '../utils/convertDatetimeLocalToKSTISOString';
-import {
-  formatDateForInput,
-  formatDateForDisplay,
-  parseInputDate,
-  applyTimeToDate,
-} from '../utils/date';
+import { formatDateForInput, parseInputDate, applyTimeToDate } from '../utils/date';
 import { timeValueToDate, timeValueFromDate } from '../utils/time';
 
 import { CoHostSelectModal } from './CoHostSelectModal';
@@ -204,9 +199,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       ...basicEventForm,
       eventOrganizerIds: basicEventForm.eventOrganizerIds ?? [],
       questions,
-      eventStart: convertDatetimeLocalToKSTISOString(basicEventForm.eventStart),
-      eventEnd: convertDatetimeLocalToKSTISOString(basicEventForm.eventEnd),
-      registrationEnd: convertDatetimeLocalToKSTISOString(basicEventForm.registrationEnd),
+      eventStart: parseInputDate(basicEventForm.eventStart)?.toISOString() ?? '',
+      eventEnd: parseInputDate(basicEventForm.eventEnd)?.toISOString() ?? '',
+      registrationEnd: parseInputDate(basicEventForm.registrationEnd)?.toISOString() ?? '',
     };
 
     if (!isEdit) {
@@ -453,7 +448,13 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 name="eventDateRange"
                 value={
                   basicEventForm.eventStart && basicEventForm.eventEnd
-                    ? `${formatDateForDisplay(basicEventForm.eventStart)} ~ ${formatDateForDisplay(basicEventForm.eventEnd)}`
+                    ? formatDate({
+                        start: basicEventForm.eventStart,
+                        end: basicEventForm.eventEnd,
+                        options: {
+                          pattern: 'YYYY.MM.DD HH:mm',
+                        },
+                      })
                     : ''
                 }
                 placeholder="이벤트 시작일과 종료일을 선택해주세요"
@@ -507,7 +508,12 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 name="registrationEnd"
                 value={
                   basicEventForm.registrationEnd
-                    ? formatDateForDisplay(basicEventForm.registrationEnd)
+                    ? formatDate({
+                        start: basicEventForm.registrationEnd,
+                        options: {
+                          pattern: 'YYYY.MM.DD HH:mm',
+                        },
+                      })
                     : ''
                 }
                 placeholder="신청 종료일과 시간을 선택해주세요"

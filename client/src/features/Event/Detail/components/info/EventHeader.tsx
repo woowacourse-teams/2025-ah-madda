@@ -15,11 +15,11 @@ import { IconButton } from '@/shared/components/IconButton';
 import { Switch } from '@/shared/components/Switch';
 import { Text } from '@/shared/components/Text';
 import { useToast } from '@/shared/components/Toast/ToastContext';
+import { formatDate } from '@/shared/utils/dateUtils';
 
 import { useModal } from '../../../../../shared/hooks/useModal';
 import type { EventDetail } from '../../../types/Event';
 import { badgeText } from '../../../utils/badgeText';
-import { formatDateTime } from '../../../utils/formatDateTime';
 
 type EventHeaderProps = { eventId: number; isOrganizer: boolean } & Pick<
   EventDetail,
@@ -95,7 +95,17 @@ export const EventHeader = ({
           </Flex>
           <Flex alignItems="center" gap="4px">
             <Icon name="clock" color="gray500" size={18} />
-            <Text type="Label">{formatDateTime(eventStart, eventEnd)}</Text>
+            <Text type="Label">
+              {formatDate({
+                start: eventStart,
+                end: eventEnd,
+                options: {
+                  pattern: 'MM.DD E HH:mm',
+                  dayOfWeekFormat: 'shortParen',
+                  smartRange: true,
+                },
+              })}
+            </Text>
           </Flex>
         </Flex>
 

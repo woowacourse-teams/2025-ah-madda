@@ -17,8 +17,8 @@ import { Text } from '@/shared/components/Text';
 import { useToast } from '@/shared/components/Toast/ToastContext';
 import { useModal } from '@/shared/hooks/useModal';
 import { theme } from '@/shared/styles/theme';
+import { formatDate } from '@/shared/utils/dateUtils';
 
-import { formatDateTime } from '../../My/utils/date';
 import { badgeText } from '../../utils/badgeText';
 import { DeadlineModal } from '../components/DeadlineModal';
 import { EventInfoSection } from '../components/EventInfoSection';
@@ -109,7 +109,14 @@ export const EventManagePage = () => {
               <Flex dir="row" gap="4px" alignItems="center">
                 <Icon name="calendar" size={16} color="gray500" />
                 <Text type="Label" weight="medium" color={theme.colors.gray500}>
-                  {formatDateTime(event.eventStart)} ~ {formatDateTime(event.eventEnd)}
+                  {formatDate({
+                    start: event.eventStart,
+                    end: event.eventEnd,
+                    options: {
+                      pattern: 'YYYY. MM. DD E A h시',
+                      dayOfWeekFormat: 'shortParen',
+                    },
+                  })}
                 </Text>
               </Flex>
             </Flex>

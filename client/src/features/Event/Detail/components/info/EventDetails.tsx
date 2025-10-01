@@ -4,10 +4,10 @@ import { Flex } from '@/shared/components/Flex';
 import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
+import { formatDate } from '@/shared/utils/dateUtils';
 
 import { EventDetail } from '../../../types/Event';
 import { calculateCapacityStatus } from '../../../utils/calculateCapacityStatus';
-import { formatKoreanDateTime } from '../../utils/formatKoreanDateTime';
 
 type EventDetailProps = Pick<
   EventDetail,
@@ -55,7 +55,13 @@ export const EventDetails = ({
           <Text as="h2" type="Heading" weight="semibold">
             마감 시간
           </Text>
-          <Text>{formatKoreanDateTime(registrationEnd)}까지</Text>
+          <Text>
+            {formatDate({
+              start: registrationEnd,
+              options: { pattern: 'YYYY년 MM월 DD일 E A h시', dayOfWeekFormat: 'long' },
+            })}
+            까지
+          </Text>
         </Flex>
         <Flex
           dir="column"
