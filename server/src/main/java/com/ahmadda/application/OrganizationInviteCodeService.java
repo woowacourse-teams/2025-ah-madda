@@ -39,6 +39,7 @@ public class OrganizationInviteCodeService {
         return findOrCreateInviteCode(inviter, organization, now);
     }
 
+    @Transactional(readOnly = true)
     public Organization getOrganizationByCode(final String code) {
         InviteCode inviteCode = inviteCodeRepository.findByCode(code)
                 .orElseThrow(() -> new UnprocessableEntityException("유효하지 않은 초대코드입니다."));

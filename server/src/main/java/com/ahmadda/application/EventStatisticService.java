@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +25,7 @@ public class EventStatisticService {
     private final OrganizationMemberRepository organizationMemberRepository;
     private final EventRepository eventRepository;
 
+    @Transactional(readOnly = true)
     public List<EventViewMetric> getEventStatistic(final Long eventId, final LoginMember loginMember) {
         EventStatistic eventStatistic = getEventStatistic(eventId);
         Event event = getEvent(eventId);

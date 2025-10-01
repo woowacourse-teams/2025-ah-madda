@@ -33,6 +33,7 @@ public class EventGuestService {
     private final QuestionRepository questionRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
 
+    @Transactional(readOnly = true)
     public List<Guest> getGuests(final Long eventId, final LoginMember loginMember) {
         Event event = getEvent(eventId);
         Organization organization = event.getOrganization();
@@ -41,6 +42,7 @@ public class EventGuestService {
         return event.getGuests();
     }
 
+    @Transactional(readOnly = true)
     public List<OrganizationMember> getNonGuestOrganizationMembers(final Long eventId, final LoginMember loginMember) {
         Event event = getEvent(eventId);
         Organization organization = event.getOrganization();
@@ -84,6 +86,7 @@ public class EventGuestService {
         guestRepository.deleteByEventAndOrganizationMember(event, organizationMember);
     }
 
+    @Transactional(readOnly = true)
     public boolean isGuest(final Long eventId, final LoginMember loginMember) {
         Event event = getEvent(eventId);
         Organization organization = event.getOrganization();
@@ -92,6 +95,7 @@ public class EventGuestService {
         return event.hasGuest(organizationMember);
     }
 
+    @Transactional(readOnly = true)
     public List<Answer> getAnswers(final Long eventId, final Long guestId, final LoginMember organizerLoginMember) {
         Event event = getEvent(eventId);
         Organization organization = event.getOrganization();
