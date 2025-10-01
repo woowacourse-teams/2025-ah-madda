@@ -1,5 +1,6 @@
 package com.ahmadda.infra.database;
 
+import com.zaxxer.hikari.HikariDataSource;
 import java.util.HashMap;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -43,7 +44,9 @@ public class DataSourceConfig {
             havingValue = "true"
     )
     public DataSource writerDataSource() {
-        return DataSourceBuilder.create().build();
+        return DataSourceBuilder.create()
+                .type(HikariDataSource.class)
+                .build();
     }
 
     @Bean
@@ -54,6 +57,8 @@ public class DataSourceConfig {
             havingValue = "true"
     )
     public DataSource readerDataSource() {
-        return DataSourceBuilder.create().build();
+        return DataSourceBuilder.create()
+                .type(HikariDataSource.class)
+                .build();
     }
 }
