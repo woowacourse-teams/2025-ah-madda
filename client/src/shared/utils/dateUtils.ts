@@ -1,6 +1,3 @@
-/**
- * 날짜 유틸리티 함수들
- */
 export type DatePattern =
   | 'MM.DD'
   | 'MM/DD'
@@ -161,6 +158,14 @@ export const formatDate = ({ start, end, options = {} }: DateRangeFormatInput): 
   const startDate = typeof start === 'string' ? new Date(start) : start;
   const endDate = end ? (typeof end === 'string' ? new Date(end) : end) : null;
 
+  if (isNaN(startDate.getTime())) {
+    throw new Error('Invalid start date');
+  }
+
+  if (endDate && isNaN(endDate.getTime())) {
+    throw new Error('Invalid end date');
+  }
+
   if (!end) {
     return applyDatePattern(startDate, pattern, locale, dayOfWeekFormat);
   }
@@ -209,8 +214,13 @@ const formatSameDayRange = (
   const startTimeStr = applyDatePattern(startDate, timePattern, locale, 'none');
   const endTimeStr = applyDatePattern(endDate, timePattern, locale, 'none');
 
-  const fullStartStr = applyDatePattern(startDate, pattern, locale, dayOfWeekFormat);
-  const dateOnlyStr = fullStartStr.replace(startTimeStr, '').trim();
+  const datePattern = pattern
+    .replace(/\s*HH:mm\s*/g, '')
+    .replace(/\s*h:mm\s*/g, '')
+    .replace(/\s*A\s*/g, '')
+    .trim() as DatePattern;
+
+  const dateOnlyStr = applyDatePattern(startDate, datePattern, locale, dayOfWeekFormat);
 
   return `${dateOnlyStr} ${startTimeStr} ${rangeSeparator} ${endTimeStr}`;
 };
@@ -221,20 +231,16 @@ const formatSameDayRange = (
  * @returns 시간 패턴만 포함된 문자열
  */
 const extractTimePattern = (pattern: DatePattern): DatePattern => {
-  // A h:mm 형태 (오전/오후 포함 12시간제) - 가장 구체적인 패턴 우선
-  if (pattern.includes('A') && pattern.includes('h:mm')) {
+  if (/A.*h:mm|h:mm.*A/.test(pattern)) {
     return 'A h:mm' as DatePattern;
   }
-  // HH:mm 형태 (24시간제)
   if (pattern.includes('HH:mm')) {
     return 'HH:mm' as DatePattern;
   }
-  // h:mm 형태 (12시간제, 오전/오후 없음)
   if (pattern.includes('h:mm')) {
     return 'h:mm' as DatePattern;
   }
 
-  // 시간 패턴이 없으면 기본값 반환
   return 'HH:mm' as DatePattern;
 };
 

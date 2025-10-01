@@ -102,6 +102,7 @@ export const EventHeader = ({
                 options: {
                   pattern: 'MM.DD E HH:mm',
                   dayOfWeekFormat: 'shortParen',
+                  smartRange: true,
                 },
               })}
             </Text>
