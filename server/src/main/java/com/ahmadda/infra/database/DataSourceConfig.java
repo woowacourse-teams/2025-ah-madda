@@ -9,9 +9,31 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 public class DataSourceConfig {
+
+    @Bean
+    @Primary
+    @ConditionalOnProperty(
+            prefix = "spring.datasource.replication",
+            name = "enabled",
+            havingValue = "true"
+    )
+    public DataSource routingDataSource(
+            @Qualifier("writerDataSource") DataSource writer,
+            @Qualifier("readerDataSource") DataSource reader
+    ) {
+        Map<Object, Object> targetDataSources = new HashMap<>();
+        targetDataSources.put("writer", writer);
+        targetDataSources.put("reader", reader);
+
+        ReplicationRoutingDataSource routing = new ReplicationRoutingDataSource();
+        routing.setDefaultTargetDataSource(writer);
+        routing.setTargetDataSources(targetDataSources);
+        return routing;
+    }
 
     @Bean
     @ConfigurationProperties("spring.datasource.writer")
@@ -33,25 +55,5 @@ public class DataSourceConfig {
     )
     public DataSource readerDataSource() {
         return DataSourceBuilder.create().build();
-    }
-
-    @Bean
-    @ConditionalOnProperty(
-            prefix = "spring.datasource.replication",
-            name = "enabled",
-            havingValue = "true"
-    )
-    public DataSource routingDataSource(
-            @Qualifier("writerDataSource") DataSource writer,
-            @Qualifier("readerDataSource") DataSource reader
-    ) {
-        Map<Object, Object> targetDataSources = new HashMap<>();
-        targetDataSources.put("writer", writer);
-        targetDataSources.put("reader", reader);
-
-        ReplicationRoutingDataSource routing = new ReplicationRoutingDataSource();
-        routing.setDefaultTargetDataSource(writer);
-        routing.setTargetDataSources(targetDataSources);
-        return routing;
     }
 }
