@@ -113,7 +113,7 @@ export const EventManagePage = () => {
                     start: event.eventStart,
                     end: event.eventEnd,
                     options: {
-                      pattern: 'YYYY. MM. DD E A HH시',
+                      pattern: 'YYYY. MM. DD E A h시',
                       dayOfWeekFormat: 'shortParen',
                     },
                   })}
