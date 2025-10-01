@@ -2,16 +2,14 @@ spring:
   datasource:
     replication:
       enabled: true
-
     writer:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://${db.prod.writer.host}:${db.prod.writer.port}/${db.prod.writer.name}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      jdbc-url: jdbc:mysql://${db.prod.writer.host}:${db.prod.writer.port}/${db.prod.writer.name}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       username: ${db.prod.writer.username}
       password: ${db.prod.writer.password}
-
     reader:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://${db.prod.reader.host}:${db.prod.reader.port}/${db.prod.reader.name}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      jdbc-url: jdbc:mysql://${db.prod.reader.host}:${db.prod.reader.port}/${db.prod.reader.name}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       username: ${db.prod.reader.username}
       password: ${db.prod.reader.password}
 
