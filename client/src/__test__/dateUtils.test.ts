@@ -113,13 +113,47 @@ describe('날짜 유틸리티 함수 테스트', () => {
     ).toBe('2025.01.15 (Wed) 10:00');
   });
 
+  test('smartRange 옵션이 같은 날짜 범위를 간결하게 표시한다', () => {
+    expect(
+      formatDate({
+        start: new Date('2025-01-15T10:00:00'),
+        end: new Date('2025-01-15T12:00:00'),
+        options: {
+          pattern: 'YYYY.MM.DD HH:mm',
+          smartRange: true,
+        },
+      })
+    ).toBe('2025.01.15 10:00 ~ 12:00');
+  });
+
+  test('smartRange 옵션이 다른 날짜에는 적용되지 않는다', () => {
+    expect(
+      formatDate({
+        start: new Date('2025-01-15T10:00:00'),
+        end: new Date('2025-01-16T12:00:00'),
+        options: {
+          pattern: 'YYYY.MM.DD HH:mm',
+          smartRange: true,
+        },
+      })
+    ).toBe('2025.01.15 10:00 ~ 2025.01.16 12:00');
+  });
+
   test('formatDate 함수가 유효하지 않은 날짜를 처리한다', () => {
     expect(() =>
       formatDate({
         start: 'invalid-date',
         options: { pattern: 'YYYY-MM-DD' },
       })
-    ).toThrow('Invalid time value');
+    ).toThrow('Invalid start date');
+
+    expect(() =>
+      formatDate({
+        start: '2025-01-15',
+        end: 'invalid-date',
+        options: { pattern: 'YYYY-MM-DD' },
+      })
+    ).toThrow('Invalid end date');
   });
 
   test('formatDate 함수가 올바른 형식의 날짜 문자열을 반환한다', () => {
