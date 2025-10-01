@@ -278,7 +278,9 @@ const applyDatePattern = (
   const { yyyy, yy, mm, dd, hh, min, h12 } = extractDateComponents(date);
 
   const ampm = getLocaleParts(date, locale);
-  const dayLabel = getLocalizedDayName(date, locale, dayOfWeekFormat);
+  const effectiveDayFormat =
+    pattern.includes('E') && dayOfWeekFormat === 'none' ? 'short' : dayOfWeekFormat;
+  const dayLabel = getLocalizedDayName(date, locale, effectiveDayFormat);
 
   const result = pattern
     .replace(/YYYY/g, String(yyyy))
