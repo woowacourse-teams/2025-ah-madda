@@ -199,7 +199,7 @@ export const OrganizationCreateForm = () => {
       onSuccess: () => {
         success('이벤트 스페이스가 성공적으로 삭제되었습니다!');
         deleteModal.close();
-        navigate('/organization');
+        navigate('/');
       },
       onError: (err) => {
         if (err instanceof HttpError) {

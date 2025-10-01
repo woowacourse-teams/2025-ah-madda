@@ -26,7 +26,7 @@ export const OverviewPage = () => {
   const { error } = useToast();
 
   const goMyEvents = () => navigate(`/${organizationId}/event/my`);
-  const goHome = () => navigate(`/${organizationId}/event`);
+  const goHome = () => navigate(`/`);
 
   const [inviteCode, setInviteCode] = useState('');
   const { isOpen, open, close } = useModal();
