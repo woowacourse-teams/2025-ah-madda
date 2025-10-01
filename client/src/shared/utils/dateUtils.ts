@@ -94,12 +94,12 @@ type FormatOptions = {
 type DateRangeFormatInput = {
   /**
    * 시작 날짜
-   * @type {Date}
+   * @type {Date | string}
    */
   start: Date | string;
   /**
    * 종료 날짜
-   * @type {Date}
+   * @type {Date | string}
    * @default undefined
    * @optional 종료 날짜가 없을 경우 단일 날짜로 포맷팅됩니다.
    */
@@ -117,7 +117,7 @@ type DateRangeFormatInput = {
  * 날짜 범위를 지정된 패턴과 로케일에 맞게 포맷팅합니다.
  * @param {start} params.start - 시작 날짜
  * @param {end} [params.end] - 종료 날짜 (선택사항, 없으면 단일 날짜로 표시)
- * @param {option} [params.options] - 포맷 옵션
+ * @param {options} [params.options] - 포맷 옵션
  * @returns {string} 포맷팅된 날짜 범위 문자열
  *
  * @example
