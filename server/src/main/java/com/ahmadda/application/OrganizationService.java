@@ -69,6 +69,7 @@ public class OrganizationService {
         return organization;
     }
 
+    @Transactional(readOnly = true)
     public Organization getOrganizationById(final Long organizationId) {
         return getOrganization(organizationId);
     }
@@ -119,6 +120,7 @@ public class OrganizationService {
         );
     }
 
+    @Transactional(readOnly = true)
     public List<Organization> getParticipatingOrganizations(final LoginMember loginMember) {
         Member member = getMember(loginMember);
 
