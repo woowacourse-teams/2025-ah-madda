@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +41,7 @@ public class EventNotificationService {
     private final EventNotificationOptOutRepository eventNotificationOptOutRepository;
     private final ReminderHistoryRepository reminderHistoryRepository;
 
+    @Transactional(readOnly = true)
     public void notifySelectedOrganizationMembers(
             final Long eventId,
             final SelectedOrganizationMembersNotificationRequest request,

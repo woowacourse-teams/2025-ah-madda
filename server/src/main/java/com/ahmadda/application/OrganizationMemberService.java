@@ -27,6 +27,7 @@ public class OrganizationMemberService {
     private final OrganizationRepository organizationRepository;
     private final OrganizationGroupRepository organizationGroupRepository;
 
+    @Transactional(readOnly = true)
     public OrganizationMember getOrganizationMember(final Long organizationId, final LoginMember loginMember) {
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, loginMember.memberId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 구성원입니다."));
@@ -85,11 +86,13 @@ public class OrganizationMemberService {
 
         organizationMember.update(request.nickname(), organizationGroup);
     }
-  
+
+    @Transactional(readOnly = true)
     public boolean isOrganizationMember(final Long organizationId, final LoginMember loginMember) {
         return organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId());
     }
 
+    @Transactional(readOnly = true)
     public List<OrganizationMember> getAllOrganizationMembers(
             final Long organizationId,
             final LoginMember loginMember

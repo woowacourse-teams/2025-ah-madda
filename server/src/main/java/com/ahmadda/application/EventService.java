@@ -162,6 +162,7 @@ public class EventService {
         return event;
     }
 
+    @Transactional(readOnly = true)
     public boolean isOrganizer(final Long eventId, final LoginMember loginMember) {
         Event event = getEvent(eventId);
         Member member = getMember(loginMember.memberId());
@@ -169,6 +170,7 @@ public class EventService {
         return event.isOrganizer(member);
     }
 
+    @Transactional(readOnly = true)
     public List<Event> getPastEvents(
             final Long organizationId,
             final LoginMember loginMember,
@@ -183,6 +185,7 @@ public class EventService {
         );
     }
 
+    @Transactional(readOnly = true)
     public List<Event> getActiveEvents(final Long organizationId, final LoginMember loginMember) {
         Organization organization = getOrganization(organizationId);
 
