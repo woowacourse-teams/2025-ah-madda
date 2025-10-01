@@ -11,6 +11,7 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 
 @Configuration
 public class DataSourceConfig {
@@ -33,7 +34,9 @@ public class DataSourceConfig {
         ReplicationRoutingDataSource routing = new ReplicationRoutingDataSource();
         routing.setDefaultTargetDataSource(writer);
         routing.setTargetDataSources(targetDataSources);
-        return routing;
+        routing.afterPropertiesSet();
+
+        return new LazyConnectionDataSourceProxy(routing);
     }
 
     @Bean
