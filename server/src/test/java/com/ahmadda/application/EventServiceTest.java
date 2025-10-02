@@ -863,6 +863,97 @@ class EventServiceTest {
     }
 
     @Test
+    void 특정_이벤트_스페이스의_과거_이벤트를_특정_개수만큼_가져온다() {
+        // given
+        var member = createMember();
+        var organization = createOrganization("우테코");
+        var organization2 = createOrganization("아맞다");
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, member, group);
+        var organizationMember2 = createOrganizationMember(organization2, member, group);
+        var loginMember = createLoginMember(member);
+
+        var now = LocalDateTime.now();
+
+        for (int i = 0; i < 20; i++) {
+            var pastEvent = createEventWithDates(
+                    organizationMember,
+                    organization,
+                    now.minusDays(4),
+                    now.minusDays(2),
+                    now.minusDays(1),
+                    now.minusDays(4)
+            );
+        }
+        // when
+        var pastEvents = sut.getPastEvents(
+                organization.getId(),
+                loginMember,
+                now,
+                0L
+        );
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(pastEvents)
+                    .hasSize(10);
+        });
+    }
+
+    @Test
+    void 특정_이벤트_스페이스의_과거_이벤트_id_보다_큰_과거_이벤트들을_조회한다() {
+        // given
+        var member = createMember();
+        var organization = createOrganization("우테코");
+        var organization2 = createOrganization("아맞다");
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, member, group);
+        var loginMember = createLoginMember(member);
+
+        var now = LocalDateTime.now();
+
+        List<Event> pastEvents = new ArrayList<>();
+
+        Event tmpCursorEvent = null;
+        for (int i = 0; i < 20; i++) {
+            pastEvents.add(createEventWithDates(
+                    organizationMember,
+                    organization,
+                    now.minusDays(4),
+                    now.minusDays(2),
+                    now.minusDays(1),
+                    now.minusDays(4)
+            ));
+            if (i == 10) {
+                tmpCursorEvent = pastEvents.get(i);
+            }
+        }
+        Event finalCursorEvent = tmpCursorEvent;
+
+        // when
+        var selectedPastEvents = sut.getPastEvents(
+                organization.getId(),
+                loginMember,
+                now,
+                tmpCursorEvent.getId()
+        );
+
+        List<Long> idList = selectedPastEvents.stream()
+                .map(Event::getId)
+                .toList();
+
+        // then
+
+        assertSoftly(softly -> {
+            idList.forEach(id ->
+                    softly.assertThat(id)
+                            .as("ID 검증: " + id)
+                            .isGreaterThan(finalCursorEvent.getId())
+            );
+        });
+    }
+
+    @Test
     void 존재하지_않는_이벤트_스페이스의_이벤트를_조회하면_예외가_발생한다() {
         // given
         var member = memberRepository.save(Member.create("user", "user@test.com", "testPicture"));
@@ -882,7 +973,7 @@ class EventServiceTest {
         var loginMember = createLoginMember(member);
 
         //when // then
-        assertThatThrownBy(() -> sut.getPastEvents(organization.getId(), loginMember, LocalDateTime.now(), lastEventId))
+        assertThatThrownBy(() -> sut.getPastEvents(organization.getId(), loginMember, LocalDateTime.now(), 0L))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage("이벤트 스페이스에 소속되지 않아 권한이 없습니다.");
     }

@@ -21,7 +21,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("SELECT e FROM Event e " +
             "WHERE e.organization = :organization AND e.eventOperationPeriod.eventPeriod.end < :compareDateTime " +
-            "AND e.id < :lastEventId " +
+            "AND e.id > :lastEventId " +
             "ORDER BY e.eventOperationPeriod.eventPeriod.end DESC " +
             "LIMIT :size")
     List<Event> findPastEventByOrganizationAndWithCursor(
