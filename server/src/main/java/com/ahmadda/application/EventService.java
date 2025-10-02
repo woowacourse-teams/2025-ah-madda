@@ -50,6 +50,7 @@ public class EventService {
 
     private static final int REMINDER_LIMIT_DURATION_MINUTES = 30;
     private static final int MAX_REMINDER_COUNT_IN_DURATION = 10;
+    private static final long PAST_EVENT_PAGE_SIZE = 10;
 
     private final MemberRepository memberRepository;
     private final EventRepository eventRepository;
@@ -174,14 +175,17 @@ public class EventService {
     public List<Event> getPastEvents(
             final Long organizationId,
             final LoginMember loginMember,
-            final LocalDateTime compareDateTime
+            final LocalDateTime compareDateTime,
+            final Long lastEventId
     ) {
         Organization organization = getOrganization(organizationId);
         validateOrganizationAccess(organizationId, loginMember.memberId());
 
-        return eventRepository.findAllByOrganizationAndEventOperationPeriodEventPeriodEndBefore(
+        return eventRepository.findPastEventByOrganizationAndWithCursor(
                 organization,
-                compareDateTime
+                compareDateTime,
+                lastEventId,
+                PAST_EVENT_PAGE_SIZE
         );
     }
 
