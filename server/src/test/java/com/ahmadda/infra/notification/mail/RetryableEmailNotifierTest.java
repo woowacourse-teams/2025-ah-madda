@@ -1,12 +1,8 @@
 package com.ahmadda.infra.notification.mail;
 
-import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.domain.notification.EventEmailPayload;
-import com.ahmadda.domain.organization.Organization;
-import com.ahmadda.domain.organization.OrganizationGroup;
-import com.ahmadda.domain.organization.OrganizationMember;
-import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.domain.notification.ReminderEmail;
 import io.github.resilience4j.retry.RetryRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,10 +21,8 @@ import static org.mockito.Mockito.verify;
 class RetryableEmailNotifierTest {
 
     private RetryableEmailNotifier sut;
-
     private EmailNotifier delegate;
-    private EventEmailPayload payload;
-    private List<OrganizationMember> recipients;
+    private ReminderEmail reminderEmail;
 
     @BeforeEach
     void setUp() {
@@ -42,7 +36,7 @@ class RetryableEmailNotifierTest {
                 10
         );
 
-        payload = new EventEmailPayload(
+        var payload = new EventEmailPayload(
                 new EventEmailPayload.Subject("이벤트 스페이스", "이벤트"),
                 new EventEmailPayload.Body(
                         "본문",
@@ -63,24 +57,17 @@ class RetryableEmailNotifierTest {
                 )
         );
 
-        var org = Organization.create("이벤트 스페이스", "설명", "logo.png");
-        var member = Member.create("닉네임", "user@example.com", "pic.png");
-        recipients = List.of(OrganizationMember.create(
-                "닉네임",
-                member,
-                org,
-                OrganizationMemberRole.USER,
-                OrganizationGroup.create("그룹")
-        ));
+        var recipients = List.of("user@example.com");
+        reminderEmail = new ReminderEmail(recipients, payload);
     }
 
     @Test
     void 첫번째_시도에_성공하면_재시도하지_않는다() {
         // when
-        sut.sendEmails(recipients, payload);
+        sut.sendEmail(reminderEmail);
 
         // then
-        verify(delegate, times(1)).sendEmails(recipients, payload);
+        verify(delegate, times(1)).sendEmail(reminderEmail);
     }
 
     @Test
@@ -92,13 +79,13 @@ class RetryableEmailNotifierTest {
         doThrow(ex)
                 .doNothing()
                 .when(delegate)
-                .sendEmails(recipients, payload);
+                .sendEmail(reminderEmail);
 
         // when
-        sut.sendEmails(recipients, payload);
+        sut.sendEmail(reminderEmail);
 
         // then
-        verify(delegate, times(2)).sendEmails(recipients, payload);
+        verify(delegate, times(2)).sendEmail(reminderEmail);
     }
 
     @Test
@@ -109,12 +96,12 @@ class RetryableEmailNotifierTest {
 
         doThrow(ex)
                 .when(delegate)
-                .sendEmails(recipients, payload);
+                .sendEmail(reminderEmail);
 
         // when & then
-        assertThatThrownBy(() -> sut.sendEmails(recipients, payload))
+        assertThatThrownBy(() -> sut.sendEmail(reminderEmail))
                 .isInstanceOf(MailSendException.class);
 
-        verify(delegate, times(3)).sendEmails(recipients, payload);
+        verify(delegate, times(3)).sendEmail(reminderEmail);
     }
 }

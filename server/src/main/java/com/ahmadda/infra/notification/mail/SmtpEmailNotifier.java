@@ -2,7 +2,7 @@ package com.ahmadda.infra.notification.mail;
 
 import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.domain.notification.EventEmailPayload;
-import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.notification.ReminderEmail;
 import com.ahmadda.infra.notification.config.NotificationProperties;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -26,8 +26,10 @@ public class SmtpEmailNotifier implements EmailNotifier {
     private final NotificationProperties notificationProperties;
 
     @Override
-    public void sendEmails(final List<OrganizationMember> recipients, final EventEmailPayload eventEmailPayload) {
-        List<String> recipientEmails = getRecipientEmails(recipients);
+    public void sendEmail(final ReminderEmail reminderEmail) {
+        List<String> recipientEmails = reminderEmail.recipientEmails();
+        EventEmailPayload eventEmailPayload = reminderEmail.payload();
+
         if (recipientEmails.isEmpty()) {
             return;
         }
@@ -37,13 +39,6 @@ public class SmtpEmailNotifier implements EmailNotifier {
 
         MimeMessage mimeMessage = createMimeMessageWithBcc(recipientEmails, subject, text);
         javaMailSender.send(mimeMessage);
-    }
-
-    private List<String> getRecipientEmails(List<OrganizationMember> recipients) {
-        return recipients.stream()
-                .map(organizationMember -> organizationMember.getMember()
-                        .getEmail())
-                .toList();
     }
 
     private String createSubject(final EventEmailPayload.Subject subject) {

@@ -1,12 +1,8 @@
 package com.ahmadda.learning.infra.notification;
 
 import com.ahmadda.annotation.LearningTest;
-import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.notification.EventEmailPayload;
-import com.ahmadda.domain.organization.Organization;
-import com.ahmadda.domain.organization.OrganizationGroup;
-import com.ahmadda.domain.organization.OrganizationMember;
-import com.ahmadda.domain.organization.OrganizationMemberRole;
+import com.ahmadda.domain.notification.ReminderEmail;
 import com.ahmadda.infra.notification.config.NotificationProperties;
 import com.ahmadda.infra.notification.mail.SmtpEmailNotifier;
 import com.ahmadda.infra.notification.mail.config.SmtpProperties;
@@ -16,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.test.context.TestPropertySource;
 import org.thymeleaf.TemplateEngine;
 
 import java.time.LocalDateTime;
@@ -25,7 +20,6 @@ import java.util.List;
 
 @Disabled
 @LearningTest
-@TestPropertySource(properties = "mail.noop=false")
 class SmtpEmailNotifierTest {
 
     private SmtpEmailNotifier sut;
@@ -77,22 +71,8 @@ class SmtpEmailNotifierTest {
         var eventTitle = "테스트 이벤트";
         var organizerNickname = "주최자";
 
-        var member = Member.create("주최자", "amadda.team@gmail.com", "testPicture");
-        var organization = Organization.create(organizationName, "설명", "logo.png");
-        var organizationMember =
-                OrganizationMember.create(
-                        organizerNickname,
-                        member,
-                        organization,
-                        OrganizationMemberRole.USER,
-                        OrganizationGroup.create("그룹")
-                );
-
-        var emailPayload = new EventEmailPayload(
-                new EventEmailPayload.Subject(
-                        organizationName,
-                        eventTitle
-                ),
+        var payload = new EventEmailPayload(
+                new EventEmailPayload.Subject(organizationName, eventTitle),
                 new EventEmailPayload.Body(
                         "테스트 메일 본문입니다.",
                         organizationName,
@@ -112,8 +92,13 @@ class SmtpEmailNotifierTest {
                 )
         );
 
+        var reminderEmail = new ReminderEmail(
+                List.of("amadda.team@gmail.com"),
+                payload
+        );
+
         // when // then
-        sut.sendEmails(List.of(organizationMember), emailPayload);
+        sut.sendEmail(reminderEmail);
     }
 
     // Gmail: BCC 최대 100명
@@ -125,28 +110,13 @@ class SmtpEmailNotifierTest {
         var eventTitle = "테스트 이벤트";
         var organizerNickname = "주최자";
 
-        var organization = Organization.create(organizationName, "설명", "logo.png");
-
-        var recipients = new ArrayList<OrganizationMember>();
-        for (int i = 0; i < 100; i++) {
-            var email = "dummy" + i + "@example.com";
-            var dummyMember = Member.create("유저" + i, email, "profile.png");
-            var orgMember =
-                    OrganizationMember.create(
-                            "닉네임" + i,
-                            dummyMember,
-                            organization,
-                            OrganizationMemberRole.USER,
-                            OrganizationGroup.create("그룹")
-                    );
-            recipients.add(orgMember);
+        var recipients = new ArrayList<String>();
+        for (int i = 0; i < 120; i++) {
+            recipients.add("dummy" + i + "@example.com");
         }
 
-        var emailPayload = new EventEmailPayload(
-                new EventEmailPayload.Subject(
-                        organizationName,
-                        eventTitle
-                ),
+        var payload = new EventEmailPayload(
+                new EventEmailPayload.Subject(organizationName, eventTitle),
                 new EventEmailPayload.Body(
                         "100명 이상의 수신자에게 발송되는 테스트 메일입니다.",
                         organizationName,
@@ -166,7 +136,9 @@ class SmtpEmailNotifierTest {
                 )
         );
 
-        // when
-        sut.sendEmails(recipients, emailPayload);
+        var reminderEmail = new ReminderEmail(recipients, payload);
+
+        // when // then
+        sut.sendEmail(reminderEmail);
     }
 }

@@ -2,7 +2,7 @@ package com.ahmadda.infra.notification.mail;
 
 import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.domain.notification.EventEmailPayload;
-import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.notification.ReminderEmail;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -14,12 +14,15 @@ public class BccChunkingEmailNotifier implements EmailNotifier {
     private final int maxBcc;
 
     @Override
-    public void sendEmails(final List<OrganizationMember> recipients, final EventEmailPayload payload) {
-        for (int i = 0; i < recipients.size(); i += maxBcc) {
-            int end = Math.min(i + maxBcc, recipients.size());
-            List<OrganizationMember> chunk = recipients.subList(i, end);
+    public void sendEmail(final ReminderEmail reminderEmail) {
+        List<String> recipientEmails = reminderEmail.recipientEmails();
+        EventEmailPayload payload = reminderEmail.payload();
 
-            delegate.sendEmails(chunk, payload);
+        for (int i = 0; i < recipientEmails.size(); i += maxBcc) {
+            int end = Math.min(i + maxBcc, recipientEmails.size());
+            List<String> chunk = recipientEmails.subList(i, end);
+
+            delegate.sendEmail(new ReminderEmail(chunk, payload));
         }
     }
 }
