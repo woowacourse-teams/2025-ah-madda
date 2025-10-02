@@ -36,10 +36,10 @@ public class RetryableEmailNotifier implements EmailNotifier {
     }
 
     @Override
-    public void sendEmail(final ReminderEmail reminderEmail) {
+    public void remind(final ReminderEmail reminderEmail) {
         Runnable runnable = Retry.decorateRunnable(
                 retry,
-                () -> delegate.sendEmail(reminderEmail)
+                () -> delegate.remind(reminderEmail)
         );
 
         try {

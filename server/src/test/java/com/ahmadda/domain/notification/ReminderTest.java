@@ -103,7 +103,7 @@ class ReminderTest {
         sut.remind(recipients, event, content);
 
         // then
-        verify(emailNotifier).sendEmail(any(ReminderEmail.class));
+        verify(emailNotifier).remind(any(ReminderEmail.class));
         verify(pushNotifier).sendPushs(
                 any(List.class),
                 any(PushNotificationPayload.class)

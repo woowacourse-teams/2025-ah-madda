@@ -48,12 +48,12 @@ class FailoverEmailNotifierTest {
         var payload = createPayload("테스트 이벤트 스페이스", "테스트 이벤트", "주최자닉네임");
         var reminderEmail = new ReminderEmail(List.of("test@example.com"), payload);
 
-        sut.sendEmail(reminderEmail);
+        sut.remind(reminderEmail);
 
         await().atMost(5, TimeUnit.SECONDS)
-                .untilAsserted(() -> verify(primaryNotifier, times(1)).sendEmail(any(ReminderEmail.class)));
+                .untilAsserted(() -> verify(primaryNotifier, times(1)).remind(any(ReminderEmail.class)));
         await().atMost(5, TimeUnit.SECONDS)
-                .untilAsserted(() -> verify(secondaryNotifier, times(0)).sendEmail(any(ReminderEmail.class)));
+                .untilAsserted(() -> verify(secondaryNotifier, times(0)).remind(any(ReminderEmail.class)));
     }
 
     @Test
@@ -63,14 +63,14 @@ class FailoverEmailNotifierTest {
 
         doThrow(new MailSendException("primary 실패"))
                 .when(primaryNotifier)
-                .sendEmail(any(ReminderEmail.class));
+                .remind(any(ReminderEmail.class));
 
-        sut.sendEmail(reminderEmail);
+        sut.remind(reminderEmail);
 
         await().atMost(5, TimeUnit.SECONDS)
-                .untilAsserted(() -> verify(primaryNotifier, times(1)).sendEmail(any(ReminderEmail.class)));
+                .untilAsserted(() -> verify(primaryNotifier, times(1)).remind(any(ReminderEmail.class)));
         await().atMost(5, TimeUnit.SECONDS)
-                .untilAsserted(() -> verify(secondaryNotifier, times(1)).sendEmail(any(ReminderEmail.class)));
+                .untilAsserted(() -> verify(secondaryNotifier, times(1)).remind(any(ReminderEmail.class)));
     }
 
     @Test
@@ -80,23 +80,23 @@ class FailoverEmailNotifierTest {
 
         doThrow(new MailSendException("primary 실패"))
                 .when(primaryNotifier)
-                .sendEmail(any(ReminderEmail.class));
+                .remind(any(ReminderEmail.class));
 
         // 3번 실패 → CircuitBreaker OPEN
         for (int i = 0; i < 3; i++) {
             try {
-                sut.sendEmail(reminderEmail);
+                sut.remind(reminderEmail);
                 Thread.sleep(7000);
             } catch (Exception ignored) {
             }
         }
 
-        sut.sendEmail(reminderEmail);
+        sut.remind(reminderEmail);
 
         await().atMost(5, TimeUnit.SECONDS)
-                .untilAsserted(() -> verify(primaryNotifier, times(3)).sendEmail(any(ReminderEmail.class)));
+                .untilAsserted(() -> verify(primaryNotifier, times(3)).remind(any(ReminderEmail.class)));
         await().atMost(5, TimeUnit.SECONDS)
-                .untilAsserted(() -> verify(secondaryNotifier, times(4)).sendEmail(any(ReminderEmail.class)));
+                .untilAsserted(() -> verify(secondaryNotifier, times(4)).remind(any(ReminderEmail.class)));
     }
 
     private EventEmailPayload createPayload(

@@ -26,7 +26,7 @@ public class SmtpEmailNotifier implements EmailNotifier {
     private final NotificationProperties notificationProperties;
 
     @Override
-    public void sendEmail(final ReminderEmail reminderEmail) {
+    public void remind(final ReminderEmail reminderEmail) {
         List<String> recipientEmails = reminderEmail.recipientEmails();
         EventEmailPayload eventEmailPayload = reminderEmail.payload();
 

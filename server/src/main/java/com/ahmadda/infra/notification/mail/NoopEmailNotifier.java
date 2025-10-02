@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 public class NoopEmailNotifier implements EmailNotifier {
 
     @Override
-    public void sendEmail(final ReminderEmail reminderEmail) {
+    public void remind(final ReminderEmail reminderEmail) {
         log.info("[Noop Email] reminderEmail: {}", reminderEmail);
     }
 }

@@ -54,10 +54,10 @@ class BccChunkingEmailNotifierTest {
         var reminderEmail = new ReminderEmail(recipients, payload);
 
         // when
-        sut.sendEmail(reminderEmail);
+        sut.remind(reminderEmail);
 
         // then
-        verify(delegate, times(1)).sendEmail(reminderEmail);
+        verify(delegate, times(1)).remind(reminderEmail);
     }
 
     @Test
@@ -67,10 +67,10 @@ class BccChunkingEmailNotifierTest {
         var reminderEmail = new ReminderEmail(recipients, payload);
 
         // when
-        sut.sendEmail(reminderEmail);
+        sut.remind(reminderEmail);
 
         // then
-        verify(delegate, times(3)).sendEmail(any(ReminderEmail.class));
+        verify(delegate, times(3)).remind(any(ReminderEmail.class));
     }
 
     private List<String> createRecipientEmails(int count) {

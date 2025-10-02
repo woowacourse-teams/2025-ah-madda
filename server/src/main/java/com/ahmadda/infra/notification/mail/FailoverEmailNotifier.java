@@ -17,8 +17,8 @@ public class FailoverEmailNotifier implements EmailNotifier {
     @Override
     @Async
     @CircuitBreaker(name = "primaryEmail", fallbackMethod = "sendEmailsWithSecondary")
-    public void sendEmail(final ReminderEmail reminderEmail) {
-        primaryNotifier.sendEmail(reminderEmail);
+    public void remind(final ReminderEmail reminderEmail) {
+        primaryNotifier.remind(reminderEmail);
     }
 
     public void sendEmailsWithSecondary(final ReminderEmail reminderEmail, final Throwable cause) {
@@ -28,6 +28,6 @@ public class FailoverEmailNotifier implements EmailNotifier {
                 cause.getMessage(),
                 cause
         );
-        secondaryNotifier.sendEmail(reminderEmail);
+        secondaryNotifier.remind(reminderEmail);
     }
 }

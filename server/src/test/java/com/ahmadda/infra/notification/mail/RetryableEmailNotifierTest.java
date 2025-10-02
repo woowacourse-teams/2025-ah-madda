@@ -64,10 +64,10 @@ class RetryableEmailNotifierTest {
     @Test
     void 첫번째_시도에_성공하면_재시도하지_않는다() {
         // when
-        sut.sendEmail(reminderEmail);
+        sut.remind(reminderEmail);
 
         // then
-        verify(delegate, times(1)).sendEmail(reminderEmail);
+        verify(delegate, times(1)).remind(reminderEmail);
     }
 
     @Test
@@ -79,13 +79,13 @@ class RetryableEmailNotifierTest {
         doThrow(ex)
                 .doNothing()
                 .when(delegate)
-                .sendEmail(reminderEmail);
+                .remind(reminderEmail);
 
         // when
-        sut.sendEmail(reminderEmail);
+        sut.remind(reminderEmail);
 
         // then
-        verify(delegate, times(2)).sendEmail(reminderEmail);
+        verify(delegate, times(2)).remind(reminderEmail);
     }
 
     @Test
@@ -96,12 +96,12 @@ class RetryableEmailNotifierTest {
 
         doThrow(ex)
                 .when(delegate)
-                .sendEmail(reminderEmail);
+                .remind(reminderEmail);
 
         // when & then
-        assertThatThrownBy(() -> sut.sendEmail(reminderEmail))
+        assertThatThrownBy(() -> sut.remind(reminderEmail))
                 .isInstanceOf(MailSendException.class);
 
-        verify(delegate, times(3)).sendEmail(reminderEmail);
+        verify(delegate, times(3)).remind(reminderEmail);
     }
 }

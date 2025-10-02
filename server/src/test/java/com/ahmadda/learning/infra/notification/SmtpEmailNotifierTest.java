@@ -98,7 +98,7 @@ class SmtpEmailNotifierTest {
         );
 
         // when // then
-        sut.sendEmail(reminderEmail);
+        sut.remind(reminderEmail);
     }
 
     // Gmail: BCC 최대 100명
@@ -139,6 +139,6 @@ class SmtpEmailNotifierTest {
         var reminderEmail = new ReminderEmail(recipients, payload);
 
         // when // then
-        sut.sendEmail(reminderEmail);
+        sut.remind(reminderEmail);
     }
 }

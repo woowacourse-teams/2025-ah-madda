@@ -14,7 +14,7 @@ public class BccChunkingEmailNotifier implements EmailNotifier {
     private final int maxBcc;
 
     @Override
-    public void sendEmail(final ReminderEmail reminderEmail) {
+    public void remind(final ReminderEmail reminderEmail) {
         List<String> recipientEmails = reminderEmail.recipientEmails();
         EventEmailPayload payload = reminderEmail.payload();
 
@@ -22,7 +22,7 @@ public class BccChunkingEmailNotifier implements EmailNotifier {
             int end = Math.min(i + maxBcc, recipientEmails.size());
             List<String> chunk = recipientEmails.subList(i, end);
 
-            delegate.sendEmail(new ReminderEmail(chunk, payload));
+            delegate.remind(new ReminderEmail(chunk, payload));
         }
     }
 }
