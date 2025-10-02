@@ -63,7 +63,7 @@ class FcmPushNotifierTest {
         );
 
         // when // then
-        sut.sendPushs(List.of(organizationMember), payload);
+        sut.remind(List.of(organizationMember), payload);
     }
 
     @Test
@@ -97,6 +97,6 @@ class FcmPushNotifierTest {
         );
 
         // when // then
-        sut.sendPush(organizationMember, payload);
+        sut.poke(organizationMember, payload);
     }
 }

@@ -27,7 +27,7 @@ public class FcmPushNotifier implements PushNotifier {
 
     @Async
     @Override
-    public void sendPushs(
+    public void remind(
             final List<OrganizationMember> recipients,
             final PushNotificationPayload pushNotificationPayload
     ) {
@@ -41,7 +41,7 @@ public class FcmPushNotifier implements PushNotifier {
 
     @Async
     @Override
-    public void sendPush(final OrganizationMember recipient, final PushNotificationPayload pushNotificationPayload) {
+    public void poke(final OrganizationMember recipient, final PushNotificationPayload pushNotificationPayload) {
         List<String> registrationTokens = getRegistrationTokens(recipient);
         sendMulticast(pushNotificationPayload, registrationTokens);
     }

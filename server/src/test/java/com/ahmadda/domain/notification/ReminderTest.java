@@ -115,7 +115,7 @@ class ReminderTest {
                         .eventId()
                         .equals(event.getId()))
         );
-        verify(pushNotifier).sendPushs(
+        verify(pushNotifier).remind(
                 eq(recipients),
                 argThat(payload -> payload != null && payload.eventId()
                         .equals(event.getId()))
