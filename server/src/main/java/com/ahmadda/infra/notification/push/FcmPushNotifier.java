@@ -13,7 +13,6 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,7 +26,6 @@ public class FcmPushNotifier implements PushNotifier {
     private final EntityManager em;
 
     @Async
-    @Transactional
     @Override
     public void sendPushs(
             final List<OrganizationMember> recipients,
@@ -36,21 +34,15 @@ public class FcmPushNotifier implements PushNotifier {
         if (recipients.isEmpty()) {
             return;
         }
-        List<OrganizationMember> mergedRecipients = recipients.stream()
-                .map(em::merge)
-                .toList();
 
-        List<String> registrationTokens = getRegistrationTokens(mergedRecipients);
+        List<String> registrationTokens = getRegistrationTokens(recipients);
         sendMulticast(pushNotificationPayload, registrationTokens);
     }
 
     @Async
-    @Transactional
     @Override
     public void sendPush(final OrganizationMember recipient, final PushNotificationPayload pushNotificationPayload) {
-        OrganizationMember mergedRecipient = em.merge(recipient);
-
-        List<String> registrationTokens = getRegistrationTokens(mergedRecipient);
+        List<String> registrationTokens = getRegistrationTokens(recipient);
         sendMulticast(pushNotificationPayload, registrationTokens);
     }
 

@@ -20,15 +20,21 @@ public class PushConfig {
     @Bean
     public PushNotifier fcmPushNotifier(
             final FcmRegistrationTokenRepository fcmRegistrationTokenRepository,
+            final FcmPushErrorHandler fcmPushErrorHandler,
             final NotificationProperties notificationProperties,
             final EntityManager em
     ) {
         return new FcmPushNotifier(
                 fcmRegistrationTokenRepository,
-                new FcmPushErrorHandler(fcmRegistrationTokenRepository),
+                fcmPushErrorHandler,
                 notificationProperties,
                 em
         );
+    }
+
+    @Bean
+    public FcmPushErrorHandler fcmPushErrorHandler(final FcmRegistrationTokenRepository fcmRegistrationTokenRepository) {
+        return new FcmPushErrorHandler(fcmRegistrationTokenRepository);
     }
 
     @Bean
