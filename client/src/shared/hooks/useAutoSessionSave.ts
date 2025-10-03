@@ -15,6 +15,7 @@ export function useAutoSessionSave<T>({ key, getData }: UseAutoSessionSaveParams
     const ok = safeSessionStorage.set(key, draft);
     if (ok) success('😀 임시 저장에 성공했어요!');
     else error('❌ 임시 저장에 실패했어요!');
+    return ok;
   };
 
   const restore = (): T | null => {
