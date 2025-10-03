@@ -1017,10 +1017,34 @@ class EventServiceTest {
                 ));
 
         var now = LocalDateTime.now();
-        eventRepository.save(createEvent(orgMemberA, orgA, "EventA1", now.plusDays(1), now.plusDays(2)));
-        eventRepository.save(createEvent(orgMemberA, orgA, "EventA2", now.plusDays(2), now.plusDays(3)));
-        eventRepository.save(createEvent(orgMemberA, orgA, "EventA3", now.minusDays(2), now.minusDays(1))); // inactive
-        eventRepository.save(createEvent(orgMemberB, orgB, "EventB1", now.plusDays(1), now.plusDays(2)));
+        eventRepository.save(createEvent(
+                orgMemberA,
+                orgA,
+                "registrationNotEndEvent",
+                now.plusDays(1),
+                now.plusDays(2)
+        )); //마감전 이벤트
+        eventRepository.save(createEvent(
+                orgMemberA,
+                orgA,
+                "registrationNotEndEvent",
+                now.plusDays(2),
+                now.plusDays(3)
+        )); //마감전 이벤트
+        eventRepository.save(createEvent(
+                orgMemberA,
+                orgA,
+                "endedEvent",
+                now.minusDays(2),
+                now.minusDays(1)
+        )); //inactive
+        eventRepository.save(createEvent(
+                orgMemberB,
+                orgB,
+                "currentProceedEvent",
+                now.minusDays(1L),
+                now
+        )); //진행중인 이벤트
 
         // when
         var events = sut.getActiveEvents(orgA.getId(), loginMember);
