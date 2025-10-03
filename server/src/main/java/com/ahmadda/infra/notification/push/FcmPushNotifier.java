@@ -9,7 +9,6 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.Notification;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -23,7 +22,6 @@ public class FcmPushNotifier implements PushNotifier {
     private final FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
     private final FcmPushErrorHandler fcmPushErrorHandler;
     private final NotificationProperties notificationProperties;
-    private final EntityManager em;
 
     @Async
     @Override
