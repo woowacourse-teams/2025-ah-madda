@@ -1,10 +1,10 @@
 package com.ahmadda.domain.notification;
 
-import java.time.LocalDateTime;
-import java.util.stream.Collectors;
-
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOrganizer;
+
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 public record EventEmailPayload(
         Subject subject,
@@ -61,7 +61,6 @@ public record EventEmailPayload(
             Long organizationId,
             Long eventId
     ) {
-
 
     }
 

@@ -10,8 +10,6 @@ import com.ahmadda.infra.notification.mail.RetryableEmailNotifier;
 import com.ahmadda.infra.notification.mail.SmtpEmailNotifier;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.retry.RetryRegistry;
-import jakarta.persistence.EntityManager;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -30,8 +28,7 @@ public class MailConfig {
             final SmtpProperties smtpProperties,
             final TemplateEngine templateEngine,
             final NotificationProperties notificationProperties,
-            final RetryRegistry retryRegistry,
-            final EntityManager em
+            final RetryRegistry retryRegistry
     ) {
         EmailNotifier googleEmailNotifier = createEmailNotifier(
                 smtpProperties.getGoogle(),
@@ -53,7 +50,7 @@ public class MailConfig {
                 3
         );
 
-        return new FailoverEmailNotifier(googleEmailNotifier, awsEmailNotifier, em);
+        return new FailoverEmailNotifier(googleEmailNotifier, awsEmailNotifier);
     }
 
     @Bean

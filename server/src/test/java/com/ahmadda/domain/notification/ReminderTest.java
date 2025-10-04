@@ -23,8 +23,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 @IntegrationTest
@@ -66,14 +65,9 @@ class ReminderTest {
         var organization = organizationRepository.save(Organization.create("우테코", "설명", "img.png"));
         var organizerMember = memberRepository.save(Member.create("주최자", "host@example.com", "pic"));
         var group = createOrganizationGroup();
-        var organizer =
-                organizationMemberRepository.save(OrganizationMember.create(
-                        "host",
-                        organizerMember,
-                        organization,
-                        OrganizationMemberRole.USER,
-                        group
-                ));
+        var organizer = organizationMemberRepository.save(
+                OrganizationMember.create("host", organizerMember, organization, OrganizationMemberRole.USER, group)
+        );
 
         var now = LocalDateTime.now();
         var event = eventRepository.save(Event.create(
@@ -127,14 +121,15 @@ class ReminderTest {
         // given
         var organization = organizationRepository.save(Organization.create("우테코", "설명", "img.png"));
         var organizerMember = memberRepository.save(Member.create("주최자", "host@example.com", "pic"));
-        var organizer =
-                organizationMemberRepository.save(OrganizationMember.create(
+        var organizer = organizationMemberRepository.save(
+                OrganizationMember.create(
                         "host",
                         organizerMember,
                         organization,
                         OrganizationMemberRole.USER,
                         createOrganizationGroup()
-                ));
+                )
+        );
 
         var now = LocalDateTime.now();
         var event = eventRepository.save(Event.create(

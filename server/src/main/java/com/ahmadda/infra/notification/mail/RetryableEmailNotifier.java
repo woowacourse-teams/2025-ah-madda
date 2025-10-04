@@ -1,8 +1,7 @@
 package com.ahmadda.infra.notification.mail;
 
 import com.ahmadda.domain.notification.EmailNotifier;
-import com.ahmadda.domain.notification.EventEmailPayload;
-import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.notification.ReminderEmail;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
@@ -10,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.SocketTimeoutException;
 import java.time.Duration;
-import java.util.List;
 
 @Slf4j
 public class RetryableEmailNotifier implements EmailNotifier {
@@ -38,20 +36,19 @@ public class RetryableEmailNotifier implements EmailNotifier {
     }
 
     @Override
-    public void sendEmails(final List<OrganizationMember> recipients, final EventEmailPayload payload) {
+    public void remind(final ReminderEmail reminderEmail) {
         Runnable runnable = Retry.decorateRunnable(
                 retry,
-                () -> delegate.sendEmails(recipients, payload)
+                () -> delegate.remind(reminderEmail)
         );
 
         try {
             runnable.run();
         } catch (Exception ex) {
             log.error(
-                    "mailRetryError - name: {}, recipients: {}, subject: {}, cause: {}",
+                    "mailRetryError - name: {}, reminderEmail: {}, cause: {}",
                     retry.getName(),
-                    recipients.size(),
-                    payload.subject(),
+                    reminderEmail,
                     ex.getMessage(),
                     ex
             );
