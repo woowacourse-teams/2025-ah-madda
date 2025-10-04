@@ -3,13 +3,16 @@ package com.ahmadda.infra.notification.mail.config;
 import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.infra.notification.config.NotificationProperties;
 import com.ahmadda.infra.notification.mail.BccChunkingEmailNotifier;
+import com.ahmadda.infra.notification.mail.EmailOutboxRepository;
 import com.ahmadda.infra.notification.mail.FailoverEmailNotifier;
 import com.ahmadda.infra.notification.mail.GmailQuotaCircuitBreakerHandler;
 import com.ahmadda.infra.notification.mail.NoopEmailNotifier;
+import com.ahmadda.infra.notification.mail.OutboxEmailNotifier;
 import com.ahmadda.infra.notification.mail.RetryableEmailNotifier;
 import com.ahmadda.infra.notification.mail.SmtpEmailNotifier;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.retry.RetryRegistry;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +27,17 @@ import org.thymeleaf.TemplateEngine;
 public class MailConfig {
 
     @Bean
+    @Primary
+    @ConditionalOnProperty(name = "mail.noop", havingValue = "false", matchIfMissing = true)
+    public EmailNotifier outboxEmailNotifier(
+            final EmailOutboxRepository emailOutboxRepository,
+            @Qualifier("failoverEmailNotifier") final EmailNotifier failoverEmailNotifier
+    ) {
+        return new OutboxEmailNotifier(emailOutboxRepository, failoverEmailNotifier);
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "mail.noop", havingValue = "false", matchIfMissing = true)
     public EmailNotifier failoverEmailNotifier(
             final SmtpProperties smtpProperties,
             final TemplateEngine templateEngine,
