@@ -24,7 +24,7 @@ public class Reminder {
         emailNotifier.remind(reminderEmail);
 
         PushNotificationPayload pushPayload = PushNotificationPayload.of(event, content);
-        pushNotifier.sendPushs(recipients, pushPayload);
+        pushNotifier.remind(recipients, pushPayload);
 
         return ReminderHistory.createNow(event, content, recipients);
     }

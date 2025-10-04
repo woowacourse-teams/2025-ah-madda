@@ -6,6 +6,7 @@ import com.google.firebase.messaging.MessagingErrorCode;
 import com.google.firebase.messaging.SendResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ public class FcmPushErrorHandler {
 
     private final FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
 
+    @Transactional
     public void handleFailures(final BatchResponse response, final List<String> registrationTokens) {
         List<SendResponse> responses = response.getResponses();
         List<String> deletableTokens = new ArrayList<>();

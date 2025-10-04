@@ -77,7 +77,7 @@ class PokeTest {
         sut.doPoke(sender, recipient, PokeMessage.ARRIVED, event, sentAt);
 
         // then
-        verify(pushNotifier).sendPush(
+        verify(pushNotifier).poke(
                 eq(recipient),
                 eq(PushNotificationPayload.of(
                         event,

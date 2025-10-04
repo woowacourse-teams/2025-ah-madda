@@ -103,13 +103,7 @@ public class Poke {
     ) {
         String sendMessage = pokeMessage.getMessage(sendOrganizationMember.getNickname());
 
-        pushNotifier.sendPush(
-                receiveOrganizationMember,
-                PushNotificationPayload.of(
-                        event,
-                        sendMessage
-                )
-        );
+        pushNotifier.poke(receiveOrganizationMember, PushNotificationPayload.of(event, sendMessage));
     }
 
     private void validateReceiveOrganizationMember(
