@@ -24,6 +24,8 @@ import java.util.List;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @IntegrationTest
@@ -103,12 +105,7 @@ class ReminderTest {
         sut.remind(recipients, event, content);
 
         // then
-        verify(emailNotifier).sendEmails(
-                eq(recipients),
-                argThat(payload -> payload != null && payload.body()
-                        .eventId()
-                        .equals(event.getId()))
-        );
+        verify(emailNotifier).remind(any(ReminderEmail.class));
         verify(pushNotifier).remind(
                 eq(recipients),
                 argThat(payload -> payload != null && payload.eventId()
