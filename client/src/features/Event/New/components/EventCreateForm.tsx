@@ -315,9 +315,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       return;
     }
 
-    const currentRegistrationEndTime =
-      parseInputDate(basicEventForm.registrationEnd) || finalStartTime;
-    const newRegistrationEnd = applyTimeToDate(startDate, currentRegistrationEndTime);
+    const newRegistrationEnd = applyTimeToDate(startDate, finalStartTime);
     const finalRegistrationEnd =
       newRegistrationEnd.getTime() > finalStartTime.getTime() ? finalStartTime : newRegistrationEnd;
 
