@@ -198,9 +198,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       ...basicEventForm,
       eventOrganizerIds: basicEventForm.eventOrganizerIds ?? [],
       questions,
-      eventStart: parseInputDate(basicEventForm.eventStart)?.toISOString() ?? '',
-      eventEnd: parseInputDate(basicEventForm.eventEnd)?.toISOString() ?? '',
-      registrationEnd: parseInputDate(basicEventForm.registrationEnd)?.toISOString() ?? '',
+      eventStart: basicEventForm.eventStart,
+      eventEnd: basicEventForm.eventEnd,
+      registrationEnd: basicEventForm.registrationEnd,
     };
 
     if (!isEdit) {
