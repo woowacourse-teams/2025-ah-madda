@@ -7,7 +7,6 @@ import { EventDetailPage } from '@/features/Event/Detail/pages/EventDetailPage';
 import { MyEventPage } from '@/features/Event/My/pages/MyEventPage';
 import { OverviewPage } from '@/features/Event/Overview/pages/OverviewPage';
 import { HomePage } from '@/features/Home/page/HomePage';
-import { OrganizationSelectPage } from '@/features/Organization/Select/pages/SelectOrganizationPage';
 import { Flex } from '@/shared/components/Flex';
 import { Loading } from '@/shared/components/Loading';
 
@@ -129,10 +128,6 @@ export const router = createBrowserRouter(
           path: '/organization',
           Component: ProtectRoute,
           children: [
-            {
-              index: true,
-              Component: OrganizationSelectPage,
-            },
             {
               path: 'new',
               element: withSuspense(NewOrganizationPage),

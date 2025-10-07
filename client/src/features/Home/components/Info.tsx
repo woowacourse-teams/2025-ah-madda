@@ -2,27 +2,24 @@ import { css, keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
-import { isAuthenticated } from '@/api/auth';
+import { getGoogleAuthUrl, isAuthenticated } from '@/api/auth';
 import Ahmadda from '@/assets/icon/ahmadda.webp';
 import Point from '@/assets/icon/point.webp';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
-import { useToast } from '@/shared/components/Toast/ToastContext';
 
 export const Info = () => {
-  const { error } = useToast();
   const navigate = useNavigate();
 
   const handleEnterOrganizationSpace = () => {
     if (!isAuthenticated()) {
-      error(`로그인이 필요한 서비스입니다.\n먼저 로그인해 주세요.`, {
-        duration: 3000,
-      });
+      const authUrl = getGoogleAuthUrl();
+      window.location.href = authUrl;
       return;
     }
-    navigate(`/organization`);
+    navigate(`/organization/new`);
   };
 
   return (
@@ -64,6 +61,10 @@ export const Info = () => {
               css={css`
                 width: 170px;
                 height: 100px;
+
+                @media (max-width: 768px) {
+                  width: 130px;
+                  height: 80px;
               `}
             />
             <Text
@@ -91,7 +92,7 @@ export const Info = () => {
           </Flex>
         </Flex>
         <Button size="full" onClick={handleEnterOrganizationSpace}>
-          이벤트 스페이스 보러가기
+          {!isAuthenticated() ? '로그인하고 이벤트 참여해요!' : '이벤트 스페이스 생성하기'}
         </Button>
       </Flex>
     </>
@@ -101,6 +102,11 @@ export const Info = () => {
 const Logo = styled.img`
   width: 150px;
   height: 220px;
+
+  @media (max-width: 768px) {
+    width: 120px;
+    height: 180px;
+  }
 `;
 
 const pop = keyframes`
@@ -142,5 +148,18 @@ const PointIcon = styled.img`
     top: 35px;
     right: -60px;
     animation-delay: 1.2s;
+  }
+
+  @media (max-width: 768px) {
+    width: 30px;
+    height: 70px;
+
+    &.point2 {
+      right: -25px;
+    }
+
+    &.point3 {
+      right: -50px;
+    }
   }
 `;

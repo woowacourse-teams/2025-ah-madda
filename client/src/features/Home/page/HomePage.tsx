@@ -15,16 +15,12 @@ import { useModal } from '../../../shared/hooks/useModal';
 import { AlarmModal } from '../components/AlarmModal';
 import { Description } from '../components/Description';
 import { Info } from '../components/Info';
+import { OrgSection } from '../components/OrgSection';
 
 export const HomePage = () => {
   const navigate = useNavigate();
   const { logout } = useGoogleAuth();
   const { isOpen, open, close } = useModal();
-
-  const handleGoogleLogin = () => {
-    const authUrl = getGoogleAuthUrl();
-    window.location.href = authUrl;
-  };
 
   const shouldShowModal =
     isAuthenticated() && isIOS() && isPWA() && Notification.permission === 'default';
@@ -51,13 +47,9 @@ export const HomePage = () => {
               />
             }
             right={
-              isAuthenticated() ? (
+              isAuthenticated() && (
                 <Button size="sm" onClick={logout}>
                   로그아웃
-                </Button>
-              ) : (
-                <Button size="sm" onClick={handleGoogleLogin}>
-                  로그인
                 </Button>
               )
             }
@@ -65,7 +57,7 @@ export const HomePage = () => {
         }
       >
         <Info />
-        <Description />
+        {!isAuthenticated() ? <Description /> : <OrgSection />}
       </PageLayout>
       <AlarmModal isOpen={isOpen} onClose={close} />
     </>
