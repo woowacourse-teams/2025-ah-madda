@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
@@ -50,8 +50,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
   const navigate = useNavigate();
   const { organizationId } = useParams();
   const { success, error } = useToast();
-  const { mutate: addEvent } = useAddEvent(Number(organizationId));
-  const { mutate: updateEvent } = useUpdateEvent();
+  const { mutateAsync: addEvent } = useAddEvent(Number(organizationId));
+  const { mutateAsync: updateEvent } = useUpdateEvent();
   const { mutate: addTemplate } = useAddTemplate();
 
   const { data: eventDetail } = useQuery({
@@ -106,6 +106,8 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     isValid: isQuestionValid,
     loadQuestions,
   } = useQuestionForm();
+
+  const [createEventLocked, setCreateEventLocked] = useState(false);
 
   const isFormReady = isBasicFormValid && isQuestionValid;
 
@@ -260,42 +262,43 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     return () => clearInterval(id);
   }, [save]);
 
-  const submitCreate = (payload: ReturnType<typeof buildPayload>) => {
-    addEvent(payload, {
-      onSuccess: ({ eventId }) => {
-        clear();
-        trackCreateEvent();
-        success('😁 이벤트가 성공적으로 생성되었습니다!');
-        navigate(`/${organizationId}/event/${eventId}`);
-      },
-      onError: handleError,
-    });
+  const submitCreate = async (payload: ReturnType<typeof buildPayload>) => {
+    const { eventId } = await addEvent(payload);
+    clear();
+    trackCreateEvent();
+    success('😁 이벤트가 성공적으로 생성되었습니다!');
+    navigate(`/${organizationId}/event/${eventId}`);
   };
 
-  const submitUpdate = (eventId: number, payload: ReturnType<typeof buildPayload>) => {
-    updateEvent(
-      { eventId, payload },
-      {
-        onSuccess: () => {
-          clear();
-          success('😁 이벤트가 성공적으로 수정되었습니다!');
-          navigate(`/${organizationId}/event/${eventId}`);
-        },
-        onError: handleError,
-      }
-    );
+  const submitUpdate = async (eventId: number, payload: ReturnType<typeof buildPayload>) => {
+    await updateEvent({ eventId, payload });
+    clear();
+    success('😁 이벤트가 성공적으로 수정되었습니다!');
+    navigate(`/${organizationId}/event/${eventId}`);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isBasicFormValid || !isQuestionValid) return;
 
-    const payload = buildPayload();
+    if (createEventLocked) return;
 
-    if (isEdit && eventId) {
-      submitUpdate(eventId, payload);
-    } else {
-      submitCreate(payload);
+    setCreateEventLocked(true);
+    const unlockTimer = setTimeout(() => setCreateEventLocked(false), 3000);
+
+    try {
+      if (!isBasicFormValid || !isQuestionValid) return;
+
+      const payload = buildPayload();
+
+      if (isEdit && eventId) {
+        await submitUpdate(eventId, payload);
+      } else {
+        await submitCreate(payload);
+      }
+    } catch (err) {
+      handleError(err);
+    } finally {
+      clearTimeout(unlockTimer);
     }
   };
 
@@ -788,13 +791,13 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
               type="submit"
               color="primary"
               size="full"
-              disabled={!isFormReady}
+              disabled={!isFormReady || createEventLocked}
               onClick={handleSubmit}
               css={css`
                 margin-top: 40px;
               `}
             >
-              {isEdit ? '이벤트 수정' : '이벤트 생성하기'}
+              {isEdit ? '이벤트 수정' : createEventLocked ? '생성중…' : '이벤트 생성하기'}
             </Button>
           </Flex>
         </Flex>
