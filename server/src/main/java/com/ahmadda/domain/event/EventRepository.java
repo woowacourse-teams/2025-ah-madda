@@ -30,6 +30,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             @Param("organization") final Organization organization,
             @Param("compareDateTime") final LocalDateTime compareDateTime,
             @Param("lastEventId") final Long lastEventId,
-            Pageable pageable
+            final Pageable pageable
     );
 }
