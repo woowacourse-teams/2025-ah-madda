@@ -32,6 +32,7 @@ import com.ahmadda.domain.organization.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +51,7 @@ public class EventService {
 
     private static final int REMINDER_LIMIT_DURATION_MINUTES = 30;
     private static final int MAX_REMINDER_COUNT_IN_DURATION = 10;
-    private static final long PAST_EVENT_PAGE_SIZE = 10;
+    private static final int PAST_EVENT_PAGE_SIZE = 10;
 
     private final MemberRepository memberRepository;
     private final EventRepository eventRepository;
@@ -181,11 +182,13 @@ public class EventService {
         Organization organization = getOrganization(organizationId);
         validateOrganizationAccess(organizationId, loginMember.memberId());
 
+        Pageable pageable = Pageable.ofSize(PAST_EVENT_PAGE_SIZE);
+
         return eventRepository.findPastEventByOrganizationAndWithCursor(
                 organization,
                 compareDateTime,
                 lastEventId,
-                PAST_EVENT_PAGE_SIZE
+                pageable
         );
     }
 

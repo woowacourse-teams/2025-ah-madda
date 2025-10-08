@@ -47,6 +47,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrganizationEventController {
 
+    private static final String DEFAULT_GET_PAST_EVENT_CURSOR = "9223372036854775807"; // Long.MAX_VALUE
+
     private final OrganizationMemberEventService organizationMemberEventService;
     private final EventService eventService;
 
@@ -182,7 +184,7 @@ public class OrganizationEventController {
     public ResponseEntity<List<MainEventResponse>> getPastEvents(
             @PathVariable final Long organizationId,
             @AuthMember final LoginMember loginMember,
-            @RequestParam(defaultValue = "0") final Long lastEventId
+            @RequestParam(defaultValue = DEFAULT_GET_PAST_EVENT_CURSOR) final Long lastEventId
     ) {
         List<Event> organizationEvents =
                 eventService.getPastEvents(organizationId, loginMember, LocalDateTime.now(), lastEventId);
