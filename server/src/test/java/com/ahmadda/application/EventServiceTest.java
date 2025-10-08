@@ -849,7 +849,7 @@ class EventServiceTest {
                 organization.getId(),
                 loginMember,
                 now,
-                0L
+                Long.MAX_VALUE
         );
 
         // then
@@ -890,7 +890,7 @@ class EventServiceTest {
                 organization.getId(),
                 loginMember,
                 now,
-                0L
+                Long.MAX_VALUE
         );
 
         // then
@@ -901,7 +901,7 @@ class EventServiceTest {
     }
 
     @Test
-    void 특정_이벤트_스페이스의_과거_이벤트_id_보다_큰_과거_이벤트들을_조회한다() {
+    void 특정_이벤트_스페이스의_기준_이벤트보다_이전에_생성된_이벤트들을_조회한다() {
         // given
         var member = createMember();
         var organization = createOrganization("우테코");
@@ -914,7 +914,7 @@ class EventServiceTest {
 
         List<Event> pastEvents = new ArrayList<>();
 
-        Event tmpCursorEvent = null;
+        Event cursorEvent = null;
         for (int i = 0; i < 20; i++) {
             pastEvents.add(createEventWithDates(
                     organizationMember,
@@ -925,17 +925,17 @@ class EventServiceTest {
                     now.minusDays(4)
             ));
             if (i == 10) {
-                tmpCursorEvent = pastEvents.get(i);
+                cursorEvent = pastEvents.get(i);
             }
         }
-        Event finalCursorEvent = tmpCursorEvent;
+        Event finalCursorEvent = cursorEvent;
 
         // when
         var selectedPastEvents = sut.getPastEvents(
                 organization.getId(),
                 loginMember,
                 now,
-                tmpCursorEvent.getId()
+                cursorEvent.getId()
         );
 
         List<Long> idList = selectedPastEvents.stream()
@@ -943,12 +943,10 @@ class EventServiceTest {
                 .toList();
 
         // then
-
         assertSoftly(softly -> {
             idList.forEach(id ->
                     softly.assertThat(id)
-                            .as("ID 검증: " + id)
-                            .isGreaterThan(finalCursorEvent.getId())
+                            .isLessThan(finalCursorEvent.getId())
             );
         });
     }
@@ -1044,7 +1042,7 @@ class EventServiceTest {
                 "currentProceedEvent",
                 now.minusDays(1L),
                 now
-        )); //진행중인 이벤트
+        )); //다른 이벤트 스페이스의 진행중인 이벤트
 
         // when
         var events = sut.getActiveEvents(orgA.getId(), loginMember);
@@ -1052,7 +1050,7 @@ class EventServiceTest {
         // then
         assertThat(events).hasSize(2)
                 .extracting(Event::getTitle)
-                .containsExactlyInAnyOrder("EventA1", "EventA2");
+                .containsExactlyInAnyOrder("registrationNotEndEvent", "registrationNotEndEvent");
     }
 
     @Test
