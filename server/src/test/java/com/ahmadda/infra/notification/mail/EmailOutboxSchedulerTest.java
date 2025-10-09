@@ -26,7 +26,7 @@ class EmailOutboxSchedulerTest {
     private EmailOutboxNotifier emailOutboxNotifier;
 
     @Test
-    void 수신자가_존재하는_Outbox는_재전송된다() {
+    void 수신자가_존재하는_아웃박스는_재전송된다() {
         // given
         var outbox = EmailOutbox.create(
                 "테스트 제목",
@@ -51,7 +51,7 @@ class EmailOutboxSchedulerTest {
     }
 
     @Test
-    void 수신자가_없으면_Outbox는_삭제된다() {
+    void 수신자가_없으면_아웃박스는_삭제된다() {
         // given
         var outbox = EmailOutbox.create(
                 "빈 아웃박스",
@@ -74,7 +74,7 @@ class EmailOutboxSchedulerTest {
     }
 
     @Test
-    void 만료된_락을_가진_Outbox만_재전송된다() {
+    void 만료된_락을_가진_아웃박스만_재전송된다() {
         // given
         var expired = EmailOutbox.create(
                 "제목1",
@@ -113,7 +113,7 @@ class EmailOutboxSchedulerTest {
     }
 
     @Test
-    void 재전송된_Outbox의_lockedAt이_갱신된다() {
+    void 재전송된_아웃박스의_잠금_일시가_갱신된다() {
         // given
         var outbox = EmailOutbox.create(
                 "락 갱신 테스트",
