@@ -182,11 +182,18 @@ public class EventService {
         Organization organization = getOrganization(organizationId);
         validateOrganizationAccess(organizationId, loginMember.memberId());
 
+        LocalDateTime lastEnd = eventRepository.findById(lastEventId)
+                .map(event -> event.getEventOperationPeriod()
+                        .getEventPeriod()
+                        .end())
+                .orElse(compareDateTime); // 없으면 compareDateTime을 기본값으로
+
         Pageable pageable = Pageable.ofSize(PAST_EVENT_PAGE_SIZE);
 
-        return eventRepository.findPastEventByOrganizationAndWithCursor(
+        return eventRepository.findPastEventsByOrganizationWithCursor(
                 organization,
                 compareDateTime,
+                lastEnd,
                 lastEventId,
                 pageable
         );
