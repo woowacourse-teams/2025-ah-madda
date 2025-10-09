@@ -4,6 +4,7 @@ import com.ahmadda.annotation.LearningTest;
 import com.ahmadda.domain.notification.EventEmailPayload;
 import com.ahmadda.domain.notification.ReminderEmail;
 import com.ahmadda.infra.notification.config.NotificationProperties;
+import com.ahmadda.infra.notification.mail.EmailOutboxSuccessHandler;
 import com.ahmadda.infra.notification.mail.SmtpEmailNotifier;
 import com.ahmadda.infra.notification.mail.config.SmtpProperties;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,9 @@ class SmtpEmailNotifierTest {
     @Autowired
     private NotificationProperties notificationProperties;
 
+    @Autowired
+    private EmailOutboxSuccessHandler emailOutboxSuccessHandler;
+
     @BeforeEach
     void setUp() {
         sut = createSmtpEmailNotifier("google");
@@ -47,7 +51,7 @@ class SmtpEmailNotifierTest {
                 };
 
         JavaMailSender sender = createJavaMailSender(acc);
-        return new SmtpEmailNotifier(sender, templateEngine, notificationProperties);
+        return new SmtpEmailNotifier(sender, templateEngine, notificationProperties, emailOutboxSuccessHandler);
     }
 
     private JavaMailSender createJavaMailSender(SmtpProperties.Account acc) {
