@@ -192,7 +192,6 @@ public class EventService {
 
         return eventRepository.findPastEventsByOrganizationWithCursor(
                 organization,
-                compareDateTime,
                 lastEnd,
                 lastEventId,
                 pageable

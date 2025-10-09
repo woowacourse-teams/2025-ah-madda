@@ -25,7 +25,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             SELECT e
             FROM Event e
             WHERE e.organization = :organization
-              AND e.eventOperationPeriod.eventPeriod.end < :compareDateTime
               AND (
                     e.eventOperationPeriod.eventPeriod.end < :lastEnd
                     OR (
@@ -37,7 +36,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             """)
     List<Event> findPastEventsByOrganizationWithCursor(
             @Param("organization") final Organization organization,
-            @Param("compareDateTime") final LocalDateTime compareDateTime,
             @Param("lastEnd") final LocalDateTime lastEnd,
             @Param("lastId") final Long lastId,
             final Pageable pageable
