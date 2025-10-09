@@ -68,6 +68,7 @@ public class EmailOutbox {
 
     public static EmailOutbox createNow(final String subject, final String body, final List<String> recipientEmails) {
         LocalDateTime now = LocalDateTime.now();
+        
         return new EmailOutbox(subject, body, recipientEmails, now, now);
     }
 
