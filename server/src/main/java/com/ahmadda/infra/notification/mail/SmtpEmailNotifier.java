@@ -11,11 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -24,6 +21,7 @@ public class SmtpEmailNotifier implements EmailNotifier {
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
     private final NotificationProperties notificationProperties;
+    private final EmailOutboxSuccessHandler emailOutboxSuccessHandler;
 
     @Override
     public void remind(final ReminderEmail reminderEmail) {
@@ -34,51 +32,18 @@ public class SmtpEmailNotifier implements EmailNotifier {
             return;
         }
 
-        String subject = createSubject(eventEmailPayload.subject());
-        String text = createText(eventEmailPayload.body());
+        String subject = eventEmailPayload.renderSubject();
+        String body = eventEmailPayload.renderBody(templateEngine, notificationProperties.getRedirectUrlPrefix());
 
-        MimeMessage mimeMessage = createMimeMessageWithBcc(recipientEmails, subject, text);
+        MimeMessage mimeMessage = createMimeMessageWithBcc(recipientEmails, subject, body);
         javaMailSender.send(mimeMessage);
-    }
-
-    private String createSubject(final EventEmailPayload.Subject subject) {
-        return "[아맞다] %s의 이벤트 안내: %s".formatted(
-                subject.organizationName(),
-                subject.eventTitle()
-        );
-    }
-
-    private String createText(final EventEmailPayload.Body body) {
-        Context context = new Context();
-        Map<String, Object> model = createModel(body);
-        context.setVariables(model);
-
-        return templateEngine.process("mail/event-notification", context);
-    }
-
-    private Map<String, Object> createModel(final EventEmailPayload.Body body) {
-        Map<String, Object> model = new HashMap<>();
-        model.put("organizationName", body.organizationName());
-        model.put("content", body.content());
-        model.put("title", body.title());
-        model.put("organizerNickname", body.organizerNickname());
-        model.put("place", body.place());
-        model.put("registrationStart", body.registrationStart());
-        model.put("registrationEnd", body.registrationEnd());
-        model.put("eventStart", body.eventStart());
-        model.put("eventEnd", body.eventEnd());
-        model.put(
-                "redirectUrl",
-                notificationProperties.getRedirectUrlPrefix() + body.organizationId() + "/event/" + body.eventId()
-        );
-
-        return model;
+        handleSuccess(recipientEmails, subject, body);
     }
 
     private MimeMessage createMimeMessageWithBcc(
             final List<String> bccRecipients,
             final String subject,
-            final String text
+            final String body
     ) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
@@ -87,11 +52,18 @@ public class SmtpEmailNotifier implements EmailNotifier {
             helper.setFrom("아맞다 <noreply@ahmadda.com>");
             helper.setBcc(bccRecipients.toArray(String[]::new));
             helper.setSubject(subject);
-            helper.setText(text, true);
+            helper.setText(body, true);
         } catch (MessagingException e) {
             log.error("mailError : {} ", e.getMessage(), e);
         }
 
         return mimeMessage;
+    }
+
+
+    private void handleSuccess(final List<String> recipientEmails, final String subject, final String body) {
+        for (String recipientEmail : recipientEmails) {
+            emailOutboxSuccessHandler.handleSuccess(recipientEmail, subject, body);
+        }
     }
 }
