@@ -3,8 +3,10 @@ package com.ahmadda.infra.notification.mail.config;
 import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.infra.notification.config.NotificationProperties;
 import com.ahmadda.infra.notification.mail.BccChunkingEmailNotifier;
+import com.ahmadda.infra.notification.mail.EmailOutboxNotifier;
 import com.ahmadda.infra.notification.mail.EmailOutboxRecipientRepository;
 import com.ahmadda.infra.notification.mail.EmailOutboxRepository;
+import com.ahmadda.infra.notification.mail.EmailOutboxScheduler;
 import com.ahmadda.infra.notification.mail.EmailOutboxSuccessHandler;
 import com.ahmadda.infra.notification.mail.FailoverEmailNotifier;
 import com.ahmadda.infra.notification.mail.GmailQuotaCircuitBreakerHandler;
@@ -32,10 +34,17 @@ public class MailConfig {
     @Primary
     @ConditionalOnProperty(name = "mail.noop", havingValue = "false", matchIfMissing = true)
     public EmailNotifier outboxEmailNotifier(
+            final TemplateEngine templateEngine,
+            final NotificationProperties notificationProperties,
             final EmailOutboxRepository emailOutboxRepository,
             @Qualifier("failoverEmailNotifier") final EmailNotifier failoverEmailNotifier
     ) {
-        return new OutboxEmailNotifier(emailOutboxRepository, failoverEmailNotifier);
+        return new OutboxEmailNotifier(
+                templateEngine,
+                notificationProperties,
+                emailOutboxRepository,
+                failoverEmailNotifier
+        );
     }
 
     @Bean
@@ -74,6 +83,31 @@ public class MailConfig {
     @Bean
     public GmailQuotaCircuitBreakerHandler gmailQuotaCircuitBreakerHandler(final CircuitBreakerRegistry circuitBreakerRegistry) {
         return new GmailQuotaCircuitBreakerHandler(circuitBreakerRegistry);
+    }
+
+    @Bean
+    public EmailOutboxScheduler emailOutboxScheduler(
+            final EmailOutboxRepository emailOutboxRepository,
+            final EmailOutboxNotifier emailOutboxNotifier
+    ) {
+        return new EmailOutboxScheduler(emailOutboxRepository, emailOutboxNotifier);
+    }
+
+    @Bean
+    public EmailOutboxNotifier awsOutboxNotifier(
+            final SmtpProperties smtpProperties,
+            final TemplateEngine templateEngine,
+            final NotificationProperties notificationProperties,
+            final EmailOutboxSuccessHandler emailOutboxSuccessHandler
+    ) {
+        SmtpEmailNotifier awsSmtpNotifier = new SmtpEmailNotifier(
+                createJavaMailSender(smtpProperties.getAws()),
+                templateEngine,
+                notificationProperties,
+                emailOutboxSuccessHandler
+        );
+
+        return new BccChunkingEmailNotifier(awsSmtpNotifier, 50);
     }
 
     @Bean

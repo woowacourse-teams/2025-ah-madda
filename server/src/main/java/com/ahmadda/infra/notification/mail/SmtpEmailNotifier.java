@@ -16,7 +16,7 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-public class SmtpEmailNotifier implements EmailNotifier {
+public class SmtpEmailNotifier implements EmailNotifier, EmailOutboxNotifier {
 
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
@@ -34,6 +34,21 @@ public class SmtpEmailNotifier implements EmailNotifier {
 
         String subject = eventEmailPayload.renderSubject();
         String body = eventEmailPayload.renderBody(templateEngine, notificationProperties.getRedirectUrlPrefix());
+
+        MimeMessage mimeMessage = createMimeMessageWithBcc(recipientEmails, subject, body);
+        javaMailSender.send(mimeMessage);
+        handleSuccess(recipientEmails, subject, body);
+    }
+
+    @Override
+    public void sendFromOutbox(
+            final List<String> recipientEmails,
+            final String subject,
+            final String body
+    ) {
+        if (recipientEmails.isEmpty()) {
+            return;
+        }
 
         MimeMessage mimeMessage = createMimeMessageWithBcc(recipientEmails, subject, body);
         javaMailSender.send(mimeMessage);

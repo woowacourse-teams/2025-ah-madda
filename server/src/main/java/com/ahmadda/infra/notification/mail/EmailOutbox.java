@@ -40,29 +40,38 @@ public class EmailOutbox {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    private EmailOutbox(final String subject, final String body, final LocalDateTime createdAt) {
+    private EmailOutbox(
+            final String subject,
+            final String body,
+            final List<String> recipientEmails,
+            final LocalDateTime lockedAt,
+            final LocalDateTime createdAt
+    ) {
         this.subject = subject;
         this.body = body;
+        recipientEmails.forEach(recipientEmail ->
+                this.recipients.add(EmailOutboxRecipient.create(this, recipientEmail))
+        );
+        this.lockedAt = lockedAt;
         this.createdAt = createdAt;
     }
 
-    public static EmailOutbox createNow(final String subject, final String body, final List<String> recipientEmails) {
-        EmailOutbox outbox = new EmailOutbox(subject, body, LocalDateTime.now());
-        recipientEmails.forEach(email -> outbox.recipients.add(EmailOutboxRecipient.create(outbox, email)));
+    public static EmailOutbox create(
+            final String subject,
+            final String body,
+            final List<String> recipientEmails,
+            final LocalDateTime lockedAt,
+            final LocalDateTime createdAt
+    ) {
+        return new EmailOutbox(subject, body, recipientEmails, lockedAt, createdAt);
+    }
 
-        return outbox;
+    public static EmailOutbox createNow(final String subject, final String body, final List<String> recipientEmails) {
+        LocalDateTime now = LocalDateTime.now();
+        return new EmailOutbox(subject, body, recipientEmails, now, now);
     }
 
     public void lock() {
         this.lockedAt = LocalDateTime.now();
-    }
-
-    public boolean isLockExpired(final int ttlMinutes) {
-        return lockedAt == null || lockedAt.isBefore(LocalDateTime.now()
-                .minusMinutes(ttlMinutes));
-    }
-
-    public boolean isAllRecipientsDeleted() {
-        return recipients.isEmpty();
     }
 }
