@@ -928,14 +928,14 @@ class EventServiceTest {
                 cursorEvent = pastEvents.get(i);
             }
         }
-        Event finalCursorEvent = cursorEvent;
+        final Event finalCursorEvent = cursorEvent;
 
         // when
         var selectedPastEvents = sut.getPastEvents(
                 organization.getId(),
                 loginMember,
                 now,
-                cursorEvent.getId()
+                finalCursorEvent.getId()
         );
 
         List<Long> idList = selectedPastEvents.stream()
