@@ -4,7 +4,7 @@ create table email_outbox
         primary key,
     subject         varchar(255) not null,
     body            longtext     not null,
-    locked_at       datetime(6)  null,
+    locked_at       datetime(6)  not null,
     created_at      datetime(6)  not null
 );
 

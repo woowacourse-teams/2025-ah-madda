@@ -13,13 +13,13 @@ public class EmailOutboxScheduler {
     private final EmailOutboxRepository emailOutboxRepository;
     private final EmailOutboxNotifier emailOutboxNotifier;
 
-    private static final int LOCK_TTL_MINUTES = 5;
+    private static final int SOFT_LOCK_TTL_MINUTES = 5;
 
     @Transactional
     @Scheduled(fixedDelay = 60_000)
     public void resendFailedEmails() {
         LocalDateTime threshold = LocalDateTime.now()
-                .minusMinutes(LOCK_TTL_MINUTES);
+                .minusMinutes(SOFT_LOCK_TTL_MINUTES);
         List<EmailOutbox> failedOutboxes = emailOutboxRepository.findAndLockExpiredOutboxes(threshold);
 
         for (EmailOutbox outbox : failedOutboxes) {

@@ -34,7 +34,7 @@ public class EmailOutbox {
     @OneToMany(mappedBy = "emailOutbox", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<EmailOutboxRecipient> recipients = new ArrayList<>();
 
-    @Column
+    @Column(nullable = false)
     private LocalDateTime lockedAt;
 
     @Column(nullable = false)
