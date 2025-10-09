@@ -2,9 +2,11 @@ package com.ahmadda.infra.notification.mail;
 
 import com.ahmadda.infra.notification.mail.exception.EmailOutboxException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 
+@Component
 @RequiredArgsConstructor
 public class EmailOutboxSuccessHandler {
 

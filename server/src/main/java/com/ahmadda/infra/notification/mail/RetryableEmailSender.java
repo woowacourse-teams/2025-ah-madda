@@ -1,7 +1,5 @@
 package com.ahmadda.infra.notification.mail;
 
-import com.ahmadda.domain.notification.EmailNotifier;
-import com.ahmadda.domain.notification.ReminderEmail;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
@@ -9,17 +7,18 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.SocketTimeoutException;
 import java.time.Duration;
+import java.util.List;
 
 @Slf4j
-public class RetryableEmailNotifier implements EmailNotifier {
+public class RetryableEmailSender implements EmailSender {
 
-    private final EmailNotifier delegate;
+    private final EmailSender delegate;
     private final Retry retry;
 
-    public RetryableEmailNotifier(
+    public RetryableEmailSender(
+            final EmailSender delegate,
             final RetryRegistry retryRegistry,
             final String retryName,
-            final EmailNotifier delegate,
             final int maxAttempts,
             final long waitMillis
     ) {
@@ -36,19 +35,19 @@ public class RetryableEmailNotifier implements EmailNotifier {
     }
 
     @Override
-    public void remind(final ReminderEmail reminderEmail) {
+    public void sendEmails(final List<String> recipientEmails, final String subject, final String body) {
         Runnable runnable = Retry.decorateRunnable(
                 retry,
-                () -> delegate.remind(reminderEmail)
+                () -> delegate.sendEmails(recipientEmails, subject, body)
         );
 
         try {
             runnable.run();
         } catch (Exception ex) {
             log.error(
-                    "mailRetryError - name: {}, reminderEmail: {}, cause: {}",
+                    "mailRetryError - name: {}, recipientEmails: {}, cause: {}",
                     retry.getName(),
-                    reminderEmail,
+                    recipientEmails,
                     ex.getMessage(),
                     ex
             );
