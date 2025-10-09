@@ -35,17 +35,17 @@ class OrganizationTest {
     void 활성화된_이벤트_목록을_조회한다() {
         // given
         var now = LocalDateTime.now();
-        var pastEvent = createEventForTest(
+        var pastEvent = createEvent(
                 "과거 이벤트",
                 now.minusDays(3), now.minusDays(2),
-                now.minusDays(1), now.plusDays(1)
+                now.minusDays(2), now.minusDays(1)
         );
-        var activeEvent1 = createEventForTest(
+        var activeEvent1 = createEvent(
                 "활성 이벤트 1",
                 now.minusDays(1), now.plusDays(1),
                 now.plusDays(2), now.plusDays(3)
         );
-        var activeEvent2 = createEventForTest(
+        var activeEvent2 = createEvent(
                 "활성 이벤트 2",
                 now.minusDays(1), now.plusDays(1),
                 now.plusDays(2), now.plusDays(3)
@@ -217,7 +217,7 @@ class OrganizationTest {
         return OrganizationGroup.create("백엔드");
     }
 
-    private Event createEventForTest(
+    private Event createEvent(
             String title,
             LocalDateTime registrationStart,
             LocalDateTime registrationEnd,

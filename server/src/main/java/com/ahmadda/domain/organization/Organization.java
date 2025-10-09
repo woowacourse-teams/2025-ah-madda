@@ -75,7 +75,7 @@ public class Organization extends BaseEntity {
 
     public List<Event> getActiveEvents(final LocalDateTime currentDateTime) {
         return events.stream()
-                .filter((event) -> event.isRegistrationEnd(currentDateTime))
+                .filter((event) -> event.isBeforeEventEnd(currentDateTime))
                 .toList();
     }
 
