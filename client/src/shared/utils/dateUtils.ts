@@ -109,7 +109,7 @@ type DateRangeFormatInput = {
    * - HH: 시간 (hour12 옵션에 따라 12/24시간제)
    * - mm: 2자리 분 (00-59)
    * - A: 오전/오후 (locale에 따라 다름)
-   * - E: 요일 (locale 및 dayOfWeekFormat에 따라 다름)
+   * - E: 요일 (locale 및 dayOfWeek에 따라 다름)
    */
   pattern: DatePattern;
   /**
@@ -125,7 +125,7 @@ type DateRangeFormatInput = {
  * 날짜 범위를 지정된 패턴과 로케일에 맞게 포맷팅합니다.
  * @param {start} params.start - 시작 날짜
  * @param {end} [params.end] - 종료 날짜 (선택사항, 없으면 단일 날짜로 표시)
- * @param {pattern} [params.pattern] - 날짜 패턴
+ * @param {pattern} params.pattern - 날짜 패턴
  * @param {options} [params.options] - 포맷 옵션
  * @returns {string} 포맷팅된 날짜 범위 문자열
  *
