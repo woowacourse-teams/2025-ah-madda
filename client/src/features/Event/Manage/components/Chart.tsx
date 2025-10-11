@@ -48,7 +48,7 @@ export const Chart = ({ statistics, maxViews, hoveredIndex, onChangeHover }: Cha
           <Text key={item.date} type="Body" weight="regular" color={theme.colors.black}>
             {formatDate({
               start: item.date,
-              options: { pattern: 'MM/DD' },
+              pattern: 'MM/DD',
             })}
           </Text>
         ))}

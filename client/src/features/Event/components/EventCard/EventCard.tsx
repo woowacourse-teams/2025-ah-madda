@@ -96,9 +96,9 @@ export const EventCard = ({
             {formatDate({
               start: eventStart,
               end: eventEnd,
+              pattern: 'MM.DD E HH:mm',
               options: {
-                pattern: 'MM.DD E HH:mm',
-                dayOfWeekFormat: 'shortParen',
+                dayOfWeek: 'shortParen',
                 smartRange: true,
               },
             })}

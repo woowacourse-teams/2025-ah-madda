@@ -112,9 +112,9 @@ export const EventManagePage = () => {
                   {formatDate({
                     start: event.eventStart,
                     end: event.eventEnd,
+                    pattern: 'YYYY. MM. DD A HH시',
                     options: {
-                      pattern: 'YYYY. MM. DD E A h시',
-                      dayOfWeekFormat: 'shortParen',
+                      dayOfWeek: 'shortParen',
                     },
                   })}
                 </Text>
