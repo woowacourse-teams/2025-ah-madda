@@ -24,4 +24,6 @@ public interface OrganizationMemberRepository extends JpaRepository<Organization
             final Organization organization,
             final List<OrganizationGroup> groups
     );
+
+    List<OrganizationMember> findAllByOrganizationIdAndGroupId(final Long organizationId, final Long groupId);
 }
