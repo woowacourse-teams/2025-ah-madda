@@ -166,7 +166,7 @@ export const formatDate = ({ start, end, pattern, options = {} }: DateRangeForma
     hour12 = false,
   } = options;
 
-  const startDate = new Date(start);
+  const startDate = typeof start === 'string' ? new Date(start) : start;
   const endDate = end ? (typeof end === 'string' ? new Date(end) : end) : null;
 
   if (isNaN(startDate.getTime())) {
@@ -220,39 +220,29 @@ const formatSameDayRange = (
   pattern: DatePattern,
   options: FormatOptions
 ): string => {
-  const { locale, hour12, dayOfWeek, separator } = options;
-
   const timePattern = extractTimePattern(pattern);
-  const timeOptions = {
-    pattern: timePattern,
-    locale,
-    hour12,
-    dayOfWeek: 'none' as DayOfWeekFormat,
-  };
-
-  const startTimeStr = applyDatePattern(startDate, timePattern, timeOptions);
-  const endTimeStr = applyDatePattern(endDate, timePattern, timeOptions);
+  const startTimeStr = applyDatePattern(startDate, timePattern, { ...options, dayOfWeek: 'none' });
+  const endTimeStr = applyDatePattern(endDate, timePattern, { ...options, dayOfWeek: 'none' });
 
   const datePattern = pattern
     .replace(/\s*HH:mm\s*/g, '')
     .replace(/\s*A\s*/g, '')
     .trim() as DatePattern;
-  const dateOptions = { pattern: datePattern, locale, hour12, dayOfWeek };
+  const dateOnlyStr = applyDatePattern(startDate, datePattern, options);
 
-  const dateOnlyStr = applyDatePattern(startDate, datePattern, dateOptions);
-
-  return `${dateOnlyStr} ${startTimeStr} ${separator} ${endTimeStr}`;
+  return `${dateOnlyStr} ${startTimeStr} ${options.separator} ${endTimeStr}`;
 };
 
 /**
  * 패턴에서 시간 부분만 추출합니다.
  */
 const extractTimePattern = (pattern: DatePattern): DatePattern => {
-  if (/A.*HH:mm|HH:mm.*A/.test(pattern)) {
-    return 'A HH:mm' as DatePattern;
-  }
+  const hasAmPm = pattern.includes('A');
+  const hasTime = pattern.includes('HH:mm');
 
-  return 'HH:mm' as DatePattern;
+  if (!hasTime) return 'HH:mm' as DatePattern;
+
+  return hasAmPm ? ('A HH:mm' as DatePattern) : ('HH:mm' as DatePattern);
 };
 
 /**
@@ -304,13 +294,16 @@ const applyDatePattern = (date: Date, pattern: DatePattern, options: FormatOptio
   const formattedWeekday =
     options.dayOfWeek === 'shortParen' ? `(${dateParts.weekday})` : dateParts.weekday;
 
-  return pattern
-    .replace(/YYYY/g, dateParts.yyyy)
-    .replace(/YY/g, dateParts.yy)
-    .replace(/MM/g, dateParts.month)
-    .replace(/DD/g, dateParts.day)
-    .replace(/HH/g, dateParts.hour)
-    .replace(/mm/g, dateParts.minute)
-    .replace(/A/g, dateParts.amPm)
-    .replace(/E/g, formattedWeekday);
+  const tokenMap: Record<string, string> = {
+    YYYY: dateParts.yyyy,
+    YY: dateParts.yy,
+    MM: dateParts.month,
+    DD: dateParts.day,
+    HH: dateParts.hour,
+    mm: dateParts.minute,
+    A: dateParts.amPm,
+    E: formattedWeekday,
+  };
+
+  return pattern.replace(/YYYY|YY|MM|DD|HH|mm|A|E/g, (match) => tokenMap[match] || match);
 };
