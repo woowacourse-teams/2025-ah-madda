@@ -13,6 +13,7 @@ import com.ahmadda.domain.event.GuestRepository;
 import com.ahmadda.domain.event.Question;
 import com.ahmadda.domain.event.QuestionRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class EventGuestService {
     private final EventRepository eventRepository;
     private final QuestionRepository questionRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
+    private final OrganizationGroupRepository organizationGroupRepository;
 
     @Transactional(readOnly = true)
     public List<Guest> getGuests(final Long eventId, final LoginMember loginMember) {
@@ -51,6 +53,28 @@ public class EventGuestService {
         List<OrganizationMember> allMembers = organization.getOrganizationMembers();
 
         return event.getNonGuestOrganizationMembers(allMembers);
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrganizationMember> getGroupNonGuestOrganizationMembers(
+            final Long eventId,
+            final Long groupId,
+            final LoginMember loginMember
+    ) {
+        Event event = getEvent(eventId);
+        Organization organization = event.getOrganization();
+        validateOrganizationAccess(loginMember, organization);
+
+        if (!organizationGroupRepository.existsById(groupId)) {
+            throw new NotFoundException("존재하지 않는 그룹입니다.");
+        }
+
+        List<OrganizationMember> groupMembers = organizationMemberRepository.findAllByOrganizationIdAndGroupId(
+                organization.getId(),
+                groupId
+        );
+
+        return event.getNonGuestOrganizationMembers(groupMembers);
     }
 
     @Transactional
