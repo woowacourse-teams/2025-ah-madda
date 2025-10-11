@@ -58,7 +58,8 @@ export const EventDetails = ({
           <Text>
             {formatDate({
               start: registrationEnd,
-              options: { pattern: 'YYYY년 MM월 DD일 E A h시', dayOfWeekFormat: 'long' },
+              pattern: 'YYYY년 MM월 DD일 E A HH시',
+              options: { dayOfWeek: 'long' },
             })}
             까지
           </Text>

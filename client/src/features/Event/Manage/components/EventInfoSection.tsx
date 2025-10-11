@@ -55,9 +55,8 @@ export const EventInfoSection = ({ event, statistics }: EventInfoSectionProps) =
           <Text type="Label" weight="medium" color={theme.colors.gray800}>
             {formatDate({
               start: event.registrationEnd,
-              options: {
-                pattern: 'YYYY. MM. DD E A h시',
-              },
+              pattern: 'YYYY. MM. DD E A HH시',
+              options: { dayOfWeek: 'long' },
             })}
             까지 신청가능
           </Text>

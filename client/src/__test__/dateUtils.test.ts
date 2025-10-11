@@ -5,9 +5,9 @@ describe('날짜 유틸리티 함수 테스트', () => {
     expect(
       formatDate({
         start: new Date('2025-01-15T14:30:00'),
+        pattern: 'YYYY.MM.DD',
         options: {
-          pattern: 'YYYY.MM.DD',
-          dayOfWeekFormat: 'short',
+          dayOfWeek: 'short',
           locale: 'ko',
         },
       })
@@ -16,9 +16,9 @@ describe('날짜 유틸리티 함수 테스트', () => {
     expect(
       formatDate({
         start: '2025-01-15T14:30:00',
+        pattern: 'YYYY-MM-DD',
         options: {
-          pattern: 'YYYY-MM-DD',
-          dayOfWeekFormat: 'short',
+          dayOfWeek: 'short',
           locale: 'ko',
         },
       })
@@ -27,9 +27,9 @@ describe('날짜 유틸리티 함수 테스트', () => {
     expect(
       formatDate({
         start: '2025-01-15T14:30:00',
+        pattern: 'YYYY년 MM월 DD일',
         options: {
-          pattern: 'YYYY년 MM월 DD일',
-          dayOfWeekFormat: 'short',
+          dayOfWeek: 'short',
           locale: 'ko',
         },
       })
@@ -41,9 +41,9 @@ describe('날짜 유틸리티 함수 테스트', () => {
       formatDate({
         start: new Date('2025-01-15T10:00:00'),
         end: new Date('2025-01-17T18:00:00'),
+        pattern: 'YYYY.MM.DD HH:mm',
         options: {
-          pattern: 'YYYY.MM.DD HH:mm',
-          rangeSeparator: '~',
+          separator: '~',
         },
       })
     ).toBe('2025.01.15 10:00 ~ 2025.01.17 18:00');
@@ -54,9 +54,9 @@ describe('날짜 유틸리티 함수 테스트', () => {
       formatDate({
         start: new Date('2025-01-15T10:00:00'),
         end: new Date('2025-01-17T18:00:00'),
+        pattern: 'YYYY.MM.DD HH:mm',
         options: {
-          pattern: 'YYYY.MM.DD HH:mm',
-          rangeSeparator: '-',
+          separator: '-',
         },
       })
     ).toBe('2025.01.15 10:00 - 2025.01.17 18:00');
@@ -67,9 +67,9 @@ describe('날짜 유틸리티 함수 테스트', () => {
       formatDate({
         start: new Date('2025-01-15T10:00:00'),
         end: new Date('2025-01-17T18:00:00'),
+        pattern: 'YYYY.MM.DD (E) HH:mm',
         options: {
-          pattern: 'YYYY.MM.DD (E) HH:mm',
-          dayOfWeekFormat: 'short',
+          dayOfWeek: 'short',
           locale: 'ko',
         },
       })
@@ -79,9 +79,9 @@ describe('날짜 유틸리티 함수 테스트', () => {
       formatDate({
         start: new Date('2025-01-15T10:00:00'),
         end: new Date('2025-01-17T18:00:00'),
+        pattern: 'YYYY.MM.DD (E) HH:mm',
         options: {
-          pattern: 'YYYY.MM.DD (E) HH:mm',
-          dayOfWeekFormat: 'long',
+          dayOfWeek: 'long',
           locale: 'ko',
         },
       })
@@ -91,9 +91,9 @@ describe('날짜 유틸리티 함수 테스트', () => {
       formatDate({
         start: new Date('2025-01-15T10:00:00'),
         end: new Date('2025-01-17T18:00:00'),
+        pattern: 'YYYY.MM.DD E HH:mm',
         options: {
-          pattern: 'YYYY.MM.DD E HH:mm',
-          dayOfWeekFormat: 'shortParen',
+          dayOfWeek: 'shortParen',
           locale: 'ko',
         },
       })
@@ -104,9 +104,9 @@ describe('날짜 유틸리티 함수 테스트', () => {
     expect(
       formatDate({
         start: new Date('2025-01-15T10:00:00'),
+        pattern: 'YYYY.MM.DD (E) HH:mm',
         options: {
-          pattern: 'YYYY.MM.DD (E) HH:mm',
-          dayOfWeekFormat: 'short',
+          dayOfWeek: 'short',
           locale: 'en',
         },
       })
@@ -118,8 +118,8 @@ describe('날짜 유틸리티 함수 테스트', () => {
       formatDate({
         start: new Date('2025-01-15T10:00:00'),
         end: new Date('2025-01-15T12:00:00'),
+        pattern: 'YYYY.MM.DD HH:mm',
         options: {
-          pattern: 'YYYY.MM.DD HH:mm',
           smartRange: true,
         },
       })
@@ -131,8 +131,8 @@ describe('날짜 유틸리티 함수 테스트', () => {
       formatDate({
         start: new Date('2025-01-15T10:00:00'),
         end: new Date('2025-01-16T12:00:00'),
+        pattern: 'YYYY.MM.DD HH:mm',
         options: {
-          pattern: 'YYYY.MM.DD HH:mm',
           smartRange: true,
         },
       })
@@ -143,7 +143,7 @@ describe('날짜 유틸리티 함수 테스트', () => {
     expect(() =>
       formatDate({
         start: 'invalid-date',
-        options: { pattern: 'YYYY-MM-DD' },
+        pattern: 'YYYY-MM-DD',
       })
     ).toThrow('Invalid start date');
 
@@ -151,7 +151,7 @@ describe('날짜 유틸리티 함수 테스트', () => {
       formatDate({
         start: '2025-01-15',
         end: 'invalid-date',
-        options: { pattern: 'YYYY-MM-DD' },
+        pattern: 'YYYY-MM-DD',
       })
     ).toThrow('Invalid end date');
   });
@@ -160,9 +160,9 @@ describe('날짜 유틸리티 함수 테스트', () => {
     expect(
       formatDate({
         start: new Date('2025-01-15T14:30:00'),
+        pattern: 'YYYY.MM.DD (E) HH:mm',
         options: {
-          pattern: 'YYYY.MM.DD (E) HH:mm',
-          dayOfWeekFormat: 'short',
+          dayOfWeek: 'short',
           locale: 'ko',
         },
       })
