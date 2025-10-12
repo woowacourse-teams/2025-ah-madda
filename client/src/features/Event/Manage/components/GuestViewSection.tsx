@@ -2,18 +2,17 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { useQuery } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
 import { myQueryOptions } from '@/api/queries/my';
+import { GuestAnswerAPIResponse } from '@/api/types/my';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
-import { useModal } from '@/shared/hooks/useModal';
 import { theme } from '@/shared/styles/theme';
 
-import { Guest, NonGuest } from '../types';
+import type { Guest, NonGuest } from '../types';
 
-import { GuestAnswerModal } from './GuestAnswerModal';
 import { GuestList } from './GuestList';
 
 type GuestViewSectionProps = {
@@ -28,6 +27,7 @@ type GuestViewSectionProps = {
 type TabButtonProps = {
   isActive: boolean;
 };
+type TabKey = 'guests' | 'nonGuests' | 'answers';
 
 type TabBadgeProps = TabButtonProps;
 
@@ -40,21 +40,14 @@ export const GuestViewSection = ({
   onNonGuestAllChecked,
 }: GuestViewSectionProps) => {
   const { eventId } = useParams();
-  const [selectedGuest, setSelectedGuest] = useState<Guest | null>(null);
-  const [activeTab, setActiveTab] = useState<'guests' | 'nonGuests'>('nonGuests');
-  const { isOpen, open, close } = useModal();
+  const [activeTab, setActiveTab] = useState<TabKey>('answers');
 
-  const { data: guestAnswers } = useQuery({
-    ...myQueryOptions.event.guestAnswers(Number(eventId), selectedGuest?.guestId ?? 0),
-    enabled: !!selectedGuest?.guestId,
+  const answerResults = useQueries({
+    queries: guests.map((guest) => ({
+      ...myQueryOptions.event.guestAnswers(Number(eventId), guest.guestId),
+      enabled: activeTab === 'answers',
+    })),
   });
-
-  const handleGuestClick = (guest: Guest | NonGuest) => {
-    if ('guestId' in guest) {
-      setSelectedGuest(guest);
-      open();
-    }
-  };
 
   return (
     <>
@@ -108,6 +101,16 @@ export const GuestViewSection = ({
               </Text>
             </TabBadge>
           </TabButton>
+
+          <TabButton isActive={activeTab === 'answers'} onClick={() => setActiveTab('answers')}>
+            <Text
+              type="Body"
+              weight="bold"
+              color={activeTab === 'answers' ? theme.colors.gray800 : theme.colors.gray400}
+            >
+              사전 질문
+            </Text>
+          </TabButton>
         </Flex>
 
         {activeTab === 'guests' && (
@@ -117,7 +120,6 @@ export const GuestViewSection = ({
             guests={guests}
             onGuestChecked={onGuestChecked}
             onAllGuestChecked={onAllChecked}
-            onGuestClick={handleGuestClick}
           />
         )}
 
@@ -128,17 +130,64 @@ export const GuestViewSection = ({
             guests={nonGuests}
             onGuestChecked={onNonGuestChecked}
             onAllGuestChecked={onNonGuestAllChecked}
-            onGuestClick={handleGuestClick}
           />
         )}
-      </Flex>
 
-      <GuestAnswerModal
-        isOpen={isOpen}
-        onClose={close}
-        guest={selectedGuest}
-        guestAnswers={guestAnswers}
-      />
+        {activeTab === 'answers' && (
+          <AnswersPanel>
+            {guests.length === 0 && (
+              <EmptyState>
+                <Text type="Body" weight="medium" color={theme.colors.gray500}>
+                  아직 신청한 참여자가 없어요.
+                </Text>
+              </EmptyState>
+            )}
+
+            {guests.map((g, idx) => {
+              const result = answerResults[idx];
+              const isError = !!result?.error;
+              const items = (result?.data as GuestAnswerAPIResponse[] | undefined) ?? [];
+
+              return (
+                <AnswerCard key={g.organizationMemberId}>
+                  <NickNameHeading>
+                    <Text type="Heading" weight="bold" color={theme.colors.gray800}>
+                      {g.nickname}
+                    </Text>
+                  </NickNameHeading>
+
+                  {isError && (
+                    <Text type="Label" weight="medium" color={theme.colors.gray800}>
+                      답변을 불러오지 못했습니다.
+                    </Text>
+                  )}
+
+                  {!isError && items.length === 0 && (
+                    <Text type="Label" weight="medium" color={theme.colors.gray500}>
+                      작성한 답변이 없습니다.
+                    </Text>
+                  )}
+
+                  {!isError && items.length > 0 && (
+                    <QAList>
+                      {items.map((qa, i) => (
+                        <QAItem key={qa.orderIndex ?? i}>
+                          <Text type="Body" weight="bold" color={theme.colors.gray800}>
+                            {qa.questionText}
+                          </Text>
+                          <Text type="Body" weight="medium" color={theme.colors.gray700}>
+                            {qa.answerText}
+                          </Text>
+                        </QAItem>
+                      ))}
+                    </QAList>
+                  )}
+                </AnswerCard>
+              );
+            })}
+          </AnswersPanel>
+        )}
+      </Flex>
     </>
   );
 };
@@ -172,4 +221,36 @@ const TabBadge = styled.div<TabBadgeProps>`
     isActive ? theme.colors.primary600 : theme.colors.gray400};
   min-width: 20px;
   height: 20px;
+`;
+
+const AnswersPanel = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+const AnswerCard = styled.article`
+  border: 1px solid ${theme.colors.gray100};
+  border-radius: 12px;
+  padding: 16px;
+`;
+
+const NickNameHeading = styled.header`
+  margin-bottom: 8px;
+`;
+
+const QAList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const QAItem = styled.div`
+  display: grid;
+  padding: 8px 0;
+`;
+
+const EmptyState = styled.div`
+  padding: 16px 0;
+  text-align: center;
 `;
