@@ -281,9 +281,9 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     e.preventDefault();
 
     if (createEventLocked) return;
+    if (!isBasicFormValid || !isQuestionValid) return;
 
     setCreateEventLocked(true);
-    const unlockTimer = setTimeout(() => setCreateEventLocked(false), 3000);
 
     try {
       if (!isBasicFormValid || !isQuestionValid) return;
@@ -297,8 +297,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
       }
     } catch (err) {
       handleError(err);
-    } finally {
-      clearTimeout(unlockTimer);
+      setCreateEventLocked(false);
     }
   };
 
