@@ -17,5 +17,4 @@ create table email_outbox_recipient
     constraint fk_email_outbox_recipient__email_outbox
         foreign key (email_outbox_id)
             references email_outbox (email_outbox_id)
-            on delete cascade
 );

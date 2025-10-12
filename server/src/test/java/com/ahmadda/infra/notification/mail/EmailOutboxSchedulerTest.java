@@ -22,6 +22,9 @@ class EmailOutboxSchedulerTest {
     @Autowired
     private EmailOutboxRepository emailOutboxRepository;
 
+    @Autowired
+    private EmailOutboxRecipientRepository emailOutboxRecipientRepository;
+
     @MockitoBean
     private EmailOutboxNotifier emailOutboxNotifier;
 
@@ -31,13 +34,17 @@ class EmailOutboxSchedulerTest {
         var outbox = EmailOutbox.create(
                 "테스트 제목",
                 "본문 내용",
-                List.of("a@test.com", "b@test.com"),
                 LocalDateTime.now()
                         .minusMinutes(10),
                 LocalDateTime.now()
                         .minusMinutes(20)
         );
         emailOutboxRepository.save(outbox);
+        var recipients = List.of(
+                EmailOutboxRecipient.create(outbox, "a@test.com"),
+                EmailOutboxRecipient.create(outbox, "b@test.com")
+        );
+        emailOutboxRecipientRepository.saveAll(recipients);
 
         // when
         sut.resendFailedEmails();
@@ -56,7 +63,6 @@ class EmailOutboxSchedulerTest {
         var outbox = EmailOutbox.create(
                 "빈 아웃박스",
                 "내용 없음",
-                List.of(),
                 LocalDateTime.now()
                         .minusMinutes(10),
                 LocalDateTime.now()
@@ -79,22 +85,23 @@ class EmailOutboxSchedulerTest {
         var expired = EmailOutbox.create(
                 "제목1",
                 "본문1",
-                List.of("expired@test.com"),
                 LocalDateTime.now()
                         .minusMinutes(10),
                 LocalDateTime.now()
                         .minusMinutes(20)
         );
+        var expiredRecipient = EmailOutboxRecipient.create(expired, "expired@test.com");
 
         var fresh = EmailOutbox.create(
                 "제목2",
                 "본문2",
-                List.of("fresh@test.com"),
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );
+        var freshRecipient = EmailOutboxRecipient.create(fresh, "fresh@test.com");
 
         emailOutboxRepository.saveAll(List.of(expired, fresh));
+        emailOutboxRecipientRepository.saveAll(List.of(expiredRecipient, freshRecipient));
 
         // when
         sut.resendFailedEmails();
@@ -118,13 +125,14 @@ class EmailOutboxSchedulerTest {
         var outbox = EmailOutbox.create(
                 "락 갱신 테스트",
                 "내용",
-                List.of("lock@test.com"),
                 LocalDateTime.now()
                         .minusMinutes(10),
                 LocalDateTime.now()
                         .minusMinutes(20)
         );
         emailOutboxRepository.save(outbox);
+        var recipient = EmailOutboxRecipient.create(outbox, "lock@test.com");
+        emailOutboxRecipientRepository.save(recipient);
         var before = outbox.getLockedAt();
 
         // when

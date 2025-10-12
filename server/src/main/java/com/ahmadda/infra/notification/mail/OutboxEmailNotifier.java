@@ -18,6 +18,7 @@ public class OutboxEmailNotifier implements EmailNotifier {
     private final TemplateEngine templateEngine;
     private final NotificationProperties notificationProperties;
     private final EmailOutboxRepository emailOutboxRepository;
+    private final EmailOutboxRecipientRepository emailOutboxRecipientRepository;
     private final EmailNotifier delegate;
 
     @Override
@@ -29,8 +30,12 @@ public class OutboxEmailNotifier implements EmailNotifier {
                 .renderBody(templateEngine, notificationProperties.getRedirectUrlPrefix());
         List<String> recipientEmails = reminderEmail.recipientEmails();
 
-        EmailOutbox outbox = EmailOutbox.createNow(subject, body, recipientEmails);
+        EmailOutbox outbox = EmailOutbox.createNow(subject, body);
+        List<EmailOutboxRecipient> recipients = recipientEmails.stream()
+                .map(email -> EmailOutboxRecipient.create(outbox, email))
+                .toList();
         emailOutboxRepository.save(outbox);
+        emailOutboxRecipientRepository.saveAll(recipients);
 
         delegate.remind(reminderEmail);
     }

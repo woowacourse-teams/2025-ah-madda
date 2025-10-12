@@ -11,6 +11,7 @@ import java.util.List;
 public class EmailOutboxScheduler {
 
     private final EmailOutboxRepository emailOutboxRepository;
+    private final EmailOutboxRecipientRepository emailOutboxRecipientRepository;
     private final EmailOutboxNotifier emailOutboxNotifier;
 
     private static final int SOFT_LOCK_TTL_MINUTES = 5;
@@ -23,10 +24,8 @@ public class EmailOutboxScheduler {
         List<EmailOutbox> failedOutboxes = emailOutboxRepository.findAndLockExpiredOutboxes(threshold);
 
         for (EmailOutbox outbox : failedOutboxes) {
-            List<String> recipients = outbox.getRecipients()
-                    .stream()
-                    .map(EmailOutboxRecipient::getRecipientEmail)
-                    .toList();
+            List<EmailOutboxRecipient> recipients =
+                    emailOutboxRecipientRepository.findAllByEmailOutboxId(outbox.getId());
 
             if (recipients.isEmpty()) {
                 emailOutboxRepository.delete(outbox);
@@ -34,7 +33,11 @@ public class EmailOutboxScheduler {
             }
 
             outbox.lock();
-            emailOutboxNotifier.sendFromOutbox(recipients, outbox.getSubject(), outbox.getBody());
+
+            List<String> recipientEmails = recipients.stream()
+                    .map(EmailOutboxRecipient::getRecipientEmail)
+                    .toList();
+            emailOutboxNotifier.sendFromOutbox(recipientEmails, outbox.getSubject(), outbox.getBody());
         }
     }
 }

@@ -37,12 +37,14 @@ public class MailConfig {
             final TemplateEngine templateEngine,
             final NotificationProperties notificationProperties,
             final EmailOutboxRepository emailOutboxRepository,
+            final EmailOutboxRecipientRepository emailOutboxRecipientRepository,
             @Qualifier("failoverEmailNotifier") final EmailNotifier failoverEmailNotifier
     ) {
         return new OutboxEmailNotifier(
                 templateEngine,
                 notificationProperties,
                 emailOutboxRepository,
+                emailOutboxRecipientRepository,
                 failoverEmailNotifier
         );
     }
@@ -88,9 +90,10 @@ public class MailConfig {
     @Bean
     public EmailOutboxScheduler emailOutboxScheduler(
             final EmailOutboxRepository emailOutboxRepository,
+            final EmailOutboxRecipientRepository emailOutboxRecipientRepository,
             final EmailOutboxNotifier emailOutboxNotifier
     ) {
-        return new EmailOutboxScheduler(emailOutboxRepository, emailOutboxNotifier);
+        return new EmailOutboxScheduler(emailOutboxRepository, emailOutboxRecipientRepository, emailOutboxNotifier);
     }
 
     @Bean
@@ -111,8 +114,11 @@ public class MailConfig {
     }
 
     @Bean
-    public EmailOutboxSuccessHandler smtpEmailSuccessHandler(final EmailOutboxRecipientRepository emailOutboxRecipientRepository) {
-        return new EmailOutboxSuccessHandler(emailOutboxRecipientRepository);
+    public EmailOutboxSuccessHandler smtpEmailSuccessHandler(
+            final EmailOutboxRepository emailOutboxRepository,
+            final EmailOutboxRecipientRepository emailOutboxRecipientRepository
+    ) {
+        return new EmailOutboxSuccessHandler(emailOutboxRepository, emailOutboxRecipientRepository);
     }
 
     @Bean
