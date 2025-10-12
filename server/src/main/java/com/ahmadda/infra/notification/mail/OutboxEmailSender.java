@@ -3,6 +3,8 @@ package com.ahmadda.infra.notification.mail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 
@@ -23,6 +25,15 @@ public class OutboxEmailSender implements EmailSender {
         emailOutboxRepository.save(outbox);
         emailOutboxRecipientRepository.saveAll(recipients);
 
-        delegate.sendEmails(recipientEmails, subject, body);
+        registerAfterCommitSend(recipientEmails, subject, body);
+    }
+
+    private void registerAfterCommitSend(final List<String> recipientEmails, final String subject, final String body) {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                delegate.sendEmails(recipientEmails, subject, body);
+            }
+        });
     }
 }
