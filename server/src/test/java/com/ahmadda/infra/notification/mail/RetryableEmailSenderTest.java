@@ -43,7 +43,7 @@ class RetryableEmailSenderTest {
     }
 
     @Test
-    void 첫번째_시도에_실패하더라도_두번째에는_성공한다() {
+    void 첫번째_시도에_실패해도_재시도한다() {
         // given
         var cause = new SocketTimeoutException("timeout");
         var ex = new MailSendException("mail send failed", cause);
