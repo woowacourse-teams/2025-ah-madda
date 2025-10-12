@@ -55,7 +55,7 @@ class OutboxEmailSenderTest {
     }
 
     @Test
-    void 트랜잭션_내에서_Outbox와_수신자가_저장된다() {
+    void 트랜잭션_내에서_Outbox가_저장된다() {
         // given
         var recipients = List.of("a@test.com", "b@test.com");
         var subject = "subject";
