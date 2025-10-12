@@ -4,14 +4,12 @@ import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.domain.notification.ReminderEmail;
 import com.ahmadda.infra.notification.config.NotificationProperties;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 
 import java.util.List;
 
-@Component
 @RequiredArgsConstructor
 public class OutboxEmailNotifier implements EmailNotifier {
 
