@@ -187,7 +187,7 @@ public class OrganizationEventController {
             @RequestParam(defaultValue = DEFAULT_GET_PAST_EVENT_CURSOR) final Long lastEventId
     ) {
         List<Event> organizationEvents =
-                eventService.getPastEvents(organizationId, loginMember, LocalDateTime.now(), lastEventId);
+                eventService.getPastEvents(organizationId, loginMember, LocalDateTime.now(), lastEventId, 10);
 
         List<MainEventResponse> eventResponses = organizationEvents.stream()
                 .map(event -> MainEventResponse.from(event, loginMember))

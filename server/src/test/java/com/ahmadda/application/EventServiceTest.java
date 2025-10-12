@@ -849,7 +849,8 @@ class EventServiceTest {
                 organization.getId(),
                 loginMember,
                 now,
-                Long.MAX_VALUE
+                Long.MAX_VALUE,
+                10
         );
 
         // then
@@ -890,7 +891,8 @@ class EventServiceTest {
                 organization.getId(),
                 loginMember,
                 now,
-                Long.MAX_VALUE
+                Long.MAX_VALUE,
+                10
         );
 
         // then
@@ -935,7 +937,8 @@ class EventServiceTest {
                 organization.getId(),
                 loginMember,
                 now,
-                finalCursorEvent.getId()
+                finalCursorEvent.getId(),
+                10
         );
 
         List<Long> idList = selectedPastEvents.stream()
@@ -971,7 +974,7 @@ class EventServiceTest {
         var loginMember = createLoginMember(member);
 
         //when // then
-        assertThatThrownBy(() -> sut.getPastEvents(organization.getId(), loginMember, LocalDateTime.now(), 0L))
+        assertThatThrownBy(() -> sut.getPastEvents(organization.getId(), loginMember, LocalDateTime.now(), 0L, 10))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage("이벤트 스페이스에 소속되지 않아 권한이 없습니다.");
     }
