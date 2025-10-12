@@ -1,6 +1,7 @@
 package com.ahmadda.infra.notification.mail;
 
 import com.ahmadda.annotation.IntegrationTest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,6 +34,12 @@ class OutboxEmailSenderTest {
     @MockitoBean
     @Qualifier("failoverEmailSender")
     private EmailSender delegate;
+
+    @AfterEach
+    void tearDown() {
+        emailOutboxRecipientRepository.deleteAllInBatch();
+        emailOutboxRepository.deleteAllInBatch();
+    }
 
     @Test
     void 트랜잭션이_없으면_MANDATORY_예외가_발생한다() {
