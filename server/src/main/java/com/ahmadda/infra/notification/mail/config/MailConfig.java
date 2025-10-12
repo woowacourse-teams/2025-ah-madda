@@ -3,13 +3,20 @@ package com.ahmadda.infra.notification.mail.config;
 import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.infra.notification.config.NotificationProperties;
 import com.ahmadda.infra.notification.mail.BccChunkingEmailNotifier;
+import com.ahmadda.infra.notification.mail.EmailOutboxNotifier;
+import com.ahmadda.infra.notification.mail.EmailOutboxRecipientRepository;
+import com.ahmadda.infra.notification.mail.EmailOutboxRepository;
+import com.ahmadda.infra.notification.mail.EmailOutboxScheduler;
+import com.ahmadda.infra.notification.mail.EmailOutboxSuccessHandler;
 import com.ahmadda.infra.notification.mail.FailoverEmailNotifier;
 import com.ahmadda.infra.notification.mail.GmailQuotaCircuitBreakerHandler;
 import com.ahmadda.infra.notification.mail.NoopEmailNotifier;
+import com.ahmadda.infra.notification.mail.OutboxEmailNotifier;
 import com.ahmadda.infra.notification.mail.RetryableEmailNotifier;
 import com.ahmadda.infra.notification.mail.SmtpEmailNotifier;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.retry.RetryRegistry;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -24,11 +31,31 @@ import org.thymeleaf.TemplateEngine;
 public class MailConfig {
 
     @Bean
+    @Primary
+    @ConditionalOnProperty(name = "mail.noop", havingValue = "false", matchIfMissing = true)
+    public EmailNotifier outboxEmailNotifier(
+            final TemplateEngine templateEngine,
+            final NotificationProperties notificationProperties,
+            final EmailOutboxRepository emailOutboxRepository,
+            final EmailOutboxRecipientRepository emailOutboxRecipientRepository,
+            @Qualifier("failoverEmailNotifier") final EmailNotifier failoverEmailNotifier
+    ) {
+        return new OutboxEmailNotifier(
+                templateEngine,
+                notificationProperties,
+                emailOutboxRepository,
+                emailOutboxRecipientRepository,
+                failoverEmailNotifier
+        );
+    }
+
+    @Bean
     public EmailNotifier failoverEmailNotifier(
             final SmtpProperties smtpProperties,
             final TemplateEngine templateEngine,
             final NotificationProperties notificationProperties,
-            final RetryRegistry retryRegistry
+            final RetryRegistry retryRegistry,
+            final EmailOutboxSuccessHandler emailOutboxSuccessHandler
     ) {
         EmailNotifier googleEmailNotifier = createEmailNotifier(
                 smtpProperties.getGoogle(),
@@ -37,7 +64,8 @@ public class MailConfig {
                 notificationProperties,
                 retryRegistry,
                 "googleEmail",
-                2
+                2,
+                emailOutboxSuccessHandler
         );
 
         EmailNotifier awsEmailNotifier = createEmailNotifier(
@@ -47,7 +75,8 @@ public class MailConfig {
                 notificationProperties,
                 retryRegistry,
                 "awsEmail",
-                3
+                3,
+                emailOutboxSuccessHandler
         );
 
         return new FailoverEmailNotifier(googleEmailNotifier, awsEmailNotifier);
@@ -56,6 +85,40 @@ public class MailConfig {
     @Bean
     public GmailQuotaCircuitBreakerHandler gmailQuotaCircuitBreakerHandler(final CircuitBreakerRegistry circuitBreakerRegistry) {
         return new GmailQuotaCircuitBreakerHandler(circuitBreakerRegistry);
+    }
+
+    @Bean
+    public EmailOutboxScheduler emailOutboxScheduler(
+            final EmailOutboxRepository emailOutboxRepository,
+            final EmailOutboxRecipientRepository emailOutboxRecipientRepository,
+            final EmailOutboxNotifier emailOutboxNotifier
+    ) {
+        return new EmailOutboxScheduler(emailOutboxRepository, emailOutboxRecipientRepository, emailOutboxNotifier);
+    }
+
+    @Bean
+    public EmailOutboxNotifier awsOutboxNotifier(
+            final SmtpProperties smtpProperties,
+            final TemplateEngine templateEngine,
+            final NotificationProperties notificationProperties,
+            final EmailOutboxSuccessHandler emailOutboxSuccessHandler
+    ) {
+        SmtpEmailNotifier awsSmtpNotifier = new SmtpEmailNotifier(
+                createJavaMailSender(smtpProperties.getAws()),
+                templateEngine,
+                notificationProperties,
+                emailOutboxSuccessHandler
+        );
+
+        return new BccChunkingEmailNotifier(awsSmtpNotifier, 50);
+    }
+
+    @Bean
+    public EmailOutboxSuccessHandler smtpEmailSuccessHandler(
+            final EmailOutboxRepository emailOutboxRepository,
+            final EmailOutboxRecipientRepository emailOutboxRecipientRepository
+    ) {
+        return new EmailOutboxSuccessHandler(emailOutboxRepository, emailOutboxRecipientRepository);
     }
 
     @Bean
@@ -72,10 +135,12 @@ public class MailConfig {
             final NotificationProperties notificationProperties,
             final RetryRegistry retryRegistry,
             final String retryName,
-            final int maxAttempts
+            final int maxAttempts,
+            final EmailOutboxSuccessHandler emailOutboxSuccessHandler
     ) {
         JavaMailSender sender = createJavaMailSender(account);
-        SmtpEmailNotifier smtp = new SmtpEmailNotifier(sender, templateEngine, notificationProperties);
+        SmtpEmailNotifier smtp =
+                new SmtpEmailNotifier(sender, templateEngine, notificationProperties, emailOutboxSuccessHandler);
         RetryableEmailNotifier retryable =
                 new RetryableEmailNotifier(retryRegistry, retryName, smtp, maxAttempts, 1000);
         return new BccChunkingEmailNotifier(retryable, maxBcc);
