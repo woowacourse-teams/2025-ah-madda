@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -903,7 +904,7 @@ class EventServiceTest {
     }
 
     @Test
-    void 특정_이벤트_스페이스의_기준_이벤트보다_이전에_생성된_이벤트들을_조회한다() {
+    void 과거_이벤트_조회에서_같은_날짜인_경우_더_작은_id를_가진_이벤트들을_조회한다() {
         // given
         var member = createMember();
         var organization = createOrganization("우테코");
@@ -947,10 +948,17 @@ class EventServiceTest {
 
         // then
         assertSoftly(softly -> {
-            idList.forEach(id ->
-                    softly.assertThat(id)
-                            .isLessThan(finalCursorEvent.getId())
-            );
+            selectedPastEvents.forEach(e -> {
+                var end = e.getEventEnd()
+                        .truncatedTo(ChronoUnit.MILLIS);
+                var cursorEnd = finalCursorEvent.getEventEnd()
+                        .truncatedTo(ChronoUnit.MILLIS);
+                var cursorId = finalCursorEvent.getId();
+
+                softly.assertThat(end.isBefore(cursorEnd) ||
+                                (end.equals(cursorEnd) && e.getId() < cursorId))
+                        .isTrue();
+            });
         });
     }
 
