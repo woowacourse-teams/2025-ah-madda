@@ -42,7 +42,7 @@ class OutboxEmailSenderTest {
     }
 
     @Test
-    void 트랜잭션이_없으면_MANDATORY_예외가_발생한다() {
+    void 트랜잭션이_없으면_예외가_발생한다() {
         // given
         if (TestTransaction.isActive()) {
             TestTransaction.end();
@@ -62,7 +62,7 @@ class OutboxEmailSenderTest {
     }
 
     @Test
-    void 트랜잭션_내에서_Outbox가_저장된다() {
+    void 트랜잭션_내에서_아웃박스가_저장된다() {
         // given
         var recipients = List.of("a@test.com", "b@test.com");
         var subject = "subject";
@@ -93,7 +93,7 @@ class OutboxEmailSenderTest {
     }
 
     @Test
-    void 커밋_후에만_delegate_전송이_실행된다() {
+    void 커밋_후에만_실제_전송이_실행된다() {
         // given
         var recipients = List.of("c@test.com", "d@test.com");
         var subject = "title";
