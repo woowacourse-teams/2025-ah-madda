@@ -2,19 +2,15 @@ package com.ahmadda.infra.notification.mail.config;
 
 import com.ahmadda.infra.notification.config.NotificationProperties;
 import com.ahmadda.infra.notification.mail.BccChunkingEmailSender;
-import com.ahmadda.infra.notification.mail.EmailOutboxRepository;
-import com.ahmadda.infra.notification.mail.EmailOutboxSuccessHandler;
 import com.ahmadda.infra.notification.mail.EmailOutboxRecipientRepository;
 import com.ahmadda.infra.notification.mail.EmailOutboxRepository;
-import com.ahmadda.infra.notification.mail.EmailOutboxScheduler;
 import com.ahmadda.infra.notification.mail.EmailOutboxSuccessHandler;
-import com.ahmadda.infra.notification.mail.FailoverEmailNotifier;
-import com.ahmadda.infra.notification.mail.GmailQuotaCircuitBreakerHandler;
-import com.ahmadda.infra.notification.mail.NoopEmailNotifier;
-import com.ahmadda.infra.notification.mail.OutboxEmailNotifier;
-import com.ahmadda.infra.notification.mail.RetryableEmailNotifier;
-import com.ahmadda.infra.notification.mail.SmtpEmailNotifier;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import com.ahmadda.infra.notification.mail.EmailSender;
+import com.ahmadda.infra.notification.mail.FailoverEmailSender;
+import com.ahmadda.infra.notification.mail.NoopEmailSender;
+import com.ahmadda.infra.notification.mail.OutboxEmailSender;
+import com.ahmadda.infra.notification.mail.RetryableEmailSender;
+import com.ahmadda.infra.notification.mail.SmtpEmailSender;
 import io.github.resilience4j.retry.RetryRegistry;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -33,23 +29,9 @@ public class MailConfig {
     public EmailSender outboxEmailSender(
             final EmailOutboxRepository emailOutboxRepository,
             final EmailOutboxRecipientRepository emailOutboxRecipientRepository,
-            @Qualifier("failoverEmailNotifier") final EmailNotifier failoverEmailNotifier
-    ) {
-        return new OutboxEmailNotifier(
-                templateEngine,
-                notificationProperties,
-                emailOutboxRepository,
-                emailOutboxRecipientRepository,
-                failoverEmailNotifier
-        );
-    }
-
-    @Bean
-            final EmailOutboxRepository emailOutboxRepository,
-            @Qualifier("failoverEmailNotifier") final EmailNotifier failoverEmailNotifier
             @Qualifier("failoverEmailSender") final EmailSender failoverEmailSender
     ) {
-        return new OutboxEmailSender(emailOutboxRepository, failoverEmailSender);
+        return new OutboxEmailSender(emailOutboxRepository, emailOutboxRecipientRepository, failoverEmailSender);
     }
 
     @Bean
@@ -70,24 +52,6 @@ public class MailConfig {
     }
 
     @Bean
-    public GmailQuotaCircuitBreakerHandler gmailQuotaCircuitBreakerHandler(final CircuitBreakerRegistry circuitBreakerRegistry) {
-        return new GmailQuotaCircuitBreakerHandler(circuitBreakerRegistry);
-    }
-
-    @Bean
-    public EmailOutboxScheduler emailOutboxScheduler(
-            final EmailOutboxRepository emailOutboxRepository,
-            final EmailOutboxRecipientRepository emailOutboxRecipientRepository,
-            final EmailOutboxNotifier emailOutboxNotifier
-    ) {
-        return new EmailOutboxScheduler(emailOutboxRepository, emailOutboxRecipientRepository, emailOutboxNotifier);
-            final EmailOutboxNotifier emailOutboxNotifier
-    ) {
-        return new EmailOutboxScheduler(emailOutboxRepository, emailOutboxNotifier);
-    }
-
-    @Bean
-    public EmailOutboxNotifier awsOutboxNotifier(
     public EmailSender googleSmtpEmailSender(
             final SmtpProperties smtpProperties,
             final EmailOutboxSuccessHandler emailOutboxSuccessHandler
@@ -97,13 +61,6 @@ public class MailConfig {
     }
 
     @Bean
-    public EmailOutboxSuccessHandler smtpEmailSuccessHandler(
-            final EmailOutboxRepository emailOutboxRepository,
-            final EmailOutboxRecipientRepository emailOutboxRecipientRepository
-    ) {
-        return new EmailOutboxSuccessHandler(emailOutboxRepository, emailOutboxRecipientRepository);
-    public EmailOutboxSuccessHandler smtpEmailSuccessHandler(final EmailOutboxRecipientRepository emailOutboxRecipientRepository) {
-        return new EmailOutboxSuccessHandler(emailOutboxRecipientRepository);
     public EmailSender awsSmtpEmailSender(
             final SmtpProperties smtpProperties,
             final EmailOutboxSuccessHandler emailOutboxSuccessHandler

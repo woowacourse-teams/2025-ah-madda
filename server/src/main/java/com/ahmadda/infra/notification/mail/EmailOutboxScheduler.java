@@ -14,16 +14,17 @@ public class EmailOutboxScheduler {
     private final EmailSender emailSender;
     private final EmailOutboxRepository emailOutboxRepository;
     private final EmailOutboxRecipientRepository emailOutboxRecipientRepository;
-    private final EmailOutboxNotifier emailOutboxNotifier;
 
     private static final int SOFT_LOCK_TTL_MINUTES = 5;
 
     public EmailOutboxScheduler(
             @Qualifier("failoverEmailSender") final EmailSender emailSender,
-            final EmailOutboxRepository emailOutboxRepository
+            final EmailOutboxRepository emailOutboxRepository,
+            final EmailOutboxRecipientRepository emailOutboxRecipientRepository
     ) {
         this.emailSender = emailSender;
         this.emailOutboxRepository = emailOutboxRepository;
+        this.emailOutboxRecipientRepository = emailOutboxRecipientRepository;
     }
 
     @Transactional
@@ -47,7 +48,7 @@ public class EmailOutboxScheduler {
             List<String> recipientEmails = recipients.stream()
                     .map(EmailOutboxRecipient::getRecipientEmail)
                     .toList();
-            emailOutboxNotifier.sendFromOutbox(recipientEmails, outbox.getSubject(), outbox.getBody());
+            emailSender.sendEmails(recipientEmails, outbox.getSubject(), outbox.getBody());
         }
     }
 }
