@@ -25,10 +25,10 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             from Event e
             where e.organization = :organization
               and (
-                    e.eventOperationPeriod.eventPeriod.end < :lastend
+                    e.eventOperationPeriod.eventPeriod.end < :lastEnd
                     or (
-                        e.eventOperationPeriod.eventPeriod.end = :lastend
-                        and e.id < :lastid
+                        e.eventOperationPeriod.eventPeriod.end = :lastEnd
+                        and e.id < :lastId
                     )
                   )
             order by e.eventOperationPeriod.eventPeriod.end desc, e.id desc
