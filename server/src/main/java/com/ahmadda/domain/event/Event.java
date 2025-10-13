@@ -478,4 +478,8 @@ public class Event extends BaseEntity {
         return eventOperationPeriod.getEventPeriod()
                 .end();
     }
+
+    public boolean isBeforeEventEnd(final LocalDateTime currentDateTime) {
+        return eventOperationPeriod.isBeforeEventEnd(currentDateTime);
+    }
 }

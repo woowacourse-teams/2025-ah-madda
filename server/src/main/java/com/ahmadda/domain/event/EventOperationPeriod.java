@@ -110,4 +110,8 @@ public class EventOperationPeriod {
 
         return cancelParticipationTime.isAfter(cancelAvailableTime);
     }
+
+    public boolean isBeforeEventEnd(final LocalDateTime currentDateTime) {
+        return eventPeriod.isBeforeEnd(currentDateTime);
+    }
 }
