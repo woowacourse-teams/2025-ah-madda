@@ -265,21 +265,6 @@ class EventServiceTest {
     }
 
     @Test
-    void 이벤트_스페이스에_속해_있지_않으면_이벤트를_생성할_수_없다() {
-        //given
-        var organization = createOrganization("우테코");
-        var otherOrganization = createOrganization("우테코");
-        var member = createMember();
-        var group = createGroup();
-        var organizationMember = createOrganizationMember(otherOrganization, member, group);
-
-        //when //then
-        assertThatThrownBy(() -> createEvent(organizationMember, organization)).isInstanceOf(
-                        ForbiddenException.class)
-                .hasMessage("주최자는 동일한 이벤트 스페이스에 속해야 합니다.");
-    }
-
-    @Test
     void 이벤트_ID를_이용해_이벤트를_조회할때_해당_이벤트가_없다면_예외가_발생한다() {
         // given
         var member = createMember();

@@ -368,6 +368,7 @@ class OrganizationMemberServiceTest {
                 .hasMessage("존재하지 않는 그룹입니다.");
     }
 
+    @Test
     void 조직_가입_여부를_확인한다() {
         // given
         var enrolledOrg = createOrganization("우테코_가입됨");

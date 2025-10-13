@@ -284,19 +284,6 @@ class LoginServiceTest {
         return member;
     }
 
-    private String createExpiredRefreshToken(Long memberId) {
-        var now = Instant.now();
-
-        var claims = JwtMemberPayload.toClaims(memberId);
-
-        return Jwts.builder()
-                .claims(claims)
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(now.minus(Duration.ofDays(1))))
-                .signWith(refreshTokenProperties.getRefreshSecretKey())
-                .compact();
-    }
-
     private String createValidRefreshToken(Long memberId) {
         var now = Instant.now();
         var claims = JwtMemberPayload.toClaims(memberId);
