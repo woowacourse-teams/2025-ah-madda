@@ -452,9 +452,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                     ? formatDate({
                         start: basicEventForm.eventStart,
                         end: basicEventForm.eventEnd,
-                        options: {
-                          pattern: 'YYYY.MM.DD HH:mm',
-                        },
+                        pattern: 'YYYY.MM.DD HH:mm',
                       })
                     : ''
                 }
@@ -511,9 +509,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                   basicEventForm.registrationEnd
                     ? formatDate({
                         start: basicEventForm.registrationEnd,
-                        options: {
-                          pattern: 'YYYY.MM.DD HH:mm',
-                        },
+                        pattern: 'YYYY.MM.DD HH:mm',
                       })
                     : ''
                 }

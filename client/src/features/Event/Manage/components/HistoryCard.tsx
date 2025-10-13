@@ -24,7 +24,8 @@ export const HistoryCard = ({ recipientCount, content, sentAt }: NotifyHistoryAP
       <Text type="Label" color={theme.colors.gray500}>
         {formatDate({
           start: sentAt,
-          options: { pattern: 'YYYY년 MM월 DD일 E A HH:mm', dayOfWeekFormat: 'long' },
+          pattern: 'YYYY년 MM월 DD일 E A HH:mm',
+          options: { dayOfWeek: 'long' },
         })}
       </Text>
     </StyledHistoryCard>
