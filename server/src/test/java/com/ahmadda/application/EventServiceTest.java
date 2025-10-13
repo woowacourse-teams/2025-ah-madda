@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -848,7 +849,9 @@ class EventServiceTest {
         var pastEvents = sut.getPastEvents(
                 organization.getId(),
                 loginMember,
-                now
+                now,
+                Long.MAX_VALUE,
+                10
         );
 
         // then
@@ -858,6 +861,104 @@ class EventServiceTest {
             softly.assertThat(pastEvents.get(0)
                             .getId())
                     .isEqualTo(pastEvent.getId());
+        });
+    }
+
+    @Test
+    void 특정_이벤트_스페이스의_과거_이벤트를_특정_개수만큼_가져온다() {
+        // given
+        var member = createMember();
+        var organization = createOrganization("우테코");
+        var organization2 = createOrganization("아맞다");
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, member, group);
+        var organizationMember2 = createOrganizationMember(organization2, member, group);
+        var loginMember = createLoginMember(member);
+
+        var now = LocalDateTime.now();
+
+        for (int i = 0; i < 20; i++) {
+            var pastEvent = createEventWithDates(
+                    organizationMember,
+                    organization,
+                    now.minusDays(4),
+                    now.minusDays(2),
+                    now.minusDays(1),
+                    now.minusDays(4)
+            );
+        }
+        // when
+        var pastEvents = sut.getPastEvents(
+                organization.getId(),
+                loginMember,
+                now,
+                Long.MAX_VALUE,
+                10
+        );
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(pastEvents)
+                    .hasSize(10);
+        });
+    }
+
+    @Test
+    void 과거_이벤트_조회에서_같은_날짜인_경우_더_작은_id를_가진_이벤트들을_조회한다() {
+        // given
+        var member = createMember();
+        var organization = createOrganization("우테코");
+        var organization2 = createOrganization("아맞다");
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, member, group);
+        var loginMember = createLoginMember(member);
+
+        var now = LocalDateTime.now();
+
+        List<Event> pastEvents = new ArrayList<>();
+
+        Event cursorEvent = null;
+        for (int i = 0; i < 20; i++) {
+            pastEvents.add(createEventWithDates(
+                    organizationMember,
+                    organization,
+                    now.minusDays(4),
+                    now.minusDays(2),
+                    now.minusDays(1),
+                    now.minusDays(4)
+            ));
+            if (i == 10) {
+                cursorEvent = pastEvents.get(i);
+            }
+        }
+        final Event finalCursorEvent = cursorEvent;
+
+        // when
+        var selectedPastEvents = sut.getPastEvents(
+                organization.getId(),
+                loginMember,
+                now,
+                finalCursorEvent.getId(),
+                10
+        );
+
+        List<Long> idList = selectedPastEvents.stream()
+                .map(Event::getId)
+                .toList();
+
+        // then
+        assertSoftly(softly -> {
+            selectedPastEvents.forEach(e -> {
+                var end = e.getEventEnd()
+                        .truncatedTo(ChronoUnit.MILLIS);
+                var cursorEnd = finalCursorEvent.getEventEnd()
+                        .truncatedTo(ChronoUnit.MILLIS);
+                var cursorId = finalCursorEvent.getId();
+
+                softly.assertThat(end.isBefore(cursorEnd) ||
+                                (end.equals(cursorEnd) && e.getId() < cursorId))
+                        .isTrue();
+            });
         });
     }
 
@@ -881,7 +982,7 @@ class EventServiceTest {
         var loginMember = createLoginMember(member);
 
         //when // then
-        assertThatThrownBy(() -> sut.getPastEvents(organization.getId(), loginMember, LocalDateTime.now()))
+        assertThatThrownBy(() -> sut.getPastEvents(organization.getId(), loginMember, LocalDateTime.now(), 0L, 10))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage("이벤트 스페이스에 소속되지 않아 권한이 없습니다.");
     }
@@ -925,10 +1026,34 @@ class EventServiceTest {
                 ));
 
         var now = LocalDateTime.now();
-        eventRepository.save(createEvent(orgMemberA, orgA, "EventA1", now.plusDays(1), now.plusDays(2)));
-        eventRepository.save(createEvent(orgMemberA, orgA, "EventA2", now.plusDays(2), now.plusDays(3)));
-        eventRepository.save(createEvent(orgMemberA, orgA, "EventA3", now.minusDays(2), now.minusDays(1))); // inactive
-        eventRepository.save(createEvent(orgMemberB, orgB, "EventB1", now.plusDays(1), now.plusDays(2)));
+        eventRepository.save(createEvent(
+                orgMemberA,
+                orgA,
+                "registrationNotEndEvent",
+                now.plusDays(1),
+                now.plusDays(2)
+        )); //마감전 이벤트
+        eventRepository.save(createEvent(
+                orgMemberA,
+                orgA,
+                "registrationNotEndEvent",
+                now.plusDays(2),
+                now.plusDays(3)
+        )); //마감전 이벤트
+        eventRepository.save(createEvent(
+                orgMemberA,
+                orgA,
+                "endedEvent",
+                now.minusDays(2),
+                now.minusDays(1)
+        )); //inactive
+        eventRepository.save(createEvent(
+                orgMemberB,
+                orgB,
+                "currentProceedEvent",
+                now.minusDays(1L),
+                now
+        )); //다른 이벤트 스페이스의 진행중인 이벤트
 
         // when
         var events = sut.getActiveEvents(orgA.getId(), loginMember);
@@ -936,7 +1061,7 @@ class EventServiceTest {
         // then
         assertThat(events).hasSize(2)
                 .extracting(Event::getTitle)
-                .containsExactlyInAnyOrder("EventA1", "EventA2");
+                .containsExactlyInAnyOrder("registrationNotEndEvent", "registrationNotEndEvent");
     }
 
     @Test
