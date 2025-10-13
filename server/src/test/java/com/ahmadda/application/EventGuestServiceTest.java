@@ -228,6 +228,112 @@ class EventGuestServiceTest {
     }
 
     @Test
+    void 그룹_내_비게스트_구성원들을_조회한다() {
+        // given
+        var organization = createAndSaveOrganization();
+        var group1 = organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
+        var group2 = organizationGroupRepository.save(OrganizationGroup.create("프론트엔드"));
+        var organizer = createAndSaveOrganizationMember(
+                "주최자",
+                createAndSaveMember("홍길동", "host@email.com"), organization, group1
+        );
+        var event = createAndSaveEvent(organizer, organization);
+
+        var guestInGroup1 = createAndSaveOrganizationMember(
+                "게스트1",
+                createAndSaveMember("게스트1", "g1@email.com"), organization, group1
+        );
+        var nonGuest1 = createAndSaveOrganizationMember(
+                "비게스트1",
+                createAndSaveMember("비게스트1", "ng1@email.com"), organization, group1
+        );
+        var nonGuest2 = createAndSaveOrganizationMember(
+                "비게스트2",
+                createAndSaveMember("비게스트2", "ng2@email.com"), organization, group1
+        );
+        var otherGroupMember = createAndSaveOrganizationMember(
+                "프론트",
+                createAndSaveMember("프론트", "fe@email.com"), organization, group2
+        );
+        createAndSaveGuest(event, guestInGroup1);
+
+        // when
+        var result =
+                sut.getGroupNonGuestOrganizationMembers(event.getId(), group1.getId(), createLoginMember(organizer));
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(result)
+                    .hasSize(2);
+            softly.assertThat(result)
+                    .containsExactlyInAnyOrder(nonGuest1, nonGuest2);
+            softly.assertThat(result)
+                    .doesNotContain(guestInGroup1, otherGroupMember);
+        });
+    }
+
+    @Test
+    void 존재하지_않는_이벤트로_비게스트를_조회하면_예외가_발생한다() {
+        // given
+        var organization = createAndSaveOrganization();
+        var group = createGroup();
+        var organizationMember = createAndSaveOrganizationMember(
+                "주최자",
+                createAndSaveMember("홍길동", "host@email.com"), organization, group
+        );
+
+        // when // then
+        assertThatThrownBy(() ->
+                sut.getGroupNonGuestOrganizationMembers(999L, group.getId(), createLoginMember(organizationMember))
+        )
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 이벤트입니다.");
+    }
+
+    @Test
+    void 이벤트_스페이스의_구성원이_아닐때_그룹_비게스트_조회시_예외가_발생한다() {
+        // given
+        var organization1 = createAndSaveOrganization();
+        var organization2 = createAndSaveOrganization();
+        var group = createGroup();
+        var organizer = createAndSaveOrganizationMember(
+                "주최자",
+                createAndSaveMember("홍길동", "host@email.com"), organization1, group
+        );
+        var outsider = createAndSaveOrganizationMember(
+                "다른사람",
+                createAndSaveMember("외부", "other@email.com"), organization2, group
+        );
+        var event = createAndSaveEvent(organizer, organization1);
+
+        // when // then
+        assertThatThrownBy(() ->
+                sut.getGroupNonGuestOrganizationMembers(event.getId(), group.getId(), createLoginMember(outsider))
+        )
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage("이벤트 스페이스의 구성원만 접근할 수 있습니다.");
+    }
+
+    @Test
+    void 존재하지_않는_그룹으로_비게스트를_조회하면_예외가_발생한다() {
+        // given
+        var organization = createAndSaveOrganization();
+        var group = createGroup();
+        var organizer = createAndSaveOrganizationMember(
+                "주최자",
+                createAndSaveMember("홍길동", "host@email.com"), organization, group
+        );
+        var event = createAndSaveEvent(organizer, organization);
+
+        // when // then
+        assertThatThrownBy(() ->
+                sut.getGroupNonGuestOrganizationMembers(event.getId(), 999L, createLoginMember(organizer))
+        )
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 그룹입니다.");
+    }
+
+    @Test
     void 구성원은_이벤트의_게스트로_참여할_수_있다() {
         // given
         var organization = createAndSaveOrganization();

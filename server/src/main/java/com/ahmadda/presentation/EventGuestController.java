@@ -195,6 +195,96 @@ public class EventGuestController {
         return ResponseEntity.ok(responses);
     }
 
+    @Operation(summary = "그룹 내 비게스트 목록 및 알림 수신 거부 여부 조회", description = "이벤트 내 특정 그룹에 속하면서 아직 초대받지 않은(비게스트) 구성원 목록과, 각 구성원의 알림 수신 거부 여부를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            array = @ArraySchema(schema = @Schema(implementation = OrganizationMemberWithOptOutResponse.class))
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보입니다.",
+                                              "instance": "/api/events/{eventId}/groups/{groupId}/non-guests"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Forbidden",
+                                              "status": 403,
+                                              "detail": "이벤트 스페이스의 구성원만 접근할 수 있습니다.",
+                                              "instance": "/api/events/{eventId}/groups/{groupId}/non-guests"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "이벤트 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 이벤트입니다.",
+                                                      "instance": "/api/events/{eventId}/groups/{groupId}/non-guests"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "그룹 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 그룹입니다.",
+                                                      "instance": "/api/events/{eventId}/groups/{groupId}/non-guests"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            )
+    })
+    @GetMapping("/{eventId}/groups/{groupId}/non-guests")
+    public ResponseEntity<List<OrganizationMemberWithOptOutResponse>> getGroupNonGuests(
+            @PathVariable final Long eventId,
+            @PathVariable final Long groupId,
+            @AuthMember final LoginMember loginMember
+    ) {
+        List<OrganizationMember> nonGuestMembers =
+                eventGuestService.getGroupNonGuestOrganizationMembers(eventId, groupId, loginMember);
+        List<OrganizationMemberWithOptStatus> nonGuestsWithOptOuts =
+                eventNotificationOptOutService.mapOrganizationMembers(eventId, nonGuestMembers);
+
+        List<OrganizationMemberWithOptOutResponse> responses = nonGuestsWithOptOuts.stream()
+                .map(OrganizationMemberWithOptOutResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(responses);
+    }
+
     @Operation(summary = "이벤트 참여", description = "이벤트 ID에 해당하는 이벤트에 참여합니다.")
     @ApiResponses(value = {
             @ApiResponse(
