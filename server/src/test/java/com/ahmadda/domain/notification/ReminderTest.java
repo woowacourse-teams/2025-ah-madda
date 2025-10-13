@@ -79,7 +79,8 @@ class ReminderTest {
                         now.plusDays(4), now.plusDays(5),
                         now
                 ),
-                10
+                10,
+                false
         ));
 
         var m1 = memberRepository.save(Member.create("게스트1", "g1@example.com", "pic"));
@@ -136,7 +137,8 @@ class ReminderTest {
                         now.plusDays(4), now.plusDays(5),
                         now
                 ),
-                10
+                10,
+                false
         ));
 
         var m1 = memberRepository.save(Member.create("게스트1", "g1@example.com", "pic"));

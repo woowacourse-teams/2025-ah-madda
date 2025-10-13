@@ -127,7 +127,8 @@ class EventCreatedListenerTest {
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
-                10
+                10,
+                false
         );
 
         return eventRepository.save(event);

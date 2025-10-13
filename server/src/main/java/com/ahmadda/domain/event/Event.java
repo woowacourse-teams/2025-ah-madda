@@ -81,6 +81,9 @@ public class Event extends BaseEntity {
     @Column(nullable = false)
     private int maxCapacity;
 
+    @Column(nullable = false)
+    private boolean isApprovalRequired;
+
     private Event(
             final String title,
             final String description,
@@ -89,7 +92,8 @@ public class Event extends BaseEntity {
             final EventOperationPeriod eventOperationPeriod,
             final int maxCapacity,
             final List<OrganizationMember> eventOrganizers,
-            final List<Question> questions
+            final List<Question> questions,
+            final boolean isApprovalRequired
     ) {
         validateMaxCapacity(maxCapacity);
         validateEventOrganizersMaxCapacity(eventOrganizers);
@@ -100,6 +104,7 @@ public class Event extends BaseEntity {
         this.organization = organization;
         this.eventOperationPeriod = eventOperationPeriod;
         this.maxCapacity = maxCapacity;
+        this.isApprovalRequired = isApprovalRequired;
 
         organization.addEvent(this);
         this.questions.addAll(questions);
@@ -114,6 +119,7 @@ public class Event extends BaseEntity {
             final EventOperationPeriod eventOperationPeriod,
             final List<OrganizationMember> eventOrganizers,
             final int maxCapacity,
+            final boolean isApprovalRequired,
             final Question... questions
     ) {
         return new Event(
@@ -124,7 +130,8 @@ public class Event extends BaseEntity {
                 eventOperationPeriod,
                 maxCapacity,
                 eventOrganizers,
-                new ArrayList<>(List.of(questions))
+                new ArrayList<>(List.of(questions)),
+                isApprovalRequired
         );
     }
 
@@ -135,6 +142,7 @@ public class Event extends BaseEntity {
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
             final int maxCapacity,
+            final boolean isApprovalRequired,
             final Question... questions
     ) {
         return new Event(
@@ -145,7 +153,8 @@ public class Event extends BaseEntity {
                 eventOperationPeriod,
                 maxCapacity,
                 List.of(),
-                new ArrayList<>(List.of(questions))
+                new ArrayList<>(List.of(questions)),
+                isApprovalRequired
         );
     }
 
@@ -157,7 +166,8 @@ public class Event extends BaseEntity {
             final EventOperationPeriod eventOperationPeriod,
             final int maxCapacity,
             final List<OrganizationMember> eventOrganizers,
-            final List<Question> questions
+            final List<Question> questions,
+            final boolean isApprovalRequired
     ) {
         return new Event(
                 title,
@@ -167,7 +177,8 @@ public class Event extends BaseEntity {
                 eventOperationPeriod,
                 maxCapacity,
                 eventOrganizers,
-                questions
+                questions,
+                isApprovalRequired
         );
     }
 
@@ -178,7 +189,8 @@ public class Event extends BaseEntity {
             final Organization organization,
             final EventOperationPeriod eventOperationPeriod,
             final int maxCapacity,
-            final List<Question> questions
+            final List<Question> questions,
+            final boolean isApprovalRequired
     ) {
         return new Event(
                 title,
@@ -188,28 +200,8 @@ public class Event extends BaseEntity {
                 eventOperationPeriod,
                 maxCapacity,
                 List.of(),
-                questions
-        );
-    }
-
-    public static Event create(
-            String title,
-            String description,
-            String place,
-            OrganizationMember organizer,
-            Organization organization,
-            EventOperationPeriod eventOperationPeriod,
-            int maxCapacity
-    ) {
-        return new Event(
-                title,
-                description,
-                place,
-                organization,
-                eventOperationPeriod,
-                maxCapacity,
-                List.of(organizer),
-                List.of()
+                questions,
+                isApprovalRequired
         );
     }
 
@@ -221,7 +213,7 @@ public class Event extends BaseEntity {
             Organization organization,
             EventOperationPeriod eventOperationPeriod,
             int maxCapacity,
-            List<Question> questions
+            boolean isApprovalRequired
     ) {
         return new Event(
                 title,
@@ -231,7 +223,8 @@ public class Event extends BaseEntity {
                 eventOperationPeriod,
                 maxCapacity,
                 List.of(organizer),
-                questions
+                List.of(),
+                isApprovalRequired
         );
     }
 
@@ -243,6 +236,31 @@ public class Event extends BaseEntity {
             Organization organization,
             EventOperationPeriod eventOperationPeriod,
             int maxCapacity,
+            List<Question> questions,
+            boolean isApprovalRequired
+    ) {
+        return new Event(
+                title,
+                description,
+                place,
+                organization,
+                eventOperationPeriod,
+                maxCapacity,
+                List.of(organizer),
+                questions,
+                isApprovalRequired
+        );
+    }
+
+    public static Event create(
+            String title,
+            String description,
+            String place,
+            OrganizationMember organizer,
+            Organization organization,
+            EventOperationPeriod eventOperationPeriod,
+            int maxCapacity,
+            boolean isApprovalRequired,
             Question... questions
     ) {
         return new Event(
@@ -253,7 +271,8 @@ public class Event extends BaseEntity {
                 eventOperationPeriod,
                 maxCapacity,
                 List.of(organizer),
-                new ArrayList<>(List.of(questions))
+                new ArrayList<>(List.of(questions)),
+                isApprovalRequired
         );
     }
 
@@ -353,7 +372,11 @@ public class Event extends BaseEntity {
     }
 
     public boolean isFull() {
-        return guests.size() >= maxCapacity;
+        long approvedGuestCount = guests.stream()
+                .filter(Guest::isApproved)
+                .count();
+        System.out.println("approvedGuestCount = " + approvedGuestCount);
+        return approvedGuestCount >= maxCapacity;
     }
 
     private void validateEventOrganizersMaxCapacity(final List<OrganizationMember> eventOrganizers) {
@@ -396,13 +419,15 @@ public class Event extends BaseEntity {
         if (eventOperationPeriod.canNotRegistration(participantDateTime)) {
             throw new UnprocessableEntityException("이벤트 신청은 신청 시작 시간부터 신청 마감 시간까지 가능합니다.");
         }
-        if (guests.size() >= maxCapacity) {
+
+        if (guest.isApproved() && isFull()) {
             throw new UnprocessableEntityException("수용 인원이 가득차 이벤트에 참여할 수 없습니다.");
         }
 
         if (isOrganizer(guest.getOrganizationMember())) {
             throw new UnprocessableEntityException("이벤트의 주최자는 게스트로 참여할 수 없습니다.");
         }
+
         if (hasGuest(guest.getOrganizationMember())) {
             throw new UnprocessableEntityException("이미 해당 이벤트에 참여 중인 게스트입니다.");
         }

@@ -613,4 +613,28 @@ public class EventGuestController {
 
         return ResponseEntity.ok(guestAnswerResponses);
     }
+
+    @GetMapping("/{eventId}/guests/{guestId}/approve")
+    public ResponseEntity<Void> receiveApprovalFromOrganizer(
+            @PathVariable final Long eventId,
+            @PathVariable final Long guestId,
+            @AuthMember final LoginMember loginMember
+    ) {
+        eventGuestService.receiveApprovalFromOrganizer(eventId, guestId, loginMember);
+
+        return ResponseEntity.ok()
+                .build();
+    }
+
+    @GetMapping("/{eventId}/guests/{guestId}/reject")
+    public ResponseEntity<Void> receiveRejectFromOrganizer(
+            @PathVariable final Long eventId,
+            @PathVariable final Long guestId,
+            @AuthMember final LoginMember loginMember
+    ) {
+        eventGuestService.receiveRejectFromOrganizer(eventId, guestId, loginMember);
+
+        return ResponseEntity.ok()
+                .build();
+    }
 }

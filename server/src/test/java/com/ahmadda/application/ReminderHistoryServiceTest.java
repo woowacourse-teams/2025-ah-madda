@@ -172,7 +172,8 @@ class ReminderHistoryServiceTest {
                         now.plusDays(1), now.plusDays(2),
                         now.minusDays(6)
                 ),
-                100
+                100,
+                false
         );
         return eventRepository.save(event);
     }

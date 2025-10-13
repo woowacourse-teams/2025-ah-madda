@@ -545,6 +545,7 @@ class EventGuestServiceTest {
                         now.minusDays(6)
                 ),
                 100,
+                false,
                 questions
         );
 
@@ -575,6 +576,7 @@ class EventGuestServiceTest {
                         creationTime
                 ),
                 100,
+                false,
                 questions
         );
 
