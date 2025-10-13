@@ -614,6 +614,114 @@ public class EventGuestController {
         return ResponseEntity.ok(guestAnswerResponses);
     }
 
+    @Operation(summary = "게스트 승인", description = "게스트의 상태를 승인 상태로 변경합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보입니다.",
+                                              "instance": "/api/events/{eventId}/guests/{guestId}/approve"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "이벤트 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 이벤트입니다.",
+                                                      "instance": "/api/events/{eventId}/guests/{guestId}/approve"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "구성원 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 구성원입니다.",
+                                                      "instance": "/api/events/{eventId}/guests/{guestId}/approve"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "게스트 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 게스트입니다.",
+                                                      "instance": "/api/events/{eventId}/guests/{guestId}/approve"
+                                                    }
+                                                    """
+                                    ),
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "주최자가 아님",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "주최자만 게스트를 승인할 수 있습니다.",
+                                                      "instance": "/api/events/{eventId}/guests/{guestId}/approve"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "승인 이벤트가 아님",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "승인 가능한 이벤트가 아니라 승인 상태를 변경할 수 없습니다.",
+                                                      "instance": "/api/events/{eventId}/guests/{guestId}/approve"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "수용 인원이 가득참",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "수용 인원이 가득차 해당 게스트를 승인할 수 없습니다.",
+                                                      "instance": "/api/events/{eventId}/guests/{guestId}/approve"
+                                                    }
+                                                    """
+                                    ),
+                            }
+                    )
+            )
+    })
     @GetMapping("/{eventId}/guests/{guestId}/approve")
     public ResponseEntity<Void> receiveApprovalFromOrganizer(
             @PathVariable final Long eventId,
@@ -626,6 +734,102 @@ public class EventGuestController {
                 .build();
     }
 
+    @Operation(summary = "게스트 승인 거절", description = "게스트의 상태를 거절 상태로 변경합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Unauthorized",
+                                              "status": 401,
+                                              "detail": "유효하지 않은 인증 정보입니다.",
+                                              "instance": "/api/events/{eventId}/guests/{guestId}/reject"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "이벤트 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 이벤트입니다.",
+                                                      "instance": "/api/events/{eventId}/guests/{guestId}/reject"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "구성원 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 구성원입니다.",
+                                                      "instance": "/api/events/{eventId}/guests/{guestId}/reject"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "게스트 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 게스트입니다.",
+                                                      "instance": "/api/events/{eventId}/guests/{guestId}/reject"
+                                                    }
+                                                    """
+                                    ),
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            name = "주최자가 아님",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "주최자만 게스트를 승인할 수 있습니다.",
+                                                      "instance": "/api/events/{eventId}/guests/{guestId}/reject"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "승인 이벤트가 아님",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "승인 가능한 이벤트가 아니라 승인 상태를 변경할 수 없습니다.",
+                                                      "instance": "/api/events/{eventId}/guests/{guestId}/reject"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            )
+    })
     @GetMapping("/{eventId}/guests/{guestId}/reject")
     public ResponseEntity<Void> receiveRejectFromOrganizer(
             @PathVariable final Long eventId,
