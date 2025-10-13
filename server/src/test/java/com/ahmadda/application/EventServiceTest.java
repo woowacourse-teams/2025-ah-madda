@@ -36,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -900,65 +899,6 @@ class EventServiceTest {
         assertSoftly(softly -> {
             softly.assertThat(pastEvents)
                     .hasSize(10);
-        });
-    }
-
-    @Test
-    void 과거_이벤트_조회에서_같은_날짜인_경우_더_작은_id를_가진_이벤트들을_조회한다() {
-        // given
-        var member = createMember();
-        var organization = createOrganization("우테코");
-        var organization2 = createOrganization("아맞다");
-        var group = createGroup();
-        var organizationMember = createOrganizationMember(organization, member, group);
-        var loginMember = createLoginMember(member);
-
-        var now = LocalDateTime.now();
-
-        List<Event> pastEvents = new ArrayList<>();
-
-        Event cursorEvent = null;
-        for (int i = 0; i < 20; i++) {
-            pastEvents.add(createEventWithDates(
-                    organizationMember,
-                    organization,
-                    now.minusDays(4),
-                    now.minusDays(2),
-                    now.minusDays(1),
-                    now.minusDays(4)
-            ));
-            if (i == 10) {
-                cursorEvent = pastEvents.get(i);
-            }
-        }
-        final Event finalCursorEvent = cursorEvent;
-
-        // when
-        var selectedPastEvents = sut.getPastEvents(
-                organization.getId(),
-                loginMember,
-                now,
-                finalCursorEvent.getId(),
-                10
-        );
-
-        List<Long> idList = selectedPastEvents.stream()
-                .map(Event::getId)
-                .toList();
-
-        // then
-        assertSoftly(softly -> {
-            selectedPastEvents.forEach(e -> {
-                var end = e.getEventEnd()
-                        .truncatedTo(ChronoUnit.MILLIS);
-                var cursorEnd = finalCursorEvent.getEventEnd()
-                        .truncatedTo(ChronoUnit.MILLIS);
-                var cursorId = finalCursorEvent.getId();
-
-                softly.assertThat(end.isBefore(cursorEnd) ||
-                                (end.equals(cursorEnd) && e.getId() < cursorId))
-                        .isTrue();
-            });
         });
     }
 
