@@ -722,7 +722,7 @@ public class EventGuestController {
                     )
             )
     })
-    @GetMapping("/{eventId}/guests/{guestId}/approve")
+    @PostMapping("/{eventId}/guests/{guestId}/approve")
     public ResponseEntity<Void> receiveApprovalFromOrganizer(
             @PathVariable final Long eventId,
             @PathVariable final Long guestId,
@@ -830,7 +830,7 @@ public class EventGuestController {
                     )
             )
     })
-    @GetMapping("/{eventId}/guests/{guestId}/reject")
+    @PostMapping("/{eventId}/guests/{guestId}/reject")
     public ResponseEntity<Void> receiveRejectFromOrganizer(
             @PathVariable final Long eventId,
             @PathVariable final Long guestId,
