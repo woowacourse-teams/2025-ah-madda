@@ -238,7 +238,7 @@ class EventGuestServiceTest {
                 "주최자",
                 createAndSaveMember("홍길동", "host@email.com"), organization, group1
         );
-        var event = createAndSaveEvent(organizer, organization);
+        var event = createAndSaveEvent(organizer, organization, false);
 
         var guestInGroup1 = createAndSaveOrganizationMember(
                 "게스트1",
@@ -305,7 +305,7 @@ class EventGuestServiceTest {
                 "다른사람",
                 createAndSaveMember("외부", "other@email.com"), organization2, group
         );
-        var event = createAndSaveEvent(organizer, organization1);
+        var event = createAndSaveEvent(organizer, organization1, false);
 
         // when // then
         assertThatThrownBy(() ->
@@ -324,7 +324,7 @@ class EventGuestServiceTest {
                 "주최자",
                 createAndSaveMember("홍길동", "host@email.com"), organization, group
         );
-        var event = createAndSaveEvent(organizer, organization);
+        var event = createAndSaveEvent(organizer, organization, false);
 
         // when // then
         assertThatThrownBy(() ->
