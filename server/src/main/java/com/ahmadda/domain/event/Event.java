@@ -46,6 +46,11 @@ public class Event extends BaseEntity {
     private static final Duration BEFORE_EVENT_STARTED_CANCEL_AVAILABLE_MINUTE = Duration.ofMinutes(10);
     private static final int MAX_EVENT_ORGANIZERS_CAPACITY = 10;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "event_id")
+    private Long id;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
     private final List<Guest> guests = new ArrayList<>();
 
@@ -55,11 +60,6 @@ public class Event extends BaseEntity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<EventOrganizer> eventOrganizers = new ArrayList<>();
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "event_id")
-    private Long id;
 
     @Column(nullable = false)
     private String title;
@@ -452,5 +452,9 @@ public class Event extends BaseEntity {
     public LocalDateTime getEventEnd() {
         return eventOperationPeriod.getEventPeriod()
                 .end();
+    }
+
+    public boolean isBeforeEventEnd(final LocalDateTime currentDateTime) {
+        return eventOperationPeriod.isBeforeEventEnd(currentDateTime);
     }
 }

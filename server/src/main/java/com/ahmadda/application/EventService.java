@@ -32,6 +32,7 @@ import com.ahmadda.domain.organization.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -174,14 +175,24 @@ public class EventService {
     public List<Event> getPastEvents(
             final Long organizationId,
             final LoginMember loginMember,
-            final LocalDateTime compareDateTime
+            final LocalDateTime compareDateTime,
+            final Long lastEventId,
+            final int pageSize
     ) {
         Organization organization = getOrganization(organizationId);
         validateOrganizationAccess(organizationId, loginMember.memberId());
 
-        return eventRepository.findAllByOrganizationAndEventOperationPeriodEventPeriodEndBefore(
+        LocalDateTime cursorDateTime = eventRepository.findById(lastEventId)
+                .map(Event::getEventEnd)
+                .orElse(compareDateTime);
+
+        Pageable pageable = Pageable.ofSize(pageSize);
+
+        return eventRepository.findPastEventsByOrganizationWithCursor(
                 organization,
-                compareDateTime
+                cursorDateTime,
+                lastEventId,
+                pageable
         );
     }
 

@@ -1,10 +1,14 @@
 package com.ahmadda.domain.notification;
 
-import java.time.LocalDateTime;
-import java.util.stream.Collectors;
-
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOrganizer;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public record EventEmailPayload(
         Subject subject,
@@ -41,6 +45,34 @@ public record EventEmailPayload(
         return new EventEmailPayload(subject, body);
     }
 
+    public String renderSubject() {
+        return "[아맞다] %s의 이벤트 안내: %s"
+                .formatted(subject.organizationName(), subject.eventTitle());
+    }
+
+    public String renderBody(final TemplateEngine templateEngine, final String redirectUrlPrefix) {
+        Context context = new Context();
+        context.setVariables(createModel(redirectUrlPrefix));
+
+        return templateEngine.process("mail/event-notification", context);
+    }
+
+    private Map<String, Object> createModel(final String redirectUrlPrefix) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("organizationName", body.organizationName());
+        model.put("content", body.content());
+        model.put("title", body.title());
+        model.put("organizerNickname", body.organizerNickname());
+        model.put("place", body.place());
+        model.put("registrationStart", body.registrationStart());
+        model.put("registrationEnd", body.registrationEnd());
+        model.put("eventStart", body.eventStart());
+        model.put("eventEnd", body.eventEnd());
+        model.put("redirectUrl", redirectUrlPrefix + body.organizationId() + "/event/" + body.eventId());
+
+        return model;
+    }
+
     public record Subject(
             String organizationName,
             String eventTitle
@@ -61,7 +93,6 @@ public record EventEmailPayload(
             Long organizationId,
             Long eventId
     ) {
-
 
     }
 

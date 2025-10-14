@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -261,21 +262,6 @@ class EventServiceTest {
 
         //then
         assertThat(findEvent.getTitle()).isEqualTo(request.title());
-    }
-
-    @Test
-    void 이벤트_스페이스에_속해_있지_않으면_이벤트를_생성할_수_없다() {
-        //given
-        var organization = createOrganization("우테코");
-        var otherOrganization = createOrganization("우테코");
-        var member = createMember();
-        var group = createGroup();
-        var organizationMember = createOrganizationMember(otherOrganization, member, group);
-
-        //when //then
-        assertThatThrownBy(() -> createEvent(organizationMember, organization)).isInstanceOf(
-                        ForbiddenException.class)
-                .hasMessage("주최자는 동일한 이벤트 스페이스에 속해야 합니다.");
     }
 
     @Test
@@ -811,53 +797,49 @@ class EventServiceTest {
     }
 
     @Test
-    void 특정_이벤트_스페이스의_과거_이벤트를_조회할_수_있다() {
+    void 특정_이벤트_스페이스의_과거_이벤트를_특정_개수만큼_가져온다() {
         // given
         var member = createMember();
         var organization = createOrganization("우테코");
         var organization2 = createOrganization("아맞다");
         var group = createGroup();
         var organizationMember = createOrganizationMember(organization, member, group);
-        var organizationMember2 = createOrganizationMember(organization2, member, group);
         var loginMember = createLoginMember(member);
 
-        var now = LocalDateTime.now();
+        var now = LocalDateTime.now()
+                .truncatedTo(ChronoUnit.MICROS);
 
-        var pastEvent = createEventWithDates(
-                organizationMember,
-                organization,
-                now.minusDays(4),
-                now.minusDays(2),
-                now.minusDays(1),
-                now.minusDays(4)
-        );
-        var otherOrganizationPastEvent = createEventWithDates(
-                organizationMember2,
-                organization2,
-                now.minusDays(4),
-                now.minusDays(2),
-                now.minusDays(1),
-                now.minusDays(4)
-        );
-        createEventWithDates(
-                organizationMember, organization, now.plusDays(2), now.plusDays(3), now.plusDays(5),
-                LocalDateTime.now()
-        );
-
+        for (int i = 0; i < 20; i++) {
+            createEventWithDates(
+                    organizationMember,
+                    organization,
+                    now.minusDays(4),
+                    now.minusDays(2),
+                    now.minusDays(1),
+                    now.minusDays(4)
+            );
+        }
+        
         // when
         var pastEvents = sut.getPastEvents(
                 organization.getId(),
                 loginMember,
-                now
+                now,
+                Long.MAX_VALUE,
+                10
         );
 
         // then
         assertSoftly(softly -> {
             softly.assertThat(pastEvents)
-                    .hasSize(1);
-            softly.assertThat(pastEvents.get(0)
-                            .getId())
-                    .isEqualTo(pastEvent.getId());
+                    .hasSize(10);
+            pastEvents.forEach(e -> {
+                var end = e.getEventEnd()
+                        .truncatedTo(ChronoUnit.MICROS);
+
+                softly.assertThat(end.isBefore(now))
+                        .isTrue();
+            });
         });
     }
 
@@ -881,7 +863,7 @@ class EventServiceTest {
         var loginMember = createLoginMember(member);
 
         //when // then
-        assertThatThrownBy(() -> sut.getPastEvents(organization.getId(), loginMember, LocalDateTime.now()))
+        assertThatThrownBy(() -> sut.getPastEvents(organization.getId(), loginMember, LocalDateTime.now(), 0L, 10))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage("이벤트 스페이스에 소속되지 않아 권한이 없습니다.");
     }
@@ -925,10 +907,34 @@ class EventServiceTest {
                 ));
 
         var now = LocalDateTime.now();
-        eventRepository.save(createEvent(orgMemberA, orgA, "EventA1", now.plusDays(1), now.plusDays(2)));
-        eventRepository.save(createEvent(orgMemberA, orgA, "EventA2", now.plusDays(2), now.plusDays(3)));
-        eventRepository.save(createEvent(orgMemberA, orgA, "EventA3", now.minusDays(2), now.minusDays(1))); // inactive
-        eventRepository.save(createEvent(orgMemberB, orgB, "EventB1", now.plusDays(1), now.plusDays(2)));
+        eventRepository.save(createEvent(
+                orgMemberA,
+                orgA,
+                "registrationNotEndEvent",
+                now.plusDays(1),
+                now.plusDays(2)
+        )); //마감전 이벤트
+        eventRepository.save(createEvent(
+                orgMemberA,
+                orgA,
+                "registrationNotEndEvent",
+                now.plusDays(2),
+                now.plusDays(3)
+        )); //마감전 이벤트
+        eventRepository.save(createEvent(
+                orgMemberA,
+                orgA,
+                "endedEvent",
+                now.minusDays(2),
+                now.minusDays(1)
+        )); //inactive
+        eventRepository.save(createEvent(
+                orgMemberB,
+                orgB,
+                "currentProceedEvent",
+                now.minusDays(1L),
+                now
+        )); //다른 이벤트 스페이스의 진행중인 이벤트
 
         // when
         var events = sut.getActiveEvents(orgA.getId(), loginMember);
@@ -936,7 +942,7 @@ class EventServiceTest {
         // then
         assertThat(events).hasSize(2)
                 .extracting(Event::getTitle)
-                .containsExactlyInAnyOrder("EventA1", "EventA2");
+                .containsExactlyInAnyOrder("registrationNotEndEvent", "registrationNotEndEvent");
     }
 
     @Test

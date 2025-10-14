@@ -1,8 +1,8 @@
 package com.ahmadda.infra.notification.push;
 
-import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.notification.PushNotificationPayload;
 import com.ahmadda.domain.notification.PushNotifier;
+import com.ahmadda.domain.organization.OrganizationMember;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 public class NoopPushNotifier implements PushNotifier {
 
     @Override
-    public void sendPushs(
+    public void remind(
             final List<OrganizationMember> recipients,
             final PushNotificationPayload pushNotificationPayload
     ) {
@@ -19,7 +19,7 @@ public class NoopPushNotifier implements PushNotifier {
     }
 
     @Override
-    public void sendPush(final OrganizationMember recipient, final PushNotificationPayload pushNotificationPayload) {
+    public void poke(final OrganizationMember recipient, final PushNotificationPayload pushNotificationPayload) {
         pushLogging(recipient, pushNotificationPayload);
     }
 
