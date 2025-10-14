@@ -178,7 +178,7 @@ public class EventService {
             final LoginMember loginMember,
             final LocalDateTime compareDateTime,
             final Long lastEventId,
-            int pageSize
+            final int pageSize
     ) {
         Organization organization = getOrganization(organizationId);
         validateOrganizationAccess(organizationId, loginMember.memberId());
