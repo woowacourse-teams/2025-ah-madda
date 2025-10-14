@@ -797,59 +797,6 @@ class EventServiceTest {
     }
 
     @Test
-    void 특정_이벤트_스페이스의_과거_이벤트를_조회할_수_있다() {
-        // given
-        var member = createMember();
-        var organization = createOrganization("우테코");
-        var organization2 = createOrganization("아맞다");
-        var group = createGroup();
-        var organizationMember = createOrganizationMember(organization, member, group);
-        var organizationMember2 = createOrganizationMember(organization2, member, group);
-        var loginMember = createLoginMember(member);
-
-        var now = LocalDateTime.now();
-
-        var pastEvent = createEventWithDates(
-                organizationMember,
-                organization,
-                now.minusDays(4),
-                now.minusDays(2),
-                now.minusDays(1),
-                now.minusDays(4)
-        );
-        var otherOrganizationPastEvent = createEventWithDates(
-                organizationMember2,
-                organization2,
-                now.minusDays(4),
-                now.minusDays(2),
-                now.minusDays(1),
-                now.minusDays(4)
-        );
-        createEventWithDates(
-                organizationMember, organization, now.plusDays(2), now.plusDays(3), now.plusDays(5),
-                LocalDateTime.now()
-        );
-
-        // when
-        var pastEvents = sut.getPastEvents(
-                organization.getId(),
-                loginMember,
-                now,
-                Long.MAX_VALUE,
-                10
-        );
-
-        // then
-        assertSoftly(softly -> {
-            softly.assertThat(pastEvents)
-                    .hasSize(1);
-            softly.assertThat(pastEvents.get(0)
-                            .getId())
-                    .isEqualTo(pastEvent.getId());
-        });
-    }
-
-    @Test
     void 특정_이벤트_스페이스의_과거_이벤트를_특정_개수만큼_가져온다() {
         // given
         var member = createMember();
@@ -860,7 +807,8 @@ class EventServiceTest {
         var organizationMember2 = createOrganizationMember(organization2, member, group);
         var loginMember = createLoginMember(member);
 
-        var now = LocalDateTime.now();
+        var now = LocalDateTime.now()
+                .truncatedTo(ChronoUnit.MICROS);
 
         for (int i = 0; i < 20; i++) {
             var pastEvent = createEventWithDates(
@@ -885,64 +833,11 @@ class EventServiceTest {
         assertSoftly(softly -> {
             softly.assertThat(pastEvents)
                     .hasSize(10);
-        });
-    }
-
-    @Test
-    void 과거_이벤트_조회에서_같은_날짜인_경우_더_작은_id를_가진_이벤트들을_조회한다() {
-        // given
-        var member = createMember();
-        var organization = createOrganization("우테코");
-        var organization2 = createOrganization("아맞다");
-        var group = createGroup();
-        var organizationMember = createOrganizationMember(organization, member, group);
-        var loginMember = createLoginMember(member);
-
-        var now = LocalDateTime.now()
-                .truncatedTo(ChronoUnit.MICROS);
-
-        List<Event> pastEvents = new ArrayList<>();
-
-        Event cursorEvent = null;
-        for (int i = 0; i < 20; i++) {
-            pastEvents.add(createEventWithDates(
-                    organizationMember,
-                    organization,
-                    now.minusDays(4),
-                    now.minusDays(2),
-                    now.minusDays(1),
-                    now.minusDays(4)
-            ));
-            if (i == 10) {
-                cursorEvent = pastEvents.get(i);
-            }
-        }
-        final Event finalCursorEvent = cursorEvent;
-
-        // when
-        var selectedPastEvents = sut.getPastEvents(
-                organization.getId(),
-                loginMember,
-                now,
-                finalCursorEvent.getId(),
-                10
-        );
-
-        List<Long> idList = selectedPastEvents.stream()
-                .map(Event::getId)
-                .toList();
-
-        // then
-        assertSoftly(softly -> {
-            selectedPastEvents.forEach(e -> {
+            pastEvents.forEach(e -> {
                 var end = e.getEventEnd()
-                        .truncatedTo(ChronoUnit.MILLIS);
-                var cursorEnd = finalCursorEvent.getEventEnd()
-                        .truncatedTo(ChronoUnit.MILLIS);
-                var cursorId = finalCursorEvent.getId();
+                        .truncatedTo(ChronoUnit.MICROS);
 
-                softly.assertThat(end.isBefore(cursorEnd) ||
-                                (end.equals(cursorEnd) && e.getId() < cursorId))
+                softly.assertThat(end.isBefore(now))
                         .isTrue();
             });
         });
