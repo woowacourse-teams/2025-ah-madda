@@ -8,6 +8,8 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -50,11 +52,20 @@ public class Guest extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "guest", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Answer> answers = new ArrayList<>();
 
-    private Guest(final Event event, final OrganizationMember organizationMember, final LocalDateTime currentDateTime) {
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ApprovalStatus approvalStatus;
+
+    private Guest(
+            final Event event,
+            final OrganizationMember organizationMember,
+            final LocalDateTime currentDateTime
+    ) {
         validateSameOrganization(event, organizationMember);
 
         this.event = event;
         this.organizationMember = organizationMember;
+        this.approvalStatus = event.isApprovalRequired() ? ApprovalStatus.PENDING : ApprovalStatus.APPROVED;
 
         event.participate(this, currentDateTime);
     }
@@ -75,6 +86,26 @@ public class Guest extends BaseEntity {
         validateRequiredQuestions(questionAnswers);
 
         addAnswers(questionAnswers);
+    }
+
+    public List<Answer> viewAnswersAs(final OrganizationMember organizationMember) {
+        if (!canViewAnswers(organizationMember)) {
+            throw new ForbiddenException("답변을 볼 권한이 없습니다.");
+        }
+
+        return answers;
+    }
+
+    public void changeApprovalStatus(final ApprovalStatus approvalStatus) {
+        this.approvalStatus = approvalStatus;
+    }
+
+    public boolean isApproved() {
+        return approvalStatus == ApprovalStatus.APPROVED;
+    }
+
+    public boolean isBelongTo(final Event event) {
+        return this.event.equals(event);
     }
 
     private void validateRequiredQuestions(final Map<Question, String> questionAnswers) {
@@ -104,14 +135,6 @@ public class Guest extends BaseEntity {
         if (!organizationMember.isBelongTo(event.getOrganization())) {
             throw new UnprocessableEntityException("같은 이벤트 스페이스의 이벤트에만 게스트로 참여할 수 있습니다합니다.");
         }
-    }
-
-    public List<Answer> viewAnswersAs(final OrganizationMember organizationMember) {
-        if (!canViewAnswers(organizationMember)) {
-            throw new ForbiddenException("답변을 볼 권한이 없습니다.");
-        }
-
-        return answers;
     }
 
     private boolean canViewAnswers(final OrganizationMember organizationMember) {

@@ -179,7 +179,8 @@ class EventStatisticServiceTest {
                 organizer,
                 organization,
                 operationPeriod,
-                30
+                30,
+                false
         );
 
         return eventRepository.save(event);

@@ -268,7 +268,8 @@ class PokeServiceTest {
         var period = EventOperationPeriod.create(
                 now.plusDays(1), now.plusDays(2), now.plusDays(3), now.plusDays(4), now
         );
-        var event = Event.create(title, description, place, organizer, organization, period, 100, new ArrayList<>());
+        var event =
+                Event.create(title, description, place, organizer, organization, period, 100, new ArrayList<>(), false);
 
         return eventRepository.save(event);
     }

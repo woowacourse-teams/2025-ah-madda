@@ -1,6 +1,7 @@
 package com.ahmadda.domain.event;
 
 import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.BaseEntity;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.organization.Organization;
@@ -66,6 +67,32 @@ public class EventOrganizer extends BaseEntity {
 
     public boolean isSameOrganizationMember(final OrganizationMember organizationMember) {
         return this.organizationMember.equals(organizationMember);
+    }
+
+    public void approve(final Guest guest) {
+        validateChangeGuestApprovalStatus(guest);
+
+        if (event.isFull()) {
+            throw new UnprocessableEntityException("수용 인원이 가득차 해당 게스트를 승인할 수 없습니다.");
+        }
+
+        guest.changeApprovalStatus(ApprovalStatus.APPROVED);
+    }
+
+    public void reject(final Guest guest) {
+        validateChangeGuestApprovalStatus(guest);
+
+        guest.changeApprovalStatus(ApprovalStatus.REJECTED);
+    }
+
+    private void validateChangeGuestApprovalStatus(final Guest guest) {
+        if (!guest.isBelongTo(event)) {
+            throw new UnprocessableEntityException("해당 이벤트의 게스트가 아닙니다.");
+        }
+
+        if (!event.isApprovalRequired()) {
+            throw new UnprocessableEntityException("승인 가능한 이벤트가 아니라 승인 상태를 변경할 수 없습니다.");
+        }
     }
 
     private void validateIsInSameOrganization(final Event event, final OrganizationMember organizationMember) {

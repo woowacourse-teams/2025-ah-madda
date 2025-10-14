@@ -174,7 +174,8 @@ class CursorPagingTest {
                         eventEnd,
                         now
                 ),
-                10
+                10,
+                false
         );
         return eventRepository.save(event);
     }

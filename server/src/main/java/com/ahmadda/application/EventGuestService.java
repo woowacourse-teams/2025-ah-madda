@@ -5,8 +5,11 @@ import com.ahmadda.application.dto.EventParticipateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Answer;
 import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventOrganizer;
+import com.ahmadda.domain.event.EventOrganizerRepository;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.event.GuestRepository;
@@ -33,6 +36,7 @@ public class EventGuestService {
     private final EventRepository eventRepository;
     private final QuestionRepository questionRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
+    private final EventOrganizerRepository eventOrganizerRepository;
     private final OrganizationGroupRepository organizationGroupRepository;
 
     @Transactional(readOnly = true)
@@ -127,6 +131,34 @@ public class EventGuestService {
         Guest guest = getGuest(guestId);
 
         return guest.viewAnswersAs(organizer);
+    }
+
+    @Transactional
+    public void receiveApprovalFromOrganizer(final Long eventId, final Long guestId, final LoginMember loginMember) {
+        Event event = getEvent(eventId);
+        Organization organization = event.getOrganization();
+        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), loginMember.memberId());
+        Guest guest = getGuest(guestId);
+
+        EventOrganizer eventOrganizer =
+                eventOrganizerRepository.findByEventAndOrganizationMember(event, organizationMember)
+                        .orElseThrow(() -> new UnprocessableEntityException("주최자만 게스트를 승인할 수 있습니다."));
+
+        eventOrganizer.approve(guest);
+    }
+
+    @Transactional
+    public void receiveRejectFromOrganizer(final Long eventId, final Long guestId, final LoginMember loginMember) {
+        Event event = getEvent(eventId);
+        Organization organization = event.getOrganization();
+        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), loginMember.memberId());
+        Guest guest = getGuest(guestId);
+
+        EventOrganizer eventOrganizer =
+                eventOrganizerRepository.findByEventAndOrganizationMember(event, organizationMember)
+                        .orElseThrow(() -> new UnprocessableEntityException("주최자만 게스트를 거절할 수 있습니다."));
+
+        eventOrganizer.reject(guest);
     }
 
     private void validateOrganizationAccess(final LoginMember loginMember, final Organization organization) {
