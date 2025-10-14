@@ -375,7 +375,7 @@ public class Event extends BaseEntity {
         long approvedGuestCount = guests.stream()
                 .filter(Guest::isApproved)
                 .count();
-        System.out.println("approvedGuestCount = " + approvedGuestCount);
+
         return approvedGuestCount >= maxCapacity;
     }
 

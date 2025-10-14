@@ -899,7 +899,7 @@ public class EventGuestController {
                                                       "type": "about:blank",
                                                       "title": "Unprocessable Entity",
                                                       "status": 422,
-                                                      "detail": "주최자만 게스트를 승인할 수 있습니다.",
+                                                      "detail": "주최자만 게스트를 거절할 수 있습니다.",
                                                       "instance": "/api/events/{eventId}/guests/{guestId}/reject"
                                                     }
                                                     """

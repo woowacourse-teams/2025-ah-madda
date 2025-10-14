@@ -136,4 +136,8 @@ public class Guest extends BaseEntity {
     private boolean canViewAnswers(final OrganizationMember organizationMember) {
         return event.isOrganizer(organizationMember) || this.organizationMember.equals(organizationMember);
     }
+
+    public boolean isBelongTo(Event event) {
+        return this.event.equals(event);
+    }
 }

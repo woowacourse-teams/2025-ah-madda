@@ -70,9 +70,7 @@ public class EventOrganizer extends BaseEntity {
     }
 
     public void approve(final Guest guest) {
-        if (!event.isApprovalRequired()) {
-            throw new UnprocessableEntityException("승인 가능한 이벤트가 아니라 승인 상태를 변경할 수 없습니다.");
-        }
+        validateChangeGuestApprovalStatus(guest);
 
         if (event.isFull()) {
             throw new UnprocessableEntityException("수용 인원이 가득차 해당 게스트를 승인할 수 없습니다.");
@@ -82,11 +80,19 @@ public class EventOrganizer extends BaseEntity {
     }
 
     public void reject(final Guest guest) {
+        validateChangeGuestApprovalStatus(guest);
+
+        guest.changeApprovalStatus(ApprovalStatus.REJECTED);
+    }
+
+    private void validateChangeGuestApprovalStatus(Guest guest) {
+        if (!guest.isBelongTo(event)) {
+            throw new UnprocessableEntityException("해당 이벤트의 게스트가 아닙니다.");
+        }
+
         if (!event.isApprovalRequired()) {
             throw new UnprocessableEntityException("승인 가능한 이벤트가 아니라 승인 상태를 변경할 수 없습니다.");
         }
-
-        guest.changeApprovalStatus(ApprovalStatus.REJECTED);
     }
 
     private void validateIsInSameOrganization(final Event event, final OrganizationMember organizationMember) {

@@ -145,6 +145,26 @@ class EventOrganizerTest {
     }
 
     @Test
+    void 주최자는_게스트를_승인할때_주최자의_이벤트에_해당하는_게스트가_아니라면_예외가_발생한다() {
+        //given
+        var organization = createOrganization();
+        var member1 = createMember();
+        var member2 = createMember();
+        var organizationMember1 = createOrganizationMember(member1, organization);
+        var organizationMember2 = createOrganizationMember(member2, organization);
+        var event1 = createEvent(organizationMember1, organization, true, 10);
+        var event2 = createEvent(organizationMember1, organization, true, 10);
+        var eventOrganizer = event1.getEventOrganizers()
+                .getFirst();
+        var guest = Guest.create(event2, organizationMember2, event2.getRegistrationStart());
+
+        //when //then
+        assertThatThrownBy(() -> eventOrganizer.approve(guest))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("해당 이벤트의 게스트가 아닙니다.");
+    }
+
+    @Test
     void 승인_이벤트가_아닐때_주최자가_게스트를_승인하면_예외가_발생한다() {
         //given
         var organization = createOrganization();
@@ -204,6 +224,26 @@ class EventOrganizerTest {
         assertThatThrownBy(() -> eventOrganizer.reject(guest))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("승인 가능한 이벤트가 아니라 승인 상태를 변경할 수 없습니다.");
+    }
+
+    @Test
+    void 주최자는_게스트를_거절할때_주최자의_이벤트에_해당하는_게스트가_아니라면_예외가_발생한다() {
+        //given
+        var organization = createOrganization();
+        var member1 = createMember();
+        var member2 = createMember();
+        var organizationMember1 = createOrganizationMember(member1, organization);
+        var organizationMember2 = createOrganizationMember(member2, organization);
+        var event1 = createEvent(organizationMember1, organization, true, 10);
+        var event2 = createEvent(organizationMember1, organization, true, 10);
+        var eventOrganizer = event1.getEventOrganizers()
+                .getFirst();
+        var guest = Guest.create(event2, organizationMember2, event2.getRegistrationStart());
+
+        //when //then
+        assertThatThrownBy(() -> eventOrganizer.reject(guest))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("해당 이벤트의 게스트가 아닙니다.");
     }
 
     private Member createMember() {
