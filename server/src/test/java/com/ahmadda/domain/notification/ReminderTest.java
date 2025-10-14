@@ -53,7 +53,7 @@ class ReminderTest {
     private PushNotifier pushNotifier;
 
     @MockitoBean
-    private EmailNotifier emailNotifier;
+    private EmailNotifier mailSender;
 
     @MockitoBean
     JwtAccessTokenProperties accessTokenProperties;
@@ -106,7 +106,7 @@ class ReminderTest {
         sut.remind(recipients, event, content);
 
         // then
-        verify(emailNotifier).remind(any(ReminderEmail.class));
+        verify(mailSender).remind(any(ReminderEmail.class));
         verify(pushNotifier).remind(
                 eq(recipients),
                 argThat(payload -> payload != null && payload.eventId()

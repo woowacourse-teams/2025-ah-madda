@@ -3,6 +3,7 @@ package com.ahmadda.infra.notification.mail;
 import com.ahmadda.annotation.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
@@ -26,7 +27,8 @@ class EmailOutboxSchedulerTest {
     private EmailOutboxRecipientRepository emailOutboxRecipientRepository;
 
     @MockitoBean
-    private EmailOutboxNotifier emailOutboxNotifier;
+    @Qualifier("failoverEmailSender")
+    private EmailSender emailSender;
 
     @Test
     void 수신자가_존재하는_아웃박스는_재전송된다() {
@@ -50,7 +52,7 @@ class EmailOutboxSchedulerTest {
         sut.resendFailedEmails();
 
         // then
-        verify(emailOutboxNotifier).sendFromOutbox(
+        verify(emailSender).sendEmails(
                 eq(List.of("a@test.com", "b@test.com")),
                 eq("테스트 제목"),
                 eq("본문 내용")
@@ -107,12 +109,12 @@ class EmailOutboxSchedulerTest {
         sut.resendFailedEmails();
 
         // then
-        verify(emailOutboxNotifier).sendFromOutbox(
+        verify(emailSender).sendEmails(
                 eq(List.of("expired@test.com")),
                 eq("제목1"),
                 eq("본문1")
         );
-        verify(emailOutboxNotifier, never()).sendFromOutbox(
+        verify(emailSender, never()).sendEmails(
                 eq(List.of("fresh@test.com")),
                 eq("제목2"),
                 eq("본문2")

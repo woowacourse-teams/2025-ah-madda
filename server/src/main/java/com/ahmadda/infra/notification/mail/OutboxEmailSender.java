@@ -1,33 +1,23 @@
 package com.ahmadda.infra.notification.mail;
 
-import com.ahmadda.domain.notification.EmailNotifier;
-import com.ahmadda.domain.notification.ReminderEmail;
-import com.ahmadda.infra.notification.config.NotificationProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.thymeleaf.TemplateEngine;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 
 @RequiredArgsConstructor
-public class OutboxEmailNotifier implements EmailNotifier {
+public class OutboxEmailSender implements EmailSender {
 
-    private final TemplateEngine templateEngine;
-    private final NotificationProperties notificationProperties;
     private final EmailOutboxRepository emailOutboxRepository;
     private final EmailOutboxRecipientRepository emailOutboxRecipientRepository;
-    private final EmailNotifier delegate;
+    private final EmailSender delegate;
 
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
-    public void remind(final ReminderEmail reminderEmail) {
-        String subject = reminderEmail.payload()
-                .renderSubject();
-        String body = reminderEmail.payload()
-                .renderBody(templateEngine, notificationProperties.getRedirectUrlPrefix());
-        List<String> recipientEmails = reminderEmail.recipientEmails();
-
+    public void sendEmails(final List<String> recipientEmails, final String subject, final String body) {
         EmailOutbox outbox = EmailOutbox.createNow(subject, body);
         List<EmailOutboxRecipient> recipients = recipientEmails.stream()
                 .map(email -> EmailOutboxRecipient.create(outbox, email))
@@ -35,6 +25,15 @@ public class OutboxEmailNotifier implements EmailNotifier {
         emailOutboxRepository.save(outbox);
         emailOutboxRecipientRepository.saveAll(recipients);
 
-        delegate.remind(reminderEmail);
+        registerAfterCommitSend(recipientEmails, subject, body);
+    }
+
+    private void registerAfterCommitSend(final List<String> recipientEmails, final String subject, final String body) {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                delegate.sendEmails(recipientEmails, subject, body);
+            }
+        });
     }
 }
