@@ -208,6 +208,26 @@ class EventOrganizerTest {
     }
 
     @Test
+    void 승인_이벤트에서_주최자는_게스트를_거절할_수_있다() {
+        //given
+        var organization = createOrganization();
+        var member1 = createMember();
+        var member2 = createMember();
+        var organizationMember1 = createOrganizationMember(member1, organization);
+        var organizationMember2 = createOrganizationMember(member2, organization);
+        var event = createEvent(organizationMember1, organization, true, 10);
+        var eventOrganizer = event.getEventOrganizers()
+                .getFirst();
+        var guest = Guest.create(event, organizationMember2, event.getRegistrationStart());
+
+        //when
+        eventOrganizer.reject(guest);
+
+        //then
+        assertThat(guest.getApprovalStatus()).isEqualTo(ApprovalStatus.REJECTED);
+    }
+
+    @Test
     void 승인_이벤트가_아닐때_주최자가_게스트를_거절하면_예외가_발생한다() {
         //given
         var organization = createOrganization();
