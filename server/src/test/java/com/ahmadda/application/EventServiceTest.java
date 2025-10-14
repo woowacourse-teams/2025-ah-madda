@@ -804,14 +804,13 @@ class EventServiceTest {
         var organization2 = createOrganization("아맞다");
         var group = createGroup();
         var organizationMember = createOrganizationMember(organization, member, group);
-        var organizationMember2 = createOrganizationMember(organization2, member, group);
         var loginMember = createLoginMember(member);
 
         var now = LocalDateTime.now()
                 .truncatedTo(ChronoUnit.MICROS);
 
         for (int i = 0; i < 20; i++) {
-            var pastEvent = createEventWithDates(
+            createEventWithDates(
                     organizationMember,
                     organization,
                     now.minusDays(4),
@@ -820,6 +819,7 @@ class EventServiceTest {
                     now.minusDays(4)
             );
         }
+        
         // when
         var pastEvents = sut.getPastEvents(
                 organization.getId(),
