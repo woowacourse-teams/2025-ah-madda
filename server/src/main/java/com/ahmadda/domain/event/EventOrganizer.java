@@ -85,7 +85,7 @@ public class EventOrganizer extends BaseEntity {
         guest.changeApprovalStatus(ApprovalStatus.REJECTED);
     }
 
-    private void validateChangeGuestApprovalStatus(Guest guest) {
+    private void validateChangeGuestApprovalStatus(final Guest guest) {
         if (!guest.isBelongTo(event)) {
             throw new UnprocessableEntityException("해당 이벤트의 게스트가 아닙니다.");
         }

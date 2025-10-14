@@ -104,6 +104,10 @@ public class Guest extends BaseEntity {
         return approvalStatus == ApprovalStatus.APPROVED;
     }
 
+    public boolean isBelongTo(final Event event) {
+        return this.event.equals(event);
+    }
+
     private void validateRequiredQuestions(final Map<Question, String> questionAnswers) {
         Set<Question> requiredQuestions = event.getRequiredQuestions();
 
@@ -135,9 +139,5 @@ public class Guest extends BaseEntity {
 
     private boolean canViewAnswers(final OrganizationMember organizationMember) {
         return event.isOrganizer(organizationMember) || this.organizationMember.equals(organizationMember);
-    }
-
-    public boolean isBelongTo(Event event) {
-        return this.event.equals(event);
     }
 }
