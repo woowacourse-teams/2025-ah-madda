@@ -22,6 +22,7 @@ import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.jspecify.annotations.Nullable;
@@ -52,6 +53,7 @@ public class Event extends BaseEntity {
     private Long id;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
+    @BatchSize(size = 32)
     private final List<Guest> guests = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
