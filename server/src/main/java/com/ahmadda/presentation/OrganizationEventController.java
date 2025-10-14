@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
@@ -45,6 +46,8 @@ import java.util.List;
 @RequestMapping("/api/organizations")
 @RequiredArgsConstructor
 public class OrganizationEventController {
+
+    private static final String DEFAULT_GET_PAST_EVENT_CURSOR = "9223372036854775807"; // Long.MAX_VALUE
 
     private final OrganizationMemberEventService organizationMemberEventService;
     private final EventService eventService;
@@ -180,9 +183,11 @@ public class OrganizationEventController {
     @GetMapping("/{organizationId}/events/past")
     public ResponseEntity<List<MainEventResponse>> getPastEvents(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
+            @AuthMember final LoginMember loginMember,
+            @RequestParam(defaultValue = DEFAULT_GET_PAST_EVENT_CURSOR) final Long lastEventId
     ) {
-        List<Event> organizationEvents = eventService.getPastEvents(organizationId, loginMember, LocalDateTime.now());
+        List<Event> organizationEvents =
+                eventService.getPastEvents(organizationId, loginMember, LocalDateTime.now(), lastEventId, 10);
 
         List<MainEventResponse> eventResponses = organizationEvents.stream()
                 .map(event -> MainEventResponse.from(event, loginMember))
