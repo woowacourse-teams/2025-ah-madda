@@ -242,8 +242,7 @@ class EventTest {
                     .isFalse();
         });
     }
-
-
+    
     @Test
     void 이벤트에_참여하지_않는_구성원을_조회할_수_있다() {
         // given
