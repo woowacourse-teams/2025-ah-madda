@@ -30,11 +30,6 @@ public class PushConfig {
     }
 
     @Bean
-    public FcmPushErrorHandler fcmPushErrorHandler(final FcmRegistrationTokenRepository fcmRegistrationTokenRepository) {
-        return new FcmPushErrorHandler(fcmRegistrationTokenRepository);
-    }
-
-    @Bean
     @Primary
     @ConditionalOnProperty(name = "push.noop", havingValue = "true")
     public PushNotifier noopPushNotifier() {

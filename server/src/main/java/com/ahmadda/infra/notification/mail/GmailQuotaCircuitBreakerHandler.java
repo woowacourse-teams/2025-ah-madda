@@ -3,9 +3,11 @@ package com.ahmadda.infra.notification.mail;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import jakarta.annotation.PostConstruct;
+import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
+@Component
 public class GmailQuotaCircuitBreakerHandler {
 
     private static final String DAILY_LIMIT_EXCEEDED_CODE = "550-5.4.5";
