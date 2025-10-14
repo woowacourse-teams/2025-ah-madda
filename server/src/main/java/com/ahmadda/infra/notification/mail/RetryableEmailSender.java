@@ -1,8 +1,5 @@
 package com.ahmadda.infra.notification.mail;
 
-import com.ahmadda.domain.notification.EmailNotifier;
-import com.ahmadda.domain.notification.EventEmailPayload;
-import com.ahmadda.domain.organization.OrganizationMember;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
@@ -13,15 +10,15 @@ import java.time.Duration;
 import java.util.List;
 
 @Slf4j
-public class RetryableEmailNotifier implements EmailNotifier {
+public class RetryableEmailSender implements EmailSender {
 
-    private final EmailNotifier delegate;
+    private final EmailSender delegate;
     private final Retry retry;
 
-    public RetryableEmailNotifier(
+    public RetryableEmailSender(
+            final EmailSender delegate,
             final RetryRegistry retryRegistry,
             final String retryName,
-            final EmailNotifier delegate,
             final int maxAttempts,
             final long waitMillis
     ) {
@@ -38,20 +35,19 @@ public class RetryableEmailNotifier implements EmailNotifier {
     }
 
     @Override
-    public void sendEmails(final List<OrganizationMember> recipients, final EventEmailPayload payload) {
+    public void sendEmails(final List<String> recipientEmails, final String subject, final String body) {
         Runnable runnable = Retry.decorateRunnable(
                 retry,
-                () -> delegate.sendEmails(recipients, payload)
+                () -> delegate.sendEmails(recipientEmails, subject, body)
         );
 
         try {
             runnable.run();
         } catch (Exception ex) {
             log.error(
-                    "mailRetryError - name: {}, recipients: {}, subject: {}, cause: {}",
+                    "mailRetryError - name: {}, recipientEmails: {}, cause: {}",
                     retry.getName(),
-                    recipients.size(),
-                    payload.subject(),
+                    recipientEmails,
                     ex.getMessage(),
                     ex
             );

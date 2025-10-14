@@ -1,7 +1,9 @@
 package com.ahmadda.domain.event;
 
 import com.ahmadda.domain.organization.Organization;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,13 +15,28 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             final LocalDateTime to
     );
 
-    List<Event> findAllByOrganizationAndEventOperationPeriodEventPeriodEndBefore(
-            final Organization organization,
-            final LocalDateTime now
-    );
-
     List<Event> findAllByEventOperationPeriodEventPeriodStartBetween(
             final LocalDateTime from,
             final LocalDateTime to
+    );
+
+    @Query("""
+            select e
+            from Event e
+            where e.organization = :organization
+              and (
+                    e.eventOperationPeriod.eventPeriod.end < :lastEnd
+                    or (
+                        e.eventOperationPeriod.eventPeriod.end = :lastEnd
+                        and e.id < :lastId
+                    )
+                  )
+            order by e.eventOperationPeriod.eventPeriod.end desc, e.id desc
+            """)
+    List<Event> findPastEventsByOrganizationWithCursor(
+            final Organization organization,
+            final LocalDateTime lastEnd,
+            final Long lastId,
+            final Pageable pageable
     );
 }

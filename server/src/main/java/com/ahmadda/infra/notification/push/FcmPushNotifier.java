@@ -9,11 +9,9 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.Notification;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,33 +22,25 @@ public class FcmPushNotifier implements PushNotifier {
     private final FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
     private final FcmPushErrorHandler fcmPushErrorHandler;
     private final NotificationProperties notificationProperties;
-    private final EntityManager em;
 
     @Async
-    @Transactional
     @Override
-    public void sendPushs(
+    public void remind(
             final List<OrganizationMember> recipients,
             final PushNotificationPayload pushNotificationPayload
     ) {
         if (recipients.isEmpty()) {
             return;
         }
-        List<OrganizationMember> mergedRecipients = recipients.stream()
-                .map(em::merge)
-                .toList();
 
-        List<String> registrationTokens = getRegistrationTokens(mergedRecipients);
+        List<String> registrationTokens = getRegistrationTokens(recipients);
         sendMulticast(pushNotificationPayload, registrationTokens);
     }
 
     @Async
-    @Transactional
     @Override
-    public void sendPush(final OrganizationMember recipient, final PushNotificationPayload pushNotificationPayload) {
-        OrganizationMember mergedRecipient = em.merge(recipient);
-
-        List<String> registrationTokens = getRegistrationTokens(mergedRecipient);
+    public void poke(final OrganizationMember recipient, final PushNotificationPayload pushNotificationPayload) {
+        List<String> registrationTokens = getRegistrationTokens(recipient);
         sendMulticast(pushNotificationPayload, registrationTokens);
     }
 
