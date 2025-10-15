@@ -26,13 +26,12 @@ public class SchedulingConfig implements SchedulingConfigurer {
     /**
      * 공통 스케줄러 스레드풀.
      * <p>
-     * 스레드풀 크기 산정은 Brian Goetz가 『Java Concurrency in Practice』에서 제시한 추정식에 기반한다.
-     * <pre>
-     * Threads = Cores × TargetUtilization × (1 + Wait / Service)
-     * </pre>
-     * 스케줄러는 CPU 바운드 작업에 가깝기 때문에 Wait/Service ≈ 0 으로 간주하며,
-     * 결과적으로 Threads ≈ Cores 수준이 가장 효율적이다.
-     * 다만, 저사양 환경(1코어)에서는 병렬 스케줄링을 보장하기 위해 최소 2개로 보정한다.
+     * 스케줄러는 예약된 작업의 정시 실행(시간 정확도) 을 보장하기 위해 별도의 워커 스레드풀을 유지한다.
+     * CPU 활용률 최적화보다는, 하나의 스케줄 작업이 DB I/O 등으로 지연되더라도
+     * 다른 예약 작업이 밀리지 않도록 병렬성을 확보하는 것이 목적이다.
+     * <p>
+     * 스레드풀 크기 산정은 사용 가능한 코어 수를 기준으로 하되,
+     * 저사양 환경(1코어)에서도 병렬 스케줄링이 가능하도록 최소 2개로 보정한다.
      */
     @Bean
     public ThreadPoolTaskScheduler taskScheduler() {
