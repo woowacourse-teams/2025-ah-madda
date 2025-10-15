@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 const OBSERVER_OPTIONS = {
   root: null,
   rootMargin: '20px',
-  threshold: 1.0,
+  threshold: 0.1,
 };
 
 export const useInfiniteScroll = (callback: VoidFunction) => {
@@ -29,7 +29,7 @@ export const useInfiniteScroll = (callback: VoidFunction) => {
         observer.unobserve(currentRef);
       }
     };
-  }, [ref, callback]);
+  }, [callback]);
 
   return { ref };
 };
