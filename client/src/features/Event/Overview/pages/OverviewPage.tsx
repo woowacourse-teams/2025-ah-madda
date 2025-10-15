@@ -1,11 +1,10 @@
 import { Suspense, useState } from 'react';
 
 import { css } from '@emotion/react';
-import { useSuspenseQuery, useSuspenseQueries, useInfiniteQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { createInviteCode } from '@/api/mutations/useCreateInviteCode';
-import { eventQueryOptions } from '@/api/queries/event';
 import { organizationQueryOptions } from '@/api/queries/organization';
 import { Button } from '@/shared/components/Button';
 import { Header } from '@/shared/components/Header';
@@ -14,7 +13,6 @@ import { PageLayout } from '@/shared/components/PageLayout';
 import { useToast } from '@/shared/components/Toast/ToastContext';
 import { useModal } from '@/shared/hooks/useModal';
 
-import { Event } from '../../types/Event';
 import { ActionButtons } from '../components/ActionButtons';
 import { InviteCodeModal } from '../components/InviteCodeModal';
 import { OrganizationInfo } from '../components/OrganizationInfo';
