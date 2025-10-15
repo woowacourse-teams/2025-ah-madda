@@ -8,23 +8,41 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
 @EnableAsync
 public class AsyncConfig implements AsyncConfigurer {
 
-    // TODO. 추후 ThreadPoolTaskExecutor의 thread 설정 변경 및 graceful shutdown 고려 필요
     @Override
     public Executor getAsyncExecutor() {
         return taskExecutor();
     }
 
+    /**
+     * 공통 비동기 스레드풀 크기 산정은 Brian Goetz가
+     * 『Java Concurrency in Practice』에서 제시한 추정식에 기반한다.
+     * <p>
+     * Threads = Cores × TargetUtilization × (1 + Wait / Service)
+     * </p>
+     */
     @Bean
     public ThreadPoolTaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setThreadNamePrefix("async-");
         executor.setTaskDecorator(new AsyncTraceLoggingDecorator());
 
+        executor.setCorePoolSize(20);
+        executor.setMaxPoolSize(50);
+        executor.setQueueCapacity(100);
+        executor.setKeepAliveSeconds(60);
+
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
+
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setAwaitTerminationSeconds(60);
+
+        executor.initialize();
         return executor;
     }
 }

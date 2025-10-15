@@ -51,16 +51,6 @@ public class Event extends BaseEntity {
     @Column(name = "event_id")
     private Long id;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
-    private final List<Guest> guests = new ArrayList<>();
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "event_id", nullable = false)
-    private final List<Question> questions = new ArrayList<>();
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<EventOrganizer> eventOrganizers = new ArrayList<>();
-
     @Column(nullable = false)
     private String title;
 
@@ -78,8 +68,18 @@ public class Event extends BaseEntity {
     @Embedded
     private EventOperationPeriod eventOperationPeriod;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
+    private final List<Guest> guests = new ArrayList<>();
+
     @Column(nullable = false)
     private int maxCapacity;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "event_id", nullable = false)
+    private final List<Question> questions = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<EventOrganizer> eventOrganizers = new ArrayList<>();
 
     @Column(nullable = false)
     private boolean isApprovalRequired;
