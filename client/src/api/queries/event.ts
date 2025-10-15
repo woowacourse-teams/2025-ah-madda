@@ -64,7 +64,7 @@ export const eventQueryOptions = {
           return data[data.length - 1].eventId;
         }
       },
-      initialPageParam: 10,
+      initialPageParam: null,
     }),
   alarms: (eventId: number) => ({
     mutationKey: [...eventQueryKeys.alarm(), eventId],
@@ -138,9 +138,8 @@ const getOngoingEventAPI = ({ organizationId }: { organizationId: number }) => {
 };
 
 const getPastEventAPI = ({ organizationId, lastEventId }: PastEventAPIResponse) => {
-  return fetcher.get<Event[]>(
-    `organizations/${organizationId}/events/past?lastEventId=${lastEventId}`
-  );
+  const params = lastEventId ? `?lastEventId=${lastEventId}` : '';
+  return fetcher.get<Event[]>(`organizations/${organizationId}/events/past${params}`);
 };
 
 const getGuests = async (eventId: number) => {

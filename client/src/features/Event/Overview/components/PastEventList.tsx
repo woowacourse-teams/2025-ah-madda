@@ -17,7 +17,7 @@ type PastEventListProps = {
 
 export const PastEventList = ({ organizationId }: PastEventListProps) => {
   const { data: pastEventData, fetchNextPage } = useInfiniteQuery({
-    ...eventQueryOptions.past(organizationId, 10),
+    ...eventQueryOptions.past(organizationId),
     staleTime: 5 * 60 * 1000,
   });
 
