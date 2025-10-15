@@ -25,6 +25,7 @@ public class AsyncConfig implements AsyncConfigurer {
      * 스레드풀 크기 산정은 Brian Goetz가 『Java Concurrency in Practice』에서 제시한 추정식에 기반한다.
      * <pre>
      * Threads = Cores × TargetUtilization × (1 + Wait / Service)
+     * </pre>
      */
     @Bean
     public ThreadPoolTaskExecutor taskExecutor() {
