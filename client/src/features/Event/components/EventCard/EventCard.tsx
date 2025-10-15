@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -23,7 +25,7 @@ export type EventCardProps = Event & {
   cardType?: EventCardType;
 };
 
-export const EventCard = ({
+export const EventCard = memo(function EventCard({
   eventId,
   title,
   description,
@@ -36,7 +38,7 @@ export const EventCard = ({
   maxCapacity,
   isGuest,
   cardType = 'default',
-}: EventCardProps) => {
+}: EventCardProps) {
   const navigate = useNavigate();
   const { organizationId } = useParams();
   const { isUnlimited, progressValue, progressMax } = calculateCapacityStatus(
@@ -122,7 +124,7 @@ export const EventCard = ({
       </Flex>
     </CardWrapper>
   );
-};
+});
 
 const CardWrapper = styled.div`
   cursor: pointer;

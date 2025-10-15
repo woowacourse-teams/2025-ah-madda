@@ -1,4 +1,4 @@
-import { queryOptions } from '@tanstack/react-query';
+import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 
 import { Guest, NonGuest } from '../../features/Event/Manage/types';
 import { CreateEventAPIRequest, Event, EventDetail } from '../../features/Event/types/Event';
@@ -13,6 +13,7 @@ import {
   NotifyHistoryAPIResponse,
   TemplateListAPIResponse,
   TemplateDetailAPIResponse,
+  PastEventAPIResponse,
 } from '../types/event';
 import { NotificationAPIRequest } from '../types/notification';
 
@@ -54,10 +55,16 @@ export const eventQueryOptions = {
       queryKey: [...eventQueryKeys.ongoing(), organizationId],
       queryFn: () => getOngoingEventAPI({ organizationId }),
     }),
-  past: (organizationId: number) =>
-    queryOptions({
-      queryKey: [...eventQueryKeys.past(), organizationId],
-      queryFn: () => getPastEventAPI({ organizationId }),
+  past: (organizationId: number, lastEventId?: number) =>
+    infiniteQueryOptions({
+      queryKey: [...eventQueryKeys.past(), organizationId, lastEventId],
+      queryFn: () => getPastEventAPI({ organizationId, lastEventId }),
+      getNextPageParam: (data: Event[]) => {
+        if (data.length > 0) {
+          return data[data.length - 1].eventId;
+        }
+      },
+      initialPageParam: null,
     }),
   alarms: (eventId: number) => ({
     mutationKey: [...eventQueryKeys.alarm(), eventId],
@@ -130,8 +137,9 @@ const getOngoingEventAPI = ({ organizationId }: { organizationId: number }) => {
   return fetcher.get<Event[]>(`organizations/${organizationId}/events`);
 };
 
-const getPastEventAPI = ({ organizationId }: { organizationId: number }) => {
-  return fetcher.get<Event[]>(`organizations/${organizationId}/events/past`);
+const getPastEventAPI = ({ organizationId, lastEventId }: PastEventAPIResponse) => {
+  const params = lastEventId ? `?lastEventId=${lastEventId}` : '';
+  return fetcher.get<Event[]>(`organizations/${organizationId}/events/past${params}`);
 };
 
 const getGuests = async (eventId: number) => {

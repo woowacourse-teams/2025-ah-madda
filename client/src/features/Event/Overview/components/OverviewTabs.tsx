@@ -1,21 +1,15 @@
-import { css } from '@emotion/react';
-
-import { Flex } from '@/shared/components/Flex';
 import { Tabs } from '@/shared/components/Tabs';
-import { Text } from '@/shared/components/Text';
 
-import { Event } from '../../types/Event';
 import { EventContainer } from '../containers/EventContainer';
 
 import { CurrentEventList } from './CurrentEventList';
 import { PastEventList } from './PastEventList';
 
 type OverviewTabsProps = {
-  currentEventData: Event[];
-  pastEventData: Event[];
+  organizationId: number;
 };
 
-export const OverviewTabs = ({ currentEventData, pastEventData }: OverviewTabsProps) => {
+export const OverviewTabs = ({ organizationId }: OverviewTabsProps) => {
   return (
     <EventContainer>
       <Tabs defaultValue="current">
@@ -25,19 +19,11 @@ export const OverviewTabs = ({ currentEventData, pastEventData }: OverviewTabsPr
         </Tabs.List>
 
         <Tabs.Content value="current">
-          <CurrentEventList events={currentEventData ?? []} />
+          <CurrentEventList organizationId={organizationId} />
         </Tabs.Content>
 
         <Tabs.Content value="past">
-          {pastEventData.length === 0 ? (
-            <Flex justifyContent="center" alignItems="center" height="200px">
-              <Text type="Heading" weight="semibold" color="gray">
-                등록된 이벤트가 없습니다.
-              </Text>
-            </Flex>
-          ) : (
-            <PastEventList events={pastEventData ?? []} />
-          )}
+          <PastEventList organizationId={organizationId} />
         </Tabs.Content>
       </Tabs>
     </EventContainer>

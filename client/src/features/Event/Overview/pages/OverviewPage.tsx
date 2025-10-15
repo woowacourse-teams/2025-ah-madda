@@ -1,11 +1,10 @@
 import { Suspense, useState } from 'react';
 
 import { css } from '@emotion/react';
-import { useSuspenseQuery, useSuspenseQueries } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { createInviteCode } from '@/api/mutations/useCreateInviteCode';
-import { eventQueryOptions } from '@/api/queries/event';
 import { organizationQueryOptions } from '@/api/queries/organization';
 import { Button } from '@/shared/components/Button';
 import { Header } from '@/shared/components/Header';
@@ -76,7 +75,7 @@ export const OverviewPage = () => {
         <ActionButtons onIssueInviteCode={handleCreateInviteCode} />
 
         <Suspense fallback={<TabsSkeleton />}>
-          <OverviewTabsSection organizationId={orgIdNum} />
+          <OverviewTabs organizationId={orgIdNum} />
         </Suspense>
       </PageLayout>
 
@@ -98,20 +97,4 @@ const OrganizationInfoSection = ({ organizationId }: { organizationId: string })
       imageUrl={organizationData?.imageUrl ?? ''}
     />
   );
-};
-
-const OverviewTabsSection = ({ organizationId }: { organizationId: number }) => {
-  const [{ data: currentEventData }, { data: pastEventData }] = useSuspenseQueries({
-    queries: [
-      {
-        ...eventQueryOptions.ongoing(organizationId),
-      },
-      {
-        ...eventQueryOptions.past(organizationId),
-        staleTime: 5 * 60 * 1000,
-      },
-    ],
-  });
-
-  return <OverviewTabs currentEventData={currentEventData} pastEventData={pastEventData} />;
 };
