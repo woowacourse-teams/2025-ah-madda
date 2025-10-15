@@ -5,6 +5,11 @@ export type Answer = {
   answerText: string;
 };
 
+export type PastEventAPIResponse = {
+  organizationId: number;
+  lastEventId?: number;
+};
+
 export type GuestStatusAPIResponse = {
   isGuest: boolean;
 };
