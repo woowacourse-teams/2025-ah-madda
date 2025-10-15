@@ -1,0 +1,130 @@
+import { css } from '@emotion/react';
+import styled from '@emotion/styled';
+import { useQueries, useQuery } from '@tanstack/react-query';
+
+import { eventQueryOptions } from '@/api/queries/event';
+import { myQueryOptions } from '@/api/queries/my';
+import type { GuestAnswerAPIResponse } from '@/api/types/my';
+import { Flex } from '@/shared/components/Flex';
+import { Text } from '@/shared/components/Text';
+import { theme } from '@/shared/styles/theme';
+
+import type { Guest } from '../types';
+
+type PreAnswersSectionProps = {
+  eventId: number;
+};
+
+export const PreAnswersSection = ({ eventId }: PreAnswersSectionProps) => {
+  const { data: guests = [] } = useQuery(eventQueryOptions.guests(eventId)) as {
+    data: Guest[] | undefined;
+  } as unknown as { data: Guest[] };
+
+  const shouldFetch = guests.length > 0;
+
+  const answersResults = useQueries({
+    queries: shouldFetch
+      ? guests.map((g) => ({
+          ...myQueryOptions.event.guestAnswers(eventId, g.guestId),
+          select: (data: GuestAnswerAPIResponse[] | undefined) => data ?? [],
+          enabled: true,
+        }))
+      : [],
+  });
+
+  return (
+    <Flex dir="column" gap="16px" padding="30px 0">
+      <Text color={theme.colors.gray600}>참여자별 사전 답변 목록입니다.</Text>
+
+      {guests.length === 0 && (
+        <EmptyState>
+          <Text type="Body" weight="medium" color={theme.colors.gray500}>
+            아직 신청한 참여자가 없어요.
+          </Text>
+        </EmptyState>
+      )}
+
+      {guests.map((g, idx) => {
+        const result = answersResults[idx];
+        const isLoading = result?.isLoading || result?.isFetching;
+        const isError = !!result?.error;
+        const items = (result?.data as GuestAnswerAPIResponse[] | undefined) ?? [];
+
+        const sorted = [...items].sort(
+          (a, b) =>
+            (a.orderIndex ?? Number.MAX_SAFE_INTEGER) - (b.orderIndex ?? Number.MAX_SAFE_INTEGER)
+        );
+
+        return (
+          <Card key={g.organizationMemberId}>
+            <Text
+              type="Heading"
+              weight="bold"
+              color={theme.colors.gray800}
+              css={css`
+                margin-bottom: 8px;
+              `}
+            >
+              {g.nickname}
+            </Text>
+
+            {isLoading && (
+              <Text type="Label" weight="medium" color={theme.colors.gray500}>
+                로딩 중...
+              </Text>
+            )}
+
+            {isError && (
+              <Text type="Label" weight="medium" color={theme.colors.gray800}>
+                답변을 불러오지 못했습니다.
+              </Text>
+            )}
+
+            {!isLoading && !isError && sorted.length === 0 && (
+              <Text type="Label" weight="medium" color={theme.colors.gray500}>
+                작성한 답변이 없습니다.
+              </Text>
+            )}
+
+            {!isLoading && !isError && sorted.length > 0 && (
+              <QAList>
+                {sorted.map((qa, i) => (
+                  <QAItem key={qa.orderIndex ?? i}>
+                    <Text type="Body" weight="bold" color={theme.colors.gray800}>
+                      {qa.questionText}
+                    </Text>
+                    <Text type="Body" weight="medium" color={theme.colors.gray700}>
+                      {qa.answerText}
+                    </Text>
+                  </QAItem>
+                ))}
+              </QAList>
+            )}
+          </Card>
+        );
+      })}
+    </Flex>
+  );
+};
+
+const Card = styled.article`
+  border: 1px solid ${theme.colors.gray100};
+  border-radius: 12px;
+  padding: 16px;
+`;
+
+const QAList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const QAItem = styled.div`
+  display: grid;
+  padding: 8px 0;
+`;
+
+const EmptyState = styled.div`
+  padding: 16px 0;
+  text-align: center;
+`;
