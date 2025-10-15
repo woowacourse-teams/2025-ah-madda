@@ -23,12 +23,33 @@ public class SchedulingConfig implements SchedulingConfigurer {
         taskRegistrar.setTaskScheduler(taskScheduler());
     }
 
-    // TODO. 추후 ThreadPoolTaskScheduler의 thread 설정 변경 및 graceful shutdown 고려 필요
+    /**
+     * 공통 스케줄러 스레드풀.
+     * <p>
+     * 스레드풀 크기 산정은 Brian Goetz가 『Java Concurrency in Practice』에서 제시한 추정식에 기반한다.
+     * <pre>
+     * Threads = Cores × TargetUtilization × (1 + Wait / Service)
+     * </pre>
+     * 스케줄러는 CPU 바운드 작업에 가깝기 때문에 Wait/Service ≈ 0 으로 간주하며,
+     * 결과적으로 Threads ≈ Cores 수준이 가장 효율적이다.
+     * 다만, 저사양 환경(1코어)에서는 병렬 스케줄링을 보장하기 위해 최소 2개로 보정한다.
+     */
     @Bean
     public ThreadPoolTaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setThreadNamePrefix("scheduler-");
 
+        int cores = Runtime.getRuntime()
+                .availableProcessors();
+        scheduler.setPoolSize(Math.max(cores, 2));
+
+        scheduler.setWaitForTasksToCompleteOnShutdown(true);
+        scheduler.setAwaitTerminationSeconds(60);
+        scheduler.setRemoveOnCancelPolicy(true);
+        scheduler.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
+        scheduler.setExecuteExistingDelayedTasksAfterShutdownPolicy(true);
+
+        scheduler.initialize();
         return scheduler;
     }
 
