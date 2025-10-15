@@ -15,8 +15,8 @@ export const useInfiniteScroll = (callback: VoidFunction) => {
         if (entry.isIntersecting) {
           callback();
         }
-      }, OBSERVER_OPTIONS);
-    });
+      });
+    }, OBSERVER_OPTIONS);
 
     const currentRef = ref.current;
 
