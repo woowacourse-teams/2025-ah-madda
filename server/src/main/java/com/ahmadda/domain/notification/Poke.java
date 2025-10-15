@@ -14,7 +14,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 
-//TODO 성능 문제 추후에 고려
 @Service
 @RequiredArgsConstructor
 public class Poke {
