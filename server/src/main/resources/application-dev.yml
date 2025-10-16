@@ -19,6 +19,9 @@ spring:
       s3:
         region: ${aws.dev.s3.region}
 
+  flyway:
+    baseline-on-migrate: false
+
 jwt:
   access:
     secret-key: ${jwt.dev.access.secret-key}
@@ -52,3 +55,30 @@ aws:
   s3:
     bucket: ${aws.dev.s3.bucket}
     folder: ${aws.dev.s3.folder}
+
+management:
+  metrics:
+    enable:
+      system.cpu.usage: true
+      jvm.memory.used: true
+      jvm.memory.max: true
+      http.server.requests: true
+      tomcat.threads: true
+      app.health.status: true
+      executor: true
+      hikaricp.connections.active: true
+      hikaricp.connections.pending: true
+      hikaricp.connections.max: true
+      hikaricp.connections.timeout: true
+      logback.events: true
+      resilience4j.circuitbreaker.state: true
+      resilience4j.circuitbreaker.failure.rate: true
+      resilience4j.circuitbreaker.slow.call.rate: true
+      resilience4j.circuitbreaker.not.permitted.calls: true
+      resilience4j.retry.calls: true
+  cloudwatch:
+    metrics:
+      export:
+        enabled: true
+        step: 1m
+        namespace: EC2/ahmadda-api
