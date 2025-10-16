@@ -20,7 +20,7 @@ spring:
         region: ${aws.dev.s3.region}
 
   flyway:
-    baseline-on-migrate: false
+    baseline-on-migrate: true
 
 jwt:
   access:
