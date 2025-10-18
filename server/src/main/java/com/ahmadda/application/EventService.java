@@ -2,6 +2,7 @@ package com.ahmadda.application;
 
 import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.EventCreated;
+import com.ahmadda.application.dto.EventRead;
 import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.EventUpdated;
 import com.ahmadda.application.dto.LoginMember;
@@ -117,10 +118,10 @@ public class EventService {
 
     @Transactional
     public Event getEvent(final Long eventId) {
-        // TODO. 추후 비회원 조회수 관련 논의 필요
-//        eventPublisher.publishEvent(EventRead.from(event, loginMember));
+        Event event = getEventById(eventId);
+        eventPublisher.publishEvent(EventRead.from(event));
 
-        return getEventById(eventId);
+        return event;
     }
 
     @Transactional
@@ -193,6 +194,11 @@ public class EventService {
         Organization organization = getOrganization(organizationId);
 
         return organization.getActiveEvents(LocalDateTime.now());
+    }
+
+    @Transactional(readOnly = true)
+    public Event getEventTemplate(final Long eventId) {
+        return getEventById(eventId);
     }
 
     private Member getMember(final Long loginMember) {

@@ -691,10 +691,10 @@ public class OrganizationEventController {
             )
     })
     @GetMapping("/events/{eventId}/owned/template")
-    public ResponseEntity<EventLoadResponse> getOwnerEventTemplate(
+    public ResponseEntity<EventLoadResponse> getEventTemplate(
             @PathVariable final Long eventId
     ) {
-        Event organizationMemberEvent = eventService.getEvent(eventId);
+        Event organizationMemberEvent = eventService.getEventTemplate(eventId);
 
         EventLoadResponse response = EventLoadResponse.from(organizationMemberEvent);
 

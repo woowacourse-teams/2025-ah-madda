@@ -2,7 +2,6 @@ package com.ahmadda.application.listener;
 
 import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.EventRead;
-import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
@@ -65,13 +64,12 @@ class EventReadListenerTest {
         // given
         var organization = createOrganization();
         var organizer = createMember("organizer", "organizer@mail.com");
-        var reader = createMember("reader", "reader@mail.com");
         var group = createGroup();
         var organizationMember = createOrganizationMember(organization, organizer, group);
         var event = createEvent(organizationMember, organization);
         eventStatisticRepository.save(EventStatistic.create(event));
 
-        var eventRead = new EventRead(event.getId(), new LoginMember(reader.getId()));
+        var eventRead = new EventRead(event.getId());
 
         // when
         sut.onEventRead(eventRead);
@@ -94,12 +92,11 @@ class EventReadListenerTest {
         // given
         var organization = createOrganization();
         var organizer = createMember("organizer", "organizer@mail.com");
-        var reader = createMember("reader", "reader@mail.com");
         var group = createGroup();
         var organizationMember = createOrganizationMember(organization, organizer, group);
         var event = createEvent(organizationMember, organization);
 
-        var eventRead = new EventRead(event.getId(), new LoginMember(reader.getId()));
+        var eventRead = new EventRead(event.getId());
 
         // when
         sut.onEventRead(eventRead);
@@ -117,27 +114,10 @@ class EventReadListenerTest {
     }
 
     @Test
-    void 이벤트_조회시_회원이_존재하지_않으면_예외가_발생한다() {
-        // given
-        var organization = createOrganization();
-        var organizer = createMember("organizer", "organizer@mail.com");
-        var group = createGroup();
-        var organizationMember = createOrganizationMember(organization, organizer, group);
-        var event = createEvent(organizationMember, organization);
-
-        var eventRead = new EventRead(event.getId(), new LoginMember(999L));
-
-        // when // then
-        assertThatThrownBy(() -> sut.onEventRead(eventRead))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 회원입니다.");
-    }
-
-    @Test
     void 이벤트_조회시_이벤트가_존재하지_않으면_예외가_발생한다() {
         // given
         var reader = createMember("reader", "reader@mail.com");
-        var eventRead = new EventRead(999L, new LoginMember(reader.getId()));
+        var eventRead = new EventRead(999L);
 
         // when // then
         assertThatThrownBy(() -> sut.onEventRead(eventRead))

@@ -183,36 +183,10 @@ class EventStatisticTest {
     }
 
     @Test
-    void 주최자는_조회해도_조회수가_오르지_않는다() {
-        //given
-        var organization = createOrganization("우테코1");
-        var organizationMember = createOrganizationMember(createMember("서프", "surf@gmail.com"), organization);
-        var event = createEvent(organizationMember, organization);
-
-        var startDatetime = event.getEventOperationPeriod()
-                .getRegistrationEventPeriod()
-                .start()
-                .toLocalDate();
-        var sut = EventStatistic.create(event);
-
-        //when
-        sut.increaseViewCount(
-                startDatetime,
-                organizationMember.getMember()
-        );
-
-        //then
-        assertThat(sut.findEventViewMetrics(organizationMember, startDatetime)
-                .getFirst()
-                .getViewCount()).isEqualTo(0L);
-    }
-
-    @Test
     void 오늘_날짜의_조회수를_증가시킬_수_있다() {
         //given
         var organization = createOrganization("우테코1");
         var organizationMember = createOrganizationMember(createMember("서프", "surf@gmail.com"), organization);
-        var organizationMember2 = createOrganizationMember(createMember("투다", "praisebak@gmail.com"), organization);
         var event = createEvent(organizationMember, organization);
 
         var startDatetime = event.getEventOperationPeriod()
@@ -222,10 +196,7 @@ class EventStatisticTest {
         var sut = EventStatistic.create(event);
 
         //when
-        sut.increaseViewCount(
-                startDatetime,
-                organizationMember2.getMember()
-        );
+        sut.increaseViewCount(startDatetime);
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, startDatetime)
@@ -247,10 +218,7 @@ class EventStatisticTest {
         var sut = EventStatistic.create(event);
 
         //when
-        sut.increaseViewCount(
-                LocalDate.MAX,
-                organizationMember.getMember()
-        );
+        sut.increaseViewCount(LocalDate.MAX);
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, startDatetime)

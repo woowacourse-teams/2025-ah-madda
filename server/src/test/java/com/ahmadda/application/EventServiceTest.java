@@ -235,7 +235,7 @@ class EventServiceTest {
         var organization = createOrganization("우테코");
         var member = createMember();
         var group = createGroup();
-        var organizationMember = createOrganizationMember(organization, member, group);
+        createOrganizationMember(organization, member, group);
 
         var now = LocalDateTime.now();
 
@@ -982,6 +982,49 @@ class EventServiceTest {
         assertThatThrownBy(() -> sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("최대 주최자 수는 10명입니다.");
+    }
+
+    @Test
+    void 이벤트_템플릿을_조회할_수_있다() {
+        //given
+        var organization = createOrganization("우테코");
+        var member = createMember();
+        var group = createGroup();
+        createOrganizationMember(organization, member, group);
+
+        var now = LocalDateTime.now();
+
+        var request = new EventCreateRequest(
+                "UI/UX 이벤트",
+                "UI/UX 이벤트입니다",
+                "선릉",
+                now.plusDays(4),
+                now.plusDays(5),
+                now.plusDays(6),
+
+                100,
+                List.of(
+                        new QuestionCreateRequest("1번 질문", true),
+                        new QuestionCreateRequest("2번 질문", false)
+                )
+        );
+
+        var loginMember = new LoginMember(member.getId());
+        var savedEvent = sut.createEvent(organization.getId(), loginMember, request, now);
+
+        //when
+        var findEvent = sut.getEventTemplate(savedEvent.getId());
+
+        //then
+        assertThat(findEvent.getTitle()).isEqualTo(request.title());
+    }
+
+    @Test
+    void 특정_이벤트_템플릿을_조회할때_해당_이벤트가_없다면_예외가_발생한다() {
+        //when //then
+        assertThatThrownBy(() -> sut.getEventTemplate(999L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 이벤트 정보입니다.");
     }
 
     private Organization createOrganization(String name) {
