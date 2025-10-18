@@ -9,6 +9,8 @@ import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
+import { byOrderIndexAsc } from '../utils/sortByOrderIndex';
+
 type PreAnswersSectionProps = {
   eventId: number;
 };
@@ -24,7 +26,8 @@ export const PreAnswersSection = ({ eventId }: PreAnswersSectionProps) => {
     queries: shouldFetch
       ? guests.map((g) => ({
           ...myQueryOptions.event.guestAnswers(eventId, g.guestId),
-          select: (data: GuestAnswerAPIResponse[] | undefined) => data ?? [],
+          select: (data: GuestAnswerAPIResponse[] | undefined) =>
+            (data ?? []).slice().sort(byOrderIndexAsc),
           enabled: true,
         }))
       : [],
@@ -46,12 +49,7 @@ export const PreAnswersSection = ({ eventId }: PreAnswersSectionProps) => {
         const result = answersResults[idx];
         const isLoading = result?.isLoading || result?.isFetching;
         const isError = !!result?.error;
-        const items = (result?.data as GuestAnswerAPIResponse[] | undefined) ?? [];
-
-        const sorted = [...items].sort(
-          (a, b) =>
-            (a.orderIndex ?? Number.MAX_SAFE_INTEGER) - (b.orderIndex ?? Number.MAX_SAFE_INTEGER)
-        );
+        const items: GuestAnswerAPIResponse[] = result?.data ?? [];
 
         if (isLoading) {
           return (
@@ -79,7 +77,7 @@ export const PreAnswersSection = ({ eventId }: PreAnswersSectionProps) => {
           );
         }
 
-        if (sorted.length === 0) {
+        if (items.length === 0) {
           return (
             <Text
               key={guest.organizationMemberId}
@@ -105,7 +103,7 @@ export const PreAnswersSection = ({ eventId }: PreAnswersSectionProps) => {
               {guest.nickname}
             </Text>
             <QAList>
-              {sorted.map((qa, i) => (
+              {items.map((qa, i) => (
                 <QAItem key={qa.orderIndex ?? i}>
                   <Text type="Body" weight="bold" color={theme.colors.gray800}>
                     {qa.questionText}
