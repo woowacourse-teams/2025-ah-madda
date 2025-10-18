@@ -46,6 +46,8 @@ dependencies {
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.4.0'
     implementation 'com.google.firebase:firebase-admin:9.5.0'
     implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.3.0'
+    implementation 'com.bucket4j:bucket4j_jdk17-core:8.15.0'
+    implementation 'com.bucket4j:bucket4j_jdk17-mysql:8.15.0'
 
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-metrics:3.4.0'
     implementation 'ca.pjer:logback-awslogs-appender:1.6.0'
