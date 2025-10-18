@@ -7,7 +7,7 @@ import { ButtonProps } from './Button';
 
 const sizeStyles = {
   sm: css`
-    min-height: 32px;
+    min-height: 36px;
     padding: 0 ${theme.spacing[3]};
     font-size: 14px;
     font-weight: 500;
@@ -120,7 +120,7 @@ export const StyledButton = styled.button<ButtonProps>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: ${theme.spacing[2]};
+  gap: ${theme.spacing[1]};
   flex-shrink: 0;
   border: none;
   border-radius: 4px;
