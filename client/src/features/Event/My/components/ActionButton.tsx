@@ -10,23 +10,17 @@ type ActionButtonProps = {
 };
 export const ActionButton = ({ organizationId }: ActionButtonProps) => {
   const navigate = useNavigate();
-  const goCreateEvent = () => navigate(`/${organizationId}/event/new`);
   const goEditProfile = () => navigate(`/${organizationId}/profile`);
 
   return (
     <>
       <DesktopButtonContainer alignItems="center" gap="8px">
-        <Button size="md" variant="outline" onClick={goCreateEvent}>
-          + 이벤트 만들기
-        </Button>
-
         <Button size="md" onClick={goEditProfile}>
           프로필 수정
         </Button>
       </DesktopButtonContainer>
 
       <MobileButtonContainer alignItems="center" gap="8px">
-        <IconButton name="plus" onClick={goCreateEvent} />
         <IconButton name="user" onClick={goEditProfile} />
       </MobileButtonContainer>
     </>

@@ -7,27 +7,28 @@ import { ButtonProps } from './Button';
 
 const sizeStyles = {
   sm: css`
-    width: 80px;
-    height: 32px;
-    font-size: 16px;
+    min-height: 36px;
+    padding: 0 ${theme.spacing[3]};
+    font-size: 14px;
     font-weight: 500;
   `,
   md: css`
-    width: 138px;
-    height: 42px;
+    min-height: 40px;
+    padding: 0 ${theme.spacing[4]};
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 500;
   `,
   lg: css`
-    width: 240px;
-    height: 50px;
+    min-height: 48px;
+    padding: 0 ${theme.spacing[5]};
     font-size: 16px;
     font-weight: 600;
   `,
   full: css`
     width: 100%;
-    height: 50px;
-    font-size: 16px;
+    min-height: 48px;
+    padding: 0 ${theme.spacing[5]};
+    font-size: 18px;
     font-weight: 600;
   `,
 } as const;
@@ -75,6 +76,28 @@ const colorStyles = {
 } as const;
 
 const variantStyles = {
+  ghost: (color: NonNullable<ButtonProps['color']>) => css`
+    color: ${color === 'primary'
+      ? theme.colors.primary600
+      : color === 'secondary'
+        ? theme.colors.secondary600
+        : theme.colors.gray800};
+    background-color: transparent;
+    border: none;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: ${color === 'primary'
+        ? `${theme.colors.primary600}1A`
+        : color === 'secondary'
+          ? `${theme.colors.secondary600}1A`
+          : `${theme.colors.gray800}1A`};
+    }
+
+    &:disabled {
+      color: ${theme.colors.gray400};
+    }
+  `,
   outline: css`
     color: ${theme.colors.gray500};
     border: 1px solid ${theme.colors.gray300};
@@ -94,23 +117,35 @@ const variantStyles = {
 } as const;
 
 export const StyledButton = styled.button<ButtonProps>`
-  height: 40px;
-  cursor: pointer;
-  background-color: transparent;
-  display: flex;
-  justify-content: center;
+  display: inline-flex;
   align-items: center;
-  gap: ${({ iconName }) => (iconName ? '2px' : '0')};
+  justify-content: center;
+  gap: ${theme.spacing[1]};
+  flex-shrink: 0;
   border: none;
   border-radius: 4px;
+  cursor: pointer;
   line-height: 1.4;
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
+  box-shadow: 0 1px 2px ${theme.colors.black}1A;
 
-  ${({ size }) => sizeStyles[size ?? 'md']}
-  ${({ color, variant = 'solid' }) =>
-    variant === 'outline' ? variantStyles.outline : colorStyles[color ?? 'primary']}
+  ${({ color = 'primary', variant = 'solid' }) =>
+    variant === 'outline'
+      ? variantStyles.outline
+      : variant === 'ghost'
+        ? variantStyles.ghost(color)
+        : colorStyles[color ?? 'primary']};
+
+  ${({ size = 'md' }) => sizeStyles[size]};
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  &:active {
+    transform: scale(0.97) translateY(1px);
   }
 `;

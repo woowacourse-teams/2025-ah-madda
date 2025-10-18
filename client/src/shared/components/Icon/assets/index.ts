@@ -8,6 +8,7 @@ import { Delete } from './delete';
 import { DropdownDown } from './dropdownDown';
 import { DropdownUp } from './dropdownUp';
 import { Edit } from './edit';
+import { Loading } from './loading';
 import { Location } from './location';
 import { Logo } from './logo';
 import { Next } from './next';
@@ -26,6 +27,7 @@ export const Icons = {
   close: Close,
   delete: Delete,
   edit: Edit,
+  loading: Loading,
   location: Location,
   logo: Logo,
   plus: Plus,

@@ -14,30 +14,16 @@ export const ActionButtons = ({ onIssueInviteCode }: ActionButtonsProps) => {
   return (
     <>
       <DesktopButtonContainer>
-        <Button
-          size="md"
-          iconName="share"
-          onClick={onIssueInviteCode}
-          css={css`
-            width: 170px;
-          `}
-        >
+        <Button size="md" color="secondary" iconName="share" onClick={onIssueInviteCode}>
           이벤트 스페이스 초대
         </Button>
-        <Button
-          size="md"
-          iconName="plus"
-          onClick={() => navigate(`/${organizationId}/event/new`)}
-          css={css`
-            width: 170px;
-          `}
-        >
+        <Button size="md" iconName="plus" onClick={() => navigate(`/${organizationId}/event/new`)}>
           이벤트 생성
         </Button>
       </DesktopButtonContainer>
 
       <MobileFixedCTA>
-        <Button size="md" iconName="share" variant="outline" onClick={onIssueInviteCode}>
+        <Button size="md" color="secondary" iconName="share" onClick={onIssueInviteCode}>
           이벤트 스페이스 초대
         </Button>
         <Button size="md" iconName="plus" onClick={() => navigate(`/${organizationId}/event/new`)}>

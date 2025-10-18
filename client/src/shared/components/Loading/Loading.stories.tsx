@@ -20,5 +20,27 @@ export default meta;
 type Story = StoryObj<typeof Loading>;
 
 export const Basic: Story = {
-  render: () => <Loading />,
+  args: {
+    type: 'text',
+    size: 48,
+    color: 'gray',
+  },
+  argTypes: {
+    type: {
+      control: {
+        type: 'select',
+        options: ['text', 'spinner'],
+      },
+    },
+    size: {
+      control: {
+        type: 'number',
+      },
+    },
+    color: {
+      control: { type: 'select' },
+      options: ['primary', 'primary500', 'secondary', 'gray', 'gray500', 'red', 'white'],
+    },
+  },
+  render: (args) => <Loading {...args} />,
 };
