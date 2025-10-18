@@ -123,7 +123,6 @@ const Card = styled.article`
 `;
 
 const QAList = styled(Flex)`
-  display: flex;
   flex-direction: column;
   gap: 8px;
 `;
