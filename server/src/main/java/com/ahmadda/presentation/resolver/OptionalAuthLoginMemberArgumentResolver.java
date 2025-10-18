@@ -1,6 +1,7 @@
 package com.ahmadda.presentation.resolver;
 
 import com.ahmadda.application.dto.LoginMember;
+import com.ahmadda.common.exception.UnauthorizedException;
 import com.ahmadda.infra.auth.jwt.JwtProvider;
 import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
 import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
@@ -17,6 +18,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+// TODO. 추후 인증 책임 분리를 위해 리졸버를 인터셉터로 변경 고려
 @Component
 @EnableConfigurationProperties(JwtAccessTokenProperties.class)
 @RequiredArgsConstructor
@@ -50,7 +52,7 @@ public class OptionalAuthLoginMemberArgumentResolver implements HandlerMethodArg
                     jwtProvider.parsePayload(accessToken, jwtAccessTokenProperties.getAccessSecretKey());
 
             return new LoginMember(payload.memberId());
-        } catch (Exception e) {
+        } catch (UnauthorizedException e) {
             return null;
         }
     }
