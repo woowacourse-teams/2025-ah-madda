@@ -111,7 +111,7 @@ const Card = styled.article`
   padding: 16px;
 `;
 
-const QAList = styled.div`
+const QAList = styled(Flex)`
   display: flex;
   flex-direction: column;
   gap: 8px;
