@@ -23,6 +23,7 @@ import { badgeText } from '../../utils/badgeText';
 import { DeadlineModal } from '../components/DeadlineModal';
 import { EventInfoSection } from '../components/EventInfoSection';
 import { GuestManageSection } from '../components/GuestManageSection';
+import { PreAnswersSection } from '../components/PreAnswersSection';
 import { EventManageContainer } from '../containers/EventManageContainer';
 
 export const EventManagePage = () => {
@@ -53,6 +54,8 @@ export const EventManagePage = () => {
   };
 
   if (!event) return null;
+
+  const hasPreQuestions = event.questions.length > 0;
 
   return (
     <>
@@ -134,6 +137,7 @@ export const EventManagePage = () => {
             >
               <Tabs.Trigger value="detail">이벤트 정보</Tabs.Trigger>
               <Tabs.Trigger value="applications">참여 현황</Tabs.Trigger>
+              {hasPreQuestions && <Tabs.Trigger value="preanswers">사전 질문</Tabs.Trigger>}
             </Tabs.List>
 
             <Tabs.Content value="detail">
@@ -143,6 +147,12 @@ export const EventManagePage = () => {
             <Tabs.Content value="applications">
               <GuestManageSection />
             </Tabs.Content>
+
+            {hasPreQuestions && (
+              <Tabs.Content value="preanswers">
+                <PreAnswersSection eventId={eventId} />
+              </Tabs.Content>
+            )}
           </Tabs>
         </EventManageContainer>
       </PageLayout>
