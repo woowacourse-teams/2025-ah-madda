@@ -58,6 +58,8 @@ export const Button = ({
   isLoading = false,
   ...props
 }: ButtonProps) => {
+  const iconSize = size === 'sm' ? 14 : size === 'md' ? 16 : 20;
+
   return (
     <StyledButton
       size={size}
@@ -67,22 +69,19 @@ export const Button = ({
       iconName={iconName}
       {...props}
     >
-      {isLoading && (
-        <Loading
-          type="spinner"
-          size={size === 'sm' ? 14 : size === 'md' ? 16 : 20}
-          color={variant === 'outline' ? 'gray' : color === 'secondary' ? 'primary' : 'white'}
-        />
-      )}
-
+      {isLoading && <Loading type="spinner" size={iconSize} color={getIconColor(variant, color)} />}
       {size === 'md' && iconName && (
-        <Icon
-          name={iconName}
-          size={20}
-          color={variant === 'outline' ? 'gray' : color === 'secondary' ? 'primary' : 'white'}
-        />
+        <Icon name={iconName} size={20} color={getIconColor(variant, color)} />
       )}
       {children}
     </StyledButton>
   );
+};
+
+const getIconColor = (variant: Variant, color: Color) => {
+  if (variant === 'outline') return 'gray500';
+  if (variant === 'ghost') {
+    return color === 'primary' ? 'primary' : color === 'secondary' ? 'secondary' : 'gray';
+  }
+  return color === 'secondary' ? 'primary' : 'white';
 };
