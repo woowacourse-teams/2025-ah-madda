@@ -18,6 +18,7 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberWithOptStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -26,7 +27,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +41,7 @@ public class EventNotificationService {
     private final EventNotificationOptOutRepository eventNotificationOptOutRepository;
     private final ReminderHistoryRepository reminderHistoryRepository;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void notifySelectedOrganizationMembers(
             final Long eventId,
             final SelectedOrganizationMembersNotificationRequest request,
