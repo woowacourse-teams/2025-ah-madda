@@ -5,7 +5,7 @@ spring:
     username: ahmadda
     password: 1234
     hikari:
-      maximum-pool-size: 20
+      maximum-pool-size: 5
 
   jpa:
     show-sql: true
