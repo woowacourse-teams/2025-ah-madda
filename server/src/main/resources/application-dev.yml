@@ -4,6 +4,8 @@ spring:
     url: jdbc:mysql://ahmadda-mysql:3306/ahmadda?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: ahmadda
     password: 1234
+    hikari:
+      maximum-pool-size: 20
 
   jpa:
     show-sql: true
