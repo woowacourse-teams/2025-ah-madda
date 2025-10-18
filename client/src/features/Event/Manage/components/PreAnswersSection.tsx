@@ -6,6 +6,7 @@ import { eventQueryOptions } from '@/api/queries/event';
 import { myQueryOptions } from '@/api/queries/my';
 import type { GuestAnswerAPIResponse } from '@/api/types/my';
 import { Flex } from '@/shared/components/Flex';
+import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
@@ -92,16 +93,10 @@ export const PreAnswersSection = ({ eventId }: PreAnswersSectionProps) => {
 
         return (
           <Card key={guest.organizationMemberId}>
-            <Text
-              type="Heading"
-              weight="bold"
-              color={theme.colors.gray800}
-              css={css`
-                margin-bottom: 8px;
-              `}
-            >
+            <Text type="Heading" weight="bold" color={theme.colors.gray800}>
               {guest.nickname}
             </Text>
+            <Spacing height="8px" />
             <QAList>
               {items.map((qa, i) => (
                 <QAItem key={qa.orderIndex ?? i}>
