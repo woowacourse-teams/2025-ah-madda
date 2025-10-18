@@ -55,6 +55,8 @@ export const EventManagePage = () => {
 
   if (!event) return null;
 
+  const hasPreQuestions = event.questions.length > 0;
+
   return (
     <>
       <PageLayout
@@ -135,7 +137,7 @@ export const EventManagePage = () => {
             >
               <Tabs.Trigger value="detail">이벤트 정보</Tabs.Trigger>
               <Tabs.Trigger value="applications">참여 현황</Tabs.Trigger>
-              <Tabs.Trigger value="preanswers">사전 질문</Tabs.Trigger>
+              {hasPreQuestions && <Tabs.Trigger value="preanswers">사전 질문</Tabs.Trigger>}
             </Tabs.List>
 
             <Tabs.Content value="detail">
@@ -146,9 +148,11 @@ export const EventManagePage = () => {
               <GuestManageSection />
             </Tabs.Content>
 
-            <Tabs.Content value="preanswers">
-              <PreAnswersSection eventId={eventId} />
-            </Tabs.Content>
+            {hasPreQuestions && (
+              <Tabs.Content value="preanswers">
+                <PreAnswersSection eventId={eventId} />
+              </Tabs.Content>
+            )}
           </Tabs>
         </EventManageContainer>
       </PageLayout>
