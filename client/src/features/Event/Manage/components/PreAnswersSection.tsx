@@ -42,7 +42,7 @@ export const PreAnswersSection = ({ eventId }: PreAnswersSectionProps) => {
         </EmptyState>
       )}
 
-      {guests.map((g, idx) => {
+      {guests.map((guest, idx) => {
         const result = answersResults[idx];
         const isLoading = result?.isLoading || result?.isFetching;
         const isError = !!result?.error;
@@ -56,7 +56,7 @@ export const PreAnswersSection = ({ eventId }: PreAnswersSectionProps) => {
         if (isLoading) {
           return (
             <Text
-              key={g.organizationMemberId}
+              key={guest.organizationMemberId}
               type="Label"
               weight="medium"
               color={theme.colors.gray500}
@@ -69,7 +69,7 @@ export const PreAnswersSection = ({ eventId }: PreAnswersSectionProps) => {
         if (isError) {
           return (
             <Text
-              key={g.organizationMemberId}
+              key={guest.organizationMemberId}
               type="Label"
               weight="medium"
               color={theme.colors.gray800}
@@ -82,7 +82,7 @@ export const PreAnswersSection = ({ eventId }: PreAnswersSectionProps) => {
         if (sorted.length === 0) {
           return (
             <Text
-              key={g.organizationMemberId}
+              key={guest.organizationMemberId}
               type="Label"
               weight="medium"
               color={theme.colors.gray500}
@@ -93,7 +93,7 @@ export const PreAnswersSection = ({ eventId }: PreAnswersSectionProps) => {
         }
 
         return (
-          <Card key={g.organizationMemberId}>
+          <Card key={guest.organizationMemberId}>
             <Text
               type="Heading"
               weight="bold"
@@ -102,7 +102,7 @@ export const PreAnswersSection = ({ eventId }: PreAnswersSectionProps) => {
                 margin-bottom: 8px;
               `}
             >
-              {g.nickname}
+              {guest.nickname}
             </Text>
             <QAList>
               {sorted.map((qa, i) => (
