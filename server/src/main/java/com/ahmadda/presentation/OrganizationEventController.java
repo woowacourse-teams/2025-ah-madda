@@ -16,6 +16,7 @@ import com.ahmadda.presentation.dto.EventUpdateResponse;
 import com.ahmadda.presentation.dto.MainEventResponse;
 import com.ahmadda.presentation.dto.OrganizerStatusResponse;
 import com.ahmadda.presentation.resolver.Auth;
+import com.ahmadda.presentation.resolver.OptionalAuth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -78,11 +79,14 @@ public class OrganizationEventController {
             )
     })
     @GetMapping("/{organizationId}/events")
-    public ResponseEntity<List<MainEventResponse>> getOrganizationEvents(@PathVariable final Long organizationId) {
+    public ResponseEntity<List<MainEventResponse>> getOrganizationEvents(
+            @PathVariable final Long organizationId,
+            @OptionalAuth final LoginMember loginMember
+    ) {
         List<Event> organizationEvents = eventService.getActiveEvents(organizationId);
 
         List<MainEventResponse> eventResponses = organizationEvents.stream()
-                .map(MainEventResponse::from)
+                .map(event -> MainEventResponse.from(event, loginMember))
                 .toList();
 
         return ResponseEntity.ok(eventResponses);
@@ -116,13 +120,14 @@ public class OrganizationEventController {
     @GetMapping("/{organizationId}/events/past")
     public ResponseEntity<List<MainEventResponse>> getPastEvents(
             @PathVariable final Long organizationId,
-            @RequestParam(defaultValue = DEFAULT_GET_PAST_EVENT_CURSOR) final Long lastEventId
+            @RequestParam(defaultValue = DEFAULT_GET_PAST_EVENT_CURSOR) final Long lastEventId,
+            @OptionalAuth final LoginMember loginMember
     ) {
         List<Event> organizationEvents =
                 eventService.getPastEvents(organizationId, LocalDateTime.now(), lastEventId, 10);
 
         List<MainEventResponse> eventResponses = organizationEvents.stream()
-                .map(MainEventResponse::from)
+                .map(event -> MainEventResponse.from(event, loginMember))
                 .toList();
 
         return ResponseEntity.ok(eventResponses);

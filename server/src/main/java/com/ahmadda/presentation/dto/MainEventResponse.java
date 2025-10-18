@@ -1,5 +1,6 @@
 package com.ahmadda.presentation.dto;
 
+import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOrganizer;
 
@@ -21,7 +22,8 @@ public record MainEventResponse(
         boolean isGuest
 ) {
 
-    public static MainEventResponse from(final Event event) {
+    public static MainEventResponse from(final Event event, final LoginMember loginMember) {
+        boolean isGuest = getIsGuest(event, loginMember);
         List<String> organizerNicknames = getOrganizerNicknames(event);
 
         return new MainEventResponse(
@@ -37,15 +39,27 @@ public record MainEventResponse(
                 event.getRegistrationStart(),
                 event.getRegistrationEnd(),
                 organizerNicknames,
-                // TODO. 추후 비회원 여부에 따른 isGuest 값 설정 필요
-                false
+                isGuest
         );
     }
 
-    private static List<String> getOrganizerNicknames(Event event) {
+    private static List<String> getOrganizerNicknames(final Event event) {
         return event.getEventOrganizers()
                 .stream()
                 .map(EventOrganizer::getNickname)
                 .toList();
+    }
+
+    private static boolean getIsGuest(final Event event, final LoginMember loginMember) {
+        if (loginMember == null) {
+            return false;
+        }
+        
+        return event.getGuests()
+                .stream()
+                .anyMatch(guest -> guest.getOrganizationMember()
+                        .getMember()
+                        .getId()
+                        .equals(loginMember.memberId()));
     }
 }
