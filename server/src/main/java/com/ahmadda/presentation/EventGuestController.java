@@ -16,7 +16,7 @@ import com.ahmadda.presentation.dto.GuestAnswerResponse;
 import com.ahmadda.presentation.dto.GuestStatusResponse;
 import com.ahmadda.presentation.dto.GuestWithOptOutResponse;
 import com.ahmadda.presentation.dto.OrganizationMemberWithOptOutResponse;
-import com.ahmadda.presentation.resolver.AuthMember;
+import com.ahmadda.presentation.resolver.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -361,7 +361,7 @@ public class EventGuestController {
     public ResponseEntity<EventDetailResponse> participateEvent(
             @PathVariable final Long eventId,
             @RequestBody @Valid final EventParticipateRequest eventParticipateRequest,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         eventGuestService.participantEvent(
                 eventId,
@@ -435,7 +435,7 @@ public class EventGuestController {
     @GetMapping("/{eventId}/guest-status")
     public ResponseEntity<GuestStatusResponse> isGuest(
             @PathVariable final Long eventId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         boolean isGuest = eventGuestService.isGuest(eventId, loginMember);
 
@@ -510,7 +510,7 @@ public class EventGuestController {
     @DeleteMapping("/{eventId}/cancel-participate")
     public ResponseEntity<Void> cancelParticipate(
             @PathVariable final Long eventId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         eventGuestService.cancelParticipation(eventId, loginMember);
 
@@ -606,7 +606,7 @@ public class EventGuestController {
     public ResponseEntity<List<GuestAnswerResponse>> getAnswers(
             @PathVariable final Long eventId,
             @PathVariable final Long guestId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         List<Answer> answers = eventGuestService.getAnswers(eventId, guestId, loginMember);
 
@@ -729,7 +729,7 @@ public class EventGuestController {
     public ResponseEntity<Void> receiveApprovalFromOrganizer(
             @PathVariable final Long eventId,
             @PathVariable final Long guestId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         eventGuestService.receiveApprovalFromOrganizer(eventId, guestId, loginMember);
 
@@ -837,7 +837,7 @@ public class EventGuestController {
     public ResponseEntity<Void> receiveRejectFromOrganizer(
             @PathVariable final Long eventId,
             @PathVariable final Long guestId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         eventGuestService.receiveRejectFromOrganizer(eventId, guestId, loginMember);
 
