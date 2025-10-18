@@ -20,7 +20,7 @@ export type LoadingProps = {
   /**
    * The color of the loading component.
    * @type {string}
-   * @default 'gray'
+   * @default 'white'
    */
   color?: IconColor;
 };
@@ -28,17 +28,17 @@ export const Loading = ({ type = 'text', size = 48, color = 'white' }: LoadingPr
   if (type === 'text') {
     const text = 'Loading';
     return (
-      <>
+      <span role="status" aria-live="polite" aria-label="Loading">
         {text.split('').map((char, i) => (
           <StyledLoadingText delay={i * 100} key={i} size={size}>
             {char}
           </StyledLoadingText>
         ))}
-      </>
+      </span>
     );
   }
   return (
-    <StyledLoadingSpinner>
+    <StyledLoadingSpinner role="status" aria-live="polite" aria-label="Loading">
       <Icon name="loading" size={size} color={color} />
     </StyledLoadingSpinner>
   );
