@@ -34,12 +34,18 @@ export const StyledLoadingText = styled.span<{ delay: number; size: number }>`
   animation-delay: ${({ delay }) => delay}ms;
   font-size: ${({ size }) => size}px;
   font-weight: bold;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 `;
 
 export const StyledLoadingDots = css`
   display: inline-block;
   margin-left: 4px;
   animation: ${pulse} 1s infinite;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 `;
 
 export const StyledLoadingSpinner = styled.span`
@@ -49,5 +55,8 @@ export const StyledLoadingSpinner = styled.span`
 
   svg {
     animation: ${spin} 1s linear infinite;
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
   }
 `;
