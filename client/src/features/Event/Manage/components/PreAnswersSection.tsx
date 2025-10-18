@@ -53,6 +53,45 @@ export const PreAnswersSection = ({ eventId }: PreAnswersSectionProps) => {
             (a.orderIndex ?? Number.MAX_SAFE_INTEGER) - (b.orderIndex ?? Number.MAX_SAFE_INTEGER)
         );
 
+        if (isLoading) {
+          return (
+            <Text
+              key={g.organizationMemberId}
+              type="Label"
+              weight="medium"
+              color={theme.colors.gray500}
+            >
+              로딩 중...
+            </Text>
+          );
+        }
+
+        if (isError) {
+          return (
+            <Text
+              key={g.organizationMemberId}
+              type="Label"
+              weight="medium"
+              color={theme.colors.gray800}
+            >
+              답변을 불러오지 못했습니다.
+            </Text>
+          );
+        }
+
+        if (sorted.length === 0) {
+          return (
+            <Text
+              key={g.organizationMemberId}
+              type="Label"
+              weight="medium"
+              color={theme.colors.gray500}
+            >
+              작성한 답변이 없습니다.
+            </Text>
+          );
+        }
+
         return (
           <Card key={g.organizationMemberId}>
             <Text
@@ -65,39 +104,18 @@ export const PreAnswersSection = ({ eventId }: PreAnswersSectionProps) => {
             >
               {g.nickname}
             </Text>
-
-            {isLoading && (
-              <Text type="Label" weight="medium" color={theme.colors.gray500}>
-                로딩 중...
-              </Text>
-            )}
-
-            {isError && (
-              <Text type="Label" weight="medium" color={theme.colors.gray800}>
-                답변을 불러오지 못했습니다.
-              </Text>
-            )}
-
-            {!isLoading && !isError && sorted.length === 0 && (
-              <Text type="Label" weight="medium" color={theme.colors.gray500}>
-                작성한 답변이 없습니다.
-              </Text>
-            )}
-
-            {!isLoading && !isError && sorted.length > 0 && (
-              <QAList>
-                {sorted.map((qa, i) => (
-                  <QAItem key={qa.orderIndex ?? i}>
-                    <Text type="Body" weight="bold" color={theme.colors.gray800}>
-                      {qa.questionText}
-                    </Text>
-                    <Text type="Body" weight="medium" color={theme.colors.gray700}>
-                      {qa.answerText}
-                    </Text>
-                  </QAItem>
-                ))}
-              </QAList>
-            )}
+            <QAList>
+              {sorted.map((qa, i) => (
+                <QAItem key={qa.orderIndex ?? i}>
+                  <Text type="Body" weight="bold" color={theme.colors.gray800}>
+                    {qa.questionText}
+                  </Text>
+                  <Text type="Body" weight="medium" color={theme.colors.gray700}>
+                    {qa.answerText}
+                  </Text>
+                </QAItem>
+              ))}
+            </QAList>
           </Card>
         );
       })}
