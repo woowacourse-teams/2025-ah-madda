@@ -256,7 +256,8 @@ class PokeTest {
                         now
                 ),
                 20,
-                List.of()
+                List.of(),
+                false
         );
         return eventRepository.save(event);
     }

@@ -84,7 +84,8 @@ class EventNotificationServiceTest {
                         now.plusDays(1), now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
 
         var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization, group);
@@ -116,7 +117,8 @@ class EventNotificationServiceTest {
                         now.plusDays(1), now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
 
         var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization, group);
@@ -186,7 +188,8 @@ class EventNotificationServiceTest {
                         now.plusDays(2), now.plusDays(3),
                         now.minusDays(2)
                 ),
-                100
+                100,
+                false
         ));
 
         var om = saveOrganizationMember("대상자", "target@email.com", organization, group);
@@ -223,7 +226,8 @@ class EventNotificationServiceTest {
                         now.plusDays(1), now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
 
         var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization, group);
@@ -267,7 +271,8 @@ class EventNotificationServiceTest {
                         now.plusDays(2), now.plusDays(3),
                         now.minusDays(2)
                 ),
-                100
+                100,
+                false
         ));
 
         var validOm = saveOrganizationMember("유효", "valid@email.com", organization, group);
@@ -308,7 +313,8 @@ class EventNotificationServiceTest {
                         now.plusDays(1), now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
 
         var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization, group);
@@ -349,7 +355,8 @@ class EventNotificationServiceTest {
                         now.plusDays(1), now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
 
         var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization, group);

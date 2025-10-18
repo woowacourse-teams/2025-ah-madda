@@ -168,7 +168,7 @@ class EventReadListenerTest {
     private Event createEvent(OrganizationMember organizer, Organization organization) {
         var now = LocalDateTime.now();
         var period = EventOperationPeriod.create(now, now.plusDays(1), now.plusDays(2), now.plusDays(3), now);
-        var event = Event.create("title", "description", "place", organizer, organization, period, 100);
+        var event = Event.create("title", "description", "place", organizer, organization, period, 100, false);
 
         return eventRepository.save(event);
     }

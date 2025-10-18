@@ -117,7 +117,7 @@ class EventUpdateListenerTest {
     }
 
     private Event createEvent(OrganizationMember organizer, Organization organization, EventOperationPeriod period) {
-        var event = Event.create("title", "description", "place", organizer, organization, period, 100);
+        var event = Event.create("title", "description", "place", organizer, organization, period, 100, false);
 
         return eventRepository.save(event);
     }

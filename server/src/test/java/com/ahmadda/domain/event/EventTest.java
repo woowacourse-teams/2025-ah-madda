@@ -51,7 +51,8 @@ class EventTest {
                         now
                 ),
                 List.of(baseOrganizer),
-                10
+                10,
+                false
         );
 
         var updatedRegistrationPeriod = EventPeriod.create(now.plusDays(2), now.plusDays(3));
@@ -108,7 +109,8 @@ class EventTest {
                         now
                 ),
                 List.of(baseOrganizer),
-                10
+                10,
+                false
         );
 
         var notOrganizer = createOrganizationMember("구성원", createMember("일반유저", "user@email.com"), baseOrganization);
@@ -338,7 +340,8 @@ class EventTest {
                 baseOrganization,
                 eventOperationPeriod,
                 List.of(baseOrganizer, coOrganizer),
-                10
+                10,
+                false
         );
 
         var nonOrganizer = createOrganizationMember("다른 구성원", createMember(), baseOrganization);
@@ -385,7 +388,8 @@ class EventTest {
                 baseOrganization,
                 eventOperationPeriod,
                 List.of(baseOrganizer, duplicateCoOrganizer),
-                10
+                10,
+                false
         ))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("주최자는 중복될 수 없습니다.");
@@ -424,7 +428,8 @@ class EventTest {
                 baseOrganization,
                 eventOperationPeriod,
                 organizers,
-                10
+                10,
+                false
         ))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("최대 주최자 수는 10명입니다.");
@@ -669,6 +674,7 @@ class EventTest {
                 ),
                 List.of(organizer),
                 maxCapacity,
+                false,
                 questions
         );
     }
@@ -685,7 +691,8 @@ class EventTest {
                         now
                 ),
                 List.of(baseOrganizer),
-                10
+                10,
+                false
         );
     }
 
@@ -722,7 +729,8 @@ class EventTest {
                 organization,
                 eventOperationPeriod,
                 List.of(organizer),
-                100
+                100,
+                false
         );
     }
 
@@ -758,7 +766,8 @@ class EventTest {
                         now
                 ),
                 List.of(organizationMember),
-                10
+                10,
+                false
         );
     }
 }

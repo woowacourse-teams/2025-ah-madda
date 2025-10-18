@@ -100,7 +100,8 @@ class EventServiceTest {
                 100,
                 List.of(new QuestionCreateRequest("1번 질문", true), new QuestionCreateRequest("2번 질문", false)),
                 List.of(),
-                List.of(group.getId())
+                List.of(group.getId()),
+                false
         );
 
         var loginMember = new LoginMember(member.getId());
@@ -370,7 +371,8 @@ class EventServiceTest {
                         new QuestionCreateRequest("2번 질문", false)
                 ),
                 List.of(),
-                List.of(group.getId())
+                List.of(group.getId()),
+                false
         );
 
         var loginMember = new LoginMember(organizerMember.getId());
@@ -410,7 +412,8 @@ class EventServiceTest {
                         new QuestionCreateRequest("2번 질문", false)
                 ),
                 List.of(),
-                List.of(group.getId())
+                List.of(group.getId()),
+                false
         );
         var loginMember = new LoginMember(organizerMember.getId());
 
@@ -457,7 +460,8 @@ class EventServiceTest {
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
-                50
+                50,
+                false
         );
         eventRepository.save(event);
 
@@ -549,7 +553,8 @@ class EventServiceTest {
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
-                50
+                50,
+                false
         );
         eventRepository.save(event);
 
@@ -587,7 +592,8 @@ class EventServiceTest {
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
-                100
+                100,
+                false
         ));
 
         for (int i = 0; i < 10; i++) {
@@ -641,7 +647,8 @@ class EventServiceTest {
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
-                50
+                50,
+                false
         );
         eventRepository.save(event);
 
@@ -701,7 +708,8 @@ class EventServiceTest {
                         now.plusDays(4),
                         now.minusDays(1)
                 ),
-                100
+                100,
+                false
         ));
         var guest1 = Guest.create(savedEvent, om1, now.plusDays(1));
         var guest2 = Guest.create(savedEvent, om2, now.plusDays(1));
@@ -964,7 +972,8 @@ class EventServiceTest {
                 100,
                 List.of(),
                 List.of(organizationMember.getId()),
-                List.of(group.getId())
+                List.of(group.getId()),
+                false
         );
 
         var loginMember = new LoginMember(member.getId());
@@ -1002,7 +1011,8 @@ class EventServiceTest {
                 100,
                 List.of(),
                 coOrganizerIds,
-                List.of(group.getId())
+                List.of(group.getId()),
+                false
         );
 
         var loginMember = new LoginMember(member.getId());
@@ -1056,7 +1066,8 @@ class EventServiceTest {
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
-                10
+                10,
+                false
         );
 
         return eventRepository.save(event);
@@ -1087,7 +1098,8 @@ class EventServiceTest {
                         eventEnd,
                         now
                 ),
-                10
+                10,
+                false
         );
         return eventRepository.save(event);
     }
@@ -1111,7 +1123,8 @@ class EventServiceTest {
                         end.plusHours(1), end.plusHours(2),
                         start.minusDays(1)
                 ),
-                100
+                100,
+                false
         );
     }
 

@@ -86,7 +86,8 @@ public class EventService {
                 eventOperationPeriod,
                 eventCreateRequest.maxCapacity(),
                 getOrganizationMemberByIds(loginMemberIncludedIds),
-                createQuestions(eventCreateRequest.questions())
+                createQuestions(eventCreateRequest.questions()),
+                eventCreateRequest.isApprovalRequired()
         );
 
         Event savedEvent = eventRepository.save(event);

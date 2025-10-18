@@ -117,7 +117,8 @@ class EventNotificationSchedulerTest {
                         now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
         eventReminderGroupRepository.save(EventReminderGroup.create(event, group));
         var ng2OptOut =
@@ -155,7 +156,8 @@ class EventNotificationSchedulerTest {
                         now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
         eventReminderGroupRepository.save(EventReminderGroup.create(event, group));
 
@@ -205,7 +207,8 @@ class EventNotificationSchedulerTest {
                         now.plusDays(2),
                         now.minusDays(3)
                 ),
-                2
+                2,
+                false
         ));
 
         saveGuest(event, saveOrganizationMember("게스트1", "g1@email.com", organization, group));
@@ -243,7 +246,8 @@ class EventNotificationSchedulerTest {
                         now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
 
         var guest1 = saveOrganizationMember("게스트1", "g1@email.com", org, group);
@@ -288,7 +292,8 @@ class EventNotificationSchedulerTest {
                         now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
 
         var g1 = saveOrganizationMember("게스트1", "g1@email.com", org, group);

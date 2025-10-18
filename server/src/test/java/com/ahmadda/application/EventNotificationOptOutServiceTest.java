@@ -407,7 +407,8 @@ class EventNotificationOptOutServiceTest {
                         now.plusDays(2),
                         now.minusDays(5)
                 ),
-                100
+                100,
+                false
         );
         eventRepository.save(event);
         eventOrganizerRepository.saveAll(event.getEventOrganizers());
