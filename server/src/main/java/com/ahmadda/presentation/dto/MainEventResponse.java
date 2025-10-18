@@ -19,12 +19,14 @@ public record MainEventResponse(
         LocalDateTime registrationStart,
         LocalDateTime registrationEnd,
         List<String> organizerNicknames,
+        boolean isOrganizer,
         boolean isGuest
 ) {
 
     public static MainEventResponse from(final Event event, final LoginMember loginMember) {
-        boolean isGuest = getIsGuest(event, loginMember);
         List<String> organizerNicknames = getOrganizerNicknames(event);
+        boolean isOrganizer = isOrganizerOf(event, loginMember);
+        boolean isGuest = isGuestOf(event, loginMember);
 
         return new MainEventResponse(
                 event.getId(),
@@ -39,6 +41,7 @@ public record MainEventResponse(
                 event.getRegistrationStart(),
                 event.getRegistrationEnd(),
                 organizerNicknames,
+                isOrganizer,
                 isGuest
         );
     }
@@ -50,11 +53,25 @@ public record MainEventResponse(
                 .toList();
     }
 
-    private static boolean getIsGuest(final Event event, final LoginMember loginMember) {
+    private static boolean isOrganizerOf(final Event event, final LoginMember loginMember) {
         if (loginMember == null) {
             return false;
         }
-        
+
+        return event.getEventOrganizers()
+                .stream()
+                .anyMatch(organizer ->
+                        organizer.getOrganizationMember()
+                                .getMember()
+                                .getId()
+                                .equals(loginMember.memberId()));
+    }
+
+    private static boolean isGuestOf(final Event event, final LoginMember loginMember) {
+        if (loginMember == null) {
+            return false;
+        }
+
         return event.getGuests()
                 .stream()
                 .anyMatch(guest -> guest.getOrganizationMember()
