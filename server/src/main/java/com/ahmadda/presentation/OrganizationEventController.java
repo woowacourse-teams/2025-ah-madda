@@ -28,6 +28,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -121,7 +122,7 @@ public class OrganizationEventController {
     public ResponseEntity<List<MainEventResponse>> getPastEvents(
             @PathVariable final Long organizationId,
             @RequestParam(defaultValue = DEFAULT_GET_PAST_EVENT_CURSOR) final Long lastEventId,
-            @OptionalAuth final LoginMember loginMember
+            @OptionalAuth @Nullable final LoginMember loginMember
     ) {
         List<Event> organizationEvents =
                 eventService.getPastEvents(organizationId, LocalDateTime.now(), lastEventId, 10);

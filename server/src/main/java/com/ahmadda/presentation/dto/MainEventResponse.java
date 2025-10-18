@@ -3,6 +3,7 @@ package com.ahmadda.presentation.dto;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOrganizer;
+import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,7 +24,7 @@ public record MainEventResponse(
         boolean isGuest
 ) {
 
-    public static MainEventResponse from(final Event event, final LoginMember loginMember) {
+    public static MainEventResponse from(final Event event, @Nullable final LoginMember loginMember) {
         List<String> organizerNicknames = getOrganizerNicknames(event);
         boolean isOrganizer = isOrganizerOf(event, loginMember);
         boolean isGuest = isGuestOf(event, loginMember);
@@ -53,7 +54,7 @@ public record MainEventResponse(
                 .toList();
     }
 
-    private static boolean isOrganizerOf(final Event event, final LoginMember loginMember) {
+    private static boolean isOrganizerOf(final Event event, @Nullable final LoginMember loginMember) {
         if (loginMember == null) {
             return false;
         }
@@ -67,7 +68,7 @@ public record MainEventResponse(
                                 .equals(loginMember.memberId()));
     }
 
-    private static boolean isGuestOf(final Event event, final LoginMember loginMember) {
+    private static boolean isGuestOf(final Event event, @Nullable final LoginMember loginMember) {
         if (loginMember == null) {
             return false;
         }
