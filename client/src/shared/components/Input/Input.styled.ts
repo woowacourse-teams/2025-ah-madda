@@ -7,14 +7,6 @@ export const StyledWrapper = styled.div`
   width: 100%;
 `;
 
-export const StyledLabel = styled.label`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 20px;
-  font-size: 14px;
-`;
-
 export const StyledFieldWrapper = styled.div`
   position: relative;
 `;
@@ -24,17 +16,31 @@ export const StyledInput = styled.input<{
   hasLeftIcon?: boolean;
   hasRightIcon?: boolean;
 }>`
-  background-color: ${theme.colors.gray50};
+  box-sizing: border-box;
+  background-color: ${theme.colors.white};
   border-radius: 8px;
   padding: 12px;
-  border: 1px solid ${theme.colors.gray200};
   font-size: 14px;
   width: 100%;
+  border: none;
+  outline: 1.5px solid ${theme.colors.gray300};
+  transition: all 0.15s ease;
 
-  &:focus {
-    outline: none;
-    border: 1px solid ${({ isError }) => (isError ? theme.colors.red300 : theme.colors.gray400)};
-  }
+  ${({ isError }) =>
+    isError &&
+    css`
+      outline-color: ${theme.colors.red500};
+      box-shadow: 0 0 0 4px ${theme.colors.red100};
+    `}
+
+  ${({ isError }) =>
+    !isError &&
+    css`
+      &:focus {
+        outline: 1.5px solid ${theme.colors.primary700};
+        box-shadow: 0 0 0 4px ${theme.colors.primary100};
+      }
+    `}
 
   ${({ hasLeftIcon }) =>
     hasLeftIcon &&
@@ -52,17 +58,10 @@ export const StyledInput = styled.input<{
     opacity: 0;
     pointer-events: none;
   }
-
-  ${({ isError, theme }) =>
-    isError &&
-    css`
-      border-color: ${theme.colors.red500};
-    `}
 `;
 
 export const StyledHelperText = styled.p<{ isError: boolean }>`
-  margin-top: 4px;
-  font-size: 12px;
+  font-size: 14px;
   min-height: 18px;
   color: ${({ isError }) => (isError ? theme.colors.red300 : theme.colors.gray400)};
 `;
@@ -80,7 +79,21 @@ export const StyledCalendarButton = styled.button`
   cursor: pointer;
 `;
 
+export const StyledClearButton = styled.button`
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+`;
+
 export const StyledFooterRow = styled.div`
+  width: 100%;
   margin-top: 8px;
   display: flex;
   justify-content: space-between;
@@ -89,5 +102,5 @@ export const StyledFooterRow = styled.div`
 
 export const StyledCounterText = styled.p`
   font-size: 14px;
-  color: ${theme.colors.gray400};
+  color: ${theme.colors.gray600};
 `;
