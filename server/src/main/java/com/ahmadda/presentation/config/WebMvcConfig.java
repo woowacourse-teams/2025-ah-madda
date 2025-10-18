@@ -1,6 +1,7 @@
 package com.ahmadda.presentation.config;
 
-import com.ahmadda.presentation.resolver.MemberArgumentResolver;
+import com.ahmadda.presentation.resolver.AuthLoginMemberArgumentResolver;
+import com.ahmadda.presentation.resolver.OptionalAuthLoginMemberArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -15,12 +16,14 @@ import java.util.List;
 @EnableConfigurationProperties(CorsProperties.class)
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    private final MemberArgumentResolver memberArgumentResolver;
+    private final AuthLoginMemberArgumentResolver authLoginMemberArgumentResolver;
+    private final OptionalAuthLoginMemberArgumentResolver optionalAuthLoginMemberArgumentResolver;
     private final CorsProperties corsProperties;
 
     @Override
     public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(memberArgumentResolver);
+        resolvers.add(authLoginMemberArgumentResolver);
+        resolvers.add(optionalAuthLoginMemberArgumentResolver);
     }
 
     @Override

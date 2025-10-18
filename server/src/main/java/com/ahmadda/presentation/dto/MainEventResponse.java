@@ -1,7 +1,9 @@
 package com.ahmadda.presentation.dto;
 
+import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOrganizer;
+import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,11 +20,14 @@ public record MainEventResponse(
         LocalDateTime registrationStart,
         LocalDateTime registrationEnd,
         List<String> organizerNicknames,
+        boolean isOrganizer,
         boolean isGuest
 ) {
 
-    public static MainEventResponse from(final Event event) {
+    public static MainEventResponse from(final Event event, @Nullable final LoginMember loginMember) {
         List<String> organizerNicknames = getOrganizerNicknames(event);
+        boolean isOrganizer = isOrganizerOf(event, loginMember);
+        boolean isGuest = isGuestOf(event, loginMember);
 
         return new MainEventResponse(
                 event.getId(),
@@ -37,15 +42,42 @@ public record MainEventResponse(
                 event.getRegistrationStart(),
                 event.getRegistrationEnd(),
                 organizerNicknames,
-                // TODO. 추후 비회원 여부에 따른 isGuest 값 설정 필요
-                false
+                isOrganizer,
+                isGuest
         );
     }
 
-    private static List<String> getOrganizerNicknames(Event event) {
+    private static List<String> getOrganizerNicknames(final Event event) {
         return event.getEventOrganizers()
                 .stream()
                 .map(EventOrganizer::getNickname)
                 .toList();
+    }
+
+    private static boolean isOrganizerOf(final Event event, @Nullable final LoginMember loginMember) {
+        if (loginMember == null) {
+            return false;
+        }
+
+        return event.getEventOrganizers()
+                .stream()
+                .anyMatch(organizer ->
+                        organizer.getOrganizationMember()
+                                .getMember()
+                                .getId()
+                                .equals(loginMember.memberId()));
+    }
+
+    private static boolean isGuestOf(final Event event, @Nullable final LoginMember loginMember) {
+        if (loginMember == null) {
+            return false;
+        }
+
+        return event.getGuests()
+                .stream()
+                .anyMatch(guest -> guest.getOrganizationMember()
+                        .getMember()
+                        .getId()
+                        .equals(loginMember.memberId()));
     }
 }

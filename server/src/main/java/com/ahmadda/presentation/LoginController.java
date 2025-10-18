@@ -6,7 +6,7 @@ import com.ahmadda.application.dto.MemberToken;
 import com.ahmadda.presentation.cookie.RefreshCookieProvider;
 import com.ahmadda.presentation.dto.AccessTokenResponse;
 import com.ahmadda.presentation.dto.LoginRequest;
-import com.ahmadda.presentation.resolver.AuthMember;
+import com.ahmadda.presentation.resolver.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -218,7 +218,7 @@ public class LoginController {
     })
     @DeleteMapping("/logout")
     public ResponseEntity<Void> logout(
-            @AuthMember final LoginMember loginMember,
+            @Auth final LoginMember loginMember,
             @RequestHeader(HttpHeaders.USER_AGENT) final String userAgent,
             @CookieValue(RefreshCookieProvider.REFRESH_TOKEN_KEY) final String refreshToken
     ) {

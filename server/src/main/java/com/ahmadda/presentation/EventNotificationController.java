@@ -6,7 +6,7 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.SelectedOrganizationMembersNotificationRequest;
 import com.ahmadda.domain.notification.ReminderHistory;
 import com.ahmadda.presentation.dto.ReminderHistorySummaryResponse;
-import com.ahmadda.presentation.resolver.AuthMember;
+import com.ahmadda.presentation.resolver.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -126,7 +126,7 @@ public class EventNotificationController {
     public ResponseEntity<Void> notifyOrganizationMembers(
             @PathVariable final Long eventId,
             @RequestBody @Valid final SelectedOrganizationMembersNotificationRequest request,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         eventNotificationService.notifySelectedOrganizationMembers(eventId, request, loginMember);
 
@@ -214,7 +214,7 @@ public class EventNotificationController {
     @GetMapping("/{eventId}/notification/history")
     public ResponseEntity<List<ReminderHistorySummaryResponse>> getNotifyHistory(
             @PathVariable final Long eventId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         List<ReminderHistory> reminderHistories =
                 reminderHistoryService.getNotifyHistory(eventId, loginMember);
