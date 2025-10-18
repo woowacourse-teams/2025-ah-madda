@@ -4,7 +4,6 @@ import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationMemberRoleUpdateRequest;
 import com.ahmadda.application.dto.OrganizationMemberUpdateRequest;
-import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
@@ -200,10 +199,8 @@ class OrganizationMemberServiceTest {
         createOrganizationMember("길동", member1, org, OrganizationMemberRole.USER, group);
         createOrganizationMember("찬호", member2, org, OrganizationMemberRole.USER, group);
 
-        var loginMember = new LoginMember(member1.getId());
-
         // when
-        var result = sut.getAllOrganizationMembers(org.getId(), loginMember);
+        var result = sut.getAllOrganizationMembers(org.getId());
 
         // then
         assertSoftly(softly -> {
@@ -220,32 +217,13 @@ class OrganizationMemberServiceTest {
     void 이벤트_스페이스_구성원_목록_조회시_이벤트_스페이스가_존재하지_않으면_예외가_발생한다() {
         // given
         var member = createMember("홍길동", "hong@email.com");
-        var loginMember = new LoginMember(member.getId());
 
         var invalidOrgId = -999L;
 
         // when // then
-        assertThatThrownBy(() -> sut.getAllOrganizationMembers(invalidOrgId, loginMember))
+        assertThatThrownBy(() -> sut.getAllOrganizationMembers(invalidOrgId))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 이벤트 스페이스입니다.");
-    }
-
-    @Test
-    void 이벤트_스페이스_구성원_목록_조회시_이벤트_스페이스에_속하지_않는_구성원이면_예외가_발생한다() {
-        // given
-        var org1 = createOrganization("우테코");
-        var org2 = createOrganization("다른 이벤트 스페이스");
-
-        var member = createMember("홍길동", "hong@email.com");
-        var group = createGroup("백엔드");
-        createOrganizationMember("길동", member, org2, OrganizationMemberRole.USER, group); // 다른 이벤트 스페이스 소속
-
-        var loginMember = new LoginMember(member.getId());
-
-        // when // then
-        assertThatThrownBy(() -> sut.getAllOrganizationMembers(org1.getId(), loginMember))
-                .isInstanceOf(ForbiddenException.class)
-                .hasMessage("이벤트 스페이스에 속한 구성원만 구성원의 목록을 조회할 수 있습니다.");
     }
 
     @Test
