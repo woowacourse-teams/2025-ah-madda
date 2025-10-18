@@ -19,11 +19,20 @@ const pulse = keyframes`
   }
 `;
 
-export const StyledLoadingText = styled.span<{ delay: number }>`
+const spin = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+export const StyledLoadingText = styled.span<{ delay: number; size: number }>`
   display: inline-block;
   animation: ${bounce} 1s infinite;
   animation-delay: ${({ delay }) => delay}ms;
-  font-size: 48px;
+  font-size: ${({ size }) => size}px;
   font-weight: bold;
 `;
 
@@ -31,4 +40,14 @@ export const StyledLoadingDots = css`
   display: inline-block;
   margin-left: 4px;
   animation: ${pulse} 1s infinite;
+`;
+
+export const StyledLoadingSpinner = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    animation: ${spin} 1s linear infinite;
+  }
 `;
