@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useQueries, useSuspenseQueries } from '@tanstack/react-query';
 
@@ -36,7 +35,7 @@ export const PreAnswersSection = ({ eventId }: PreAnswersSectionProps) => {
 
   return (
     <Flex dir="column" gap="16px" padding="30px 0">
-      <Text color={theme.colors.gray600}>참여자별 사전 답변 목록입니다.</Text>
+      <Text color={theme.colors.gray600}>질문별로 각 참여자의 답변을 보여줍니다.</Text>
 
       {guests.length === 0 && (
         <EmptyState>
@@ -46,72 +45,82 @@ export const PreAnswersSection = ({ eventId }: PreAnswersSectionProps) => {
         </EmptyState>
       )}
 
-      {guests.map((guest, idx) => {
-        const result = answersResults[idx];
-        const isLoading = result?.isLoading || result?.isFetching;
-        const isError = !!result?.error;
-        const items: GuestAnswerAPIResponse[] = result?.data ?? [];
+      {guests.length > 0 && (
+        <>
+          {(() => {
+            type ParticipantAnswer = {
+              nickname: string;
+              organizationMemberId: number;
+              answerText: string;
+            };
 
-        if (isLoading) {
-          return (
-            <Text
-              key={guest.organizationMemberId}
-              type="Label"
-              weight="medium"
-              color={theme.colors.gray500}
-            >
-              로딩 중...
-            </Text>
-          );
-        }
+            const answersByQuestion = new Map<
+              number,
+              { questionText: string; participants: ParticipantAnswer[] }
+            >();
 
-        if (isError) {
-          return (
-            <Text
-              key={guest.organizationMemberId}
-              type="Label"
-              weight="medium"
-              color={theme.colors.gray800}
-            >
-              답변을 불러오지 못했습니다.
-            </Text>
-          );
-        }
+            answersResults.forEach((result, guestIndex) => {
+              const guestAnswers: GuestAnswerAPIResponse[] = result?.data ?? [];
+              const guest = guests[guestIndex];
 
-        if (items.length === 0) {
-          return (
-            <Text
-              key={guest.organizationMemberId}
-              type="Label"
-              weight="medium"
-              color={theme.colors.gray500}
-            >
-              작성한 답변이 없습니다.
-            </Text>
-          );
-        }
+              guestAnswers.forEach((qa) => {
+                const orderIndex = qa.orderIndex;
 
-        return (
-          <Card key={guest.organizationMemberId}>
-            <Text type="Heading" weight="bold" color={theme.colors.gray800}>
-              {guest.nickname}
-            </Text>
-            <Spacing height="8px" />
-            <QAList>
-              {items.map((qa, i) => (
-                <QAItem key={qa.orderIndex ?? i}>
-                  <Text type="Body" weight="bold" color={theme.colors.gray800}>
-                    {qa.questionText}
+                const questionGroup = answersByQuestion.get(orderIndex);
+                const participantAnswer: ParticipantAnswer = {
+                  nickname: guest.nickname,
+                  organizationMemberId: guest.organizationMemberId,
+                  answerText: qa.answerText,
+                };
+
+                if (questionGroup) {
+                  questionGroup.participants.push(participantAnswer);
+                } else {
+                  answersByQuestion.set(orderIndex, {
+                    questionText: qa.questionText,
+                    participants: [participantAnswer],
+                  });
+                }
+              });
+            });
+
+            const questions = Array.from(answersByQuestion.entries())
+              .sort((a, b) => a[0] - b[0])
+              .map(([orderIndex, group]) => ({ orderIndex, ...group }));
+
+            if (questions.length === 0) {
+              return (
+                <EmptyState>
+                  <Text type="Body" weight="medium" color={theme.colors.gray500}>
+                    사전 질문에 대한 답변이 없습니다.
                   </Text>
-                  <Text type="Body" weight="medium" color={theme.colors.gray700}>
-                    {qa.answerText}
-                  </Text>
-                </QAItem>
-              ))}
-            </QAList>
-          </Card>
-        );
-      })}
+                </EmptyState>
+              );
+            }
+
+            return questions.map((q) => (
+              <Card key={q.orderIndex}>
+                <Text type="Heading" weight="bold" color={theme.colors.gray800}>
+                  {q.questionText}
+                </Text>
+                <Spacing height="8px" />
+                <QAList>
+                  {q.participants.map((pa, idx) => (
+                    <QAItem key={`${q.orderIndex}-${pa.organizationMemberId}-${idx}`}>
+                      <Text type="Body" weight="bold" color={theme.colors.gray800}>
+                        {pa.nickname}
+                      </Text>
+                      <Text type="Body" weight="medium" color={theme.colors.gray700}>
+                        {pa.answerText}
+                      </Text>
+                    </QAItem>
+                  ))}
+                </QAList>
+              </Card>
+            ));
+          })()}
+        </>
+      )}
     </Flex>
   );
 };
