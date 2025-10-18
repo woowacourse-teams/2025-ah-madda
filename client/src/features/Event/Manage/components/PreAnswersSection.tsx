@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { useQueries, useQuery } from '@tanstack/react-query';
+import { useQueries, useSuspenseQueries } from '@tanstack/react-query';
 
 import { eventQueryOptions } from '@/api/queries/event';
 import { myQueryOptions } from '@/api/queries/my';
@@ -9,16 +9,14 @@ import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
-import type { Guest } from '../types';
-
 type PreAnswersSectionProps = {
   eventId: number;
 };
 
 export const PreAnswersSection = ({ eventId }: PreAnswersSectionProps) => {
-  const { data: guests = [] } = useQuery(eventQueryOptions.guests(eventId)) as {
-    data: Guest[] | undefined;
-  } as unknown as { data: Guest[] };
+  const [{ data: guests = [] }] = useSuspenseQueries({
+    queries: [eventQueryOptions.guests(eventId)],
+  });
 
   const shouldFetch = guests.length > 0;
 
