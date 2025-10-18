@@ -1,5 +1,7 @@
 import { ComponentPropsWithRef, PropsWithChildren } from 'react';
 
+import { IconColor } from '@/shared/styles/colors';
+
 import { Icon } from '../Icon';
 import { IconName } from '../Icon/assets';
 import { Loading } from '../Loading';
@@ -47,7 +49,13 @@ export type ButtonProps = {
   isLoading?: boolean;
 } & PropsWithChildren<ComponentPropsWithRef<'button'>>;
 
-// S.TODO: isLoading 추가, 아이콘이 들어가는 경우
+const ICON_SIZE_MAP = {
+  sm: 14,
+  md: 16,
+  lg: 20,
+  full: 16,
+} as const;
+
 export const Button = ({
   size = 'md',
   color = 'primary',
@@ -58,7 +66,7 @@ export const Button = ({
   isLoading = false,
   ...props
 }: ButtonProps) => {
-  const iconSize = size === 'sm' ? 14 : size === 'md' ? 16 : 20;
+  const isDisabled = isLoading || props.disabled;
 
   return (
     <StyledButton
@@ -67,9 +75,12 @@ export const Button = ({
       variant={variant}
       type={type}
       iconName={iconName}
+      disabled={isDisabled}
       {...props}
     >
-      {isLoading && <Loading type="spinner" size={iconSize} color={getIconColor(variant, color)} />}
+      {isLoading && (
+        <Loading type="spinner" size={ICON_SIZE_MAP[size]} color={getIconColor(variant, color)} />
+      )}
       {size === 'md' && iconName && (
         <Icon name={iconName} size={20} color={getIconColor(variant, color)} />
       )}
@@ -81,7 +92,12 @@ export const Button = ({
 const getIconColor = (variant: Variant, color: Color) => {
   if (variant === 'outline') return 'gray500';
   if (variant === 'ghost') {
-    return color === 'primary' ? 'primary' : color === 'secondary' ? 'secondary' : 'gray';
+    const ghostColorMap: Record<Color, IconColor> = {
+      primary: 'primary',
+      secondary: 'secondary',
+      tertiary: 'gray',
+    };
+    return ghostColorMap[color];
   }
   return color === 'secondary' ? 'primary' : 'white';
 };
