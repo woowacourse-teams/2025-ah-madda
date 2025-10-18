@@ -41,9 +41,6 @@ export const PreQuestionSection = ({
                 placeholder="답변을 입력하세요"
                 value={answers.find((a) => a.questionId === question.questionId)?.answerText ?? ''}
                 onChange={(e) => onChangeAnswer(question.questionId, e.target.value)}
-                css={css`
-                  outline: 1px solid ${theme.colors.gray300};
-                `}
               />
             </Flex>
           ))}

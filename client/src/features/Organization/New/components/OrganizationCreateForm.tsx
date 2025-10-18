@@ -18,6 +18,7 @@ import type { NonGuest } from '@/features/Event/Manage/types';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
+import { Spacing } from '@/shared/components/Spacing';
 import { Tabs } from '@/shared/components/Tabs/Tabs';
 import { Text } from '@/shared/components/Text';
 import { useToast } from '@/shared/components/Toast/ToastContext';
@@ -346,39 +347,41 @@ export const OrganizationCreateForm = () => {
             />
           </Flex>
 
-          <Flex dir="column" gap="12px">
+          <Flex dir="column">
             <Text as="label" htmlFor="orgName" type="Heading" weight="medium">
               이벤트 스페이스 이름
               <StyledRequiredMark>*</StyledRequiredMark>
             </Text>
+            <Spacing height="8px" />
             <Input
               id="orgName"
               name="name"
-              placeholder="이벤트 스페이스 이름을 입력해주세요."
               value={form.name}
               onChange={handleChange}
+              placeholder="이벤트 스페이스 이름을 입력해주세요."
               errorMessage={errors.name}
               showCounter
-              maxLength={MAX_LENGTH.NAME}
               isRequired
+              maxLength={MAX_LENGTH.NAME}
             />
           </Flex>
 
-          <Flex dir="column" gap="12px">
+          <Flex dir="column">
             <Text as="label" htmlFor="orgDescription" type="Heading" weight="medium">
               한 줄 소개
               <StyledRequiredMark>*</StyledRequiredMark>
             </Text>
+            <Spacing height="8px" />
             <Input
               id="orgDescription"
               name="description"
-              placeholder="이벤트 스페이스를 소개해주세요."
               value={form.description}
               onChange={handleChange}
+              placeholder="이벤트 스페이스를 소개해주세요."
               errorMessage={errors.description}
               showCounter
-              maxLength={MAX_LENGTH.DESCRIPTION}
               isRequired
+              maxLength={MAX_LENGTH.DESCRIPTION}
             />
           </Flex>
 

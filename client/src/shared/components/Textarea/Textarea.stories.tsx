@@ -1,3 +1,5 @@
+import { ComponentProps, useState } from 'react';
+
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { Textarea } from './Textarea';
@@ -19,14 +21,19 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof Textarea>;
 
+const DefaultTextarea = (args: ComponentProps<typeof Textarea>) => {
+  const [value, setValue] = useState('');
+  return <Textarea {...args} value={value} onChange={(e) => setValue(e.target.value)} />;
+};
+
 export const Basic: Story = {
   args: {
     id: 'description',
     name: 'description',
     placeholder: '설명을 입력하세요',
-    value: '',
-    onChange: () => {},
+    maxLength: 200,
   },
+  render: (args) => <DefaultTextarea {...args} />,
 };
 
 export const WithHelperText: Story = {
@@ -35,7 +42,6 @@ export const WithHelperText: Story = {
     name: 'bio',
     placeholder: '간단한 자기소개를 작성해주세요',
     helperText: '최대 200자까지 작성 가능합니다.',
-    value: '',
-    onChange: () => {},
   },
+  render: (args) => <DefaultTextarea {...args} />,
 };
