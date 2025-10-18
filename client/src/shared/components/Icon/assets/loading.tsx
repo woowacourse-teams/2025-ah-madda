@@ -18,30 +18,6 @@ export const Loading = ({ width, height, color, ...props }: SVGProps<SVGSVGEleme
         d="M16.892 4.29763C17.0235 4.15087 17.1827 4.03148 17.3604 3.94627C17.5381 3.86107 17.7309 3.81171 17.9277 3.80103C18.1245 3.79035 18.3214 3.81856 18.5073 3.88403C18.6932 3.94951 18.8643 4.05097 19.011 4.18263C20.11 5.16666 20.9888 6.3716 21.59 7.71865C22.1913 9.06569 22.5013 10.5245 22.5 11.9996C22.5 17.7996 17.799 22.4996 12 22.4996V19.4996C13.5182 19.4996 15.0006 19.0389 16.2513 18.1784C17.502 17.3179 18.4621 16.098 19.0047 14.6802C19.5473 13.2623 19.6469 11.7131 19.2902 10.2375C18.9335 8.76179 18.1373 7.42913 17.007 6.41563C16.7109 6.14999 16.5325 5.77763 16.5109 5.38044C16.4893 4.98325 16.6264 4.59376 16.892 4.29763Z"
         fill={color ?? '#2B2B2B'}
       />
-      <defs>
-        <linearGradient
-          id="paint0_linear_1542_5379"
-          x1="526.5"
-          y1="111.636"
-          x2="526.5"
-          y2="1917.38"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor={color ?? '#2B2B2B'} />
-          <stop offset="1" stopColor={color ?? '#2B2B2B'} stopOpacity="0.55" />
-        </linearGradient>
-        <linearGradient
-          id="paint1_linear_1542_5379"
-          x1="537"
-          y1="288.799"
-          x2="537"
-          y2="1633.57"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#2B2B2B" stopOpacity="0" />
-          <stop offset="1" stopColor={color ?? '#2B2B2B'} stopOpacity="0.55" />
-        </linearGradient>
-      </defs>
     </svg>
   );
 };
