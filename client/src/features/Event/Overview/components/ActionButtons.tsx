@@ -15,7 +15,7 @@ export const ActionButtons = ({ onIssueInviteCode }: ActionButtonsProps) => {
     <>
       <DesktopButtonContainer>
         <Button size="md" color="secondary" iconName="share" onClick={onIssueInviteCode}>
-          이벤트 스페이스 초대
+          스페이스 초대
         </Button>
         <Button size="md" iconName="plus" onClick={() => navigate(`/${organizationId}/event/new`)}>
           이벤트 생성
@@ -24,7 +24,7 @@ export const ActionButtons = ({ onIssueInviteCode }: ActionButtonsProps) => {
 
       <MobileFixedCTA>
         <Button size="md" color="secondary" iconName="share" onClick={onIssueInviteCode}>
-          이벤트 스페이스 초대
+          스페이스 초대
         </Button>
         <Button size="md" iconName="plus" onClick={() => navigate(`/${organizationId}/event/new`)}>
           이벤트 생성
