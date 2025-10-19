@@ -141,7 +141,7 @@ public class OrganizationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Organization> findAllOrderByActiveEventsDesc(LocalDateTime currentDateTime) {
+    public List<Organization> findAllOrderByActiveEventsDesc(final LocalDateTime currentDateTime) {
         return organizationRepository.findAll()
                 .stream()
                 .sorted(new ActiveEventCountComparator(currentDateTime))
