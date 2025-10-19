@@ -14,6 +14,7 @@ export const MessageCard = ({ message, image, index }: MessageCardProps) => {
   return (
     <Flex
       dir="column"
+      justifyContent="space-between"
       alignItems="flex-start"
       width="100%"
       padding="32px"
@@ -31,17 +32,18 @@ export const MessageCard = ({ message, image, index }: MessageCardProps) => {
         width={600}
         height={300}
         loading={index > 2 ? 'lazy' : 'eager'}
+        isSecond={index === 1}
       />
     </Flex>
   );
 };
 
-const LandingImage = styled.img`
-  width: 60%;
+const LandingImage = styled.img<{ isSecond: boolean }>`
+  width: ${({ isSecond }) => (isSecond ? '40%' : '30%')};
   height: auto;
   align-self: flex-end;
 
   @media (max-width: 768px) {
-    width: 50%;
+    width: 40%;
   }
 `;

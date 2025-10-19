@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 
-import { getGoogleAuthUrl, isAuthenticated } from '@/api/auth';
+import { isAuthenticated } from '@/api/auth';
 import { Button } from '@/shared/components/Button';
 import { Header } from '@/shared/components/Header';
 import { Icon } from '@/shared/components/Icon';
