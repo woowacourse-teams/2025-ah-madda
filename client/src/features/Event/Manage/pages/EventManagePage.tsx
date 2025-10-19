@@ -10,6 +10,7 @@ import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
 import { Icon } from '@/shared/components/Icon';
+import { IconButton } from '@/shared/components/IconButton';
 import { PageLayout } from '@/shared/components/PageLayout';
 import { Spacing } from '@/shared/components/Spacing';
 import { Tabs } from '@/shared/components/Tabs';
@@ -70,9 +71,16 @@ export const EventManagePage = () => {
               />
             }
             right={
-              <Button size="sm" onClick={() => navigate(`/${organizationId}/event/my`)}>
-                마이 페이지
-              </Button>
+              <Flex alignItems="center" gap="8px">
+                <Button size="sm" onClick={() => navigate(`/${organizationId}/event/my`)}>
+                  내 이벤트
+                </Button>
+                <IconButton
+                  name="user"
+                  size={24}
+                  onClick={() => navigate(`/${organizationId}/profile`)}
+                />
+              </Flex>
             }
           />
         }
@@ -93,9 +101,19 @@ export const EventManagePage = () => {
                   마감됨
                 </Button>
               ) : (
-                <Button size="sm" color="tertiary" variant="solid" onClick={open}>
-                  마감하기
-                </Button>
+                <Flex alignItems="center" gap="8px">
+                  <Button
+                    size="sm"
+                    color="primary"
+                    variant="solid"
+                    onClick={() => navigate(`/${organizationId}/event/${eventId}/edit`)}
+                  >
+                    수정하기
+                  </Button>
+                  <Button size="sm" color="secondary" variant="solid" onClick={open}>
+                    마감하기
+                  </Button>
+                </Flex>
               )}
             </Flex>
 

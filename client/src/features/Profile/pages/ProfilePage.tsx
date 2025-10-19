@@ -5,6 +5,7 @@ import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
 import { Icon } from '@/shared/components/Icon';
+import { IconButton } from '@/shared/components/IconButton';
 import { PageLayout } from '@/shared/components/PageLayout';
 import { Text } from '@/shared/components/Text';
 import { DEFAULT_AVATAR_URL } from '@/shared/constants';
@@ -34,9 +35,16 @@ export const ProfilePage = () => {
             />
           }
           right={
-            <Button size="sm" onClick={() => navigate(`/${organizationId}/event/my`)}>
-              마이 페이지
-            </Button>
+            <Flex alignItems="center" gap="8px">
+              <Button size="sm" onClick={() => navigate(`/${organizationId}/event/my`)}>
+                내 이벤트
+              </Button>
+              <IconButton
+                name="user"
+                size={24}
+                onClick={() => navigate(`/${organizationId}/profile`)}
+              />
+            </Flex>
           }
         />
       }
