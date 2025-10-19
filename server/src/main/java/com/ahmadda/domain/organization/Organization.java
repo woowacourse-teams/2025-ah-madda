@@ -82,7 +82,7 @@ public class Organization extends BaseEntity {
                 .toList();
     }
 
-    public int getActiveEventsCount(LocalDateTime currentDateTime) {
+    public int getActiveEventsCount(final LocalDateTime currentDateTime) {
         return getActiveEvents(currentDateTime).size();
     }
 
