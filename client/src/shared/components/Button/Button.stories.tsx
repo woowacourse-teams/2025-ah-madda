@@ -26,6 +26,7 @@ export const Basic: Story = {
     color: 'primary',
     variant: 'solid',
     disabled: false,
+    isLoading: false,
     children: 'Button',
   },
   argTypes: {
@@ -35,70 +36,84 @@ export const Basic: Story = {
   render: (args) => <Button {...args} />,
 };
 
-export const Primary: Story = {
+export const Colors: Story = {
   args: {
-    color: 'primary',
     children: 'Primary Button',
   },
+  argTypes: {
+    size: { control: false },
+  },
   render: (args) => (
-    <Flex dir="column" gap="10px">
-      <Button size="sm" {...args}>
-        Primary
-      </Button>
-      <Button size="md" {...args}>
-        Primary
-      </Button>
-      <Button size="lg" {...args}>
-        Primary
-      </Button>
+    <Flex dir="row" gap="24px" width="100%">
+      <Flex dir="column" gap="10px" alignItems="flex-start">
+        <Button {...args} size="sm">
+          Primary
+        </Button>
+        <Button {...args} size="md">
+          Primary
+        </Button>
+        <Button {...args} size="lg">
+          Primary
+        </Button>
+      </Flex>
+      <Flex dir="column" gap="10px" alignItems="flex-start">
+        <Button {...args} color="secondary" size="sm">
+          Secondary
+        </Button>
+        <Button {...args} color="secondary" size="md">
+          Secondary
+        </Button>
+        <Button {...args} color="secondary" size="lg">
+          Secondary
+        </Button>
+      </Flex>
+      <Flex dir="column" gap="10px" alignItems="flex-start">
+        <Button {...args} color="tertiary" size="sm">
+          Tertiary
+        </Button>
+        <Button {...args} color="tertiary" size="md">
+          Tertiary
+        </Button>
+        <Button {...args} color="tertiary" size="lg">
+          Tertiary
+        </Button>
+      </Flex>
     </Flex>
   ),
 };
 
-export const Secondary: Story = {
+export const Ghost: Story = {
   args: {
-    color: 'secondary',
-    children: 'Secondary Button',
+    variant: 'ghost',
+    size: 'sm',
+    children: 'Ghost',
   },
-  render: (args) => (
-    <Flex dir="column" gap="10px">
-      <Button size="sm" {...args}>
-        Second
-      </Button>
-      <Button size="md" {...args}>
-        Secondary
-      </Button>
-      <Button size="lg" {...args}>
-        Secondary
-      </Button>
-    </Flex>
-  ),
+  argTypes: {
+    size: { control: false },
+  },
+  render: (args) => <Button {...args} />,
 };
 
-export const Tertiary: Story = {
+export const Loading: Story = {
   args: {
-    color: 'tertiary',
-    children: 'Tertiary Button',
+    isLoading: true,
+    children: 'Loading',
   },
-  render: (args) => (
-    <Flex dir="column" gap="10px">
-      <Button size="sm" {...args}>
-        Tertiary
-      </Button>
-      <Button size="md" {...args}>
-        Tertiary
-      </Button>
-      <Button size="lg" {...args}>
-        Tertiary
-      </Button>
-    </Flex>
-  ),
+  render: (args) => <Button {...args} />,
 };
 
 export const Outlined: Story = {
   args: {
     variant: 'outline',
     children: 'Outlined',
+  },
+  render: (args) => <Button {...args} />,
+};
+
+export const WithIcon: Story = {
+  args: {
+    iconName: 'plus',
+    children: 'Icon Button',
   },
   render: (args) => <Button {...args} />,
 };
