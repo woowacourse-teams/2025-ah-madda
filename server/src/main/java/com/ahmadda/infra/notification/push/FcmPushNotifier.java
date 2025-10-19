@@ -57,7 +57,7 @@ public class FcmPushNotifier implements PushNotifier {
     }
 
     private List<String> getRegistrationTokens(final OrganizationMember recipient) {
-        long memberId = recipient.getMember()
+        Long memberId = recipient.getMember()
                 .getId();
 
         return fcmRegistrationTokenRepository.findAllByMemberId(memberId)
