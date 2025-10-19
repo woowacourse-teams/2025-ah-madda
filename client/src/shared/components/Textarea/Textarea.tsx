@@ -1,7 +1,5 @@
 import { ComponentProps } from 'react';
 
-import { computeCounter } from '@/shared/utils/computeCounter';
-
 import {
   StyledWrapper,
   StyledTextarea,
@@ -20,7 +18,6 @@ export type TextareaProps = {
    * Message displayed when the textarea is invalid.
    */
   errorMessage?: string;
-
   /**
    * Force invalid UI on/off (e.g., show only on blur/submit).
    * If omitted, falls back to !!errorMessage.
@@ -31,12 +28,6 @@ export type TextareaProps = {
 export const Textarea = ({ helperText, errorMessage, isInvalid, ...props }: TextareaProps) => {
   const isError = isInvalid ?? Boolean(errorMessage);
 
-  const { hasMax, displayLength } = computeCounter(
-    props.value,
-    props.defaultValue,
-    props.maxLength
-  );
-
   return (
     <StyledWrapper>
       <StyledTextarea isError={isError} aria-invalid={isError || undefined} {...props} />
@@ -46,9 +37,9 @@ export const Textarea = ({ helperText, errorMessage, isInvalid, ...props }: Text
           {isError ? (errorMessage ?? ' ') : (helperText ?? ' ')}
         </StyledHelperText>
 
-        {hasMax && (
+        {props.maxLength && (
           <StyledCounterText>
-            ({displayLength}/{props.maxLength})
+            ({props.value?.toString().length ?? 0}/{props.maxLength})
           </StyledCounterText>
         )}
       </StyledFooterRow>
