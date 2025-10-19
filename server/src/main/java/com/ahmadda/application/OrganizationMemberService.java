@@ -94,12 +94,9 @@ public class OrganizationMemberService {
 
     @Transactional(readOnly = true)
     public List<OrganizationMember> getAllOrganizationMembers(
-            final Long organizationId,
-            final LoginMember loginMember
+            final Long organizationId
     ) {
         Organization organization = getOrganization(organizationId);
-
-        validateBelongsToOrganization(organizationId, loginMember);
 
         return organization.getOrganizationMembers();
     }

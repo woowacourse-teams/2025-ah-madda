@@ -214,38 +214,6 @@ public class OrganizationMemberController {
                     )
             ),
             @ApiResponse(
-                    responseCode = "401",
-                    content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Unauthorized",
-                                              "status": 401,
-                                              "detail": "유효하지 않은 인증 정보입니다.",
-                                              "instance": "/api/organizations/{organizationId}/organization-members"
-                                            }
-                                            """
-                            )
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "403",
-                    content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Forbidden",
-                                              "status": 403,
-                                              "detail": "이벤트 스페이스에 속한 구성원만 구성원의 목록을 조회할 수 있습니다.",
-                                              "instance": "/api/organizations/{organizationId}/organization-members"
-                                            }
-                                            """
-                            )
-                    )
-            ),
-            @ApiResponse(
                     responseCode = "404",
                     content = @Content(
                             examples = @ExampleObject(
@@ -264,11 +232,10 @@ public class OrganizationMemberController {
     })
     @GetMapping("/organization-members")
     public ResponseEntity<List<OrganizationMemberResponse>> getAllOrganizationMembers(
-            @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
+            @PathVariable final Long organizationId
     ) {
         List<OrganizationMember> organizationMembers =
-                organizationMemberService.getAllOrganizationMembers(organizationId, loginMember);
+                organizationMemberService.getAllOrganizationMembers(organizationId);
 
         List<OrganizationMemberResponse> response = organizationMembers.stream()
                 .map(OrganizationMemberResponse::from)
