@@ -1,11 +1,10 @@
 package com.ahmadda.presentation.dto;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOrganizer;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 public record MainEventResponse(
         Long eventId,
@@ -22,9 +21,7 @@ public record MainEventResponse(
         boolean isGuest
 ) {
 
-    public static MainEventResponse from(final Event event, final LoginMember loginMember) {
-        boolean isGuest = getIsGuest(event, loginMember);
-
+    public static MainEventResponse from(final Event event) {
         List<String> organizerNicknames = getOrganizerNicknames(event);
 
         return new MainEventResponse(
@@ -40,7 +37,8 @@ public record MainEventResponse(
                 event.getRegistrationStart(),
                 event.getRegistrationEnd(),
                 organizerNicknames,
-                isGuest
+                // TODO. 추후 비회원 여부에 따른 isGuest 값 설정 필요
+                false
         );
     }
 
@@ -49,14 +47,5 @@ public record MainEventResponse(
                 .stream()
                 .map(EventOrganizer::getNickname)
                 .toList();
-    }
-
-    private static boolean getIsGuest(Event event, LoginMember loginMember) {
-        return event.getGuests()
-                .stream()
-                .anyMatch(guest -> guest.getOrganizationMember()
-                        .getMember()
-                        .getId()
-                        .equals(loginMember.memberId()));
     }
 }

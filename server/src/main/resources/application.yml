@@ -6,13 +6,8 @@ server:
     max-http-form-post-size: 2MB
 
 spring:
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 20MB
-
-  profiles:
-    default: local
+  application:
+    name: ah-madda
 
   config:
     import:
@@ -23,8 +18,17 @@ spring:
       - security/slack.yml
       - security/aws.yml
 
-  application:
-    name: ah-madda
+  profiles:
+    default: local
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+
+  jpa:
+    properties:
+      hibernate.default_batch_fetch_size: 16
 
 oauth:
   google:
