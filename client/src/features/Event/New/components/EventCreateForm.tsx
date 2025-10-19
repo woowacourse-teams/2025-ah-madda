@@ -555,7 +555,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                   >
                     <Text
                       weight={areAllSelected ? 'bold' : 'regular'}
-                      color={areAllSelected ? theme.colors.primary500 : theme.colors.gray300}
+                      color={areAllSelected ? theme.colors.primary500 : theme.colors.gray500}
                     >
                       전체
                     </Text>
@@ -573,7 +573,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                       >
                         <Text
                           weight={selected ? 'bold' : 'regular'}
-                          color={selected ? theme.colors.primary500 : theme.colors.gray300}
+                          color={selected ? theme.colors.primary500 : theme.colors.gray500}
                         >
                           {group.name}
                         </Text>
@@ -761,7 +761,7 @@ const Segment = styled.button<{ isSelected: boolean }>`
   flex: 0 0 auto;
   word-break: keep-all;
   border: 1.5px solid
-    ${(props) => (props.isSelected ? theme.colors.primary500 : theme.colors.gray300)};
+    ${(props) => (props.isSelected ? theme.colors.primary500 : theme.colors.gray500)};
   text-align: center;
   border-radius: 8px;
   cursor: pointer;

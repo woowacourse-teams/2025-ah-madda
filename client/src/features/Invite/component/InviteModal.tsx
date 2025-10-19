@@ -83,7 +83,7 @@ export const InviteModal = () => {
                     color={
                       selectedGroup === group.groupId
                         ? theme.colors.primary500
-                        : theme.colors.gray300
+                        : theme.colors.gray500
                     }
                   >
                     {group.name}
@@ -142,7 +142,7 @@ const Segment = styled.button<{ isSelected: boolean }>`
   flex: 0 0 auto;
   word-break: keep-all;
   border: 1.5px solid
-    ${(props) => (props.isSelected ? theme.colors.primary500 : theme.colors.gray300)};
+    ${(props) => (props.isSelected ? theme.colors.primary500 : theme.colors.gray500)};
   text-align: center;
   border-radius: 8px;
   cursor: pointer;
