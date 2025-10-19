@@ -37,11 +37,11 @@ export const Info = () => {
           alignItems="center"
           gap="30px"
           width="100%"
-          padding="60px 10px"
+          padding="0 10px"
           css={css`
             @media (max-width: 768px) {
               flex-direction: column-reverse;
-              padding: 40px 0px;
+              padding: 0 0 30px 0;
               gap: 0px;
             }
           `}
@@ -88,7 +88,6 @@ export const Info = () => {
             <Logo src={Ahmadda} alt="아마다 로고" width={150} height={220} />
             <PointIcon src={Point} alt="Point" className="point1" width={40} height={100} />
             <PointIcon src={Point} alt="Point" className="point2" width={40} height={100} />
-            <PointIcon src={Point} alt="Point" className="point3" width={40} height={100} />
           </Flex>
         </Flex>
         <Button size="full" onClick={handleEnterOrganizationSpace}>
@@ -99,16 +98,6 @@ export const Info = () => {
   );
 };
 
-const Logo = styled.img`
-  width: 150px;
-  height: 220px;
-
-  @media (max-width: 768px) {
-    width: 120px;
-    height: 180px;
-  }
-`;
-
 const pop = keyframes`
   0% {
     opacity: 0;
@@ -118,48 +107,55 @@ const pop = keyframes`
     opacity: 1;
     transform: scale(1.1);
   }
-
   100% {
     opacity: 1;
     transform: scale(1);
   }
 `;
 
+const Logo = styled.img`
+  width: 200px;
+  height: 300px;
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    width: 180px;
+    height: 250px;
+  }
+`;
+
 const PointIcon = styled.img`
   position: absolute;
-  width: 40px;
-  height: 100px;
+  width: 55px;
+  height: 90px;
   opacity: 0;
   animation: ${pop} 0.6s ease-out forwards;
 
   &.point1 {
-    top: 30px;
-    right: 0px;
+    top: 40px;
+    right: 10px;
     animation-delay: 0s;
   }
 
   &.point2 {
-    top: 20px;
-    right: -30px;
+    top: 30px;
+    right: -20px;
     animation-delay: 0.6s;
   }
 
-  &.point3 {
-    top: 35px;
-    right: -60px;
-    animation-delay: 1.2s;
-  }
-
   @media (max-width: 768px) {
-    width: 30px;
-    height: 70px;
+    width: 55px;
+    height: 90px;
+
+    &.point1 {
+      top: 30px;
+      right: 10px;
+      animation-delay: 0s;
+    }
 
     &.point2 {
-      right: -25px;
-    }
-
-    &.point3 {
-      right: -50px;
-    }
+      top: 20px;
+      right: -20px;
+      animation-delay: 0.6s;
   }
 `;
