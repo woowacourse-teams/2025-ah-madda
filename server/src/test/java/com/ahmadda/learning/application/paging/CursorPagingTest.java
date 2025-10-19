@@ -59,7 +59,6 @@ class CursorPagingTest {
         var organization = createOrganization("우테코");
         var group = createGroup();
         var organizationMember = createOrganizationMember(organization, member, group);
-        var loginMember = createLoginMember(member);
 
         var now = LocalDateTime.now()
                 .truncatedTo(ChronoUnit.MICROS);
@@ -83,7 +82,6 @@ class CursorPagingTest {
         // when
         var firstPage = sut.getPastEvents(
                 organization.getId(),
-                loginMember,
                 now,
                 Long.MAX_VALUE,
                 10
@@ -93,7 +91,6 @@ class CursorPagingTest {
 
         var secondPage = sut.getPastEvents(
                 organization.getId(),
-                loginMember,
                 now,
                 lastEventOfFirstPage.getId(),
                 10
