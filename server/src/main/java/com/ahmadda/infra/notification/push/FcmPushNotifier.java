@@ -8,7 +8,6 @@ import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.MulticastMessage;
-import com.google.firebase.messaging.Notification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -74,10 +73,6 @@ public class FcmPushNotifier implements PushNotifier {
     ) {
         return MulticastMessage.builder()
                 .addAllTokens(recipientPushTokens)
-                .setNotification(Notification.builder()
-                        .setTitle(payload.title())
-                        .setBody(payload.body())
-                        .build())
                 .putData("title", payload.title())
                 .putData("body", payload.body())
                 .putData(
