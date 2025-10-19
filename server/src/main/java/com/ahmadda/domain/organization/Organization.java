@@ -82,6 +82,10 @@ public class Organization extends BaseEntity {
                 .toList();
     }
 
+    public int getActiveEventsCount(LocalDateTime currentDateTime) {
+        return getActiveEvents(currentDateTime).size();
+    }
+
     public OrganizationMember participate(
             final Member member,
             final String nickname,
