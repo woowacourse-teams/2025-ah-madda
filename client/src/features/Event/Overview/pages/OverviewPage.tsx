@@ -1,47 +1,21 @@
 import { Suspense, useState } from 'react';
 
-import { css } from '@emotion/react';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
-import { createInviteCode } from '@/api/mutations/useCreateInviteCode';
 import { organizationQueryOptions } from '@/api/queries/organization';
-import { Button } from '@/shared/components/Button';
-import { Flex } from '@/shared/components/Flex';
-import { Header } from '@/shared/components/Header';
-import { Icon } from '@/shared/components/Icon';
-import { IconButton } from '@/shared/components/IconButton';
 import { PageLayout } from '@/shared/components/PageLayout';
-import { useToast } from '@/shared/components/Toast/ToastContext';
-import { useModal } from '@/shared/hooks/useModal';
 
 import { ActionButtons } from '../components/ActionButtons';
-// import { InviteCodeModal } from '../components/InviteCodeModal';
 import { OrganizationInfo } from '../components/OrganizationInfo';
 import { OrganizationInfoSkeleton, TabsSkeleton } from '../components/OverviewSkeletons';
 import { OverviewTabs } from '../components/OverviewTabs';
 
+// S.TODO : 추후 삭제
 export const OverviewPage = () => {
   const { organizationId } = useParams();
-  const { error } = useToast();
-
-  const [inviteCode, setInviteCode] = useState('');
-  const { isOpen, open, close } = useModal();
 
   const orgIdNum = Number(organizationId);
-
-  const handleCreateInviteCode = async () => {
-    try {
-      const data = await createInviteCode(orgIdNum);
-      const baseUrl =
-        process.env.NODE_ENV === 'production' ? 'https://ahmadda.com' : 'http://localhost:5173';
-      const inviteUrl = `${baseUrl}/invite?code=${data.inviteCode}`;
-      setInviteCode(inviteUrl);
-      open();
-    } catch {
-      error('초대 코드 생성에 실패했습니다.');
-    }
-  };
 
   return (
     <>
@@ -49,15 +23,11 @@ export const OverviewPage = () => {
         <Suspense fallback={<OrganizationInfoSkeleton />}>
           <OrganizationInfoSection organizationId={organizationId!} />
         </Suspense>
-
-        <ActionButtons onIssueInviteCode={handleCreateInviteCode} />
-
+        <ActionButtons />
         <Suspense fallback={<TabsSkeleton />}>
           <OverviewTabs organizationId={orgIdNum} />
         </Suspense>
       </PageLayout>
-      {/* 
-      <InviteCodeModal inviteCode={inviteCode} isOpen={isOpen} onClose={close} /> */}
     </>
   );
 };

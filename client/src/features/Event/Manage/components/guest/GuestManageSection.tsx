@@ -7,11 +7,11 @@ import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
 import { Spacing } from '@/shared/components/Spacing';
 
-import { useCheckableGuests } from '../hooks/useCheckableGuests';
+import { useCheckableGuests } from '../../hooks/useCheckableGuests';
+import { AlarmComposer } from '../alarm/ReminderForm';
+import { AlarmHeader } from '../alarm/ReminderHeader';
 
 import { GuestViewSection } from './GuestViewSection';
-import { AlarmComposer } from './ReminderForm';
-import { AlarmHeader } from './ReminderHeader';
 
 export const GuestManageSection = () => {
   const { eventId: eventIdParam } = useParams();

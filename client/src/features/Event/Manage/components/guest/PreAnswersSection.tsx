@@ -9,7 +9,7 @@ import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
-import { byOrderIndexAsc } from '../utils/sortByOrderIndex';
+import { byOrderIndexAsc } from '../../utils/sortByOrderIndex';
 
 type PreAnswersSectionProps = {
   eventId: number;

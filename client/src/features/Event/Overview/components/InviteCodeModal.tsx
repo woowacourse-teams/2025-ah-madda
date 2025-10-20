@@ -1,4 +1,18 @@
 // S.TODO : 추후 삭제
+
+// const handleCreateInviteCode = async () => {
+//   try {
+//     const data = await createInviteCode(orgIdNum);
+//     const baseUrl =
+//       process.env.NODE_ENV === 'production' ? 'https://ahmadda.com' : 'http://localhost:5173';
+//     const inviteUrl = `${baseUrl}/invite?code=${data.inviteCode}`;
+//     setInviteCode(inviteUrl);
+//     open();
+//   } catch {
+//     error('초대 코드 생성에 실패했습니다.');
+//   }
+// };
+
 // import { css } from '@emotion/react';
 
 // import { Button } from '@/shared/components/Button';

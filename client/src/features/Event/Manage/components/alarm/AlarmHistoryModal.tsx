@@ -7,7 +7,7 @@ import { ModalProps } from '@/shared/components/Modal/Modal';
 import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 
-import { HistoryContainer } from '../containers/HistoryContainer';
+import { HistoryContainer } from '../../containers/HistoryContainer';
 
 import { HistoryCard } from './HistoryCard';
 

@@ -6,7 +6,7 @@ import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
-import { useHoverIndex } from '../hooks/useHoverIndex';
+import { useHoverIndex } from '../../hooks/useHoverIndex';
 
 import { Chart } from './Chart';
 
