@@ -17,7 +17,7 @@ export const organizationQueryOptions = {
   all: () =>
     queryOptions({
       queryKey: organizationQueryKeys.all(),
-      queryFn: () => getAllOrganization(),
+      queryFn: () => getAllOrganizations(),
     }),
   // S.TODO : 추후 수정 ':organizationId' : number
   organizations: (organizationId: string) =>
@@ -56,7 +56,7 @@ export const organizationQueryOptions = {
     }),
 };
 
-const getAllOrganization = () => {
+const getAllOrganizations = () => {
   return fetcher.get<OrganizationAPIResponse[]>(`organizations/popular`);
 };
 
