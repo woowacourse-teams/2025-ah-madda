@@ -16,6 +16,7 @@ type ProfileFormProps = {
   group: OrganizationGroupAPIResponse[];
 };
 
+const DEFAULT_GROUP_ID = 4;
 export const ProfileForm = ({ profile, group }: ProfileFormProps) => {
   const {
     nickname,
@@ -27,9 +28,8 @@ export const ProfileForm = ({ profile, group }: ProfileFormProps) => {
     // isLoading,
   } = useProfileForm({
     initialNickname: profile.name,
-    initialGroupID: profile.group?.groupId ?? 4,
+    initialGroupID: profile.group?.groupId ?? DEFAULT_GROUP_ID,
   });
-  console.log(profile.group);
 
   return (
     <>
