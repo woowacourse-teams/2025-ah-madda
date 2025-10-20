@@ -13,7 +13,7 @@ type MessageCardProps = {
 export const MessageCard = ({ message, image, index }: MessageCardProps) => {
   return (
     <Flex
-      dir="column"
+      dir="row"
       justifyContent="space-between"
       alignItems="flex-start"
       width="100%"
