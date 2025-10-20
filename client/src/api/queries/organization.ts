@@ -1,9 +1,7 @@
 import { queryOptions } from '@tanstack/react-query';
 
-import { Organization } from '@/features/Organization/types/Organization';
-
 import { fetcher } from '../fetcher';
-import { OrganizationMember } from '../types/organizations';
+import { OrganizationAPIResponse, OrganizationMember } from '../types/organizations';
 import { OrganizationGroupAPIResponse } from '../types/organizations';
 
 export const organizationQueryKeys = {
@@ -16,6 +14,11 @@ export const organizationQueryKeys = {
   group: () => [...organizationQueryKeys.all(), 'group'],
 };
 export const organizationQueryOptions = {
+  all: () =>
+    queryOptions({
+      queryKey: organizationQueryKeys.all(),
+      queryFn: () => getAllOrganization(),
+    }),
   // S.TODO : 추후 수정 ':organizationId' : number
   organizations: (organizationId: string) =>
     queryOptions({
@@ -34,7 +37,6 @@ export const organizationQueryOptions = {
       queryKey: [...organizationQueryKeys.all(), 'preview', inviteCode],
       queryFn: () => getOrganizationPreview(inviteCode),
     }),
-
   joined: () =>
     queryOptions({
       queryKey: organizationQueryKeys.joined(),
@@ -54,12 +56,16 @@ export const organizationQueryOptions = {
     }),
 };
 
+const getAllOrganization = () => {
+  return fetcher.get<OrganizationAPIResponse[]>(`organizations/popular`);
+};
+
 const getAllEventAPI = ({ organizationId }: { organizationId: number }) => {
   return fetcher.get<Event[]>(`organizations/${organizationId}/events`);
 };
 
 export const getOrganization = ({ organizationId }: { organizationId: string }) => {
-  return fetcher.get<Organization>(`organizations/${organizationId}`);
+  return fetcher.get<OrganizationAPIResponse>(`organizations/${organizationId}`);
 };
 
 const getOrganizationProfile = ({ organizationId }: { organizationId: number }) => {
@@ -67,11 +73,11 @@ const getOrganizationProfile = ({ organizationId }: { organizationId: number }) 
 };
 
 export const getOrganizationPreview = (inviteCode: string) => {
-  return fetcher.get<Organization>(`organizations/preview?inviteCode=${inviteCode}`);
+  return fetcher.get<OrganizationAPIResponse>(`organizations/preview?inviteCode=${inviteCode}`);
 };
 
 export const getParticipatedOrganizations = () => {
-  return fetcher.get<Organization[]>(`organizations/participated`);
+  return fetcher.get<OrganizationAPIResponse[]>(`organizations/participated`);
 };
 
 const getOrganizationMembers = ({ organizationId }: { organizationId: number }) => {
