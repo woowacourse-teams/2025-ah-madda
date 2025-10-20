@@ -7,8 +7,6 @@ spring:
     hikari:
       maximum-pool-size: 10
 
-
-
   jpa:
     show-sql: true
     hibernate:
@@ -97,3 +95,6 @@ management:
         enabled: true
         step: 1m
         namespace: EC2/ahmadda-api
+
+mail:
+  noop: true
