@@ -1,7 +1,6 @@
 package com.ahmadda.learning.infra.notification;
 
 import com.ahmadda.annotation.LearningTest;
-import com.ahmadda.infra.notification.config.NotificationProperties;
 import com.ahmadda.infra.notification.mail.EmailOutboxSuccessHandler;
 import com.ahmadda.infra.notification.mail.SmtpEmailSender;
 import com.ahmadda.infra.notification.mail.config.SmtpProperties;
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.thymeleaf.TemplateEngine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +22,6 @@ class SmtpEmailSenderTest {
 
     @Autowired
     private SmtpProperties smtpProperties;
-
-    @Autowired
-    private TemplateEngine templateEngine;
-
-    @Autowired
-    private NotificationProperties notificationProperties;
 
     @Autowired
     private EmailOutboxSuccessHandler emailOutboxSuccessHandler;

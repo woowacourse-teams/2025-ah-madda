@@ -1,6 +1,7 @@
 package com.ahmadda.infra.config;
 
 import com.ahmadda.infra.logger.AsyncTraceLoggingDecorator;
+import com.ahmadda.infra.logger.LoggingDiscardPolicy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
@@ -8,7 +9,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
 @EnableAsync
@@ -20,11 +20,12 @@ public class AsyncConfig implements AsyncConfigurer {
     }
 
     /**
-     * 공통 비동기 스레드풀 크기 산정은 Brian Goetz가
-     * 『Java Concurrency in Practice』에서 제시한 추정식에 기반한다.
+     * 공통 비동기 스레드풀.
      * <p>
+     * 스레드풀 크기 산정은 Brian Goetz가 『Java Concurrency in Practice』에서 제시한 추정식에 기반한다.
+     * <pre>
      * Threads = Cores × TargetUtilization × (1 + Wait / Service)
-     * </p>
+     * </pre>
      */
     @Bean
     public ThreadPoolTaskExecutor taskExecutor() {
@@ -37,10 +38,37 @@ public class AsyncConfig implements AsyncConfigurer {
         executor.setQueueCapacity(100);
         executor.setKeepAliveSeconds(60);
 
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
+        executor.setRejectedExecutionHandler(new LoggingDiscardPolicy("taskExecutor"));
 
         executor.setWaitForTasksToCompleteOnShutdown(true);
         executor.setAwaitTerminationSeconds(60);
+
+        executor.initialize();
+        return executor;
+    }
+
+    /**
+     * 격벽(Bulkhead) 비동기 스레드풀.
+     * <p>
+     * 메인 비동기 풀(taskExecutor)과 격리되어 운영되는 보호용 풀이다.
+     */
+    @Bean(name = "bulkheadExecutor")
+    public Executor bulkheadExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setThreadNamePrefix("async-");
+        executor.setTaskDecorator(new AsyncTraceLoggingDecorator());
+
+        int cores = Runtime.getRuntime()
+                .availableProcessors();
+        executor.setCorePoolSize(cores);
+        executor.setMaxPoolSize(cores * 2);
+        executor.setQueueCapacity(100);
+        executor.setKeepAliveSeconds(60);
+
+        executor.setRejectedExecutionHandler(new LoggingDiscardPolicy("bulkheadExecutor"));
+
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setAwaitTerminationSeconds(30);
 
         executor.initialize();
         return executor;
