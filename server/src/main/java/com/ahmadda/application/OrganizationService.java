@@ -8,7 +8,6 @@ import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
-import com.ahmadda.domain.organization.ActiveEventCountComparator;
 import com.ahmadda.domain.organization.InviteCode;
 import com.ahmadda.domain.organization.InviteCodeRepository;
 import com.ahmadda.domain.organization.Organization;
@@ -142,10 +141,7 @@ public class OrganizationService {
 
     @Transactional(readOnly = true)
     public List<Organization> findAllOrderByActiveEventsDesc(final LocalDateTime currentDateTime) {
-        return organizationRepository.findAll()
-                .stream()
-                .sorted(new ActiveEventCountComparator(currentDateTime))
-                .toList();
+        return organizationRepository.findAllOrderByActiveEventsDesc(currentDateTime);
     }
 
     private void validateDuplicateNickname(final Long organizationId, final String nickname) {
