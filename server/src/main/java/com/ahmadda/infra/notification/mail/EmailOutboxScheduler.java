@@ -28,7 +28,7 @@ public class EmailOutboxScheduler {
     }
 
     @Transactional
-    @Scheduled(fixedDelay = 60_000)
+    @Scheduled(fixedRate = 60 * 1000)
     public void resendFailedEmails() {
         LocalDateTime threshold = LocalDateTime.now()
                 .minusMinutes(SOFT_LOCK_TTL_MINUTES);
