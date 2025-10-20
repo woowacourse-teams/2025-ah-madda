@@ -43,9 +43,9 @@ export const requestFCMPermission = async () => {
 
 export const setupForegroundMessage = () => {
   onMessage(messaging, (payload) => {
-    if (Notification.permission === 'granted' && payload.notification) {
-      const notification = new Notification(payload.notification?.title || '새 알림', {
-        body: payload.notification?.body || '',
+    if (Notification.permission === 'granted' && payload.data) {
+      const notification = new Notification(payload.data?.title || '새 알림', {
+        body: payload.data?.body || '',
         icon: '/icon-192x192.png',
         data: payload.data,
       });
