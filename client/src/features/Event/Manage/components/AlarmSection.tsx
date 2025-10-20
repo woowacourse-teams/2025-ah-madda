@@ -78,6 +78,7 @@ export const AlarmSection = ({
       <Card
         css={css`
           padding: 32px;
+          border: none;
         `}
       >
         <Flex as="section" dir="column">
