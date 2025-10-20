@@ -1,17 +1,13 @@
 import { css } from '@emotion/react';
-import { useSuspenseQueries } from '@tanstack/react-query';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useQuery, useSuspenseQueries } from '@tanstack/react-query';
+import { useParams } from 'react-router-dom';
 
-import { HttpError } from '@/api/fetcher';
 import { eventQueryOptions } from '@/api/queries/event';
-import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
-import { Header } from '@/shared/components/Header';
-import { Icon } from '@/shared/components/Icon';
-import { IconButton } from '@/shared/components/IconButton';
 import { PageLayout } from '@/shared/components/PageLayout';
 import { Tabs } from '@/shared/components/Tabs';
 import { Text } from '@/shared/components/Text';
+import { useGoogleAuth } from '@/shared/hooks/useGoogleAuth';
 
 import { AttendanceOverview } from '../components/guest/AttendanceOverview';
 import { EventBody } from '../components/info/EventBody';
@@ -19,30 +15,22 @@ import { EventHeader } from '../components/info/EventHeader';
 import { EventDetailContainer } from '../containers/EventDetailContainer';
 
 export const EventDetailPage = () => {
-  const navigate = useNavigate();
-  const { eventId, organizationId } = useParams();
+  const { eventId } = useParams();
+  const { isAuthenticated } = useGoogleAuth();
 
-  const [
-    { data: event },
-    { data: guestStatus, isError: guestStatusError, error: guestStatusErrorData },
-    { data: organizerStatus },
-  ] = useSuspenseQueries({
-    queries: [
-      eventQueryOptions.detail(Number(eventId)),
-      eventQueryOptions.guestStatus(Number(eventId)),
-      eventQueryOptions.organizer(Number(eventId)),
-    ],
+  const [{ data: event }] = useSuspenseQueries({
+    queries: [eventQueryOptions.detail(Number(eventId))],
   });
 
-  if (guestStatusError) {
-    if (guestStatusErrorData instanceof HttpError && guestStatusErrorData.status === 404) {
-      alert(
-        '해당 이벤트 스페이스의 구성원이 아닙니다. 이벤트 스페이스에 가입 후 다시 시도해주세요.'
-      );
-      navigate('/');
-      return null;
-    }
-  }
+  const { data: guestStatus } = useQuery({
+    ...eventQueryOptions.guestStatus(Number(eventId)),
+    enabled: isAuthenticated,
+  });
+
+  const { data: organizerStatus } = useQuery({
+    ...eventQueryOptions.organizer(Number(eventId)),
+    enabled: isAuthenticated,
+  });
 
   if (!event) {
     return (
@@ -55,34 +43,7 @@ export const EventDetailPage = () => {
   }
 
   return (
-    <PageLayout
-      header={
-        <Header
-          left={
-            <Icon
-              name="logo"
-              size={55}
-              onClick={() => navigate(`/${organizationId}/event`)}
-              css={css`
-                cursor: pointer;
-              `}
-            />
-          }
-          right={
-            <Flex alignItems="center" gap="8px">
-              <Button size="sm" onClick={() => navigate(`/${organizationId}/event/my`)}>
-                내 이벤트
-              </Button>
-              <IconButton
-                name="user"
-                size={24}
-                onClick={() => navigate(`/${organizationId}/profile`)}
-              />
-            </Flex>
-          }
-        />
-      }
-    >
+    <PageLayout>
       <EventDetailContainer>
         <EventHeader
           eventId={Number(eventId)}

@@ -7,6 +7,7 @@ import { EventDetailPage } from '@/features/Event/Detail/pages/EventDetailPage';
 import { MyEventPage } from '@/features/Event/My/pages/MyEventPage';
 import { OverviewPage } from '@/features/Event/Overview/pages/OverviewPage';
 import { HomePage } from '@/features/Home/page/HomePage';
+import { OrganizationOverviewPage } from '@/features/Organization/Overview/pages/OrganizationOverviewPage';
 import { Flex } from '@/shared/components/Flex';
 import { Loading } from '@/shared/components/Loading';
 
@@ -92,7 +93,6 @@ export const router = createBrowserRouter(
         },
         {
           path: '/:organizationId/event',
-          Component: ProtectRoute,
           children: [
             {
               index: true,
@@ -116,7 +116,13 @@ export const router = createBrowserRouter(
             },
             {
               path: 'manage/:eventId',
-              element: withSuspense(EventManagePage),
+              Component: ProtectRoute,
+              children: [
+                {
+                  index: true,
+                  element: withSuspense(EventManagePage),
+                },
+              ],
             },
             {
               path: ':eventId/invite',
@@ -126,20 +132,32 @@ export const router = createBrowserRouter(
         },
         {
           path: '/organization',
-          Component: ProtectRoute,
+          Component: OrganizationOverviewPage,
           children: [
             {
               path: 'new',
-              element: withSuspense(NewOrganizationPage),
+              Component: ProtectRoute,
+              children: [
+                {
+                  index: true,
+                  element: withSuspense(NewOrganizationPage),
+                },
+              ],
             },
             {
               path: 'edit/:organizationId',
-              element: withSuspense(NewOrganizationPage),
+              Component: ProtectRoute,
+              children: [
+                {
+                  index: true,
+                  element: withSuspense(NewOrganizationPage),
+                },
+              ],
             },
           ],
         },
         {
-          path: '/:organizationId/profile',
+          path: '/profile',
           Component: ProtectRoute,
           children: [
             {

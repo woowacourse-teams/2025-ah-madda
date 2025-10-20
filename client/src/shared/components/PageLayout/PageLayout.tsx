@@ -5,18 +5,16 @@ import { css } from '@emotion/react';
 import { Flex } from '../Flex';
 import { Footer } from '../Footer';
 
+import { PageHeader } from './PageHeader';
+
 type PageLayoutProps = {
-  /**
-   * Header content to be displayed at the top of the page layout.
-   */
-  header: ReactNode;
   /**
    * Main content of the page layout.
    */
   children: ReactNode;
 };
 
-export const PageLayout = ({ header, children }: PageLayoutProps) => {
+export const PageLayout = ({ children }: PageLayoutProps) => {
   return (
     <Flex
       dir="column"
@@ -28,7 +26,7 @@ export const PageLayout = ({ header, children }: PageLayoutProps) => {
         min-height: 100vh;
       `}
     >
-      {header}
+      <PageHeader />
       <Flex
         dir="column"
         width="100%"
