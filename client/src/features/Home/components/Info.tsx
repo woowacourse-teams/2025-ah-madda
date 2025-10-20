@@ -80,7 +80,7 @@ export const Info = () => {
           >
             <Logo
               src={Ahmadda}
-              alt="아마다 곰돌이가 깜짝 놀라며 느낌표 2개를 표시하는 애니메이션"
+              alt="아맞다 곰돌이가 깜짝 놀라며 느낌표 2개를 표시하는 애니메이션"
               width={150}
               height={220}
             />
