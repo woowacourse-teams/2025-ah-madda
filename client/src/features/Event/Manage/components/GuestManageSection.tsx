@@ -1,12 +1,17 @@
+import { css } from '@emotion/react';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
 import { eventQueryOptions } from '@/api/queries/event';
+import { Card } from '@/shared/components/Card';
 import { Flex } from '@/shared/components/Flex';
+import { Spacing } from '@/shared/components/Spacing';
 
 import { useCheckableGuests } from '../hooks/useCheckableGuests';
 
-import { AlarmSection } from './AlarmSection';
+import { GuestViewSection } from './GuestViewSection';
+import { AlarmComposer } from './ReminderForm';
+import { AlarmHeader } from './ReminderHeader';
 
 export const GuestManageSection = () => {
   const { eventId: eventIdParam } = useParams();
@@ -25,8 +30,9 @@ export const GuestManageSection = () => {
     guestData,
     toggleAll: toggleGuestAllChecked,
     toggleItem: toggleGuestChecked,
-    getCheckedGuests: getCheckedGuests,
+    getCheckedGuests,
   } = useCheckableGuests(guests);
+
   const {
     guestData: nonGuestData,
     toggleAll: toggleNonGuestAllChecked,
@@ -34,27 +40,37 @@ export const GuestManageSection = () => {
     getCheckedGuests: getCheckedNonGuests,
   } = useCheckableGuests(nonGuests);
 
-  const checkedGuests = getCheckedGuests();
-  const checkedNonGuests = getCheckedNonGuests();
-
   const selectedMemberIds = [
-    ...checkedGuests.map((g) => g.organizationMemberId),
-    ...checkedNonGuests.map((ng) => ng.organizationMemberId),
+    ...getCheckedGuests().map((g) => g.organizationMemberId),
+    ...getCheckedNonGuests().map((ng) => ng.organizationMemberId),
   ];
+  const selectedGuestCount = selectedMemberIds.length;
 
   return (
     <Flex as="section" dir="column" gap="24px" width="100%" margin="0 auto" padding="38px 0">
-      <AlarmSection
-        notifyData={notifyData}
-        organizationMemberIds={selectedMemberIds}
-        selectedGuestCount={selectedMemberIds.length}
-        guests={guestData}
-        onGuestChecked={toggleGuestChecked}
-        onAllChecked={toggleGuestAllChecked}
-        nonGuests={nonGuestData}
-        onNonGuestChecked={toggleNonGuestChecked}
-        onNonGuestAllChecked={toggleNonGuestAllChecked}
-      />
+      <Card
+        css={css`
+          border: none;
+        `}
+      >
+        <Flex as="section" dir="column">
+          <AlarmHeader selectedGuestCount={selectedGuestCount} notifyData={notifyData} />
+          <Spacing height="24px" />
+          <GuestViewSection
+            guests={guestData}
+            onGuestChecked={toggleGuestChecked}
+            onAllChecked={toggleGuestAllChecked}
+            nonGuests={nonGuestData}
+            onNonGuestChecked={toggleNonGuestChecked}
+            onNonGuestAllChecked={toggleNonGuestAllChecked}
+          />
+          <Spacing height="28px" />
+          <AlarmComposer
+            organizationMemberIds={selectedMemberIds}
+            selectedGuestCount={selectedGuestCount}
+          />
+        </Flex>
+      </Card>
     </Flex>
   );
 };
