@@ -19,6 +19,8 @@ html {
   -moz-text-size-adjust: none;
   -webkit-text-size-adjust: none;
   text-size-adjust: none;
+  scrollbar-width: thin;
+  scrollbar-color: #d9dadb transparent;
 }
 
 body,
@@ -42,11 +44,6 @@ ol[role='list'] {
 body {
   min-height: 100vh;
   line-height: 1.5;
-}
-
-html {
-  scrollbar-width: thin;
-  scrollbar-color: #d9dadb transparent;
 }
 
 *::-webkit-scrollbar {
