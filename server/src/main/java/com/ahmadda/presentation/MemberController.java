@@ -129,7 +129,7 @@ public class MemberController {
             @Auth final LoginMember loginMember
     ) {
         List<Event> organizationEvents =
-                memberService.getOwnerEvents(loginMember);
+                memberService.getParticipatedEvents(loginMember);
 
         List<EventResponse> eventResponses = organizationEvents.stream()
                 .map(EventResponse::from)

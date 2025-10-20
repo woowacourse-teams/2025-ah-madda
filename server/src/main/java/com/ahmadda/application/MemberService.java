@@ -24,6 +24,7 @@ public class MemberService {
         return getMember(loginMember.memberId());
     }
 
+    @Transactional(readOnly = true)
     public List<Event> getOwnerEvents(final LoginMember loginMember) {
         Member member = getMember(loginMember.memberId());
 
