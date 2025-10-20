@@ -18,20 +18,14 @@ export const OrgSection = ({ organizations }: OrgSectionProps) => {
   const handleJoin = (orgId: number) => navigate(`/${orgId}/event`);
 
   return (
-    <Flex
-      dir="column"
-      width="100%"
-      justifyContent="center"
-      alignItems="flex-start"
-      gap="32px"
-      padding="80px 20px 0 20px"
-    >
+    <Flex dir="column" gap="24px" margin="60px 0 0 0" padding="40px 20px 0 20px">
       <Flex
         dir="row"
         justifyContent="space-between"
         alignItems="flex-end"
         gap="8px"
         width="100%"
+        margin="0 0 30px 0"
         css={css`
           @media (max-width: 768px) {
             flex-direction: column;

@@ -6,7 +6,7 @@ type EventManageContainerProps = {
 
 export const EventManageContainer = ({ children }: EventManageContainerProps) => {
   return (
-    <Flex dir="column" margin="24px" padding="60px 0 0 0">
+    <Flex dir="column" gap="24px" margin="60px 0 0 0" padding="40px 20px 0 20px">
       {children}
     </Flex>
   );

@@ -13,7 +13,7 @@ import {
 } from '@/api/mutations/useUpdateOrganization';
 import { useUpdateOrganizationMemberRoles } from '@/api/mutations/useUpdateOrganizationMemberRoles';
 import { organizationQueryOptions } from '@/api/queries/organization';
-import { GuestList } from '@/features/Event/Manage/components/GuestList';
+import { GuestList } from '@/features/Event/Manage/components/guest/GuestList';
 import type { NonGuest } from '@/features/Event/Manage/types';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';

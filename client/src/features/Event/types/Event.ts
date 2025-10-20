@@ -11,6 +11,7 @@ export type Event = {
   registrationEnd: string;
   organizerNicknames: string[];
   isGuest: boolean;
+  isOrganizer: boolean;
 };
 
 export type EventDetail = {

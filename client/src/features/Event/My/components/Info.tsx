@@ -1,6 +1,3 @@
-import { css } from '@emotion/react';
-import { useParams } from 'react-router-dom';
-
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 
@@ -10,7 +7,7 @@ export const Info = () => {
       dir="row"
       justifyContent="space-between"
       alignItems="center"
-      margin="60px 0 30px 0"
+      margin="0 0 30px 0"
       padding="20px 0"
       gap="16px"
       width="100%"
