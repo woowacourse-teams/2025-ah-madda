@@ -19,21 +19,13 @@ import { useModal } from '../../../../shared/hooks/useModal';
 import { useNotificationForm } from '../hooks/useNotificationForm';
 
 import { AlarmHistoryModal } from './AlarmHistoryModal';
-import { GuestViewSection } from './GuestViewSection';
+import { GuestViewSection, GuestViewSectionProps } from './GuestViewSection';
 
 export type AlarmSectionProps = {
   notifyData: NotifyHistoryAPIResponse[];
   organizationMemberIds: number[];
   selectedGuestCount: number;
-} & Pick<
-  React.ComponentProps<typeof GuestViewSection>,
-  | 'guests'
-  | 'onGuestChecked'
-  | 'onAllChecked'
-  | 'nonGuests'
-  | 'onNonGuestChecked'
-  | 'onNonGuestAllChecked'
->;
+} & GuestViewSectionProps;
 
 export const AlarmSection = ({
   notifyData,

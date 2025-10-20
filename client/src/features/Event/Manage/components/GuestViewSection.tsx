@@ -16,7 +16,7 @@ import { Guest, NonGuest } from '../types';
 import { GuestAnswerModal } from './GuestAnswerModal';
 import { GuestList } from './GuestList';
 
-type GuestViewSectionProps = {
+export type GuestViewSectionProps = {
   guests: Guest[];
   onGuestChecked: (organizationMemberId: number) => void;
   onAllChecked: VoidFunction;
