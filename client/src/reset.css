@@ -44,6 +44,25 @@ body {
   line-height: 1.5;
 }
 
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #d9dadb transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background: #d9dadb;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 h1,
 h2,
 h3,
