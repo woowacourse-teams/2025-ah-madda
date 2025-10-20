@@ -67,7 +67,7 @@ server:
 management:
   metrics:
     tags:
-      instanceId: ${HOSTNAME}
+      hostname: ${HOSTNAME}
     enable:
       system.cpu.usage: true
       jvm.memory.used: true
