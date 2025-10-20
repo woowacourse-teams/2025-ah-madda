@@ -28,6 +28,7 @@ export const PageLayout = ({ children }: PageLayoutProps) => {
     >
       <PageHeader />
       <Flex
+        as="main"
         dir="column"
         width="100%"
         css={css`

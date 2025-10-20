@@ -46,10 +46,11 @@ export const Footer = () => {
           <StyledLinkButton
             target="_blank"
             href="https://github.com/woowacourse-teams/2025-ah-madda"
+            aria-label="GitHub 저장소로 이동"
           >
             <img
               src={GithubIcon}
-              alt="github"
+              alt="GitHub 로고"
               width="30"
               height="30"
               loading="lazy"
