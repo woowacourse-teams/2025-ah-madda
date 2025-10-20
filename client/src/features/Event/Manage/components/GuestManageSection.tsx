@@ -7,7 +7,6 @@ import { Flex } from '@/shared/components/Flex';
 import { useCheckableGuests } from '../hooks/useCheckableGuests';
 
 import { AlarmSection } from './AlarmSection';
-import { GuestViewSection } from './GuestViewSection';
 
 export const GuestManageSection = () => {
   const { eventId: eventIdParam } = useParams();
@@ -39,20 +38,16 @@ export const GuestManageSection = () => {
   const checkedNonGuests = getCheckedNonGuests();
 
   const selectedMemberIds = [
-    ...checkedGuests.map((guest) => guest.organizationMemberId),
-    ...checkedNonGuests.map((nonGuest) => nonGuest.organizationMemberId),
+    ...checkedGuests.map((g) => g.organizationMemberId),
+    ...checkedNonGuests.map((ng) => ng.organizationMemberId),
   ];
-
-  const selectedGuestCount = selectedMemberIds.length;
 
   return (
     <Flex as="section" dir="column" gap="24px" width="100%" margin="0 auto" padding="38px 0">
       <AlarmSection
         notifyData={notifyData}
         organizationMemberIds={selectedMemberIds}
-        selectedGuestCount={selectedGuestCount}
-      />
-      <GuestViewSection
+        selectedGuestCount={selectedMemberIds.length}
         guests={guestData}
         onGuestChecked={toggleGuestChecked}
         onAllChecked={toggleGuestAllChecked}
