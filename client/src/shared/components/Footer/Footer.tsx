@@ -23,7 +23,7 @@ export const Footer = () => {
       >
         <Flex dir="column" width="100%" gap="10px">
           <Flex alignItems="center">
-            <img src="/favicon-light.png" alt="logo" width="30" height="30" loading="lazy" />
+            <img src="/favicon.png" alt="logo" width="30" height="30" loading="lazy" />
             <Icon name="logo" />
           </Flex>
           <Text type="Body" weight="semibold" color={theme.colors.gray600}>

@@ -16,18 +16,14 @@ import { useToast } from '@/shared/components/Toast/ToastContext';
 import { useModal } from '@/shared/hooks/useModal';
 
 import { ActionButtons } from '../components/ActionButtons';
-import { InviteCodeModal } from '../components/InviteCodeModal';
+// import { InviteCodeModal } from '../components/InviteCodeModal';
 import { OrganizationInfo } from '../components/OrganizationInfo';
 import { OrganizationInfoSkeleton, TabsSkeleton } from '../components/OverviewSkeletons';
 import { OverviewTabs } from '../components/OverviewTabs';
 
 export const OverviewPage = () => {
-  const navigate = useNavigate();
   const { organizationId } = useParams();
   const { error } = useToast();
-
-  const goMyEvents = () => navigate(`/${organizationId}/event/my`);
-  const goHome = () => navigate(`/`);
 
   const [inviteCode, setInviteCode] = useState('');
   const { isOpen, open, close } = useModal();
@@ -49,34 +45,7 @@ export const OverviewPage = () => {
 
   return (
     <>
-      <PageLayout
-        header={
-          <Header
-            left={
-              <Icon
-                name="logo"
-                size={55}
-                onClick={goHome}
-                css={css`
-                  cursor: pointer;
-                `}
-              />
-            }
-            right={
-              <Flex alignItems="center" gap="8px">
-                <Button size="sm" onClick={() => navigate(`/${organizationId}/event/my`)}>
-                  내 이벤트
-                </Button>
-                <IconButton
-                  name="user"
-                  size={24}
-                  onClick={() => navigate(`/${organizationId}/profile`)}
-                />
-              </Flex>
-            }
-          />
-        }
-      >
+      <PageLayout>
         <Suspense fallback={<OrganizationInfoSkeleton />}>
           <OrganizationInfoSection organizationId={organizationId!} />
         </Suspense>
@@ -87,8 +56,8 @@ export const OverviewPage = () => {
           <OverviewTabs organizationId={orgIdNum} />
         </Suspense>
       </PageLayout>
-
-      <InviteCodeModal inviteCode={inviteCode} isOpen={isOpen} onClose={close} />
+      {/* 
+      <InviteCodeModal inviteCode={inviteCode} isOpen={isOpen} onClose={close} /> */}
     </>
   );
 };

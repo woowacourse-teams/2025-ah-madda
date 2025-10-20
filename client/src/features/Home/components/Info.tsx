@@ -2,7 +2,6 @@ import { css, keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
-import { getGoogleAuthUrl, isAuthenticated } from '@/api/auth';
 import Ahmadda from '@/assets/icon/ahmadda.webp';
 import Point from '@/assets/icon/point.webp';
 import { Button } from '@/shared/components/Button';
@@ -12,16 +11,7 @@ import { Text } from '@/shared/components/Text';
 
 export const Info = () => {
   const navigate = useNavigate();
-
-  const handleEnterOrganizationSpace = () => {
-    if (!isAuthenticated()) {
-      const authUrl = getGoogleAuthUrl();
-      window.location.href = authUrl;
-      return;
-    }
-    navigate(`/organization/new`);
-  };
-
+  const goOverview = () => navigate(`/organization`);
   return (
     <>
       <Flex
@@ -90,8 +80,8 @@ export const Info = () => {
             <PointIcon src={Point} alt="Point" className="point2" width={40} height={100} />
           </Flex>
         </Flex>
-        <Button size="full" onClick={handleEnterOrganizationSpace}>
-          {!isAuthenticated() ? '로그인하고 이벤트 참여해요!' : '이벤트 스페이스 생성하기'}
+        <Button size="full" onClick={goOverview}>
+          이벤트 스페이스 보러가기
         </Button>
       </Flex>
     </>
