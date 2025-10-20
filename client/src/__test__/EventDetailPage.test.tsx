@@ -15,8 +15,8 @@ vi.mock('@/api/fetcher', () => ({
   },
 }));
 
-vi.mock('@/shared/hooks/useGoogleAuth', () => ({
-  useGoogleAuth: () => ({ isAuthenticated: true, logout: vi.fn() }),
+vi.mock('@/api/auth', () => ({
+  isAuthenticated: () => true,
 }));
 const mockFetcher = vi.mocked(fetcher);
 
