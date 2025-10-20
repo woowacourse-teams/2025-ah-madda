@@ -30,8 +30,8 @@ export const OrgCard = ({ organization, onJoin, isAdmin, onEdit }: OrgCardProps)
         onError={(e) => {
           e.currentTarget.src = '/icon-512x512.png';
         }}
-        width={120}
-        height={120}
+        width={255}
+        height={255}
       />
 
       <StyledOverlay data-overlay justifyContent="center" alignItems="center">
@@ -70,15 +70,16 @@ export const OrgCard = ({ organization, onJoin, isAdmin, onEdit }: OrgCardProps)
 
 const StyledCardContainer = styled(Flex)`
   cursor: pointer;
-  width: 120px;
+  width: 175px;
 `;
 
 const StyledImageWrapper = styled(Flex)`
-  width: 120px;
-  height: 120px;
-  border: 2px solid ${theme.colors.gray100};
-  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid ${theme.colors.gray100};
+  width: clamp(140px, 30vw, 175px);
+  height: clamp(140px, 30vw, 175px);
   position: relative;
+  overflow: hidden;
 
   &:hover [data-overlay] {
     opacity: 1;
@@ -91,11 +92,12 @@ const StyledOverlay = styled(Flex)`
   background: rgba(0, 0, 0, 0.44);
   opacity: 0;
   transition: opacity 0.18s ease-in-out;
+  border-radius: 12px;
 `;
 
 const StyledImg = styled.img`
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: scale-down;
   display: block;
 `;

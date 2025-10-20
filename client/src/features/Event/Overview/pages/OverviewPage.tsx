@@ -7,8 +7,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { createInviteCode } from '@/api/mutations/useCreateInviteCode';
 import { organizationQueryOptions } from '@/api/queries/organization';
 import { Button } from '@/shared/components/Button';
+import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
 import { Icon } from '@/shared/components/Icon';
+import { IconButton } from '@/shared/components/IconButton';
 import { PageLayout } from '@/shared/components/PageLayout';
 import { useToast } from '@/shared/components/Toast/ToastContext';
 import { useModal } from '@/shared/hooks/useModal';
@@ -61,9 +63,16 @@ export const OverviewPage = () => {
               />
             }
             right={
-              <Button size="sm" onClick={goMyEvents}>
-                마이 페이지
-              </Button>
+              <Flex alignItems="center" gap="8px">
+                <Button size="sm" onClick={() => navigate(`/${organizationId}/event/my`)}>
+                  내 이벤트
+                </Button>
+                <IconButton
+                  name="user"
+                  size={24}
+                  onClick={() => navigate(`/${organizationId}/profile`)}
+                />
+              </Flex>
             }
           />
         }

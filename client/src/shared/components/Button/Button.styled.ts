@@ -30,6 +30,7 @@ const sizeStyles = {
     padding: 0 ${theme.spacing[5]};
     font-size: 18px;
     font-weight: 600;
+    flex: 1;
   `,
 } as const;
 
@@ -117,6 +118,7 @@ const variantStyles = {
 } as const;
 
 export const StyledButton = styled.button<ButtonProps>`
+  width: fit-content;
   display: inline-flex;
   align-items: center;
   justify-content: center;

@@ -5,10 +5,9 @@ import DefaultImage from '@/assets/icon/ahmadda.webp';
 import { Organization } from '@/features/Organization/types/Organization';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
+import { theme } from '@/shared/styles/theme';
 
 type OrganizationProps = Omit<Organization, 'organizationId'>;
-
-const THUMB_MAX_PX = 160;
 
 export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationProps) => {
   const src = imageUrl || DefaultImage;
@@ -32,27 +31,27 @@ export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationPr
           justifyContent="space-between"
           alignItems="center"
           padding="10px"
+          gap="20px"
           css={css`
             @media (max-width: 481px) {
               flex-direction: column;
               align-items: flex-start;
+              gap: 10px;
             }
           `}
         >
-          <ThumbWrap>
-            <ThumbImg
-              src={src}
-              alt={alt}
-              width={THUMB_MAX_PX}
-              height={THUMB_MAX_PX}
-              decoding="async"
-              fetchPriority="high"
-              onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.src = DefaultImage;
-              }}
-            />
-          </ThumbWrap>
+          <ThumbImg
+            src={src}
+            alt={alt}
+            width={255}
+            height={255}
+            decoding="async"
+            fetchPriority="high"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = DefaultImage;
+            }}
+          />
 
           <Flex dir="column" gap="8px">
             <Text type="Display" weight="bold">
@@ -68,26 +67,16 @@ export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationPr
   );
 };
 
-const ThumbWrap = styled.div`
-  position: relative;
-  width: clamp(140px, 30vw, ${THUMB_MAX_PX}px);
-  aspect-ratio: 1 / 1;
+const ThumbImg = styled.img`
   border-radius: 12px;
-  overflow: hidden;
-  margin-right: 20px;
-  background: #f2f3f5;
+  border: 1px solid ${theme.colors.gray100};
+  width: clamp(140px, 30vw, 175px);
+  height: clamp(140px, 30vw, 175px);
+  display: block;
+  object-fit: scale-down;
 
   @media (max-width: 481px) {
     margin-right: 0;
     margin-bottom: 8px;
   }
-`;
-
-const ThumbImg = styled.img`
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
 `;

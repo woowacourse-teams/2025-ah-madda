@@ -89,8 +89,9 @@ export const ProfileForm = ({
         size="full"
         disabled={!hasChanges || isLoading}
         onClick={handleSaveProfile}
+        isLoading={isLoading}
       >
-        {isLoading ? '저장 중...' : '변경사항 저장'}
+        프로필 수정
       </Button>
     </>
   );

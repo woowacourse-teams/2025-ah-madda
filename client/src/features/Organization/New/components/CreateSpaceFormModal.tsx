@@ -115,11 +115,16 @@ export const CreateSpaceFormModal = ({
         />
       </Flex>
 
-      <Flex gap="12px" alignItems="center">
+      <Flex gap="12px" alignItems="center" width="100%">
         <Button variant="outline" size="full" onClick={onClose} disabled={isSubmitting}>
           취소
         </Button>
-        <Button size="full" disabled={!nickname.trim() || isSubmitting} onClick={submit}>
+        <Button
+          size="full"
+          disabled={!nickname.trim() || isSubmitting}
+          onClick={submit}
+          isLoading={isSubmitting}
+        >
           생성하기
         </Button>
       </Flex>
@@ -141,9 +146,9 @@ const Segment = styled.button<{ isSelected: boolean }>`
 `;
 
 const Img = styled.img`
-  width: 100%;
-  max-width: 250px;
-  height: auto;
+  width: 255px;
+  height: 255px;
+  object-fit: scale-down;
   margin: 0 auto;
   padding: 20px 0;
 `;

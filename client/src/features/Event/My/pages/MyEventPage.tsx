@@ -2,8 +2,10 @@ import { css } from '@emotion/react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Button } from '@/shared/components/Button';
+import { Flex } from '@/shared/components/Flex';
 import { Header } from '@/shared/components/Header';
 import { Icon } from '@/shared/components/Icon';
+import { IconButton } from '@/shared/components/IconButton';
 import { PageLayout } from '@/shared/components/PageLayout';
 
 import { EventTabs } from '../components/EventTabs';
@@ -28,9 +30,16 @@ export const MyEventPage = () => {
             />
           }
           right={
-            <Button size="sm" onClick={() => navigate(`/${organizationId}/event/my`)}>
-              마이 페이지
-            </Button>
+            <Flex alignItems="center" gap="8px">
+              <Button size="sm" onClick={() => navigate(`/${organizationId}/event/my`)}>
+                내 이벤트
+              </Button>
+              <IconButton
+                name="user"
+                size={24}
+                onClick={() => navigate(`/${organizationId}/profile`)}
+              />
+            </Flex>
           }
         />
       }
