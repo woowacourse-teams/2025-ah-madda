@@ -21,8 +21,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-@EnableConfigurationProperties({NotificationProperties.class, SmtpProperties.class})
 @Configuration
+@EnableConfigurationProperties({NotificationProperties.class, SmtpProperties.class})
 public class MailConfig {
 
     @Bean
