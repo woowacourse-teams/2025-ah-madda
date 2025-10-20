@@ -7,6 +7,8 @@ spring:
     hikari:
       maximum-pool-size: 10
 
+
+
   jpa:
     show-sql: true
     hibernate:
@@ -63,6 +65,9 @@ server:
   tomcat:
     mbean-registry:
       enabled: true
+
+    threads:
+      max: 300
 
 management:
   metrics:
