@@ -16,7 +16,7 @@ export const PageHeader = () => {
   const goMyEvents = () => navigate(`/event/my`);
   const goProfile = () => navigate(`/profile`);
 
-  const handleEnterOrganizationSpace = () => {
+  const handleLogin = () => {
     const authUrl = getGoogleAuthUrl();
     window.location.href = authUrl;
     return;
@@ -44,7 +44,7 @@ export const PageHeader = () => {
           </Flex>
         ) : (
           <>
-            <Button size="sm" onClick={handleEnterOrganizationSpace}>
+            <Button size="sm" onClick={handleLogin}>
               로그인
             </Button>
           </>
