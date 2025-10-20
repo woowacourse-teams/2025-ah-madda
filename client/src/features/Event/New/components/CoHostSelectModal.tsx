@@ -232,13 +232,6 @@ const ScrollArea = styled.div`
   margin-top: 12px;
 
   scrollbar-width: thin;
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: ${theme.colors.gray300};
-    border-radius: 8px;
-  }
 `;
 
 const StickyFooter = styled.div`

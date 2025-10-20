@@ -505,13 +505,6 @@ const ScrollArea = styled.div`
   padding-right: 4px;
 
   scrollbar-width: thin;
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: ${theme.colors.gray300};
-    border-radius: 8px;
-  }
 `;
 
 const EmptyState = styled.div`
