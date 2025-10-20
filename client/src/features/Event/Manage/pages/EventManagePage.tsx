@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom';
 
 import { eventQueryOptions } from '@/api/queries/event';
 import { PageLayout } from '@/shared/components/PageLayout';
-import { Spacing } from '@/shared/components/Spacing';
 import { Tabs } from '@/shared/components/Tabs';
 
 import { GuestManageSection } from '../components/guest/GuestManageSection';

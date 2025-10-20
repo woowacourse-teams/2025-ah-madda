@@ -12,7 +12,6 @@ import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
 import { useToast } from '@/shared/components/Toast/ToastContext';
 import { useModal } from '@/shared/hooks/useModal';
-import { theme } from '@/shared/styles/theme';
 import { formatDate } from '@/shared/utils/dateUtils';
 
 import { DeadlineModal } from './DeadlineModal';
