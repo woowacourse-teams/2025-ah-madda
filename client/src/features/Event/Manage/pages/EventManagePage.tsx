@@ -8,9 +8,7 @@ import { eventQueryOptions } from '@/api/queries/event';
 import { Badge } from '@/shared/components/Badge';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
-import { Header } from '@/shared/components/Header';
 import { Icon } from '@/shared/components/Icon';
-import { IconButton } from '@/shared/components/IconButton';
 import { PageLayout } from '@/shared/components/PageLayout';
 import { Spacing } from '@/shared/components/Spacing';
 import { Tabs } from '@/shared/components/Tabs';
@@ -60,34 +58,7 @@ export const EventManagePage = () => {
 
   return (
     <>
-      <PageLayout
-        header={
-          <Header
-            left={
-              <Icon
-                name="logo"
-                size={55}
-                onClick={() => navigate(`/${organizationId}/event`)}
-                css={css`
-                  cursor: pointer;
-                `}
-              />
-            }
-            right={
-              <Flex alignItems="center" gap="8px">
-                <Button size="sm" onClick={() => navigate(`/${organizationId}/event/my`)}>
-                  내 이벤트
-                </Button>
-                <IconButton
-                  name="user"
-                  size={24}
-                  onClick={() => navigate(`/${organizationId}/profile`)}
-                />
-              </Flex>
-            }
-          />
-        }
-      >
+      <PageLayout>
         <EventManageContainer>
           <Spacing height="56px" />
           <Flex dir="column" gap="12px">

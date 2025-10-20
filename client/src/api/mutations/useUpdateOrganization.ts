@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { Organization } from '@/features/Organization/types/Organization';
+import { OrganizationAPIResponse } from '@/api/types/organizations';
 
 import { fetcher } from '../fetcher';
 
@@ -45,5 +45,5 @@ export const useUpdateOrganization = () =>
   });
 
 export const getOrganizationDetailAPI = (organizationId: number) => {
-  return fetcher.get<Organization>(`organizations/${organizationId}`);
+  return fetcher.get<OrganizationAPIResponse>(`organizations/${organizationId}`);
 };

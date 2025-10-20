@@ -30,19 +30,6 @@ export const EventList = ({ events, selectedId, onSelectEvent }: EventListProps)
         css={css`
           max-height: 200px;
           overflow-y: auto;
-
-          &::-webkit-scrollbar {
-            width: 6px;
-          }
-
-          &::-webkit-scrollbar-thumb {
-            background: ${theme.colors.gray300};
-            border-radius: 3px;
-
-            &:hover {
-              background: ${theme.colors.gray400};
-            }
-          }
         `}
       >
         {events.map((event) => {

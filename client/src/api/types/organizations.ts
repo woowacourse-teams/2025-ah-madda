@@ -1,3 +1,10 @@
+export type OrganizationAPIResponse = {
+  organizationId: number;
+  name: string;
+  description: string;
+  imageUrl: string;
+};
+
 export type InviteCodeAPIResponse = {
   inviteCode: string;
   expiresAt: string;

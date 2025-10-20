@@ -23,8 +23,8 @@ export const Footer = () => {
       >
         <Flex dir="column" width="100%" gap="10px">
           <Flex alignItems="center">
-            <img src="/favicon-light.png" alt="아맞다 로고" width="30" height="30" loading="lazy" />
-            <Icon name="logo" aria-label="아맞다 로고" />
+            <img src="/favicon.png" alt="logo" width="30" height="30" loading="lazy" />
+            <Icon name="logo" />
           </Flex>
           <Text type="Body" weight="semibold" color={theme.colors.gray600}>
             우아한테크코스 - 아맞다팀

@@ -1,23 +1,16 @@
 import { ChangeEvent, useState } from 'react';
 
-import { useEditProfile } from '@/api/mutations/useEditProfile';
-import { useToast } from '@/shared/components/Toast/ToastContext';
+// import { useEditProfile } from '@/api/mutations/useEditProfile';
 
 type UseProfileFormProps = {
-  organizationId: number;
   initialNickname: string;
   initialGroupID: number;
 };
 
-export const useProfileForm = ({
-  organizationId,
-  initialNickname,
-  initialGroupID,
-}: UseProfileFormProps) => {
-  const { success: successToast, error: errorToast } = useToast();
+export const useProfileForm = ({ initialNickname, initialGroupID }: UseProfileFormProps) => {
   const [nickname, setNickname] = useState(initialNickname);
   const [selectedGroup, setSelectedGroup] = useState<number>(initialGroupID);
-  const { mutate: editProfile, isPending } = useEditProfile();
+  // const { mutate: editProfile, isPending } = useEditProfile();
 
   const handleNicknameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setNickname(e.target.value);
@@ -27,19 +20,19 @@ export const useProfileForm = ({
     setSelectedGroup(groupId);
   };
 
-  const handleSaveProfile = () => {
-    editProfile(
-      { organizationId, nickname, groupId: selectedGroup },
-      {
-        onSuccess: () => {
-          successToast('프로필이 성공적으로 변경되었어요.');
-        },
-        onError: (error) => {
-          errorToast(error.message);
-        },
-      }
-    );
-  };
+  // const handleSaveProfile = () => {
+  //   editProfile(
+  //     { nickname, groupId: selectedGroup },
+  //     {
+  //       onSuccess: () => {
+  //         successToast('프로필이 성공적으로 변경되었어요.');
+  //       },
+  //       onError: (error: HttpError) => {
+  //         errorToast(error.message);
+  //       },
+  //     }
+  //   );
+  // };
 
   const hasChanges = nickname !== initialNickname || selectedGroup !== initialGroupID;
 
@@ -48,8 +41,8 @@ export const useProfileForm = ({
     selectedGroup,
     handleNicknameChange,
     handleGroupChange,
-    handleSaveProfile,
+    // handleSaveProfile,
     hasChanges,
-    isLoading: isPending,
+    // isLoading: isPending,
   };
 };

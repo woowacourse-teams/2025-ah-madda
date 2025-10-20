@@ -14,6 +14,10 @@ vi.mock('@/api/fetcher', () => ({
     get: vi.fn(),
   },
 }));
+
+vi.mock('@/api/auth', () => ({
+  isAuthenticated: () => true,
+}));
 const mockFetcher = vi.mocked(fetcher);
 
 const setupMockResponses = ({

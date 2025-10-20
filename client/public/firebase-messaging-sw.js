@@ -56,7 +56,7 @@ self.addEventListener('push', (event) => {
   const notificationTitle = payload.data?.title || '새 알림';
   const notificationOptions = {
     body: payload.data?.body || '내용 없음',
-    icon: '/icon-512x512.png',
+    icon: '/icon-192x192.png',
     data: payload.data,
   };
 

@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 import { OrganizationGroupAPIResponse } from '@/api/types/organizations';
-import { OrganizationProfile } from '@/api/types/profile';
+import { Profile } from '@/api/types/profile';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
@@ -12,28 +12,23 @@ import { theme } from '@/shared/styles/theme';
 import { useProfileForm } from '../hooks/useProfileForm';
 
 type ProfileFormProps = {
-  organizationId: number;
-  organizationProfile: OrganizationProfile;
-  organizationGroups: OrganizationGroupAPIResponse[];
+  profile: Profile;
+  group: OrganizationGroupAPIResponse[];
 };
 
-export const ProfileForm = ({
-  organizationId,
-  organizationGroups,
-  organizationProfile,
-}: ProfileFormProps) => {
+const DEFAULT_GROUP_ID = 4;
+export const ProfileForm = ({ profile, group }: ProfileFormProps) => {
   const {
     nickname,
     selectedGroup,
     handleNicknameChange,
     handleGroupChange,
-    handleSaveProfile,
+    // handleSaveProfile,
     hasChanges,
-    isLoading,
+    // isLoading,
   } = useProfileForm({
-    organizationId,
-    initialNickname: organizationProfile.nickname,
-    initialGroupID: organizationProfile.group.groupId,
+    initialNickname: profile.name,
+    initialGroupID: profile.group?.groupId ?? DEFAULT_GROUP_ID,
   });
 
   return (
@@ -51,7 +46,7 @@ export const ProfileForm = ({
               flex-wrap: wrap;
             `}
           >
-            {organizationGroups.map((group) => (
+            {group.map((group) => (
               <Segment
                 key={group.groupId}
                 type="button"
@@ -87,9 +82,9 @@ export const ProfileForm = ({
       <Button
         type="button"
         size="full"
-        disabled={!hasChanges || isLoading}
-        onClick={handleSaveProfile}
-        isLoading={isLoading}
+        // disabled={!hasChanges || isLoading}
+        // onClick={handleSaveProfile}
+        // isLoading={isLoading}
       >
         프로필 수정
       </Button>
