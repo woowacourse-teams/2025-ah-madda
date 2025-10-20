@@ -67,14 +67,7 @@ export const Info = () => {
                   height: 80px;
               `}
             />
-            <Text
-              as="h2"
-              type="Heading"
-              weight="medium"
-              css={css`
-                word-break: keep-all;
-              `}
-            >
+            <Text as="h1" type="Heading" weight="medium">
               이벤트 스페이스 내 이벤트를 더 잘 참여하게!
             </Text>
           </Flex>
@@ -85,9 +78,14 @@ export const Info = () => {
               position: relative;
             `}
           >
-            <Logo src={Ahmadda} alt="아마다 로고" width={150} height={220} />
-            <PointIcon src={Point} alt="Point" className="point1" width={40} height={100} />
-            <PointIcon src={Point} alt="Point" className="point2" width={40} height={100} />
+            <Logo
+              src={Ahmadda}
+              alt="아맞다 곰돌이가 깜짝 놀라며 느낌표 2개를 표시하는 애니메이션"
+              width={150}
+              height={220}
+            />
+            <PointIcon src={Point} alt="" className="point1" width={40} height={100} />
+            <PointIcon src={Point} alt="" className="point2" width={40} height={100} />
           </Flex>
         </Flex>
         <Button size="full" onClick={handleEnterOrganizationSpace}>

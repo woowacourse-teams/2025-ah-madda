@@ -3,7 +3,7 @@ importScripts('https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js'
 importScripts('https://www.gstatic.com/firebasejs/12.0.0/firebase-messaging-compat.js');
 
 const CACHE_NAME = 'ah-madda-cache-v1';
-const urlsToCache = ['/manifest.json', '/icon-192x192.png', '/icon-512x512.png', '/offline.html'];
+const urlsToCache = ['/manifest.json', '/icon-192x192.png', '/offline.html'];
 
 const firebaseConfig = {
   apiKey: 'AIzaSyA1LwhH1JhJBBOlIC3F9RreoGIjo5RgV7Q',
@@ -16,22 +16,6 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-// const messaging = firebase.messaging();
-
-// messaging.onBackgroundMessage((payload) => {
-//   if (payload.notification) return;
-//   const notificationTitle = payload.data?.title || '새 알림';
-
-//   const notificationOptions = {
-//     body: payload.data?.body || '내용 없음',
-//     icon: '/icon-192x192.png',
-//     data: payload.data,
-//     requireInteraction: true,
-//     renotify: false,
-//   };
-
-//   self.registration.showNotification(notificationTitle, notificationOptions);
-// });
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

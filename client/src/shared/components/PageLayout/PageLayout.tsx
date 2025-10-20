@@ -30,6 +30,7 @@ export const PageLayout = ({ header, children }: PageLayoutProps) => {
     >
       {header}
       <Flex
+        as="main"
         dir="column"
         width="100%"
         css={css`
