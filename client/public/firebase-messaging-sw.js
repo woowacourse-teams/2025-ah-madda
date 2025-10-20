@@ -16,21 +16,22 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-const messaging = firebase.messaging();
+// const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage((payload) => {
-  const notificationTitle = payload.data?.title || '새 알림';
+// messaging.onBackgroundMessage((payload) => {
+//   if (payload.notification) return;
+//   const notificationTitle = payload.data?.title || '새 알림';
 
-  const notificationOptions = {
-    body: payload.data?.body || '내용 없음',
-    icon: '/icon-192x192.png',
-    data: payload.data,
-    requireInteraction: true,
-    renotify: false,
-  };
+//   const notificationOptions = {
+//     body: payload.data?.body || '내용 없음',
+//     icon: '/icon-192x192.png',
+//     data: payload.data,
+//     requireInteraction: true,
+//     renotify: false,
+//   };
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
+//   self.registration.showNotification(notificationTitle, notificationOptions);
+// });
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
