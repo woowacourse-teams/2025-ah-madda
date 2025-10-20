@@ -15,7 +15,8 @@ import com.ahmadda.presentation.dto.EventTitleResponse;
 import com.ahmadda.presentation.dto.EventUpdateResponse;
 import com.ahmadda.presentation.dto.MainEventResponse;
 import com.ahmadda.presentation.dto.OrganizerStatusResponse;
-import com.ahmadda.presentation.resolver.AuthMember;
+import com.ahmadda.presentation.resolver.Auth;
+import com.ahmadda.presentation.resolver.OptionalAuth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -27,6 +28,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -78,11 +80,14 @@ public class OrganizationEventController {
             )
     })
     @GetMapping("/{organizationId}/events")
-    public ResponseEntity<List<MainEventResponse>> getOrganizationEvents(@PathVariable final Long organizationId) {
+    public ResponseEntity<List<MainEventResponse>> getOrganizationEvents(
+            @PathVariable final Long organizationId,
+            @OptionalAuth final LoginMember loginMember
+    ) {
         List<Event> organizationEvents = eventService.getActiveEvents(organizationId);
 
         List<MainEventResponse> eventResponses = organizationEvents.stream()
-                .map(MainEventResponse::from)
+                .map(event -> MainEventResponse.from(event, loginMember))
                 .toList();
 
         return ResponseEntity.ok(eventResponses);
@@ -116,13 +121,14 @@ public class OrganizationEventController {
     @GetMapping("/{organizationId}/events/past")
     public ResponseEntity<List<MainEventResponse>> getPastEvents(
             @PathVariable final Long organizationId,
-            @RequestParam(defaultValue = DEFAULT_GET_PAST_EVENT_CURSOR) final Long lastEventId
+            @RequestParam(defaultValue = DEFAULT_GET_PAST_EVENT_CURSOR) final Long lastEventId,
+            @OptionalAuth @Nullable final LoginMember loginMember
     ) {
         List<Event> organizationEvents =
                 eventService.getPastEvents(organizationId, LocalDateTime.now(), lastEventId, 10);
 
         List<MainEventResponse> eventResponses = organizationEvents.stream()
-                .map(MainEventResponse::from)
+                .map(event -> MainEventResponse.from(event, loginMember))
                 .toList();
 
         return ResponseEntity.ok(eventResponses);
@@ -302,7 +308,7 @@ public class OrganizationEventController {
     public ResponseEntity<EventCreateResponse> createOrganizationEvent(
             @PathVariable final Long organizationId,
             @RequestBody @Valid final EventCreateRequest eventCreateRequest,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         Event event = eventService.createEvent(
                 organizationId,
@@ -416,7 +422,7 @@ public class OrganizationEventController {
     @PostMapping("/events/{eventId}/registration/close")
     public ResponseEntity<Void> closeOrganizationEvent(
             @PathVariable final Long eventId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         eventService.closeEventRegistration(
                 eventId,
@@ -506,7 +512,7 @@ public class OrganizationEventController {
     public ResponseEntity<EventUpdateResponse> updateEvent(
             @PathVariable final Long eventId,
             @RequestBody @Valid final EventUpdateRequest eventUpdateRequest,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         Event updated = eventService.updateEvent(
                 eventId,
@@ -596,7 +602,7 @@ public class OrganizationEventController {
     @GetMapping("/{organizationId}/events/owned")
     public ResponseEntity<List<EventResponse>> getOwnerEvents(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         List<Event> organizationEvents = organizationMemberEventService.getOwnerEvents(organizationId, loginMember);
 
@@ -651,7 +657,7 @@ public class OrganizationEventController {
     @GetMapping("/{organizationId}/events/owned/titles")
     public ResponseEntity<List<EventTitleResponse>> getOwnerEventTitles(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         List<Event> ownerEvents = organizationMemberEventService.getOwnerEvents(organizationId, loginMember);
 
@@ -745,7 +751,7 @@ public class OrganizationEventController {
     @GetMapping("/{organizationId}/events/participated")
     public ResponseEntity<List<EventResponse>> getParticipantEvents(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         List<Event> organizationEvents =
                 organizationMemberEventService.getParticipantEvents(organizationId, loginMember);
@@ -818,7 +824,7 @@ public class OrganizationEventController {
     @GetMapping("/events/{eventId}/organizer-status")
     public ResponseEntity<OrganizerStatusResponse> isOrganizer(
             @PathVariable final Long eventId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         boolean isOrganizer = eventService.isOrganizer(eventId, loginMember);
 

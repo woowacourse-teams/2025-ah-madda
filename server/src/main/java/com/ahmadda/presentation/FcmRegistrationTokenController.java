@@ -3,7 +3,7 @@ package com.ahmadda.presentation;
 import com.ahmadda.application.FcmRegistrationTokenService;
 import com.ahmadda.application.dto.FcmRegistrationTokenRequest;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.presentation.resolver.AuthMember;
+import com.ahmadda.presentation.resolver.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -65,7 +65,7 @@ public class FcmRegistrationTokenController {
     @PostMapping
     public ResponseEntity<Void> registerFcmRegistrationToken(
             @RequestBody @Valid final FcmRegistrationTokenRequest request,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         fcmRegistrationTokenService.registerFcmRegistrationToken(request, loginMember);
         return ResponseEntity.noContent()
