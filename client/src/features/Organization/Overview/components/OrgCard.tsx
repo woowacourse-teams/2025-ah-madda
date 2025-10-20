@@ -25,6 +25,7 @@ export const OrgCard = ({ organization, onJoin }: OrgCardProps) => (
         src={organization.imageUrl}
         alt={organization.name}
         onError={(e) => {
+          e.currentTarget.onerror = null;
           e.currentTarget.src = '/icon-192x192.png';
         }}
       />

@@ -48,17 +48,13 @@ export const OrgSection = ({ organizations }: OrgSectionProps) => {
         </Text>
       </Flex>
       <OrgListContainer dir="column" width="100%" gap="8px">
-        <DeskTopOrgList
-          dir="column"
-          justifyContent="flex-start"
-          width="100%"
-          padding="8px 4px"
-          gap="8px"
-        >
+        <DeskTopOrgList>
           {organizations.map((org) => (
-            <Flex key={org.organizationId}>
-              <OrgCard organization={org} onJoin={() => handleJoin(org.organizationId)} />
-            </Flex>
+            <OrgCard
+              key={org.organizationId}
+              organization={org}
+              onJoin={() => handleJoin(org.organizationId)}
+            />
           ))}
         </DeskTopOrgList>
 
@@ -121,13 +117,14 @@ const OrgListContainer = styled(Flex)`
   overflow-y: auto;
 `;
 
-const DeskTopOrgList = styled(Flex)`
+const DeskTopOrgList = styled.div`
   @media (min-width: 768px) {
-    overflow-x: auto;
-    flex-wrap: nowrap;
-
+    width: 100%;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 8px;
   }
 
   @media (max-width: 768px) {
