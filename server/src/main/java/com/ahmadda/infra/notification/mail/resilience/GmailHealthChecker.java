@@ -1,5 +1,6 @@
-package com.ahmadda.infra.notification.mail;
+package com.ahmadda.infra.notification.mail.resilience;
 
+import com.ahmadda.infra.notification.mail.EmailSender;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 

@@ -1,5 +1,6 @@
-package com.ahmadda.infra.notification.mail;
+package com.ahmadda.infra.notification.mail.outbox;
 
+import com.ahmadda.infra.notification.mail.EmailSender;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

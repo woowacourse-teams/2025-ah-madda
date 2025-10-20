@@ -1,6 +1,7 @@
-package com.ahmadda.infra.notification.mail;
+package com.ahmadda.infra.notification.mail.outbox;
 
 import com.ahmadda.annotation.IntegrationTest;
+import com.ahmadda.infra.notification.mail.EmailSender;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

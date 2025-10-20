@@ -1,4 +1,4 @@
-package com.ahmadda.infra.notification.mail;
+package com.ahmadda.infra.notification.mail.resilience;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
