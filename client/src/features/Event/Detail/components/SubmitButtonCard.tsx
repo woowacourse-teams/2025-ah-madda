@@ -1,13 +1,17 @@
 import { css } from '@emotion/react';
 
+import { isAuthenticated } from '@/api/auth';
 import { useCancelParticipation } from '@/api/mutations/useCancelParticipation';
 import { useParticipateEvent } from '@/api/mutations/useParticipateEvent';
 import { Answer, GuestStatusAPIResponse } from '@/api/types/event';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { useToast } from '@/shared/components/Toast/ToastContext';
+import { useModal } from '@/shared/hooks/useModal';
 
 import { getEventButtonState } from '../utils/getSubmitButtonState';
+
+import { LoginModal } from './LoginModal';
 
 type SubmitBUttonCardProps = {
   eventId: number;
@@ -35,7 +39,13 @@ export const SubmitButtonCard = ({
     isRequiredAnswerComplete,
   });
 
+  const { isOpen, open, close } = useModal();
+
   const handleParticipantClick = () => {
+    if (!isAuthenticated()) {
+      open();
+      return;
+    }
     participantMutate(answers, {
       onSuccess: () => {
         onResetAnswers();
@@ -59,20 +69,23 @@ export const SubmitButtonCard = ({
   };
 
   return (
-    <Flex margin="10px 0 40px">
-      <Button
-        size="full"
-        color={buttonState.color}
-        disabled={buttonState.disabled}
-        onClick={
-          buttonState.action === 'cancel' ? handleCancelParticipateClick : handleParticipantClick
-        }
-        css={css`
-          transition: all 0.2s ease-in-out;
-        `}
-      >
-        {buttonState.text}
-      </Button>
-    </Flex>
+    <>
+      <Flex margin="10px 0 40px">
+        <Button
+          size="full"
+          color={buttonState.color}
+          disabled={buttonState.disabled}
+          onClick={
+            buttonState.action === 'cancel' ? handleCancelParticipateClick : handleParticipantClick
+          }
+          css={css`
+            transition: all 0.2s ease-in-out;
+          `}
+        >
+          {buttonState.text}
+        </Button>
+      </Flex>
+      <LoginModal isOpen={isOpen} onClose={close} />
+    </>
   );
 };
