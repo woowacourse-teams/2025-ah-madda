@@ -3,7 +3,7 @@ package com.ahmadda.presentation;
 import com.ahmadda.application.PokeService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.presentation.dto.PokeRequest;
-import com.ahmadda.presentation.resolver.AuthMember;
+import com.ahmadda.presentation.resolver.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -174,7 +174,7 @@ public class PokeController {
     public ResponseEntity<Void> poke(
             @PathVariable final Long eventId,
             @RequestBody @Valid final PokeRequest notifyPokeRequest,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         pokeService.poke(eventId, notifyPokeRequest, loginMember);
 

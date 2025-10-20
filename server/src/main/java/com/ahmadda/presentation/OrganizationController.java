@@ -11,7 +11,7 @@ import com.ahmadda.presentation.dto.OrganizationCreateResponse;
 import com.ahmadda.presentation.dto.OrganizationParticipateRequest;
 import com.ahmadda.presentation.dto.OrganizationParticipateResponse;
 import com.ahmadda.presentation.dto.OrganizationResponse;
-import com.ahmadda.presentation.resolver.AuthMember;
+import com.ahmadda.presentation.resolver.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -108,7 +108,7 @@ public class OrganizationController {
     public ResponseEntity<OrganizationCreateResponse> createOrganization(
             @RequestPart("organization") @Valid OrganizationCreateRequest organizationCreateRequest,
             @RequestPart("thumbnail") MultipartFile multipartFile,
-            @AuthMember LoginMember loginMember
+            @Auth LoginMember loginMember
     ) throws IOException {
         OrganizationImageFile thumbnailOrganizationImageFile = OrganizationImageFile.create(
                 multipartFile.getOriginalFilename(),
@@ -274,7 +274,7 @@ public class OrganizationController {
     @PostMapping("/{organizationId}/participation")
     public ResponseEntity<OrganizationParticipateResponse> participateOrganization(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember,
+            @Auth final LoginMember loginMember,
             @Valid @RequestBody final OrganizationParticipateRequest organizationParticipateRequest
     ) {
         OrganizationMember organizationMember =
@@ -393,7 +393,7 @@ public class OrganizationController {
             @RequestPart("organization") @Valid final OrganizationUpdateRequest organizationUpdateRequest,
             @Nullable @RequestPart(value = "thumbnail", required = false) final MultipartFile multipartFile,
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) throws IOException {
         OrganizationImageFile thumbnailOrganizationImageFile = null;
         if (multipartFile != null) {
@@ -459,7 +459,7 @@ public class OrganizationController {
     })
     @GetMapping("/participated")
     public ResponseEntity<List<OrganizationResponse>> getParticipatedOrganizations(
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         List<Organization> participatingOrganizations = organizationService.getParticipatingOrganizations(loginMember);
 
@@ -540,7 +540,7 @@ public class OrganizationController {
     @DeleteMapping("/{organizationId}")
     public ResponseEntity<Void> deleteOrganization(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         organizationService.deleteOrganization(organizationId, loginMember);
 

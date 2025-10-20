@@ -8,7 +8,7 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.presentation.dto.OrganizationMemberRenameRequest;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
 import com.ahmadda.presentation.dto.OrganizationMemberStatusResponse;
-import com.ahmadda.presentation.resolver.AuthMember;
+import com.ahmadda.presentation.resolver.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -81,7 +81,7 @@ public class OrganizationMemberController {
     @GetMapping("/profile")
     public ResponseEntity<OrganizationMemberResponse> getOrganizationMemberProfile(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         OrganizationMember organizationMember =
                 organizationMemberService.getOrganizationMember(organizationId, loginMember);
@@ -195,7 +195,7 @@ public class OrganizationMemberController {
     @PatchMapping("/organization-members/roles")
     public ResponseEntity<Void> updateRoles(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember,
+            @Auth final LoginMember loginMember,
             @Valid @RequestBody final OrganizationMemberRoleUpdateRequest request
     ) {
         organizationMemberService.updateRoles(organizationId, loginMember, request);
@@ -272,7 +272,7 @@ public class OrganizationMemberController {
     @GetMapping("/organization-member-status")
     public ResponseEntity<OrganizationMemberStatusResponse> getOrganizationMemberStatus(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         boolean isMember = organizationMemberService.isOrganizationMember(organizationId, loginMember);
 
@@ -360,7 +360,7 @@ public class OrganizationMemberController {
     @PatchMapping("/organization-members/rename")
     public ResponseEntity<Void> organizationMemberRenameNickname(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember,
+            @Auth final LoginMember loginMember,
             @Valid @RequestBody final OrganizationMemberRenameRequest request
     ) {
         organizationMemberService.renameOrganizationMemberNickname(organizationId, loginMember, request.nickname());
@@ -442,7 +442,7 @@ public class OrganizationMemberController {
     @PatchMapping("/organization-members")
     public ResponseEntity<Void> updateOrganizationMember(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember,
+            @Auth final LoginMember loginMember,
             @Valid @RequestBody final OrganizationMemberUpdateRequest request
     ) {
         organizationMemberService.updateOrganizationMember(organizationId, loginMember, request);
