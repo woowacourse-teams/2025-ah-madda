@@ -16,7 +16,7 @@ import { Guest, NonGuest } from '../types';
 import { GuestAnswerModal } from './GuestAnswerModal';
 import { GuestList } from './GuestList';
 
-type GuestViewSectionProps = {
+export type GuestViewSectionProps = {
   guests: Guest[];
   onGuestChecked: (organizationMemberId: number) => void;
   onAllChecked: VoidFunction;
@@ -58,11 +58,15 @@ export const GuestViewSection = ({
 
   return (
     <>
-      <Flex as="section" dir="column" gap="20px" padding="30px">
-        <Text type="Heading" weight="bold" color={theme.colors.gray800}>
-          게스트 조회
-        </Text>
-
+      <Flex
+        as="section"
+        dir="column"
+        gap="16px"
+        padding="30px 0"
+        css={css`
+          min-height: 0;
+        `}
+      >
         <Flex
           padding="6px"
           gap="8px"
@@ -110,27 +114,27 @@ export const GuestViewSection = ({
           </TabButton>
         </Flex>
 
-        {activeTab === 'guests' && (
-          <GuestList
-            title={`신청 완료 (${guests.length}명)`}
-            titleColor={theme.colors.primary600}
-            guests={guests}
-            onGuestChecked={onGuestChecked}
-            onAllGuestChecked={onAllChecked}
-            onGuestClick={handleGuestClick}
-          />
-        )}
-
-        {activeTab === 'nonGuests' && (
-          <GuestList
-            title={`미신청 (${nonGuests.length}명)`}
-            titleColor={theme.colors.gray700}
-            guests={nonGuests}
-            onGuestChecked={onNonGuestChecked}
-            onAllGuestChecked={onNonGuestAllChecked}
-            onGuestClick={handleGuestClick}
-          />
-        )}
+        <ScrollArea>
+          {activeTab === 'guests' ? (
+            <GuestList
+              title={`신청 완료 (${guests.length}명)`}
+              titleColor={theme.colors.primary600}
+              guests={guests}
+              onGuestChecked={onGuestChecked}
+              onAllGuestChecked={onAllChecked}
+              onGuestClick={handleGuestClick}
+            />
+          ) : (
+            <GuestList
+              title={`미신청 (${nonGuests.length}명)`}
+              titleColor={theme.colors.gray700}
+              guests={nonGuests}
+              onGuestChecked={onNonGuestChecked}
+              onAllGuestChecked={onNonGuestAllChecked}
+              onGuestClick={handleGuestClick}
+            />
+          )}
+        </ScrollArea>
       </Flex>
 
       <GuestAnswerModal
@@ -142,6 +146,11 @@ export const GuestViewSection = ({
     </>
   );
 };
+
+const ScrollArea = styled.div`
+  max-height: 320px;
+  overflow-y: auto;
+`;
 
 const TabButton = styled.button<TabButtonProps>`
   display: flex;
