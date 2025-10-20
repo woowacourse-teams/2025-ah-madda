@@ -6,6 +6,7 @@ import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnauthorizedException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.infra.auth.HashEncoder;
 import com.ahmadda.infra.auth.RefreshTokenRepository;
 import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
@@ -45,8 +46,12 @@ class LoginServiceTest {
     @Autowired
     private HashEncoder hashEncoder;
 
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
+
     @MockitoBean
     private GoogleOAuthProvider googleOAuthProvider;
+
 
     @Test
     void 신규회원이면_저장한다() {
