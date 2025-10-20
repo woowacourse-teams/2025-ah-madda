@@ -7,6 +7,9 @@ spring:
       ddl-auto: create-drop
     show-sql: true
 
+  scheduling:
+    enabled: false
+
   cloud:
     aws:
       s3:
