@@ -555,7 +555,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                   >
                     <Text
                       weight={areAllSelected ? 'bold' : 'regular'}
-                      color={areAllSelected ? theme.colors.primary500 : theme.colors.gray300}
+                      color={areAllSelected ? theme.colors.white : theme.colors.primary600}
                     >
                       전체
                     </Text>
@@ -573,7 +573,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                       >
                         <Text
                           weight={selected ? 'bold' : 'regular'}
-                          color={selected ? theme.colors.primary500 : theme.colors.gray300}
+                          color={selected ? theme.colors.white : theme.colors.primary600}
                         >
                           {group.name}
                         </Text>
@@ -761,14 +761,18 @@ const Segment = styled.button<{ isSelected: boolean }>`
   flex: 0 0 auto;
   word-break: keep-all;
   border: 1.5px solid
-    ${(props) => (props.isSelected ? theme.colors.primary500 : theme.colors.gray300)};
+    ${(props) => (props.isSelected ? theme.colors.primary300 : theme.colors.gray500)};
   text-align: center;
   border-radius: 8px;
   cursor: pointer;
   padding: 4px 8px;
   white-space: nowrap;
 
+  background: ${(p) => (p.isSelected ? theme.colors.primary400 : theme.colors.primary50)};
+  border: 1.5px solid ${(p) => (p.isSelected ? theme.colors.primary300 : theme.colors.primary200)};
+
   &:hover {
-    border-color: ${theme.colors.primary500};
+    background: ${(p) => (p.isSelected ? theme.colors.primary600 : theme.colors.primary100)};
+    border-color: ${(p) => (p.isSelected ? theme.colors.primary600 : theme.colors.primary300)};
   }
 `;

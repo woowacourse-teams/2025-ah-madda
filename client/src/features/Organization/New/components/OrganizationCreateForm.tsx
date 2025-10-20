@@ -511,7 +511,7 @@ const EmptyState = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${theme.colors.gray400};
+  color: ${theme.colors.gray800};
   font-size: 14px;
   height: 180px;
   text-align: center;

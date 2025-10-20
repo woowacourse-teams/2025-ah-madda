@@ -98,8 +98,8 @@ export const EventInfoSection = ({ event, statistics }: EventInfoSectionProps) =
             <Text type="Body" weight="medium" color={theme.colors.gray600}>
               {event.currentGuestCount}
             </Text>
-            <Text type="Body" weight="medium" color={theme.colors.gray400}>
-              /{capacityInfo.maxNumberOfGuests}
+            <Text type="Body" weight="medium" color={theme.colors.gray600}>
+              / {capacityInfo.maxNumberOfGuests}
             </Text>
           </Flex>
         </Flex>
