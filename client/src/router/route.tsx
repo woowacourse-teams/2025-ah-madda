@@ -132,8 +132,12 @@ export const router = createBrowserRouter(
         },
         {
           path: '/organization',
-          Component: OrganizationOverviewPage,
+
           children: [
+            {
+              index: true,
+              Component: OrganizationOverviewPage,
+            },
             {
               path: 'new',
               Component: ProtectRoute,
