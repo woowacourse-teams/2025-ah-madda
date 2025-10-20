@@ -68,10 +68,10 @@ class GuestTest {
     @Test
     void 동일한_참가자인지_확인한다() {
         // given
-        var guest = Guest.create(event, participant, event.getRegistrationStart());
+        var sut = Guest.create(event, participant, event.getRegistrationStart());
 
         // when
-        var isSame = guest.isSameOrganizationMember(participant);
+        var isSame = sut.isSameOrganizationMember(participant);
 
         // then
         assertThat(isSame).isTrue();
@@ -80,10 +80,10 @@ class GuestTest {
     @Test
     void 다른_참가자인지_확인한다() {
         // given
-        var guest = Guest.create(event, participant, event.getRegistrationStart());
+        var sut = Guest.create(event, participant, event.getRegistrationStart());
 
         // when
-        var isSame = guest.isSameOrganizationMember(otherParticipant);
+        var isSame = sut.isSameOrganizationMember(otherParticipant);
 
         // then
         assertThat(isSame).isFalse();
@@ -92,11 +92,11 @@ class GuestTest {
     @Test
     void 게스트를_생성하면_이벤트에_참여된다() {
         //when
-        var guest = Guest.create(event, participant, event.getRegistrationStart());
+        var sut = Guest.create(event, participant, event.getRegistrationStart());
 
         //then
         assertThat(event.getGuests()
-                .contains(guest)).isTrue();
+                .contains(sut)).isTrue();
     }
 
     @Test
@@ -240,7 +240,7 @@ class GuestTest {
         var question2 = Question.create("선택 질문2", false, 1);
         var event = createEvent("이벤트", participant, now, question1, question2);
 
-        var guest = Guest.create(event, otherParticipant, now);
+        var sut = Guest.create(event, otherParticipant, now);
 
         var answers = Map.of(
                 question1, "답변1",
@@ -248,11 +248,11 @@ class GuestTest {
         );
 
         // when
-        guest.submitAnswers(answers);
+        sut.submitAnswers(answers);
 
         // then
-        assertThat(guest.getAnswers()).hasSize(2);
-        assertThat(guest.getAnswers())
+        assertThat(sut.getAnswers()).hasSize(2);
+        assertThat(sut.getAnswers())
                 .extracting(Answer::getAnswerText)
                 .containsExactlyInAnyOrder("답변1", "답변2");
     }
@@ -266,14 +266,14 @@ class GuestTest {
         var question2 = Question.create("선택 질문2", false, 1);
         var event = createEvent("이벤트", participant, now, question1, question2);
 
-        var guest = Guest.create(event, otherParticipant, now);
+        var sut = Guest.create(event, otherParticipant, now);
 
         var answers = Map.of(
                 question2, "답변2"
         );
 
         // when // then
-        assertThatThrownBy(() -> guest.submitAnswers(answers))
+        assertThatThrownBy(() -> sut.submitAnswers(answers))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessageContaining("필수 질문에 대한 답변이 누락되었습니다");
     }
@@ -287,14 +287,14 @@ class GuestTest {
         var question = Question.create("필수 질문1", true, 0);
         var event = createEvent("이벤트", participant, now, question);
 
-        var guest = Guest.create(event, otherParticipant, now);
+        var sut = Guest.create(event, otherParticipant, now);
 
         var answers = Map.of(
                 question, answer
         );
 
         // when // then
-        assertThatThrownBy(() -> guest.submitAnswers(answers))
+        assertThatThrownBy(() -> sut.submitAnswers(answers))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessageContaining("필수 질문에 대한 답변이 누락되었습니다");
     }
@@ -305,7 +305,7 @@ class GuestTest {
         var now = LocalDateTime.now();
 
         var event = createEvent("이벤트", participant, now);
-        var guest = Guest.create(event, otherParticipant, now);
+        var sut = Guest.create(event, otherParticipant, now);
 
         var externalQuestion = Question.create("외부 질문", true, 0);
         var otherEvent = createEvent("다른 이벤트", participant, now, externalQuestion);
@@ -315,7 +315,7 @@ class GuestTest {
         );
 
         // when // then
-        assertThatThrownBy(() -> guest.submitAnswers(answers))
+        assertThatThrownBy(() -> sut.submitAnswers(answers))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessageContaining("이벤트에 포함되지 않는 질문입니다");
     }
@@ -328,15 +328,15 @@ class GuestTest {
         var question2 = Question.create("질문2", false, 1);
         var event = createEvent("이벤트", participant, now, question1, question2);
 
-        var guest = Guest.create(event, otherParticipant, now);
+        var sut = Guest.create(event, otherParticipant, now);
         var answers = Map.of(
                 question1, "답변1",
                 question2, "답변2"
         );
-        guest.submitAnswers(answers);
+        sut.submitAnswers(answers);
 
         // when
-        var retrievedAnswers = guest.viewAnswersAs(participant);
+        var retrievedAnswers = sut.viewAnswersAs(participant);
 
         // then
         assertThat(retrievedAnswers).hasSize(2);
@@ -351,13 +351,13 @@ class GuestTest {
         var now = LocalDateTime.now();
         var question = Question.create("질문", true, 0);
         var event = createEvent("이벤트", participant, now, question);
-        var guest = Guest.create(event, otherParticipant, now);
+        var sut = Guest.create(event, otherParticipant, now);
 
         var answers = Map.of(question, "답변");
-        guest.submitAnswers(answers);
+        sut.submitAnswers(answers);
 
         // when
-        var retrievedAnswers = guest.viewAnswersAs(otherParticipant);
+        var retrievedAnswers = sut.viewAnswersAs(otherParticipant);
 
         // then
         assertThat(retrievedAnswers).hasSize(1);
@@ -380,12 +380,12 @@ class GuestTest {
                         OrganizationMemberRole.USER,
                         OrganizationGroup.create("백엔드")
                 );
-        var guest = Guest.create(event, otherParticipant, now);
+        var sut = Guest.create(event, otherParticipant, now);
         var answers = Map.of(question, "답변");
-        guest.submitAnswers(answers);
+        sut.submitAnswers(answers);
 
         // when // then
-        assertThatThrownBy(() -> guest.viewAnswersAs(othrerOrganizationMember))
+        assertThatThrownBy(() -> sut.viewAnswersAs(othrerOrganizationMember))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage("답변을 볼 권한이 없습니다.");
     }

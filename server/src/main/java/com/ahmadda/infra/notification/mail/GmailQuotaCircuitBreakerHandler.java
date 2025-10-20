@@ -5,8 +5,6 @@ import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
-
 @Component
 public class GmailQuotaCircuitBreakerHandler {
 
@@ -25,7 +23,7 @@ public class GmailQuotaCircuitBreakerHandler {
                     Throwable cause = event.getThrowable();
                     if (cause.getMessage() != null && cause.getMessage()
                             .contains(DAILY_LIMIT_EXCEEDED_CODE)) {
-                        circuitBreaker.transitionToOpenStateFor(Duration.ofHours(6));
+                        circuitBreaker.transitionToForcedOpenState();
                     }
                 });
     }
