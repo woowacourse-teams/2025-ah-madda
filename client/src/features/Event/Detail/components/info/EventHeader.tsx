@@ -1,19 +1,13 @@
-import { useState } from 'react';
-
 import { css } from '@emotion/react';
-import styled from '@emotion/styled';
-import { useParams } from 'react-router-dom';
 
-import { createInviteCode } from '@/api/mutations/useCreateInviteCode';
+import { isAuthenticated } from '@/api/auth';
 import { useEventNotificationToggle } from '@/api/mutations/useEventNotificationToggle';
-import { InviteCodeModal } from '@/features/Event/Overview/components/InviteCodeModal';
 import { Badge } from '@/shared/components/Badge';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Switch } from '@/shared/components/Switch';
 import { Text } from '@/shared/components/Text';
 import { useToast } from '@/shared/components/Toast/ToastContext';
-import { useModal } from '@/shared/hooks/useModal';
 import { formatDate } from '@/shared/utils/dateUtils';
 
 import type { EventDetail } from '../../../types/Event';
@@ -32,25 +26,12 @@ export const EventHeader = ({
   eventEnd,
   registrationEnd,
 }: EventHeaderProps) => {
-  const { organizationId } = useParams();
   const status = badgeText(registrationEnd);
-  const { isOpen, open: openInviteCodeModal, close } = useModal();
+
   const { optOut, optIn, isLoading, data } = useEventNotificationToggle(eventId);
   const { error } = useToast();
 
-  const [inviteCode, setInviteCode] = useState('');
-  const checked = !data.optedOut;
-
-  const handleInviteCodeClick = async () => {
-    const data = await createInviteCode(Number(organizationId));
-    const baseUrl =
-      process.env.NODE_ENV === 'production'
-        ? `https://ahmadda.com/${organizationId}/event/${eventId}`
-        : `http://localhost:5173/${organizationId}/event/${eventId}`;
-    const inviteUrl = `${baseUrl}/invite?code=${data.inviteCode}`;
-    setInviteCode(inviteUrl);
-    openInviteCodeModal();
-  };
+  const checked = !data?.optedOut;
 
   const handleSwitch = (next: boolean) => {
     if (next === checked) return;
@@ -96,19 +77,18 @@ export const EventHeader = ({
             </Text>
           </Flex>
         </Flex>
-
-        <Flex alignItems="center" gap="8px">
-          <Text type="Body">알림 받기</Text>
-          <Switch
-            aria-label="이벤트 알림 수신 설정"
-            checked={checked}
-            onCheckedChange={handleSwitch}
-            disabled={isLoading}
-          />
-        </Flex>
+        {isAuthenticated() && (
+          <Flex alignItems="center" gap="8px">
+            <Text type="Body">알림 받기</Text>
+            <Switch
+              aria-label="이벤트 알림 수신 설정"
+              checked={checked}
+              onCheckedChange={handleSwitch}
+              disabled={isLoading}
+            />
+          </Flex>
+        )}
       </Flex>
-
-      <InviteCodeModal inviteCode={inviteCode} isOpen={isOpen} onClose={close} />
     </>
   );
 };
