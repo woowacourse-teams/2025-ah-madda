@@ -2,12 +2,12 @@ import { css } from '@emotion/react';
 import { useQuery, useSuspenseQueries } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
+import { isAuthenticated } from '@/api/auth';
 import { eventQueryOptions } from '@/api/queries/event';
 import { Flex } from '@/shared/components/Flex';
 import { PageLayout } from '@/shared/components/PageLayout';
 import { Tabs } from '@/shared/components/Tabs';
 import { Text } from '@/shared/components/Text';
-import { useGoogleAuth } from '@/shared/hooks/useGoogleAuth';
 
 import { AttendanceOverview } from '../components/guest/AttendanceOverview';
 import { EventBody } from '../components/info/EventBody';
@@ -16,7 +16,6 @@ import { EventDetailContainer } from '../containers/EventDetailContainer';
 
 export const EventDetailPage = () => {
   const { eventId } = useParams();
-  const { isAuthenticated } = useGoogleAuth();
 
   const [{ data: event }] = useSuspenseQueries({
     queries: [eventQueryOptions.detail(Number(eventId))],
@@ -24,12 +23,12 @@ export const EventDetailPage = () => {
 
   const { data: guestStatus } = useQuery({
     ...eventQueryOptions.guestStatus(Number(eventId)),
-    enabled: isAuthenticated,
+    enabled: isAuthenticated(),
   });
 
   const { data: organizerStatus } = useQuery({
     ...eventQueryOptions.organizer(Number(eventId)),
-    enabled: isAuthenticated,
+    enabled: isAuthenticated(),
   });
 
   if (!event) {

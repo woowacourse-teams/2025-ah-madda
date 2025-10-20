@@ -8,12 +8,7 @@ import { ModalProps } from '@/shared/components/Modal/Modal';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
-type LoginModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-} & ModalProps;
-
-export const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
+export const LoginModal = ({ isOpen, onClose }: ModalProps) => {
   const handleLogin = () => {
     const authUrl = getGoogleAuthUrl();
     window.location.href = authUrl;

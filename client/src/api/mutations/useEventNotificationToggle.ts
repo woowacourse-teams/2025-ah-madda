@@ -1,4 +1,4 @@
-import { useMutation, useSuspenseQuery, useQueryClient, useQuery } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 
 import { isAuthenticated } from '../auth';
 import { fetcher } from '../fetcher';
@@ -9,7 +9,7 @@ export const useEventNotificationToggle = (eventId: number) => {
   const options = eventQueryOptions.notificationOptOutState(eventId);
   const { data } = useQuery({
     ...options,
-    enabled: isAuthenticated,
+    enabled: isAuthenticated(),
   });
 
   const optOut = useMutation({
