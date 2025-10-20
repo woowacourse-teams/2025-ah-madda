@@ -47,7 +47,7 @@ export const ErrorPage = () => {
           </Flex>
 
           <Flex dir="row" gap="16px" justifyContent="center" margin="24px 0 0 0">
-            <Button size="lg" color="primary" onClick={() => navigate('/')}>
+            <Button size="lg" color="primary" onClick={() => (window.location.href = '/')}>
               홈으로 가기
             </Button>
           </Flex>
