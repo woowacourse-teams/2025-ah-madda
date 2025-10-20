@@ -132,15 +132,15 @@ const Segment = styled.button<{ isSelected: boolean }>`
   flex: 0 0 auto;
   word-break: keep-all;
   border: 1.5px solid
-    ${(props) => (props.isSelected ? theme.colors.primary500 : theme.colors.gray500)};
+    ${(props) => (props.isSelected ? theme.colors.primary300 : theme.colors.gray500)};
   text-align: center;
   border-radius: 8px;
   cursor: pointer;
   padding: 4px 8px;
   white-space: nowrap;
 
-  background: ${(p) => (p.isSelected ? theme.colors.primary500 : theme.colors.primary50)};
-  border: 1.5px solid ${(p) => (p.isSelected ? theme.colors.primary500 : theme.colors.primary200)};
+  background: ${(p) => (p.isSelected ? theme.colors.primary400 : theme.colors.primary50)};
+  border: 1.5px solid ${(p) => (p.isSelected ? theme.colors.primary300 : theme.colors.primary200)};
 
   &:hover {
     background: ${(p) => (p.isSelected ? theme.colors.primary600 : theme.colors.primary100)};
