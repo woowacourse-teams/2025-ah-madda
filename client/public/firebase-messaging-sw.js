@@ -23,7 +23,7 @@ messaging.onBackgroundMessage((payload) => {
 
   const notificationOptions = {
     body: payload.data?.body || '내용 없음',
-    icon: '/icon-512x512.png',
+    icon: '/icon-192x192.png',
     data: payload.data,
     requireInteraction: true,
     renotify: false,
