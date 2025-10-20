@@ -83,7 +83,7 @@ export const CreateSpaceFormModal = ({
               <Text
                 weight={selectedGroup === group.groupId ? 'bold' : 'regular'}
                 color={
-                  selectedGroup === group.groupId ? theme.colors.primary500 : theme.colors.gray500
+                  selectedGroup === group.groupId ? theme.colors.white : theme.colors.primary600
                 }
               >
                 {group.name}
@@ -138,6 +138,14 @@ const Segment = styled.button<{ isSelected: boolean }>`
   cursor: pointer;
   padding: 4px 8px;
   white-space: nowrap;
+
+  background: ${(p) => (p.isSelected ? theme.colors.primary500 : theme.colors.primary50)};
+  border: 1.5px solid ${(p) => (p.isSelected ? theme.colors.primary500 : theme.colors.primary200)};
+
+  &:hover {
+    background: ${(p) => (p.isSelected ? theme.colors.primary600 : theme.colors.primary100)};
+    border-color: ${(p) => (p.isSelected ? theme.colors.primary600 : theme.colors.primary300)};
+  }
 `;
 
 const Img = styled.img`

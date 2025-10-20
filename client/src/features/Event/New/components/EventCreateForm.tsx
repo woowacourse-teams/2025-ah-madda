@@ -555,7 +555,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                   >
                     <Text
                       weight={areAllSelected ? 'bold' : 'regular'}
-                      color={areAllSelected ? theme.colors.primary500 : theme.colors.gray500}
+                      color={areAllSelected ? theme.colors.white : theme.colors.primary600}
                     >
                       전체
                     </Text>
@@ -573,7 +573,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                       >
                         <Text
                           weight={selected ? 'bold' : 'regular'}
-                          color={selected ? theme.colors.primary500 : theme.colors.gray500}
+                          color={selected ? theme.colors.white : theme.colors.primary600}
                         >
                           {group.name}
                         </Text>
@@ -768,7 +768,11 @@ const Segment = styled.button<{ isSelected: boolean }>`
   padding: 4px 8px;
   white-space: nowrap;
 
+  background: ${(p) => (p.isSelected ? theme.colors.primary500 : theme.colors.primary50)};
+  border: 1.5px solid ${(p) => (p.isSelected ? theme.colors.primary500 : theme.colors.primary200)};
+
   &:hover {
-    border-color: ${theme.colors.primary500};
+    background: ${(p) => (p.isSelected ? theme.colors.primary600 : theme.colors.primary100)};
+    border-color: ${(p) => (p.isSelected ? theme.colors.primary600 : theme.colors.primary300)};
   }
 `;
