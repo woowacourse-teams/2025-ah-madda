@@ -70,15 +70,11 @@ export const OrgSection = ({ organizations }: OrgSectionProps) => {
               alignItems="center"
               width="100%"
               gap="12px"
-              padding="10px 12px"
+              padding="10px"
               css={css`
                 border: 1px solid ${theme.colors.gray200};
                 border-radius: 12px;
                 cursor: pointer;
-
-                &:hover {
-                  background: ${theme.colors.gray50};
-                }
               `}
             >
               <Flex
@@ -86,7 +82,7 @@ export const OrgSection = ({ organizations }: OrgSectionProps) => {
                 width="100px"
                 height="100px"
                 css={css`
-                  border-radius: 10px;
+                  flex-shrink: 0;
                   background-image: ${org.imageUrl ? `url(${org.imageUrl})` : 'none'};
                   background-size: contain;
                   background-position: center;
@@ -129,6 +125,9 @@ const DeskTopOrgList = styled(Flex)`
   @media (min-width: 768px) {
     overflow-x: auto;
     flex-wrap: nowrap;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
   }
 
   @media (max-width: 768px) {
@@ -145,6 +144,5 @@ const MobileOrgList = styled(Flex)`
     width: 100%;
     flex-shrink: 0;
     overflow-y: auto;
-    padding: 0 10px;
   }
 `;

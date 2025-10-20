@@ -27,14 +27,14 @@ export const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
         max-width: 100%;
       `}
     >
-      <Flex dir="column" gap="10px">
+      <Flex dir="column" gap="10px" width="100%">
         <Text
           as="h1"
           type="Heading"
           weight="semibold"
           color={theme.colors.gray900}
           css={css`
-            padding: 20px;
+            padding: 30px 0 20px 0;
             text-align: center;
           `}
         >

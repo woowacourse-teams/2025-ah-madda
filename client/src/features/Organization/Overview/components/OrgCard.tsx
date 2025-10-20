@@ -38,7 +38,7 @@ export const OrgCard = ({ organization, onJoin }: OrgCardProps) => (
       </Text>
     </Flex>
     <StyledOverlay data-overlay justifyContent="center" alignItems="center">
-      <Text type="Title" color="white" weight="semibold">
+      <Text type="Heading" color="white" weight="semibold">
         구경하기
       </Text>
     </StyledOverlay>
@@ -65,7 +65,7 @@ const StyledImageWrapper = styled(Flex)`
 const StyledOverlay = styled(Flex)`
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.24);
+  background: rgba(0, 0, 0, 0.34);
   opacity: 0;
   transition: opacity 0.18s ease-in-out;
   border-radius: 12px;
