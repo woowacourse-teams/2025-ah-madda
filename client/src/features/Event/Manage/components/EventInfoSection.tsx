@@ -72,7 +72,9 @@ export const EventInfoSection = ({ event, statistics }: EventInfoSectionProps) =
           <Text type="Heading" weight="bold" color={theme.colors.gray800}>
             주최자
           </Text>
-          <Text>{event.organizerNicknames}</Text>
+          {event.organizerNicknames.length > 1
+            ? `${event.organizerNicknames[0]} 외 ${event.organizerNicknames.length - 1}명`
+            : event.organizerNicknames[0]}
         </Flex>
       </Flex>
 

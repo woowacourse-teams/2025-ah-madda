@@ -75,7 +75,9 @@ export const EventDetails = ({
             주최자
           </Text>
           <Text>
-            {organizerNicknames.length > 1 ? organizerNicknames.join(', ') : organizerNicknames[0]}
+            {organizerNicknames.length > 1
+              ? `${organizerNicknames[0]} 외 ${organizerNicknames.length - 1}명`
+              : organizerNicknames[0]}
           </Text>
         </Flex>
       </Flex>

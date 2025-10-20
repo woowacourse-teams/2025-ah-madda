@@ -109,7 +109,10 @@ export const EventCard = memo(function EventCard({
         <Flex alignItems="center" gap="4px" height="100%">
           <Icon name="user" size={16} color="gray500" />
           <Text type="Label" color={theme.colors.gray500}>
-            {organizerNicknames ? organizerNicknames.join(', ') : ''} 주최
+            {organizerNicknames.length > 1
+              ? `${organizerNicknames[0]} 외 ${organizerNicknames.length - 1}명`
+              : organizerNicknames[0]}{' '}
+            주최
           </Text>
         </Flex>
         <Spacing height="2px" />
