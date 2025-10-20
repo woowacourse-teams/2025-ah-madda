@@ -38,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Tag(name = "Organization", description = "이벤트 스페이스 관련 API")
@@ -546,5 +547,26 @@ public class OrganizationController {
 
         return ResponseEntity.noContent()
                 .build();
+    }
+
+    @Operation(summary = "활성 이벤트 수 기준으로 이벤트 스페이스 조회", description = "활성 이벤트가 많은 순서대로 이벤트 스페이스를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            array = @ArraySchema(schema = @Schema(implementation = OrganizationResponse.class))
+                    )
+            )
+    })
+    @GetMapping("/popular")
+    public ResponseEntity<List<OrganizationResponse>> getPopularOrganizations() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Organization> organizations = organizationService.findAllOrderByActiveEventsDesc(now);
+
+        List<OrganizationResponse> response = organizations.stream()
+                .map(OrganizationResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(response);
     }
 }
