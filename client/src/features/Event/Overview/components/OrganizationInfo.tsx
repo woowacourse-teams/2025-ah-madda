@@ -1,13 +1,13 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
+import { OrganizationAPIResponse } from '@/api/types/organizations';
 import DefaultImage from '@/assets/icon/ahmadda.webp';
-import { Organization } from '@/features/Organization/types/Organization';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
-type OrganizationProps = Omit<Organization, 'organizationId'>;
+type OrganizationProps = Omit<OrganizationAPIResponse, 'organizationId'>;
 
 export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationProps) => {
   const src = imageUrl || DefaultImage;

@@ -1,10 +1,5 @@
-import { css } from '@emotion/react';
-import { useNavigate } from 'react-router-dom';
-
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
-import { Header } from '@/shared/components/Header';
-import { Icon } from '@/shared/components/Icon';
 import { PageLayout } from '@/shared/components/PageLayout';
 import { Text } from '@/shared/components/Text';
 import { colors } from '@/shared/styles/colors';
@@ -12,25 +7,8 @@ import { colors } from '@/shared/styles/colors';
 import { ErrorContainer } from '../containers/ErrorContainer';
 
 export const ErrorPage = () => {
-  const navigate = useNavigate();
-
   return (
-    <PageLayout
-      header={
-        <Header
-          left={
-            <Icon
-              name="logo"
-              size={55}
-              onClick={() => navigate(`/`)}
-              css={css`
-                cursor: pointer;
-              `}
-            />
-          }
-        />
-      }
-    >
+    <PageLayout>
       <ErrorContainer>
         <Flex dir="column" height="100%" justifyContent="center" alignItems="center" gap="24px">
           <Text type="Heading" weight="bold" color="#0A0A0A">
