@@ -38,6 +38,8 @@ export const HomePage = () => {
           <Header
             left={
               <Icon
+                role="img"
+                aria-label="아맞다 로고"
                 name="logo"
                 size={55}
                 onClick={() => navigate(`/`)}
