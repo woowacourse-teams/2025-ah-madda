@@ -13,7 +13,7 @@ export const PageHeader = () => {
   const navigate = useNavigate();
 
   const goHome = () => navigate(`/`);
-  const goMyEvents = () => navigate(`/event/my`);
+  const goMyEvents = () => navigate(`/my`);
   const goProfile = () => navigate(`/profile`);
 
   const handleLogin = () => {
