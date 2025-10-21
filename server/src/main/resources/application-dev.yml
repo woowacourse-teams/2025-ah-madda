@@ -50,6 +50,7 @@ cors:
     - https://dev.ahmadda.com
     - https://staging.ahmadda.com
     - http://local.ahmadda.com:5173
+    - http://192.168.*:5173
 
 notification:
   redirect-url-prefix: https://staging.ahmadda.com/
