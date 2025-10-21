@@ -1,6 +1,5 @@
 package com.ahmadda.learning.infra.notification;
 
-import com.ahmadda.annotation.LearningTest;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.notification.PushNotificationPayload;
@@ -11,6 +10,7 @@ import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.infra.notification.push.FcmPushNotifier;
 import com.ahmadda.infra.notification.push.FcmRegistrationToken;
 import com.ahmadda.infra.notification.push.FcmRegistrationTokenRepository;
+import com.ahmadda.support.LearningTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

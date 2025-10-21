@@ -1,6 +1,5 @@
 package com.ahmadda.application;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.LoginMember;
@@ -18,7 +17,6 @@ import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.notification.EventNotificationOptOut;
 import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
-import com.ahmadda.domain.notification.Reminder;
 import com.ahmadda.domain.notification.ReminderHistory;
 import com.ahmadda.domain.notification.ReminderHistoryRepository;
 import com.ahmadda.domain.notification.ReminderRecipient;
@@ -29,10 +27,10 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.support.IntegrationTest;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -45,8 +43,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.verify;
 
-@IntegrationTest
-class EventServiceTest {
+class EventServiceTest extends IntegrationTest {
 
     @Autowired
     private EventService sut;
@@ -65,9 +62,6 @@ class EventServiceTest {
 
     @Autowired
     private GuestRepository guestRepository;
-
-    @MockitoSpyBean
-    private Reminder reminder;
 
     @Autowired
     private ReminderHistoryRepository reminderHistoryRepository;

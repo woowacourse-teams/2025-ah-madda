@@ -1,6 +1,6 @@
 package com.ahmadda.infra.notification.push;
 
-import com.ahmadda.annotation.IntegrationTest;
+import com.ahmadda.support.IntegrationTest;
 import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.MessagingErrorCode;
@@ -14,8 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@IntegrationTest
-class FcmPushErrorHandlerTest {
+class FcmPushErrorHandlerTest extends IntegrationTest {
 
     @Autowired
     private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;

@@ -1,10 +1,10 @@
 package com.ahmadda.learning.infra.notification;
 
 
-import com.ahmadda.annotation.LearningTest;
 import com.ahmadda.application.dto.MemberCreateAlarmPayload;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.infra.notification.slack.SlackAlarm;
+import com.ahmadda.support.LearningTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
