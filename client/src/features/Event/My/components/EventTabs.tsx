@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 
 import { myQueryOptions } from '@/api/queries/my';
 import { Flex } from '@/shared/components/Flex';
-import { Loading } from '@/shared/components/Loading';
 import { Tabs } from '@/shared/components/Tabs';
 import { Text } from '@/shared/components/Text';
 
