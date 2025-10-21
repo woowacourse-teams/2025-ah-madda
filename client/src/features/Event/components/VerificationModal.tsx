@@ -5,7 +5,7 @@ import { InviteModal } from './InviteModal';
 import { LoginModal } from './LoginModal';
 
 type VerificationModalProps = {
-  onSubmit: VoidFunction;
+  onSubmit: (inviteCode: string) => void;
   isMember?: boolean;
 } & ModalProps;
 
