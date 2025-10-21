@@ -7,7 +7,7 @@ import { Text } from '@/shared/components/Text';
 import { EventCard } from '../../components/EventCard';
 
 type EventSectionProps = {
-  events: Omit<Event, 'isGuest' | 'isOrganizer'>[];
+  events: Event[];
   date: string;
   cardType: 'host' | 'participate';
 };

@@ -8,5 +8,4 @@ export type GuestAnswerAPIResponse = {
   orderIndex: number;
 };
 
-export type ParticipateEventAPIResponse = Omit<Event, 'isGuest' | 'isOrganizer'> &
-  OrganizationAPIResponse;
+export type ParticipateEventAPIResponse = Omit<Event, 'isGuest'> & OrganizationAPIResponse;

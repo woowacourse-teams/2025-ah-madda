@@ -3,11 +3,11 @@ import { Event } from '@/api/types/event';
 type GroupEvent = {
   label: string;
   date: string;
-  events: Omit<Event, 'isGuest' | 'isOrganizer'>[];
+  events: Event[];
 };
 
 // S.TODO : 추후 날짜, sort 관련 로직을 utils로 분리
-export const groupEventsByDate = (events: Omit<Event, 'isGuest' | 'isOrganizer'>[]) => {
+export const groupEventsByDate = (events: Event[]) => {
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
