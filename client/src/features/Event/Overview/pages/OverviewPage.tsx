@@ -22,7 +22,6 @@ export const OverviewPage = () => {
         <Suspense fallback={<OrganizationInfoSkeleton />}>
           <OrganizationInfoSection organizationId={organizationId!} />
         </Suspense>
-
         <Suspense fallback={<TabsSkeleton />}>
           <OverviewTabs organizationId={orgIdNum} />
         </Suspense>
