@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { isAuthenticated } from '@/api/auth';
-import { LoginModal } from '@/features/Event/Detail/components/LoginModal';
+import { LoginModal } from '@/features/Event/components/LoginModal';
 import { useToast } from '@/shared/components/Toast/ToastContext';
 import { useModal } from '@/shared/hooks/useModal';
 
