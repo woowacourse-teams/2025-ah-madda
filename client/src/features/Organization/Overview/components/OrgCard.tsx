@@ -1,3 +1,4 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 import { OrganizationAPIResponse } from '@/api/types/organizations';
@@ -10,17 +11,23 @@ export type OrgCardProps = {
   onJoin: () => void;
 };
 
+export const DEFAULT_IMAGE_SIZE = 120;
 export const OrgCard = ({ organization, onJoin }: OrgCardProps) => (
   <StyledCardContainer
     dir="row"
     alignItems="center"
     role="button"
     width="100%"
-    gap="24px"
+    gap="4px"
     aria-label={`${organization.name} 참여하기`}
     onClick={onJoin}
   >
-    <StyledImageWrapper justifyContent="center" alignItems="center" width="155px" height="155px">
+    <StyledImageWrapper
+      justifyContent="center"
+      alignItems="center"
+      width={`${DEFAULT_IMAGE_SIZE}px`}
+      height={`${DEFAULT_IMAGE_SIZE}px`}
+    >
       <StyledImg
         src={organization.imageUrl}
         alt={organization.name}
@@ -31,10 +38,21 @@ export const OrgCard = ({ organization, onJoin }: OrgCardProps) => (
       />
     </StyledImageWrapper>
     <Flex dir="column" gap="4px" justifyContent="center" alignItems="flex-start" width="100%">
-      <Text type="Title" weight="bold">
+      <Text type="Heading" weight="bold">
         {organization.name}
       </Text>
-      <Text type="Body" color={theme.colors.gray500}>
+      <Text
+        type="Body"
+        color={theme.colors.gray500}
+        css={css`
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          line-height: 1.4;
+          word-break: break-word;
+        `}
+      >
         {organization.description}
       </Text>
     </Flex>
@@ -50,6 +68,7 @@ const StyledCardContainer = styled(Flex)`
   cursor: pointer;
   position: relative;
   border-radius: 12px;
+  border: 1px solid ${theme.colors.gray100};
 
   &:hover [data-overlay] {
     opacity: 1;
@@ -58,7 +77,7 @@ const StyledCardContainer = styled(Flex)`
 
 const StyledImageWrapper = styled(Flex)`
   border-radius: 12px;
-  border: 1px solid ${theme.colors.gray100};
+
   flex-shrink: 0;
   overflow: hidden;
 `;
@@ -74,6 +93,7 @@ const StyledOverlay = styled(Flex)`
 `;
 
 const StyledImg = styled.img`
+  padding: 10px;
   width: 100%;
   height: 100%;
   object-fit: scale-down;

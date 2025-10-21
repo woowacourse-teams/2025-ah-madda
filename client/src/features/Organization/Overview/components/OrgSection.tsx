@@ -72,46 +72,11 @@ export const OrgSection = ({ organizations }: OrgSectionProps) => {
 
         <MobileOrgList dir="column">
           {organizations.map((org) => (
-            <Flex
+            <OrgCard
               key={org.organizationId}
-              onClick={() => handleJoin(org.organizationId)}
-              alignItems="center"
-              width="100%"
-              gap="12px"
-              padding="10px"
-              css={css`
-                border: 1px solid ${theme.colors.gray200};
-                border-radius: 12px;
-                cursor: pointer;
-              `}
-            >
-              <Flex
-                as="span"
-                width="100px"
-                height="100px"
-                css={css`
-                  flex-shrink: 0;
-                  background-image: ${org.imageUrl ? `url(${org.imageUrl})` : 'none'};
-                  background-size: contain;
-                  background-position: center;
-                  background-repeat: no-repeat;
-                `}
-              />
-              <Flex
-                dir="column"
-                gap="4px"
-                justifyContent="center"
-                alignItems="flex-start"
-                width="100%"
-              >
-                <Text type="Body" weight="bold">
-                  {org.name}
-                </Text>
-                <Text type="Label" color={theme.colors.gray500}>
-                  {org.description}
-                </Text>
-              </Flex>
-            </Flex>
+              organization={org}
+              onJoin={() => handleJoin(org.organizationId)}
+            />
           ))}
         </MobileOrgList>
       </OrgListContainer>
@@ -133,10 +98,10 @@ const DeskTopOrgList = styled.div`
   @media (min-width: 768px) {
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 3fr));
     flex-wrap: nowrap;
     overflow-x: auto;
-    gap: 8px;
+    gap: 20px;
   }
 
   @media (max-width: 768px) {
