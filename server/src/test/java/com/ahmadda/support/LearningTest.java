@@ -1,4 +1,4 @@
-package com.ahmadda.annotation;
+package com.ahmadda.support;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
