@@ -7,8 +7,15 @@ import { RouterWithQueryClient } from './customRender';
 import { mockHostEvents } from './mocks/event';
 import { mockOrganization } from './mocks/organization';
 
+vi.mock('@/api/mutations/useCreateInviteCode', () => ({
+  useCreateInviteCode: () => ({
+    mutateAsync: vi.fn(() => Promise.resolve({ inviteCode: 'MOCK123' })),
+  }),
+}));
+
 vi.mock('@/api/fetcher', () => ({
   fetcher: {
+    post: vi.fn(),
     get: vi.fn(),
   },
 }));
