@@ -1,6 +1,5 @@
 package com.ahmadda.application.listener;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.EventCreated;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.event.Event;
@@ -16,19 +15,16 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
-import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
-import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-@IntegrationTest
-class EventCreatedListenerTest {
+class EventCreatedListenerTest extends IntegrationTest {
 
     @Autowired
     private EventCreatedListener sut;
@@ -50,12 +46,6 @@ class EventCreatedListenerTest {
 
     @Autowired
     private OrganizationGroupRepository organizationGroupRepository;
-
-    @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
-
-    @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 이벤트가_생성되면_이벤트_통계가_저장된다() {

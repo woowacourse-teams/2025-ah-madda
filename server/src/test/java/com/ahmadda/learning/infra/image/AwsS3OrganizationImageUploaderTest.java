@@ -1,8 +1,8 @@
 package com.ahmadda.learning.infra.image;
 
-import com.ahmadda.annotation.LearningTest;
 import com.ahmadda.domain.organization.OrganizationImageFile;
 import com.ahmadda.infra.image.AwsS3OrganizationImageUploader;
+import com.ahmadda.support.LearningTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
