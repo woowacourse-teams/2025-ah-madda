@@ -1,13 +1,13 @@
 import styled from '@emotion/styled';
 
+import { Event } from '@/api/types/event';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 
 import { EventCard } from '../../components/EventCard';
-import { Event } from '../../types/Event';
 
 type EventSectionProps = {
-  events: Event[];
+  events: Omit<Event, 'isGuest' | 'isOrganizer'>[];
   date: string;
   cardType: 'host' | 'participate';
 };
