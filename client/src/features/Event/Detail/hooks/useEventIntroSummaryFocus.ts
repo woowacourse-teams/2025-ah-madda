@@ -91,9 +91,9 @@ export function useEventIntroSummaryFocus(params: {
       event.description ? `이벤트 소개: ${event.description}.` : '',
       `마감 시간: ${spokenSingle(event.registrationEnd)}까지.`,
       `주최자: ${
-        event.organizerNicknames.length > 1
-          ? `${event.organizerNicknames[0]} 외 ${event.organizerNicknames.length - 1}명`
-          : (event.organizerNicknames[0] ?? '주최자 정보 없음')
+        event.organizerNicknames.length <= 3
+          ? event.organizerNicknames.join(', ')
+          : `${event.organizerNicknames.slice(0, 3).join(', ')} 외 ${event.organizerNicknames.length - 3}명`
       }.`,
       capPart,
       ...qParts,
