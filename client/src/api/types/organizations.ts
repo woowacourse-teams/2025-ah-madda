@@ -27,8 +27,6 @@ export type CreateOrganizationAPIRequest = {
   organization: {
     name: string;
     description: string;
-    nickname: string;
-    groupId: number;
   };
   thumbnail: File;
 };
