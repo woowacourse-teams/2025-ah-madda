@@ -278,6 +278,4 @@ public class OrganizationMemberController {
 
         return ResponseEntity.ok(response);
     }
-
-
 }
