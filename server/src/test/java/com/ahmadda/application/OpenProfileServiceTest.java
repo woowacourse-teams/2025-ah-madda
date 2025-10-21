@@ -45,13 +45,16 @@ class OpenProfileServiceTest {
 
     @Test
     void 회원의_오픈_프로필을_조회한다() {
+        // given
         var group = createGroup("백엔드");
         var member = createMember("홍길동", "hong@email.com");
         var openProfile = createOpenProfile(member, group);
         var loginMember = new LoginMember(member.getId());
 
+        // when
         var result = sut.getOpenProfile(loginMember);
 
+        // then
         assertSoftly(softly -> {
             softly.assertThat(result.getMember()
                             .getId())
@@ -64,8 +67,10 @@ class OpenProfileServiceTest {
 
     @Test
     void 존재하지_않는_회원의_오픈_프로필_조회시_예외가_발생한다() {
+        // given
         var invalidLoginMember = new LoginMember(999L);
 
+        // when // then
         assertThatThrownBy(() -> sut.getOpenProfile(invalidLoginMember))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 회원입니다.");
@@ -73,9 +78,11 @@ class OpenProfileServiceTest {
 
     @Test
     void 오픈_프로필이_없는_회원_조회시_예외가_발생한다() {
+        // given
         var member = createMember("홍길동", "hong@email.com");
         var loginMember = new LoginMember(member.getId());
 
+        // when // then
         assertThatThrownBy(() -> sut.getOpenProfile(loginMember))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 프로필입니다.");
@@ -83,6 +90,7 @@ class OpenProfileServiceTest {
 
     @Test
     void 오픈_프로필을_업데이트한다() {
+        // given
         var oldGroup = createGroup("프론트엔드");
         var newGroup = createGroup("백엔드");
 
@@ -92,16 +100,20 @@ class OpenProfileServiceTest {
 
         var request = new OpenProfileUpdateRequest("새닉네임", newGroup.getId());
 
+        // when
         sut.updateProfile(loginMember, request);
 
         var updated = openProfileRepository.findByMemberId(member.getId())
                 .orElseThrow();
+
+        // then
         assertThat(updated.getOrganizationGroup()
                 .getId()).isEqualTo(newGroup.getId());
     }
 
     @Test
     void 오픈_프로필_업데이트시_조직_구성원_정보도_함께_업데이트된다() {
+        // given
         var oldGroup = createGroup("프론트엔드");
         var newGroup = createGroup("백엔드");
 
@@ -114,11 +126,13 @@ class OpenProfileServiceTest {
 
         var request = new OpenProfileUpdateRequest("새닉네임", newGroup.getId());
 
+        // when
         sut.updateProfile(loginMember, request);
 
         var updatedOrgMember1 = organizationMemberRepository.findById(orgMember1.getId())
                 .orElseThrow();
 
+        // then
         assertSoftly(softly -> {
             softly.assertThat(updatedOrgMember1.getNickname())
                     .isEqualTo("새닉네임");
@@ -130,10 +144,12 @@ class OpenProfileServiceTest {
 
     @Test
     void 존재하지_않는_멤버로_프로필_업데이트시_예외가_발생한다() {
+        // given
         var group = createGroup("백엔드");
         var request = new OpenProfileUpdateRequest("닉네임", group.getId());
         var notFountLoginMember = new LoginMember(999L);
 
+        // when // then
         assertThatThrownBy(() -> sut.updateProfile(notFountLoginMember, request))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 회원입니다.");
@@ -141,6 +157,7 @@ class OpenProfileServiceTest {
 
     @Test
     void 존재하지_않는_그룹으로_업데이트시_예외가_발생한다() {
+        // given
         var extraGroup = createGroup("기타");
         var member = createMember("홍길동", "hong@email.com");
         var openProfile = createOpenProfile(member, extraGroup);
@@ -148,6 +165,7 @@ class OpenProfileServiceTest {
 
         var request = new OpenProfileUpdateRequest("닉네임", 999L);
 
+        // when // then
         assertThatThrownBy(() -> sut.updateProfile(loginMember, request))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 그룹입니다.");
@@ -164,7 +182,6 @@ class OpenProfileServiceTest {
     private OpenProfile createOpenProfile(Member member, OrganizationGroup group) {
         return openProfileRepository.save(OpenProfile.create(member, group));
     }
-
 
     private Organization createOrganization(String name) {
         return organizationRepository.save(Organization.create(name, "설명", "img.png"));
