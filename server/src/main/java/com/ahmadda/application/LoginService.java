@@ -43,7 +43,8 @@ public class LoginService {
     private final OpenProfileRepository openProfileRepository;
     private final OrganizationGroupRepository organizationGroupRepository;
 
-    private static final Long DEFAULT_GROUP_ID = 1L;
+    private static final Long DEFAULT_GROUP_ID = 5L;
+    private static final String DEFAULT_GROUP_NAME = "기타";
 
     @Transactional
     public MemberToken login(final String code, final String redirectUri, final String userAgent) {
@@ -101,21 +102,17 @@ public class LoginService {
     }
 
     private void createOpenProfile(final Member member) {
-        OrganizationGroup defaultGroup = getOrganizationGroup(DEFAULT_GROUP_ID);
+        OrganizationGroup defaultGroup = getDefaultOrganizationGroup();
         OpenProfile openProfile = OpenProfile.create(member, defaultGroup);
 
         openProfileRepository.save(openProfile);
     }
 
-    private OrganizationGroup getOrganizationGroup(final Long groupId) {
-        return organizationGroupRepository.findById(groupId)
+    private OrganizationGroup getDefaultOrganizationGroup() {
+        return organizationGroupRepository.findById(LoginService.DEFAULT_GROUP_ID)
                 .orElseGet(() -> {
-                    if (groupId.equals(DEFAULT_GROUP_ID)) {
-                        // 기본 그룹이 없으면 생성
-                        OrganizationGroup defaultGroup = OrganizationGroup.create("기본 그룹");
-                        return organizationGroupRepository.save(defaultGroup);
-                    }
-                    throw new NotFoundException("존재하지 않는 그룹입니다.");
+                    OrganizationGroup defaultGroup = OrganizationGroup.create(DEFAULT_GROUP_NAME);
+                    return organizationGroupRepository.save(defaultGroup);
                 });
     }
 
