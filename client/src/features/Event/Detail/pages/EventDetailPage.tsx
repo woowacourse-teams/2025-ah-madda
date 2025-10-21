@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { useQuery, useSuspenseQueries } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 
 import { isAuthenticated } from '@/api/auth';
 import { eventQueryOptions } from '@/api/queries/event';
@@ -13,9 +13,11 @@ import { AttendanceOverview } from '../components/guest/AttendanceOverview';
 import { EventBody } from '../components/info/EventBody';
 import { EventHeader } from '../components/info/EventHeader';
 import { EventDetailContainer } from '../containers/EventDetailContainer';
+import { useEventIntroSummaryFocus } from '../hooks/useEventIntroSummaryFocus';
 
 export const EventDetailPage = () => {
   const { eventId } = useParams();
+  const location = useLocation();
 
   const [{ data: event }] = useSuspenseQueries({
     queries: [eventQueryOptions.detail(Number(eventId))],
@@ -29,6 +31,12 @@ export const EventDetailPage = () => {
   const { data: organizerStatus } = useQuery({
     ...eventQueryOptions.organizer(Number(eventId)),
     enabled: isAuthenticated(),
+  });
+
+  useEventIntroSummaryFocus({
+    event,
+    isGuest: guestStatus?.isGuest,
+    locationKey: location.key,
   });
 
   if (!event) {
@@ -54,6 +62,7 @@ export const EventDetailPage = () => {
         />
         <Tabs defaultValue="detail">
           <Tabs.List
+            aria-label="이벤트 상세 정보와 참여 현황 탭"
             css={css`
               width: 30%;
               @media (max-width: 768px) {
@@ -65,7 +74,7 @@ export const EventDetailPage = () => {
             <Tabs.Trigger value="participation">참여 현황</Tabs.Trigger>
           </Tabs.List>
 
-          <Tabs.Content value="detail">
+          <Tabs.Content value="detail" role="region" aria-label="이벤트 정보">
             <EventBody
               isOrganizer={organizerStatus?.isOrganizer || false}
               isGuest={guestStatus?.isGuest || false}
@@ -73,7 +82,7 @@ export const EventDetailPage = () => {
             />
           </Tabs.Content>
 
-          <Tabs.Content value="participation">
+          <Tabs.Content value="participation" role="region" aria-label="참여 현황">
             <AttendanceOverview eventId={Number(eventId)} />
           </Tabs.Content>
         </Tabs>

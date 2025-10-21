@@ -1,3 +1,5 @@
+import { useCallback, useRef } from 'react';
+
 import { css } from '@emotion/react';
 
 import { isAuthenticated } from '@/api/auth';
@@ -8,6 +10,7 @@ import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { useToast } from '@/shared/components/Toast/ToastContext';
 import { useModal } from '@/shared/hooks/useModal';
+import { srSpeak } from '@/shared/utils/srSpeak';
 
 import { getEventButtonState } from '../utils/getSubmitButtonState';
 
@@ -20,6 +23,16 @@ type SubmitBUttonCardProps = {
   onResetAnswers: VoidFunction;
   isRequiredAnswerComplete: boolean;
 } & GuestStatusAPIResponse;
+
+const getErrorMessage = (err: unknown, fallback = '오류가 발생했어요.') => {
+  if (err instanceof Error && err.message) return err.message;
+  if (typeof err === 'string' && err.trim()) return err;
+  try {
+    return JSON.stringify(err);
+  } catch {
+    return fallback;
+  }
+};
 
 export const SubmitButtonCard = ({
   eventId,
@@ -41,18 +54,33 @@ export const SubmitButtonCard = ({
 
   const { isOpen, open, close } = useModal();
 
+  const hint =
+    buttonState.action === 'cancel'
+      ? '신청 완료된 이벤트입니다. 버튼을 선택하면 참여 취소가 가능합니다.'
+      : buttonState.action === 'participate' && !buttonState.disabled
+        ? '아직 신청하지 않은 이벤트입니다. 버튼을 선택하면 참여가 가능합니다.'
+        : buttonState.action === 'participate' && buttonState.disabled
+          ? '아직 신청하지 않은 이벤트입니다. 사전 질문을 모두 작성하면 신청할 수 있습니다.'
+          : '마감된 이벤트입니다.';
+
   const handleParticipantClick = () => {
     if (!isAuthenticated()) {
       open();
+      srSpeak('로그인이 필요합니다. 로그인 모달이 열렸습니다.');
       return;
     }
     participantMutate(answers, {
       onSuccess: () => {
         onResetAnswers();
         success('✅ 참가 신청이 완료되었습니다.');
+        srSpeak('참가 신청이 완료되었습니다.');
+        const btn = document.getElementById('event-submit-button') as HTMLButtonElement | null;
+        btn?.focus();
       },
-      onError: () => {
-        error('❌ 신청에 실패했어요.');
+      onError: (err: unknown) => {
+        const msg = getErrorMessage(err, '신청에 실패했어요.');
+        error(`❌ ${msg}`);
+        srSpeak(`신청에 실패했습니다. ${msg}`);
       },
     });
   };
@@ -61,20 +89,71 @@ export const SubmitButtonCard = ({
     cancelParticipateMutate(undefined, {
       onSuccess: () => {
         success('✅ 참가 신청이 취소되었습니다.');
+        srSpeak('참가 신청이 취소되었습니다.');
+        const btn = document.getElementById('event-submit-button') as HTMLButtonElement | null;
+        btn?.focus();
       },
-      onError: (err) => {
-        error(`${err.message}`);
+      onError: (err: unknown) => {
+        const msg = getErrorMessage(err, '취소에 실패했어요.');
+        error(`❌ ${msg}`);
+        srSpeak(`참가 취소에 실패했습니다. ${msg}`);
       },
     });
   };
 
+  const onKeyDown: React.KeyboardEventHandler<HTMLButtonElement> = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (buttonState.action === 'cancel') handleCancelParticipateClick();
+      else if (buttonState.action === 'participate') handleParticipantClick();
+    }
+  };
+
+  const ariaLabel = buttonState.action === 'cancel' ? '신청 취소 버튼' : '신청 하기 버튼';
+
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const setDescribedByInOrder = useCallback(() => {
+    const btn = btnRef.current;
+    if (!btn) return;
+
+    const ids: string[] = [];
+    if (document.getElementById('event-intro-desc')) ids.push('event-intro-desc');
+    if (document.getElementById('event-submit-hint')) ids.push('event-submit-hint');
+
+    if (ids.length) btn.setAttribute('aria-describedby', ids.join(' '));
+    else btn.removeAttribute('aria-describedby');
+  }, []);
+
+  const onFocus: React.FocusEventHandler<HTMLButtonElement> = () => {
+    setDescribedByInOrder();
+  };
+
   return (
     <>
-      <Flex margin="10px 0 40px">
+      <Flex
+        as="section"
+        id="event-submit-section"
+        role="region"
+        aria-label="신청 섹션"
+        tabIndex={-1}
+        margin="10px 0 40px"
+        dir="column"
+        gap="8px"
+      >
+        <span id="event-submit-hint" style={{ position: 'absolute', left: -9999 }}>
+          {hint}
+        </span>
+
         <Button
+          ref={btnRef}
+          id="event-submit-button"
+          aria-label={ariaLabel}
+          aria-live="off"
           size="full"
           color={buttonState.color}
           disabled={buttonState.disabled}
+          onFocus={onFocus}
+          onKeyDown={onKeyDown}
           onClick={
             buttonState.action === 'cancel' ? handleCancelParticipateClick : handleParticipantClick
           }
