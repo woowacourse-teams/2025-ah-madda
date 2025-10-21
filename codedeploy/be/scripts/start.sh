@@ -20,5 +20,5 @@ class Handler(SimpleHTTPRequestHandler):
         else:
             super().do_GET()
 
-HTTPServer(("", 8080), Handler).serve_forever()
+HTTPServer(("", 80), Handler).serve_forever()
 EOF
