@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef } from 'react';
 
+import { EventDetail } from '@/api/types/event';
 import { formatDate } from '@/shared/utils/dateUtils';
 
-import { EventDetail } from '../../types/Event';
 import { getEventButtonState } from '../utils/getSubmitButtonState';
 
 const speakifyTime = (s: string) =>
