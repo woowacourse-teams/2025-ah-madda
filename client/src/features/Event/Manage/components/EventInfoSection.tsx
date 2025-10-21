@@ -72,7 +72,9 @@ export const EventInfoSection = ({ event, statistics }: EventInfoSectionProps) =
           <Text type="Heading" weight="bold" color={theme.colors.gray800}>
             주최자
           </Text>
-          <Text>{event.organizerNicknames}</Text>
+          {event.organizerNicknames.length <= 3
+            ? event.organizerNicknames.join(', ')
+            : `${event.organizerNicknames.slice(0, 3).join(', ')} 외 ${event.organizerNicknames.length - 3}명`}
         </Flex>
       </Flex>
 
