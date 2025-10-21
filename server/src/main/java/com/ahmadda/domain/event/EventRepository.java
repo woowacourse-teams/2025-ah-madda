@@ -43,19 +43,23 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
 
     @Query("""
-                select eo.event
+                select e
                 from EventOrganizer eo
                 join eo.organizationMember om
                 join om.member m
+                join eo.event e
+                join fetch e.organization
                 where m = :member
             """)
     List<Event> findAllOrganizedBy(final Member member);
 
     @Query("""
-                select g.event
+                select e
                 from Guest g
                 join g.organizationMember om
                 join om.member m
+                join g.event e
+                join fetch e.organization
                 where m = :member
             """)
     List<Event> findAllParticipatedBy(final Member member);
