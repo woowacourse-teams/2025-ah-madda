@@ -17,7 +17,7 @@ export const useCreateOrganizationProcess = ({
 }: CreateOrganizationProcessArgs) => {
   const { mutate, isPending } = useCreateOrganization();
 
-  const handleCreate = () => {
+  const handleOrganizationCreateClick = () => {
     if (!thumbnail) {
       return;
     }
@@ -42,5 +42,5 @@ export const useCreateOrganizationProcess = ({
     onClose?.();
   };
 
-  return { handleCreate, handleClose, isSubmitting: isPending };
+  return { handleOrganizationCreateClick, handleClose, isSubmitting: isPending };
 };
