@@ -1,7 +1,11 @@
 import { queryOptions } from '@tanstack/react-query';
 
 import { fetcher } from '../fetcher';
-import { OrganizationAPIResponse, OrganizationMember } from '../types/organizations';
+import {
+  OrganizationAPIResponse,
+  OrganizationJoinedStatusAPIResponse,
+  OrganizationMember,
+} from '../types/organizations';
 import { OrganizationGroupAPIResponse } from '../types/organizations';
 
 export const organizationQueryKeys = {
@@ -12,7 +16,9 @@ export const organizationQueryKeys = {
   joined: () => [...organizationQueryKeys.all(), 'participated'],
   members: () => [...organizationQueryKeys.all(), 'organization-members'],
   group: () => [...organizationQueryKeys.all(), 'group'],
+  joinedStatus: () => [...organizationQueryKeys.all(), 'joined-status'],
 };
+
 export const organizationQueryOptions = {
   all: () =>
     queryOptions({
@@ -54,6 +60,12 @@ export const organizationQueryOptions = {
       queryKey: organizationQueryKeys.group(),
       queryFn: getOrganizationGroups,
     }),
+
+  joinedStatus: (organizationId: number) =>
+    queryOptions({
+      queryKey: [...organizationQueryKeys.joinedStatus(), organizationId],
+      queryFn: () => getOrganizationJoinedStatus({ organizationId }),
+    }),
 };
 
 const getAllOrganizations = () => {
@@ -82,6 +94,12 @@ export const getParticipatedOrganizations = () => {
 
 const getOrganizationMembers = ({ organizationId }: { organizationId: number }) => {
   return fetcher.get<OrganizationMember[]>(`organizations/${organizationId}/organization-members`);
+};
+
+const getOrganizationJoinedStatus = ({ organizationId }: { organizationId: number }) => {
+  return fetcher.get<OrganizationJoinedStatusAPIResponse>(
+    `organizations/${organizationId}/organization-member-status`
+  );
 };
 
 export const getOrganizationGroups = () => {
