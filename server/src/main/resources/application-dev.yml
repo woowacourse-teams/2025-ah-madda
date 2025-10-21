@@ -65,7 +65,7 @@ server:
       enabled: true
 
     threads:
-      max: 300
+      max: 100
 
 management:
   metrics:
