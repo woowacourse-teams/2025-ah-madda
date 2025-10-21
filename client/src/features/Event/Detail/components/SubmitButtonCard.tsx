@@ -1,4 +1,5 @@
 import { css } from '@emotion/react';
+import { useQuery } from '@tanstack/react-query';
 
 import { isAuthenticated } from '@/api/auth';
 import { useCancelParticipation } from '@/api/mutations/useCancelParticipation';
@@ -9,9 +10,8 @@ import { Flex } from '@/shared/components/Flex';
 import { useToast } from '@/shared/components/Toast/ToastContext';
 import { useModal } from '@/shared/hooks/useModal';
 
+import { VerificationModal } from '../../components/VerificationModal';
 import { getEventButtonState } from '../utils/getSubmitButtonState';
-
-import { LoginModal } from './LoginModal';
 
 type SubmitBUttonCardProps = {
   eventId: number;
@@ -19,6 +19,7 @@ type SubmitBUttonCardProps = {
   answers: Answer[];
   onResetAnswers: VoidFunction;
   isRequiredAnswerComplete: boolean;
+  isMember: boolean;
 } & GuestStatusAPIResponse;
 
 export const SubmitButtonCard = ({
@@ -26,6 +27,7 @@ export const SubmitButtonCard = ({
   answers,
   registrationEnd,
   isGuest,
+  isMember,
   onResetAnswers,
   isRequiredAnswerComplete,
 }: SubmitBUttonCardProps) => {
@@ -42,10 +44,11 @@ export const SubmitButtonCard = ({
   const { isOpen, open, close } = useModal();
 
   const handleParticipantClick = () => {
-    if (!isAuthenticated()) {
+    if (!isAuthenticated() || !isMember) {
       open();
       return;
     }
+
     participantMutate(answers, {
       onSuccess: () => {
         onResetAnswers();
@@ -58,6 +61,11 @@ export const SubmitButtonCard = ({
   };
 
   const handleCancelParticipateClick = () => {
+    if (!isAuthenticated() || !isMember) {
+      open();
+      return;
+    }
+
     cancelParticipateMutate(undefined, {
       onSuccess: () => {
         success('✅ 참가 신청이 취소되었습니다.');
@@ -85,7 +93,12 @@ export const SubmitButtonCard = ({
           {buttonState.text}
         </Button>
       </Flex>
-      <LoginModal isOpen={isOpen} onClose={close} />
+      <VerificationModal
+        isOpen={isOpen}
+        onClose={close}
+        onSubmit={handleParticipantClick}
+        isMember={isMember}
+      />
     </>
   );
 };

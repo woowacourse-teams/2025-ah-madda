@@ -1,21 +1,16 @@
 import styled from '@emotion/styled';
-import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { isAuthenticated } from '@/api/auth';
-import { organizationQueryOptions } from '@/api/queries/organization';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 
-export const ActionButtons = () => {
+type ActionButtonsProps = {
+  isAdmin: boolean;
+  isMember: boolean;
+};
+export const ActionButtons = ({ isAdmin, isMember }: ActionButtonsProps) => {
   const navigate = useNavigate();
   const { organizationId } = useParams();
-  const { data: organization } = useQuery({
-    ...organizationQueryOptions.profile(Number(organizationId)),
-    enabled: !!organizationId && isAuthenticated(),
-  });
-
-  const isAdmin = organization?.isAdmin ?? false;
 
   return (
     <>
@@ -30,9 +25,16 @@ export const ActionButtons = () => {
             스페이스 수정
           </Button>
         )}
-        <Button size="md" iconName="plus" onClick={() => navigate(`/${organizationId}/event/new`)}>
-          이벤트 생성
-        </Button>
+
+        {isMember && (
+          <Button
+            size="md"
+            iconName="plus"
+            onClick={() => navigate(`/${organizationId}/event/new`)}
+          >
+            이벤트 생성
+          </Button>
+        )}
       </DesktopButtonContainer>
 
       <MobileFixedCTA>
@@ -46,9 +48,15 @@ export const ActionButtons = () => {
             스페이스 수정
           </Button>
         )}
-        <Button size="md" iconName="plus" onClick={() => navigate(`/${organizationId}/event/new`)}>
-          이벤트 생성
-        </Button>
+        {isMember && (
+          <Button
+            size="md"
+            iconName="plus"
+            onClick={() => navigate(`/${organizationId}/event/new`)}
+          >
+            이벤트 생성
+          </Button>
+        )}
       </MobileFixedCTA>
     </>
   );

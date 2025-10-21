@@ -1,4 +1,5 @@
 import { GuestStatusAPIResponse, OrganizerStatusAPIResponse } from '@/api/types/event';
+import { OrganizationJoinedStatusAPIResponse } from '@/api/types/organizations';
 import { Flex } from '@/shared/components/Flex';
 
 import { EventDetail } from '../../../types/Event';
@@ -8,9 +9,13 @@ import { SubmitButtonCard } from '../SubmitButtonCard';
 import { EventDetails } from './EventDetails';
 import { PreQuestionSection } from './PreQuestionSection';
 
-type EventBodyProps = EventDetail & GuestStatusAPIResponse & OrganizerStatusAPIResponse;
+type EventBodyProps = EventDetail &
+  GuestStatusAPIResponse &
+  OrganizerStatusAPIResponse &
+  OrganizationJoinedStatusAPIResponse;
 
 export const EventBody = ({
+  isMember,
   isOrganizer,
   eventId,
   registrationEnd,
@@ -43,6 +48,7 @@ export const EventBody = ({
       {!isOrganizer && (
         <SubmitButtonCard
           isGuest={isGuest}
+          isMember={isMember}
           eventId={eventId}
           registrationEnd={registrationEnd}
           answers={answers}

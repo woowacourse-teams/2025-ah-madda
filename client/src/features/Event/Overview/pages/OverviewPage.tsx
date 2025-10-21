@@ -22,7 +22,6 @@ export const OverviewPage = () => {
         <Suspense fallback={<OrganizationInfoSkeleton />}>
           <OrganizationInfoSection organizationId={organizationId!} />
         </Suspense>
-
         <Suspense fallback={<TabsSkeleton />}>
           <OverviewTabs organizationId={orgIdNum} />
         </Suspense>
@@ -32,15 +31,14 @@ export const OverviewPage = () => {
 };
 
 const OrganizationInfoSection = ({ organizationId }: { organizationId: string }) => {
-  const queryClient = useQueryClient();
   const { data: organizationData } = useSuspenseQuery({
     ...organizationQueryOptions.organizations(String(organizationId)),
     staleTime: 5 * 60 * 1000,
   });
-  queryClient.prefetchQuery(organizationQueryOptions.profile(Number(organizationId)));
 
   return (
     <OrganizationInfo
+      organizationId={Number(organizationId)}
       name={organizationData?.name ?? ''}
       description={organizationData?.description ?? ''}
       imageUrl={organizationData?.imageUrl ?? ''}
