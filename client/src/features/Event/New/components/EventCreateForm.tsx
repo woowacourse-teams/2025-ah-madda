@@ -615,11 +615,11 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                     주최자
                   </Text>
                   <Text as="span" type="Body" color="#4b5563" data-role="value">
-                    {selectedNames.length > 0
-                      ? `${selectedNames.slice(0, 1).join(', ')}${
-                          selectedNames.length > 1 ? ` 외 ${selectedNames.length - 1}명` : ''
-                        } ✎`
-                      : '미선택 ✎'}
+                    {selectedNames.length === 0
+                      ? '미선택 ✎'
+                      : selectedNames.length <= 3
+                        ? `${selectedNames.join(', ')} ✎`
+                        : `${selectedNames.slice(0, 3).join(', ')} 외 ${selectedNames.length - 3}명 ✎`}
                   </Text>
                 </Button>
 
