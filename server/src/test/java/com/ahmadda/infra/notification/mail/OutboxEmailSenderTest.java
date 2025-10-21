@@ -1,11 +1,9 @@
 package com.ahmadda.infra.notification.mail;
 
-import com.ahmadda.annotation.IntegrationTest;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.IllegalTransactionStateException;
 
@@ -13,14 +11,13 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.anyString;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@IntegrationTest
-class OutboxEmailSenderTest {
+class OutboxEmailSenderTest extends IntegrationTest {
 
     @Autowired
     private OutboxEmailSender sut;
@@ -30,10 +27,6 @@ class OutboxEmailSenderTest {
 
     @Autowired
     private EmailOutboxRecipientRepository emailOutboxRecipientRepository;
-
-    @MockitoBean
-    @Qualifier("failoverEmailSender")
-    private EmailSender delegate;
 
     @AfterEach
     void tearDown() {
@@ -103,13 +96,13 @@ class OutboxEmailSenderTest {
         sut.sendEmails(recipients, subject, body);
 
         // then
-        verify(delegate, never()).sendEmails(anyList(), anyString(), anyString());
+        verify(emailSender, never()).sendEmails(anyList(), anyString(), anyString());
 
         // afterCommit 트리거
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
         // 커밋 후 delegate 호출 확인
-        verify(delegate, times(1)).sendEmails(recipients, subject, body);
+        verify(emailSender, times(1)).sendEmails(recipients, subject, body);
     }
 }

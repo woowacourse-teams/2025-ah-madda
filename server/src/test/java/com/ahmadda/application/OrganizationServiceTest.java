@@ -1,12 +1,13 @@
 package com.ahmadda.application;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.application.dto.OrganizationUpdateRequest;
 import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
+import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventOperationPeriod;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
@@ -23,6 +24,7 @@ import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.presentation.dto.OrganizationParticipateRequest;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,8 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-@IntegrationTest
-class OrganizationServiceTest {
+class OrganizationServiceTest extends IntegrationTest {
 
     @Autowired
     private OrganizationRepository organizationRepository;
@@ -485,6 +486,38 @@ class OrganizationServiceTest {
     }
 
 
+    @Test
+    void 활성_이벤트가_많은_이벤트_스페이스_순으로_조회된다() {
+        // given
+        var now = LocalDateTime.now();
+        var org1 = organizationRepository.save(createOrganization("우테코"));
+        var org2 = organizationRepository.save(createOrganization("아맞다"));
+        var member = memberRepository.save(Member.create("관리자", "admin@test.com", "pic"));
+        var group = createGroup();
+        var orgMember1 = createOrganizationMember("surf1", member, org1, OrganizationMemberRole.ADMIN, group);
+        var orgMember2 = createOrganizationMember("surf2", member, org2, OrganizationMemberRole.ADMIN, group);
+
+        eventRepository.save(createEvent(org1, orgMember1, "이벤트1-1", now.minusDays(1), now.plusDays(1)));
+        eventRepository.save(createEvent(org1, orgMember1, "이벤트1-2", now.minusDays(2), now.plusDays(2)));
+
+        eventRepository.save(createEvent(org2, orgMember2, "이벤트2-1", now.minusDays(1), now.plusDays(1)));
+
+        // when
+        var organizations = sut.findAllOrderByActiveEventsDesc(now);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(organizations)
+                    .hasSize(2);
+            softly.assertThat(organizations.get(0)
+                            .getName())
+                    .isEqualTo("우테코");
+            softly.assertThat(organizations.get(1)
+                            .getName())
+                    .isEqualTo("아맞다");
+        });
+    }
+
     private Organization createOrganization(String name) {
         var organization = createOrganization(name, "Desc", "img.png");
         return organizationRepository.save(organization);
@@ -542,5 +575,35 @@ class OrganizationServiceTest {
 
     private OpenProfile createOpenProfile(Member member, OrganizationGroup group) {
         return openProfileRepository.save(OpenProfile.create(member, group));
+    }
+
+    private Event createEvent(
+            Organization organization,
+            OrganizationMember organizer,
+            String title,
+            LocalDateTime eventStart,
+            LocalDateTime eventEnd
+    ) {
+        var registrationStart = eventStart.minusDays(2);
+        var registrationEnd = eventStart.minusDays(1);
+
+        return eventRepository.save(
+                Event.create(
+                        title,
+                        "설명",
+                        "장소",
+                        organizer,
+                        organization,
+                        EventOperationPeriod.create(
+                                registrationStart,
+                                registrationEnd,
+                                eventStart,
+                                eventEnd,
+                                registrationStart.minusDays(1)
+                        ),
+                        50,
+                        false
+                )
+        );
     }
 }

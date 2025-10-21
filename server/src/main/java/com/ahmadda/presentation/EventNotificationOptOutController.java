@@ -4,7 +4,7 @@ import com.ahmadda.application.EventNotificationOptOutService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.organization.OrganizationMemberWithOptStatus;
 import com.ahmadda.presentation.dto.OptOutStatusResponse;
-import com.ahmadda.presentation.resolver.AuthMember;
+import com.ahmadda.presentation.resolver.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -94,7 +94,7 @@ public class EventNotificationOptOutController {
     @PostMapping("/{eventId}/notification/opt-out")
     public ResponseEntity<Void> optOut(
             @PathVariable final Long eventId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         optOutService.optOut(eventId, loginMember);
 
@@ -167,7 +167,7 @@ public class EventNotificationOptOutController {
     @DeleteMapping("/{eventId}/notification/opt-out")
     public ResponseEntity<Void> cancelOptOut(
             @PathVariable final Long eventId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         optOutService.cancelOptOut(eventId, loginMember);
 
@@ -235,7 +235,7 @@ public class EventNotificationOptOutController {
     @GetMapping("/{eventId}/notification/opt-out")
     public ResponseEntity<OptOutStatusResponse> getOptOutStatus(
             @PathVariable final Long eventId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         OrganizationMemberWithOptStatus organizationMemberWithOptStatus =
                 optOutService.getMemberWithOptStatus(eventId, loginMember);

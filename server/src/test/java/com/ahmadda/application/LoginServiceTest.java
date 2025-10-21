@@ -1,6 +1,5 @@
 package com.ahmadda.application;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnauthorizedException;
@@ -10,12 +9,11 @@ import com.ahmadda.infra.auth.HashEncoder;
 import com.ahmadda.infra.auth.RefreshTokenRepository;
 import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
 import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
-import com.ahmadda.infra.auth.oauth.GoogleOAuthProvider;
 import com.ahmadda.infra.auth.oauth.dto.OAuthUserInfoResponse;
+import com.ahmadda.support.IntegrationTest;
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -27,8 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
-@IntegrationTest
-class LoginServiceTest {
+class LoginServiceTest extends IntegrationTest {
 
     @Autowired
     private LoginService sut;
@@ -44,9 +41,6 @@ class LoginServiceTest {
 
     @Autowired
     private HashEncoder hashEncoder;
-    
-    @MockitoBean
-    private GoogleOAuthProvider googleOAuthProvider;
 
     @Test
     void 신규회원이면_저장한다() {

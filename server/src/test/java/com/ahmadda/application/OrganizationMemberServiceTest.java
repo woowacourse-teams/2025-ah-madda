@@ -1,6 +1,5 @@
 package com.ahmadda.application;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationMemberRoleUpdateRequest;
 import com.ahmadda.application.dto.OrganizationMemberUpdateRequest;
@@ -15,6 +14,7 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,8 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-@IntegrationTest
-class OrganizationMemberServiceTest {
+class OrganizationMemberServiceTest extends IntegrationTest {
 
     @Autowired
     private OrganizationMemberService sut;

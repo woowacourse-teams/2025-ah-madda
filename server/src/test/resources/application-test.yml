@@ -7,6 +7,9 @@ spring:
       ddl-auto: create-drop
     show-sql: true
 
+  scheduling:
+    enabled: false
+
   cloud:
     aws:
       s3:
@@ -51,3 +54,7 @@ aws:
     noop: true
     bucket: ${aws.local.s3.bucket}
     folder: ${aws.local.s3.folder}
+
+logging:
+  level:
+    org.springframework.test.context.cache: DEBUG

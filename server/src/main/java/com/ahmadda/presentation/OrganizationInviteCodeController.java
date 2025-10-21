@@ -6,7 +6,7 @@ import com.ahmadda.domain.organization.InviteCode;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.presentation.dto.InviteCodeCreateResponse;
 import com.ahmadda.presentation.dto.OrganizationResponse;
-import com.ahmadda.presentation.resolver.AuthMember;
+import com.ahmadda.presentation.resolver.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -110,7 +110,7 @@ public class OrganizationInviteCodeController {
     @PostMapping("/{organizationId}/invite-codes")
     public ResponseEntity<InviteCodeCreateResponse> create(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         InviteCode inviteCode =
                 organizationInviteCodeService.createInviteCode(organizationId, loginMember, LocalDateTime.now());

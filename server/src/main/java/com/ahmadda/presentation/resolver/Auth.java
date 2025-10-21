@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
 @Parameter(hidden = true)
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AuthMember {
+public @interface Auth {
 
 }

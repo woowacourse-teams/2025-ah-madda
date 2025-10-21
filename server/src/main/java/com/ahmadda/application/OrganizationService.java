@@ -138,6 +138,11 @@ public class OrganizationService {
         organizationRepository.deleteById(organizationId);
     }
 
+    @Transactional(readOnly = true)
+    public List<Organization> findAllOrderByActiveEventsDesc(final LocalDateTime currentDateTime) {
+        return organizationRepository.findAllOrderByActiveEventsDesc(currentDateTime);
+    }
+
     private void validateAdmin(final OrganizationMember organizationMember) {
         if (!organizationMember.isAdmin()) {
             throw new ForbiddenException("이벤트 스페이스의 관리자만 삭제할 수 있습니다.");

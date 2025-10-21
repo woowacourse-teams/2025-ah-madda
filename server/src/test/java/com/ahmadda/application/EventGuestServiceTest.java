@@ -1,6 +1,5 @@
 package com.ahmadda.application;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.AnswerCreateRequest;
 import com.ahmadda.application.dto.EventParticipateRequest;
 import com.ahmadda.application.dto.LoginMember;
@@ -23,6 +22,7 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,8 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-@IntegrationTest
-class EventGuestServiceTest {
+class EventGuestServiceTest extends IntegrationTest {
 
     @Autowired
     private EventGuestService sut;
@@ -207,7 +206,7 @@ class EventGuestServiceTest {
     void 존재하지_않는_이벤트로_비게스트를_조회하면_예외가_발생한다() {
         // given
         var group = createGroup();
-        
+
         // when // then
         assertThatThrownBy(() ->
                 sut.getGroupNonGuestOrganizationMembers(999L, group.getId())
