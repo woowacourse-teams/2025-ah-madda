@@ -4,8 +4,9 @@ import com.ahmadda.application.MemberService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.member.Member;
-import com.ahmadda.presentation.dto.EventResponse;
 import com.ahmadda.presentation.dto.MemberResponse;
+import com.ahmadda.presentation.dto.OwnerEventResponse;
+import com.ahmadda.presentation.dto.ParticipatedEventResponse;
 import com.ahmadda.presentation.resolver.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -88,7 +89,7 @@ public class MemberController {
             @ApiResponse(
                     responseCode = "200",
                     content = @Content(
-                            array = @ArraySchema(schema = @Schema(implementation = EventResponse.class))
+                            array = @ArraySchema(schema = @Schema(implementation = ParticipatedEventResponse.class))
                     )
             ),
             @ApiResponse(
@@ -125,14 +126,14 @@ public class MemberController {
             )
     })
     @GetMapping("/events/participated")
-    public ResponseEntity<List<EventResponse>> getParticipantEvents(
+    public ResponseEntity<List<ParticipatedEventResponse>> getParticipantEvents(
             @Auth final LoginMember loginMember
     ) {
         List<Event> organizationEvents =
                 memberService.getParticipatedEvents(loginMember);
 
-        List<EventResponse> eventResponses = organizationEvents.stream()
-                .map(EventResponse::from)
+        List<ParticipatedEventResponse> eventResponses = organizationEvents.stream()
+                .map(ParticipatedEventResponse::from)
                 .toList();
 
         return ResponseEntity.ok(eventResponses);
@@ -143,7 +144,7 @@ public class MemberController {
             @ApiResponse(
                     responseCode = "200",
                     content = @Content(
-                            array = @ArraySchema(schema = @Schema(implementation = EventResponse.class))
+                            array = @ArraySchema(schema = @Schema(implementation = OwnerEventResponse.class))
                     )
             ),
             @ApiResponse(
@@ -180,13 +181,13 @@ public class MemberController {
             )
     })
     @GetMapping("/events/owned")
-    public ResponseEntity<List<EventResponse>> getOwnerEvents(
+    public ResponseEntity<List<OwnerEventResponse>> getOwnerEvents(
             @Auth final LoginMember loginMember
     ) {
         List<Event> organizationEvents = memberService.getOwnerEvents(loginMember);
 
-        List<EventResponse> eventResponses = organizationEvents.stream()
-                .map(EventResponse::from)
+        List<OwnerEventResponse> eventResponses = organizationEvents.stream()
+                .map(OwnerEventResponse::from)
                 .toList();
 
         return ResponseEntity.ok(eventResponses);
