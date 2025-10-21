@@ -1,12 +1,12 @@
 import { css } from '@emotion/react';
 
+import { EventDetail } from '@/api/types/event';
 import { Flex } from '@/shared/components/Flex';
 import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 import { formatDate } from '@/shared/utils/dateUtils';
 
-import { EventDetail } from '../../../types/Event';
 import { calculateCapacityStatus } from '../../../utils/calculateCapacityStatus';
 
 type EventDetailProps = Pick<
@@ -61,7 +61,7 @@ export const EventDetails = ({
               pattern: 'YYYY년 MM월 DD일 E A HH시',
               options: { dayOfWeek: 'long' },
             })}
-            까지
+            까지 신청가능
           </Text>
         </Flex>
         <Flex

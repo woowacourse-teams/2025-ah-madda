@@ -7,7 +7,6 @@ import { useParams } from 'react-router-dom';
 
 import { organizationQueryOptions } from '@/api/queries/organization';
 import type { OrganizationMember } from '@/api/types/organizations';
-import { GuestList } from '@/features/Event/Manage/components/GuestList';
 import type { NonGuest } from '@/features/Event/Manage/types';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
@@ -16,6 +15,8 @@ import { Tabs } from '@/shared/components/Tabs/Tabs';
 import { Text } from '@/shared/components/Text';
 import { useToast } from '@/shared/components/Toast/ToastContext';
 import { theme } from '@/shared/styles/theme';
+
+import { GuestList } from '../../Manage/components/guest/GuestList';
 
 export type CoHostSelectModalProps = {
   isOpen: boolean;

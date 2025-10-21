@@ -1,9 +1,7 @@
 import { queryOptions } from '@tanstack/react-query';
 
-import { Event } from '@/features/Event/types/Event';
-
 import { fetcher } from '../fetcher';
-import { GuestAnswerAPIResponse } from '../types/my';
+import { GuestAnswerAPIResponse, ParticipateEventAPIResponse } from '../types/my';
 
 export const myQueryKeys = {
   all: () => ['my'],
@@ -17,18 +15,16 @@ export const myQueryKeys = {
 
 export const myQueryOptions = {
   event: {
-    hostEvents: (organizationId: number) =>
+    hostEvents: () =>
       queryOptions({
-        queryKey: [...myQueryKeys.event.host(), organizationId],
-        queryFn: () => getHostEvents(organizationId),
+        queryKey: [...myQueryKeys.event.host()],
+        queryFn: () => getHostEvents(),
       }),
-
-    participateEvents: (organizationId: number) =>
+    participateEvents: () =>
       queryOptions({
-        queryKey: [...myQueryKeys.event.participate(), organizationId],
-        queryFn: () => getParticipateEvents(organizationId),
+        queryKey: [...myQueryKeys.event.participate()],
+        queryFn: () => getParticipateEvents(),
       }),
-
     guestAnswers: (eventId: number, guestId: number) =>
       queryOptions({
         queryKey: [...myQueryKeys.event.guestAnswers(), eventId, guestId],
@@ -37,12 +33,12 @@ export const myQueryOptions = {
   },
 };
 
-const getHostEvents = async (organizationId: number): Promise<Event[]> => {
-  return await fetcher.get<Event[]>(`organizations/${organizationId}/events/owned`);
+const getHostEvents = async () => {
+  return await fetcher.get<ParticipateEventAPIResponse[]>(`members/events/owned`);
 };
 
-const getParticipateEvents = async (organizationId: number): Promise<Event[]> => {
-  return await fetcher.get<Event[]>(`organizations/${organizationId}/events/participated`);
+const getParticipateEvents = async () => {
+  return await fetcher.get<ParticipateEventAPIResponse[]>(`members/events/participated`);
 };
 
 const getGuestAnswers = async (eventId: number, guestId: number) => {

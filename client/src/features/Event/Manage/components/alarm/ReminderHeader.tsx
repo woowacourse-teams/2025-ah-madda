@@ -39,7 +39,7 @@ export const AlarmHeader = ({ selectedGuestCount, notifyData }: AlarmHeaderProps
             {`선택한 ${selectedGuestCount}명에게 알람이 전송됩니다.`}
           </Text>
         </Flex>
-        <Button size="sm" color="tertiary" variant="ghost" onClick={open}>
+        <Button size="md" color="tertiary" variant="ghost" onClick={open}>
           알림 내역
         </Button>
       </Flex>

@@ -2,6 +2,7 @@ import { css } from '@emotion/react';
 
 import { isAuthenticated } from '@/api/auth';
 import { useEventNotificationToggle } from '@/api/mutations/useEventNotificationToggle';
+import type { EventDetail } from '@/api/types/event';
 import { Badge } from '@/shared/components/Badge';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
@@ -10,7 +11,6 @@ import { Text } from '@/shared/components/Text';
 import { useToast } from '@/shared/components/Toast/ToastContext';
 import { formatDate } from '@/shared/utils/dateUtils';
 
-import type { EventDetail } from '../../../types/Event';
 import { badgeText } from '../../../utils/badgeText';
 
 type EventHeaderProps = { eventId: number } & Pick<

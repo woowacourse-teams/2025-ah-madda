@@ -27,6 +27,7 @@ export const CurrentEventList = ({ organizationId }: CurrentEventListProps) => {
       },
     ],
   });
+
   const groupedEvents = groupEventsByDate(events);
 
   if (events.length === 0) {
@@ -64,7 +65,11 @@ export const CurrentEventList = ({ organizationId }: CurrentEventListProps) => {
           <EventSection key={label} title={label}>
             <EventGrid>
               {events.map((event, index) => (
-                <EventCard key={index} {...event} cardType="default" />
+                <EventCard
+                  key={index}
+                  {...event}
+                  cardType={event.isOrganizer ? 'host' : 'default'}
+                />
               ))}
             </EventGrid>
           </EventSection>

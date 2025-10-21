@@ -2,8 +2,8 @@ import { Avatar } from '@/shared/components/Avatar';
 import { CheckBox } from '@/shared/components/CheckBox';
 import { Flex } from '@/shared/components/Flex';
 
-import { GuestItemContainer } from '../containers/GuestItemContainer';
-import { Guest, NonGuest } from '../types';
+import { GuestItemContainer } from '../../containers/GuestItemContainer';
+import { Guest, NonGuest } from '../../types';
 
 type GuestItemProps = {
   onGuestChecked: (organizationMemberId: number) => void;

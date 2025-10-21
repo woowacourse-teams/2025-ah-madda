@@ -1,6 +1,7 @@
 import { useCallback, useRef } from 'react';
 
 import { css } from '@emotion/react';
+import { useQuery } from '@tanstack/react-query';
 
 import { isAuthenticated } from '@/api/auth';
 import { useCancelParticipation } from '@/api/mutations/useCancelParticipation';
@@ -12,9 +13,8 @@ import { useToast } from '@/shared/components/Toast/ToastContext';
 import { useModal } from '@/shared/hooks/useModal';
 import { announce } from '@/shared/utils/announce';
 
+import { VerificationModal } from '../../components/VerificationModal';
 import { getEventButtonState } from '../utils/getSubmitButtonState';
-
-import { LoginModal } from './LoginModal';
 
 type SubmitBUttonCardProps = {
   eventId: number;
@@ -22,6 +22,7 @@ type SubmitBUttonCardProps = {
   answers: Answer[];
   onResetAnswers: VoidFunction;
   isRequiredAnswerComplete: boolean;
+  isMember: boolean;
 } & GuestStatusAPIResponse;
 
 const getErrorMessage = (err: unknown, fallback = '오류가 발생했어요.') => {
@@ -39,6 +40,7 @@ export const SubmitButtonCard = ({
   answers,
   registrationEnd,
   isGuest,
+  isMember,
   onResetAnswers,
   isRequiredAnswerComplete,
 }: SubmitBUttonCardProps) => {
@@ -55,11 +57,12 @@ export const SubmitButtonCard = ({
   const { isOpen, open, close } = useModal();
 
   const handleParticipantClick = () => {
-    if (!isAuthenticated()) {
+    if (!isAuthenticated() || !isMember) {
       open();
       announce('로그인이 필요합니다. 로그인 모달이 열렸습니다.');
       return;
     }
+
     participantMutate(answers, {
       onSuccess: () => {
         onResetAnswers();
@@ -77,6 +80,11 @@ export const SubmitButtonCard = ({
   };
 
   const handleCancelParticipateClick = () => {
+    if (!isAuthenticated() || !isMember) {
+      open();
+      return;
+    }
+
     cancelParticipateMutate(undefined, {
       onSuccess: () => {
         success('✅ 참가 신청이 취소되었습니다.');
@@ -151,7 +159,12 @@ export const SubmitButtonCard = ({
           {buttonState.text}
         </Button>
       </Flex>
-      <LoginModal isOpen={isOpen} onClose={close} />
+      <VerificationModal
+        isOpen={isOpen}
+        onClose={close}
+        onSubmit={handleParticipantClick}
+        isMember={isMember}
+      />
     </>
   );
 };
