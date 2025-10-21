@@ -6,6 +6,7 @@ import { eventQueryOptions } from '@/api/queries/event';
 import { organizationQueryOptions } from '@/api/queries/organization';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
+import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 import { Tooltip } from '@/shared/components/Tooltip/Tooltip';
 import { theme } from '@/shared/styles/theme';
@@ -35,7 +36,7 @@ export const AttendanceOverview = ({ eventId }: { eventId: number }) => {
   });
 
   return (
-    <Flex as="section" width="100%" dir="column">
+    <Flex as="section" width="100%" dir="column" gap="8px">
       <Flex justifyContent="flex-end" padding="12px 0 0 0">
         <Tooltip
           placement="left-bottom"
@@ -51,6 +52,7 @@ export const AttendanceOverview = ({ eventId }: { eventId: number }) => {
         guests={guests}
         memberIdToGroup={memberIdToGroup}
       />
+      <Spacing height="16px" />
       <GuestList
         eventId={eventId}
         title={`미신청 (${nonGuests.length}명)`}

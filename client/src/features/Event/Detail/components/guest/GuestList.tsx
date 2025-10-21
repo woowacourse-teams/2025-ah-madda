@@ -70,7 +70,7 @@ export const GuestList = ({
 
   return (
     <>
-      <Flex dir="column" margin="0" padding="0 16px" gap="16px">
+      <Flex dir="column" margin="0" padding="0 16px">
         <Flex alignItems="center" gap="8px">
           <Text type="Heading" weight="semibold" color={titleColor}>
             {title}
