@@ -2,7 +2,7 @@
 # scripts/validate.sh
 
 for i in {1..12}; do
-  HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/actuator/health)
+  HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80/actuator/health)
 
   if [ "$HTTP_CODE" -eq 200 ]; then
     echo "애플리케이션 시작 확인"
