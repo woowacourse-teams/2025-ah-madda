@@ -5,7 +5,7 @@ import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OpenProfileUpdateRequest;
 import com.ahmadda.domain.member.OpenProfile;
 import com.ahmadda.presentation.dto.OpenProfileResponse;
-import com.ahmadda.presentation.resolver.AuthMember;
+import com.ahmadda.presentation.resolver.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -87,7 +87,7 @@ public class OpenProfileController {
             )
     })
     @GetMapping
-    public ResponseEntity<OpenProfileResponse> getOpenProfile(@AuthMember final LoginMember loginMember) {
+    public ResponseEntity<OpenProfileResponse> getOpenProfile(@Auth final LoginMember loginMember) {
         OpenProfile openProfile = openProfileService.getOpenProfile(loginMember);
 
         OpenProfileResponse response = OpenProfileResponse.from(openProfile);
@@ -132,7 +132,7 @@ public class OpenProfileController {
     })
     @PatchMapping
     public ResponseEntity<Void> updateProfile(
-            @AuthMember final LoginMember loginMember,
+            @Auth final LoginMember loginMember,
             @Valid @RequestBody final OpenProfileUpdateRequest request
     ) {
         openProfileService.updateProfile(loginMember, request);
