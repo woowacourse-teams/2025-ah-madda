@@ -1,9 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { HttpError } from '@/api/fetcher';
 import { useCloseEventRegistration } from '@/api/mutations/useCloseEventRegistration';
-import { eventQueryOptions } from '@/api/queries/event';
 import { badgeText } from '@/features/Event/utils/badgeText';
 import { Badge } from '@/shared/components/Badge';
 import { Button } from '@/shared/components/Button';
@@ -38,7 +36,8 @@ export const EventHeader = ({
   const { organizationId } = useParams();
   const isClosed = registrationEnd ? new Date(registrationEnd) < new Date() : false;
   const { isOpen, open, close } = useModal();
-  const { refetch } = useQuery(eventQueryOptions.detail(eventId));
+
+  const badgeTextValue = badgeText(registrationEnd);
 
   const { mutate: closeEventRegistration } = useCloseEventRegistration();
 
@@ -46,7 +45,6 @@ export const EventHeader = ({
     closeEventRegistration(eventId, {
       onSuccess: () => {
         success('이벤트가 마감되었습니다.');
-        refetch();
         close();
       },
       onError: (err) => {
@@ -60,7 +58,7 @@ export const EventHeader = ({
   return (
     <>
       <Flex dir="column" gap="12px">
-        <Badge variant={badgeText(registrationEnd).color}>{badgeText(registrationEnd).text}</Badge>
+        <Badge variant={badgeTextValue.color}>{badgeTextValue.text}</Badge>
         <Flex dir="row" justifyContent="space-between">
           <Text as="h1" type="Display" weight="bold">
             {title}
