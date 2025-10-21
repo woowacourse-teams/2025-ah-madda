@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { useQuery } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { isAuthenticated } from '@/api/auth';
@@ -10,12 +10,21 @@ import { Flex } from '@/shared/components/Flex';
 export const ActionButtons = () => {
   const navigate = useNavigate();
   const { organizationId } = useParams();
-  const { data: organization } = useQuery({
-    ...organizationQueryOptions.profile(Number(organizationId)),
-    enabled: !!organizationId && isAuthenticated(),
+  const [{ data: joinedStatus }, { data: organization }] = useQueries({
+    queries: [
+      {
+        ...organizationQueryOptions.joinedStatus(Number(organizationId)),
+        enabled: !!organizationId && isAuthenticated(),
+      },
+      {
+        ...organizationQueryOptions.profile(Number(organizationId)),
+        enabled: !!organizationId && isAuthenticated(),
+      },
+    ],
   });
 
   const isAdmin = organization?.isAdmin ?? false;
+  const isMember = isAuthenticated() && joinedStatus?.isMember;
 
   return (
     <>
@@ -30,9 +39,16 @@ export const ActionButtons = () => {
             스페이스 수정
           </Button>
         )}
-        <Button size="md" iconName="plus" onClick={() => navigate(`/${organizationId}/event/new`)}>
-          이벤트 생성
-        </Button>
+
+        {isMember && (
+          <Button
+            size="md"
+            iconName="plus"
+            onClick={() => navigate(`/${organizationId}/event/new`)}
+          >
+            이벤트 생성
+          </Button>
+        )}
       </DesktopButtonContainer>
 
       <MobileFixedCTA>
@@ -46,9 +62,15 @@ export const ActionButtons = () => {
             스페이스 수정
           </Button>
         )}
-        <Button size="md" iconName="plus" onClick={() => navigate(`/${organizationId}/event/new`)}>
-          이벤트 생성
-        </Button>
+        {isMember && (
+          <Button
+            size="md"
+            iconName="plus"
+            onClick={() => navigate(`/${organizationId}/event/new`)}
+          >
+            이벤트 생성
+          </Button>
+        )}
       </MobileFixedCTA>
     </>
   );
