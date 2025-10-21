@@ -77,8 +77,8 @@ export type Event = {
   registrationStart: string;
   registrationEnd: string;
   organizerNicknames: string[];
-  isGuest: boolean;
-  isOrganizer: boolean;
+  isGuest?: boolean;
+  isOrganizer?: boolean;
 };
 
 export type EventDetail = {
