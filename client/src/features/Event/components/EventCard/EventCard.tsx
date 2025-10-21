@@ -4,6 +4,7 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { Event } from '@/api/types/event';
 import { Badge } from '@/shared/components/Badge';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
@@ -14,7 +15,6 @@ import { trackClickEventCard } from '@/shared/lib/gaEvents';
 import { theme } from '@/shared/styles/theme';
 import { formatDate } from '@/shared/utils/dateUtils';
 
-import { Event } from '../../types/Event';
 import { badgeText } from '../../utils/badgeText';
 import { calculateCapacityStatus } from '../../utils/calculateCapacityStatus';
 import { normalizeWhitespace } from '../../utils/normalizeWhitespace';
