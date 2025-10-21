@@ -4,12 +4,12 @@ import { isAuthenticated } from '../auth';
 import { fetcher } from '../fetcher';
 import { eventQueryOptions, NotificationOptOutState } from '../queries/event';
 
-export const useEventNotificationToggle = (eventId: number) => {
+export const useEventNotificationToggle = (eventId: number, isMember: boolean = false) => {
   const queryClient = useQueryClient();
   const options = eventQueryOptions.notificationOptOutState(eventId);
   const { data } = useQuery({
     ...options,
-    enabled: isAuthenticated(),
+    enabled: isAuthenticated() && isMember,
   });
 
   const optOut = useMutation({
