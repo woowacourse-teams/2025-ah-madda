@@ -75,8 +75,6 @@ export const OrganizationInfo = ({
                 gap: 10px;
               }
             `}
-            aria-labelledby="org-info-name"
-            aria-describedby="org-info-description"
             aria-label={`${name} 스페이스 입니다. ${name}에 대한 설명은 다음과 같습니다. ${description}`}
           >
             <ThumbImg
@@ -93,11 +91,11 @@ export const OrganizationInfo = ({
             />
 
             <Flex dir="column" gap="8px">
-              <Text type="Display" weight="bold" id="org-info-name" aria-hidden="true">
+              <Text type="Display" weight="bold" aria-hidden="true">
                 {name}
               </Text>
               <Spacing height="4px" />
-              <Text as="h2" type="Heading" id="org-info-description" aria-hidden="true">
+              <Text as="h2" type="Heading" aria-hidden="true">
                 {description}
               </Text>
               {organizationMember?.isAdmin && (

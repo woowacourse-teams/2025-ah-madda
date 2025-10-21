@@ -58,6 +58,7 @@ export const EventCard = memo(function EventCard({
 
   return (
     <CardWrapper
+      role="button"
       id={`event-card-${eventId}`}
       onClick={handleClickCard}
       aria-label={`${title} 이벤트 카드입니다. ${place}장소에서 이벤트가 열리고, ${organizerNicknames.join(', ')} 주최자가 주최하고 있습니다. ${isGuest ? '참여 가능한 이벤트입니다.' : '신청이 마감되어 참여가 불가능한 이벤트입니다.'} 신청 마감 시간은 ${registrationEnd} 입니다. 최대 인원은 ${maxCapacity}명 이고, 현재 ${currentGuestCount}명이 참여하고 있습니다.`}
