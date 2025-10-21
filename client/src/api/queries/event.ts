@@ -1,9 +1,10 @@
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 
 import { Guest, NonGuest } from '../../features/Event/Manage/types';
-import { CreateEventAPIRequest, Event, EventDetail } from '../../features/Event/types/Event';
+import { CreateEventAPIRequest } from '../../features/Event/types/Event';
 import { fetcher } from '../fetcher';
 import { postAlarm } from '../mutations/useAddAlarm';
+import { Event, EventDetail } from '../types/event';
 import {
   GuestStatusAPIResponse,
   OrganizerStatusAPIResponse,

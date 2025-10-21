@@ -1,9 +1,9 @@
 import { Answer } from '@/api/types/event';
+import type { EventDetail } from '@/api/types/event';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
 
-import type { EventDetail } from '../../../types/Event';
 import { QuestionContainer } from '../../containers/QuestionContainer';
 
 type PreQuestionSectionProps = Pick<EventDetail, 'questions'> & {

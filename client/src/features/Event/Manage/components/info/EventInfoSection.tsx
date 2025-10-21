@@ -1,14 +1,13 @@
 import { css } from '@emotion/react';
 
 import type { StatisticsAPIResponse } from '@/api/types/event';
+import { EventDetail } from '@/api/types/event';
 import { calculateCapacityStatus } from '@/features/Event/utils/calculateCapacityStatus';
 import { Flex } from '@/shared/components/Flex';
 import { ProgressBar } from '@/shared/components/ProgressBar';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 import { formatDate } from '@/shared/utils/dateUtils';
-
-import type { EventDetail } from '../../../types/Event';
 
 import { Statistics } from './Statistics';
 

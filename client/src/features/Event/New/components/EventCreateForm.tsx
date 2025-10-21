@@ -9,7 +9,7 @@ import { HttpError } from '@/api/fetcher';
 import { useUpdateEvent } from '@/api/mutations/useUpdateEvent';
 import { getEventDetailAPI } from '@/api/queries/event';
 import { organizationQueryOptions } from '@/api/queries/organization';
-import type { EventTemplateAPIResponse } from '@/api/types/event';
+import type { EventDetail, EventTemplateAPIResponse } from '@/api/types/event';
 import type { OrganizationMember } from '@/api/types/organizations';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
@@ -23,7 +23,6 @@ import { trackCreateEvent } from '@/shared/lib/gaEvents';
 import { theme } from '@/shared/styles/theme';
 import { formatDate } from '@/shared/utils/dateUtils';
 
-import { EventDetail } from '../../types/Event';
 import { MAX_LENGTH, UNLIMITED_CAPACITY } from '../constants/errorMessages';
 import { useAddEvent } from '../hooks/useAddEvent';
 import { useBasicEventForm } from '../hooks/useBasicEventForm';

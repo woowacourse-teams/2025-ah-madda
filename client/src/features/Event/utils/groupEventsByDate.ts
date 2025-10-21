@@ -1,4 +1,4 @@
-import { Event } from '../types/Event';
+import { Event } from '@/api/types/event';
 
 type GroupEvent = {
   label: string;
@@ -11,7 +11,6 @@ export const groupEventsByDate = (events: Event[]) => {
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
-
   const groups = new Map<string, GroupEvent>();
 
   events.forEach((event) => {
