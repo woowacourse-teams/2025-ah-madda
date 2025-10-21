@@ -54,15 +54,6 @@ export const SubmitButtonCard = ({
 
   const { isOpen, open, close } = useModal();
 
-  const hint =
-    buttonState.action === 'cancel'
-      ? '신청 완료된 이벤트입니다. 버튼을 선택하면 참여 취소가 가능합니다.'
-      : buttonState.action === 'participate' && !buttonState.disabled
-        ? '아직 신청하지 않은 이벤트입니다. 버튼을 선택하면 참여가 가능합니다.'
-        : buttonState.action === 'participate' && buttonState.disabled
-          ? '아직 신청하지 않은 이벤트입니다. 사전 질문을 모두 작성하면 신청할 수 있습니다.'
-          : '마감된 이벤트입니다.';
-
   const handleParticipantClick = () => {
     if (!isAuthenticated()) {
       open();
@@ -73,7 +64,7 @@ export const SubmitButtonCard = ({
       onSuccess: () => {
         onResetAnswers();
         success('✅ 참가 신청이 완료되었습니다.');
-        announce('참가 신청이 완료되었습니다.');
+        announce('참가 신청이 완료되었습니다. 버튼 재클릭 시 참가 신청을 취소할 수 있습니다.');
         const btn = document.getElementById('event-submit-button') as HTMLButtonElement | null;
         btn?.focus();
       },
@@ -89,7 +80,7 @@ export const SubmitButtonCard = ({
     cancelParticipateMutate(undefined, {
       onSuccess: () => {
         success('✅ 참가 신청이 취소되었습니다.');
-        announce('참가 신청이 취소되었습니다.');
+        announce('참가 신청이 취소되었습니다. 버튼 재클릭 시 참가 신청할 수 있습니다.');
         const btn = document.getElementById('event-submit-button') as HTMLButtonElement | null;
         btn?.focus();
       },
@@ -140,10 +131,6 @@ export const SubmitButtonCard = ({
         dir="column"
         gap="8px"
       >
-        <span id="event-submit-hint" style={{ position: 'absolute', left: -9999 }}>
-          {hint}
-        </span>
-
         <Button
           ref={btnRef}
           id="event-submit-button"
