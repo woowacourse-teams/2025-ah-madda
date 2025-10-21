@@ -1,6 +1,5 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { useQuery } from '@tanstack/react-query';
 
 import { OrganizationAPIResponse } from '@/api/types/organizations';
 import DefaultImage from '@/assets/icon/ahmadda.webp';
@@ -18,6 +17,7 @@ export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationPr
 
   return (
     <Flex
+      as="section"
       alignItems="flex-end"
       justifyContent="space-between"
       width="100%"
@@ -44,6 +44,9 @@ export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationPr
                 gap: 10px;
               }
             `}
+            aria-labelledby="org-info-name"
+            aria-describedby="org-info-description"
+            aria-label={`${name} 스페이스 입니다. ${description}에 대한 설명입니다.`}
           >
             <ThumbImg
               src={src}
@@ -59,10 +62,10 @@ export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationPr
             />
 
             <Flex dir="column" gap="8px">
-              <Text type="Display" weight="bold">
+              <Text type="Display" weight="bold" id="org-info-name" aria-hidden="true">
                 {name}
               </Text>
-              <Text as="h2" type="Heading">
+              <Text as="h2" type="Heading" id="org-info-description" aria-hidden="true">
                 {description}
               </Text>
             </Flex>
