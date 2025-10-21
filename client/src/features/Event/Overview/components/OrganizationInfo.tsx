@@ -46,7 +46,7 @@ export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationPr
             `}
             aria-labelledby="org-info-name"
             aria-describedby="org-info-description"
-            aria-label={`${name} 스페이스 입니다. ${description}에 대한 설명입니다.`}
+            aria-label={`${name} 스페이스 입니다. ${name}에 대한 설명은 다음과 같습니다. ${description}`}
           >
             <ThumbImg
               src={src}
