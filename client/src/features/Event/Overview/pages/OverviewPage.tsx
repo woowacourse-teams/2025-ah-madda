@@ -1,12 +1,11 @@
 import { Suspense } from 'react';
 
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
 import { organizationQueryOptions } from '@/api/queries/organization';
 import { PageLayout } from '@/shared/components/PageLayout';
 
-import { ActionButtons } from '../components/ActionButtons';
 import { OrganizationInfo } from '../components/OrganizationInfo';
 import { OrganizationInfoSkeleton, TabsSkeleton } from '../components/OverviewSkeletons';
 import { OverviewTabs } from '../components/OverviewTabs';
@@ -23,7 +22,7 @@ export const OverviewPage = () => {
         <Suspense fallback={<OrganizationInfoSkeleton />}>
           <OrganizationInfoSection organizationId={organizationId!} />
         </Suspense>
-        <ActionButtons />
+
         <Suspense fallback={<TabsSkeleton />}>
           <OverviewTabs organizationId={orgIdNum} />
         </Suspense>
@@ -33,10 +32,12 @@ export const OverviewPage = () => {
 };
 
 const OrganizationInfoSection = ({ organizationId }: { organizationId: string }) => {
+  const queryClient = useQueryClient();
   const { data: organizationData } = useSuspenseQuery({
     ...organizationQueryOptions.organizations(String(organizationId)),
     staleTime: 5 * 60 * 1000,
   });
+  queryClient.prefetchQuery(organizationQueryOptions.profile(Number(organizationId)));
 
   return (
     <OrganizationInfo

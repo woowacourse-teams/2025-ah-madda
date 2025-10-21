@@ -1,11 +1,14 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useQuery } from '@tanstack/react-query';
 
 import { OrganizationAPIResponse } from '@/api/types/organizations';
 import DefaultImage from '@/assets/icon/ahmadda.webp';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
+
+import { ActionButtons } from './ActionButtons';
 
 type OrganizationProps = Omit<OrganizationAPIResponse, 'organizationId'>;
 
@@ -15,7 +18,8 @@ export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationPr
 
   return (
     <Flex
-      dir="column"
+      alignItems="flex-end"
+      justifyContent="space-between"
       width="100%"
       gap="20px"
       margin="0px auto"
@@ -26,43 +30,46 @@ export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationPr
         }
       `}
     >
-      <Flex padding="0 10px" justifyContent="space-between" alignItems="center" width="100%">
-        <Flex
-          justifyContent="space-between"
-          alignItems="center"
-          padding="10px"
-          gap="20px"
-          css={css`
-            @media (max-width: 481px) {
-              flex-direction: column;
-              align-items: flex-start;
-              gap: 10px;
-            }
-          `}
-        >
-          <ThumbImg
-            src={src}
-            alt={alt}
-            width={255}
-            height={255}
-            decoding="async"
-            fetchPriority="high"
-            onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = DefaultImage;
-            }}
-          />
+      <Flex dir="column">
+        <Flex padding="0 10px" justifyContent="space-between" alignItems="center" width="100%">
+          <Flex
+            justifyContent="space-between"
+            alignItems="center"
+            padding="10px"
+            gap="20px"
+            css={css`
+              @media (max-width: 481px) {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+              }
+            `}
+          >
+            <ThumbImg
+              src={src}
+              alt={alt}
+              width={255}
+              height={255}
+              decoding="async"
+              fetchPriority="high"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = DefaultImage;
+              }}
+            />
 
-          <Flex dir="column" gap="8px">
-            <Text type="Display" weight="bold">
-              {name}
-            </Text>
-            <Text as="h2" type="Heading">
-              {description}
-            </Text>
+            <Flex dir="column" gap="8px">
+              <Text type="Display" weight="bold">
+                {name}
+              </Text>
+              <Text as="h2" type="Heading">
+                {description}
+              </Text>
+            </Flex>
           </Flex>
         </Flex>
       </Flex>
+      <ActionButtons />
     </Flex>
   );
 };
