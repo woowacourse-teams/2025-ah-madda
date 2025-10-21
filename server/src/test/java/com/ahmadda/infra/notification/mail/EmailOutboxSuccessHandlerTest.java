@@ -1,6 +1,6 @@
 package com.ahmadda.infra.notification.mail;
 
-import com.ahmadda.annotation.IntegrationTest;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -8,8 +8,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@IntegrationTest
-class EmailOutboxSuccessHandlerTest {
+class EmailOutboxSuccessHandlerTest extends IntegrationTest {
 
     @Autowired
     private EmailOutboxSuccessHandler sut;

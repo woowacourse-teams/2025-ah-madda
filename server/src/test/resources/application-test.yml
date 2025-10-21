@@ -54,3 +54,7 @@ aws:
     noop: true
     bucket: ${aws.local.s3.bucket}
     folder: ${aws.local.s3.folder}
+
+logging:
+  level:
+    org.springframework.test.context.cache: DEBUG

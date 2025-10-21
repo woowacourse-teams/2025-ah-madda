@@ -1,6 +1,5 @@
 package com.ahmadda.application;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationCreateRequest;
 import com.ahmadda.application.dto.OrganizationUpdateRequest;
@@ -23,6 +22,7 @@ import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.presentation.dto.OrganizationParticipateRequest;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,8 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-@IntegrationTest
-class OrganizationServiceTest {
+class OrganizationServiceTest extends IntegrationTest {
 
     @Autowired
     private OrganizationRepository organizationRepository;
@@ -517,7 +516,7 @@ class OrganizationServiceTest {
 
         eventRepository.save(createEvent(org1, orgMember1, "이벤트1-1", now.minusDays(1), now.plusDays(1)));
         eventRepository.save(createEvent(org1, orgMember1, "이벤트1-2", now.minusDays(2), now.plusDays(2)));
-        
+
         eventRepository.save(createEvent(org2, orgMember2, "이벤트2-1", now.minusDays(1), now.plusDays(1)));
 
         // when
