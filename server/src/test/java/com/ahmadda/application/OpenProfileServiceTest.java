@@ -53,9 +53,11 @@ class OpenProfileServiceTest {
         var result = sut.getOpenProfile(loginMember);
 
         assertSoftly(softly -> {
-            softly.assertThat(result.getMember().getId())
+            softly.assertThat(result.getMember()
+                            .getId())
                     .isEqualTo(member.getId());
-            softly.assertThat(result.getOrganizationGroup().getId())
+            softly.assertThat(result.getOrganizationGroup()
+                            .getId())
                     .isEqualTo(group.getId());
         });
     }
@@ -76,7 +78,7 @@ class OpenProfileServiceTest {
 
         assertThatThrownBy(() -> sut.getOpenProfile(loginMember))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 오픈 프로필입니다.");
+                .hasMessage("존재하지 않는 프로필입니다.");
     }
 
     @Test
@@ -92,8 +94,10 @@ class OpenProfileServiceTest {
 
         sut.updateProfile(loginMember, request);
 
-        var updated = openProfileRepository.findByMember(member).orElseThrow();
-        assertThat(updated.getOrganizationGroup().getId()).isEqualTo(newGroup.getId());
+        var updated = openProfileRepository.findByMemberId(member.getId())
+                .orElseThrow();
+        assertThat(updated.getOrganizationGroup()
+                .getId()).isEqualTo(newGroup.getId());
     }
 
     @Test

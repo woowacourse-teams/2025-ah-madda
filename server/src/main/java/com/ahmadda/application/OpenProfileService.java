@@ -31,8 +31,8 @@ public class OpenProfileService {
         Member member = memberRepository.findById(loginMember.memberId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
 
-        return openProfileRepository.findByMember(member)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 오픈 프로필입니다."));
+        return openProfileRepository.findByMemberId(member.getId())
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 프로필입니다."));
     }
 
     @Transactional

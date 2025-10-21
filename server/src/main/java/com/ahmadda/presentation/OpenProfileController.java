@@ -77,7 +77,7 @@ public class OpenProfileController {
                                                       "type": "about:blank",
                                                       "title": "Not Found",
                                                       "status": 404,
-                                                      "detail": "존재하지 않는 오픈 프로필입니다.",
+                                                      "detail": "존재하지 않는 프로필입니다.",
                                                       "instance": "/api/open-profiles/profile"
                                                     }
                                                     """

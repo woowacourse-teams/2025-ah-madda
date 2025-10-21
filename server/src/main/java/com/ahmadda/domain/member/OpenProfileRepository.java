@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface OpenProfileRepository extends JpaRepository<OpenProfile, Long> {
 
-    Optional<OpenProfile> findByMember(Member member);
+    Optional<OpenProfile> findByMemberId(final Long memberId);
 }
