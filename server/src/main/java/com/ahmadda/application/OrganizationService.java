@@ -13,7 +13,6 @@ import com.ahmadda.domain.member.OpenProfileRepository;
 import com.ahmadda.domain.organization.InviteCode;
 import com.ahmadda.domain.organization.InviteCodeRepository;
 import com.ahmadda.domain.organization.Organization;
-import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationImageFile;
 import com.ahmadda.domain.organization.OrganizationImageUploader;
 import com.ahmadda.domain.organization.OrganizationMember;
@@ -38,7 +37,6 @@ public class OrganizationService {
     private final MemberRepository memberRepository;
     private final InviteCodeRepository inviteCodeRepository;
     private final OrganizationImageUploader organizationImageUploader;
-    private final OrganizationGroupRepository organizationGroupRepository;
     private final OpenProfileRepository openProfileRepository;
 
     @Transactional
