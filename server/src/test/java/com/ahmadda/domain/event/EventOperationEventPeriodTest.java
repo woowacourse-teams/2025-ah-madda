@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import java.time.LocalDateTime;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -136,5 +137,37 @@ class EventOperationEventPeriodTest {
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("신청 기간은 이벤트 기간보다 앞서야 합니다.");
 
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "2025-07-23T07:59:59, true",
+            "2025-07-23T08:00:00, false",
+            "2025-07-23T08:00:01, false"
+    })
+    void 이벤트_종료_시간_이전인지_확인한다(LocalDateTime now, boolean expected) {
+        // given
+        var currentTime = LocalDateTime.of(2025, 7, 16, 8, 0);
+        var registrationPeriod = EventPeriod.create(
+                currentTime.plusDays(1),
+                currentTime.plusDays(5)
+        );
+        var eventPeriod = EventPeriod.create(
+                currentTime.plusDays(6),
+                currentTime.plusDays(7)
+        );
+        var eventOperationPeriod = EventOperationPeriod.create(
+                registrationPeriod.start(),
+                registrationPeriod.end(),
+                eventPeriod.start(),
+                eventPeriod.end(),
+                currentTime
+        );
+
+        // when
+        var result = eventOperationPeriod.isBeforeEventEnd(now);
+
+        // then
+        assertThat(result).isEqualTo(expected);
     }
 }

@@ -1,6 +1,5 @@
 package com.ahmadda.application;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.NotFoundException;
@@ -12,10 +11,13 @@ import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.notification.ReminderHistory;
 import com.ahmadda.domain.notification.ReminderHistoryRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,8 +27,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-@IntegrationTest
-class ReminderHistoryServiceTest {
+class ReminderHistoryServiceTest extends IntegrationTest {
 
     @Autowired
     private ReminderHistoryService sut;
@@ -46,12 +47,16 @@ class ReminderHistoryServiceTest {
     @Autowired
     private ReminderHistoryRepository reminderHistoryRepository;
 
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
+
     @Test
     void 주최자가_리마인드_히스토리를_조회한다() {
         // given
         var organization = createOrganization();
         var organizerMember = createMember("organizer", "organizer@mail.com");
-        var organizer = createOrganizationMember(organization, organizerMember);
+        var group = createGroup();
+        var organizer = createOrganizationMember(organization, organizerMember, group);
         var event = createEvent(organizer, organization);
 
         reminderHistoryRepository.save(ReminderHistory.createNow(event, "첫 번째 알림입니다.", List.of()));
@@ -96,8 +101,9 @@ class ReminderHistoryServiceTest {
         var organizerMember = createMember("host", "host@mail.com");
         var outsiderMember = createMember("out", "out@mail.com");
 
-        var organizer = createOrganizationMember(org1, organizerMember);
-        createOrganizationMember(org2, outsiderMember);
+        var group = createGroup();
+        var organizer = createOrganizationMember(org1, organizerMember, group);
+        createOrganizationMember(org2, outsiderMember, group);
 
         var event = createEvent(organizer, org1);
 
@@ -116,8 +122,9 @@ class ReminderHistoryServiceTest {
         var organizerMember = createMember("host", "host@mail.com");
         var normalMember = createMember("user", "user@mail.com");
 
-        var organizer = createOrganizationMember(organization, organizerMember);
-        createOrganizationMember(organization, normalMember);
+        var group = createGroup();
+        var organizer = createOrganizationMember(organization, organizerMember, group);
+        createOrganizationMember(organization, normalMember, group);
 
         var event = createEvent(organizer, organization);
 
@@ -137,12 +144,17 @@ class ReminderHistoryServiceTest {
         return memberRepository.save(Member.create(name, email, "testPicture"));
     }
 
-    private OrganizationMember createOrganizationMember(final Organization organization, final Member member) {
+    private OrganizationMember createOrganizationMember(
+            final Organization organization,
+            final Member member,
+            final OrganizationGroup group
+    ) {
         return organizationMemberRepository.save(OrganizationMember.create(
                 "nick",
                 member,
                 organization,
-                OrganizationMemberRole.USER
+                OrganizationMemberRole.USER,
+                group
         ));
     }
 
@@ -159,8 +171,13 @@ class ReminderHistoryServiceTest {
                         now.plusDays(1), now.plusDays(2),
                         now.minusDays(6)
                 ),
-                100
+                100,
+                false
         );
         return eventRepository.save(event);
+    }
+
+    private OrganizationGroup createGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
     }
 }

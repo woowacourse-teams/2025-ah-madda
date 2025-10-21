@@ -1,8 +1,6 @@
 package com.ahmadda.application.listener;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.EventRead;
-import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
@@ -12,15 +10,15 @@ import com.ahmadda.domain.event.EventStatisticRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
-import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
-import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,8 +26,7 @@ import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@IntegrationTest
-class EventReadListenerTest {
+class EventReadListenerTest extends IntegrationTest {
 
     @Autowired
     private EventReadListener sut;
@@ -49,23 +46,20 @@ class EventReadListenerTest {
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
 
-    @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
-
-    @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
 
     @Test
     void 해당_이벤트에_대한_통계가_존재하면_조회수가_1_증가한다() {
         // given
         var organization = createOrganization();
         var organizer = createMember("organizer", "organizer@mail.com");
-        var reader = createMember("reader", "reader@mail.com");
-        var organizationMember = createOrganizationMember(organization, organizer);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, organizer, group);
         var event = createEvent(organizationMember, organization);
         eventStatisticRepository.save(EventStatistic.create(event));
 
-        var eventRead = new EventRead(event.getId(), new LoginMember(reader.getId()));
+        var eventRead = new EventRead(event.getId());
 
         // when
         sut.onEventRead(eventRead);
@@ -88,11 +82,11 @@ class EventReadListenerTest {
         // given
         var organization = createOrganization();
         var organizer = createMember("organizer", "organizer@mail.com");
-        var reader = createMember("reader", "reader@mail.com");
-        var organizationMember = createOrganizationMember(organization, organizer);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, organizer, group);
         var event = createEvent(organizationMember, organization);
 
-        var eventRead = new EventRead(event.getId(), new LoginMember(reader.getId()));
+        var eventRead = new EventRead(event.getId());
 
         // when
         sut.onEventRead(eventRead);
@@ -110,26 +104,10 @@ class EventReadListenerTest {
     }
 
     @Test
-    void 이벤트_조회시_회원이_존재하지_않으면_예외가_발생한다() {
-        // given
-        var organization = createOrganization();
-        var organizer = createMember("organizer", "organizer@mail.com");
-        var organizationMember = createOrganizationMember(organization, organizer);
-        var event = createEvent(organizationMember, organization);
-
-        var eventRead = new EventRead(event.getId(), new LoginMember(999L));
-
-        // when // then
-        assertThatThrownBy(() -> sut.onEventRead(eventRead))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 회원입니다.");
-    }
-
-    @Test
     void 이벤트_조회시_이벤트가_존재하지_않으면_예외가_발생한다() {
         // given
         var reader = createMember("reader", "reader@mail.com");
-        var eventRead = new EventRead(999L, new LoginMember(reader.getId()));
+        var eventRead = new EventRead(999L);
 
         // when // then
         assertThatThrownBy(() -> sut.onEventRead(eventRead))
@@ -147,16 +125,25 @@ class EventReadListenerTest {
         return memberRepository.save(member);
     }
 
-    private OrganizationMember createOrganizationMember(Organization organization, Member member) {
-        var organizationMember = OrganizationMember.create("surf", member, organization, OrganizationMemberRole.USER);
+    private OrganizationMember createOrganizationMember(
+            Organization organization,
+            Member member,
+            OrganizationGroup group
+    ) {
+        var organizationMember =
+                OrganizationMember.create("surf", member, organization, OrganizationMemberRole.USER, group);
         return organizationMemberRepository.save(organizationMember);
     }
 
     private Event createEvent(OrganizationMember organizer, Organization organization) {
         var now = LocalDateTime.now();
         var period = EventOperationPeriod.create(now, now.plusDays(1), now.plusDays(2), now.plusDays(3), now);
-        var event = Event.create("title", "description", "place", organizer, organization, period, 100);
+        var event = Event.create("title", "description", "place", organizer, organization, period, 100, false);
 
         return eventRepository.save(event);
+    }
+
+    private OrganizationGroup createGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
     }
 }

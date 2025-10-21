@@ -20,11 +20,11 @@ public class Reminder {
             final Event event,
             final String content
     ) {
-        EventEmailPayload emailPayload = EventEmailPayload.of(event, content);
-        emailNotifier.sendEmails(recipients, emailPayload);
+        ReminderEmail reminderEmail = ReminderEmail.of(recipients, event, content);
+        emailNotifier.remind(reminderEmail);
 
         PushNotificationPayload pushPayload = PushNotificationPayload.of(event, content);
-        pushNotifier.sendPushs(recipients, pushPayload);
+        pushNotifier.remind(recipients, pushPayload);
 
         return ReminderHistory.createNow(event, content, recipients);
     }

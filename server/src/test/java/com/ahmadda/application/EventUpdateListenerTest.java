@@ -1,6 +1,5 @@
 package com.ahmadda.application;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.EventUpdated;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.event.Event;
@@ -10,10 +9,13 @@ import com.ahmadda.domain.event.EventStatisticRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,8 +25,7 @@ import java.time.temporal.ChronoUnit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-@IntegrationTest
-class EventUpdateListenerTest {
+class EventUpdateListenerTest extends IntegrationTest {
 
     @Autowired
     private EventUpdateListener sut;
@@ -44,6 +45,9 @@ class EventUpdateListenerTest {
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
 
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
+
     @Test
     void 이벤트_기간이_연장되어_수정되면_연장된_기간만큼_통계가_추가_생성된다() {
         // given
@@ -51,7 +55,8 @@ class EventUpdateListenerTest {
         var initialPeriod = EventOperationPeriod.create(now, now.plusDays(1), now.plusDays(2), now.plusDays(3), now);
         var organization = createOrganization();
         var organizer = createMember("organizer", "organizer@mail.com");
-        var organizationMember = createOrganizationMember(organization, organizer);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, organizer, group);
         var event = createEvent(organizationMember, organization, initialPeriod);
 
         var extendedPeriod = EventOperationPeriod.create(now, now.plusDays(1), now.plusDays(4), now.plusDays(5), now);
@@ -99,15 +104,24 @@ class EventUpdateListenerTest {
         return memberRepository.save(member);
     }
 
-    private OrganizationMember createOrganizationMember(Organization organization, Member member) {
-        var organizationMember = OrganizationMember.create("surf", member, organization, OrganizationMemberRole.USER);
+    private OrganizationMember createOrganizationMember(
+            Organization organization,
+            Member member,
+            OrganizationGroup group
+    ) {
+        var organizationMember =
+                OrganizationMember.create("surf", member, organization, OrganizationMemberRole.USER, group);
 
         return organizationMemberRepository.save(organizationMember);
     }
 
     private Event createEvent(OrganizationMember organizer, Organization organization, EventOperationPeriod period) {
-        var event = Event.create("title", "description", "place", organizer, organization, period, 100);
+        var event = Event.create("title", "description", "place", organizer, organization, period, 100, false);
 
         return eventRepository.save(event);
+    }
+
+    private OrganizationGroup createGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
     }
 }

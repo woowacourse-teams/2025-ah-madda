@@ -2,6 +2,7 @@ package com.ahmadda.domain.organization;
 
 
 import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.BaseEntity;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.member.Member;
@@ -30,6 +31,8 @@ import java.util.List;
 @SQLRestriction("deleted_at IS NULL")
 public class OrganizationMember extends BaseEntity {
 
+    private static final int MAX_NICKNAME_LENGTH = 10;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "organization_member_id")
@@ -50,16 +53,24 @@ public class OrganizationMember extends BaseEntity {
     @Column(nullable = false)
     private OrganizationMemberRole role;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_group_id", nullable = false)
+    private OrganizationGroup group;
+
     private OrganizationMember(
             final String nickname,
             final Member member,
             final Organization organization,
-            final OrganizationMemberRole role
+            final OrganizationMemberRole role,
+            final OrganizationGroup group
     ) {
+        validateNickname(nickname);
+
         this.nickname = nickname;
         this.member = member;
         this.organization = organization;
         this.role = role;
+        this.group = group;
 
         organization.getOrganizationMembers()
                 .add(this);
@@ -69,9 +80,10 @@ public class OrganizationMember extends BaseEntity {
             final String nickname,
             final Member member,
             final Organization organization,
-            final OrganizationMemberRole role
+            final OrganizationMemberRole role,
+            final OrganizationGroup group
     ) {
-        return new OrganizationMember(nickname, member, organization, role);
+        return new OrganizationMember(nickname, member, organization, role, group);
     }
 
     public boolean isBelongTo(final Organization organization) {
@@ -104,16 +116,23 @@ public class OrganizationMember extends BaseEntity {
     }
 
     public void rename(final String newNickname) {
+        validateNickname(newNickname);
+
         this.nickname = newNickname;
     }
 
-    private void validateRoleChangeBy(final OrganizationMember operator) {
-        if (!operator.isBelongTo(this.organization)) {
-            throw new ForbiddenException("같은 이벤트 스페이스에 속한 구성원만 권한을 변경할 수 있습니다.");
-        }
+    public void update(final String nickname, final OrganizationGroup group) {
+        this.nickname = nickname;
+        this.group = group;
+    }
 
-        if (!operator.isAdmin()) {
-            throw new ForbiddenException("관리자만 구성원의 권한을 변경할 수 있습니다.");
+    public boolean isEqualNickname(final String nickname) {
+        return this.nickname.equals(nickname);
+    }
+
+    private void validateNickname(final String nickname) {
+        if (nickname.length() > MAX_NICKNAME_LENGTH) {
+            throw new UnprocessableEntityException("최대 닉네임 길이는 10자입니다.");
         }
     }
 }

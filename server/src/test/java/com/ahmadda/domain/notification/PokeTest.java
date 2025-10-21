@@ -1,6 +1,5 @@
 package com.ahmadda.domain.notification;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
@@ -9,15 +8,15 @@ import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
-import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
-import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -27,8 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
-@IntegrationTest
-class PokeTest {
+class PokeTest extends IntegrationTest {
 
     @Autowired
     private Poke sut;
@@ -48,14 +46,8 @@ class PokeTest {
     @Autowired
     private PokeHistoryRepository pokeHistoryRepository;
 
-    @MockitoBean
-    private PushNotifier pushNotifier;
-
-    @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
-
-    @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
 
     @Test
     void 포키를_성공적으로_전송한다() {
@@ -72,7 +64,7 @@ class PokeTest {
         sut.doPoke(sender, recipient, PokeMessage.ARRIVED, event, sentAt);
 
         // then
-        verify(pushNotifier).sendPush(
+        verify(pushNotifier).poke(
                 eq(recipient),
                 eq(PushNotificationPayload.of(
                         event,
@@ -228,7 +220,13 @@ class PokeTest {
         }
 
         var organizationMember =
-                OrganizationMember.create("nickname", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "nickname",
+                        member,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        createOrganizationGroup()
+                );
         return organizationMemberRepository.save(organizationMember);
     }
 
@@ -245,8 +243,13 @@ class PokeTest {
                         now
                 ),
                 20,
-                List.of()
+                List.of(),
+                false
         );
         return eventRepository.save(event);
+    }
+
+    private OrganizationGroup createOrganizationGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("프론트"));
     }
 }

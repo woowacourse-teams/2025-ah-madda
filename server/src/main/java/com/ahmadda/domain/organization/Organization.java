@@ -16,6 +16,7 @@ import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -34,6 +35,7 @@ public class Organization extends BaseEntity {
     private static final int MAX_NAME_LENGTH = 30;
     private static final int MIN_DESCRIPTION_LENGTH = 1;
     private static final int MIN_NAME_LENGTH = 1;
+    private static final int MAX_ORGANIZATION_MEMBER_LENGTH = 300;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,9 +43,11 @@ public class Organization extends BaseEntity {
     private Long id;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
+    @BatchSize(size = 64)
     private final List<Event> events = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
+    @BatchSize(size = 64)
     private final List<OrganizationMember> organizationMembers = new ArrayList<>();
 
     @Column(nullable = false)
@@ -74,24 +78,25 @@ public class Organization extends BaseEntity {
 
     public List<Event> getActiveEvents(final LocalDateTime currentDateTime) {
         return events.stream()
-                .filter((event) -> event.isRegistrationEnd(currentDateTime))
+                .filter((event) -> event.isBeforeEventEnd(currentDateTime))
                 .toList();
+    }
+
+    public int getActiveEventsCount(final LocalDateTime currentDateTime) {
+        return getActiveEvents(currentDateTime).size();
     }
 
     public OrganizationMember participate(
             final Member member,
             final String nickname,
             final InviteCode inviteCode,
+            final OrganizationGroup group,
             final LocalDateTime now
     ) {
-        if (!inviteCode.matchesOrganization(this)) {
-            throw new UnprocessableEntityException("잘못된 초대코드입니다.");
-        }
-        if (inviteCode.isExpired(now)) {
-            throw new UnprocessableEntityException("초대코드가 만료되었습니다.");
-        }
+        validateInviteCode(inviteCode, now);
+        validateOrganizationMemberSize();
 
-        return OrganizationMember.create(nickname, member, this, OrganizationMemberRole.USER);
+        return OrganizationMember.create(nickname, member, this, OrganizationMemberRole.USER, group);
     }
 
     public boolean isExistOrganizationMember(final OrganizationMember otherOrganizationMember) {
@@ -111,6 +116,21 @@ public class Organization extends BaseEntity {
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
+    }
+
+    private void validateOrganizationMemberSize() {
+        if (organizationMembers.size() >= MAX_ORGANIZATION_MEMBER_LENGTH) {
+            throw new UnprocessableEntityException("이벤트 스페이스에 이미 정원이 가득차 참여할 수 없습니다.");
+        }
+    }
+
+    private void validateInviteCode(final InviteCode inviteCode, final LocalDateTime now) {
+        if (!inviteCode.matchesOrganization(this)) {
+            throw new UnprocessableEntityException("잘못된 초대코드입니다.");
+        }
+        if (inviteCode.isExpired(now)) {
+            throw new UnprocessableEntityException("초대코드가 만료되었습니다.");
+        }
     }
 
     private void validateUpdatableBy(final OrganizationMember updatingOrganizationMember) {

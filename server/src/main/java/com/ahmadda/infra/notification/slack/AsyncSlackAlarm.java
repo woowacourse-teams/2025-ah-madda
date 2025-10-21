@@ -44,7 +44,8 @@ public class AsyncSlackAlarm implements SlackAlarm {
         return factory;
     }
 
-    @Async
+    @Override
+    @Async("bulkheadExecutor")
     public void alarmMemberCreation(final MemberCreateAlarmPayload memberCreateAlarmPayload) {
         try {
             ResponseSpec retrieve = restClient.post()

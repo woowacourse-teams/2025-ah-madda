@@ -14,7 +14,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 
-//TODO 성능 문제 추후에 고려
 @Service
 @RequiredArgsConstructor
 public class Poke {
@@ -103,13 +102,7 @@ public class Poke {
     ) {
         String sendMessage = pokeMessage.getMessage(sendOrganizationMember.getNickname());
 
-        pushNotifier.sendPush(
-                receiveOrganizationMember,
-                PushNotificationPayload.of(
-                        event,
-                        sendMessage
-                )
-        );
+        pushNotifier.poke(receiveOrganizationMember, PushNotificationPayload.of(event, sendMessage));
     }
 
     private void validateReceiveOrganizationMember(

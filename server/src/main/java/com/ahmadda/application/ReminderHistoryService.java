@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class ReminderHistoryService {
     private final OrganizationMemberRepository organizationMemberRepository;
     private final ReminderHistoryRepository reminderHistoryRepository;
 
+    @Transactional(readOnly = true)
     public List<ReminderHistory> getNotifyHistory(
             final Long eventId,
             final LoginMember loginMember

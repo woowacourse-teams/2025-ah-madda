@@ -1,8 +1,6 @@
 package com.ahmadda.infra.notification.push;
 
-import com.ahmadda.annotation.IntegrationTest;
-import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
-import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
+import com.ahmadda.support.IntegrationTest;
 import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.MessagingErrorCode;
@@ -16,17 +14,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@IntegrationTest
-class FcmPushErrorHandlerTest {
+class FcmPushErrorHandlerTest extends IntegrationTest {
 
     @Autowired
     private FcmRegistrationTokenRepository fcmRegistrationTokenRepository;
-
-    @Autowired
-    private JwtAccessTokenProperties accessTokenProperties;
-
-    @Autowired
-    private JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 요청_실패시_유효하지_않는_토큰이_있으면_제거한다() {

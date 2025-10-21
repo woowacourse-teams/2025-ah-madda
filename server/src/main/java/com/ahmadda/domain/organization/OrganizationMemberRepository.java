@@ -18,9 +18,12 @@ public interface OrganizationMemberRepository extends JpaRepository<Organization
 
     boolean existsByOrganizationIdAndMemberId(final Long organizationId, final Long memberId);
 
-    List<OrganizationMember> findAllByOrganizationId(final Long organizationId);
-
-    boolean existsByOrganization(final Organization organization);
-
     boolean existsByOrganizationIdAndNickname(final Long organizationId, final String nickname);
+
+    List<OrganizationMember> findAllByOrganizationAndGroupIn(
+            final Organization organization,
+            final List<OrganizationGroup> groups
+    );
+
+    List<OrganizationMember> findAllByOrganizationIdAndGroupId(final Long organizationId, final Long groupId);
 }

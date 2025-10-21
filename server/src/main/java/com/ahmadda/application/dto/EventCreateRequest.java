@@ -25,7 +25,10 @@ public record EventCreateRequest(
         @Valid
         List<QuestionCreateRequest> questions,
         @NotNull
-        List<Long> eventOrganizerIds
+        List<Long> eventOrganizerIds,
+        @NotNull
+        List<Long> groupIds,
+        boolean isApprovalRequired
 ) {
 
     public EventCreateRequest(
@@ -47,7 +50,9 @@ public record EventCreateRequest(
                 eventEnd,
                 maxCapacity,
                 questions,
-                List.of()
+                List.of(),
+                List.of(),
+                false
         );
     }
 }

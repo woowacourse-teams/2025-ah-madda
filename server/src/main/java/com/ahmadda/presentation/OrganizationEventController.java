@@ -15,7 +15,8 @@ import com.ahmadda.presentation.dto.EventTitleResponse;
 import com.ahmadda.presentation.dto.EventUpdateResponse;
 import com.ahmadda.presentation.dto.MainEventResponse;
 import com.ahmadda.presentation.dto.OrganizerStatusResponse;
-import com.ahmadda.presentation.resolver.AuthMember;
+import com.ahmadda.presentation.resolver.Auth;
+import com.ahmadda.presentation.resolver.OptionalAuth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -27,6 +28,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
@@ -46,6 +49,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrganizationEventController {
 
+    private static final String DEFAULT_GET_PAST_EVENT_CURSOR = "9223372036854775807"; // Long.MAX_VALUE
+
     private final OrganizationMemberEventService organizationMemberEventService;
     private final EventService eventService;
 
@@ -55,38 +60,6 @@ public class OrganizationEventController {
                     responseCode = "200",
                     content = @Content(
                             array = @ArraySchema(schema = @Schema(implementation = MainEventResponse.class))
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "401",
-                    content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Unauthorized",
-                                              "status": 401,
-                                              "detail": "유효하지 않은 인증 정보입니다.",
-                                              "instance": "/api/organizations/{organizationId}/events"
-                                            }
-                                            """
-                            )
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "403",
-                    content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Forbidden",
-                                              "status": 403,
-                                              "detail": "이벤트 스페이스에 참여하지 않아 권한이 없습니다.",
-                                              "instance": "/api/organizations/{organizationId}/events"
-                                            }
-                                            """
-                            )
                     )
             ),
             @ApiResponse(
@@ -109,9 +82,9 @@ public class OrganizationEventController {
     @GetMapping("/{organizationId}/events")
     public ResponseEntity<List<MainEventResponse>> getOrganizationEvents(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
+            @OptionalAuth final LoginMember loginMember
     ) {
-        List<Event> organizationEvents = eventService.getActiveEvents(organizationId, loginMember);
+        List<Event> organizationEvents = eventService.getActiveEvents(organizationId);
 
         List<MainEventResponse> eventResponses = organizationEvents.stream()
                 .map(event -> MainEventResponse.from(event, loginMember))
@@ -126,38 +99,6 @@ public class OrganizationEventController {
                     responseCode = "200",
                     content = @Content(
                             array = @ArraySchema(schema = @Schema(implementation = MainEventResponse.class))
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "401",
-                    content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Unauthorized",
-                                              "status": 401,
-                                              "detail": "유효하지 않은 인증 정보입니다.",
-                                              "instance": "/api/organizations/{organizationId}/events/past"
-                                            }
-                                            """
-                            )
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "403",
-                    content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Forbidden",
-                                              "status": 403,
-                                              "detail": "이벤트 스페이스에 참여하지 않아 권한이 없습니다.",
-                                              "instance": "/api/organizations/{organizationId}/events/past"
-                                            }
-                                            """
-                            )
                     )
             ),
             @ApiResponse(
@@ -180,9 +121,11 @@ public class OrganizationEventController {
     @GetMapping("/{organizationId}/events/past")
     public ResponseEntity<List<MainEventResponse>> getPastEvents(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
+            @RequestParam(defaultValue = DEFAULT_GET_PAST_EVENT_CURSOR) final Long lastEventId,
+            @OptionalAuth @Nullable final LoginMember loginMember
     ) {
-        List<Event> organizationEvents = eventService.getPastEvents(organizationId, loginMember, LocalDateTime.now());
+        List<Event> organizationEvents =
+                eventService.getPastEvents(organizationId, LocalDateTime.now(), lastEventId, 10);
 
         List<MainEventResponse> eventResponses = organizationEvents.stream()
                 .map(event -> MainEventResponse.from(event, loginMember))
@@ -365,7 +308,7 @@ public class OrganizationEventController {
     public ResponseEntity<EventCreateResponse> createOrganizationEvent(
             @PathVariable final Long organizationId,
             @RequestBody @Valid final EventCreateRequest eventCreateRequest,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         Event event = eventService.createEvent(
                 organizationId,
@@ -479,7 +422,7 @@ public class OrganizationEventController {
     @PostMapping("/events/{eventId}/registration/close")
     public ResponseEntity<Void> closeOrganizationEvent(
             @PathVariable final Long eventId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         eventService.closeEventRegistration(
                 eventId,
@@ -569,7 +512,7 @@ public class OrganizationEventController {
     public ResponseEntity<EventUpdateResponse> updateEvent(
             @PathVariable final Long eventId,
             @RequestBody @Valid final EventUpdateRequest eventUpdateRequest,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         Event updated = eventService.updateEvent(
                 eventId,
@@ -592,22 +535,6 @@ public class OrganizationEventController {
                     )
             ),
             @ApiResponse(
-                    responseCode = "403",
-                    content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Forbidden",
-                                              "status": 403,
-                                              "detail": "이벤트 스페이스에 소속되지 않는 회원입니다.",
-                                              "instance": "/api/organizations/events/{eventId}/registration/close"
-                                            }
-                                            """
-                            )
-                    )
-            ),
-            @ApiResponse(
                     responseCode = "404",
                     content = @Content(
                             examples = @ExampleObject(
@@ -625,11 +552,8 @@ public class OrganizationEventController {
             )
     })
     @GetMapping("/events/{eventId}")
-    public ResponseEntity<EventDetailResponse> getOrganizationEvent(
-            @AuthMember final LoginMember loginMember,
-            @PathVariable final Long eventId
-    ) {
-        Event event = eventService.getOrganizationMemberEvent(loginMember, eventId);
+    public ResponseEntity<EventDetailResponse> getOrganizationEvent(@PathVariable final Long eventId) {
+        Event event = eventService.getEvent(eventId);
 
         return ResponseEntity.ok(EventDetailResponse.from(event));
     }
@@ -678,7 +602,7 @@ public class OrganizationEventController {
     @GetMapping("/{organizationId}/events/owned")
     public ResponseEntity<List<EventResponse>> getOwnerEvents(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         List<Event> organizationEvents = organizationMemberEventService.getOwnerEvents(organizationId, loginMember);
 
@@ -733,7 +657,7 @@ public class OrganizationEventController {
     @GetMapping("/{organizationId}/events/owned/titles")
     public ResponseEntity<List<EventTitleResponse>> getOwnerEventTitles(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         List<Event> ownerEvents = organizationMemberEventService.getOwnerEvents(organizationId, loginMember);
 
@@ -756,22 +680,6 @@ public class OrganizationEventController {
                     )
             ),
             @ApiResponse(
-                    responseCode = "401",
-                    content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Unauthorized",
-                                              "status": 401,
-                                              "detail": "유효하지 않은 인증 정보입니다.",
-                                              "instance": "/api/organizations/{organizationId}/events/owned"
-                                            }
-                                            """
-                            )
-                    )
-            ),
-            @ApiResponse(
                     responseCode = "404",
                     content = @Content(
                             examples = @ExampleObject(
@@ -789,11 +697,10 @@ public class OrganizationEventController {
             )
     })
     @GetMapping("/events/{eventId}/owned/template")
-    public ResponseEntity<EventLoadResponse> getOwnerEventTemplate(
-            @PathVariable final Long eventId,
-            @AuthMember final LoginMember loginMember
+    public ResponseEntity<EventLoadResponse> getEventTemplate(
+            @PathVariable final Long eventId
     ) {
-        Event organizationMemberEvent = eventService.getOrganizationMemberEvent(loginMember, eventId);
+        Event organizationMemberEvent = eventService.getEventTemplate(eventId);
 
         EventLoadResponse response = EventLoadResponse.from(organizationMemberEvent);
 
@@ -844,7 +751,7 @@ public class OrganizationEventController {
     @GetMapping("/{organizationId}/events/participated")
     public ResponseEntity<List<EventResponse>> getParticipantEvents(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         List<Event> organizationEvents =
                 organizationMemberEventService.getParticipantEvents(organizationId, loginMember);
@@ -917,7 +824,7 @@ public class OrganizationEventController {
     @GetMapping("/events/{eventId}/organizer-status")
     public ResponseEntity<OrganizerStatusResponse> isOrganizer(
             @PathVariable final Long eventId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         boolean isOrganizer = eventService.isOrganizer(eventId, loginMember);
 

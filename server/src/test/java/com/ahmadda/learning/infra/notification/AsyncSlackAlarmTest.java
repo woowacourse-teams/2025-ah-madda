@@ -1,0 +1,30 @@
+package com.ahmadda.learning.infra.notification;
+
+
+import com.ahmadda.application.dto.MemberCreateAlarmPayload;
+import com.ahmadda.domain.member.Member;
+import com.ahmadda.infra.notification.slack.SlackAlarm;
+import com.ahmadda.support.LearningTest;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.TestPropertySource;
+
+@Disabled
+@LearningTest
+@TestPropertySource(properties = "slack.noop=false")
+class AsyncSlackAlarmTest {
+
+    @Autowired
+    private SlackAlarm sut;
+
+    @Test
+    void 실제_슬랙으로_알람을_전송한다() {
+        sut.alarmMemberCreation(
+                MemberCreateAlarmPayload.from(Member.create(
+                        "asdf",
+                        "asdf@naver.com",
+                        "testPicture"
+                )));
+    }
+}

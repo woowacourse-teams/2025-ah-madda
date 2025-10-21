@@ -51,7 +51,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./server
-          file: ./server/Dockerfile
+          file: ./server/Dockerfile.pinpoint
           push: true
           tags: ahmadda1234/ahmadda_server:${{ steps.set-tag.outputs.image-tag }}
 
@@ -86,6 +86,7 @@ jobs:
             --network ahmadda-net \
             -p 8080:8080 \
             -e PROFILE=dev \
+            -v /home/ubuntu/pinpoint-agent-2.5.3:/pinpoint-agent-2.5.3 \
             -d ahmadda1234/ahmadda_server:$TAG
             # --log-driver=awslogs \
             # --log-opt awslogs-group=ahmadda-dev-server \

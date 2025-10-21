@@ -1,8 +1,9 @@
 package com.ahmadda.application.scheduler;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventReminderGroup;
+import com.ahmadda.domain.event.EventReminderGroupRepository;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.event.GuestRepository;
@@ -10,24 +11,22 @@ import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.notification.EventNotificationOptOut;
 import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
-import com.ahmadda.domain.notification.Reminder;
 import com.ahmadda.domain.notification.ReminderHistoryRepository;
 import com.ahmadda.domain.notification.ReminderRecipient;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
-import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
-import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,8 +36,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
-@IntegrationTest
-class EventNotificationSchedulerTest {
+class EventNotificationSchedulerTest extends IntegrationTest {
 
     @Autowired
     private EventNotificationScheduler sut;
@@ -61,29 +59,27 @@ class EventNotificationSchedulerTest {
     @Autowired
     private EventNotificationOptOutRepository eventNotificationOptOutRepository;
 
-    @MockitoSpyBean
-    private Reminder reminder;
-
-    @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
-
-    @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
+    @Autowired
+    private EventReminderGroupRepository eventReminderGroupRepository;
 
     @Autowired
     private ReminderHistoryRepository reminderHistoryRepository;
 
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
+
     @ParameterizedTest
     @MethodSource("registrationEndOffsets")
-    void 등록_마감_30분_전_수신_거부하지_않는_비게스트에게만_알람을_전송한다(
+    void 등록_마감_30분전_리마인더그룹의_수신가능한_비게스에게만_알람을_보낸다(
             int minutesUntilRegistrationEnds,
             boolean expectToSend
     ) {
         // given
         var organization = organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
-        var host = saveOrganizationMember("주최자", "host@email.com", organization);
-        var ng1 = saveOrganizationMember("비게스트1", "ng1@email.com", organization);
-        var ng2 = saveOrganizationMember("비게스트2", "ng2@email.com", organization);
+        var group = createGroup();
+        var host = saveOrganizationMember("주최자", "host@email.com", organization, group);
+        var ng1 = saveOrganizationMember("비게스트1", "ng1@email.com", organization, group);
+        var ng2 = saveOrganizationMember("비게스트2", "ng2@email.com", organization, group);
 
         var now = LocalDateTime.now();
 
@@ -100,9 +96,10 @@ class EventNotificationSchedulerTest {
                         now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
-
+        eventReminderGroupRepository.save(EventReminderGroup.create(event, group));
         var ng2OptOut =
                 eventNotificationOptOutRepository.save(EventNotificationOptOut.create(ng2, event));
         eventNotificationOptOutRepository.save(ng2OptOut);
@@ -122,9 +119,10 @@ class EventNotificationSchedulerTest {
     void 등록_마감_30분_전_리마인더_호출_후_히스토리가_저장된다() {
         // given
         var org = organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
-        var host = saveOrganizationMember("주최자", "host@email.com", org);
-        var ng1 = saveOrganizationMember("비게스트1", "ng1@email.com", org);
-        var ng2 = saveOrganizationMember("비게스트2", "ng2@email.com", org);
+        var group = createGroup();
+        var host = saveOrganizationMember("주최자", "host@email.com", org, group);
+        var ng1 = saveOrganizationMember("비게스트1", "ng1@email.com", org, group);
+        var ng2 = saveOrganizationMember("비게스트2", "ng2@email.com", org, group);
 
         var now = LocalDateTime.now();
         var event = eventRepository.save(Event.create(
@@ -137,8 +135,10 @@ class EventNotificationSchedulerTest {
                         now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
+        eventReminderGroupRepository.save(EventReminderGroup.create(event, group));
 
         // when
         sut.notifyRegistrationClosingIn30Minutes();
@@ -167,10 +167,11 @@ class EventNotificationSchedulerTest {
     void 정원이_다_찼다면_알림을_전송하지_않는다() {
         // given
         var organization = organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
-        var host = saveOrganizationMember("주최자", "host@email.com", organization);
+        var group = createGroup();
+        var host = saveOrganizationMember("주최자", "host@email.com", organization, group);
 
-        saveOrganizationMember("비게스트1", "ng1@email.com", organization);
-        saveOrganizationMember("비게스트2", "ng2@email.com", organization);
+        saveOrganizationMember("비게스트1", "ng1@email.com", organization, group);
+        saveOrganizationMember("비게스트2", "ng2@email.com", organization, group);
 
         var now = LocalDateTime.now();
         var registrationEnd = now.plusMinutes(4);
@@ -185,11 +186,12 @@ class EventNotificationSchedulerTest {
                         now.plusDays(2),
                         now.minusDays(3)
                 ),
-                2
+                2,
+                false
         ));
 
-        saveGuest(event, saveOrganizationMember("게스트1", "g1@email.com", organization));
-        saveGuest(event, saveOrganizationMember("게스트2", "g2@email.com", organization));
+        saveGuest(event, saveOrganizationMember("게스트1", "g1@email.com", organization, group));
+        saveGuest(event, saveOrganizationMember("게스트2", "g2@email.com", organization, group));
 
         // when
         sut.notifyRegistrationClosingIn30Minutes();
@@ -206,7 +208,8 @@ class EventNotificationSchedulerTest {
     ) {
         // given
         var org = organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
-        var host = saveOrganizationMember("주최자", "host@email.com", org);
+        var group = createGroup();
+        var host = saveOrganizationMember("주최자", "host@email.com", org, group);
 
         var now = LocalDateTime.now();
         var eventStart = now.plusHours(24)
@@ -222,14 +225,15 @@ class EventNotificationSchedulerTest {
                         now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
 
-        var guest1 = saveOrganizationMember("게스트1", "g1@email.com", org);
-        var guest2 = saveOrganizationMember("게스트2", "g2@email.com", org);
+        var guest1 = saveOrganizationMember("게스트1", "g1@email.com", org, group);
+        var guest2 = saveOrganizationMember("게스트2", "g2@email.com", org, group);
         saveGuest(event, guest1);
         saveGuest(event, guest2);
-        saveOrganizationMember("비게스트", "ng@email.com", org);
+        saveOrganizationMember("비게스트", "ng@email.com", org, group);
 
         // when
         sut.notifyEventStartIn24Hours();
@@ -250,7 +254,8 @@ class EventNotificationSchedulerTest {
     void 이벤트_시작_24시간_전_리마인더_호출_후_히스토리가_저장된다() {
         // given
         var org = organizationRepository.save(Organization.create("이벤트 스페이스", "설명", "img.png"));
-        var host = saveOrganizationMember("주최자", "host@email.com", org);
+        var group = createGroup();
+        var host = saveOrganizationMember("주최자", "host@email.com", org, group);
 
         var now = LocalDateTime.now();
         var eventStart = now.plusHours(24)
@@ -266,11 +271,12 @@ class EventNotificationSchedulerTest {
                         now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
 
-        var g1 = saveOrganizationMember("게스트1", "g1@email.com", org);
-        var g2 = saveOrganizationMember("게스트2", "g2@email.com", org);
+        var g1 = saveOrganizationMember("게스트1", "g1@email.com", org, group);
+        var g2 = saveOrganizationMember("게스트2", "g2@email.com", org, group);
         saveGuest(event, g1);
         saveGuest(event, g2);
 
@@ -324,7 +330,8 @@ class EventNotificationSchedulerTest {
     private OrganizationMember saveOrganizationMember(
             String nickname,
             String email,
-            Organization organization
+            Organization organization,
+            OrganizationGroup group
     ) {
         var member = memberRepository.save(Member.create(nickname, email, "testPicture"));
 
@@ -332,7 +339,8 @@ class EventNotificationSchedulerTest {
                 nickname,
                 member,
                 organization,
-                OrganizationMemberRole.USER
+                OrganizationMemberRole.USER,
+                group
         ));
     }
 
@@ -340,5 +348,9 @@ class EventNotificationSchedulerTest {
         var guest = Guest.create(event, participant, event.getRegistrationStart());
 
         return guestRepository.save(guest);
+    }
+
+    private OrganizationGroup createGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
     }
 }

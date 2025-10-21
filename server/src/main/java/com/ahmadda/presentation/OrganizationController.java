@@ -11,7 +11,7 @@ import com.ahmadda.presentation.dto.OrganizationCreateResponse;
 import com.ahmadda.presentation.dto.OrganizationParticipateRequest;
 import com.ahmadda.presentation.dto.OrganizationParticipateResponse;
 import com.ahmadda.presentation.dto.OrganizationResponse;
-import com.ahmadda.presentation.resolver.AuthMember;
+import com.ahmadda.presentation.resolver.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -38,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Tag(name = "Organization", description = "이벤트 스페이스 관련 API")
@@ -108,7 +109,7 @@ public class OrganizationController {
     public ResponseEntity<OrganizationCreateResponse> createOrganization(
             @RequestPart("organization") @Valid OrganizationCreateRequest organizationCreateRequest,
             @RequestPart("thumbnail") MultipartFile multipartFile,
-            @AuthMember LoginMember loginMember
+            @Auth LoginMember loginMember
     ) throws IOException {
         OrganizationImageFile thumbnailOrganizationImageFile = OrganizationImageFile.create(
                 multipartFile.getOriginalFilename(),
@@ -254,6 +255,18 @@ public class OrganizationController {
                                                       "instance": "/api/organizations/{organizationId}/participation"
                                                     }
                                                     """
+                                    ),
+                                    @ExampleObject(
+                                            name = "이벤트 스페이스가 정원이 가득 찬 경우",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "이벤트 스페이스에 이미 정원이 가득차 참여할 수 없습니다.",
+                                                      "instance": "/api/organizations/{organizationId}/participation"
+                                                    }
+                                                    """
                                     )
                             }
                     )
@@ -262,7 +275,7 @@ public class OrganizationController {
     @PostMapping("/{organizationId}/participation")
     public ResponseEntity<OrganizationParticipateResponse> participateOrganization(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember,
+            @Auth final LoginMember loginMember,
             @Valid @RequestBody final OrganizationParticipateRequest organizationParticipateRequest
     ) {
         OrganizationMember organizationMember =
@@ -381,7 +394,7 @@ public class OrganizationController {
             @RequestPart("organization") @Valid final OrganizationUpdateRequest organizationUpdateRequest,
             @Nullable @RequestPart(value = "thumbnail", required = false) final MultipartFile multipartFile,
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) throws IOException {
         OrganizationImageFile thumbnailOrganizationImageFile = null;
         if (multipartFile != null) {
@@ -447,7 +460,7 @@ public class OrganizationController {
     })
     @GetMapping("/participated")
     public ResponseEntity<List<OrganizationResponse>> getParticipatedOrganizations(
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         List<Organization> participatingOrganizations = organizationService.getParticipatingOrganizations(loginMember);
 
@@ -528,11 +541,32 @@ public class OrganizationController {
     @DeleteMapping("/{organizationId}")
     public ResponseEntity<Void> deleteOrganization(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         organizationService.deleteOrganization(organizationId, loginMember);
 
         return ResponseEntity.noContent()
                 .build();
+    }
+
+    @Operation(summary = "활성 이벤트 수 기준으로 이벤트 스페이스 조회", description = "활성 이벤트가 많은 순서대로 이벤트 스페이스를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            array = @ArraySchema(schema = @Schema(implementation = OrganizationResponse.class))
+                    )
+            )
+    })
+    @GetMapping("/popular")
+    public ResponseEntity<List<OrganizationResponse>> getPopularOrganizations() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Organization> organizations = organizationService.findAllOrderByActiveEventsDesc(now);
+
+        List<OrganizationResponse> response = organizations.stream()
+                .map(OrganizationResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(response);
     }
 }

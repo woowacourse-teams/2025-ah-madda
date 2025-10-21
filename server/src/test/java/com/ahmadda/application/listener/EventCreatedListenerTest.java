@@ -1,6 +1,5 @@
 package com.ahmadda.application.listener;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.EventCreated;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.event.Event;
@@ -10,23 +9,22 @@ import com.ahmadda.domain.event.EventStatisticRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
-import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
-import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-@IntegrationTest
-class EventCreatedListenerTest {
+class EventCreatedListenerTest extends IntegrationTest {
 
     @Autowired
     private EventCreatedListener sut;
@@ -46,18 +44,16 @@ class EventCreatedListenerTest {
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
 
-    @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
-
-    @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
 
     @Test
     void 이벤트가_생성되면_이벤트_통계가_저장된다() {
         // given
         var organization = createOrganization();
         var member = createMember();
-        var organizationMember = createOrganizationMember(organization, member);
+        var group = createGroup();
+        var organizationMember = createOrganizationMember(organization, member, group);
         var event = createEvent(organizationMember, organization);
         var eventCreated = new EventCreated(event.getId());
 
@@ -71,7 +67,7 @@ class EventCreatedListenerTest {
             softly.assertThat(eventStatistic)
                     .isPresent();
             softly.assertThat(eventStatistic.get()
-                                      .getEvent())
+                            .getEvent())
                     .isEqualTo(event);
         });
     }
@@ -97,8 +93,13 @@ class EventCreatedListenerTest {
         return memberRepository.save(Member.create("name", "ahmadda@ahmadda.com", "testPicture"));
     }
 
-    private OrganizationMember createOrganizationMember(Organization organization, Member member) {
-        var organizationMember = OrganizationMember.create("surf", member, organization, OrganizationMemberRole.USER);
+    private OrganizationMember createOrganizationMember(
+            Organization organization,
+            Member member,
+            OrganizationGroup group
+    ) {
+        var organizationMember =
+                OrganizationMember.create("surf", member, organization, OrganizationMemberRole.USER, group);
 
         return organizationMemberRepository.save(organizationMember);
     }
@@ -116,9 +117,14 @@ class EventCreatedListenerTest {
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
-                10
+                10,
+                false
         );
 
         return eventRepository.save(event);
+    }
+
+    private OrganizationGroup createGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
     }
 }

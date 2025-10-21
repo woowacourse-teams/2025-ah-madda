@@ -4,6 +4,7 @@ package com.ahmadda.domain.event;
 import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.Test;
@@ -182,36 +183,10 @@ class EventStatisticTest {
     }
 
     @Test
-    void 주최자는_조회해도_조회수가_오르지_않는다() {
-        //given
-        var organization = createOrganization("우테코1");
-        var organizationMember = createOrganizationMember(createMember("서프", "surf@gmail.com"), organization);
-        var event = createEvent(organizationMember, organization);
-
-        var startDatetime = event.getEventOperationPeriod()
-                .getRegistrationEventPeriod()
-                .start()
-                .toLocalDate();
-        var sut = EventStatistic.create(event);
-
-        //when
-        sut.increaseViewCount(
-                startDatetime,
-                organizationMember.getMember()
-        );
-
-        //then
-        assertThat(sut.findEventViewMetrics(organizationMember, startDatetime)
-                .getFirst()
-                .getViewCount()).isEqualTo(0L);
-    }
-
-    @Test
     void 오늘_날짜의_조회수를_증가시킬_수_있다() {
         //given
         var organization = createOrganization("우테코1");
         var organizationMember = createOrganizationMember(createMember("서프", "surf@gmail.com"), organization);
-        var organizationMember2 = createOrganizationMember(createMember("투다", "praisebak@gmail.com"), organization);
         var event = createEvent(organizationMember, organization);
 
         var startDatetime = event.getEventOperationPeriod()
@@ -221,10 +196,7 @@ class EventStatisticTest {
         var sut = EventStatistic.create(event);
 
         //when
-        sut.increaseViewCount(
-                startDatetime,
-                organizationMember2.getMember()
-        );
+        sut.increaseViewCount(startDatetime);
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, startDatetime)
@@ -246,10 +218,7 @@ class EventStatisticTest {
         var sut = EventStatistic.create(event);
 
         //when
-        sut.increaseViewCount(
-                LocalDate.MAX,
-                organizationMember.getMember()
-        );
+        sut.increaseViewCount(LocalDate.MAX);
 
         //then
         assertThat(sut.findEventViewMetrics(organizationMember, startDatetime)
@@ -260,7 +229,13 @@ class EventStatisticTest {
     }
 
     private OrganizationMember createOrganizationMember(Member member, Organization organization) {
-        return OrganizationMember.create("nickname", member, organization, OrganizationMemberRole.USER);
+        return OrganizationMember.create(
+                "nickname",
+                member,
+                organization,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
+        );
     }
 
     private Member createMember(String name, String email) {
@@ -285,7 +260,8 @@ class EventStatisticTest {
                         now.plusDays(3), now.plusDays(4),
                         now
                 ),
-                10
+                10,
+                false
         );
     }
 }

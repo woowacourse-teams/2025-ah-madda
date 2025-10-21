@@ -1,6 +1,7 @@
 package com.ahmadda.application.scheduler;
 
 import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventReminderGroupRepository;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.event.GuestWithOptStatus;
@@ -8,9 +9,12 @@ import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
 import com.ahmadda.domain.notification.Reminder;
 import com.ahmadda.domain.notification.ReminderHistory;
 import com.ahmadda.domain.notification.ReminderHistoryRepository;
+import com.ahmadda.domain.organization.OrganizationGroup;
 import com.ahmadda.domain.organization.OrganizationMember;
+import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberWithOptStatus;
 import lombok.RequiredArgsConstructor;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,9 +36,15 @@ public class EventNotificationScheduler {
     private final EventNotificationOptOutRepository eventNotificationOptOutRepository;
     private final Reminder reminder;
     private final ReminderHistoryRepository reminderHistoryRepository;
+    private final EventReminderGroupRepository eventReminderGroupRepository;
+    private final OrganizationMemberRepository organizationMemberRepository;
 
-    // TODO. 추후 중복 알람을 방지하도록 구현
-    @Scheduled(fixedRate = 180_000)
+    @Scheduled(cron = "0 */3 * * * *")
+    @SchedulerLock(
+            name = "notifyRegistrationClosingIn30Minutes",
+            lockAtMostFor = "2m",
+            lockAtLeastFor = "1m"
+    )
     @Transactional
     public void notifyRegistrationClosingIn30Minutes() {
         LocalDateTime now = LocalDateTime.now();
@@ -54,8 +64,12 @@ public class EventNotificationScheduler {
                 });
     }
 
-    // TODO. 추후 중복 알람을 방지하도록 구현
-    @Scheduled(fixedRate = 180_000)
+    @Scheduled(cron = "0 */3 * * * *")
+    @SchedulerLock(
+            name = "notifyEventStartIn24Hours",
+            lockAtMostFor = "2m",
+            lockAtLeastFor = "1m"
+    )
     @Transactional
     public void notifyEventStartIn24Hours() {
         LocalDateTime now = LocalDateTime.now();
@@ -74,9 +88,12 @@ public class EventNotificationScheduler {
     }
 
     private List<OrganizationMember> getOptInNonGuestOrganizationMembers(final Event event) {
+        List<OrganizationGroup> reminderGroups = eventReminderGroupRepository.findGroupsByEvent(event);
+        List<OrganizationMember> groupOrganizationMembers =
+                organizationMemberRepository.findAllByOrganizationAndGroupIn(event.getOrganization(), reminderGroups);
+
         List<OrganizationMember> nonGuestOrganizationMembers =
-                event.getNonGuestOrganizationMembers(event.getOrganization()
-                        .getOrganizationMembers());
+                event.getNonGuestOrganizationMembers(groupOrganizationMembers);
 
         return OrganizationMemberWithOptStatus.extractOptInOrganizationMembers(
                 nonGuestOrganizationMembers

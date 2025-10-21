@@ -6,13 +6,8 @@ server:
     max-http-form-post-size: 2MB
 
 spring:
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 20MB
-
-  profiles:
-    default: local
+  application:
+    name: ah-madda
 
   config:
     import:
@@ -23,8 +18,17 @@ spring:
       - security/slack.yml
       - security/aws.yml
 
-  application:
-    name: ah-madda
+  profiles:
+    default: local
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+
+  jpa:
+    properties:
+      hibernate.default_batch_fetch_size: 16
 
 oauth:
   google:
@@ -60,6 +64,19 @@ smtp:
       mail.smtp.timeout: 10000
       mail.smtp.writetimeout: 5000
 
+resilience4j:
+  circuitbreaker:
+    instances:
+      primaryEmail:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 5
+        minimumNumberOfCalls: 3
+        failureRateThreshold: 50
+        slowCallDurationThreshold: 5s
+        slowCallRateThreshold: 50
+        waitDurationInOpenState: 2m
+        permittedNumberOfCallsInHalfOpenState: 3
+
 springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
@@ -80,11 +97,6 @@ management:
     jmx:
       exposure:
         exclude: '*'
-  health:
-    db:
-      enabled: false
-    mail:
-      enabled: false
 
 slack:
   bot-token: ${slack.bot-token}

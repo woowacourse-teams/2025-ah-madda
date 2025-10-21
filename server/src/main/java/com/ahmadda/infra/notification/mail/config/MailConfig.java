@@ -1,57 +1,82 @@
 package com.ahmadda.infra.notification.mail.config;
 
-import com.ahmadda.domain.notification.EmailNotifier;
 import com.ahmadda.infra.notification.config.NotificationProperties;
-import com.ahmadda.infra.notification.mail.MockEmailNotifier;
-import com.ahmadda.infra.notification.mail.SmtpEmailNotifier;
-import jakarta.persistence.EntityManager;
+import com.ahmadda.infra.notification.mail.BccChunkingEmailSender;
+import com.ahmadda.infra.notification.mail.EmailOutboxRecipientRepository;
+import com.ahmadda.infra.notification.mail.EmailOutboxRepository;
+import com.ahmadda.infra.notification.mail.EmailOutboxSuccessHandler;
+import com.ahmadda.infra.notification.mail.EmailSender;
+import com.ahmadda.infra.notification.mail.FailoverEmailSender;
+import com.ahmadda.infra.notification.mail.NoopEmailSender;
+import com.ahmadda.infra.notification.mail.OutboxEmailSender;
+import com.ahmadda.infra.notification.mail.RetryableEmailSender;
+import com.ahmadda.infra.notification.mail.SmtpEmailSender;
+import io.github.resilience4j.retry.RetryRegistry;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.Primary;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.thymeleaf.TemplateEngine;
 
-@EnableConfigurationProperties({NotificationProperties.class, SmtpProperties.class})
 @Configuration
+@EnableConfigurationProperties({NotificationProperties.class, SmtpProperties.class})
 public class MailConfig {
 
     @Bean
-    @ConditionalOnProperty(name = "mail.mock", havingValue = "true")
-    public EmailNotifier mockEmailNotifier() {
-        return new MockEmailNotifier();
-    }
-
-    @Bean
-    @ConditionalOnProperty(name = "mail.mock", havingValue = "false", matchIfMissing = true)
-    public EmailNotifier smtpEmailNotifier(
-            final JavaMailSender javaMailSender,
-            final TemplateEngine templateEngine,
-            final NotificationProperties notificationProperties,
-            final EntityManager em
+    public EmailSender outboxEmailSender(
+            final EmailOutboxRepository emailOutboxRepository,
+            final EmailOutboxRecipientRepository emailOutboxRecipientRepository,
+            @Qualifier("failoverEmailSender") final EmailSender failoverEmailSender
     ) {
-        return new SmtpEmailNotifier(javaMailSender, templateEngine, notificationProperties, em);
+        return new OutboxEmailSender(emailOutboxRepository, emailOutboxRecipientRepository, failoverEmailSender);
     }
 
     @Bean
-    @Profile("prod")
-    public JavaMailSender awsMailSender(final SmtpProperties smtpProperties) {
-        SmtpProperties.Account account = smtpProperties.getAws();
+    public EmailSender failoverEmailSender(
+            final RetryRegistry retryRegistry,
+            final EmailSender googleSmtpEmailSender,
+            final EmailSender awsSmtpEmailSender
+    ) {
+        EmailSender googleRetryable =
+                new RetryableEmailSender(googleSmtpEmailSender, retryRegistry, "googleEmail", 2, 1000);
+        EmailSender awsRetryable =
+                new RetryableEmailSender(awsSmtpEmailSender, retryRegistry, "awsEmail", 3, 1000);
 
-        return getJavaMailSender(account);
+        EmailSender googleChunked = new BccChunkingEmailSender(googleRetryable, 100);
+        EmailSender awsChunked = new BccChunkingEmailSender(awsRetryable, 50);
+
+        return new FailoverEmailSender(googleChunked, awsChunked);
     }
 
     @Bean
-    @Profile("!prod")
-    public JavaMailSender gmailMailSender(final SmtpProperties smtpProperties) {
-        SmtpProperties.Account account = smtpProperties.getGoogle();
-
-        return getJavaMailSender(account);
+    public EmailSender googleSmtpEmailSender(
+            final SmtpProperties smtpProperties,
+            final EmailOutboxSuccessHandler emailOutboxSuccessHandler
+    ) {
+        JavaMailSender sender = createJavaMailSender(smtpProperties.getGoogle());
+        return new SmtpEmailSender(sender, emailOutboxSuccessHandler);
     }
 
-    private JavaMailSender getJavaMailSender(final SmtpProperties.Account acc) {
+    @Bean
+    public EmailSender awsSmtpEmailSender(
+            final SmtpProperties smtpProperties,
+            final EmailOutboxSuccessHandler emailOutboxSuccessHandler
+    ) {
+        JavaMailSender sender = createJavaMailSender(smtpProperties.getAws());
+        return new SmtpEmailSender(sender, emailOutboxSuccessHandler);
+    }
+
+    @Bean
+    @Primary
+    @ConditionalOnProperty(name = "mail.noop", havingValue = "true")
+    public EmailSender noopEmailSender() {
+        return new NoopEmailSender();
+    }
+
+    private JavaMailSender createJavaMailSender(final SmtpProperties.Account acc) {
         JavaMailSenderImpl sender = new JavaMailSenderImpl();
         sender.setHost(acc.getHost());
         sender.setPort(acc.getPort());

@@ -1,6 +1,5 @@
 package com.ahmadda.application;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.domain.event.Event;
@@ -12,10 +11,13 @@ import com.ahmadda.domain.event.GuestRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,8 +26,7 @@ import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-@IntegrationTest
-class OrganizationMemberEventServiceTest {
+class OrganizationMemberEventServiceTest extends IntegrationTest {
 
     @Autowired
     private EventRepository eventRepository;
@@ -48,12 +49,16 @@ class OrganizationMemberEventServiceTest {
     @Autowired
     private EventOrganizerRepository eventOrganizerRepository;
 
+    @Autowired
+    private OrganizationGroupRepository organizationGroupRepository;
+
     @Test
     void 구성원이_주최한_이벤트들을_조회한다() {
         // given
         var organization = createAndSaveOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "org.png");
         var member = createAndSaveMember("주최자", "organizer@test.com");
-        var organizer = createAndSaveOrganizationMember("주최자닉네임", member, organization);
+        var group = createAndSaveGroup();
+        var organizer = createAndSaveOrganizationMember("주최자닉네임", member, organization, group);
 
         var event1 = createAndSaveEvent(
                 "주최 이벤트 1",
@@ -82,7 +87,7 @@ class OrganizationMemberEventServiceTest {
         );
 
         var otherMember = createAndSaveMember("다른 주최자", "other@test.com");
-        var otherOrganizer = createAndSaveOrganizationMember("다른주최자닉네임", otherMember, organization);
+        var otherOrganizer = createAndSaveOrganizationMember("다른주최자닉네임", otherMember, organization, group);
 
         createAndSaveEvent(
                 "다른 이벤트",
@@ -134,9 +139,9 @@ class OrganizationMemberEventServiceTest {
         var organization = createAndSaveOrganization("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "org.png");
         var organizerMember = createAndSaveMember("주최자", "organizer@test.com");
         var participantMember = createAndSaveMember("참여자", "participant@test.com");
-
-        var organizer = createAndSaveOrganizationMember("주최자닉네임", organizerMember, organization);
-        var participant = createAndSaveOrganizationMember("참여자닉네임", participantMember, organization);
+        var group = createAndSaveGroup();
+        var organizer = createAndSaveOrganizationMember("주최자닉네임", organizerMember, organization, group);
+        var participant = createAndSaveOrganizationMember("참여자닉네임", participantMember, organization, group);
 
         var event1 = createAndSaveEvent(
                 "참여 이벤트 1",
@@ -238,9 +243,11 @@ class OrganizationMemberEventServiceTest {
     private OrganizationMember createAndSaveOrganizationMember(
             String nickname,
             Member member,
-            Organization organization
+            Organization organization,
+            OrganizationGroup group
     ) {
-        var organizationMember = OrganizationMember.create(nickname, member, organization, OrganizationMemberRole.USER);
+        var organizationMember =
+                OrganizationMember.create(nickname, member, organization, OrganizationMemberRole.USER, group);
         return organizationMemberRepository.save(organizationMember);
     }
 
@@ -270,7 +277,8 @@ class OrganizationMemberEventServiceTest {
                         LocalDateTime.now()
                                 .minusDays(20)
                 ),
-                maxCapacity
+                maxCapacity,
+                false
         );
 
         Event savedEvent = eventRepository.save(event);
@@ -282,5 +290,9 @@ class OrganizationMemberEventServiceTest {
         var guest = Guest.create(event, participant, event.getRegistrationStart());
 
         return guestRepository.save(guest);
+    }
+
+    private OrganizationGroup createAndSaveGroup() {
+        return organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
     }
 }

@@ -7,11 +7,12 @@ import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.EventUpdated;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
-import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
+import com.ahmadda.domain.event.EventReminderGroup;
+import com.ahmadda.domain.event.EventReminderGroupRepository;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.GuestWithOptStatus;
 import com.ahmadda.domain.event.Question;
@@ -22,12 +23,15 @@ import com.ahmadda.domain.notification.Reminder;
 import com.ahmadda.domain.notification.ReminderHistory;
 import com.ahmadda.domain.notification.ReminderHistoryRepository;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,7 +58,9 @@ public class EventService {
     private final Reminder reminder;
     private final ReminderHistoryRepository reminderHistoryRepository;
     private final EventNotificationOptOutRepository eventNotificationOptOutRepository;
+    private final EventReminderGroupRepository eventReminderGroupRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final OrganizationGroupRepository organizationGroupRepository;
 
     @Transactional
     public Event createEvent(
@@ -79,36 +85,22 @@ public class EventService {
                 eventOperationPeriod,
                 eventCreateRequest.maxCapacity(),
                 getOrganizationMemberByIds(loginMemberIncludedIds),
-                createQuestions(eventCreateRequest.questions())
+                createQuestions(eventCreateRequest.questions()),
+                eventCreateRequest.isApprovalRequired()
         );
 
         Event savedEvent = eventRepository.save(event);
 
         validateReminderLimit(savedEvent);
-        notifyEventCreated(savedEvent, organization);
+
+        List<OrganizationGroup> groups = organizationGroupRepository.findAllById(eventCreateRequest.groupIds());
+        createEventReminderGroups(groups, event);
+
+        notifyEventCreated(savedEvent, organization, groups);
 
         eventPublisher.publishEvent(EventCreated.from(savedEvent.getId()));
 
         return savedEvent;
-    }
-
-    private List<OrganizationMember> getOrganizationMemberByIds(
-            final List<Long> organizationMemberIds
-    ) {
-        Set<Long> NonDuplicatedOrganizationMemberIds = new HashSet<>(organizationMemberIds);
-
-        if (NonDuplicatedOrganizationMemberIds.size() != organizationMemberIds.size()) {
-            throw new UnprocessableEntityException("주최자는 중복될 수 없습니다.");
-        }
-
-        List<OrganizationMember> findOrganizationMembers =
-                organizationMemberRepository.findAllById(new ArrayList<>(NonDuplicatedOrganizationMemberIds));
-
-        if (findOrganizationMembers.size() != NonDuplicatedOrganizationMemberIds.size()) {
-            throw new NotFoundException("요청된 주최자 구성원 중 일부 구성원이 존재하지 않습니다.");
-        }
-
-        return findOrganizationMembers;
     }
 
     @Transactional
@@ -117,7 +109,7 @@ public class EventService {
             final Long memberId,
             final LocalDateTime currentDateTime
     ) {
-        Event event = getEvent(eventId);
+        Event event = getEventById(eventId);
         Organization organization = event.getOrganization();
         OrganizationMember organizationMember = getOrganizationMember(organization.getId(), memberId);
 
@@ -125,14 +117,9 @@ public class EventService {
     }
 
     @Transactional
-    public Event getOrganizationMemberEvent(final LoginMember loginMember, final Long eventId) {
-        Event event = getEvent(eventId);
-
-        Organization organization = event.getOrganization();
-
-        validateOrganizationAccess(organization.getId(), loginMember.memberId());
-
-        eventPublisher.publishEvent(EventRead.from(event, loginMember));
+    public Event getEvent(final Long eventId) {
+        Event event = getEventById(eventId);
+        eventPublisher.publishEvent(EventRead.from(event));
 
         return event;
     }
@@ -144,7 +131,7 @@ public class EventService {
             final EventUpdateRequest eventUpdateRequest,
             final LocalDateTime currentDateTime
     ) {
-        Event event = getEvent(eventId);
+        Event event = getEventById(eventId);
         Member member = getMember(loginMember.memberId());
         validateReminderLimit(event);
 
@@ -171,21 +158,47 @@ public class EventService {
         return event;
     }
 
+    @Transactional(readOnly = true)
     public boolean isOrganizer(final Long eventId, final LoginMember loginMember) {
-        Event event = getEvent(eventId);
+        Event event = getEventById(eventId);
         Member member = getMember(loginMember.memberId());
 
         return event.isOrganizer(member);
     }
 
+    @Transactional(readOnly = true)
     public List<Event> getPastEvents(
             final Long organizationId,
-            final LoginMember loginMember,
-            final LocalDateTime compareDateTime
+            final LocalDateTime compareDateTime,
+            final Long lastEventId,
+            final int pageSize
     ) {
-        validateOrganizationAccess(organizationId, loginMember.memberId());
+        Organization organization = getOrganization(organizationId);
 
-        return eventRepository.findAllByEventOperationPeriodEventPeriodEndBefore(compareDateTime);
+        LocalDateTime cursorDateTime = eventRepository.findById(lastEventId)
+                .map(Event::getEventEnd)
+                .orElse(compareDateTime);
+
+        Pageable pageable = Pageable.ofSize(pageSize);
+
+        return eventRepository.findPastEventsByOrganizationWithCursor(
+                organization,
+                cursorDateTime,
+                lastEventId,
+                pageable
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public List<Event> getActiveEvents(final Long organizationId) {
+        Organization organization = getOrganization(organizationId);
+
+        return organization.getActiveEvents(LocalDateTime.now());
+    }
+
+    @Transactional(readOnly = true)
+    public Event getEventTemplate(final Long eventId) {
+        return getEventById(eventId);
     }
 
     private Member getMember(final Long loginMember) {
@@ -207,7 +220,7 @@ public class EventService {
         );
     }
 
-    private Event getEvent(final Long eventId) {
+    private Event getEventById(final Long eventId) {
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 이벤트 정보입니다."));
     }
@@ -215,12 +228,6 @@ public class EventService {
     private Organization getOrganization(final Long organizationId) {
         return organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 이벤트 스페이스 정보입니다."));
-    }
-
-    private void validateOrganizationAccess(final Long organizationId, final Long memberId) {
-        if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, memberId)) {
-            throw new ForbiddenException("이벤트 스페이스에 소속되지 않아 권한이 없습니다.");
-        }
     }
 
     private OrganizationMember getOrganizationMember(final Long organizationId, final Long memberId) {
@@ -284,10 +291,35 @@ public class EventService {
         return Math.max(0, (remaining.getSeconds() + 59) / 60);
     }
 
-    private void notifyEventCreated(final Event event, final Organization organization) {
+    private List<OrganizationMember> getOrganizationMemberByIds(
+            final List<Long> organizationMemberIds
+    ) {
+        Set<Long> nonDuplicatedOrganizationMemberIds = new HashSet<>(organizationMemberIds);
+
+        if (nonDuplicatedOrganizationMemberIds.size() != organizationMemberIds.size()) {
+            throw new UnprocessableEntityException("주최자는 중복될 수 없습니다.");
+        }
+
+        List<OrganizationMember> findOrganizationMembers =
+                organizationMemberRepository.findAllById(new ArrayList<>(nonDuplicatedOrganizationMemberIds));
+
+        if (findOrganizationMembers.size() != nonDuplicatedOrganizationMemberIds.size()) {
+            throw new NotFoundException("요청된 주최자 구성원 중 일부 구성원이 존재하지 않습니다.");
+        }
+
+        return findOrganizationMembers;
+    }
+
+    private void notifyEventCreated(
+            final Event event,
+            final Organization organization,
+            final List<OrganizationGroup> groups
+    ) {
         String content = "새로운 이벤트가 등록되었습니다.";
-        List<OrganizationMember> recipients =
-                event.getNonGuestOrganizationMembers(organization.getOrganizationMembers());
+
+        List<OrganizationMember> organizationMembers =
+                organizationMemberRepository.findAllByOrganizationAndGroupIn(organization, groups);
+        List<OrganizationMember> recipients = event.getNonGuestOrganizationMembers(organizationMembers);
 
         sendAndRecordReminder(event, recipients, content);
     }
@@ -312,13 +344,11 @@ public class EventService {
         reminderHistoryRepository.save(reminderHistory);
     }
 
-    public List<Event> getActiveEvents(final Long organizationId, final LoginMember loginMember) {
-        Organization organization = getOrganization(organizationId);
+    private void createEventReminderGroups(List<OrganizationGroup> groups, Event event) {
+        List<EventReminderGroup> eventReminderGroups = groups.stream()
+                .map(group -> EventReminderGroup.create(event, group))
+                .toList();
 
-        if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId())) {
-            throw new ForbiddenException("이벤트 스페이스에 참여하지 않아 권한이 없습니다.");
-        }
-
-        return organization.getActiveEvents(LocalDateTime.now());
+        eventReminderGroupRepository.saveAll(eventReminderGroups);
     }
 }

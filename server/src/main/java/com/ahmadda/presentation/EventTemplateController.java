@@ -6,7 +6,7 @@ import com.ahmadda.domain.event.EventTemplate;
 import com.ahmadda.presentation.dto.EventTemplateCreateRequest;
 import com.ahmadda.presentation.dto.EventTemplateResponse;
 import com.ahmadda.presentation.dto.EventTemplateTitleResponse;
-import com.ahmadda.presentation.resolver.AuthMember;
+import com.ahmadda.presentation.resolver.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -59,7 +59,7 @@ public class EventTemplateController {
     })
     @PostMapping
     public ResponseEntity<Void> createTemplate(
-            @AuthMember final LoginMember loginMember,
+            @Auth final LoginMember loginMember,
             @RequestBody @Valid final EventTemplateCreateRequest eventTemplateCreateRequest
     ) {
         EventTemplate eventTemplate = eventTemplateService.createTemplate(loginMember, eventTemplateCreateRequest);
@@ -95,7 +95,7 @@ public class EventTemplateController {
             )
     })
     @GetMapping
-    public ResponseEntity<List<EventTemplateTitleResponse>> getMyTemplates(@AuthMember final LoginMember loginMember) {
+    public ResponseEntity<List<EventTemplateTitleResponse>> getMyTemplates(@Auth final LoginMember loginMember) {
         List<EventTemplate> eventTemplates = eventTemplateService.getTemplates(loginMember);
 
         List<EventTemplateTitleResponse> responses = eventTemplates.stream()
@@ -158,7 +158,7 @@ public class EventTemplateController {
     })
     @GetMapping("/{templateId}")
     public ResponseEntity<EventTemplateResponse> getMyTemplate(
-            @AuthMember final LoginMember loginMember,
+            @Auth final LoginMember loginMember,
             @PathVariable final Long templateId
     ) {
         EventTemplate eventTemplate = eventTemplateService.getTemplate(loginMember, templateId);
@@ -219,7 +219,7 @@ public class EventTemplateController {
     })
     @DeleteMapping("/{templateId}")
     public ResponseEntity<Void> deleteTemplate(
-            @AuthMember final LoginMember loginMember,
+            @Auth final LoginMember loginMember,
             @PathVariable final Long templateId
     ) {
         eventTemplateService.deleteTemplate(loginMember, templateId);

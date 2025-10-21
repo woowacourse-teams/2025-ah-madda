@@ -17,7 +17,7 @@ public record EventResponse(
         String place,
         LocalDateTime registrationStart,
         LocalDateTime registrationEnd,
-        List<String> organizerNickNames
+        List<String> organizerNicknames
 ) {
 
     public static EventResponse from(final Event event) {

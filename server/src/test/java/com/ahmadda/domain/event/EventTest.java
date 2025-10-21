@@ -4,6 +4,7 @@ import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.organization.Organization;
+import com.ahmadda.domain.organization.OrganizationGroup;
 import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +51,8 @@ class EventTest {
                         now
                 ),
                 List.of(baseOrganizer),
-                10
+                10,
+                false
         );
 
         var updatedRegistrationPeriod = EventPeriod.create(now.plusDays(2), now.plusDays(3));
@@ -107,7 +109,8 @@ class EventTest {
                         now
                 ),
                 List.of(baseOrganizer),
-                10
+                10,
+                false
         );
 
         var notOrganizer = createOrganizationMember("구성원", createMember("일반유저", "user@email.com"), baseOrganization);
@@ -239,8 +242,7 @@ class EventTest {
                     .isFalse();
         });
     }
-
-
+    
     @Test
     void 이벤트에_참여하지_않는_구성원을_조회할_수_있다() {
         // given
@@ -338,7 +340,8 @@ class EventTest {
                 baseOrganization,
                 eventOperationPeriod,
                 List.of(baseOrganizer, coOrganizer),
-                10
+                10,
+                false
         );
 
         var nonOrganizer = createOrganizationMember("다른 구성원", createMember(), baseOrganization);
@@ -385,7 +388,8 @@ class EventTest {
                 baseOrganization,
                 eventOperationPeriod,
                 List.of(baseOrganizer, duplicateCoOrganizer),
-                10
+                10,
+                false
         ))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("주최자는 중복될 수 없습니다.");
@@ -424,7 +428,8 @@ class EventTest {
                 baseOrganization,
                 eventOperationPeriod,
                 organizers,
-                10
+                10,
+                false
         ))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("최대 주최자 수는 10명입니다.");
@@ -455,12 +460,24 @@ class EventTest {
         var organization = Organization.create("우아한 테크코스", "woowahan-tech-course", "우아한 테크코스 6기");
         var member = Member.create("박미참여", "not.participant.park@woowahan.com", "testPicture");
         var organizationMember =
-                OrganizationMember.create("참여안한_구성원", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "참여안한_구성원",
+                        member,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
 
 
         var member2 = Member.create("김참가", "participant.kim@woowahan.com", "testPicture");
         var organizationMember2 =
-                OrganizationMember.create("실제_참가자", member2, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "실제_참가자",
+                        member2,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
 
         var sut = createEvent(organizationMember, organization);
         var participate = Guest.create(sut, organizationMember2, sut.getRegistrationStart());
@@ -476,12 +493,24 @@ class EventTest {
         var organization = Organization.create("우아한 테크코스", "woowahan-tech-course", "우아한 테크코스 6기");
         var member = Member.create("박찬양", "creator.chanyang@woowahan.com", "testPicture");
         var organizationMember =
-                OrganizationMember.create("이벤트_개설자_닉네임", member, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "주최자_닉네임",
+                        member,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
 
 
         var member2 = Member.create("김참가", "participant.kim@woowahan.com", "testPicture");
         var organizationMember2 =
-                OrganizationMember.create("참가자A_닉네임", member2, organization, OrganizationMemberRole.USER);
+                OrganizationMember.create(
+                        "참가자A_닉네임",
+                        member2,
+                        organization,
+                        OrganizationMemberRole.USER,
+                        OrganizationGroup.create("백엔드")
+                );
 
         var sut = createEvent(organizationMember, organization);
         var participate = Guest.create(sut, organizationMember2, sut.getRegistrationStart());
@@ -645,6 +674,7 @@ class EventTest {
                 ),
                 List.of(organizer),
                 maxCapacity,
+                false,
                 questions
         );
     }
@@ -661,7 +691,8 @@ class EventTest {
                         now
                 ),
                 List.of(baseOrganizer),
-                10
+                10,
+                false
         );
     }
 
@@ -678,7 +709,13 @@ class EventTest {
             Member member,
             Organization organization
     ) {
-        return OrganizationMember.create(nickname, member, organization, OrganizationMemberRole.USER);
+        return OrganizationMember.create(
+                nickname,
+                member,
+                organization,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
+        );
     }
 
     private Event createEvent(String title, EventOperationPeriod eventOperationPeriod) {
@@ -692,12 +729,19 @@ class EventTest {
                 organization,
                 eventOperationPeriod,
                 List.of(organizer),
-                100
+                100,
+                false
         );
     }
 
     private OrganizationMember createOrganizationMember(Member member, Organization organization) {
-        return OrganizationMember.create("nickname", member, organization, OrganizationMemberRole.USER);
+        return OrganizationMember.create(
+                "nickname",
+                member,
+                organization,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
+        );
     }
 
     private Member createMember() {
@@ -722,7 +766,8 @@ class EventTest {
                         now
                 ),
                 List.of(organizationMember),
-                10
+                10,
+                false
         );
     }
 }

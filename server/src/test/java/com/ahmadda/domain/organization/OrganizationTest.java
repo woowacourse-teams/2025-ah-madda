@@ -22,24 +22,30 @@ class OrganizationTest {
     void setUp() {
         sut = Organization.create("테스트 이벤트 스페이스", "이벤트 스페이스 설명", "image.png");
         var member = Member.create("주최자 회원", "organizer@example.com", "testPicture");
-        organizer = OrganizationMember.create("주최자", member, sut, OrganizationMemberRole.USER);
+        organizer = OrganizationMember.create(
+                "주최자",
+                member,
+                sut,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
+        );
     }
 
     @Test
     void 활성화된_이벤트_목록을_조회한다() {
         // given
         var now = LocalDateTime.now();
-        var pastEvent = createEventForTest(
+        var pastEvent = createEvent(
                 "과거 이벤트",
                 now.minusDays(3), now.minusDays(2),
-                now.minusDays(1), now.plusDays(1)
+                now.minusDays(2), now.minusDays(1)
         );
-        var activeEvent1 = createEventForTest(
+        var activeEvent1 = createEvent(
                 "활성 이벤트 1",
                 now.minusDays(1), now.plusDays(1),
                 now.plusDays(2), now.plusDays(3)
         );
-        var activeEvent2 = createEventForTest(
+        var activeEvent2 = createEvent(
                 "활성 이벤트 2",
                 now.minusDays(1), now.plusDays(1),
                 now.plusDays(2), now.plusDays(3)
@@ -65,7 +71,8 @@ class OrganizationTest {
         var inviteCode = InviteCode.create("code", sut, organizer, LocalDateTime.now());
 
         //when
-        var organizationMember = sut.participate(member, "surf", inviteCode, LocalDateTime.now());
+        var organizationMember =
+                sut.participate(member, "surf", inviteCode, OrganizationGroup.create("백엔드"), LocalDateTime.now());
 
         //then
         assertSoftly(softly -> {
@@ -83,11 +90,23 @@ class OrganizationTest {
         //given
         var organization = Organization.create("테스트 이벤트 스페이스2", "이벤트 스페이스 설명", "image.png");
         var member = Member.create("주최자 회원", "organizer@example.com", "testPicture");
-        var inviter = OrganizationMember.create("test", member, organization, OrganizationMemberRole.USER);
+        var inviter = OrganizationMember.create(
+                "test",
+                member,
+                organization,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
+        );
         var inviteCode = InviteCode.create("code", organization, inviter, LocalDateTime.now());
 
         //when //then
-        assertThatThrownBy(() -> sut.participate(member, "surf", inviteCode, LocalDateTime.now()))
+        assertThatThrownBy(() -> sut.participate(
+                member,
+                "surf",
+                inviteCode,
+                OrganizationGroup.create("백엔드"),
+                LocalDateTime.now()
+        ))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("잘못된 초대코드입니다.");
     }
@@ -99,7 +118,13 @@ class OrganizationTest {
         var inviteCode = InviteCode.create("code", sut, organizer, LocalDateTime.of(2000, 1, 1, 0, 0));
 
         //when //then
-        assertThatThrownBy(() -> sut.participate(member, "surf", inviteCode, LocalDateTime.now()))
+        assertThatThrownBy(() -> sut.participate(
+                member,
+                "surf",
+                inviteCode,
+                OrganizationGroup.create("백엔드"),
+                LocalDateTime.now()
+        ))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("초대코드가 만료되었습니다.");
     }
@@ -107,7 +132,13 @@ class OrganizationTest {
     @Test
     void 관리자가_이벤트_스페이스_정보를_수정할_수_있다() {
         // given
-        var admin = OrganizationMember.create("관리자", organizer.getMember(), sut, OrganizationMemberRole.ADMIN);
+        var admin = OrganizationMember.create(
+                "관리자",
+                organizer.getMember(),
+                sut,
+                OrganizationMemberRole.ADMIN,
+                OrganizationGroup.create("백엔드")
+        );
 
         // when
         sut.update(admin, "새 이벤트 스페이스명", "새 설명", "newImage.png");
@@ -126,7 +157,13 @@ class OrganizationTest {
     @Test
     void 관리자가_아니면_이벤트_스페이스_정보를_수정하면_예외가_발생한다() {
         // given
-        var user = OrganizationMember.create("일반회원", organizer.getMember(), sut, OrganizationMemberRole.USER);
+        var user = OrganizationMember.create(
+                "일반회원",
+                organizer.getMember(),
+                sut,
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
+        );
 
         // when // then
         assertThatThrownBy(() ->
@@ -144,7 +181,8 @@ class OrganizationTest {
                 "일반회원",
                 organizer.getMember(),
                 otherOrganization,
-                OrganizationMemberRole.USER
+                OrganizationMemberRole.USER,
+                OrganizationGroup.create("백엔드")
         );
 
         // when // then
@@ -155,7 +193,31 @@ class OrganizationTest {
                 .hasMessage("이벤트 스페이스에 속한 구성원만 수정이 가능합니다.");
     }
 
-    private Event createEventForTest(
+    @Test
+    void 이벤트_스페이스에_참여시_이미_정원이_찬_경우_예외가_발생한다() {
+        // given
+        var inviteCode = InviteCode.create("code", sut, organizer, LocalDateTime.now());
+        var group = createGroup();
+
+        for (int i = 0; i < 299; i++) {
+            var member = Member.create("일반회원" + i, "email" + i + "@gmail.com", "profile.img");
+            sut.participate(member, "nick" + i, inviteCode, group, LocalDateTime.now());
+        }
+
+        // when // then
+        assertThatThrownBy(() -> {
+            var cannotParticipateMember = Member.create("참여불가능한회원", "cannotpart@gmail.com", "profile.img");
+            sut.participate(cannotParticipateMember, "cannotpart", inviteCode, group, LocalDateTime.now());
+        })
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("이벤트 스페이스에 이미 정원이 가득차 참여할 수 없습니다.");
+    }
+
+    private OrganizationGroup createGroup() {
+        return OrganizationGroup.create("백엔드");
+    }
+
+    private Event createEvent(
             String title,
             LocalDateTime registrationStart,
             LocalDateTime registrationEnd,
@@ -169,7 +231,8 @@ class OrganizationTest {
                         eventStart, eventEnd,
                         registrationStart.minusDays(1)
                 ),
-                50
+                50,
+                false
         );
     }
 }
