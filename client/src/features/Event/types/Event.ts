@@ -1,35 +1,3 @@
-export type Event = {
-  eventId: number;
-  title: string;
-  description: string;
-  eventStart: string;
-  eventEnd: string;
-  currentGuestCount: number;
-  maxCapacity: number;
-  place: string;
-  registrationStart: string;
-  registrationEnd: string;
-  organizerNicknames: string[];
-  isGuest: boolean;
-  isOrganizer: boolean;
-};
-
-export type EventDetail = {
-  eventId: number;
-  title: string;
-  description: string;
-  place: string;
-  organizerNicknames: string[];
-  eventOrganizerIds: number[];
-  eventStart: string;
-  eventEnd: string;
-  registrationStart: string;
-  registrationEnd: string;
-  currentGuestCount: number;
-  maxCapacity: number;
-  questions: Question[];
-};
-
 export type CreateEventAPIRequest = {
   title: string;
   description: string;
