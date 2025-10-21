@@ -2,7 +2,9 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
+import { isAuthenticated } from '@/api/auth';
 import { OrganizationAPIResponse } from '@/api/types/organizations';
+import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
@@ -22,25 +24,41 @@ export const OrgSection = ({ organizations }: OrgSectionProps) => {
       <Flex
         dir="row"
         justifyContent="space-between"
-        alignItems="flex-end"
+        alignItems="flex-start"
         gap="8px"
         width="100%"
         margin="0 0 30px 0"
         css={css`
           @media (max-width: 768px) {
-            flex-direction: column;
             align-items: flex-start;
             gap: 10px;
           }
         `}
       >
-        <Text as="h1" type="Display" weight="bold">
-          스페이스 목록 ({organizations.length})
-        </Text>
-        <Text as="h3" type="Body" color={theme.colors.gray500}>
-          현재 가장 활발한 순서대로 스페이스를 노출해요.
-        </Text>
+        <Flex dir="column" gap="8px" alignItems="flex-start">
+          <Text as="h1" type="Display" weight="bold">
+            스페이스 목록 ({organizations.length})
+          </Text>
+
+          <Text as="h3" type="Body" color={theme.colors.gray500}>
+            현재 가장 활발한 순서대로 스페이스를 노출해요.
+          </Text>
+        </Flex>
+        {isAuthenticated() && (
+          <Flex dir="column" gap="8px" alignItems="flex-end">
+            <Button
+              size="md"
+              color="primary"
+              variant="solid"
+              iconName="plus"
+              onClick={() => navigate(`/organization/new`)}
+            >
+              스페이스 만들기
+            </Button>
+          </Flex>
+        )}
       </Flex>
+
       <OrgListContainer dir="column" width="100%" gap="8px">
         <DeskTopOrgList>
           {organizations.map((org) => (
