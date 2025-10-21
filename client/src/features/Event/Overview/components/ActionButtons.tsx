@@ -25,7 +25,7 @@ export const ActionButtons = () => {
             size="md"
             color="secondary"
             iconName="edit"
-            onClick={() => navigate(`/${organizationId}/edit`)}
+            onClick={() => navigate(`/organization/${organizationId}/edit`)}
           >
             스페이스 수정
           </Button>
@@ -41,7 +41,7 @@ export const ActionButtons = () => {
             size="md"
             color="secondary"
             iconName="edit"
-            onClick={() => navigate(`/${organizationId}/edit`)}
+            onClick={() => navigate(`/organization/${organizationId}/edit`)}
           >
             스페이스 수정
           </Button>
