@@ -11,8 +11,13 @@ type EventSectionProps = {
 export const EventSection = ({ title, children }: EventSectionProps) => {
   return (
     <Flex as="section" dir="column" gap="16px" width="100%">
-      <Flex alignItems="center" gap="4px">
-        <Text as="h2" type="Heading" weight="bold">
+      <Flex
+        alignItems="center"
+        gap="4px"
+        aria-label={`${title}이 마감일인 이벤트 목록입니다.`}
+        tabIndex={0}
+      >
+        <Text as="h2" type="Heading" weight="bold" aria-hidden="true">
           {title}
         </Text>
       </Flex>

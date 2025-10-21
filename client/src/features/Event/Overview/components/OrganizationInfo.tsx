@@ -48,6 +48,7 @@ export const OrganizationInfo = ({
 
   return (
     <Flex
+      as="section"
       alignItems="flex-end"
       justifyContent="space-between"
       width="100%"
@@ -74,6 +75,7 @@ export const OrganizationInfo = ({
                 gap: 10px;
               }
             `}
+            aria-label={`${name} 스페이스 입니다. ${name}에 대한 설명은 다음과 같습니다. ${description}`}
           >
             <ThumbImg
               src={src}
@@ -88,12 +90,12 @@ export const OrganizationInfo = ({
               }}
             />
 
-            <Flex dir="column" gap="4px">
-              <Text type="Display" weight="bold">
+            <Flex dir="column" gap="8px">
+              <Text type="Display" weight="bold" aria-hidden="true">
                 {name}
               </Text>
               <Spacing height="4px" />
-              <Text as="h2" type="Heading">
+              <Text as="h2" type="Heading" aria-hidden="true">
                 {description}
               </Text>
               {organizationMember?.isAdmin && (
