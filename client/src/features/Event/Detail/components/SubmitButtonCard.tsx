@@ -10,7 +10,7 @@ import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { useToast } from '@/shared/components/Toast/ToastContext';
 import { useModal } from '@/shared/hooks/useModal';
-import { srSpeak } from '@/shared/utils/srSpeak';
+import { announce } from '@/shared/utils/announce';
 
 import { getEventButtonState } from '../utils/getSubmitButtonState';
 
@@ -66,21 +66,21 @@ export const SubmitButtonCard = ({
   const handleParticipantClick = () => {
     if (!isAuthenticated()) {
       open();
-      srSpeak('로그인이 필요합니다. 로그인 모달이 열렸습니다.');
+      announce('로그인이 필요합니다. 로그인 모달이 열렸습니다.');
       return;
     }
     participantMutate(answers, {
       onSuccess: () => {
         onResetAnswers();
         success('✅ 참가 신청이 완료되었습니다.');
-        srSpeak('참가 신청이 완료되었습니다.');
+        announce('참가 신청이 완료되었습니다.');
         const btn = document.getElementById('event-submit-button') as HTMLButtonElement | null;
         btn?.focus();
       },
       onError: (err: unknown) => {
         const msg = getErrorMessage(err, '신청에 실패했어요.');
         error(`❌ ${msg}`);
-        srSpeak(`신청에 실패했습니다. ${msg}`);
+        announce(`신청에 실패했습니다. ${msg}`);
       },
     });
   };
@@ -89,14 +89,14 @@ export const SubmitButtonCard = ({
     cancelParticipateMutate(undefined, {
       onSuccess: () => {
         success('✅ 참가 신청이 취소되었습니다.');
-        srSpeak('참가 신청이 취소되었습니다.');
+        announce('참가 신청이 취소되었습니다.');
         const btn = document.getElementById('event-submit-button') as HTMLButtonElement | null;
         btn?.focus();
       },
       onError: (err: unknown) => {
         const msg = getErrorMessage(err, '취소에 실패했어요.');
         error(`❌ ${msg}`);
-        srSpeak(`참가 취소에 실패했습니다. ${msg}`);
+        announce(`참가 취소에 실패했습니다. ${msg}`);
       },
     });
   };

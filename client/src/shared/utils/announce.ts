@@ -17,7 +17,7 @@ function ensureLiveRegion(kind: 'assertive' | 'polite') {
   }
   return el;
 }
-export function srSpeak(message: string, politeness: 'polite' | 'assertive' = 'assertive') {
+export function announce(message: string, politeness: 'polite' | 'assertive' = 'assertive') {
   if (typeof document === 'undefined') return;
   const live = ensureLiveRegion(politeness);
   live.textContent = '';
