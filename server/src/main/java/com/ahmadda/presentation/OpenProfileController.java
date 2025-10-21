@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -87,9 +86,9 @@ public class OpenProfileController {
                     )
             )
     })
-    @GetMapping("/profile")
+    @GetMapping
     public ResponseEntity<OpenProfileResponse> getOpenProfile(@AuthMember final LoginMember loginMember) {
-        OpenProfile openProfile = openProfileService.getOpenProfileByMember(loginMember);
+        OpenProfile openProfile = openProfileService.getOpenProfile(loginMember);
 
         OpenProfileResponse response = OpenProfileResponse.from(openProfile);
 
@@ -131,12 +130,12 @@ public class OpenProfileController {
                     )
             )
     })
-    @PatchMapping("/{openProfileId}")
+    @PatchMapping
     public ResponseEntity<Void> updateProfile(
-            @PathVariable final Long openProfileId,
+            @AuthMember final LoginMember loginMember,
             @Valid @RequestBody final OpenProfileUpdateRequest request
     ) {
-        openProfileService.updateProfile(openProfileId, request);
+        openProfileService.updateProfile(loginMember, request);
 
         return ResponseEntity.noContent()
                 .build();

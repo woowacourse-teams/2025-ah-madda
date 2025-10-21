@@ -2,9 +2,9 @@ package com.ahmadda.domain.member;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface OpenProfileRepository extends JpaRepository<OpenProfile, Long> {
 
-    List<OpenProfile> findByMember(Member member);
+    Optional<OpenProfile> findByMember(Member member);
 }

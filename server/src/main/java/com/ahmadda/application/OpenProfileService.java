@@ -27,36 +27,25 @@ public class OpenProfileService {
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
-    public OpenProfile getOpenProfile(final Long openProfileId) {
-        return openProfileRepository.findById(openProfileId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 프로필입니다."));
-    }
-
-    @Transactional(readOnly = true)
-    public OpenProfile getOpenProfileByMember(final LoginMember loginMember) {
+    public OpenProfile getOpenProfile(final LoginMember loginMember) {
         Member member = memberRepository.findById(loginMember.memberId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
 
-        List<OpenProfile> openProfiles = openProfileRepository.findByMember(member);
-
-        if (openProfiles.isEmpty()) {
-            throw new NotFoundException("존재하지 않는 오픈 프로필입니다.");
-        }
-
-        return openProfiles.get(0);
+        return openProfileRepository.findByMember(member)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 오픈 프로필입니다."));
     }
 
     @Transactional
-    public void updateProfile(final Long openProfileId, final OpenProfileUpdateRequest request) {
-        final OpenProfile openProfile = getOpenProfile(openProfileId);
-        final OrganizationGroup organizationGroup = getOrganizationGroup(request.groupId());
+    public void updateProfile(final LoginMember loginMember, final OpenProfileUpdateRequest request) {
+        OpenProfile openProfile = getOpenProfile(loginMember);
+        OrganizationGroup organizationGroup = getOrganizationGroup(request.groupId());
 
         openProfile.updateProfile(organizationGroup);
 
-        final List<OrganizationMember> organizationMembers =
+        List<OrganizationMember> organizationMembers =
                 organizationMemberRepository.findAllByMember(openProfile.getMember());
 
-        for (final OrganizationMember organizationMember : organizationMembers) {
+        for (OrganizationMember organizationMember : organizationMembers) {
             organizationMember.update(request.nickname(), organizationGroup);
         }
     }
