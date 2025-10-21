@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { useQueries } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 
 import { isAuthenticated } from '@/api/auth';
 import { useCreateInviteCode } from '@/api/mutations/useCreateInviteCode';
@@ -28,24 +28,23 @@ export const OrganizationInfo = ({
   const alt = imageUrl ? `${name} 썸네일` : '기본 이벤트 스페이스 이미지';
   const [inviteCode, setInviteCode] = useState<string>('');
   const { mutateAsync: createInviteCodeMutation } = useCreateInviteCode(Number(organizationId));
-  const [{ data: joinedStatus }, { data: organizationMember }] = useQueries({
-    queries: [
-      {
-        ...organizationQueryOptions.joinedStatus(Number(organizationId)),
-        enabled: !!organizationId && isAuthenticated(),
-      },
-      {
-        ...organizationQueryOptions.profile(Number(organizationId)),
-        enabled: !!organizationId && isAuthenticated(),
-      },
-    ],
+  const { data: joinedStatus } = useQuery({
+    ...organizationQueryOptions.joinedStatus(Number(organizationId)),
+    enabled: !!organizationId && isAuthenticated(),
+  });
+
+  const { data: organizationMember } = useQuery({
+    ...organizationQueryOptions.profile(Number(organizationId)),
+    enabled: !!organizationId && isAuthenticated() && !!joinedStatus?.isMember,
   });
 
   useEffect(() => {
-    createInviteCodeMutation().then((data) => {
-      setInviteCode(data.inviteCode);
-    });
-  }, [organizationId, createInviteCodeMutation]);
+    if (organizationMember?.isAdmin) {
+      createInviteCodeMutation().then((data) => {
+        setInviteCode(data.inviteCode);
+      });
+    }
+  }, [organizationId, createInviteCodeMutation, organizationMember?.isAdmin]);
 
   return (
     <Flex

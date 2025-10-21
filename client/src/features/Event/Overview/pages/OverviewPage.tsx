@@ -31,12 +31,10 @@ export const OverviewPage = () => {
 };
 
 const OrganizationInfoSection = ({ organizationId }: { organizationId: string }) => {
-  const queryClient = useQueryClient();
   const { data: organizationData } = useSuspenseQuery({
     ...organizationQueryOptions.organizations(String(organizationId)),
     staleTime: 5 * 60 * 1000,
   });
-  queryClient.prefetchQuery(organizationQueryOptions.profile(Number(organizationId)));
 
   return (
     <OrganizationInfo
