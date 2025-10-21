@@ -148,7 +148,6 @@ export const router = createBrowserRouter(
         },
         {
           path: '/organization',
-
           children: [
             {
               index: true,
@@ -165,7 +164,7 @@ export const router = createBrowserRouter(
               ],
             },
             {
-              path: 'edit/:organizationId',
+              path: ':organizationId/edit',
               Component: ProtectRoute,
               children: [
                 {
