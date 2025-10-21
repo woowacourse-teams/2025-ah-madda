@@ -61,7 +61,7 @@ export const EventDetails = ({
               pattern: 'YYYY년 MM월 DD일 E A HH시',
               options: { dayOfWeek: 'long' },
             })}
-            까지
+            까지 신청가능
           </Text>
         </Flex>
         <Flex

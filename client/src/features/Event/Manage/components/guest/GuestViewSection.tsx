@@ -11,7 +11,7 @@ import { Text } from '@/shared/components/Text';
 import { useModal } from '@/shared/hooks/useModal';
 import { theme } from '@/shared/styles/theme';
 
-import { Guest, NonGuest } from '../types';
+import { Guest, NonGuest } from '../../types';
 
 import { GuestAnswerModal } from './GuestAnswerModal';
 import { GuestList } from './GuestList';

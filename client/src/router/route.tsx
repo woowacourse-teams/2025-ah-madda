@@ -88,6 +88,26 @@ export const router = createBrowserRouter(
           element: withSuspense(InvitePage),
         },
         {
+          path: '/profile',
+          Component: ProtectRoute,
+          children: [
+            {
+              index: true,
+              element: withSuspense(ProfilePage),
+            },
+          ],
+        },
+        {
+          path: '/my',
+          Component: ProtectRoute,
+          children: [
+            {
+              index: true,
+              Component: MyEventPage,
+            },
+          ],
+        },
+        {
           path: '/auth',
           Component: AuthCallback,
         },
@@ -105,10 +125,6 @@ export const router = createBrowserRouter(
             {
               path: 'edit/:eventId',
               element: withSuspense(NewEventPage),
-            },
-            {
-              path: 'my',
-              Component: MyEventPage,
             },
             {
               path: ':eventId',
@@ -157,16 +173,6 @@ export const router = createBrowserRouter(
                   element: withSuspense(NewOrganizationPage),
                 },
               ],
-            },
-          ],
-        },
-        {
-          path: '/profile',
-          Component: ProtectRoute,
-          children: [
-            {
-              index: true,
-              element: withSuspense(ProfilePage),
             },
           ],
         },

@@ -7,7 +7,7 @@ import { Input } from '@/shared/components/Input';
 import { useToast } from '@/shared/components/Toast/ToastContext';
 import { trackSendAlarm } from '@/shared/lib/gaEvents';
 
-import { useNotificationForm } from '../hooks/useNotificationForm';
+import { useNotificationForm } from '../../hooks/useNotificationForm';
 
 type AlarmComposerProps = {
   organizationMemberIds: number[];

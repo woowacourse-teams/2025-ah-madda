@@ -1,10 +1,7 @@
-import { css } from '@emotion/react';
-
 import { Answer } from '@/api/types/event';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Text } from '@/shared/components/Text';
-import { theme } from '@/shared/styles/theme';
 
 import type { EventDetail } from '../../../types/Event';
 import { QuestionContainer } from '../../containers/QuestionContainer';
