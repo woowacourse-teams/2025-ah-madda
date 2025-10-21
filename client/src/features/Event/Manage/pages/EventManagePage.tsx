@@ -26,7 +26,14 @@ export const EventManagePage = () => {
   return (
     <PageLayout>
       <EventManageContainer>
-        <EventHeader {...event} />
+        <EventHeader
+          eventId={event.eventId}
+          title={event.title}
+          place={event.place}
+          eventStart={event.eventStart}
+          eventEnd={event.eventEnd}
+          registrationEnd={event.registrationEnd}
+        />
 
         <Tabs defaultValue="detail">
           <Tabs.List
