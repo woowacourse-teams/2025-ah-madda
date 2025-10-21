@@ -7,14 +7,14 @@ export const closeEventRegistration = async (eventId: number) => {
   return await fetcher.post(`organizations/events/${eventId}/registration/close`);
 };
 
-export const useCloseEventRegistration = () => {
+export const useCloseEventRegistration = (eventId: number) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (eventId: number) => closeEventRegistration(eventId),
+    mutationFn: () => closeEventRegistration(eventId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: eventQueryKeys.detail(),
+        queryKey: [...eventQueryKeys.detail(), eventId],
       });
     },
   });

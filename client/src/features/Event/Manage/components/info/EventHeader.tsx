@@ -39,10 +39,10 @@ export const EventHeader = ({
 
   const badgeTextValue = badgeText(registrationEnd);
 
-  const { mutate: closeEventRegistration } = useCloseEventRegistration();
+  const { mutate: closeEventRegistrationMutate } = useCloseEventRegistration(eventId);
 
   const handleDeadlineChangeClick = () => {
-    closeEventRegistration(eventId, {
+    closeEventRegistrationMutate(undefined, {
       onSuccess: () => {
         success('이벤트가 마감되었습니다.');
         close();
