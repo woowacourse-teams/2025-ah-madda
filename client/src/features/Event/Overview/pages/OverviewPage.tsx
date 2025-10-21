@@ -22,7 +22,6 @@ export const OverviewPage = () => {
         <Suspense fallback={<OrganizationInfoSkeleton />}>
           <OrganizationInfoSection organizationId={organizationId!} />
         </Suspense>
-
         <Suspense fallback={<TabsSkeleton />}>
           <OverviewTabs organizationId={orgIdNum} />
         </Suspense>
@@ -41,6 +40,7 @@ const OrganizationInfoSection = ({ organizationId }: { organizationId: string })
 
   return (
     <OrganizationInfo
+      organizationId={Number(organizationId)}
       name={organizationData?.name ?? ''}
       description={organizationData?.description ?? ''}
       imageUrl={organizationData?.imageUrl ?? ''}

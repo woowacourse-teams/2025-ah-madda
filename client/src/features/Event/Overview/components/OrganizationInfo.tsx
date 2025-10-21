@@ -1,20 +1,51 @@
+import { useEffect, useState } from 'react';
+
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { useQuery } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 
+import { isAuthenticated } from '@/api/auth';
+import { useCreateInviteCode } from '@/api/mutations/useCreateInviteCode';
+import { organizationQueryOptions } from '@/api/queries/organization';
 import { OrganizationAPIResponse } from '@/api/types/organizations';
 import DefaultImage from '@/assets/icon/ahmadda.webp';
 import { Flex } from '@/shared/components/Flex';
+import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
 import { ActionButtons } from './ActionButtons';
 
-type OrganizationProps = Omit<OrganizationAPIResponse, 'organizationId'>;
+type OrganizationProps = OrganizationAPIResponse;
 
-export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationProps) => {
+export const OrganizationInfo = ({
+  organizationId,
+  name,
+  description,
+  imageUrl,
+}: OrganizationProps) => {
   const src = imageUrl || DefaultImage;
   const alt = imageUrl ? `${name} 썸네일` : '기본 이벤트 스페이스 이미지';
+  const [inviteCode, setInviteCode] = useState<string>('');
+  const { mutateAsync: createInviteCodeMutation } = useCreateInviteCode(Number(organizationId));
+  const [{ data: joinedStatus }, { data: organizationMember }] = useQueries({
+    queries: [
+      {
+        ...organizationQueryOptions.joinedStatus(Number(organizationId)),
+        enabled: !!organizationId && isAuthenticated(),
+      },
+      {
+        ...organizationQueryOptions.profile(Number(organizationId)),
+        enabled: !!organizationId && isAuthenticated(),
+      },
+    ],
+  });
+
+  useEffect(() => {
+    createInviteCodeMutation().then((data) => {
+      setInviteCode(data.inviteCode);
+    });
+  }, [organizationId, createInviteCodeMutation]);
 
   return (
     <Flex
@@ -58,18 +89,27 @@ export const OrganizationInfo = ({ name, description, imageUrl }: OrganizationPr
               }}
             />
 
-            <Flex dir="column" gap="8px">
+            <Flex dir="column" gap="4px">
               <Text type="Display" weight="bold">
                 {name}
               </Text>
+              <Spacing height="4px" />
               <Text as="h2" type="Heading">
                 {description}
               </Text>
+              {organizationMember?.isAdmin && (
+                <Text type="Body" color={theme.colors.gray500}>
+                  {`초대 코드: ${inviteCode}`}
+                </Text>
+              )}
             </Flex>
           </Flex>
         </Flex>
       </Flex>
-      <ActionButtons />
+      <ActionButtons
+        isAdmin={organizationMember?.isAdmin ?? false}
+        isMember={(isAuthenticated() && joinedStatus?.isMember) ?? false}
+      />
     </Flex>
   );
 };

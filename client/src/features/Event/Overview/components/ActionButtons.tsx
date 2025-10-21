@@ -1,30 +1,16 @@
 import styled from '@emotion/styled';
-import { useQueries } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { isAuthenticated } from '@/api/auth';
-import { organizationQueryOptions } from '@/api/queries/organization';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 
-export const ActionButtons = () => {
+type ActionButtonsProps = {
+  isAdmin: boolean;
+  isMember: boolean;
+};
+export const ActionButtons = ({ isAdmin, isMember }: ActionButtonsProps) => {
   const navigate = useNavigate();
   const { organizationId } = useParams();
-  const [{ data: joinedStatus }, { data: organization }] = useQueries({
-    queries: [
-      {
-        ...organizationQueryOptions.joinedStatus(Number(organizationId)),
-        enabled: !!organizationId && isAuthenticated(),
-      },
-      {
-        ...organizationQueryOptions.profile(Number(organizationId)),
-        enabled: !!organizationId && isAuthenticated(),
-      },
-    ],
-  });
-
-  const isAdmin = organization?.isAdmin ?? false;
-  const isMember = isAuthenticated() && joinedStatus?.isMember;
 
   return (
     <>
