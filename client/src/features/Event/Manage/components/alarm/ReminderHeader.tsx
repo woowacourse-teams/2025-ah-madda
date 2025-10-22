@@ -25,7 +25,6 @@ export const AlarmHeader = ({ selectedGuestCount, notifyData }: AlarmHeaderProps
         gap="8px"
         css={css`
           @media (max-width: 768px) {
-            flex-direction: column;
             align-items: flex-start;
             gap: 16px;
           }
