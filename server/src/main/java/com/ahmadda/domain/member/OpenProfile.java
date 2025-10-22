@@ -66,7 +66,7 @@ public class OpenProfile extends BaseEntity {
         return member.getEmail();
     }
 
-    public String getPicture() {
+    public String getProfileImageUrl() {
         return member.getProfileImageUrl();
     }
 }

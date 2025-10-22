@@ -16,7 +16,7 @@ public record OpenProfileResponse(
                 openProfile.getId(),
                 openProfile.getNickname(),
                 openProfile.getEmail(),
-                openProfile.getPicture(),
+                openProfile.getProfileImageUrl(),
                 openProfile.getOrganizationGroup()
                         .getId(),
                 openProfile.getOrganizationGroup()
