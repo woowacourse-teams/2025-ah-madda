@@ -60,11 +60,6 @@ jobs:
           version="${prefix}.${next_be_build}" 
           echo "version=$version" >> $GITHUB_OUTPUT
 
-          docker_version=$(echo "$version" | sed -E 's/\+be\././')
-          echo "docker_version=$docker_version" >> $GITHUB_OUTPUT
-
-          echo "Using version: $version (Docker: $docker_version)"
-
       - name: Create and push Git tag
         run: |
           git config user.name "github-actions[bot]"
