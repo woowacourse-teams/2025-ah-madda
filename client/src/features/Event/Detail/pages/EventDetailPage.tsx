@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { css } from '@emotion/react';
 import { useQuery, useSuspenseQueries } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
@@ -16,6 +18,10 @@ import { EventHeader } from '../components/info/EventHeader';
 import { EventDetailContainer } from '../containers/EventDetailContainer';
 
 export const EventDetailPage = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const { eventId, organizationId } = useParams();
 
   const [{ data: event }] = useSuspenseQueries({
