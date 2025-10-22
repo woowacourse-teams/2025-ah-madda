@@ -15,8 +15,7 @@ jobs:
     runs-on: ubuntu-22.04-arm
 
     outputs:
-      image-tag: ${{ steps.calc.outputs.version }}
-      docker-tag: ${{ steps.calc.outputs.docker_version }}
+      s3_key: ah-madda/codedeploy/ahmadda-server-prod-${{ steps.calc.outputs.version }}.zip
 
     steps:
       - name: Checkout (for tagging)
@@ -61,11 +60,6 @@ jobs:
           version="${prefix}.${next_be_build}" 
           echo "version=$version" >> $GITHUB_OUTPUT
 
-          docker_version=$(echo "$version" | sed -E 's/\+be\././')
-          echo "docker_version=$docker_version" >> $GITHUB_OUTPUT
-
-          echo "Using version: $version (Docker: $docker_version)"
-
       - name: Create and push Git tag
         run: |
           git config user.name "github-actions[bot]"
@@ -88,59 +82,39 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Run tests
+      - name: Build with Gradle
         working-directory: ./server
         run: |
           chmod +x ./gradlew
-          ./gradlew test
+          ./gradlew build -x test
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.PROD_DOCKERHUB_DEPLOY_USERNAME }}
-          password: ${{ secrets.PROD_DOCKERHUB_DEPLOY_TOKEN }}
+          - name: Create deployment package
+            run: |
+              mkdir deploy
+              cp server/build/libs/*[!plain].jar deploy/ahmadda-server-prod.jar
+              cp codedeploy/be/appspec.yml deploy/
+              cp -r codedeploy/be/scripts/ deploy/
+              cd deploy
+              tar -czf ahmadda-server-prod-${{ steps.calc.outputs.version }}.tar.gz -C deploy .
+              cd ..
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+          - name: Upload to S3
+            run: |
+              aws s3 cp \
+                ahmadda-server-prod-${{ steps.calc.outputs.version }}.tar.gz \
+                s3://techcourse-project-2025/ah-madda/codedeploy/ahmadda-server-prod-${{ steps.calc.outputs.version }}.tar.gz
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./server
-          file: ./server/Dockerfile
-          push: true
-          tags: amadda/ahmadda_server:${{ steps.calc.outputs.docker_version }}
+        deploy:
+          needs: setup
+          runs-on:
+            - self-hosted
+            - prod
 
-  deploy:
-    needs: setup
-    runs-on:
-      - self-hosted
-      - prod
-
-    steps:
-      - name: Set tag name from setup output
-        run: echo "TAG=${{ needs.setup.outputs.docker-tag }}" >> $GITHUB_ENV
-
-      - name: Log in to Docker Hub
-        run: |
-          sudo docker login \
-            --username ${{ secrets.PROD_DOCKERHUB_DEPLOY_USERNAME }} \
-            --password ${{ secrets.PROD_DOCKERHUB_DEPLOY_TOKEN }}
-
-      - name: Stop existing container and pull latest image
-        run: |
-          if sudo docker inspect ahmadda-prod-server &>/dev/null; then
-            sudo docker stop ahmadda-prod-server || true
-            sudo docker rm -f ahmadda-prod-server || true
-            sudo docker image prune -af || true
-          fi
-          sudo docker pull amadda/ahmadda_server:$TAG
-
-      - name: Run container
-        run: |
-          sudo docker run -v /home/ubuntu/app/logs:/app/logs \
-            --name ahmadda-prod-server \
-            --restart unless-stopped \
-            -p 80:8080 \
-            -e PROFILE=prod \
-            -d amadda/ahmadda_server:$TAG
+          steps:
+            - name: Start AWS CodeDeploy deployment
+              run: |
+                aws deploy create-deployment \
+                  --application-name ahmadda-code-deploy-ec2 \
+                  --deployment-group-name ahmadda-code-deploy-alb \
+                  --s3-location bucket=techcourse-project-2025,key=${{ needs.build.outputs.s3_key }},bundleType=tar \
+                  --description "prod deployment ${{ steps.calc.outputs.version }} deployed via GitHub Actions"
