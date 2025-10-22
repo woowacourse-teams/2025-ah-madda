@@ -47,3 +47,7 @@ export type OrganizationGroupAPIResponse = {
   groupId: number;
   name: string;
 };
+
+export type OrganizationJoinedStatusAPIResponse = {
+  isMember: boolean;
+};

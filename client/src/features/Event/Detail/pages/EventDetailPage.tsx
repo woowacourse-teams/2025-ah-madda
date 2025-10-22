@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 
 import { isAuthenticated } from '@/api/auth';
 import { eventQueryOptions } from '@/api/queries/event';
+import { organizationQueryOptions } from '@/api/queries/organization';
 import { Flex } from '@/shared/components/Flex';
 import { PageLayout } from '@/shared/components/PageLayout';
 import { Tabs } from '@/shared/components/Tabs';
@@ -15,7 +16,7 @@ import { EventHeader } from '../components/info/EventHeader';
 import { EventDetailContainer } from '../containers/EventDetailContainer';
 
 export const EventDetailPage = () => {
-  const { eventId } = useParams();
+  const { eventId, organizationId } = useParams();
 
   const [{ data: event }] = useSuspenseQueries({
     queries: [eventQueryOptions.detail(Number(eventId))],
@@ -29,6 +30,11 @@ export const EventDetailPage = () => {
   const { data: organizerStatus } = useQuery({
     ...eventQueryOptions.organizer(Number(eventId)),
     enabled: isAuthenticated(),
+  });
+
+  const { data: joinedStatus } = useQuery({
+    ...organizationQueryOptions.joinedStatus(Number(organizationId)),
+    enabled: !!organizationId && isAuthenticated(),
   });
 
   if (!event) {
@@ -67,6 +73,7 @@ export const EventDetailPage = () => {
 
           <Tabs.Content value="detail">
             <EventBody
+              isMember={joinedStatus?.isMember || false}
               isOrganizer={organizerStatus?.isOrganizer || false}
               isGuest={guestStatus?.isGuest || false}
               {...event}

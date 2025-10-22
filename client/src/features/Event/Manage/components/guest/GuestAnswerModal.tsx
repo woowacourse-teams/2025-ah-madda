@@ -7,7 +7,7 @@ import { Modal } from '@/shared/components/Modal';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
-import type { Guest } from '../types';
+import { Guest } from '../../types';
 
 type GuestAnswerModalProps = {
   isOpen: boolean;

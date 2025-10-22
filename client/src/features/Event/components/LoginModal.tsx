@@ -33,7 +33,7 @@ export const LoginModal = ({ isOpen, onClose }: ModalProps) => {
             text-align: center;
           `}
         >
-          {`이벤트 신청은 로그인 후 이용할 수 있어요. \n먼저 로그인해 주세요.`}
+          {`로그인 후 이용할 수 있어요. \n먼저 로그인해 주세요.`}
         </Text>
         <Flex width="100%" gap="12px">
           <Button size="full" variant="outline" onClick={onClose}>

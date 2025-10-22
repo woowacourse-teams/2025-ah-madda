@@ -2,7 +2,7 @@ import { CheckBox } from '@/shared/components/CheckBox';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 
-import { Guest, NonGuest } from '../types';
+import { Guest, NonGuest } from '../../types';
 
 import { GuestItem } from './GuestItem';
 
