@@ -44,8 +44,6 @@ public class OrganizationMemberService {
         updateRoles(operator, targets, request.role());
     }
 
-
-
     @Transactional(readOnly = true)
     public boolean isOrganizationMember(final Long organizationId, final LoginMember loginMember) {
         return organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId());
