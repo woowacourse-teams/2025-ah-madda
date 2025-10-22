@@ -102,7 +102,7 @@ public class LoginService {
 
     private void createOpenProfile(final Member member) {
         OrganizationGroup defaultGroup = getDefaultOrganizationGroup();
-        OpenProfile openProfile = OpenProfile.create(member, member.getName(), defaultGroup);
+        OpenProfile openProfile = OpenProfile.create(member, defaultGroup);
 
         openProfileRepository.save(openProfile);
     }

@@ -574,7 +574,7 @@ class OrganizationServiceTest extends IntegrationTest {
     }
 
     private OpenProfile createOpenProfile(Member member, OrganizationGroup group) {
-        return openProfileRepository.save(OpenProfile.create(member, member.getName(), group));
+        return openProfileRepository.save(OpenProfile.create(member, group));
     }
 
     private Event createEvent(

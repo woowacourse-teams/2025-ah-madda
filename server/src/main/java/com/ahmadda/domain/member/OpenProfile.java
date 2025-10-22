@@ -52,10 +52,9 @@ public class OpenProfile extends BaseEntity {
 
     public static OpenProfile create(
             final Member member,
-            final String nickName,
             final OrganizationGroup organizationGroup
     ) {
-        return new OpenProfile(member, nickName, organizationGroup);
+        return new OpenProfile(member, member.getName(), organizationGroup);
     }
 
     public void updateProfile(final String nickName, final OrganizationGroup organizationGroup) {
