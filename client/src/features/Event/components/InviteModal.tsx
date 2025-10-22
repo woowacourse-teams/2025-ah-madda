@@ -6,7 +6,9 @@ import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
 import { Modal, ModalProps } from '@/shared/components/Modal/Modal';
+import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
+import { theme } from '@/shared/styles/theme';
 
 type InviteModalProps = {
   onJoinOrganization: (inviteCode: string) => void;
@@ -41,10 +43,14 @@ export const InviteModal = ({
         max-width: 100%;
       `}
     >
-      <Flex dir="column" gap="16px" width="100%">
+      <Flex dir="column" width="100%">
         <Text type="Heading" weight="bold">
           초대 코드 입력
         </Text>
+        <Text type="Body" weight="regular" color={theme.colors.gray500}>
+          초대 코드는 스페이스 관리자에게 문의해주세요.
+        </Text>
+        <Spacing height="16px" />
         <Input
           id="invite-code"
           type="text"
@@ -53,7 +59,7 @@ export const InviteModal = ({
           placeholder="초대 코드를 입력해주세요"
         />
       </Flex>
-      <Flex gap="12px" alignItems="center">
+      <Flex gap="8px" alignItems="center">
         <Button size="full" variant="outline" onClick={onClose}>
           취소
         </Button>
