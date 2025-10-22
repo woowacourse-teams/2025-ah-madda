@@ -5,6 +5,7 @@ import styled from '@emotion/styled';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Event } from '@/api/types/event';
+import { ParticipateEventAPIResponse } from '@/api/types/my';
 import { Badge } from '@/shared/components/Badge';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
@@ -21,7 +22,8 @@ import { normalizeWhitespace } from '../../utils/normalizeWhitespace';
 
 export type EventCardType = 'default' | 'host' | 'participate';
 
-export type EventCardProps = Event & {
+export type EventCardProps = ParticipateEventAPIResponse & {
+  isGuest?: boolean;
   cardType?: EventCardType;
 };
 
@@ -36,6 +38,7 @@ export const EventCard = memo(function EventCard({
   organizerNicknames,
   currentGuestCount,
   maxCapacity,
+  organization,
   isGuest,
   cardType = 'default',
 }: EventCardProps) {
@@ -48,11 +51,11 @@ export const EventCard = memo(function EventCard({
 
   const handleClickCard = () => {
     trackClickEventCard(title);
-
+    const orgId = organizationId ?? organization?.organizationId;
     if (cardType === 'host') {
-      navigate(`/${organizationId}/event/manage/${eventId}`);
+      navigate(`/${orgId}/event/${eventId}/manage`);
     } else {
-      navigate(`/${organizationId}/event/${eventId}`);
+      navigate(`/${orgId}/event/${eventId}`);
     }
   };
 

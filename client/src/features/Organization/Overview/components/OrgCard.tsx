@@ -119,7 +119,7 @@ const StyledOverlay = styled(Flex)`
 `;
 
 const StyledImg = styled.img`
-  padding: 10px;
+  padding: 8px;
   width: 100%;
   height: 100%;
   object-fit: scale-down;

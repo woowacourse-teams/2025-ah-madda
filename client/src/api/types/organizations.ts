@@ -11,8 +11,6 @@ export type InviteCodeAPIResponse = {
 };
 
 export type OrganizationParticipateAPIRequest = {
-  nickname: string;
-  groupId: number;
   inviteCode: string;
 };
 
@@ -27,8 +25,6 @@ export type CreateOrganizationAPIRequest = {
   organization: {
     name: string;
     description: string;
-    nickname: string;
-    groupId: number;
   };
   thumbnail: File;
 };

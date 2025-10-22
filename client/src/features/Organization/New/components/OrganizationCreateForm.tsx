@@ -29,7 +29,6 @@ import { MAX_LENGTH } from '../constants/validationRules';
 import { useCreateOrganizationProcess } from '../hooks/useCreateOrganizationProcess';
 import { useOrganizationForm } from '../hooks/useOrganizationForm';
 
-import { CreateSpaceFormModal } from './CreateSpaceFormModal';
 import { OrganizationDeleteModal } from './OrganizationDeleteModal';
 import { OrganizationImageInput } from './OrganizationImageInput';
 
@@ -93,7 +92,7 @@ export const OrganizationCreateForm = () => {
 
   const { mutate: patchOrganization, isPending: isPatching } = useUpdateOrganization();
 
-  const { handleCreate, isSubmitting: isCreating } = useCreateOrganizationProcess({
+  const { handleOrganizationCreateClick, isSubmitting: isCreating } = useCreateOrganizationProcess({
     name: form.name.trim(),
     description: form.description.trim(),
     thumbnail: form.thumbnail,
@@ -112,7 +111,7 @@ export const OrganizationCreateForm = () => {
     return true;
   };
 
-  const handleEditButtonClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOrganizationEditClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (!isValid()) return;
 
@@ -208,11 +207,6 @@ export const OrganizationCreateForm = () => {
         }
       },
     });
-  };
-
-  const handleSpaceOneForm = (data: { nickname: string; groupId: number }) => {
-    if (!data.nickname.trim() || isSubmitting) return;
-    handleCreate(data);
   };
 
   const { data: myProfile } = useQuery({
@@ -466,23 +460,12 @@ export const OrganizationCreateForm = () => {
             color="primary"
             size="full"
             disabled={!isValid() || isSubmitting}
-            onClick={handleEditButtonClick}
+            onClick={isEdit ? handleOrganizationEditClick : handleOrganizationCreateClick}
           >
             {isEdit ? '이벤트 스페이스 수정하기' : '이벤트 스페이스 생성하기'}
           </Button>
         </Flex>
       </Flex>
-
-      {!isEdit && (
-        <CreateSpaceFormModal
-          isOpen={createModal.isOpen}
-          orgName={form.name || '이벤트 스페이스'}
-          previewUrl={previewUrl}
-          isSubmitting={isSubmitting}
-          onClose={createModal.close}
-          onConfirm={handleSpaceOneForm}
-        />
-      )}
 
       <OrganizationDeleteModal
         isOpen={deleteModal.isOpen}

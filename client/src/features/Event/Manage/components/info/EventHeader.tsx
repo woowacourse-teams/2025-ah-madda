@@ -58,12 +58,8 @@ export const EventHeader = ({
   return (
     <>
       <Flex dir="column" gap="12px">
-        <Badge variant={badgeTextValue.color}>{badgeTextValue.text}</Badge>
-        <Flex dir="row" justifyContent="space-between">
-          <Text as="h1" type="Display" weight="bold">
-            {title}
-          </Text>
-
+        <Flex dir="row" justifyContent="space-between" alignItems="flex-end">
+          <Badge variant={badgeTextValue.color}>{badgeTextValue.text}</Badge>
           {isClosed ? (
             <Button size="sm" color="tertiary" variant="solid" disabled>
               마감됨
@@ -84,6 +80,9 @@ export const EventHeader = ({
             </Flex>
           )}
         </Flex>
+        <Text as="h1" type="Display" weight="bold">
+          {title}
+        </Text>
 
         <Flex dir="column" gap="4px">
           <Flex dir="row" gap="4px" alignItems="center">

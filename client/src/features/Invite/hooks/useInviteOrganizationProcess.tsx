@@ -38,14 +38,9 @@ export const useInviteOrganizationProcess = () => {
     organizationData?.organizationId ?? 0
   );
 
-  const handleJoin = (nickname: string, groupId: number) => {
-    if (!groupId) {
-      error('그룹을 선택해주세요.');
-      return;
-    }
-
+  const handleJoin = () => {
     joinOrganization(
-      { nickname, groupId, inviteCode: inviteCode ?? '' },
+      { inviteCode: inviteCode! },
       {
         onSuccess: () => {
           success('이벤트 스페이스 참가가 완료되었습니다!');

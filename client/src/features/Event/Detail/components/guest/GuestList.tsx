@@ -2,7 +2,11 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useQuery } from '@tanstack/react-query';
+import { useParams } from 'react-router-dom';
 
+import { isAuthenticated } from '@/api/auth';
+import { organizationQueryOptions } from '@/api/queries/organization';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 import { useModal } from '@/shared/hooks/useModal';
@@ -27,10 +31,15 @@ export const GuestList = ({
   guests,
   memberIdToGroup,
 }: GuestListProps) => {
+  const { organizationId } = useParams();
   const { isOpen, open, close } = useModal();
   const [receiverGuest, setReceiverGuest] = useState<NonGuest | null>(null);
+  const { data: joinedMember } = useQuery({
+    ...organizationQueryOptions.joinedStatus(Number(organizationId)),
+  });
 
   const handleGuestClick = (guest: NonGuest) => {
+    if (!isAuthenticated() || !joinedMember?.isMember) return;
     setReceiverGuest(guest);
     open();
   };
@@ -61,7 +70,7 @@ export const GuestList = ({
 
   return (
     <>
-      <Flex dir="column" margin="40px 0 0 0" padding="0 16px" gap="16px">
+      <Flex dir="column" margin="0" padding="0 16px">
         <Flex alignItems="center" gap="8px">
           <Text type="Heading" weight="semibold" color={titleColor}>
             {title}
