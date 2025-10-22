@@ -1,11 +1,11 @@
 name: BE Dev Deploy Closed Prs
 
 on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
+  push:
+    branches:
+      - be/dev
+    paths:
+      - "server/**"
 
 jobs:
   setup:
@@ -56,7 +56,7 @@ jobs:
 
   deploy:
     needs: setup
-    runs-on: 
+    runs-on:
       - self-hosted
       - dev
 

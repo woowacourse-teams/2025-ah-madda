@@ -1,7 +1,12 @@
+server:
+  tomcat:
+    threads:
+      max: 200
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://3.37.164.56:3306/ahmadda?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://ahmadda-mysql:3306/ahmadda?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: ahmadda
     password: 1234
     hikari:
@@ -20,10 +25,6 @@ spring:
     aws:
       s3:
         region: ${aws.dev.s3.region}
-
-  flyway:
-    baseline-on-migrate: true
-    enabled: false
 
 jwt:
   access:
@@ -59,43 +60,3 @@ aws:
   s3:
     bucket: ${aws.dev.s3.bucket}
     folder: ${aws.dev.s3.folder}
-
-server:
-  tomcat:
-    mbean-registry:
-      enabled: true
-
-    threads:
-      max: 100
-
-management:
-  metrics:
-    tags:
-      hostname: ${HOSTNAME}
-    enable:
-      system.cpu.usage: true
-      jvm.memory.used: true
-      jvm.memory.max: true
-      http.server.requests: true
-      tomcat.threads: true
-      app.health.status: true
-      executor: true
-      hikaricp.connections.active: true
-      hikaricp.connections.pending: true
-      hikaricp.connections.max: true
-      hikaricp.connections.timeout: true
-      logback.events: true
-      resilience4j.circuitbreaker.state: true
-      resilience4j.circuitbreaker.failure.rate: true
-      resilience4j.circuitbreaker.slow.call.rate: true
-      resilience4j.circuitbreaker.not.permitted.calls: true
-      resilience4j.retry.calls: true
-  cloudwatch:
-    metrics:
-      export:
-        enabled: true
-        step: 1m
-        namespace: EC2/ahmadda-api
-
-mail:
-  noop: true
