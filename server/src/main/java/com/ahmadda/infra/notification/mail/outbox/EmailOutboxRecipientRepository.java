@@ -1,4 +1,4 @@
-package com.ahmadda.infra.notification.mail;
+package com.ahmadda.infra.notification.mail.outbox;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

@@ -1,5 +1,9 @@
 package com.ahmadda.infra.notification.mail;
 
+import com.ahmadda.infra.notification.mail.outbox.EmailOutbox;
+import com.ahmadda.infra.notification.mail.outbox.EmailOutboxRecipient;
+import com.ahmadda.infra.notification.mail.outbox.EmailOutboxRecipientRepository;
+import com.ahmadda.infra.notification.mail.outbox.EmailOutboxRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;

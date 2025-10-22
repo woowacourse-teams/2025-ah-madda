@@ -1,9 +1,16 @@
+server:
+  tomcat:
+    threads:
+      max: 200
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://ahmadda-mysql:3306/ahmadda?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: ahmadda
     password: 1234
+    hikari:
+      maximum-pool-size: 10
 
   jpa:
     show-sql: true
@@ -44,6 +51,7 @@ cors:
     - https://dev.ahmadda.com
     - https://staging.ahmadda.com
     - http://local.ahmadda.com:5173
+    - http://192.168.*:5173
 
 notification:
   redirect-url-prefix: https://staging.ahmadda.com/
