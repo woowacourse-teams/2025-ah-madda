@@ -75,7 +75,7 @@ describe('EventDetailPage', () => {
       });
 
       expect(screen.getByText('테스트 이벤트 설명')).toBeInTheDocument();
-      expect(screen.getByText(/홍길동/)).toBeInTheDocument();
+      expect(screen.getByText(/홍길동/, { selector: 'span' })).toBeInTheDocument();
       expect(screen.getByText('서울시 강남구')).toBeInTheDocument();
     });
 
