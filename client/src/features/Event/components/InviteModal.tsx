@@ -9,10 +9,16 @@ import { Modal, ModalProps } from '@/shared/components/Modal/Modal';
 import { Text } from '@/shared/components/Text';
 
 type InviteModalProps = {
-  onSubmit: (inviteCode: string) => void;
+  onJoinOrganization: (inviteCode: string) => void;
+  onSubmit: VoidFunction;
 } & ModalProps;
 
-export const InviteModal = ({ isOpen, onClose, onSubmit }: InviteModalProps) => {
+export const InviteModal = ({
+  isOpen,
+  onClose,
+  onJoinOrganization,
+  onSubmit,
+}: InviteModalProps) => {
   const [inviteCode, setInviteCode] = useState('');
 
   const handleInviteCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,7 +27,8 @@ export const InviteModal = ({ isOpen, onClose, onSubmit }: InviteModalProps) => 
 
   const handleSubmit = () => {
     if (inviteCode.trim()) {
-      onSubmit(inviteCode);
+      onJoinOrganization(inviteCode);
+      onSubmit();
     }
   };
 

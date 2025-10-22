@@ -73,6 +73,7 @@ export const EventDetailPage = () => {
 
           <Tabs.Content value="detail">
             <EventBody
+              organizationId={Number(organizationId)}
               isMember={joinedStatus?.isMember || false}
               isOrganizer={organizerStatus?.isOrganizer || false}
               isGuest={guestStatus?.isGuest || false}
