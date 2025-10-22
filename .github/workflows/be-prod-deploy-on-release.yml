@@ -11,10 +11,13 @@ permissions: write-all
 
 jobs:
   setup:
-    runs-on: ubuntu-22.04-arm
+    runs-on:
+      - self-hosted
+      - prod
 
     outputs:
-      s3_key: ah-madda/codedeploy/ahmadda-server-prod-${{ steps.calc.outputs.version }}.zip
+      s3_key: ah-madda/codedeploy/ahmadda-server-prod-${{ steps.calc.outputs.version }}.tar.gz
+      version: ${{ steps.calc.outputs.version }}
 
     steps:
       - name: Checkout (for tagging)
@@ -93,12 +96,6 @@ jobs:
           tar -czf ../ahmadda-server-prod-${{ steps.calc.outputs.version }}.tar.gz .
           cd ..
 
-      - name: Upload to S3
-        run: |
-          aws s3 cp \
-            ahmadda-server-prod-${{ steps.calc.outputs.version }}.tar.gz \
-            s3://techcourse-project-2025/ah-madda/codedeploy/ahmadda-server-prod-${{ steps.calc.outputs.version }}.tar.gz
-
   deploy:
     needs: setup
     runs-on:
@@ -106,10 +103,17 @@ jobs:
       - prod
 
     steps:
+      - name: Upload to S3
+        run: |
+          aws s3 cp \
+            ahmadda-server-prod-${{ needs.setup.outputs.version }}.tar.gz \
+            s3://techcourse-project-2025/ah-madda/codedeploy/ahmadda-server-prod-${{ needs.setup.outputs.version }}.tar.gz
+
       - name: Start AWS CodeDeploy deployment
         run: |
           aws deploy create-deployment \
             --application-name ahmadda-code-deploy-ec2 \
             --deployment-group-name ahmadda-code-deploy-alb \
-            --s3-location bucket=techcourse-project-2025,key=${{ needs.build.outputs.s3_key }},bundleType=tar \
-            --description "prod deployment ${{ needs.build.outputs.release_tag }} deployed via GitHub Actions"
+            --s3-location bucket=techcourse-project-2025,key=${{ needs.setup.outputs.s3_key }},bundleType=tgz \
+            --description "prod deployment ${{ needs.setup.outputs.version }} deployed via GitHub Actions"
+          
