@@ -77,11 +77,11 @@ export const SubmitButtonCard = ({
     else btn.removeAttribute('aria-describedby');
   }, []);
 
-  const onFocus: React.FocusEventHandler<HTMLButtonElement> = () => {
+  const handleSubmitButtonFocusDescribe: React.FocusEventHandler<HTMLButtonElement> = () => {
     setDescribedByInOrder();
   };
 
-  const onKeyDown: React.KeyboardEventHandler<HTMLButtonElement> = (e) => {
+  const handleSubmitButtonKeyActivate: React.KeyboardEventHandler<HTMLButtonElement> = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       if (buttonState.action === 'cancel') handleCancelParticipateClick();
@@ -152,8 +152,8 @@ export const SubmitButtonCard = ({
           size="full"
           color={buttonState.color}
           disabled={buttonState.disabled}
-          onFocus={onFocus}
-          onKeyDown={onKeyDown}
+          onFocus={handleSubmitButtonFocusDescribe}
+          onKeyDown={handleSubmitButtonKeyActivate}
           onClick={
             buttonState.action === 'cancel' ? handleCancelParticipateClick : handleParticipantClick
           }
