@@ -53,9 +53,11 @@ export const CurrentEventList = ({ organizationId }: CurrentEventListProps) => {
           border-radius: 8px;
           background-color: ${theme.colors.primary50};
         `}
+        aria-label={`${events.length}개의 이벤트가 열려있어요!`}
+        tabIndex={0}
       >
         <Icon name="calendar" color="primary500" size={20} />
-        <Text weight="bold" color={theme.colors.primary500}>
+        <Text weight="bold" color={theme.colors.primary500} aria-hidden="true">
           {events.length}개의 이벤트가 열려있어요!
         </Text>
       </Flex>

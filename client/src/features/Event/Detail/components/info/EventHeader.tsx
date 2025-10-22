@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import { isAuthenticated } from '@/api/auth';
 import { useEventNotificationToggle } from '@/api/mutations/useEventNotificationToggle';
 import type { EventDetail } from '@/api/types/event';
+import { OrganizationJoinedStatusAPIResponse } from '@/api/types/organizations';
 import { Badge } from '@/shared/components/Badge';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
@@ -16,9 +17,11 @@ import { badgeText } from '../../../utils/badgeText';
 type EventHeaderProps = { eventId: number } & Pick<
   EventDetail,
   'title' | 'place' | 'eventStart' | 'eventEnd' | 'registrationEnd'
->;
+> &
+  OrganizationJoinedStatusAPIResponse;
 
 export const EventHeader = ({
+  isMember,
   eventId,
   title,
   place,
@@ -28,7 +31,7 @@ export const EventHeader = ({
 }: EventHeaderProps) => {
   const status = badgeText(registrationEnd);
 
-  const { optOut, optIn, isLoading, data } = useEventNotificationToggle(eventId);
+  const { optOut, optIn, isLoading, data } = useEventNotificationToggle(eventId, isMember);
   const { error } = useToast();
 
   const checked = !data?.optedOut;
@@ -77,7 +80,7 @@ export const EventHeader = ({
             </Text>
           </Flex>
         </Flex>
-        {isAuthenticated() && (
+        {isAuthenticated() && isMember && (
           <Flex alignItems="center" gap="8px">
             <Text type="Body">알림 받기</Text>
             <Switch

@@ -11,6 +11,7 @@ import { css } from '@emotion/react';
 import { isAuthenticated } from '@/api/auth';
 import { useCancelParticipation } from '@/api/mutations/useCancelParticipation';
 import { useParticipateEvent } from '@/api/mutations/useParticipateEvent';
+import { useParticipateOrganization } from '@/api/mutations/useParticipateOrganization';
 import { Answer, GuestStatusAPIResponse } from '@/api/types/event';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
@@ -22,6 +23,7 @@ import { VerificationModal } from '../../components/VerificationModal';
 import { getEventButtonState } from '../utils/getSubmitButtonState';
 
 type SubmitBUttonCardProps = {
+  organizationId: number;
   eventId: number;
   registrationEnd: string;
   answers: Answer[];
@@ -41,6 +43,7 @@ const getErrorMessage = (err: unknown, fallback = '오류가 발생했어요.') 
 };
 
 export const SubmitButtonCard = ({
+  organizationId,
   eventId,
   answers,
   registrationEnd,
@@ -52,7 +55,7 @@ export const SubmitButtonCard = ({
   const { success, error } = useToast();
   const { mutate: participantMutate } = useParticipateEvent(eventId);
   const { mutate: cancelParticipateMutate } = useCancelParticipation(eventId);
-
+  const { mutate: joinOrganization } = useParticipateOrganization(organizationId);
   const buttonState = getEventButtonState({
     registrationEnd,
     isGuest,
@@ -120,6 +123,17 @@ export const SubmitButtonCard = ({
     });
   };
 
+  const handleJoinOrganization = (inviteCode: string) => {
+    joinOrganization(
+      { inviteCode },
+      {
+        onError: (err) => {
+          error(err.message);
+        },
+      }
+    );
+  };
+
   const handleCancelParticipateClick = () => {
     if (!isAuthenticated() || !isMember) {
       open();
@@ -173,6 +187,7 @@ export const SubmitButtonCard = ({
       <VerificationModal
         isOpen={isOpen}
         onClose={close}
+        onJoinOrganization={handleJoinOrganization}
         onSubmit={handleParticipantClick}
         isMember={isMember}
       />

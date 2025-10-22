@@ -14,8 +14,6 @@ const createOrganization = async (
   const organization = {
     name: body.organization.name.trim(),
     description: body.organization.description.trim(),
-    nickname: body.organization.nickname.trim(),
-    groupId: body.organization.groupId,
   };
 
   formData.append(

@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
+
 import { css } from '@emotion/react';
 
-import { getGoogleAuthUrl } from '@/api/auth';
+import { getGoogleAuthUrl, isAuthenticated } from '@/api/auth';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Modal } from '@/shared/components/Modal';
@@ -12,7 +14,9 @@ export const LoginModal = ({ isOpen, onClose }: ModalProps) => {
   const handleLogin = () => {
     const authUrl = getGoogleAuthUrl();
     window.location.href = authUrl;
+    sessionStorage.setItem('redirectAfterLogin', location.pathname);
   };
+
   return (
     <Modal
       isOpen={isOpen}

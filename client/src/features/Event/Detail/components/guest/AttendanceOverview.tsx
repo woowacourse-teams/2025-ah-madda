@@ -1,9 +1,14 @@
+import { css } from '@emotion/react';
 import { useSuspenseQueries, useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
 import { eventQueryOptions } from '@/api/queries/event';
 import { organizationQueryOptions } from '@/api/queries/organization';
 import { Flex } from '@/shared/components/Flex';
+import { Icon } from '@/shared/components/Icon';
+import { Spacing } from '@/shared/components/Spacing';
+import { Text } from '@/shared/components/Text';
+import { Tooltip } from '@/shared/components/Tooltip/Tooltip';
 import { theme } from '@/shared/styles/theme';
 
 import { GuestList } from './GuestList';
@@ -31,7 +36,15 @@ export const AttendanceOverview = ({ eventId }: { eventId: number }) => {
   });
 
   return (
-    <Flex as="section" width="100%" dir="column">
+    <Flex as="section" width="100%" dir="column" gap="8px">
+      <Flex justifyContent="flex-end" padding="12px 0 0 0">
+        <Tooltip
+          placement="left-bottom"
+          content={`포키 알림은 로그인 후 스페이스에 참여한 친구에게만 보낼 수 있어요.\n친구를 클릭해 알림을 보내보세요!`}
+        >
+          <Icon name="info" color="gray500" size={28} />
+        </Tooltip>
+      </Flex>
       <GuestList
         eventId={eventId}
         title={`신청 완료 (${guests.length}명)`}
@@ -39,6 +52,7 @@ export const AttendanceOverview = ({ eventId }: { eventId: number }) => {
         guests={guests}
         memberIdToGroup={memberIdToGroup}
       />
+      <Spacing height="16px" />
       <GuestList
         eventId={eventId}
         title={`미신청 (${nonGuests.length}명)`}

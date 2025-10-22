@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { css } from '@emotion/react';
 import { useQuery, useSuspenseQueries } from '@tanstack/react-query';
 import { useParams, useLocation } from 'react-router-dom';
@@ -18,15 +20,14 @@ import { useEventIntroSummaryFocus } from '../hooks/useEventIntroSummaryFocus';
 
 export const EventDetailPage = () => {
   const location = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const { eventId, organizationId } = useParams();
 
   const [{ data: event }] = useSuspenseQueries({
     queries: [eventQueryOptions.detail(Number(eventId))],
-  });
-
-  const { data: guestStatus } = useQuery({
-    ...eventQueryOptions.guestStatus(Number(eventId)),
-    enabled: isAuthenticated(),
   });
 
   const { data: organizerStatus } = useQuery({
@@ -45,6 +46,11 @@ export const EventDetailPage = () => {
     enabled: !!organizationId && isAuthenticated(),
   });
 
+  const { data: guestStatus } = useQuery({
+    ...eventQueryOptions.guestStatus(Number(eventId)),
+    enabled: isAuthenticated() && joinedStatus?.isMember,
+  });
+
   if (!event) {
     return (
       <Flex dir="column" justifyContent="center" alignItems="center">
@@ -59,6 +65,7 @@ export const EventDetailPage = () => {
     <PageLayout>
       <EventDetailContainer>
         <EventHeader
+          isMember={joinedStatus?.isMember || false}
           eventId={Number(eventId)}
           title={event.title}
           place={event.place}
@@ -82,6 +89,7 @@ export const EventDetailPage = () => {
 
           <Tabs.Content value="detail" role="region" aria-label="이벤트 정보">
             <EventBody
+              organizationId={Number(organizationId)}
               isMember={joinedStatus?.isMember || false}
               isOrganizer={organizerStatus?.isOrganizer || false}
               isGuest={guestStatus?.isGuest || false}

@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 
-import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
 import { organizationQueryOptions } from '@/api/queries/organization';

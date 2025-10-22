@@ -5,6 +5,7 @@ import styled from '@emotion/styled';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Event } from '@/api/types/event';
+import { ParticipateEventAPIResponse } from '@/api/types/my';
 import { Badge } from '@/shared/components/Badge';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
@@ -21,7 +22,8 @@ import { normalizeWhitespace } from '../../utils/normalizeWhitespace';
 
 export type EventCardType = 'default' | 'host' | 'participate';
 
-export type EventCardProps = Event & {
+export type EventCardProps = ParticipateEventAPIResponse & {
+  isGuest?: boolean;
   cardType?: EventCardType;
 };
 
@@ -36,6 +38,7 @@ export const EventCard = memo(function EventCard({
   organizerNicknames,
   currentGuestCount,
   maxCapacity,
+  organization,
   isGuest,
   cardType = 'default',
 }: EventCardProps) {
@@ -48,17 +51,28 @@ export const EventCard = memo(function EventCard({
 
   const handleClickCard = () => {
     trackClickEventCard(title);
-
+    const orgId = organizationId ?? organization?.organizationId;
     if (cardType === 'host') {
-      navigate(`/${organizationId}/event/manage/${eventId}`);
+      navigate(`/${orgId}/event/${eventId}/manage`);
     } else {
-      navigate(`/${organizationId}/event/${eventId}`);
+      navigate(`/${orgId}/event/${eventId}`);
     }
   };
 
   return (
-    <CardWrapper onClick={handleClickCard}>
-      <Flex dir="column" justifyContent={description ? 'flex-start' : 'space-between'} gap="8px">
+    <CardWrapper
+      role="button"
+      id={`event-card-${eventId}`}
+      onClick={handleClickCard}
+      aria-label={`${title} 이벤트 카드입니다. ${place}장소에서 이벤트가 열리고, ${organizerNicknames.join(', ')} 주최자가 주최하고 있습니다. ${isGuest ? '참여 가능한 이벤트입니다.' : '신청이 마감되어 참여가 불가능한 이벤트입니다.'} 신청 마감 시간은 ${registrationEnd} 입니다. 최대 인원은 ${maxCapacity}명 이고, 현재 ${currentGuestCount}명이 참여하고 있습니다.`}
+      tabIndex={0}
+    >
+      <Flex
+        dir="column"
+        justifyContent={description ? 'flex-start' : 'space-between'}
+        gap="8px"
+        aria-hidden="true"
+      >
         <Flex justifyContent="space-between" alignItems="center" width="100%">
           <Badge variant={badgeText(registrationEnd).color}>
             {badgeText(registrationEnd).text}
@@ -70,7 +84,7 @@ export const EventCard = memo(function EventCard({
             {title.length > 17 ? `${title.slice(0, 19)}...` : title}
           </Text>
         </Flex>
-        {/* S.TODO: 추후 구조 개선 */}
+
         <Flex
           height="20px"
           css={css`
@@ -124,6 +138,7 @@ export const EventCard = memo(function EventCard({
             </Text>
           </Flex>
         </Flex>
+        <Spacing height="12px" />
       </Flex>
     </CardWrapper>
   );

@@ -77,7 +77,6 @@ const StyledCardContainer = styled(Flex)`
 
 const StyledImageWrapper = styled(Flex)`
   border-radius: 12px;
-
   flex-shrink: 0;
   overflow: hidden;
 `;
@@ -93,7 +92,7 @@ const StyledOverlay = styled(Flex)`
 `;
 
 const StyledImg = styled.img`
-  padding: 10px;
+  padding: 8px;
   width: 100%;
   height: 100%;
   object-fit: scale-down;
