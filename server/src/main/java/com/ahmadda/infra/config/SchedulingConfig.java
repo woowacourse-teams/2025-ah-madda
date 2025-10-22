@@ -52,6 +52,7 @@ public class SchedulingConfig implements SchedulingConfigurer {
         scheduler.setWaitForTasksToCompleteOnShutdown(true);
         scheduler.setAwaitTerminationSeconds(60);
         scheduler.setRemoveOnCancelPolicy(true);
+        scheduler.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
 
         scheduler.initialize();
         return scheduler;
