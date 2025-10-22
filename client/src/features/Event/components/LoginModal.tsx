@@ -14,16 +14,8 @@ export const LoginModal = ({ isOpen, onClose }: ModalProps) => {
   const handleLogin = () => {
     const authUrl = getGoogleAuthUrl();
     window.location.href = authUrl;
+    sessionStorage.setItem('redirectAfterLogin', location.pathname);
   };
-
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      open();
-      sessionStorage.setItem('redirectAfterLogin', location.pathname);
-    } else {
-      close();
-    }
-  }, []);
 
   return (
     <Modal

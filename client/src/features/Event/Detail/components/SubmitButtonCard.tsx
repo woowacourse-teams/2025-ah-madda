@@ -1,5 +1,4 @@
 import { css } from '@emotion/react';
-import { useQuery } from '@tanstack/react-query';
 
 import { isAuthenticated } from '@/api/auth';
 import { useCancelParticipation } from '@/api/mutations/useCancelParticipation';

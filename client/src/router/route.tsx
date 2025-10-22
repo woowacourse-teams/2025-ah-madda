@@ -11,7 +11,6 @@ import { OrganizationOverviewPage } from '@/features/Organization/Overview/pages
 import { Flex } from '@/shared/components/Flex';
 import { Loading } from '@/shared/components/Loading';
 
-import { AuthCallback } from './AuthCallback';
 import { InviteRedirect } from './InviteRedirect';
 import { ProtectRoute } from './ProtectRoute';
 
@@ -106,10 +105,6 @@ export const router = createBrowserRouter(
               Component: MyEventPage,
             },
           ],
-        },
-        {
-          path: '/auth',
-          Component: AuthCallback,
         },
         {
           path: '/:organizationId/event',
