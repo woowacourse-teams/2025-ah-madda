@@ -22,11 +22,6 @@ export const EventDetailPage = () => {
     queries: [eventQueryOptions.detail(Number(eventId))],
   });
 
-  const { data: guestStatus } = useQuery({
-    ...eventQueryOptions.guestStatus(Number(eventId)),
-    enabled: isAuthenticated(),
-  });
-
   const { data: organizerStatus } = useQuery({
     ...eventQueryOptions.organizer(Number(eventId)),
     enabled: isAuthenticated(),
@@ -35,6 +30,11 @@ export const EventDetailPage = () => {
   const { data: joinedStatus } = useQuery({
     ...organizationQueryOptions.joinedStatus(Number(organizationId)),
     enabled: !!organizationId && isAuthenticated(),
+  });
+
+  const { data: guestStatus } = useQuery({
+    ...eventQueryOptions.guestStatus(Number(eventId)),
+    enabled: isAuthenticated() && joinedStatus?.isMember,
   });
 
   if (!event) {
@@ -51,6 +51,7 @@ export const EventDetailPage = () => {
     <PageLayout>
       <EventDetailContainer>
         <EventHeader
+          isMember={joinedStatus?.isMember || false}
           eventId={Number(eventId)}
           title={event.title}
           place={event.place}
