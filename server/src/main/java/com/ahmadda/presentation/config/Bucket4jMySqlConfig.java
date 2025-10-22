@@ -27,9 +27,9 @@ public class Bucket4jMySqlConfig {
         return BucketConfiguration.builder()
                 .addLimit(
                         limit -> limit
-                                .capacity(500)
+                                .capacity(1000)
                                 // TODO. 추후 버스트 허용이 필요할 경우 refillGreedy 고려
-                                .refillIntervally(500, Duration.ofMinutes(30))
+                                .refillIntervally(1000, Duration.ofMinutes(30))
                 )
                 .build();
     }
