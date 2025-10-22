@@ -11,9 +11,14 @@ PIDS=$(pgrep -f $JAR_NAME)
 if [ -n "$PIDS" ]; then
   echo "Stopping old process(es): $PIDS"
   kill -9 $PIDS
+  sleep 2
 fi
 
-nohup java -jar $APP_DIR/$JAR_NAME --server.port=$APP_PORT --spring.profiles.active=prod
+nohup java -jar $APP_DIR/$JAR_NAME \
+  --server.port=$APP_PORT \
+  --spring.profiles.active=prod \
+  > $LOG_FILE 2>&1 < /dev/null &
 
-echo "Application started on port $APP_PORT"
+echo "Application started on port $APP_PORT with PID $(pgrep -f $JAR_NAME)"
 exit 0
+
