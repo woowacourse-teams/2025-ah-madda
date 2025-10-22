@@ -44,12 +44,14 @@ export const StyledTooltipContent = styled.div<{ placement: TooltipPlacement }>`
   min-width: 200px;
   z-index: 1000;
   box-sizing: border-box;
+  word-wrap: break-word;
+  white-space: normal;
 
   transform: ${({ placement }) => PLACEMENT_TRANSFORMS[placement]};
 
   @media (max-width: 768px) {
     padding: 6px 10px;
     width: max-content;
-    box-sizing: border-box;
+    max-width: calc(100vw - 32px);
   }
 `;

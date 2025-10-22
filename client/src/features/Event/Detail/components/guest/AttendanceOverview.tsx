@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import { useSuspenseQueries, useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
@@ -7,7 +6,6 @@ import { organizationQueryOptions } from '@/api/queries/organization';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Spacing } from '@/shared/components/Spacing';
-import { Text } from '@/shared/components/Text';
 import { Tooltip } from '@/shared/components/Tooltip/Tooltip';
 import { theme } from '@/shared/styles/theme';
 
