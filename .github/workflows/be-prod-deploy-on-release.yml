@@ -1,4 +1,4 @@
-name: BE Prod Deploy On Release
+name: BE Test Deploy On PR
 
 on:
   pull_request:
@@ -10,14 +10,14 @@ on:
 permissions: write-all
 
 jobs:
-  setup:
-    runs-on:
-      - self-hosted
-      - prod
+  build:
+    name: Build, Version, and Package Artifact
+    runs-on: ubuntu-latest
 
     outputs:
       s3_key: ah-madda/codedeploy/ahmadda-server-prod-${{ steps.calc.outputs.version }}.tar.gz
       version: ${{ steps.calc.outputs.version }}
+      artifact_name: ahmadda-server-prod-${{ steps.calc.outputs.version }}.tar.gz
 
     steps:
       - name: Checkout (for tagging)
@@ -29,8 +29,12 @@ jobs:
         id: base
         run: |
           git fetch --tags
-
           base_tag=$(git tag -l 'v*.*.*'  | grep -v '+be' | sort -V | tail -n 1)
+          
+          if [ -z "$base_tag" ]; then
+            echo "No base tag found, setting default v5.2542.0"
+            base_tag="v5.2542.0" 
+          fi
           base_version="${base_tag#v}"
 
           head=$(echo "$base_version" | cut -d'.' -f1)
@@ -45,7 +49,6 @@ jobs:
         id: calc
         run: |
           git fetch --tags
-
           head="${{ steps.base.outputs.head }}"
           yearweek="${{ steps.base.outputs.yearweek }}"
           common="${{ steps.base.outputs.common_build }}"
@@ -79,41 +82,70 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+          cache: 'gradle'
 
       - name: Build with Gradle
         working-directory: ./server
         run: |
           chmod +x ./gradlew
-          ./gradlew build
+          ./gradlew build -x test
 
-      - name: Create deployment package
+      - name: Create artifact package
         run: |
-          mkdir deploy
-          cp server/build/libs/*[!plain].jar deploy/ahmadda-server-prod.jar
-          cp codedeploy/be/appspec.yml deploy/
-          cp -r codedeploy/be/scripts/ deploy/
-          cd deploy
-          tar -czf ../ahmadda-server-prod-${{ steps.calc.outputs.version }}.tar.gz .
-          cd ..
+          mkdir deploy-artifact
+          cp server/build/libs/*[!plain].jar deploy-artifact/ahmadda-server-prod.jar
+          cp codedeploy/be/appspec.yml deploy-artifact/
+          cp -r codedeploy/be/scripts/ deploy-artifact/
+
+      - name: Upload artifact for deploy job
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-package
+          path: deploy-artifact/
+          retention-days: 1
 
   deploy:
-    needs: setup
+    name: Package and Deploy
+    needs: build
     runs-on:
       - self-hosted
       - prod
 
     steps:
+      - name: Clean up previous artifacts
+        run: |
+          echo "Cleaning up old build artifacts..."
+          rm -f ahmadda-server-prod-*.tar.gz
+          rm -rf deploy-artifact/
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: deployment-package
+          path: deploy-artifact/
+
+      - name: Create deployment package (tar.gz)
+        run: |
+          tar -czf ${{ needs.build.outputs.artifact_name }} -C deploy-artifact .
+
       - name: Upload to S3
         run: |
           aws s3 cp \
-            ahmadda-server-prod-${{ needs.setup.outputs.version }}.tar.gz \
-            s3://techcourse-project-2025/ah-madda/codedeploy/ahmadda-server-prod-${{ needs.setup.outputs.version }}.tar.gz
+            ${{ needs.build.outputs.artifact_name }} \
+            s3://techcourse-project-2025/ah-madda/codedeploy/${{ needs.build.outputs.artifact_name }}
 
       - name: Start AWS CodeDeploy deployment
         run: |
           aws deploy create-deployment \
             --application-name ahmadda-code-deploy-ec2 \
             --deployment-group-name ahmadda-code-deploy-alb \
-            --s3-location bucket=techcourse-project-2025,key=${{ needs.setup.outputs.s3_key }},bundleType=tgz \
-            --description "prod deployment ${{ needs.setup.outputs.version }} deployed via GitHub Actions"
-          
+            --s3-location bucket=techcourse-project-2025,key=${{ needs.build.outputs.s3_key }},bundleType=tgz \
+            --description "prod deployment ${{ needs.build.outputs.version }} deployed via GitHub Actions"
+
+      - name: Post-cleanup build artifacts
+        if: always()
+        run: |
+          echo "Cleaning up local build artifacts..."
+          rm -f ${{ needs.build.outputs.artifact_name }}
+          rm -rf deploy-artifact/
+
