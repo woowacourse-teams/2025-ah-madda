@@ -35,12 +35,6 @@ export const EventDetailPage = () => {
     enabled: isAuthenticated(),
   });
 
-  useEventIntroSummaryFocus({
-    event,
-    isGuest: guestStatus?.isGuest,
-    locationKey: location.key,
-  });
-
   const { data: joinedStatus } = useQuery({
     ...organizationQueryOptions.joinedStatus(Number(organizationId)),
     enabled: !!organizationId && isAuthenticated(),
@@ -49,6 +43,12 @@ export const EventDetailPage = () => {
   const { data: guestStatus } = useQuery({
     ...eventQueryOptions.guestStatus(Number(eventId)),
     enabled: isAuthenticated() && joinedStatus?.isMember,
+  });
+
+  useEventIntroSummaryFocus({
+    event,
+    isGuest: guestStatus?.isGuest,
+    locationKey: location.key,
   });
 
   if (!event) {
