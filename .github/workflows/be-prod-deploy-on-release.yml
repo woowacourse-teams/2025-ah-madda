@@ -81,7 +81,7 @@ jobs:
         working-directory: ./server
         run: |
           chmod +x ./gradlew
-          ./gradlew build -x test
+          ./gradlew build
 
       - name: Create deployment package
         run: |
