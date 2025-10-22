@@ -11,8 +11,6 @@ export type InviteCodeAPIResponse = {
 };
 
 export type OrganizationParticipateAPIRequest = {
-  nickname: string;
-  groupId: number;
   inviteCode: string;
 };
 
