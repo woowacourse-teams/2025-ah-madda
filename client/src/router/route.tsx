@@ -21,13 +21,13 @@ const ErrorPage = lazy(() =>
   }))
 );
 
-const InvitePage = lazy(() =>
-  import(/* webpackChunkName: "invite-pages" */ '@/features/Invite/page/InvitePage').then(
-    (module) => ({
-      default: module.InvitePage,
-    })
-  )
-);
+// const InvitePage = lazy(() =>
+//   import(/* webpackChunkName: "invite-pages" */ '@/features/Invite/page/InvitePage').then(
+//     (module) => ({
+//       default: module.InvitePage,
+//     })
+//   )
+// );
 
 const NewEventPage = lazy(() =>
   import(/* webpackChunkName: "new-event-pages" */ '@/features/Event/New/pages/NewEventPage').then(
@@ -83,10 +83,10 @@ export const router = createBrowserRouter(
           index: true,
           Component: HomePage,
         },
-        {
-          path: '/invite',
-          element: withSuspense(InvitePage),
-        },
+        // {
+        //   path: '/invite',
+        //   element: withSuspense(InvitePage),
+        // },
         {
           path: '/profile',
           Component: ProtectRoute,
@@ -123,7 +123,7 @@ export const router = createBrowserRouter(
               element: withSuspense(NewEventPage),
             },
             {
-              path: 'edit/:eventId',
+              path: ':eventId/edit',
               element: withSuspense(NewEventPage),
             },
             {
@@ -131,7 +131,7 @@ export const router = createBrowserRouter(
               Component: EventDetailPage,
             },
             {
-              path: 'manage/:eventId',
+              path: ':eventId/manage',
               Component: ProtectRoute,
               children: [
                 {

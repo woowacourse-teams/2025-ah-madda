@@ -50,7 +50,7 @@ export const EventCard = memo(function EventCard({
     trackClickEventCard(title);
 
     if (cardType === 'host') {
-      navigate(`/${organizationId}/event/manage/${eventId}`);
+      navigate(`/${organizationId}/event/${eventId}/manage`);
     } else {
       navigate(`/${organizationId}/event/${eventId}`);
     }
