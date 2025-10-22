@@ -1,5 +1,8 @@
 package com.ahmadda.infra.notification.mail;
 
+import com.ahmadda.infra.notification.mail.outbox.EmailOutboxRecipient;
+import com.ahmadda.infra.notification.mail.outbox.EmailOutboxRecipientRepository;
+import com.ahmadda.infra.notification.mail.outbox.EmailOutboxRepository;
 import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.ahmadda.infra.notification.mail;
+package com.ahmadda.infra.notification.mail.outbox;
 
 import com.ahmadda.infra.notification.mail.exception.EmailOutboxException;
 import lombok.RequiredArgsConstructor;
