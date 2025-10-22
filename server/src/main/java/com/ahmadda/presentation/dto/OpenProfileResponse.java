@@ -17,8 +17,10 @@ public record OpenProfileResponse(
                 openProfile.getName(),
                 openProfile.getEmail(),
                 openProfile.getPicture(),
-                openProfile.getOrganizationGroup().getId(),
-                openProfile.getOrganizationGroup().getName()
+                openProfile.getOrganizationGroup()
+                        .getId(),
+                openProfile.getOrganizationGroup()
+                        .getName()
         );
     }
 }
