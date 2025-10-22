@@ -1,8 +1,11 @@
 name: BE Prod Deploy On Release
 
 on:
-  release:
-    types: [published]
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 permissions: write-all
 
@@ -24,7 +27,7 @@ jobs:
         run: |
           git fetch --tags
 
-          base_tag=$(git tag -l 'v*.*.*' | grep -v '+be' | sort -V | tail -n 1)
+          base_tag=$(git tag -l 'v*.*.*'  | grep -v '+be' | sort -V | tail -n 1)
           base_version="${base_tag#v}"
 
           head=$(echo "$base_version" | cut -d'.' -f1)
