@@ -60,17 +60,32 @@ public class OrganizationController {
             @ApiResponse(
                     responseCode = "404",
                     content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Not Found",
-                                              "status": 404,
-                                              "detail": "존재하지 않는 회원입니다",
-                                              "instance": "/api/organizations"
-                                            }
-                                            """
-                            )
+                            examples = {
+                                    @ExampleObject(
+                                            name = "회원 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 회원입니다",
+                                                      "instance": "/api/organizations"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "오픈 프로필 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 프로필입니다.",
+                                                      "instance": "/api/organizations"
+                                                    }
+                                                    """
+                                    )
+                            }
                     )
             ),
             @ApiResponse(
@@ -209,6 +224,18 @@ public class OrganizationController {
                                                       "title": "Not Found",
                                                       "status": 404,
                                                       "detail": "존재하지 않는 회원입니다",
+                                                      "instance": "/api/organizations/{organizationId}/participation"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "오픈 프로필 없음",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Not Found",
+                                                      "status": 404,
+                                                      "detail": "존재하지 않는 프로필입니다.",
                                                       "instance": "/api/organizations/{organizationId}/participation"
                                                     }
                                                     """

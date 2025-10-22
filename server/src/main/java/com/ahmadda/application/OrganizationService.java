@@ -8,11 +8,11 @@ import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.member.OpenProfile;
+import com.ahmadda.domain.member.OpenProfileRepository;
 import com.ahmadda.domain.organization.InviteCode;
 import com.ahmadda.domain.organization.InviteCodeRepository;
 import com.ahmadda.domain.organization.Organization;
-import com.ahmadda.domain.organization.OrganizationGroup;
-import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.domain.organization.OrganizationImageFile;
 import com.ahmadda.domain.organization.OrganizationImageUploader;
 import com.ahmadda.domain.organization.OrganizationMember;
@@ -37,7 +37,7 @@ public class OrganizationService {
     private final MemberRepository memberRepository;
     private final InviteCodeRepository inviteCodeRepository;
     private final OrganizationImageUploader organizationImageUploader;
-    private final OrganizationGroupRepository organizationGroupRepository;
+    private final OpenProfileRepository openProfileRepository;
 
     @Transactional
     public Organization createOrganization(
@@ -46,7 +46,7 @@ public class OrganizationService {
             final LoginMember loginMember
     ) {
         Member member = getMember(loginMember);
-        OrganizationGroup group = getOrganizationGroup(organizationCreateRequest.groupId());
+        OpenProfile openProfile = getOpenProfile(member.getId());
 
         String uploadImageUrl = organizationImageUploader.upload(thumbnailOrganizationImageFile);
         Organization organization = Organization.create(
@@ -58,11 +58,11 @@ public class OrganizationService {
 
         OrganizationMember organizationMember =
                 OrganizationMember.create(
-                        organizationCreateRequest.nickname(),
+                        openProfile.getNickname(),
                         member,
                         organization,
                         OrganizationMemberRole.ADMIN,
-                        group
+                        openProfile.getOrganizationGroup()
                 );
         organizationMemberRepository.save(organizationMember);
 
@@ -81,19 +81,18 @@ public class OrganizationService {
             final OrganizationParticipateRequest organizationParticipateRequest
     ) {
         validateAlreadyParticipationMember(organizationId, loginMember);
-        validateDuplicateNickname(organizationId, organizationParticipateRequest.nickname());
 
         Organization organization = getOrganization(organizationId);
         Member member = getMember(loginMember);
         InviteCode inviteCode = getInviteCode(organizationParticipateRequest.inviteCode());
-        OrganizationGroup group = getOrganizationGroup(organizationParticipateRequest.groupId());
+        OpenProfile openProfile = getOpenProfile(member.getId());
 
         OrganizationMember organizationMember =
                 organization.participate(
                         member,
-                        organizationParticipateRequest.nickname(),
+                        openProfile.getNickname(),
                         inviteCode,
-                        group,
+                        openProfile.getOrganizationGroup(),
                         LocalDateTime.now()
                 );
 
@@ -144,12 +143,6 @@ public class OrganizationService {
         return organizationRepository.findAllOrderByActiveEventsDesc(currentDateTime);
     }
 
-    private void validateDuplicateNickname(final Long organizationId, final String nickname) {
-        if (organizationMemberRepository.existsByOrganizationIdAndNickname(organizationId, nickname)) {
-            throw new UnprocessableEntityException("이미 사용 중인 닉네임입니다.");
-        }
-    }
-
     private void validateAdmin(final OrganizationMember organizationMember) {
         if (!organizationMember.isAdmin()) {
             throw new ForbiddenException("이벤트 스페이스의 관리자만 삭제할 수 있습니다.");
@@ -195,8 +188,8 @@ public class OrganizationService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 구성원입니다."));
     }
 
-    private OrganizationGroup getOrganizationGroup(final Long groupId) {
-        return organizationGroupRepository.findById(groupId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 그룹입니다."));
+    private OpenProfile getOpenProfile(final Long memberId) {
+        return openProfileRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 프로필입니다."));
     }
 }

@@ -1,5 +1,6 @@
 package com.ahmadda.domain.organization;
 
+import com.ahmadda.domain.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -26,4 +27,6 @@ public interface OrganizationMemberRepository extends JpaRepository<Organization
     );
 
     List<OrganizationMember> findAllByOrganizationIdAndGroupId(final Long organizationId, final Long groupId);
+
+    List<OrganizationMember> findAllByMember(final Member member);
 }

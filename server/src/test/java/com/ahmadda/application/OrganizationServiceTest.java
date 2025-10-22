@@ -11,6 +11,8 @@ import com.ahmadda.domain.event.EventOperationPeriod;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.member.OpenProfile;
+import com.ahmadda.domain.member.OpenProfileRepository;
 import com.ahmadda.domain.organization.InviteCode;
 import com.ahmadda.domain.organization.InviteCodeRepository;
 import com.ahmadda.domain.organization.Organization;
@@ -57,6 +59,9 @@ class OrganizationServiceTest extends IntegrationTest {
     @Autowired
     private OrganizationGroupRepository organizationGroupRepository;
 
+    @Autowired
+    private OpenProfileRepository openProfileRepository;
+
     @Test
     void 이벤트_스페이스를_ID로_조회한다() {
         // given
@@ -79,9 +84,10 @@ class OrganizationServiceTest extends IntegrationTest {
     @Test
     void 이벤트_스페이스를_생성한다() {
         // given
-        var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        var member = memberRepository.save(Member.create("서프", "user1@test.com", "testPicture"));
         var group = createGroup();
-        var request = createOrganizationCreateRequest("이벤트 스페이스명", "이벤트 스페이스 설명", "서프", group.getId());
+        var openProfile = createOpenProfile(member, group);
+        var request = createOrganizationCreateRequest("이벤트 스페이스명", "이벤트 스페이스 설명");
         var thumbnailImageFile = createImageFile("test.png");
 
         // when
@@ -117,18 +123,6 @@ class OrganizationServiceTest extends IntegrationTest {
         });
     }
 
-    @Test
-    void 이벤트_스페이스를_생성시_존재하지_않는_그룹으로_생성하면_예외가_발생한다() {
-        // given
-        var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
-        var request = createOrganizationCreateRequest("이벤트 스페이스명", "이벤트 스페이스 설명", "서프", 999L);
-        var thumbnailImageFile = createImageFile("test.png");
-
-        // when // then
-        assertThatThrownBy(() -> sut.createOrganization(request, thumbnailImageFile, new LoginMember(member.getId())))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 그룹입니다.");
-    }
 
     @Test
     void 존재하지_않는_이벤트_스페이스_ID로_조회하면_예외가_발생한다() {
@@ -136,6 +130,19 @@ class OrganizationServiceTest extends IntegrationTest {
         assertThatThrownBy(() -> sut.getOrganizationById(999L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 이벤트 스페이스입니다.");
+    }
+
+    @Test
+    void 오픈_프로필이_없는_회원으로_이벤트_스페이스_생성시_예외가_발생한다() {
+        // given
+        var member = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        var request = createOrganizationCreateRequest("이벤트 스페이스명", "이벤트 스페이스 설명");
+        var thumbnailImageFile = createImageFile("test.png");
+
+        // when // then
+        assertThatThrownBy(() -> sut.createOrganization(request, thumbnailImageFile, new LoginMember(member.getId())))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 프로필입니다.");
     }
 
     @Test
@@ -148,8 +155,9 @@ class OrganizationServiceTest extends IntegrationTest {
         var inviter = createOrganizationMember("surf", member2, organization, OrganizationMemberRole.USER, group);
         var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
 
+        var openProfile1 = createOpenProfile(member1, group);
         var loginMember = new LoginMember(member1.getId());
-        var request = new OrganizationParticipateRequest("nickname", inviteCode.getCode(), group.getId());
+        var request = new OrganizationParticipateRequest(inviteCode.getCode());
 
         // when
         var organizationMember = sut.participateOrganization(organization.getId(), loginMember, request);
@@ -172,8 +180,9 @@ class OrganizationServiceTest extends IntegrationTest {
         var inviter = createOrganizationMember("tuda", member2, organization, OrganizationMemberRole.USER, group);
         var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
 
+        var openProfile1 = createOpenProfile(member1, group);
         var loginMember = new LoginMember(member1.getId());
-        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode(), group.getId());
+        var request = new OrganizationParticipateRequest(inviteCode.getCode());
 
         // when // then
         assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
@@ -181,24 +190,6 @@ class OrganizationServiceTest extends IntegrationTest {
                 .hasMessage("이미 참여한 이벤트 스페이스입니다.");
     }
 
-    @Test
-    void 존재하지_않는_그룹으로_이벤트_스페이스에_참여한다면_예외가_발생한다() {
-        // given
-        var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
-        var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
-        var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        var group = createGroup();
-        var inviter = createOrganizationMember("tuda", member2, organization, OrganizationMemberRole.USER, group);
-        var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
-
-        var loginMember = new LoginMember(member1.getId());
-        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode(), 999L);
-
-        // when // then
-        assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 그룹입니다.");
-    }
 
     @Test
     void 존재하지_않는_이벤트_스페이스에_참여한다면_예외가_발생한다() {
@@ -210,8 +201,9 @@ class OrganizationServiceTest extends IntegrationTest {
         var inviter = createOrganizationMember("surf", member2, organization, OrganizationMemberRole.USER, group);
         var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
 
+        var openProfile1 = createOpenProfile(member1, group);
         var loginMember = new LoginMember(member1.getId());
-        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode(), group.getId());
+        var request = new OrganizationParticipateRequest(inviteCode.getCode());
 
         // when // then
         assertThatThrownBy(() -> sut.participateOrganization(999L, loginMember, request))
@@ -229,7 +221,7 @@ class OrganizationServiceTest extends IntegrationTest {
         var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
 
         var loginMember = new LoginMember(999L);
-        var request = new OrganizationParticipateRequest("new_nickname", inviteCode.getCode(), group.getId());
+        var request = new OrganizationParticipateRequest(inviteCode.getCode());
 
         // when // then
         assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
@@ -244,13 +236,33 @@ class OrganizationServiceTest extends IntegrationTest {
         var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
 
         var group = createGroup();
+        var openProfile = createOpenProfile(member, group);
         var loginMember = new LoginMember(member.getId());
-        var request = new OrganizationParticipateRequest("new_nickname", "notFoundCode", group.getId());
+        var request = new OrganizationParticipateRequest("notFoundCode");
 
         // when // then
         assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("잘못된 초대코드입니다.");
+    }
+
+    @Test
+    void 오픈_프로필이_없는_회원으로_이벤트_스페이스_참여시_예외가_발생한다() {
+        // given
+        var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
+        var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
+        var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
+        var group = createGroup();
+        var inviter = createOrganizationMember("surf", member2, organization, OrganizationMemberRole.USER, group);
+        var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
+
+        var loginMember = new LoginMember(member1.getId());
+        var request = new OrganizationParticipateRequest(inviteCode.getCode());
+
+        // when // then
+        assertThatThrownBy(() -> sut.participateOrganization(organization.getId(), loginMember, request))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 프로필입니다.");
     }
 
     @Test
@@ -450,58 +462,29 @@ class OrganizationServiceTest extends IntegrationTest {
             var user = memberRepository.save(Member.create("user", i + "user@test.com", "pic"));
             var loginMember = new LoginMember(user.getId());
 
+            var openProfile = createOpenProfile(user, group);
             sut.participateOrganization(
                     organization.getId(),
                     loginMember,
-                    new OrganizationParticipateRequest("parti" + i, inviteCode.getCode(), group.getId())
+                    new OrganizationParticipateRequest(inviteCode.getCode())
             );
         }
 
         var cannotParticipateUser =
                 memberRepository.save(Member.create("cannotparticipate", "cannotparticiapteuser@test.com", "pic"));
+        var openProfile = createOpenProfile(cannotParticipateUser, group);
         var loginMember = new LoginMember(cannotParticipateUser.getId());
 
         // when // then
         assertThatThrownBy(() -> sut.participateOrganization(
                 organization.getId(),
                 loginMember,
-                new OrganizationParticipateRequest("cannotpar", inviteCode.getCode(), group.getId())
+                new OrganizationParticipateRequest(inviteCode.getCode())
         ))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("이벤트 스페이스에 이미 정원이 가득차 참여할 수 없습니다.");
     }
 
-    @Test
-    void 이미_같은_이름의_사용자가_존재한다면_가입하려하면_예외가_발생한다() {
-        // given
-        var member1 = memberRepository.save(Member.create("user1", "user1@test.com", "testPicture"));
-        var member2 = memberRepository.save(Member.create("user2", "user2@test.com", "testPicture"));
-        var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        var group = createGroup();
-        var inviter = createOrganizationMember("surf", member2, organization, OrganizationMemberRole.USER, group);
-        var inviteCode = createInviteCode("code", organization, inviter, LocalDateTime.now());
-
-        var loginMember = new LoginMember(member1.getId());
-        var request = new OrganizationParticipateRequest("newname", inviteCode.getCode(), group.getId());
-
-        sut.participateOrganization(organization.getId(), loginMember, request);
-
-        var duplicateNameMember =
-                memberRepository.save(Member.create("dupliName", "user3@test.com", "testPicture"));
-        var duplicateName = "surf";
-        var duplicateNameRequest =
-                new OrganizationParticipateRequest(duplicateName, inviteCode.getCode(), group.getId());
-        var duplicateLoginMember = new LoginMember(duplicateNameMember.getId());
-
-        // when // then
-        assertThatThrownBy(() -> sut.participateOrganization(
-                organization.getId(),
-                duplicateLoginMember,
-                duplicateNameRequest
-        ))
-                .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("이미 사용 중인 닉네임입니다.");
-    }
 
     @Test
     void 활성_이벤트가_많은_이벤트_스페이스_순으로_조회된다() {
@@ -546,11 +529,9 @@ class OrganizationServiceTest extends IntegrationTest {
 
     private OrganizationCreateRequest createOrganizationCreateRequest(
             String name,
-            String description,
-            String nickname,
-            Long groupId
+            String description
     ) {
-        return new OrganizationCreateRequest(name, description, nickname, groupId);
+        return new OrganizationCreateRequest(name, description);
     }
 
     private OrganizationMember createOrganizationMember(
@@ -590,6 +571,10 @@ class OrganizationServiceTest extends IntegrationTest {
 
     private OrganizationGroup createGroup() {
         return organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
+    }
+
+    private OpenProfile createOpenProfile(Member member, OrganizationGroup group) {
+        return openProfileRepository.save(OpenProfile.create(member, group));
     }
 
     private Event createEvent(
