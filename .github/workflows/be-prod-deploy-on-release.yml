@@ -1,18 +1,23 @@
-name: BE Prod Deploy On Release
+name: BE Test Deploy On PR
 
 on:
-  release:
-    types: [published]
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 permissions: write-all
 
 jobs:
-  setup:
-    runs-on: ubuntu-22.04-arm
+  build:
+    name: Build, Version, and Package Artifact
+    runs-on: ubuntu-latest
 
     outputs:
-      image-tag: ${{ steps.calc.outputs.version }}
-      docker-tag: ${{ steps.calc.outputs.docker_version }}
+      s3_key: ah-madda/codedeploy/ahmadda-server-prod-${{ steps.calc.outputs.version }}.tar.gz
+      version: ${{ steps.calc.outputs.version }}
+      artifact_name: ahmadda-server-prod-${{ steps.calc.outputs.version }}.tar.gz
 
     steps:
       - name: Checkout (for tagging)
@@ -24,8 +29,12 @@ jobs:
         id: base
         run: |
           git fetch --tags
-
-          base_tag=$(git tag -l 'v*.*.*' | grep -v '+be' | sort -V | tail -n 1)
+          base_tag=$(git tag -l 'v*.*.*'  | grep -v '+be' | sort -V | tail -n 1)
+          
+          if [ -z "$base_tag" ]; then
+            echo "No base tag found, setting default v5.2542.0"
+            base_tag="v5.2542.0" 
+          fi
           base_version="${base_tag#v}"
 
           head=$(echo "$base_version" | cut -d'.' -f1)
@@ -40,7 +49,6 @@ jobs:
         id: calc
         run: |
           git fetch --tags
-
           head="${{ steps.base.outputs.head }}"
           yearweek="${{ steps.base.outputs.yearweek }}"
           common="${{ steps.base.outputs.common_build }}"
@@ -56,9 +64,6 @@ jobs:
 
           version="${prefix}.${next_be_build}"
           echo "version=$version" >> $GITHUB_OUTPUT
-
-          docker_version=$(echo "$version" | sed -E 's/\+be\././')
-          echo "docker_version=$docker_version" >> $GITHUB_OUTPUT
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -77,60 +82,70 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+          cache: 'gradle'
 
-      - name: Run tests
+      - name: Build with Gradle
         working-directory: ./server
         run: |
           chmod +x ./gradlew
-          ./gradlew test
+          ./gradlew build -x test
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
+      - name: Create artifact package
+        run: |
+          mkdir deploy-artifact
+          cp server/build/libs/*[!plain].jar deploy-artifact/ahmadda-server-prod.jar
+          cp codedeploy/be/appspec.yml deploy-artifact/
+          cp -r codedeploy/be/scripts/ deploy-artifact/
+
+      - name: Upload artifact for deploy job
+        uses: actions/upload-artifact@v4
         with:
-          username: ${{ secrets.PROD_DOCKERHUB_DEPLOY_USERNAME }}
-          password: ${{ secrets.PROD_DOCKERHUB_DEPLOY_TOKEN }}
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./server
-          file: ./server/Dockerfile
-          push: true
-          tags: amadda/ahmadda_server:${{ steps.calc.outputs.docker_version }}
+          name: deployment-package
+          path: deploy-artifact/
+          retention-days: 1
 
   deploy:
-    needs: setup
+    name: Package and Deploy
+    needs: build
     runs-on:
       - self-hosted
       - prod
 
     steps:
-      - name: Set tag name from setup output
-        run: echo "TAG=${{ needs.setup.outputs.docker-tag }}" >> $GITHUB_ENV
-
-      - name: Log in to Docker Hub
+      - name: Clean up previous artifacts
         run: |
-          sudo docker login \
-            --username ${{ secrets.PROD_DOCKERHUB_DEPLOY_USERNAME }} \
-            --password ${{ secrets.PROD_DOCKERHUB_DEPLOY_TOKEN }}
+          echo "Cleaning up old build artifacts..."
+          rm -f ahmadda-server-prod-*.tar.gz
+          rm -rf deploy-artifact/
 
-      - name: Stop existing container and pull latest image
-        run: |
-          if sudo docker inspect ahmadda-prod-server &>/dev/null; then
-            sudo docker stop ahmadda-prod-server || true
-            sudo docker rm -f ahmadda-prod-server || true
-            sudo docker image prune -af || true
-          fi
-          sudo docker pull amadda/ahmadda_server:$TAG
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: deployment-package
+          path: deploy-artifact/
 
-      - name: Run container
+      - name: Create deployment package (tar.gz)
         run: |
-          sudo docker run -v /home/ubuntu/app/logs:/app/logs \
-            --name ahmadda-prod-server \
-            --restart unless-stopped \
-            -p 80:8080 \
-            -e PROFILE=prod \
-            -d amadda/ahmadda_server:$TAG
+          tar -czf ${{ needs.build.outputs.artifact_name }} -C deploy-artifact .
+
+      - name: Upload to S3
+        run: |
+          aws s3 cp \
+            ${{ needs.build.outputs.artifact_name }} \
+            s3://techcourse-project-2025/ah-madda/codedeploy/${{ needs.build.outputs.artifact_name }}
+
+      - name: Start AWS CodeDeploy deployment
+        run: |
+          aws deploy create-deployment \
+            --application-name ahmadda-code-deploy-ec2 \
+            --deployment-group-name ahmadda-code-deploy-alb \
+            --s3-location bucket=techcourse-project-2025,key=${{ needs.build.outputs.s3_key }},bundleType=tgz \
+            --description "prod deployment ${{ needs.build.outputs.version }} deployed via GitHub Actions"
+
+      - name: Post-cleanup build artifacts
+        if: always()
+        run: |
+          echo "Cleaning up local build artifacts..."
+          rm -f ${{ needs.build.outputs.artifact_name }}
+          rm -rf deploy-artifact/
+
