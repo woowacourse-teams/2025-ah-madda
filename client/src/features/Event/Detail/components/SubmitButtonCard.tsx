@@ -1,7 +1,6 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { css } from '@emotion/react';
-import { useQuery } from '@tanstack/react-query';
 
 import { isAuthenticated } from '@/api/auth';
 import { useCancelParticipation } from '@/api/mutations/useCancelParticipation';
@@ -56,6 +55,40 @@ export const SubmitButtonCard = ({
 
   const { isOpen, open, close } = useModal();
 
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const focusedOnceRef = useRef(false);
+
+  useEffect(() => {
+    if (!focusedOnceRef.current && !buttonState.disabled) {
+      focusedOnceRef.current = true;
+      requestAnimationFrame(() => btnRef.current?.focus());
+    }
+  }, [buttonState.disabled]);
+
+  const setDescribedByInOrder = useCallback(() => {
+    const btn = btnRef.current;
+    if (!btn) return;
+
+    const ids: string[] = [];
+    const intro = document.getElementById('event-intro-desc');
+    if (intro) ids.push('event-intro-desc');
+
+    if (ids.length) btn.setAttribute('aria-describedby', ids.join(' '));
+    else btn.removeAttribute('aria-describedby');
+  }, []);
+
+  const onFocus: React.FocusEventHandler<HTMLButtonElement> = () => {
+    setDescribedByInOrder();
+  };
+
+  const onKeyDown: React.KeyboardEventHandler<HTMLButtonElement> = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (buttonState.action === 'cancel') handleCancelParticipateClick();
+      else if (buttonState.action === 'participate') handleParticipantClick();
+    }
+  };
+
   const handleParticipantClick = () => {
     if (!isAuthenticated() || !isMember) {
       open();
@@ -67,14 +100,16 @@ export const SubmitButtonCard = ({
       onSuccess: () => {
         onResetAnswers();
         success('✅ 참가 신청이 완료되었습니다.');
-        announce('참가 신청이 완료되었습니다. 버튼 재클릭 시 참가 신청을 취소할 수 있습니다.');
-        const btn = document.getElementById('event-submit-button') as HTMLButtonElement | null;
-        btn?.focus();
+        announce(
+          '참가 신청이 완료되었습니다. 버튼 재클릭 시 참가 신청을 취소할 수 있습니다.',
+          'polite'
+        );
+        btnRef.current?.focus();
       },
       onError: (err: unknown) => {
         const msg = getErrorMessage(err, '신청에 실패했어요.');
         error(`❌ ${msg}`);
-        announce(`신청에 실패했습니다. ${msg}`);
+        announce(`신청에 실패했습니다. ${msg}`, 'assertive');
       },
     });
   };
@@ -88,43 +123,15 @@ export const SubmitButtonCard = ({
     cancelParticipateMutate(undefined, {
       onSuccess: () => {
         success('✅ 참가 신청이 취소되었습니다.');
-        announce('참가 신청이 취소되었습니다. 버튼 재클릭 시 참가 신청할 수 있습니다.');
-        const btn = document.getElementById('event-submit-button') as HTMLButtonElement | null;
-        btn?.focus();
+        announce('참가 신청이 취소되었습니다. 버튼 재클릭 시 참가 신청할 수 있습니다.', 'polite');
+        btnRef.current?.focus();
       },
       onError: (err: unknown) => {
         const msg = getErrorMessage(err, '취소에 실패했어요.');
         error(`❌ ${msg}`);
-        announce(`참가 취소에 실패했습니다. ${msg}`);
+        announce(`참가 취소에 실패했습니다. ${msg}`, 'assertive');
       },
     });
-  };
-
-  const onKeyDown: React.KeyboardEventHandler<HTMLButtonElement> = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      if (buttonState.action === 'cancel') handleCancelParticipateClick();
-      else if (buttonState.action === 'participate') handleParticipantClick();
-    }
-  };
-
-  const ariaLabel = buttonState.action === 'cancel' ? '신청 취소 버튼' : '신청 하기 버튼';
-
-  const btnRef = useRef<HTMLButtonElement>(null);
-  const setDescribedByInOrder = useCallback(() => {
-    const btn = btnRef.current;
-    if (!btn) return;
-
-    const ids: string[] = [];
-    if (document.getElementById('event-intro-desc')) ids.push('event-intro-desc');
-    if (document.getElementById('event-submit-hint')) ids.push('event-submit-hint');
-
-    if (ids.length) btn.setAttribute('aria-describedby', ids.join(' '));
-    else btn.removeAttribute('aria-describedby');
-  }, []);
-
-  const onFocus: React.FocusEventHandler<HTMLButtonElement> = () => {
-    setDescribedByInOrder();
   };
 
   return (
@@ -141,8 +148,6 @@ export const SubmitButtonCard = ({
       >
         <Button
           ref={btnRef}
-          id="event-submit-button"
-          aria-label={ariaLabel}
           aria-live="off"
           size="full"
           color={buttonState.color}

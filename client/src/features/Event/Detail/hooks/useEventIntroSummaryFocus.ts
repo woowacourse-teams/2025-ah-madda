@@ -43,10 +43,9 @@ export function useEventIntroSummaryFocus(params: {
   isGuest?: boolean;
   locationKey: string;
 }) {
-  const { event, isGuest, locationKey } = params;
+  const { event, isGuest } = params;
 
   const lastSummaryRef = useRef<string | null>(null);
-  const focusedOnceRef = useRef(false);
 
   const summary = useMemo(() => {
     if (!event) return '';
@@ -84,17 +83,22 @@ export function useEventIntroSummaryFocus(params: {
             ? '아직 신청하지 않은 이벤트입니다. 사전 질문을 모두 작성하면 신청할 수 있습니다.'
             : '마감된 이벤트입니다.';
 
+    const organizerText =
+      event.organizerNicknames.length === 0
+        ? '주최자 정보 없음'
+        : event.organizerNicknames.length <= 3
+          ? event.organizerNicknames.join(', ')
+          : `${event.organizerNicknames.slice(0, 3).join(', ')} 외 ${
+              event.organizerNicknames.length - 3
+            }명`;
+
     return [
       titlePart,
       `장소: ${event.place}.`,
       timePart,
       event.description ? `이벤트 소개: ${event.description}.` : '',
       `마감 시간: ${spokenSingle(event.registrationEnd)}까지.`,
-      `주최자: ${
-        event.organizerNicknames.length <= 3
-          ? event.organizerNicknames.join(', ')
-          : `${event.organizerNicknames.slice(0, 3).join(', ')} 외 ${event.organizerNicknames.length - 3}명`
-      }.`,
+      `주최자: ${organizerText}.`,
       capPart,
       ...qParts,
       buttonSummary,
@@ -104,13 +108,7 @@ export function useEventIntroSummaryFocus(params: {
   }, [event, isGuest]);
 
   useEffect(() => {
-    if (!event || !summary) return;
-
-    const btn = document.getElementById('event-submit-button') as HTMLButtonElement | null;
-    if (!btn || btn.disabled) return;
-
-    if (lastSummaryRef.current === summary) return;
-    lastSummaryRef.current = summary;
+    if (!summary) return;
 
     let intro = document.getElementById('event-intro-desc') as HTMLElement | null;
     if (!intro) {
@@ -123,38 +121,10 @@ export function useEventIntroSummaryFocus(params: {
       intro.style.overflow = 'hidden';
       document.body.appendChild(intro);
     }
-    intro.textContent = summary;
 
-    const addDescribedBy = (el: HTMLElement, id: string) => {
-      const prev = el.getAttribute('aria-describedby');
-      const tokens = new Set((prev ?? '').split(/\s+/).filter(Boolean));
-      el.setAttribute('aria-describedby', Array.from(tokens.add(id)).join(' '));
-    };
-
-    const removeDescribedBy = (el: HTMLElement, id: string) => {
-      const prev = el.getAttribute('aria-describedby');
-      if (!prev) return;
-      const next = prev
-        .split(/\s+/)
-        .filter((x) => x && x !== id)
-        .join(' ');
-      if (next) el.setAttribute('aria-describedby', next);
-      else el.removeAttribute('aria-describedby');
-    };
-
-    if (!focusedOnceRef.current) {
-      focusedOnceRef.current = true;
-      requestAnimationFrame(() =>
-        requestAnimationFrame(() => {
-          addDescribedBy(btn, 'event-intro-desc');
-          btn.focus();
-          const onBlur = () => {
-            removeDescribedBy(btn, 'event-intro-desc');
-            btn.removeEventListener('blur', onBlur);
-          };
-          btn.addEventListener('blur', onBlur);
-        })
-      );
+    if (lastSummaryRef.current !== summary) {
+      lastSummaryRef.current = summary;
+      intro.textContent = summary;
     }
-  }, [event, summary, locationKey]);
+  }, [summary]);
 }
