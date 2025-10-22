@@ -6,6 +6,7 @@ import { isAuthenticated } from '@/api/auth';
 import { OrganizationAPIResponse } from '@/api/types/organizations';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
+import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
@@ -20,22 +21,23 @@ export const OrgSection = ({ organizations }: OrgSectionProps) => {
   const handleJoin = (orgId: number) => navigate(`/${orgId}/event`);
 
   return (
-    <Flex dir="column" gap="24px" margin="60px 0 0 0" padding="40px 20px 0 20px">
+    <Flex dir="column" margin="60px 0 0 0" padding="40px 20px 0 20px">
       <Flex
         dir="row"
         justifyContent="space-between"
-        alignItems="flex-start"
-        gap="8px"
+        alignItems="flex-end"
         width="100%"
-        margin="0 0 30px 0"
+        margin="0 0 20px 0"
         css={css`
           @media (max-width: 768px) {
-            align-items: flex-start;
+            flex-direction: column;
+            align-items: flex-end;
+
             gap: 10px;
           }
         `}
       >
-        <Flex dir="column" gap="8px" alignItems="flex-start">
+        <Flex dir="column" gap="8px" alignItems="flex-start" width="100%">
           <Text as="h1" type="Display" weight="bold">
             스페이스 목록 ({organizations.length})
           </Text>
@@ -45,7 +47,7 @@ export const OrgSection = ({ organizations }: OrgSectionProps) => {
           </Text>
         </Flex>
         {isAuthenticated() && (
-          <Flex dir="column" gap="8px" alignItems="flex-end">
+          <Flex dir="column" gap="8px" alignItems="flex-end" width="100%">
             <Button
               size="md"
               color="primary"
