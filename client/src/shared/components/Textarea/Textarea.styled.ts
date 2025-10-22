@@ -32,6 +32,10 @@ export const StyledTextarea = styled.textarea<{ isError: boolean }>`
       outline-color: ${theme.colors.red500};
       box-shadow: 0 0 0 4px ${theme.colors.red100};
     `}
+
+  @supports (-webkit-touch-callout: none) {
+    font-size: 16px;
+  }
 `;
 
 export const StyledHelperText = styled.p<{ isError: boolean }>`

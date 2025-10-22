@@ -58,6 +58,10 @@ export const StyledInput = styled.input<{
     opacity: 0;
     pointer-events: none;
   }
+
+  @supports (-webkit-touch-callout: none) {
+    font-size: 16px;
+  }
 `;
 
 export const StyledHelperText = styled.p<{ isError: boolean }>`
