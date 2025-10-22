@@ -12,10 +12,10 @@ for (( i=1; i<=$TIMEOUT; i++ )); do
     echo "Validation successful! (Status: $STATUS_CODE)"
     exit 0
   else
-    echo "Validation attempt $i/$TIMEOUT failed (Status: $STATUS_CODE). Retrying in 1s..."
+    echo "Validation attempt $i/$TIMEOUT failed (Status: $STATUS_CODE). Retrying in 3s..."
   fi
 
-  sleep 1
+  sleep 3
 done
 
 echo "Service validation failed after $TIMEOUT seconds."
