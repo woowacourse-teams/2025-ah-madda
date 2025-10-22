@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  type FocusEventHandler,
+  type KeyboardEventHandler,
+} from 'react';
 
 import { css } from '@emotion/react';
 
@@ -77,11 +83,11 @@ export const SubmitButtonCard = ({
     else btn.removeAttribute('aria-describedby');
   }, []);
 
-  const handleSubmitButtonFocusDescribe: React.FocusEventHandler<HTMLButtonElement> = () => {
+  const handleSubmitButtonFocusDescribe: FocusEventHandler<HTMLButtonElement> = () => {
     setDescribedByInOrder();
   };
 
-  const handleSubmitButtonKeyActivate: React.KeyboardEventHandler<HTMLButtonElement> = (e) => {
+  const handleSubmitButtonKeyActivate: KeyboardEventHandler<HTMLButtonElement> = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       if (buttonState.action === 'cancel') handleCancelParticipateClick();
