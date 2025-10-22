@@ -10,7 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +18,6 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
-@Table(name = "open_profile")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE open_profile SET deleted_at = CURRENT_TIMESTAMP WHERE open_profile_id = ?")
@@ -30,7 +29,7 @@ public class OpenProfile extends BaseEntity {
     @Column(name = "open_profile_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
@@ -38,27 +37,30 @@ public class OpenProfile extends BaseEntity {
     @JoinColumn(name = "organization_group_id", nullable = false)
     private OrganizationGroup organizationGroup;
 
+    @Column(nullable = false)
+    private String nickName;
+
     private OpenProfile(
             final Member member,
+            final String nickName,
             final OrganizationGroup organizationGroup
     ) {
         this.member = member;
+        this.nickName = nickName;
         this.organizationGroup = organizationGroup;
     }
 
     public static OpenProfile create(
             final Member member,
+            final String nickName,
             final OrganizationGroup organizationGroup
     ) {
-        return new OpenProfile(member, organizationGroup);
+        return new OpenProfile(member, nickName, organizationGroup);
     }
 
-    public void updateProfile(final OrganizationGroup organizationGroup) {
+    public void updateProfile(final String nickName, final OrganizationGroup organizationGroup) {
+        this.nickName = nickName;
         this.organizationGroup = organizationGroup;
-    }
-
-    public String getName() {
-        return member.getName();
     }
 
     public String getEmail() {

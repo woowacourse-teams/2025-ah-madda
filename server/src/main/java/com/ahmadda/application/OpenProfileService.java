@@ -40,7 +40,7 @@ public class OpenProfileService {
         OpenProfile openProfile = getOpenProfile(loginMember);
         OrganizationGroup organizationGroup = getOrganizationGroup(request.groupId());
 
-        openProfile.updateProfile(organizationGroup);
+        openProfile.updateProfile(request.nickname(), organizationGroup);
 
         List<OrganizationMember> organizationMembers =
                 organizationMemberRepository.findAllByMember(openProfile.getMember());

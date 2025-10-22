@@ -32,6 +32,8 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class LoginService {
 
+    private static final String DEFAULT_GROUP_NAME = "기타";
+
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final GoogleOAuthProvider googleOAuthProvider;
@@ -42,9 +44,6 @@ public class LoginService {
     private final HashEncoder hashEncoder;
     private final OpenProfileRepository openProfileRepository;
     private final OrganizationGroupRepository organizationGroupRepository;
-
-    private static final Long DEFAULT_GROUP_ID = 5L;
-    private static final String DEFAULT_GROUP_NAME = "기타";
 
     @Transactional
     public MemberToken login(final String code, final String redirectUri, final String userAgent) {
@@ -103,15 +102,16 @@ public class LoginService {
 
     private void createOpenProfile(final Member member) {
         OrganizationGroup defaultGroup = getDefaultOrganizationGroup();
-        OpenProfile openProfile = OpenProfile.create(member, defaultGroup);
+        OpenProfile openProfile = OpenProfile.create(member, member.getName(), defaultGroup);
 
         openProfileRepository.save(openProfile);
     }
 
     private OrganizationGroup getDefaultOrganizationGroup() {
-        return organizationGroupRepository.findById(LoginService.DEFAULT_GROUP_ID)
+        return organizationGroupRepository.findByName(DEFAULT_GROUP_NAME)
                 .orElseGet(() -> {
                     OrganizationGroup defaultGroup = OrganizationGroup.create(DEFAULT_GROUP_NAME);
+
                     return organizationGroupRepository.save(defaultGroup);
                 });
     }

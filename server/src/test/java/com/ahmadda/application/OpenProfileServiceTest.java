@@ -106,8 +106,12 @@ class OpenProfileServiceTest extends IntegrationTest {
                 .orElseThrow();
 
         // then
-        assertThat(updated.getOrganizationGroup()
-                .getId()).isEqualTo(newGroup.getId());
+        assertSoftly(softly -> {
+            assertThat(updated.getOrganizationGroup()
+                    .getId()).isEqualTo(newGroup.getId());
+            assertThat(updated.getNickName())
+                    .isEqualTo("새닉네임");
+        });
     }
 
     @Test
@@ -179,7 +183,7 @@ class OpenProfileServiceTest extends IntegrationTest {
     }
 
     private OpenProfile createOpenProfile(Member member, OrganizationGroup group) {
-        return openProfileRepository.save(OpenProfile.create(member, group));
+        return openProfileRepository.save(OpenProfile.create(member, member.getName(), group));
     }
 
     private Organization createOrganization(String name) {
