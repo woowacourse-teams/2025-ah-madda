@@ -10,8 +10,7 @@ on:
 permissions: write-all
 
 jobs:
-  build:
-    name: Build, Version, and Package Artifact
+  setup:
     runs-on: ubuntu-latest
 
     outputs:
@@ -105,8 +104,7 @@ jobs:
           retention-days: 1
 
   deploy:
-    name: Package and Deploy
-    needs: build
+    needs: setup
     runs-on:
       - self-hosted
       - prod
@@ -126,26 +124,26 @@ jobs:
 
       - name: Create deployment package (tar.gz)
         run: |
-          tar -czf ${{ needs.build.outputs.artifact_name }} -C deploy-artifact .
+          tar -czf ${{ needs.setup.outputs.artifact_name }} -C deploy-artifact .
 
       - name: Upload to S3
         run: |
           aws s3 cp \
-            ${{ needs.build.outputs.artifact_name }} \
-            s3://techcourse-project-2025/ah-madda/codedeploy/${{ needs.build.outputs.artifact_name }}
+            ${{ needs.setup.outputs.artifact_name }} \
+            s3://techcourse-project-2025/ah-madda/codedeploy/${{ needs.setup.outputs.artifact_name }}
 
       - name: Start AWS CodeDeploy deployment
         run: |
           aws deploy create-deployment \
             --application-name ahmadda-code-deploy-ec2 \
             --deployment-group-name ahmadda-code-deploy-alb \
-            --s3-location bucket=techcourse-project-2025,key=${{ needs.build.outputs.s3_key }},bundleType=tgz \
-            --description "prod deployment ${{ needs.build.outputs.version }} deployed via GitHub Actions"
+            --s3-location bucket=techcourse-project-2025,key=${{ needs.setup.outputs.s3_key }},bundleType=tgz \
+            --description "prod deployment ${{ needs.setup.outputs.version }} deployed via GitHub Actions"
 
       - name: Post-cleanup build artifacts
         if: always()
         run: |
           echo "Cleaning up local build artifacts..."
-          rm -f ${{ needs.build.outputs.artifact_name }}
+          rm -f ${{ needs.setup.outputs.artifact_name }}
           rm -rf deploy-artifact/
 
