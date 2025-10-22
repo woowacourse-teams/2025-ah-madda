@@ -1,3 +1,10 @@
+server:
+  tomcat:
+    mbean-registry:
+      enabled: true
+    threads:
+      max: 200
+
 spring:
   datasource:
     replication:
@@ -64,13 +71,6 @@ aws:
   s3:
     bucket: ${aws.prod.s3.bucket}
     folder: ${aws.prod.s3.folder}
-
-server:
-  tomcat:
-    mbean-registry:
-      enabled: true
-    threads:
-      max: 200
 
 management:
   metrics:
