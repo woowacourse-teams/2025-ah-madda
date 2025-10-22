@@ -123,7 +123,7 @@ export const router = createBrowserRouter(
               element: withSuspense(NewEventPage),
             },
             {
-              path: 'edit/:eventId',
+              path: ':eventId/edit',
               element: withSuspense(NewEventPage),
             },
             {
@@ -131,7 +131,7 @@ export const router = createBrowserRouter(
               Component: EventDetailPage,
             },
             {
-              path: 'manage/:eventId',
+              path: ':eventId/manage',
               Component: ProtectRoute,
               children: [
                 {

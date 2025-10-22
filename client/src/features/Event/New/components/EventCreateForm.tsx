@@ -251,14 +251,14 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     clear();
     trackCreateEvent();
     success('😁 이벤트가 성공적으로 생성되었습니다!');
-    navigate(`/${organizationId}/event/${eventId}`);
+    navigate(`/${organizationId}/event/${eventId}/manage`);
   };
 
   const submitUpdate = async (eventId: number, payload: ReturnType<typeof buildPayload>) => {
     await updateEvent({ eventId, payload });
     clear();
     success('😁 이벤트가 성공적으로 수정되었습니다!');
-    navigate(`/${organizationId}/event/${eventId}`);
+    navigate(`/${organizationId}/event/${eventId}/manage`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
