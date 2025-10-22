@@ -14,7 +14,7 @@ export const OrganizationOverviewPage = () => {
 
   return (
     <PageLayout>
-      <Flex dir="column" width="100%" margin="0 auto" padding="28px 20px" gap="24px">
+      <Flex dir="column" gap="24px" padding="20px 0 0 0">
         <OrgSection organizations={organizations} />
       </Flex>
     </PageLayout>
