@@ -1,4 +1,4 @@
-name: BE Test Deploy On PR
+name: BE Prod Deploy On Release
 
 on:
   pull_request:
@@ -81,13 +81,13 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-          cache: 'gradle'
+          cache: gradle
 
       - name: Build with Gradle
         working-directory: ./server
         run: |
           chmod +x ./gradlew
-          ./gradlew build -x test
+          ./gradlew build
 
       - name: Create artifact package
         run: |
