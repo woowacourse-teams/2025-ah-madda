@@ -1,6 +1,6 @@
 package com.ahmadda.domain.notification;
 
-import com.ahmadda.annotation.IntegrationTest;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.thymeleaf.TemplateEngine;
@@ -10,8 +10,7 @@ import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-@IntegrationTest
-class EventEmailPayloadTest {
+class EventEmailPayloadTest extends IntegrationTest {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm");
 

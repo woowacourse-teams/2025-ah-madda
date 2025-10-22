@@ -1,5 +1,6 @@
 package com.ahmadda.domain.event;
 
+import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.organization.Organization;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -39,4 +40,27 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             final Long lastId,
             final Pageable pageable
     );
+
+
+    @Query("""
+                select e
+                from EventOrganizer eo
+                join eo.organizationMember om
+                join om.member m
+                join eo.event e
+                join fetch e.organization
+                where m = :member
+            """)
+    List<Event> findAllOrganizedBy(final Member member);
+
+    @Query("""
+                select e
+                from Guest g
+                join g.organizationMember om
+                join om.member m
+                join g.event e
+                join fetch e.organization
+                where m = :member
+            """)
+    List<Event> findAllParticipatedBy(final Member member);
 }

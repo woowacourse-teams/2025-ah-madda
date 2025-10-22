@@ -61,6 +61,11 @@ aws:
     bucket: ${aws.prod.s3.bucket}
     folder: ${aws.prod.s3.folder}
 
+server:
+  tomcat:
+    mbean-registry:
+      enabled: true
+
 management:
   metrics:
     enable:

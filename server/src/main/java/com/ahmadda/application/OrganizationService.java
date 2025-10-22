@@ -139,6 +139,11 @@ public class OrganizationService {
         organizationRepository.deleteById(organizationId);
     }
 
+    @Transactional(readOnly = true)
+    public List<Organization> findAllOrderByActiveEventsDesc(final LocalDateTime currentDateTime) {
+        return organizationRepository.findAllOrderByActiveEventsDesc(currentDateTime);
+    }
+
     private void validateDuplicateNickname(final Long organizationId, final String nickname) {
         if (organizationMemberRepository.existsByOrganizationIdAndNickname(organizationId, nickname)) {
             throw new UnprocessableEntityException("이미 사용 중인 닉네임입니다.");

@@ -1,8 +1,6 @@
 server:
   port: 8080
   tomcat:
-    mbean-registry:
-      enabled: true
     max-http-form-post-size: 2MB
 
 spring:
