@@ -62,7 +62,7 @@ export const GuestViewSection = ({
         as="section"
         dir="column"
         gap="16px"
-        padding="30px 0"
+        padding="20px 0"
         css={css`
           min-height: 0;
         `}

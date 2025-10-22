@@ -47,30 +47,24 @@ export const GuestManageSection = () => {
   const selectedGuestCount = selectedMemberIds.length;
 
   return (
-    <Flex as="section" dir="column" gap="24px" width="100%" margin="0 auto" padding="38px 0">
-      <Card
-        css={css`
-          border: none;
-        `}
-      >
-        <Flex as="section" dir="column">
-          <AlarmHeader selectedGuestCount={selectedGuestCount} notifyData={notifyData} />
-          <Spacing height="24px" />
-          <GuestViewSection
-            guests={guestData}
-            onGuestChecked={toggleGuestChecked}
-            onAllChecked={toggleGuestAllChecked}
-            nonGuests={nonGuestData}
-            onNonGuestChecked={toggleNonGuestChecked}
-            onNonGuestAllChecked={toggleNonGuestAllChecked}
-          />
-          <Spacing height="28px" />
-          <AlarmComposer
-            organizationMemberIds={selectedMemberIds}
-            selectedGuestCount={selectedGuestCount}
-          />
-        </Flex>
-      </Card>
+    <Flex as="section" dir="column" gap="24px" width="100%" margin="40px 0" padding="0 16px">
+      <Flex as="section" dir="column">
+        <AlarmHeader selectedGuestCount={selectedGuestCount} notifyData={notifyData} />
+        <Spacing height="24px" />
+        <GuestViewSection
+          guests={guestData}
+          onGuestChecked={toggleGuestChecked}
+          onAllChecked={toggleGuestAllChecked}
+          nonGuests={nonGuestData}
+          onNonGuestChecked={toggleNonGuestChecked}
+          onNonGuestAllChecked={toggleNonGuestAllChecked}
+        />
+        <Spacing height="28px" />
+        <AlarmComposer
+          organizationMemberIds={selectedMemberIds}
+          selectedGuestCount={selectedGuestCount}
+        />
+      </Flex>
     </Flex>
   );
 };
