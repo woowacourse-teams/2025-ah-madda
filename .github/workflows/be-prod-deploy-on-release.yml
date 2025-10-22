@@ -90,7 +90,7 @@ jobs:
           cp codedeploy/be/appspec.yml deploy/
           cp -r codedeploy/be/scripts/ deploy/
           cd deploy
-          tar -czf ahmadda-server-prod-${{ steps.calc.outputs.version }}.tar.gz -C deploy .
+          tar -czf ahmadda-server-prod-${{ steps.calc.outputs.version }}.tar.gz .
           cd ..
 
       - name: Upload to S3
