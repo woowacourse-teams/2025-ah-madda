@@ -49,7 +49,7 @@ public class TokenBucketRateLimitFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (processRateLimiting(memberId.get(), request, response)) {
+        if (isRateLimitExceeded(memberId.get(), request, response)) {
             return;
         }
 
@@ -69,7 +69,7 @@ public class TokenBucketRateLimitFilter extends OncePerRequestFilter {
         }
     }
 
-    private boolean processRateLimiting(
+    private boolean isRateLimitExceeded(
             final Long memberId,
             final HttpServletRequest request,
             final HttpServletResponse response
