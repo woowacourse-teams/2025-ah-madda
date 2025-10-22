@@ -58,7 +58,7 @@ public class OrganizationService {
 
         OrganizationMember organizationMember =
                 OrganizationMember.create(
-                        openProfile.getNickName(),
+                        openProfile.getNickname(),
                         member,
                         organization,
                         OrganizationMemberRole.ADMIN,
@@ -90,7 +90,7 @@ public class OrganizationService {
         OrganizationMember organizationMember =
                 organization.participate(
                         member,
-                        openProfile.getNickName(),
+                        openProfile.getNickname(),
                         inviteCode,
                         openProfile.getOrganizationGroup(),
                         LocalDateTime.now()

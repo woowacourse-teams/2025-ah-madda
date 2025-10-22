@@ -14,7 +14,7 @@ public record OpenProfileResponse(
     public static OpenProfileResponse from(final OpenProfile openProfile) {
         return new OpenProfileResponse(
                 openProfile.getId(),
-                openProfile.getNickName(),
+                openProfile.getNickname(),
                 openProfile.getEmail(),
                 openProfile.getPicture(),
                 openProfile.getOrganizationGroup()

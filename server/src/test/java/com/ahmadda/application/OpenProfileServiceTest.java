@@ -109,7 +109,7 @@ class OpenProfileServiceTest extends IntegrationTest {
         assertSoftly(softly -> {
             assertThat(updated.getOrganizationGroup()
                     .getId()).isEqualTo(newGroup.getId());
-            assertThat(updated.getNickName())
+            assertThat(updated.getNickname())
                     .isEqualTo("새닉네임");
         });
     }
