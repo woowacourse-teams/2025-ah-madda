@@ -38,15 +38,15 @@ public class OpenProfile extends BaseEntity {
     private OrganizationGroup organizationGroup;
 
     @Column(nullable = false)
-    private String nickName;
+    private String nickname;
 
     private OpenProfile(
             final Member member,
-            final String nickName,
+            final String nickname,
             final OrganizationGroup organizationGroup
     ) {
         this.member = member;
-        this.nickName = nickName;
+        this.nickname = nickname;
         this.organizationGroup = organizationGroup;
     }
 
@@ -57,8 +57,8 @@ public class OpenProfile extends BaseEntity {
         return new OpenProfile(member, member.getName(), organizationGroup);
     }
 
-    public void updateProfile(final String nickName, final OrganizationGroup organizationGroup) {
-        this.nickName = nickName;
+    public void updateProfile(final String nickname, final OrganizationGroup organizationGroup) {
+        this.nickname = nickname;
         this.organizationGroup = organizationGroup;
     }
 
