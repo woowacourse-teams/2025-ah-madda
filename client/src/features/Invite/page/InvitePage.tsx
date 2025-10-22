@@ -1,11 +1,11 @@
-import { PageLayout } from '@/shared/components/PageLayout';
+// import { PageLayout } from '@/shared/components/PageLayout';
 
-import { InviteModal } from '../component/InviteModal';
+// import { InviteModal } from '../component/InviteModal';
 
-export const InvitePage = () => {
-  return (
-    <PageLayout>
-      <InviteModal />
-    </PageLayout>
-  );
-};
+// export const InvitePage = () => {
+//   return (
+//     <PageLayout>
+//       <InviteModal />
+//     </PageLayout>
+//   );
+// };
