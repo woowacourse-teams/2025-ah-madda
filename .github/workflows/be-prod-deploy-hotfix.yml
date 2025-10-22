@@ -88,33 +88,33 @@ jobs:
           chmod +x ./gradlew
           ./gradlew build -x test
 
-          - name: Create deployment package
-            run: |
-              mkdir deploy
-              cp server/build/libs/*[!plain].jar deploy/ahmadda-server-prod.jar
-              cp codedeploy/be/appspec.yml deploy/
-              cp -r codedeploy/be/scripts/ deploy/
-              cd deploy
-              tar -czf ahmadda-server-prod-${{ steps.calc.outputs.version }}.tar.gz -C deploy .
-              cd ..
+      - name: Create deployment package
+        run: |
+          mkdir deploy
+          cp server/build/libs/*[!plain].jar deploy/ahmadda-server-prod.jar
+          cp codedeploy/be/appspec.yml deploy/
+          cp -r codedeploy/be/scripts/ deploy/
+          cd deploy
+          tar -czf ahmadda-server-prod-${{ steps.calc.outputs.version }}.tar.gz -C deploy .
+          cd ..
 
-          - name: Upload to S3
-            run: |
-              aws s3 cp \
-                ahmadda-server-prod-${{ steps.calc.outputs.version }}.tar.gz \
-                s3://techcourse-project-2025/ah-madda/codedeploy/ahmadda-server-prod-${{ steps.calc.outputs.version }}.tar.gz
+      - name: Upload to S3
+        run: |
+          aws s3 cp \
+            ahmadda-server-prod-${{ steps.calc.outputs.version }}.tar.gz \
+            s3://techcourse-project-2025/ah-madda/codedeploy/ahmadda-server-prod-${{ steps.calc.outputs.version }}.tar.gz
 
-        deploy:
-          needs: setup
-          runs-on:
-            - self-hosted
-            - prod
+  deploy:
+    needs: setup
+    runs-on:
+      - self-hosted
+      - prod
 
-          steps:
-            - name: Start AWS CodeDeploy deployment
-              run: |
-                aws deploy create-deployment \
-                  --application-name ahmadda-code-deploy-ec2 \
-                  --deployment-group-name ahmadda-code-deploy-alb \
-                  --s3-location bucket=techcourse-project-2025,key=${{ needs.build.outputs.s3_key }},bundleType=tar \
-                  --description "prod deployment ${{ steps.calc.outputs.version }} deployed via GitHub Actions"
+    steps:
+      - name: Start AWS CodeDeploy deployment
+        run: |
+          aws deploy create-deployment \
+            --application-name ahmadda-code-deploy-ec2 \
+            --deployment-group-name ahmadda-code-deploy-alb \
+            --s3-location bucket=techcourse-project-2025,key=${{ needs.build.outputs.s3_key }},bundleType=tar \
+            --description "prod deployment ${{ steps.calc.outputs.version }} deployed via GitHub Actions"
