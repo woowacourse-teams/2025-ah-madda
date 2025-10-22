@@ -1,3 +1,10 @@
+server:
+  tomcat:
+    mbean-registry:
+      enabled: true
+    threads:
+      max: 200
+
 spring:
   datasource:
     replication:
@@ -7,11 +14,15 @@ spring:
       jdbc-url: jdbc:mysql://${db.prod.writer.host}:${db.prod.writer.port}/${db.prod.writer.name}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       username: ${db.prod.writer.username}
       password: ${db.prod.writer.password}
+      hikari:
+        maximum-pool-size: 10
     reader:
       driver-class-name: com.mysql.cj.jdbc.Driver
       jdbc-url: jdbc:mysql://${db.prod.reader.host}:${db.prod.reader.port}/${db.prod.reader.name}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       username: ${db.prod.reader.username}
       password: ${db.prod.reader.password}
+      hikari:
+        maximum-pool-size: 10
 
   flyway:
     url: jdbc:mysql://${db.prod.writer.host}:${db.prod.writer.port}/${db.prod.writer.name}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
@@ -61,13 +72,10 @@ aws:
     bucket: ${aws.prod.s3.bucket}
     folder: ${aws.prod.s3.folder}
 
-server:
-  tomcat:
-    mbean-registry:
-      enabled: true
-
 management:
   metrics:
+    tags:
+      hostname: ${HOSTNAME}
     enable:
       system.cpu.usage: true
       jvm.memory.used: true

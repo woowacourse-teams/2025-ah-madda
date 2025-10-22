@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 class TokenBucketRateLimitFilterTest {
 
     TokenBucketRateLimitFilter filter;
-    MySQLSelectForUpdateBasedProxyManager<Long> proxyManager;
+    MySQLSelectForUpdateBasedProxyManager<Long> bucketProxyManager;
     BucketConfiguration bucketConfiguration;
     RateLimitExceededHandler rateLimitExceededHandler;
     HeaderProvider headerProvider;
@@ -44,7 +44,7 @@ class TokenBucketRateLimitFilterTest {
 
     @BeforeEach
     void setUp() {
-        proxyManager = mock(MySQLSelectForUpdateBasedProxyManager.class);
+        bucketProxyManager = mock(MySQLSelectForUpdateBasedProxyManager.class);
         bucketConfiguration = mock(BucketConfiguration.class);
         rateLimitExceededHandler = spy(new RateLimitExceededHandler(new ObjectMapper()));
         headerProvider = mock(HeaderProvider.class);
@@ -56,7 +56,7 @@ class TokenBucketRateLimitFilterTest {
         jwtAccessTokenProperties = new JwtAccessTokenProperties(accessSecretKey, accessExpiration);
 
         filter = new TokenBucketRateLimitFilter(
-                proxyManager,
+                bucketProxyManager,
                 bucketConfiguration,
                 rateLimitExceededHandler,
                 headerProvider,
@@ -79,7 +79,7 @@ class TokenBucketRateLimitFilterTest {
 
         // then
         verify(chain).doFilter(request, response);
-        verifyNoInteractions(rateLimitExceededHandler, proxyManager);
+        verifyNoInteractions(rateLimitExceededHandler, bucketProxyManager);
     }
 
     @Test
@@ -99,7 +99,7 @@ class TokenBucketRateLimitFilterTest {
         var bucket = mock(BucketProxy.class);
         var probe = mock(ConsumptionProbe.class);
 
-        when(proxyManager.getProxy(eq(memberId), any())).thenReturn(bucket);
+        when(bucketProxyManager.getProxy(eq(memberId), any())).thenReturn(bucket);
         when(bucket.tryConsumeAndReturnRemaining(1)).thenReturn(probe);
         when(probe.isConsumed()).thenReturn(true);
 
@@ -129,7 +129,7 @@ class TokenBucketRateLimitFilterTest {
         var bucket = mock(BucketProxy.class);
         var probe = mock(ConsumptionProbe.class);
 
-        when(proxyManager.getProxy(eq(memberId), any())).thenReturn(bucket);
+        when(bucketProxyManager.getProxy(eq(memberId), any())).thenReturn(bucket);
         when(bucket.tryConsumeAndReturnRemaining(1)).thenReturn(probe);
         when(probe.isConsumed()).thenReturn(false);
         when(probe.getNanosToWaitForRefill()).thenReturn(TimeUnit.SECONDS.toNanos(5));
