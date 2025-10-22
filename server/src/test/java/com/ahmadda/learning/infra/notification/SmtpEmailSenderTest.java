@@ -1,9 +1,9 @@
 package com.ahmadda.learning.infra.notification;
 
-import com.ahmadda.annotation.LearningTest;
-import com.ahmadda.infra.notification.mail.EmailOutboxSuccessHandler;
 import com.ahmadda.infra.notification.mail.SmtpEmailSender;
 import com.ahmadda.infra.notification.mail.config.SmtpProperties;
+import com.ahmadda.infra.notification.mail.outbox.EmailOutboxSuccessHandler;
+import com.ahmadda.support.LearningTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

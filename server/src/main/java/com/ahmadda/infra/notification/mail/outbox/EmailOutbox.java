@@ -1,4 +1,4 @@
-package com.ahmadda.infra.notification.mail;
+package com.ahmadda.infra.notification.mail.outbox;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

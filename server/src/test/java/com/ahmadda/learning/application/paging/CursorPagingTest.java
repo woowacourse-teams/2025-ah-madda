@@ -1,6 +1,5 @@
 package com.ahmadda.learning.application.paging;
 
-import com.ahmadda.annotation.LearningTest;
 import com.ahmadda.application.EventService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.event.Event;
@@ -8,7 +7,6 @@ import com.ahmadda.domain.event.EventOperationPeriod;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
-import com.ahmadda.domain.notification.Reminder;
 import com.ahmadda.domain.organization.Organization;
 import com.ahmadda.domain.organization.OrganizationGroup;
 import com.ahmadda.domain.organization.OrganizationGroupRepository;
@@ -16,10 +14,10 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.support.LearningTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -46,9 +44,6 @@ class CursorPagingTest {
     @Autowired
     private EventRepository eventRepository;
 
-    @MockitoSpyBean
-    private Reminder reminder;
-
     @Autowired
     private OrganizationGroupRepository organizationGroupRepository;
 
@@ -59,7 +54,6 @@ class CursorPagingTest {
         var organization = createOrganization("우테코");
         var group = createGroup();
         var organizationMember = createOrganizationMember(organization, member, group);
-        var loginMember = createLoginMember(member);
 
         var now = LocalDateTime.now()
                 .truncatedTo(ChronoUnit.MICROS);
@@ -83,7 +77,6 @@ class CursorPagingTest {
         // when
         var firstPage = sut.getPastEvents(
                 organization.getId(),
-                loginMember,
                 now,
                 Long.MAX_VALUE,
                 10
@@ -93,7 +86,6 @@ class CursorPagingTest {
 
         var secondPage = sut.getPastEvents(
                 organization.getId(),
-                loginMember,
                 now,
                 lastEventOfFirstPage.getId(),
                 10

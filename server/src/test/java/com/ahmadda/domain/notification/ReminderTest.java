@@ -1,6 +1,5 @@
 package com.ahmadda.domain.notification;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
 import com.ahmadda.domain.event.EventRepository;
@@ -13,11 +12,9 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
-import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
-import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,8 +25,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
-@IntegrationTest
-class ReminderTest {
+class ReminderTest extends IntegrationTest {
 
     @Autowired
     private Reminder sut;
@@ -48,18 +44,6 @@ class ReminderTest {
 
     @Autowired
     private OrganizationGroupRepository organizationGroupRepository;
-
-    @MockitoBean
-    private PushNotifier pushNotifier;
-
-    @MockitoBean
-    private EmailNotifier mailSender;
-
-    @MockitoBean
-    JwtAccessTokenProperties accessTokenProperties;
-
-    @MockitoBean
-    JwtRefreshTokenProperties refreshTokenProperties;
 
     @Test
     void 수신자들에게_이메일과_푸시를_발송한다() {
@@ -106,7 +90,7 @@ class ReminderTest {
         sut.remind(recipients, event, content);
 
         // then
-        verify(mailSender).remind(any(ReminderEmail.class));
+        verify(emailNotifier).remind(any(ReminderEmail.class));
         verify(pushNotifier).remind(
                 eq(recipients),
                 argThat(payload -> payload != null && payload.eventId()

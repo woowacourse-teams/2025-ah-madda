@@ -1,9 +1,9 @@
 package com.ahmadda.learning.infra.notification;
 
-import com.ahmadda.annotation.LearningTest;
 import com.ahmadda.infra.notification.mail.EmailSender;
 import com.ahmadda.infra.notification.mail.FailoverEmailSender;
 import com.ahmadda.infra.notification.mail.NoopEmailSender;
+import com.ahmadda.support.LearningTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

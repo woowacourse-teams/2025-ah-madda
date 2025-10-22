@@ -8,7 +8,7 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.presentation.dto.OrganizationMemberRenameRequest;
 import com.ahmadda.presentation.dto.OrganizationMemberResponse;
 import com.ahmadda.presentation.dto.OrganizationMemberStatusResponse;
-import com.ahmadda.presentation.resolver.AuthMember;
+import com.ahmadda.presentation.resolver.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -81,7 +81,7 @@ public class OrganizationMemberController {
     @GetMapping("/profile")
     public ResponseEntity<OrganizationMemberResponse> getOrganizationMemberProfile(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         OrganizationMember organizationMember =
                 organizationMemberService.getOrganizationMember(organizationId, loginMember);
@@ -195,7 +195,7 @@ public class OrganizationMemberController {
     @PatchMapping("/organization-members/roles")
     public ResponseEntity<Void> updateRoles(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember,
+            @Auth final LoginMember loginMember,
             @Valid @RequestBody final OrganizationMemberRoleUpdateRequest request
     ) {
         organizationMemberService.updateRoles(organizationId, loginMember, request);
@@ -210,38 +210,6 @@ public class OrganizationMemberController {
                     responseCode = "200",
                     content = @Content(
                             array = @ArraySchema(schema = @Schema(implementation = OrganizationMemberResponse.class)
-                            )
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "401",
-                    content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Unauthorized",
-                                              "status": 401,
-                                              "detail": "유효하지 않은 인증 정보입니다.",
-                                              "instance": "/api/organizations/{organizationId}/organization-members"
-                                            }
-                                            """
-                            )
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "403",
-                    content = @Content(
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "type": "about:blank",
-                                              "title": "Forbidden",
-                                              "status": 403,
-                                              "detail": "이벤트 스페이스에 속한 구성원만 구성원의 목록을 조회할 수 있습니다.",
-                                              "instance": "/api/organizations/{organizationId}/organization-members"
-                                            }
-                                            """
                             )
                     )
             ),
@@ -264,11 +232,10 @@ public class OrganizationMemberController {
     })
     @GetMapping("/organization-members")
     public ResponseEntity<List<OrganizationMemberResponse>> getAllOrganizationMembers(
-            @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
+            @PathVariable final Long organizationId
     ) {
         List<OrganizationMember> organizationMembers =
-                organizationMemberService.getAllOrganizationMembers(organizationId, loginMember);
+                organizationMemberService.getAllOrganizationMembers(organizationId);
 
         List<OrganizationMemberResponse> response = organizationMembers.stream()
                 .map(OrganizationMemberResponse::from)
@@ -305,7 +272,7 @@ public class OrganizationMemberController {
     @GetMapping("/organization-member-status")
     public ResponseEntity<OrganizationMemberStatusResponse> getOrganizationMemberStatus(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         boolean isMember = organizationMemberService.isOrganizationMember(organizationId, loginMember);
 
@@ -393,7 +360,7 @@ public class OrganizationMemberController {
     @PatchMapping("/organization-members/rename")
     public ResponseEntity<Void> organizationMemberRenameNickname(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember,
+            @Auth final LoginMember loginMember,
             @Valid @RequestBody final OrganizationMemberRenameRequest request
     ) {
         organizationMemberService.renameOrganizationMemberNickname(organizationId, loginMember, request.nickname());
@@ -475,7 +442,7 @@ public class OrganizationMemberController {
     @PatchMapping("/organization-members")
     public ResponseEntity<Void> updateOrganizationMember(
             @PathVariable final Long organizationId,
-            @AuthMember final LoginMember loginMember,
+            @Auth final LoginMember loginMember,
             @Valid @RequestBody final OrganizationMemberUpdateRequest request
     ) {
         organizationMemberService.updateOrganizationMember(organizationId, loginMember, request);

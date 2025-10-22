@@ -1,5 +1,6 @@
 package com.ahmadda.infra.notification.mail;
 
+import com.ahmadda.infra.notification.mail.outbox.EmailOutboxSuccessHandler;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,7 @@ public class SmtpEmailSender implements EmailSender {
 
         return mimeMessage;
     }
-    
+
     private void handleSuccess(final List<String> recipientEmails, final String subject, final String body) {
         for (String recipientEmail : recipientEmails) {
             emailOutboxSuccessHandler.handleSuccess(recipientEmail, subject, body);

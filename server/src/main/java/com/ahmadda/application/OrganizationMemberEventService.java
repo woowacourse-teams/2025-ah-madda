@@ -9,6 +9,7 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ public class OrganizationMemberEventService {
     private final EventOrganizerRepository eventOrganizerRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
 
+    @Transactional(readOnly = true)
     public List<Event> getOwnerEvents(final Long organizationId, final LoginMember loginMember) {
         OrganizationMember organizationMember = getOrganizationMember(organizationId, loginMember);
 
@@ -30,6 +32,7 @@ public class OrganizationMemberEventService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<Event> getParticipantEvents(final Long organizationId, final LoginMember loginMember) {
         OrganizationMember organizationMember = getOrganizationMember(organizationId, loginMember);
 

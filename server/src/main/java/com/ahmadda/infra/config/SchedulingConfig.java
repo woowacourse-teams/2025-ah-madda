@@ -3,6 +3,7 @@ package com.ahmadda.infra.config;
 import net.javacrumbs.shedlock.core.LockProvider;
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,6 +15,12 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import javax.sql.DataSource;
 
 @Configuration
+@ConditionalOnProperty(
+        prefix = "spring.scheduling",
+        name = "enabled",
+        havingValue = "true",
+        matchIfMissing = true
+)
 @EnableScheduling
 @EnableSchedulerLock(defaultLockAtMostFor = "5m")
 public class SchedulingConfig implements SchedulingConfigurer {
@@ -23,12 +30,31 @@ public class SchedulingConfig implements SchedulingConfigurer {
         taskRegistrar.setTaskScheduler(taskScheduler());
     }
 
-    // TODO. 추후 ThreadPoolTaskScheduler의 thread 설정 변경 및 graceful shutdown 고려 필요
+    /**
+     * 공통 스케줄러 스레드풀.
+     * <p>
+     * 스케줄러는 예약된 작업의 정시 실행(시간 정확도) 을 보장하기 위해 별도의 워커 스레드풀을 유지한다.
+     * CPU 활용률 최적화보다는, 하나의 스케줄 작업이 DB I/O 등으로 지연되더라도
+     * 다른 예약 작업이 밀리지 않도록 병렬성을 확보하는 것이 목적이다.
+     * <p>
+     * 스레드풀 크기 산정은 사용 가능한 코어 수를 기준으로 하되,
+     * 저사양 환경(1코어)에서도 병렬 스케줄링이 가능하도록 최소 2개로 보정한다.
+     */
     @Bean
     public ThreadPoolTaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setThreadNamePrefix("scheduler-");
 
+        int cores = Runtime.getRuntime()
+                .availableProcessors();
+        scheduler.setPoolSize(Math.max(cores, 2));
+
+        scheduler.setWaitForTasksToCompleteOnShutdown(true);
+        scheduler.setAwaitTerminationSeconds(60);
+        scheduler.setRemoveOnCancelPolicy(true);
+        scheduler.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
+
+        scheduler.initialize();
         return scheduler;
     }
 

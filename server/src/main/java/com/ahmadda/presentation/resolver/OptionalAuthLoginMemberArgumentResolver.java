@@ -1,0 +1,59 @@
+package com.ahmadda.presentation.resolver;
+
+import com.ahmadda.application.dto.LoginMember;
+import com.ahmadda.common.exception.UnauthorizedException;
+import com.ahmadda.infra.auth.jwt.JwtProvider;
+import com.ahmadda.infra.auth.jwt.config.JwtAccessTokenProperties;
+import com.ahmadda.infra.auth.jwt.dto.JwtMemberPayload;
+import com.ahmadda.presentation.header.HeaderProvider;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.support.WebDataBinderFactory;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.method.support.ModelAndViewContainer;
+
+// TODO. 추후 인증 책임 분리를 위해 리졸버를 인터셉터로 변경 고려
+@Component
+@EnableConfigurationProperties(JwtAccessTokenProperties.class)
+@RequiredArgsConstructor
+public class OptionalAuthLoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
+
+    private final JwtAccessTokenProperties jwtAccessTokenProperties;
+    private final JwtProvider jwtProvider;
+    private final HeaderProvider headerProvider;
+
+    @Override
+    public boolean supportsParameter(final MethodParameter parameter) {
+        return parameter.hasParameterAnnotation(OptionalAuth.class)
+                && parameter.getParameterType()
+                .equals(LoginMember.class);
+    }
+
+    @Override
+    @Nullable
+    public Object resolveArgument(
+            final MethodParameter parameter,
+            final ModelAndViewContainer mavContainer,
+            final NativeWebRequest webRequest,
+            final WebDataBinderFactory binderFactory
+    ) {
+        HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
+        try {
+            String authorizationHeader = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+            String accessToken = headerProvider.extractAccessToken(authorizationHeader);
+
+            JwtMemberPayload payload =
+                    jwtProvider.parsePayload(accessToken, jwtAccessTokenProperties.getAccessSecretKey());
+
+            return new LoginMember(payload.memberId());
+        } catch (UnauthorizedException e) {
+            return null;
+        }
+    }
+}

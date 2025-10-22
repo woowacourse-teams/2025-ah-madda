@@ -1,11 +1,9 @@
 package com.ahmadda.application;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.EventCreateRequest;
 import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
-import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
@@ -19,7 +17,6 @@ import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.notification.EventNotificationOptOut;
 import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
-import com.ahmadda.domain.notification.Reminder;
 import com.ahmadda.domain.notification.ReminderHistory;
 import com.ahmadda.domain.notification.ReminderHistoryRepository;
 import com.ahmadda.domain.notification.ReminderRecipient;
@@ -30,10 +27,10 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.support.IntegrationTest;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -46,8 +43,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.verify;
 
-@IntegrationTest
-class EventServiceTest {
+class EventServiceTest extends IntegrationTest {
 
     @Autowired
     private EventService sut;
@@ -66,9 +62,6 @@ class EventServiceTest {
 
     @Autowired
     private GuestRepository guestRepository;
-
-    @MockitoSpyBean
-    private Reminder reminder;
 
     @Autowired
     private ReminderHistoryRepository reminderHistoryRepository;
@@ -236,7 +229,7 @@ class EventServiceTest {
         var organization = createOrganization("우테코");
         var member = createMember();
         var group = createGroup();
-        var organizationMember = createOrganizationMember(organization, member, group);
+        createOrganizationMember(organization, member, group);
 
         var now = LocalDateTime.now();
 
@@ -259,20 +252,16 @@ class EventServiceTest {
         var savedEvent = sut.createEvent(organization.getId(), loginMember, request, now);
 
         //when
-        var findEvent = sut.getOrganizationMemberEvent(loginMember, savedEvent.getId());
+        var findEvent = sut.getEvent(savedEvent.getId());
 
         //then
         assertThat(findEvent.getTitle()).isEqualTo(request.title());
     }
 
     @Test
-    void 이벤트_ID를_이용해_이벤트를_조회할때_해당_이벤트가_없다면_예외가_발생한다() {
-        // given
-        var member = createMember();
-        var loginMember = createLoginMember(member);
-
+    void 특정_이벤트를_조회할때_해당_이벤트가_없다면_예외가_발생한다() {
         //when //then
-        assertThatThrownBy(() -> sut.getOrganizationMemberEvent(loginMember, 999L))
+        assertThatThrownBy(() -> sut.getEvent(999L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 이벤트 정보입니다.");
     }
@@ -809,10 +798,8 @@ class EventServiceTest {
         // given
         var member = createMember();
         var organization = createOrganization("우테코");
-        var organization2 = createOrganization("아맞다");
         var group = createGroup();
         var organizationMember = createOrganizationMember(organization, member, group);
-        var loginMember = createLoginMember(member);
 
         var now = LocalDateTime.now()
                 .truncatedTo(ChronoUnit.MICROS);
@@ -827,11 +814,10 @@ class EventServiceTest {
                     now.minusDays(4)
             );
         }
-        
+
         // when
         var pastEvents = sut.getPastEvents(
                 organization.getId(),
-                loginMember,
                 now,
                 Long.MAX_VALUE,
                 10
@@ -853,47 +839,16 @@ class EventServiceTest {
 
     @Test
     void 존재하지_않는_이벤트_스페이스의_이벤트를_조회하면_예외가_발생한다() {
-        // given
-        var member = memberRepository.save(Member.create("user", "user@test.com", "testPicture"));
-        var loginMember = new LoginMember(member.getId());
-
         // when // then
-        assertThatThrownBy(() -> sut.getActiveEvents(999L, loginMember))
+        assertThatThrownBy(() -> sut.getActiveEvents(999L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 이벤트 스페이스 정보입니다.");
-    }
-
-    @Test
-    void 과거_이벤트_조회시_이벤트_스페이스에_속하지_않으면_예외가_발생한다() {
-        // given
-        var member = createMember();
-        var organization = createOrganization("우테코");
-        var loginMember = createLoginMember(member);
-
-        //when // then
-        assertThatThrownBy(() -> sut.getPastEvents(organization.getId(), loginMember, LocalDateTime.now(), 0L, 10))
-                .isInstanceOf(ForbiddenException.class)
-                .hasMessage("이벤트 스페이스에 소속되지 않아 권한이 없습니다.");
-    }
-
-    @Test
-    void 구성원이_아니면_이벤트_스페이스의_이벤트를_조회시_예외가_발생한다() {
-        // given
-        var member = memberRepository.save(Member.create("user", "user@test.com", "testPicture"));
-        var organization = organizationRepository.save(createOrganization("Org", "Desc", "img.png"));
-        var loginMember = new LoginMember(member.getId());
-
-        // when // then
-        assertThatThrownBy(() -> sut.getActiveEvents(organization.getId(), loginMember))
-                .isInstanceOf(ForbiddenException.class)
-                .hasMessage("이벤트 스페이스에 참여하지 않아 권한이 없습니다.");
     }
 
     @Test
     void 여러_이벤트_스페이스의_이벤트가_있을때_선택된_이벤트_스페이스의_활성화된_이벤트만_가져온다() {
         // given
         var member = memberRepository.save(Member.create("name", "test@test.com", "testPicture"));
-        var loginMember = new LoginMember(member.getId());
         var orgA = organizationRepository.save(createOrganization("OrgA", "DescA", "a.png"));
         var orgB = organizationRepository.save(createOrganization("OrgB", "DescB", "b.png"));
         var group = createGroup();
@@ -945,7 +900,7 @@ class EventServiceTest {
         )); //다른 이벤트 스페이스의 진행중인 이벤트
 
         // when
-        var events = sut.getActiveEvents(orgA.getId(), loginMember);
+        var events = sut.getActiveEvents(orgA.getId());
 
         // then
         assertThat(events).hasSize(2)
@@ -1021,6 +976,49 @@ class EventServiceTest {
         assertThatThrownBy(() -> sut.createEvent(organization.getId(), loginMember, eventCreateRequest, now))
                 .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessage("최대 주최자 수는 10명입니다.");
+    }
+
+    @Test
+    void 이벤트_템플릿을_조회할_수_있다() {
+        //given
+        var organization = createOrganization("우테코");
+        var member = createMember();
+        var group = createGroup();
+        createOrganizationMember(organization, member, group);
+
+        var now = LocalDateTime.now();
+
+        var request = new EventCreateRequest(
+                "UI/UX 이벤트",
+                "UI/UX 이벤트입니다",
+                "선릉",
+                now.plusDays(4),
+                now.plusDays(5),
+                now.plusDays(6),
+
+                100,
+                List.of(
+                        new QuestionCreateRequest("1번 질문", true),
+                        new QuestionCreateRequest("2번 질문", false)
+                )
+        );
+
+        var loginMember = new LoginMember(member.getId());
+        var savedEvent = sut.createEvent(organization.getId(), loginMember, request, now);
+
+        //when
+        var findEvent = sut.getEventTemplate(savedEvent.getId());
+
+        //then
+        assertThat(findEvent.getTitle()).isEqualTo(request.title());
+    }
+
+    @Test
+    void 특정_이벤트_템플릿을_조회할때_해당_이벤트가_없다면_예외가_발생한다() {
+        //when //then
+        assertThatThrownBy(() -> sut.getEventTemplate(999L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 이벤트 정보입니다.");
     }
 
     private Organization createOrganization(String name) {
