@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class TokenBucketRateLimitFilter extends OncePerRequestFilter {
 
-    private final MySQLSelectForUpdateBasedProxyManager<Long> proxyManager;
+    private final MySQLSelectForUpdateBasedProxyManager<Long> bucketProxyManager;
     private final BucketConfiguration memberRateLimitConfig;
     private final RateLimitExceededHandler rateLimitExceededHandler;
     private final HeaderProvider headerProvider;
@@ -74,7 +74,7 @@ public class TokenBucketRateLimitFilter extends OncePerRequestFilter {
             final HttpServletRequest request,
             final HttpServletResponse response
     ) throws IOException {
-        BucketProxy bucket = proxyManager.getProxy(memberId, () -> memberRateLimitConfig);
+        BucketProxy bucket = bucketProxyManager.getProxy(memberId, () -> memberRateLimitConfig);
         ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
 
         if (probe.isConsumed()) {
