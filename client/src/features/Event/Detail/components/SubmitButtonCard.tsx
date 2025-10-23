@@ -1,10 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  type FocusEventHandler,
-  type KeyboardEventHandler,
-} from 'react';
+import { useEffect, useRef, type KeyboardEventHandler } from 'react';
 
 import { css } from '@emotion/react';
 
@@ -73,22 +67,6 @@ export const SubmitButtonCard = ({
       requestAnimationFrame(() => btnRef.current?.focus());
     }
   }, [buttonState.disabled]);
-
-  const setDescribedByInOrder = useCallback(() => {
-    const btn = btnRef.current;
-    if (!btn) return;
-
-    const ids: string[] = [];
-    const intro = document.getElementById('event-intro-desc');
-    if (intro) ids.push('event-intro-desc');
-
-    if (ids.length) btn.setAttribute('aria-describedby', ids.join(' '));
-    else btn.removeAttribute('aria-describedby');
-  }, []);
-
-  const handleSubmitButtonFocusDescribe: FocusEventHandler<HTMLButtonElement> = () => {
-    setDescribedByInOrder();
-  };
 
   const handleSubmitButtonKeyActivate: KeyboardEventHandler<HTMLButtonElement> = (e) => {
     if (e.key === 'Enter') {
@@ -169,10 +147,10 @@ export const SubmitButtonCard = ({
         <Button
           ref={btnRef}
           aria-live="off"
+          aria-describedby="event-intro-desc"
           size="full"
           color={buttonState.color}
           disabled={buttonState.disabled}
-          onFocus={handleSubmitButtonFocusDescribe}
           onKeyDown={handleSubmitButtonKeyActivate}
           onClick={
             buttonState.action === 'cancel' ? handleCancelParticipateClick : handleParticipantClick
