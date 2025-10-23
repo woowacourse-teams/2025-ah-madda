@@ -102,7 +102,6 @@ export const GuestViewSection = ({
               guests={guests}
               onGuestChecked={onGuestChecked}
               onAllGuestChecked={onAllChecked}
-              // onGuestClick={handleGuestClick}
             />
           ) : (
             <GuestList
@@ -111,7 +110,6 @@ export const GuestViewSection = ({
               guests={nonGuests}
               onGuestChecked={onNonGuestChecked}
               onAllGuestChecked={onNonGuestAllChecked}
-              // onGuestClick={handleGuestClick}
             />
           )}
         </ScrollArea>
