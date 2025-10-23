@@ -15,6 +15,7 @@ spring:
       username: ${db.prod.writer.username}
       password: ${db.prod.writer.password}
       hikari:
+        minimum-idle: 10
         maximum-pool-size: 10
         connection-timeout: 3000
     reader:
@@ -23,6 +24,7 @@ spring:
       username: ${db.prod.reader.username}
       password: ${db.prod.reader.password}
       hikari:
+        minimum-idle: 10
         maximum-pool-size: 10
         connection-timeout: 3000
 
