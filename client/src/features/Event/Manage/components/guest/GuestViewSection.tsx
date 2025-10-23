@@ -2,18 +2,13 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom';
 
-import { myQueryOptions } from '@/api/queries/my';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
-import { useModal } from '@/shared/hooks/useModal';
 import { theme } from '@/shared/styles/theme';
 
 import { Guest, NonGuest } from '../../types';
 
-import { GuestAnswerModal } from './GuestAnswerModal';
 import { GuestList } from './GuestList';
 
 export type GuestViewSectionProps = {
@@ -39,22 +34,7 @@ export const GuestViewSection = ({
   onNonGuestChecked,
   onNonGuestAllChecked,
 }: GuestViewSectionProps) => {
-  const { eventId } = useParams();
-  const [selectedGuest, setSelectedGuest] = useState<Guest | null>(null);
   const [activeTab, setActiveTab] = useState<'guests' | 'nonGuests'>('nonGuests');
-  const { isOpen, open, close } = useModal();
-
-  const { data: guestAnswers } = useQuery({
-    ...myQueryOptions.event.guestAnswers(Number(eventId), selectedGuest?.guestId ?? 0),
-    enabled: !!selectedGuest?.guestId,
-  });
-
-  const handleGuestClick = (guest: Guest | NonGuest) => {
-    if ('guestId' in guest) {
-      setSelectedGuest(guest);
-      open();
-    }
-  };
 
   return (
     <>
@@ -122,7 +102,7 @@ export const GuestViewSection = ({
               guests={guests}
               onGuestChecked={onGuestChecked}
               onAllGuestChecked={onAllChecked}
-              onGuestClick={handleGuestClick}
+              // onGuestClick={handleGuestClick}
             />
           ) : (
             <GuestList
@@ -131,18 +111,11 @@ export const GuestViewSection = ({
               guests={nonGuests}
               onGuestChecked={onNonGuestChecked}
               onAllGuestChecked={onNonGuestAllChecked}
-              onGuestClick={handleGuestClick}
+              // onGuestClick={handleGuestClick}
             />
           )}
         </ScrollArea>
       </Flex>
-
-      <GuestAnswerModal
-        isOpen={isOpen}
-        onClose={close}
-        guest={selectedGuest}
-        guestAnswers={guestAnswers}
-      />
     </>
   );
 };
