@@ -1,11 +1,9 @@
 name: BE Prod Deploy On Release
 
 on:
-  pull_request:
+  release:
     types:
-      - opened
-      - synchronize
-      - reopened
+      - published
 
 permissions: write-all
 
