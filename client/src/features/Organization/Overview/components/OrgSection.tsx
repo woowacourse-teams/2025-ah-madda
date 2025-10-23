@@ -39,15 +39,16 @@ export const OrgSection = ({ organizations }: OrgSectionProps) => {
         alignItems="flex-start"
         gap="8px"
         width="100%"
-        margin="0 0 30px 0"
+        margin="0 0 20px 0"
         css={css`
           @media (max-width: 768px) {
-            align-items: flex-start;
+            flex-direction: column;
+            align-items: flex-end;
             gap: 10px;
           }
         `}
       >
-        <Flex dir="column" gap="8px" alignItems="flex-start">
+        <Flex dir="column" gap="8px" alignItems="flex-start" width="100%">
           <Text as="h1" type="Display" weight="bold" aria-hidden="true">
             스페이스 목록 ({total})
           </Text>
@@ -56,7 +57,7 @@ export const OrgSection = ({ organizations }: OrgSectionProps) => {
           </Text>
         </Flex>
         {isAuthenticated() && (
-          <Flex dir="column" gap="8px" alignItems="flex-end">
+          <Flex dir="column" gap="8px" alignItems="flex-end" width="100%">
             <Button
               size="md"
               color="primary"
@@ -70,8 +71,14 @@ export const OrgSection = ({ organizations }: OrgSectionProps) => {
           </Flex>
         )}
       </Flex>
-
-      <OrgListContainer dir="column" width="100%" gap="8px" role="list" aria-label="스페이스 목록">
+      <OrgListContainer
+        dir="column"
+        width="100%"
+        gap="8px"
+        margin="0 0 40px 0"
+        role="list"
+        aria-label="스페이스 목록"
+      >
         <DeskTopOrgList>
           {organizations.map((org, idx) => (
             <OrgCard

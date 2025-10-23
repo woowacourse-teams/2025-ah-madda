@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 import { OrganizationAPIResponse } from '@/api/types/organizations';
@@ -65,26 +64,19 @@ export const OrgCard = ({ organization, onJoin, position, total }: OrgCardProps)
           }}
         />
       </StyledImageWrapper>
-      <Flex dir="column" gap="4px" justifyContent="center" alignItems="flex-start" width="100%">
+      <StyledTextContainer
+        dir="column"
+        justifyContent="center"
+        alignItems="flex-start"
+        width="100%"
+      >
         <Text type="Heading" weight="bold" aria-hidden="true">
           {name}
         </Text>
-        <Text
-          type="Body"
-          color={theme.colors.gray500}
-          aria-hidden="true"
-          css={css`
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            line-height: 1.4;
-            word-break: break-word;
-          `}
-        >
+        <StyledText type="Body" color={theme.colors.gray500} aria-hidden="true">
           {description}
-        </Text>
-      </Flex>
+        </StyledText>
+      </StyledTextContainer>
 
       <StyledOverlay data-overlay justifyContent="center" alignItems="center" aria-hidden="true">
         <Text type="Heading" color="white" weight="semibold">
@@ -128,12 +120,7 @@ const StyledOverlay = styled(Flex)`
   pointer-events: none;
 `;
 
-const StyledTextContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  justify-content: center;
-  align-items: flex-start;
+const StyledTextContainer = styled(Flex)`
   width: 100%;
   box-sizing: border-box;
   overflow: hidden;
