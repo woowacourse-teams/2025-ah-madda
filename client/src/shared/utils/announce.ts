@@ -1,9 +1,9 @@
 let speakNonce = 0;
 
-function getLiveRegion(kind: 'assertive' | 'polite') {
+const getLiveRegion = (kind: 'assertive' | 'polite') => {
   const id = kind === 'assertive' ? 'a11y-live-assertive' : 'a11y-live-polite';
   return document.getElementById(id) as HTMLElement | null;
-}
+};
 
 export function announce(message: string, politeness: 'polite' | 'assertive' = 'assertive') {
   if (typeof document === 'undefined') return;
