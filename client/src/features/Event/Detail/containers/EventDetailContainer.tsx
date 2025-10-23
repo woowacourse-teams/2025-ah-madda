@@ -1,5 +1,6 @@
 import { PropsWithChildren } from 'react';
 
+import { A11y } from '@/shared/components/A11y/A11y';
 import { Flex } from '@/shared/components/Flex';
 
 export const EventDetailContainer = ({ children }: PropsWithChildren) => {
@@ -15,38 +16,7 @@ export const EventDetailContainer = ({ children }: PropsWithChildren) => {
       padding="40px 20px 0 20px"
       style={{ position: 'relative' }}
     >
-      <div
-        id="a11y-live-1"
-        role="status"
-        aria-live="assertive"
-        aria-atomic="true"
-        style={{
-          position: 'absolute',
-          width: 1,
-          height: 1,
-          margin: -1,
-          padding: 0,
-          border: 0,
-          clip: 'rect(0 0 0 0)',
-          overflow: 'hidden',
-        }}
-      />
-      <div
-        id="a11y-live-2"
-        role="status"
-        aria-live="assertive"
-        aria-atomic="true"
-        style={{
-          position: 'absolute',
-          width: 1,
-          height: 1,
-          margin: -1,
-          padding: 0,
-          border: 0,
-          clip: 'rect(0 0 0 0)',
-          overflow: 'hidden',
-        }}
-      />
+      <A11y includeIntroDesc />
 
       {children}
     </Flex>
