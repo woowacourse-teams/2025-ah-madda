@@ -9,6 +9,7 @@ import { eventQueryOptions } from '@/api/queries/event';
 import { organizationQueryOptions } from '@/api/queries/organization';
 import { Flex } from '@/shared/components/Flex';
 import { PageLayout } from '@/shared/components/PageLayout';
+import { SEO } from '@/shared/components/SEO';
 import { Tabs } from '@/shared/components/Tabs';
 import { Text } from '@/shared/components/Text';
 
@@ -61,6 +62,12 @@ export const EventDetailPage = () => {
 
   return (
     <PageLayout>
+      <SEO
+        title={event.title}
+        description={event?.description || ''}
+        eventId={Number(eventId)}
+        organizationId={Number(organizationId)}
+      />
       <EventDetailContainer introDesc={summary}>
         <EventHeader
           isMember={joinedStatus?.isMember || false}
