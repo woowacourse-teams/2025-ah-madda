@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
@@ -6,7 +8,6 @@ import { isAuthenticated } from '@/api/auth';
 import { OrganizationAPIResponse } from '@/api/types/organizations';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
-import { Spacing } from '@/shared/components/Spacing';
 import { Text } from '@/shared/components/Text';
 import { theme } from '@/shared/styles/theme';
 
@@ -17,53 +18,51 @@ export type OrgSectionProps = {
 };
 export const OrgSection = ({ organizations }: OrgSectionProps) => {
   const navigate = useNavigate();
+  const total = organizations.length;
+  const announceRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    announceRef.current?.focus();
+  }, []);
 
   const handleJoin = (orgId: number) => navigate(`/${orgId}/event`);
 
   return (
-    <Flex
-      dir="column"
-      gap="24px"
-      margin="60px 0 0 0"
-      padding="40px 20px 0 20px"
-      css={css`
-        @media (max-width: 768px) {
-          padding: 20px 20px 0 20px;
-          gap: 12px;
-        }
-      `}
-    >
+    <Flex dir="column" gap="24px" margin="60px 0 0 0" padding="40px 20px 0 20px">
+      <VisuallyHidden as="h1" ref={announceRef} tabIndex={-1}>
+        스페이스 목록 안내. 현재 스페이스는 총 {total}개입니다. 현재 가장 활발한 순서대로 스페이스를
+        노출합니다.
+      </VisuallyHidden>
       <Flex
         dir="row"
         justifyContent="space-between"
-        alignItems="flex-end"
+        alignItems="flex-start"
+        gap="8px"
         width="100%"
-        margin="0 0 20px 0"
+        margin="0 0 30px 0"
         css={css`
           @media (max-width: 768px) {
-            flex-direction: column;
-            align-items: flex-end;
-
+            align-items: flex-start;
             gap: 10px;
           }
         `}
       >
-        <Flex dir="column" gap="8px" alignItems="flex-start" width="100%">
-          <Text as="h1" type="Display" weight="bold">
-            스페이스 목록 ({organizations.length})
+        <Flex dir="column" gap="8px" alignItems="flex-start">
+          <Text as="h1" type="Display" weight="bold" aria-hidden="true">
+            스페이스 목록 ({total})
           </Text>
-
-          <Text as="h3" type="Body" color={theme.colors.gray500}>
+          <Text as="h3" type="Body" color={theme.colors.gray500} aria-hidden="true">
             현재 가장 활발한 순서대로 스페이스를 노출해요.
           </Text>
         </Flex>
         {isAuthenticated() && (
-          <Flex dir="column" gap="8px" alignItems="flex-end" width="100%">
+          <Flex dir="column" gap="8px" alignItems="flex-end">
             <Button
               size="md"
               color="primary"
               variant="solid"
               iconName="plus"
+              aria-label="스페이스 만들기 버튼입니다. 클릭하여 스페이스 만들기 페이지로 이동하세요."
               onClick={() => navigate(`/organization/new`)}
             >
               스페이스 만들기
@@ -72,28 +71,33 @@ export const OrgSection = ({ organizations }: OrgSectionProps) => {
         )}
       </Flex>
 
-      <OrgListContainer dir="column" width="100%" gap="8px" margin="0 0 40px 0">
+      <OrgListContainer dir="column" width="100%" gap="8px" role="list" aria-label="스페이스 목록">
         <DeskTopOrgList>
-          {organizations.map((org) => (
+          {organizations.map((org, idx) => (
             <OrgCard
               key={org.organizationId}
               organization={org}
+              position={idx + 1}
+              total={total}
               onJoin={() => handleJoin(org.organizationId)}
             />
           ))}
         </DeskTopOrgList>
 
         <MobileOrgList dir="column">
-          {organizations.map((org) => (
+          {organizations.map((org, idx) => (
             <OrgCard
               key={org.organizationId}
               organization={org}
+              position={idx + 1}
+              total={total}
               onJoin={() => handleJoin(org.organizationId)}
             />
           ))}
         </MobileOrgList>
       </OrgListContainer>
-      {organizations.length === 0 && (
+
+      {total === 0 && (
         <Text type="Body" color={theme.colors.gray500}>
           아직 스페이스가 없어요. 새로운 스페이스를 만들어보세요!
         </Text>
@@ -132,4 +136,17 @@ const MobileOrgList = styled(Flex)`
     flex-shrink: 0;
     overflow-y: auto;
   }
+`;
+
+const VisuallyHidden = styled.span`
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
 `;
