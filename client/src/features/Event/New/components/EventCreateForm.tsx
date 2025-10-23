@@ -543,7 +543,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                 `}
               >
                 <Text as="label" type="Heading" weight="medium">
-                  알림 보낼 그룹
+                  알림 보낼 포지션
                   <StyledRequiredMark>*</StyledRequiredMark>
                 </Text>
 
@@ -563,7 +563,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                   >
                     <Text
                       weight={areAllSelected ? 'bold' : 'regular'}
-                      color={areAllSelected ? theme.colors.white : theme.colors.primary600}
+                      color={areAllSelected ? theme.colors.white : theme.colors.gray700}
                     >
                       전체
                     </Text>
@@ -581,7 +581,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
                       >
                         <Text
                           weight={selected ? 'bold' : 'regular'}
-                          color={selected ? theme.colors.white : theme.colors.primary600}
+                          color={selected ? theme.colors.white : theme.colors.gray700}
                         >
                           {group.name}
                         </Text>
@@ -776,8 +776,8 @@ const Segment = styled.button<{ isSelected: boolean }>`
   padding: 4px 8px;
   white-space: nowrap;
 
-  background: ${(p) => (p.isSelected ? theme.colors.primary400 : theme.colors.primary50)};
-  border: 1.5px solid ${(p) => (p.isSelected ? theme.colors.primary300 : theme.colors.primary200)};
+  background: ${(p) => (p.isSelected ? theme.colors.primary500 : theme.colors.gray50)};
+  border: 1.5px solid ${(p) => (p.isSelected ? theme.colors.primary500 : theme.colors.gray200)};
 
   &:hover {
     background: ${(p) => (p.isSelected ? theme.colors.primary600 : theme.colors.primary100)};

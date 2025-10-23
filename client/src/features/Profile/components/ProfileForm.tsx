@@ -37,7 +37,7 @@ export const ProfileForm = ({ profile, totalGroup }: ProfileFormProps) => {
       <Flex dir="column" gap="24px" width="100%">
         <Flex dir="column" gap="8px">
           <Text type="Heading" weight="semibold" color="gray700">
-            그룹
+            포지션
           </Text>
           <Flex
             gap="8px"
@@ -58,7 +58,7 @@ export const ProfileForm = ({ profile, totalGroup }: ProfileFormProps) => {
                 <Text
                   weight={selectedGroup === group.groupId ? 'bold' : 'regular'}
                   color={
-                    selectedGroup === group.groupId ? theme.colors.white : theme.colors.primary600
+                    selectedGroup === group.groupId ? theme.colors.white : theme.colors.gray700
                   }
                 >
                   {group.name}
@@ -111,8 +111,8 @@ const Segment = styled.button<{ isSelected: boolean }>`
   padding: 4px 8px;
   white-space: nowrap;
 
-  background: ${(p) => (p.isSelected ? theme.colors.primary400 : theme.colors.primary50)};
-  border: 1.5px solid ${(p) => (p.isSelected ? theme.colors.primary300 : theme.colors.primary200)};
+  background: ${(p) => (p.isSelected ? theme.colors.primary500 : theme.colors.gray50)};
+  border: 1.5px solid ${(p) => (p.isSelected ? theme.colors.primary500 : theme.colors.gray200)};
 
   &:hover {
     background: ${(p) => (p.isSelected ? theme.colors.primary600 : theme.colors.primary100)};
