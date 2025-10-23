@@ -1,0 +1,5 @@
+ALTER TABLE event
+    ADD COLUMN is_approval_required TINYINT(1) NOT NULL DEFAULT 0;
+
+ALTER TABLE guest
+    ADD COLUMN approval_status VARCHAR(20) NOT NULL DEFAULT 'APPROVED';

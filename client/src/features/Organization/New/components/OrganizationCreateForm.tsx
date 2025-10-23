@@ -13,11 +13,12 @@ import {
 } from '@/api/mutations/useUpdateOrganization';
 import { useUpdateOrganizationMemberRoles } from '@/api/mutations/useUpdateOrganizationMemberRoles';
 import { organizationQueryOptions } from '@/api/queries/organization';
-import { GuestList } from '@/features/Event/Manage/components/GuestList';
+import { GuestList } from '@/features/Event/Manage/components/guest/GuestList';
 import type { NonGuest } from '@/features/Event/Manage/types';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
+import { Spacing } from '@/shared/components/Spacing';
 import { Tabs } from '@/shared/components/Tabs/Tabs';
 import { Text } from '@/shared/components/Text';
 import { useToast } from '@/shared/components/Toast/ToastContext';
@@ -28,7 +29,6 @@ import { MAX_LENGTH } from '../constants/validationRules';
 import { useCreateOrganizationProcess } from '../hooks/useCreateOrganizationProcess';
 import { useOrganizationForm } from '../hooks/useOrganizationForm';
 
-import { CreateSpaceFormModal } from './CreateSpaceFormModal';
 import { OrganizationDeleteModal } from './OrganizationDeleteModal';
 import { OrganizationImageInput } from './OrganizationImageInput';
 
@@ -92,7 +92,7 @@ export const OrganizationCreateForm = () => {
 
   const { mutate: patchOrganization, isPending: isPatching } = useUpdateOrganization();
 
-  const { handleCreate, isSubmitting: isCreating } = useCreateOrganizationProcess({
+  const { handleOrganizationCreateClick, isSubmitting: isCreating } = useCreateOrganizationProcess({
     name: form.name.trim(),
     description: form.description.trim(),
     thumbnail: form.thumbnail,
@@ -111,7 +111,7 @@ export const OrganizationCreateForm = () => {
     return true;
   };
 
-  const handleEditButtonClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOrganizationEditClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (!isValid()) return;
 
@@ -199,7 +199,7 @@ export const OrganizationCreateForm = () => {
       onSuccess: () => {
         success('이벤트 스페이스가 성공적으로 삭제되었습니다!');
         deleteModal.close();
-        navigate('/organization');
+        navigate('/');
       },
       onError: (err) => {
         if (err instanceof HttpError) {
@@ -207,11 +207,6 @@ export const OrganizationCreateForm = () => {
         }
       },
     });
-  };
-
-  const handleSpaceOneForm = (data: { nickname: string; groupId: number }) => {
-    if (!data.nickname.trim() || isSubmitting) return;
-    handleCreate(data);
   };
 
   const { data: myProfile } = useQuery({
@@ -346,39 +341,41 @@ export const OrganizationCreateForm = () => {
             />
           </Flex>
 
-          <Flex dir="column" gap="12px">
+          <Flex dir="column">
             <Text as="label" htmlFor="orgName" type="Heading" weight="medium">
               이벤트 스페이스 이름
               <StyledRequiredMark>*</StyledRequiredMark>
             </Text>
+            <Spacing height="8px" />
             <Input
               id="orgName"
               name="name"
-              placeholder="이벤트 스페이스 이름을 입력해주세요."
               value={form.name}
               onChange={handleChange}
+              placeholder="이벤트 스페이스 이름을 입력해주세요."
               errorMessage={errors.name}
               showCounter
-              maxLength={MAX_LENGTH.NAME}
               isRequired
+              maxLength={MAX_LENGTH.NAME}
             />
           </Flex>
 
-          <Flex dir="column" gap="12px">
+          <Flex dir="column">
             <Text as="label" htmlFor="orgDescription" type="Heading" weight="medium">
               한 줄 소개
               <StyledRequiredMark>*</StyledRequiredMark>
             </Text>
+            <Spacing height="8px" />
             <Input
               id="orgDescription"
               name="description"
-              placeholder="이벤트 스페이스를 소개해주세요."
               value={form.description}
               onChange={handleChange}
+              placeholder="이벤트 스페이스를 소개해주세요."
               errorMessage={errors.description}
               showCounter
-              maxLength={MAX_LENGTH.DESCRIPTION}
               isRequired
+              maxLength={MAX_LENGTH.DESCRIPTION}
             />
           </Flex>
 
@@ -463,23 +460,12 @@ export const OrganizationCreateForm = () => {
             color="primary"
             size="full"
             disabled={!isValid() || isSubmitting}
-            onClick={handleEditButtonClick}
+            onClick={isEdit ? handleOrganizationEditClick : handleOrganizationCreateClick}
           >
             {isEdit ? '이벤트 스페이스 수정하기' : '이벤트 스페이스 생성하기'}
           </Button>
         </Flex>
       </Flex>
-
-      {!isEdit && (
-        <CreateSpaceFormModal
-          isOpen={createModal.isOpen}
-          orgName={form.name || '이벤트 스페이스'}
-          previewUrl={previewUrl}
-          isSubmitting={isSubmitting}
-          onClose={createModal.close}
-          onConfirm={handleSpaceOneForm}
-        />
-      )}
 
       <OrganizationDeleteModal
         isOpen={deleteModal.isOpen}
@@ -502,20 +488,13 @@ const ScrollArea = styled.div`
   padding-right: 4px;
 
   scrollbar-width: thin;
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: ${theme.colors.gray300};
-    border-radius: 8px;
-  }
 `;
 
 const EmptyState = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${theme.colors.gray400};
+  color: ${theme.colors.gray800};
   font-size: 14px;
   height: 180px;
   text-align: center;

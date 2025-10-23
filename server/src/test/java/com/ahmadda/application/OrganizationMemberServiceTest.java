@@ -1,10 +1,8 @@
 package com.ahmadda.application;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OrganizationMemberRoleUpdateRequest;
 import com.ahmadda.application.dto.OrganizationMemberUpdateRequest;
-import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
@@ -16,6 +14,7 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,8 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-@IntegrationTest
-class OrganizationMemberServiceTest {
+class OrganizationMemberServiceTest extends IntegrationTest {
 
     @Autowired
     private OrganizationMemberService sut;
@@ -200,10 +198,8 @@ class OrganizationMemberServiceTest {
         createOrganizationMember("길동", member1, org, OrganizationMemberRole.USER, group);
         createOrganizationMember("찬호", member2, org, OrganizationMemberRole.USER, group);
 
-        var loginMember = new LoginMember(member1.getId());
-
         // when
-        var result = sut.getAllOrganizationMembers(org.getId(), loginMember);
+        var result = sut.getAllOrganizationMembers(org.getId());
 
         // then
         assertSoftly(softly -> {
@@ -220,153 +216,15 @@ class OrganizationMemberServiceTest {
     void 이벤트_스페이스_구성원_목록_조회시_이벤트_스페이스가_존재하지_않으면_예외가_발생한다() {
         // given
         var member = createMember("홍길동", "hong@email.com");
-        var loginMember = new LoginMember(member.getId());
 
         var invalidOrgId = -999L;
 
         // when // then
-        assertThatThrownBy(() -> sut.getAllOrganizationMembers(invalidOrgId, loginMember))
+        assertThatThrownBy(() -> sut.getAllOrganizationMembers(invalidOrgId))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 이벤트 스페이스입니다.");
     }
 
-    @Test
-    void 이벤트_스페이스_구성원_목록_조회시_이벤트_스페이스에_속하지_않는_구성원이면_예외가_발생한다() {
-        // given
-        var org1 = createOrganization("우테코");
-        var org2 = createOrganization("다른 이벤트 스페이스");
-
-        var member = createMember("홍길동", "hong@email.com");
-        var group = createGroup("백엔드");
-        createOrganizationMember("길동", member, org2, OrganizationMemberRole.USER, group); // 다른 이벤트 스페이스 소속
-
-        var loginMember = new LoginMember(member.getId());
-
-        // when // then
-        assertThatThrownBy(() -> sut.getAllOrganizationMembers(org1.getId(), loginMember))
-                .isInstanceOf(ForbiddenException.class)
-                .hasMessage("이벤트 스페이스에 속한 구성원만 구성원의 목록을 조회할 수 있습니다.");
-    }
-
-    @Test
-    void 자신의_닉네임을_변경할_수_있다() {
-        // given
-        var org = createOrganization("우테코");
-        var member = createMember("홍길동", "hong@email.com");
-        var group = createGroup("백엔드");
-        var orgMember = createOrganizationMember("닉네임", member, org, OrganizationMemberRole.USER, group);
-        var loginMember = new LoginMember(member.getId());
-
-        var newName = "닉네임2";
-
-        // when
-        sut.renameOrganizationMemberNickname(org.getId(), loginMember, newName);
-
-        // then
-        assertThat(orgMember.getNickname()).isEqualTo(newName);
-    }
-
-    @Test
-    void 이미_사용_중인_닉네임으로_닉네임을_변경하면_예외가_발생한다() {
-        // given
-        var org = createOrganization("우테코");
-        var member1 = createMember("홍길동1", "hong1@email.com");
-        var group = createGroup("백엔드");
-        var orgMember1 = createOrganizationMember("닉네임1", member1, org, OrganizationMemberRole.USER, group);
-
-        var member2 = createMember("홍길동2", "hong@email2.com");
-        var orgMember2 = createOrganizationMember("닉네임2", member2, org, OrganizationMemberRole.USER, group);
-        var loginMember2 = new LoginMember(member2.getId());
-
-        var duplicateName = "닉네임1";
-
-        // when // then
-        assertThatThrownBy(() -> sut.renameOrganizationMemberNickname(org.getId(), loginMember2, duplicateName))
-                .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("이미 사용 중인 닉네임입니다.");
-    }
-
-    @Test
-    void 자신의_닉네임으로_리네임_하면_예외가_발생한다() {
-        // given
-        var org = createOrganization("우테코");
-        var member = createMember("홍길동", "hong1@email.com");
-        var group = createGroup("백엔드");
-        var orgMember = createOrganizationMember("닉네임1", member, org, OrganizationMemberRole.USER, group);
-        var loginMember = new LoginMember(member.getId());
-
-        var myNickname = "닉네임1";
-
-        // when // then
-        assertThatThrownBy(() -> sut.renameOrganizationMemberNickname(org.getId(), loginMember, myNickname))
-                .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("현재 닉네임과 동일하여 변경할 수 없습니다.");
-    }
-
-    @Test
-    void 자신의_닉네임과_그룹을_업데이트할_수_있다() {
-        // given
-        var org = createOrganization("우테코");
-        var member = createMember("홍길동", "hong@email.com");
-        var group1 = createGroup("백엔드");
-        var orgMember = createOrganizationMember("닉네임", member, org, OrganizationMemberRole.USER, group1);
-        var loginMember = new LoginMember(member.getId());
-
-        var newGroup = createGroup("프론트"); // 새로운 그룹
-        var request = new OrganizationMemberUpdateRequest("새닉네임", newGroup.getId());
-
-        // when
-        sut.updateOrganizationMember(org.getId(), loginMember, request);
-
-        // then
-        var updated = organizationMemberRepository.findById(orgMember.getId())
-                .orElseThrow();
-        assertSoftly(softly -> {
-            softly.assertThat(updated.getNickname())
-                    .isEqualTo("새닉네임");
-            softly.assertThat(updated.getGroup()
-                            .getId())
-                    .isEqualTo(newGroup.getId());
-        });
-    }
-
-    @Test
-    void 이미_사용중인_닉네임으로_업데이트하면_예외가_발생한다() {
-        // given
-        var org = createOrganization("우테코");
-        var member1 = createMember("홍길동1", "hong1@email.com");
-        var member2 = createMember("홍길동2", "hong2@email.com");
-
-        var group = createGroup("백엔드");
-        createOrganizationMember("닉네임1", member1, org, OrganizationMemberRole.USER, group);
-        var orgMember2 = createOrganizationMember("닉네임2", member2, org, OrganizationMemberRole.USER, group);
-
-        var loginMember = new LoginMember(member2.getId());
-        var request = new OrganizationMemberUpdateRequest("닉네임1", group.getId());
-
-        // when // then
-        assertThatThrownBy(() -> sut.updateOrganizationMember(org.getId(), loginMember, request))
-                .isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("이미 사용 중인 닉네임입니다.");
-    }
-
-    @Test
-    void 존재하지_않는_그룹으로_업데이트하면_예외가_발생한다() {
-        // given
-        var org = createOrganization("우테코");
-        var member = createMember("홍길동", "hong@email.com");
-        var group = createGroup("백엔드");
-        var orgMember = createOrganizationMember("닉네임", member, org, OrganizationMemberRole.USER, group);
-        var loginMember = new LoginMember(member.getId());
-
-        var invalidGroupId = -999L;
-        var request = new OrganizationMemberUpdateRequest("새닉네임", invalidGroupId);
-
-        // when // then
-        assertThatThrownBy(() -> sut.updateOrganizationMember(org.getId(), loginMember, request))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 그룹입니다.");
-    }
 
     @Test
     void 조직_가입_여부를_확인한다() {

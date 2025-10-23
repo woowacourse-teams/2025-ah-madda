@@ -1,13 +1,13 @@
-import { css } from '@emotion/react';
-import { useSuspenseQueries } from '@tanstack/react-query';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect } from 'react';
 
-import { HttpError } from '@/api/fetcher';
+import { css } from '@emotion/react';
+import { useQuery, useSuspenseQueries } from '@tanstack/react-query';
+import { useParams } from 'react-router-dom';
+
+import { isAuthenticated } from '@/api/auth';
 import { eventQueryOptions } from '@/api/queries/event';
-import { Button } from '@/shared/components/Button';
+import { organizationQueryOptions } from '@/api/queries/organization';
 import { Flex } from '@/shared/components/Flex';
-import { Header } from '@/shared/components/Header';
-import { Icon } from '@/shared/components/Icon';
 import { PageLayout } from '@/shared/components/PageLayout';
 import { Tabs } from '@/shared/components/Tabs';
 import { Text } from '@/shared/components/Text';
@@ -16,32 +16,38 @@ import { AttendanceOverview } from '../components/guest/AttendanceOverview';
 import { EventBody } from '../components/info/EventBody';
 import { EventHeader } from '../components/info/EventHeader';
 import { EventDetailContainer } from '../containers/EventDetailContainer';
+import { useEventIntroSummaryFocus } from '../hooks/useEventIntroSummaryFocus';
 
 export const EventDetailPage = () => {
-  const navigate = useNavigate();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const { eventId, organizationId } = useParams();
 
-  const [
-    { data: event },
-    { data: guestStatus, isError: guestStatusError, error: guestStatusErrorData },
-    { data: organizerStatus },
-  ] = useSuspenseQueries({
-    queries: [
-      eventQueryOptions.detail(Number(eventId)),
-      eventQueryOptions.guestStatus(Number(eventId)),
-      eventQueryOptions.organizer(Number(eventId)),
-    ],
+  const [{ data: event }] = useSuspenseQueries({
+    queries: [eventQueryOptions.detail(Number(eventId))],
   });
 
-  if (guestStatusError) {
-    if (guestStatusErrorData instanceof HttpError && guestStatusErrorData.status === 404) {
-      alert(
-        '해당 이벤트 스페이스의 구성원이 아닙니다. 이벤트 스페이스에 가입 후 다시 시도해주세요.'
-      );
-      navigate('/');
-      return null;
-    }
-  }
+  const { data: organizerStatus } = useQuery({
+    ...eventQueryOptions.organizer(Number(eventId)),
+    enabled: isAuthenticated(),
+  });
+
+  const { data: joinedStatus } = useQuery({
+    ...organizationQueryOptions.joinedStatus(Number(organizationId)),
+    enabled: !!organizationId && isAuthenticated(),
+  });
+
+  const { data: guestStatus } = useQuery({
+    ...eventQueryOptions.guestStatus(Number(eventId)),
+    enabled: isAuthenticated() && joinedStatus?.isMember,
+  });
+
+  const summary = useEventIntroSummaryFocus({
+    event,
+    isGuest: guestStatus?.isGuest,
+  });
 
   if (!event) {
     return (
@@ -54,30 +60,10 @@ export const EventDetailPage = () => {
   }
 
   return (
-    <PageLayout
-      header={
-        <Header
-          left={
-            <Icon
-              name="logo"
-              size={55}
-              onClick={() => navigate(`/${organizationId}/event`)}
-              css={css`
-                cursor: pointer;
-              `}
-            />
-          }
-          right={
-            <Button size="sm" onClick={() => navigate(`/${organizationId}/event/my`)}>
-              마이 페이지
-            </Button>
-          }
-        />
-      }
-    >
-      <EventDetailContainer>
+    <PageLayout>
+      <EventDetailContainer introDesc={summary}>
         <EventHeader
-          isOrganizer={organizerStatus?.isOrganizer || false}
+          isMember={joinedStatus?.isMember || false}
           eventId={Number(eventId)}
           title={event.title}
           place={event.place}
@@ -87,6 +73,7 @@ export const EventDetailPage = () => {
         />
         <Tabs defaultValue="detail">
           <Tabs.List
+            aria-label="이벤트 상세 정보와 참여 현황 탭"
             css={css`
               width: 30%;
               @media (max-width: 768px) {
@@ -98,15 +85,17 @@ export const EventDetailPage = () => {
             <Tabs.Trigger value="participation">참여 현황</Tabs.Trigger>
           </Tabs.List>
 
-          <Tabs.Content value="detail">
+          <Tabs.Content value="detail" role="region" aria-label="이벤트 정보">
             <EventBody
+              organizationId={Number(organizationId)}
+              isMember={joinedStatus?.isMember || false}
               isOrganizer={organizerStatus?.isOrganizer || false}
               isGuest={guestStatus?.isGuest || false}
               {...event}
             />
           </Tabs.Content>
 
-          <Tabs.Content value="participation">
+          <Tabs.Content value="participation" role="region" aria-label="참여 현황">
             <AttendanceOverview eventId={Number(eventId)} />
           </Tabs.Content>
         </Tabs>

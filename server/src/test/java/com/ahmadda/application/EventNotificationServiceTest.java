@@ -1,6 +1,5 @@
 package com.ahmadda.application;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.SelectedOrganizationMembersNotificationRequest;
 import com.ahmadda.common.exception.ForbiddenException;
@@ -13,7 +12,6 @@ import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.notification.EventNotificationOptOut;
 import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
-import com.ahmadda.domain.notification.Reminder;
 import com.ahmadda.domain.notification.ReminderHistory;
 import com.ahmadda.domain.notification.ReminderHistoryRepository;
 import com.ahmadda.domain.notification.ReminderRecipient;
@@ -24,9 +22,9 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,8 +33,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.Mockito.verify;
 
-@IntegrationTest
-class EventNotificationServiceTest {
+class EventNotificationServiceTest extends IntegrationTest {
 
     @Autowired
     private EventNotificationService sut;
@@ -52,9 +49,6 @@ class EventNotificationServiceTest {
 
     @Autowired
     private OrganizationMemberRepository organizationMemberRepository;
-
-    @MockitoSpyBean
-    private Reminder reminder;
 
     @Autowired
     private ReminderHistoryRepository reminderHistoryRepository;
@@ -84,7 +78,8 @@ class EventNotificationServiceTest {
                         now.plusDays(1), now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
 
         var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization, group);
@@ -116,7 +111,8 @@ class EventNotificationServiceTest {
                         now.plusDays(1), now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
 
         var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization, group);
@@ -186,7 +182,8 @@ class EventNotificationServiceTest {
                         now.plusDays(2), now.plusDays(3),
                         now.minusDays(2)
                 ),
-                100
+                100,
+                false
         ));
 
         var om = saveOrganizationMember("대상자", "target@email.com", organization, group);
@@ -223,7 +220,8 @@ class EventNotificationServiceTest {
                         now.plusDays(1), now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
 
         var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization, group);
@@ -267,7 +265,8 @@ class EventNotificationServiceTest {
                         now.plusDays(2), now.plusDays(3),
                         now.minusDays(2)
                 ),
-                100
+                100,
+                false
         ));
 
         var validOm = saveOrganizationMember("유효", "valid@email.com", organization, group);
@@ -308,7 +307,8 @@ class EventNotificationServiceTest {
                         now.plusDays(1), now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
 
         var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization, group);
@@ -349,7 +349,8 @@ class EventNotificationServiceTest {
                         now.plusDays(1), now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
 
         var om1 = saveOrganizationMember("선택1", "sel1@email.com", organization, group);

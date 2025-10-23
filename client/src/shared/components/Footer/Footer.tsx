@@ -23,7 +23,7 @@ export const Footer = () => {
       >
         <Flex dir="column" width="100%" gap="10px">
           <Flex alignItems="center">
-            <img src="/favicon-light.png" alt="logo" width="30" height="30" loading="lazy" />
+            <img src="/favicon.png" alt="logo" width="30" height="30" loading="lazy" />
             <Icon name="logo" />
           </Flex>
           <Text type="Body" weight="semibold" color={theme.colors.gray600}>
@@ -46,10 +46,11 @@ export const Footer = () => {
           <StyledLinkButton
             target="_blank"
             href="https://github.com/woowacourse-teams/2025-ah-madda"
+            aria-label="GitHub 저장소로 이동"
           >
             <img
               src={GithubIcon}
-              alt="github"
+              alt="GitHub 로고"
               width="30"
               height="30"
               loading="lazy"

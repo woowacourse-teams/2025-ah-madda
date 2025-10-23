@@ -7,7 +7,6 @@ import { useParams } from 'react-router-dom';
 
 import { organizationQueryOptions } from '@/api/queries/organization';
 import type { OrganizationMember } from '@/api/types/organizations';
-import { GuestList } from '@/features/Event/Manage/components/GuestList';
 import type { NonGuest } from '@/features/Event/Manage/types';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
@@ -16,6 +15,8 @@ import { Tabs } from '@/shared/components/Tabs/Tabs';
 import { Text } from '@/shared/components/Text';
 import { useToast } from '@/shared/components/Toast/ToastContext';
 import { theme } from '@/shared/styles/theme';
+
+import { GuestList } from '../../Manage/components/guest/GuestList';
 
 export type CoHostSelectModalProps = {
   isOpen: boolean;
@@ -232,13 +233,6 @@ const ScrollArea = styled.div`
   margin-top: 12px;
 
   scrollbar-width: thin;
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: ${theme.colors.gray300};
-    border-radius: 8px;
-  }
 `;
 
 const StickyFooter = styled.div`
@@ -251,7 +245,7 @@ const EmptyState = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${theme.colors.gray400};
+  color: ${theme.colors.gray800};
   font-size: 14px;
   height: 250px;
   text-align: center;

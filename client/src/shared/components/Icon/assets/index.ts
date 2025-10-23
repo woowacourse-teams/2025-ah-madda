@@ -8,10 +8,13 @@ import { Delete } from './delete';
 import { DropdownDown } from './dropdownDown';
 import { DropdownUp } from './dropdownUp';
 import { Edit } from './edit';
+import { Info } from './info';
+import { Loading } from './loading';
 import { Location } from './location';
 import { Logo } from './logo';
 import { Next } from './next';
 import { Plus } from './plus';
+import { QuestionMark } from './questionmark';
 import { Save } from './save';
 import { Setting } from './setting';
 import { Share } from './share';
@@ -26,6 +29,8 @@ export const Icons = {
   close: Close,
   delete: Delete,
   edit: Edit,
+  info: Info,
+  loading: Loading,
   location: Location,
   logo: Logo,
   plus: Plus,
@@ -34,6 +39,7 @@ export const Icons = {
   dropdownDown: DropdownDown,
   dropdownUp: DropdownUp,
   next: Next,
+  queueMicrotask: QuestionMark,
   save: Save,
   setting: Setting,
 };

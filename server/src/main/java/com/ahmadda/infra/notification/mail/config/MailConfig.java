@@ -2,15 +2,15 @@ package com.ahmadda.infra.notification.mail.config;
 
 import com.ahmadda.infra.notification.config.NotificationProperties;
 import com.ahmadda.infra.notification.mail.BccChunkingEmailSender;
-import com.ahmadda.infra.notification.mail.EmailOutboxRecipientRepository;
-import com.ahmadda.infra.notification.mail.EmailOutboxRepository;
-import com.ahmadda.infra.notification.mail.EmailOutboxSuccessHandler;
 import com.ahmadda.infra.notification.mail.EmailSender;
 import com.ahmadda.infra.notification.mail.FailoverEmailSender;
 import com.ahmadda.infra.notification.mail.NoopEmailSender;
 import com.ahmadda.infra.notification.mail.OutboxEmailSender;
 import com.ahmadda.infra.notification.mail.RetryableEmailSender;
 import com.ahmadda.infra.notification.mail.SmtpEmailSender;
+import com.ahmadda.infra.notification.mail.outbox.EmailOutboxRecipientRepository;
+import com.ahmadda.infra.notification.mail.outbox.EmailOutboxRepository;
+import com.ahmadda.infra.notification.mail.outbox.EmailOutboxSuccessHandler;
 import io.github.resilience4j.retry.RetryRegistry;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -21,8 +21,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-@EnableConfigurationProperties({NotificationProperties.class, SmtpProperties.class})
 @Configuration
+@EnableConfigurationProperties({NotificationProperties.class, SmtpProperties.class})
 public class MailConfig {
 
     @Bean

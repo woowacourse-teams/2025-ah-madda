@@ -1,6 +1,5 @@
 package com.ahmadda.application;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
@@ -21,6 +20,7 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,8 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-@IntegrationTest
-class EventNotificationOptOutServiceTest {
+class EventNotificationOptOutServiceTest extends IntegrationTest {
 
     @Autowired
     private EventNotificationOptOutService sut;
@@ -407,7 +406,8 @@ class EventNotificationOptOutServiceTest {
                         now.plusDays(2),
                         now.minusDays(5)
                 ),
-                100
+                100,
+                false
         );
         eventRepository.save(event);
         eventOrganizerRepository.saveAll(event.getEventOrganizers());

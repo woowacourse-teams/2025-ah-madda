@@ -1,8 +1,9 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
+import { logout } from '@/api/auth';
 import { OrganizationGroupAPIResponse } from '@/api/types/organizations';
-import { OrganizationProfile } from '@/api/types/profile';
+import { ProfileAPIResponse } from '@/api/types/profile';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Input } from '@/shared/components/Input';
@@ -12,16 +13,12 @@ import { theme } from '@/shared/styles/theme';
 import { useProfileForm } from '../hooks/useProfileForm';
 
 type ProfileFormProps = {
-  organizationId: number;
-  organizationProfile: OrganizationProfile;
-  organizationGroups: OrganizationGroupAPIResponse[];
+  profile: ProfileAPIResponse;
+  totalGroup: OrganizationGroupAPIResponse[];
 };
 
-export const ProfileForm = ({
-  organizationId,
-  organizationGroups,
-  organizationProfile,
-}: ProfileFormProps) => {
+const DEFAULT_GROUP_ID = 5;
+export const ProfileForm = ({ profile, totalGroup }: ProfileFormProps) => {
   const {
     nickname,
     selectedGroup,
@@ -31,9 +28,8 @@ export const ProfileForm = ({
     hasChanges,
     isLoading,
   } = useProfileForm({
-    organizationId,
-    initialNickname: organizationProfile.nickname,
-    initialGroupID: organizationProfile.group.groupId,
+    initialNickname: profile.name,
+    initialGroupID: profile?.groupId ?? DEFAULT_GROUP_ID,
   });
 
   return (
@@ -51,7 +47,7 @@ export const ProfileForm = ({
               flex-wrap: wrap;
             `}
           >
-            {organizationGroups.map((group) => (
+            {totalGroup.map((group) => (
               <Segment
                 key={group.groupId}
                 type="button"
@@ -62,7 +58,7 @@ export const ProfileForm = ({
                 <Text
                   weight={selectedGroup === group.groupId ? 'bold' : 'regular'}
                   color={
-                    selectedGroup === group.groupId ? theme.colors.primary500 : theme.colors.gray300
+                    selectedGroup === group.groupId ? theme.colors.white : theme.colors.primary600
                   }
                 >
                   {group.name}
@@ -76,6 +72,7 @@ export const ProfileForm = ({
             닉네임
           </Text>
           <Input
+            showCounter
             id="nickname"
             value={nickname}
             onChange={handleNicknameChange}
@@ -83,15 +80,21 @@ export const ProfileForm = ({
           />
         </Flex>
       </Flex>
-
-      <Button
-        type="button"
-        size="full"
-        disabled={!hasChanges || isLoading}
-        onClick={handleSaveProfile}
-      >
-        {isLoading ? '저장 중...' : '변경사항 저장'}
-      </Button>
+      <Flex gap="8px" width="100%" justifyContent="flex-end">
+        <Button
+          type="button"
+          size="lg"
+          color="secondary"
+          disabled={!hasChanges || isLoading}
+          onClick={handleSaveProfile}
+          isLoading={isLoading}
+        >
+          프로필 수정
+        </Button>
+        <Button type="button" size="lg" onClick={logout}>
+          로그아웃
+        </Button>
+      </Flex>
     </>
   );
 };
@@ -101,10 +104,18 @@ const Segment = styled.button<{ isSelected: boolean }>`
   flex: 0 0 auto;
   word-break: keep-all;
   border: 1.5px solid
-    ${(props) => (props.isSelected ? theme.colors.primary500 : theme.colors.gray300)};
+    ${(props) => (props.isSelected ? theme.colors.primary300 : theme.colors.gray500)};
   text-align: center;
   border-radius: 8px;
   cursor: pointer;
   padding: 4px 8px;
   white-space: nowrap;
+
+  background: ${(p) => (p.isSelected ? theme.colors.primary400 : theme.colors.primary50)};
+  border: 1.5px solid ${(p) => (p.isSelected ? theme.colors.primary300 : theme.colors.primary200)};
+
+  &:hover {
+    background: ${(p) => (p.isSelected ? theme.colors.primary600 : theme.colors.primary100)};
+    border-color: ${(p) => (p.isSelected ? theme.colors.primary600 : theme.colors.primary300)};
+  }
 `;

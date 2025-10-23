@@ -1,6 +1,5 @@
 package com.ahmadda.application;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.NotFoundException;
@@ -18,6 +17,7 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -26,8 +26,7 @@ import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@IntegrationTest
-class EventStatisticServiceTest {
+class EventStatisticServiceTest extends IntegrationTest {
 
     @Autowired
     private EventStatisticService sut;
@@ -179,7 +178,8 @@ class EventStatisticServiceTest {
                 organizer,
                 organization,
                 operationPeriod,
-                30
+                30,
+                false
         );
 
         return eventRepository.save(event);

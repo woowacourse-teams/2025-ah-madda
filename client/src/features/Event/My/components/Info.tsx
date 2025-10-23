@@ -1,19 +1,13 @@
-import { css } from '@emotion/react';
-import { useParams } from 'react-router-dom';
-
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 
-import { ActionButton } from './ActionButton';
-
 export const Info = () => {
-  const { organizationId } = useParams();
   return (
     <Flex
       dir="row"
       justifyContent="space-between"
       alignItems="center"
-      margin="60px 0 30px 0"
+      margin="0 0 30px 0"
       padding="20px 0"
       gap="16px"
       width="100%"
@@ -26,7 +20,6 @@ export const Info = () => {
           내가 주최하고, 참여한 이벤트를 확인해보세요.
         </Text>
       </Flex>
-      <ActionButton organizationId={Number(organizationId)} />
     </Flex>
   );
 };

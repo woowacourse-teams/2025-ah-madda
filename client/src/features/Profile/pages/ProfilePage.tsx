@@ -1,46 +1,22 @@
-import { css } from '@emotion/react';
-import { useNavigate } from 'react-router-dom';
+import { useSuspenseQueries } from '@tanstack/react-query';
 
-import { Button } from '@/shared/components/Button';
+import { organizationQueryOptions } from '@/api/queries/organization';
+import { profileQueryOptions } from '@/api/queries/profile';
 import { Flex } from '@/shared/components/Flex';
-import { Header } from '@/shared/components/Header';
-import { Icon } from '@/shared/components/Icon';
 import { PageLayout } from '@/shared/components/PageLayout';
 import { Text } from '@/shared/components/Text';
 import { DEFAULT_AVATAR_URL } from '@/shared/constants';
 
 import { ProfileAvatar } from '../components/ProfileAvatar';
 import { ProfileForm } from '../components/ProfileForm';
-import { useProfile } from '../hooks/useProfile';
-import { useProfileNavigation } from '../hooks/useProfileNavigation';
 
 export const ProfilePage = () => {
-  const navigate = useNavigate();
-  const { organizationId } = useProfileNavigation();
-  const { profile, organizationProfile, organizationGroups } = useProfile(organizationId);
+  const [{ data: profile }, { data: group }] = useSuspenseQueries({
+    queries: [profileQueryOptions.profile(), organizationQueryOptions.group()],
+  });
 
   return (
-    <PageLayout
-      header={
-        <Header
-          left={
-            <Icon
-              name="logo"
-              size={55}
-              onClick={() => navigate(`/${organizationId}/event`)}
-              css={css`
-                cursor: pointer;
-              `}
-            />
-          }
-          right={
-            <Button size="sm" onClick={() => navigate(`/${organizationId}/event/my`)}>
-              마이 페이지
-            </Button>
-          }
-        />
-      }
-    >
+    <PageLayout>
       <Flex width="100%" margin="0px auto" padding="120px 20px 10px ">
         <Flex dir="column" gap="24px" width="100%">
           <Text as="h1" type="Display" weight="bold" color="gray900">
@@ -48,11 +24,7 @@ export const ProfilePage = () => {
           </Text>
 
           <ProfileAvatar email={profile.email} src={profile.picture || DEFAULT_AVATAR_URL} />
-          <ProfileForm
-            organizationProfile={organizationProfile}
-            organizationGroups={organizationGroups}
-            organizationId={organizationId}
-          />
+          <ProfileForm profile={profile} totalGroup={group} />
         </Flex>
       </Flex>
     </PageLayout>

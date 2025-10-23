@@ -1,6 +1,5 @@
 package com.ahmadda.application;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
@@ -11,7 +10,6 @@ import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.notification.EventNotificationOptOut;
 import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
-import com.ahmadda.domain.notification.Poke;
 import com.ahmadda.domain.notification.PokeHistoryRepository;
 import com.ahmadda.domain.notification.PokeMessage;
 import com.ahmadda.domain.organization.Organization;
@@ -22,9 +20,9 @@ import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
 import com.ahmadda.presentation.dto.PokeRequest;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,8 +33,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
-@IntegrationTest
-class PokeServiceTest {
+class PokeServiceTest extends IntegrationTest {
 
     @Autowired
     private PokeService sut;
@@ -52,9 +49,6 @@ class PokeServiceTest {
 
     @Autowired
     private OrganizationRepository organizationRepository;
-
-    @MockitoSpyBean
-    private Poke poke;
 
     @Autowired
     private EventNotificationOptOutRepository eventNotificationOptOutRepository;
@@ -268,7 +262,8 @@ class PokeServiceTest {
         var period = EventOperationPeriod.create(
                 now.plusDays(1), now.plusDays(2), now.plusDays(3), now.plusDays(4), now
         );
-        var event = Event.create(title, description, place, organizer, organization, period, 100, new ArrayList<>());
+        var event =
+                Event.create(title, description, place, organizer, organization, period, 100, new ArrayList<>(), false);
 
         return eventRepository.save(event);
     }
