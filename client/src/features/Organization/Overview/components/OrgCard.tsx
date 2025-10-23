@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 import { OrganizationAPIResponse } from '@/api/types/organizations';
@@ -100,6 +99,7 @@ const StyledCardContainer = styled(Flex)`
   position: relative;
   border-radius: 12px;
   border: 1px solid ${theme.colors.gray100};
+  box-sizing: border-box;
 
   &:hover [data-overlay] {
     opacity: 1;
@@ -125,6 +125,26 @@ const StyledOverlay = styled(Flex)`
   transition: opacity 0.18s ease-in-out;
   border-radius: 12px;
   pointer-events: none;
+`;
+
+const StyledTextContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+`;
+
+const StyledText = styled(Text)`
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+  word-break: break-word;
 `;
 
 const StyledImg = styled.img`

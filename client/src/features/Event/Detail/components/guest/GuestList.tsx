@@ -36,6 +36,7 @@ export const GuestList = ({
   const [receiverGuest, setReceiverGuest] = useState<NonGuest | null>(null);
   const { data: joinedMember } = useQuery({
     ...organizationQueryOptions.joinedStatus(Number(organizationId)),
+    enabled: isAuthenticated(),
   });
 
   const handleGuestClick = (guest: NonGuest) => {

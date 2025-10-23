@@ -57,7 +57,20 @@ export const EventHeader = ({
             min-width: 0;
           `}
         >
-          <Badge variant={status.color}>{status.text}</Badge>
+          <Flex dir="row" justifyContent="space-between" alignItems="flex-end">
+            <Badge variant={status.color}>{status.text}</Badge>
+            {isAuthenticated() && isMember && (
+              <Flex alignItems="center" gap="8px">
+                <Text type="Body">알림 받기</Text>
+                <Switch
+                  aria-label="이벤트 알림 수신 설정"
+                  checked={checked}
+                  onCheckedChange={handleSwitch}
+                  disabled={isLoading}
+                />
+              </Flex>
+            )}
+          </Flex>
           <Text as="h1" type="Display" weight="bold">
             {title}
           </Text>
@@ -80,17 +93,6 @@ export const EventHeader = ({
             </Text>
           </Flex>
         </Flex>
-        {isAuthenticated() && isMember && (
-          <Flex alignItems="center" gap="8px">
-            <Text type="Body">알림 받기</Text>
-            <Switch
-              aria-label="이벤트 알림 수신 설정"
-              checked={checked}
-              onCheckedChange={handleSwitch}
-              disabled={isLoading}
-            />
-          </Flex>
-        )}
       </Flex>
     </>
   );
