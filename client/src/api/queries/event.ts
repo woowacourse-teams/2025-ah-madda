@@ -59,7 +59,8 @@ export const eventQueryOptions = {
   past: (organizationId: number, lastEventId?: number) =>
     infiniteQueryOptions({
       queryKey: [...eventQueryKeys.past(), organizationId, lastEventId],
-      queryFn: () => getPastEventAPI({ organizationId, lastEventId }),
+      queryFn: ({ pageParam }) =>
+        getPastEventAPI({ organizationId, lastEventId: pageParam ?? undefined }),
       getNextPageParam: (data: Event[]) => {
         if (data.length > 0) {
           return data[data.length - 1].eventId;
