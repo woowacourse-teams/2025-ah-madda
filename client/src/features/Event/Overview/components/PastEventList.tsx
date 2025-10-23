@@ -36,7 +36,7 @@ export const PastEventList = ({ organizationId }: PastEventListProps) => {
 
   return (
     <>
-      <Flex dir="column" width="100%" gap="20px">
+      <Flex dir="column" width="100%" gap="20px" margin="0 0 20px 0">
         {groupedEvents
           .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
           .map(({ label, events }) => (

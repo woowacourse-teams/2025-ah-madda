@@ -72,7 +72,7 @@ export const OrgSection = ({ organizations }: OrgSectionProps) => {
         )}
       </Flex>
 
-      <OrgListContainer dir="column" width="100%" gap="8px">
+      <OrgListContainer dir="column" width="100%" gap="8px" margin="0 0 40px 0">
         <DeskTopOrgList>
           {organizations.map((org) => (
             <OrgCard

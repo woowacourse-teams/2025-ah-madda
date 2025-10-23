@@ -48,7 +48,7 @@ export const CurrentEventList = ({ organizationId }: CurrentEventListProps) => {
         alignItems="center"
         gap="5px"
         padding="10px"
-        margin="10px 0 "
+        margin="10px 0"
         css={css`
           border-radius: 8px;
           background-color: ${theme.colors.primary50};
@@ -62,7 +62,7 @@ export const CurrentEventList = ({ organizationId }: CurrentEventListProps) => {
         </Text>
       </Flex>
       <Spacing height="20px" />
-      <Flex dir="column" width="100%" gap="20px">
+      <Flex dir="column" width="100%" gap="20px" margin="0 0 20px 0">
         {groupedEvents.map(({ label, events }) => (
           <EventSection key={label} title={label}>
             <EventGrid>
