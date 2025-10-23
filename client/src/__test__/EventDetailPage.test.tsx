@@ -75,7 +75,7 @@ describe('EventDetailPage', () => {
       });
 
       expect(screen.getByText('테스트 이벤트 설명')).toBeInTheDocument();
-      expect(screen.getByText(/홍길동/)).toBeInTheDocument();
+      expect(screen.getByText(/홍길동/, { selector: 'span' })).toBeInTheDocument();
       expect(screen.getByText('서울시 강남구')).toBeInTheDocument();
     });
 
@@ -118,7 +118,7 @@ describe('EventDetailPage', () => {
 
       renderEventDetailPage();
 
-      expect(await screen.findByRole('button', { name: '신청 하기' })).toBeInTheDocument();
+      expect(await screen.findByRole('button', { name: /신청 하기/ })).toBeInTheDocument();
     });
 
     test('이벤트가 시작되었고 참가 신청을 했다면, "신청 취소" 버튼을 보여준다.', async () => {

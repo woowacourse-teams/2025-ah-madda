@@ -16,6 +16,7 @@ import { AttendanceOverview } from '../components/guest/AttendanceOverview';
 import { EventBody } from '../components/info/EventBody';
 import { EventHeader } from '../components/info/EventHeader';
 import { EventDetailContainer } from '../containers/EventDetailContainer';
+import { useEventIntroSummaryFocus } from '../hooks/useEventIntroSummaryFocus';
 
 export const EventDetailPage = () => {
   useEffect(() => {
@@ -43,6 +44,11 @@ export const EventDetailPage = () => {
     enabled: isAuthenticated() && joinedStatus?.isMember,
   });
 
+  const summary = useEventIntroSummaryFocus({
+    event,
+    isGuest: guestStatus?.isGuest,
+  });
+
   if (!event) {
     return (
       <Flex dir="column" justifyContent="center" alignItems="center">
@@ -55,7 +61,7 @@ export const EventDetailPage = () => {
 
   return (
     <PageLayout>
-      <EventDetailContainer>
+      <EventDetailContainer introDesc={summary}>
         <EventHeader
           isMember={joinedStatus?.isMember || false}
           eventId={Number(eventId)}
@@ -67,6 +73,7 @@ export const EventDetailPage = () => {
         />
         <Tabs defaultValue="detail">
           <Tabs.List
+            aria-label="이벤트 상세 정보와 참여 현황 탭"
             css={css`
               width: 30%;
               @media (max-width: 768px) {
@@ -78,7 +85,7 @@ export const EventDetailPage = () => {
             <Tabs.Trigger value="participation">참여 현황</Tabs.Trigger>
           </Tabs.List>
 
-          <Tabs.Content value="detail">
+          <Tabs.Content value="detail" role="region" aria-label="이벤트 정보">
             <EventBody
               organizationId={Number(organizationId)}
               isMember={joinedStatus?.isMember || false}
@@ -88,7 +95,7 @@ export const EventDetailPage = () => {
             />
           </Tabs.Content>
 
-          <Tabs.Content value="participation">
+          <Tabs.Content value="participation" role="region" aria-label="참여 현황">
             <AttendanceOverview eventId={Number(eventId)} />
           </Tabs.Content>
         </Tabs>
