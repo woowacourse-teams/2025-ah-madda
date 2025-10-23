@@ -382,7 +382,7 @@ export const OrganizationCreateForm = () => {
           {isEdit && (
             <Flex dir="column" gap="12px">
               <Text as="label" type="Heading" weight="medium">
-                관리자
+                관리자 설정
               </Text>
 
               <Tabs defaultValue={String(tabs[0]?.id ?? '')}>
