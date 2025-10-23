@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 import { css } from '@emotion/react';
 import { useQuery, useSuspenseQueries } from '@tanstack/react-query';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { isAuthenticated } from '@/api/auth';
 import { eventQueryOptions } from '@/api/queries/event';
@@ -19,7 +19,6 @@ import { EventDetailContainer } from '../containers/EventDetailContainer';
 import { useEventIntroSummaryFocus } from '../hooks/useEventIntroSummaryFocus';
 
 export const EventDetailPage = () => {
-  const location = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -45,10 +44,9 @@ export const EventDetailPage = () => {
     enabled: isAuthenticated() && joinedStatus?.isMember,
   });
 
-  useEventIntroSummaryFocus({
+  const summary = useEventIntroSummaryFocus({
     event,
     isGuest: guestStatus?.isGuest,
-    locationKey: location.key,
   });
 
   if (!event) {
@@ -63,7 +61,7 @@ export const EventDetailPage = () => {
 
   return (
     <PageLayout>
-      <EventDetailContainer>
+      <EventDetailContainer introDesc={summary}>
         <EventHeader
           isMember={joinedStatus?.isMember || false}
           eventId={Number(eventId)}

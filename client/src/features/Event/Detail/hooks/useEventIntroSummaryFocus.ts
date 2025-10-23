@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 
 import { EventDetail } from '@/api/types/event';
 import { formatDate } from '@/shared/utils/dateUtils';
@@ -12,28 +12,17 @@ const speakifyTime = (s: string) =>
     .replace(/\s+/g, ' ')
     .trim();
 
-const spokenRange = (startISO: string, endISO: string) => {
-  const start = formatDate({
-    start: startISO,
-    pattern: 'YYYY년 MM월 DD일 E A HH:mm',
-    options: { locale: 'ko', dayOfWeek: 'long', hour12: true },
-  });
-  const end = formatDate({
-    start: endISO,
-    pattern: 'YYYY년 MM월 DD일 E A HH:mm',
-    options: { locale: 'ko', dayOfWeek: 'long', hour12: true },
-  });
-  return `${speakifyTime(start)}부터 ${speakifyTime(end)}까지`;
-};
+const spokenSingle = (iso: string) =>
+  speakifyTime(
+    formatDate({
+      start: iso,
+      pattern: 'YYYY년 MM월 DD일 E A HH:mm',
+      options: { locale: 'ko', dayOfWeek: 'long', hour12: true },
+    })
+  );
 
-const spokenSingle = (iso: string) => {
-  const single = formatDate({
-    start: iso,
-    pattern: 'YYYY년 MM월 DD일 E A HH:mm',
-    options: { locale: 'ko', dayOfWeek: 'long', hour12: true },
-  });
-  return speakifyTime(single);
-};
+const spokenRange = (startISO: string, endISO: string) =>
+  `이벤트 시간: ${spokenSingle(startISO)}부터 ${spokenSingle(endISO)}까지.`;
 
 const ordinalKo = (n: number) =>
   ['첫', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열'][n - 1] ?? `${n}번째`;
@@ -41,19 +30,16 @@ const ordinalKo = (n: number) =>
 export function useEventIntroSummaryFocus(params: {
   event?: EventDetail;
   isGuest?: boolean;
-  locationKey: string;
-}) {
+}): string {
   const { event, isGuest } = params;
 
-  const lastSummaryRef = useRef<string | null>(null);
-
-  const summary = useMemo(() => {
+  return useMemo(() => {
     if (!event) return '';
 
-    const titlePart = `이벤트 제목: ${event.title}.`;
-    const timePart = `이벤트 시간: ${spokenRange(event.eventStart, event.eventEnd)}.`;
+    const title = `이벤트 제목: ${event.title}.`;
+    const time = spokenRange(event.eventStart, event.eventEnd);
 
-    const capPart =
+    const capacity =
       event.maxCapacity > 0
         ? `참여 현황: 총 ${event.maxCapacity}명 중 ${event.currentGuestCount}명.`
         : `참여 현황: 현재 ${event.currentGuestCount}명.`;
@@ -83,7 +69,7 @@ export function useEventIntroSummaryFocus(params: {
             ? '아직 신청하지 않은 이벤트입니다. 사전 질문을 모두 작성하면 신청할 수 있습니다.'
             : '마감된 이벤트입니다.';
 
-    const organizerText =
+    const organizers =
       event.organizerNicknames.length === 0
         ? '주최자 정보 없음'
         : event.organizerNicknames.length <= 3
@@ -93,38 +79,17 @@ export function useEventIntroSummaryFocus(params: {
             }명`;
 
     return [
-      titlePart,
+      title,
       `장소: ${event.place}.`,
-      timePart,
+      time,
       event.description ? `이벤트 소개: ${event.description}.` : '',
       `마감 시간: ${spokenSingle(event.registrationEnd)}까지.`,
-      `주최자: ${organizerText}.`,
-      capPart,
+      `주최자: ${organizers}.`,
+      capacity,
       ...qParts,
       buttonSummary,
     ]
       .filter(Boolean)
       .join(' ');
   }, [event, isGuest]);
-
-  useEffect(() => {
-    if (!summary) return;
-
-    let intro = document.getElementById('event-intro-desc') as HTMLElement | null;
-    if (!intro) {
-      intro = document.createElement('div');
-      intro.id = 'event-intro-desc';
-      intro.style.position = 'absolute';
-      intro.style.left = '-9999px';
-      intro.style.width = '1px';
-      intro.style.height = '1px';
-      intro.style.overflow = 'hidden';
-      document.body.appendChild(intro);
-    }
-
-    if (lastSummaryRef.current !== summary) {
-      lastSummaryRef.current = summary;
-      intro.textContent = summary;
-    }
-  }, [summary]);
 }

@@ -1,5 +1,7 @@
+export const INTRO_DESC_ID = 'event-intro-desc';
+
 type A11yProps = {
-  includeIntroDesc?: boolean;
+  introDesc?: string;
 };
 
 const srHiddenStyle: React.CSSProperties = {
@@ -13,7 +15,7 @@ const srHiddenStyle: React.CSSProperties = {
   overflow: 'hidden',
 };
 
-export const A11y = ({ includeIntroDesc = false }: A11yProps) => {
+export const A11y = ({ introDesc }: A11yProps) => {
   return (
     <>
       <div
@@ -30,8 +32,9 @@ export const A11y = ({ includeIntroDesc = false }: A11yProps) => {
         aria-atomic="true"
         style={srHiddenStyle}
       />
-
-      {includeIntroDesc && <div id="event-intro-desc" style={srHiddenStyle} />}
+      <div id={INTRO_DESC_ID} style={srHiddenStyle}>
+        {introDesc}
+      </div>
     </>
   );
 };

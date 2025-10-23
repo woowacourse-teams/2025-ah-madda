@@ -3,7 +3,10 @@ import { PropsWithChildren } from 'react';
 import { A11y } from '@/shared/components/A11y/A11y';
 import { Flex } from '@/shared/components/Flex';
 
-export const EventDetailContainer = ({ children }: PropsWithChildren) => {
+export const EventDetailContainer = ({
+  children,
+  introDesc,
+}: PropsWithChildren<{ introDesc?: string }>) => {
   return (
     <Flex
       as="main"
@@ -16,8 +19,7 @@ export const EventDetailContainer = ({ children }: PropsWithChildren) => {
       padding="40px 20px 0 20px"
       style={{ position: 'relative' }}
     >
-      <A11y includeIntroDesc />
-
+      <A11y introDesc={introDesc} />
       {children}
     </Flex>
   );

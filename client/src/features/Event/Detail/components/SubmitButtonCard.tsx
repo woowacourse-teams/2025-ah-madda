@@ -7,6 +7,7 @@ import { useCancelParticipation } from '@/api/mutations/useCancelParticipation';
 import { useParticipateEvent } from '@/api/mutations/useParticipateEvent';
 import { useParticipateOrganization } from '@/api/mutations/useParticipateOrganization';
 import { Answer, GuestStatusAPIResponse } from '@/api/types/event';
+import { INTRO_DESC_ID } from '@/shared/components/A11y/A11y';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { useToast } from '@/shared/components/Toast/ToastContext';
@@ -147,7 +148,7 @@ export const SubmitButtonCard = ({
         <Button
           ref={btnRef}
           aria-live="off"
-          aria-describedby="event-intro-desc"
+          aria-describedby={INTRO_DESC_ID}
           size="full"
           color={buttonState.color}
           disabled={buttonState.disabled}
