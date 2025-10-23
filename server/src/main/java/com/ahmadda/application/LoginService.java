@@ -7,6 +7,10 @@ import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnauthorizedException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.member.OpenProfile;
+import com.ahmadda.domain.member.OpenProfileRepository;
+import com.ahmadda.domain.organization.OrganizationGroup;
+import com.ahmadda.domain.organization.OrganizationGroupRepository;
 import com.ahmadda.infra.auth.HashEncoder;
 import com.ahmadda.infra.auth.RefreshToken;
 import com.ahmadda.infra.auth.RefreshTokenRepository;
@@ -28,6 +32,8 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class LoginService {
 
+    private static final String DEFAULT_GROUP_NAME = "기타";
+
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final GoogleOAuthProvider googleOAuthProvider;
@@ -36,6 +42,8 @@ public class LoginService {
     private final JwtRefreshTokenProperties jwtRefreshTokenProperties;
     private final SlackAlarm slackAlarm;
     private final HashEncoder hashEncoder;
+    private final OpenProfileRepository openProfileRepository;
+    private final OrganizationGroupRepository organizationGroupRepository;
 
     @Transactional
     public MemberToken login(final String code, final String redirectUri, final String userAgent) {
@@ -82,10 +90,29 @@ public class LoginService {
         return memberRepository.findByEmail(email)
                 .orElseGet(() -> {
                     Member newMember = Member.create(name, email, profileImageUrl);
+                    Member savedMember = memberRepository.save(newMember);
+
+                    createOpenProfile(savedMember);
 
                     slackAlarm.alarmMemberCreation(MemberCreateAlarmPayload.from(newMember));
 
-                    return memberRepository.save(newMember);
+                    return savedMember;
+                });
+    }
+
+    private void createOpenProfile(final Member member) {
+        OrganizationGroup defaultGroup = getDefaultOrganizationGroup();
+        OpenProfile openProfile = OpenProfile.create(member, defaultGroup);
+
+        openProfileRepository.save(openProfile);
+    }
+
+    private OrganizationGroup getDefaultOrganizationGroup() {
+        return organizationGroupRepository.findByName(DEFAULT_GROUP_NAME)
+                .orElseGet(() -> {
+                    OrganizationGroup defaultGroup = OrganizationGroup.create(DEFAULT_GROUP_NAME);
+
+                    return organizationGroupRepository.save(defaultGroup);
                 });
     }
 

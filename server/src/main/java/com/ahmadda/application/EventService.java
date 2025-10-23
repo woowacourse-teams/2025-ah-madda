@@ -7,7 +7,6 @@ import com.ahmadda.application.dto.EventUpdateRequest;
 import com.ahmadda.application.dto.EventUpdated;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.QuestionCreateRequest;
-import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Event;
@@ -86,7 +85,8 @@ public class EventService {
                 eventOperationPeriod,
                 eventCreateRequest.maxCapacity(),
                 getOrganizationMemberByIds(loginMemberIncludedIds),
-                createQuestions(eventCreateRequest.questions())
+                createQuestions(eventCreateRequest.questions()),
+                eventCreateRequest.isApprovalRequired()
         );
 
         Event savedEvent = eventRepository.save(event);
@@ -109,7 +109,7 @@ public class EventService {
             final Long memberId,
             final LocalDateTime currentDateTime
     ) {
-        Event event = getEvent(eventId);
+        Event event = getEventById(eventId);
         Organization organization = event.getOrganization();
         OrganizationMember organizationMember = getOrganizationMember(organization.getId(), memberId);
 
@@ -117,14 +117,9 @@ public class EventService {
     }
 
     @Transactional
-    public Event getOrganizationMemberEvent(final LoginMember loginMember, final Long eventId) {
-        Event event = getEvent(eventId);
-
-        Organization organization = event.getOrganization();
-
-        validateOrganizationAccess(organization.getId(), loginMember.memberId());
-
-        eventPublisher.publishEvent(EventRead.from(event, loginMember));
+    public Event getEvent(final Long eventId) {
+        Event event = getEventById(eventId);
+        eventPublisher.publishEvent(EventRead.from(event));
 
         return event;
     }
@@ -136,7 +131,7 @@ public class EventService {
             final EventUpdateRequest eventUpdateRequest,
             final LocalDateTime currentDateTime
     ) {
-        Event event = getEvent(eventId);
+        Event event = getEventById(eventId);
         Member member = getMember(loginMember.memberId());
         validateReminderLimit(event);
 
@@ -165,7 +160,7 @@ public class EventService {
 
     @Transactional(readOnly = true)
     public boolean isOrganizer(final Long eventId, final LoginMember loginMember) {
-        Event event = getEvent(eventId);
+        Event event = getEventById(eventId);
         Member member = getMember(loginMember.memberId());
 
         return event.isOrganizer(member);
@@ -174,13 +169,11 @@ public class EventService {
     @Transactional(readOnly = true)
     public List<Event> getPastEvents(
             final Long organizationId,
-            final LoginMember loginMember,
             final LocalDateTime compareDateTime,
             final Long lastEventId,
             final int pageSize
     ) {
         Organization organization = getOrganization(organizationId);
-        validateOrganizationAccess(organizationId, loginMember.memberId());
 
         LocalDateTime cursorDateTime = eventRepository.findById(lastEventId)
                 .map(Event::getEventEnd)
@@ -197,14 +190,15 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
-    public List<Event> getActiveEvents(final Long organizationId, final LoginMember loginMember) {
+    public List<Event> getActiveEvents(final Long organizationId) {
         Organization organization = getOrganization(organizationId);
 
-        if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, loginMember.memberId())) {
-            throw new ForbiddenException("이벤트 스페이스에 참여하지 않아 권한이 없습니다.");
-        }
-
         return organization.getActiveEvents(LocalDateTime.now());
+    }
+
+    @Transactional(readOnly = true)
+    public Event getEventTemplate(final Long eventId) {
+        return getEventById(eventId);
     }
 
     private Member getMember(final Long loginMember) {
@@ -226,7 +220,7 @@ public class EventService {
         );
     }
 
-    private Event getEvent(final Long eventId) {
+    private Event getEventById(final Long eventId) {
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 이벤트 정보입니다."));
     }
@@ -234,12 +228,6 @@ public class EventService {
     private Organization getOrganization(final Long organizationId) {
         return organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 이벤트 스페이스 정보입니다."));
-    }
-
-    private void validateOrganizationAccess(final Long organizationId, final Long memberId) {
-        if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(organizationId, memberId)) {
-            throw new ForbiddenException("이벤트 스페이스에 소속되지 않아 권한이 없습니다.");
-        }
     }
 
     private OrganizationMember getOrganizationMember(final Long organizationId, final Long memberId) {

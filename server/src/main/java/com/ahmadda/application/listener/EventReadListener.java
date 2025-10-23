@@ -6,7 +6,6 @@ import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.EventStatistic;
 import com.ahmadda.domain.event.EventStatisticRepository;
-import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,31 +28,22 @@ public class EventReadListener {
     @EventListener
     @Transactional
     public void onEventRead(final EventRead eventRead) {
-        Member member = memberRepository.findById(eventRead.loginMember()
-                        .memberId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
-
         eventStatisticRepository.findByEventId(eventRead.eventId())
                 .ifPresentOrElse(
-                        eventStatistic -> {
-                            increaseViewCount(eventStatistic, member);
-                        },
+                        this::increaseViewCount,
                         () -> {
                             Event event = eventRepository.findById(eventRead.eventId())
                                     .orElseThrow((() -> new NotFoundException("존재하지 않는 이벤트입니다")));
 
                             EventStatistic eventStatistic = EventStatistic.create(event);
 
-                            increaseViewCount(eventStatistic, member);
+                            increaseViewCount(eventStatistic);
                             eventStatisticRepository.save(eventStatistic);
                         }
                 );
     }
 
-    private void increaseViewCount(final EventStatistic eventStatistic, final Member member) {
-        eventStatistic.increaseViewCount(
-                LocalDate.now(),
-                member
-        );
+    private void increaseViewCount(final EventStatistic eventStatistic) {
+        eventStatistic.increaseViewCount(LocalDate.now());
     }
 }

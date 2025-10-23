@@ -20,7 +20,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @Component
 @EnableConfigurationProperties(JwtAccessTokenProperties.class)
 @RequiredArgsConstructor
-public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
+public class AuthLoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtAccessTokenProperties jwtAccessTokenProperties;
     private final JwtProvider jwtProvider;
@@ -28,7 +28,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(AuthMember.class) &&
+        return parameter.hasParameterAnnotation(Auth.class) &&
                 parameter.getParameterType()
                         .equals(LoginMember.class);
     }

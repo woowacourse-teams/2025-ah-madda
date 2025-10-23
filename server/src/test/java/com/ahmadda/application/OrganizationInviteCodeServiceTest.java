@@ -1,6 +1,5 @@
 package com.ahmadda.application;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
@@ -15,20 +14,19 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
-import com.ahmadda.domain.organization.RandomCodeGenerator;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.BDDMockito.given;
 
-@IntegrationTest
-class OrganizationInviteCodeServiceTest {
+class OrganizationInviteCodeServiceTest extends IntegrationTest {
 
     @Autowired
     private OrganizationInviteCodeService sut;
@@ -56,6 +54,11 @@ class OrganizationInviteCodeServiceTest {
         var group = createAndSaveGroup();
         var organizationMember = createAndSaveOrganizationMember("surf", member, organization, group);
         var now = LocalDateTime.now();
+
+        given(randomCodeGenerator.generate(anyInt())).willAnswer(invocation -> {
+            var length = invocation.getArgument(0, Integer.class);
+            return "a".repeat(length);
+        });
 
         //when
         var inviteCode = sut.createInviteCode(organization.getId(), new LoginMember(member.getId()), now);
@@ -105,6 +108,11 @@ class OrganizationInviteCodeServiceTest {
                 createAndSaveInviteCode("ahmada", organization, organizationMember, prevInviteCodeCreateDateTime);
         var now = LocalDateTime.of(2025, 7, 8, 0, 1);
 
+        given(randomCodeGenerator.generate(anyInt())).willAnswer(invocation -> {
+            var length = invocation.getArgument(0, Integer.class);
+            return "a".repeat(length);
+        });
+        
         //when
         var inviteCode = sut.createInviteCode(organization.getId(), new LoginMember(member.getId()), now);
 
@@ -226,18 +234,5 @@ class OrganizationInviteCodeServiceTest {
 
     private OrganizationGroup createAndSaveGroup() {
         return organizationGroupRepository.save(OrganizationGroup.create("백엔드"));
-    }
-
-    @TestConfiguration
-    static class OrganizationInviteCodeServiceTestContextConfiguration {
-
-        @Bean
-        public RandomCodeGenerator randomCodeGenerator() {
-            return length -> {
-                StringBuilder sb = new StringBuilder();
-                sb.repeat('a', length);
-                return sb.toString();
-            };
-        }
     }
 }

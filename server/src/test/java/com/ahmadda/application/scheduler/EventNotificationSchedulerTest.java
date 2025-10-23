@@ -1,6 +1,5 @@
 package com.ahmadda.application.scheduler;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
 import com.ahmadda.domain.event.EventReminderGroup;
@@ -12,7 +11,6 @@ import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.notification.EventNotificationOptOut;
 import com.ahmadda.domain.notification.EventNotificationOptOutRepository;
-import com.ahmadda.domain.notification.Reminder;
 import com.ahmadda.domain.notification.ReminderHistoryRepository;
 import com.ahmadda.domain.notification.ReminderRecipient;
 import com.ahmadda.domain.organization.Organization;
@@ -22,31 +20,23 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
-import net.javacrumbs.shedlock.core.LockProvider;
-import net.javacrumbs.shedlock.core.SimpleLock;
-import org.junit.jupiter.api.BeforeEach;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-@IntegrationTest
-class EventNotificationSchedulerTest {
+class EventNotificationSchedulerTest extends IntegrationTest {
 
     @Autowired
     private EventNotificationScheduler sut;
@@ -72,22 +62,11 @@ class EventNotificationSchedulerTest {
     @Autowired
     private EventReminderGroupRepository eventReminderGroupRepository;
 
-    @MockitoSpyBean
-    private Reminder reminder;
-
-    @MockitoBean
-    private LockProvider lockProvider;
-
     @Autowired
     private ReminderHistoryRepository reminderHistoryRepository;
 
     @Autowired
     private OrganizationGroupRepository organizationGroupRepository;
-
-    @BeforeEach
-    void setUp() {
-        when(lockProvider.lock(any())).thenReturn(Optional.of(mock(SimpleLock.class)));
-    }
 
     @ParameterizedTest
     @MethodSource("registrationEndOffsets")
@@ -117,7 +96,8 @@ class EventNotificationSchedulerTest {
                         now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
         eventReminderGroupRepository.save(EventReminderGroup.create(event, group));
         var ng2OptOut =
@@ -155,7 +135,8 @@ class EventNotificationSchedulerTest {
                         now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
         eventReminderGroupRepository.save(EventReminderGroup.create(event, group));
 
@@ -205,7 +186,8 @@ class EventNotificationSchedulerTest {
                         now.plusDays(2),
                         now.minusDays(3)
                 ),
-                2
+                2,
+                false
         ));
 
         saveGuest(event, saveOrganizationMember("게스트1", "g1@email.com", organization, group));
@@ -243,7 +225,8 @@ class EventNotificationSchedulerTest {
                         now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
 
         var guest1 = saveOrganizationMember("게스트1", "g1@email.com", org, group);
@@ -288,7 +271,8 @@ class EventNotificationSchedulerTest {
                         now.plusDays(2),
                         now.minusDays(3)
                 ),
-                100
+                100,
+                false
         ));
 
         var g1 = saveOrganizationMember("게스트1", "g1@email.com", org, group);

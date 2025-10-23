@@ -2,7 +2,6 @@ package com.ahmadda.domain.event;
 
 import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.domain.BaseEntity;
-import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.organization.OrganizationMember;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -56,11 +55,7 @@ public class EventStatistic extends BaseEntity {
         return new EventStatistic(event);
     }
 
-    public void increaseViewCount(final LocalDate currentDate, final Member member) {
-        if (event.isOrganizer(member)) {
-            return;
-        }
-
+    public void increaseViewCount(final LocalDate currentDate) {
         eventViewMetrics.stream()
                 .filter((eventViewMetric) -> eventViewMetric.isSameDate(currentDate))
                 .findFirst()

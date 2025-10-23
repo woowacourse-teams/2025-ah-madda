@@ -5,7 +5,7 @@ on:
     branches:
       - be/dev
     paths:
-      - 'server/**'
+      - "server/**"
 
 jobs:
   setup:
@@ -56,7 +56,7 @@ jobs:
 
   deploy:
     needs: setup
-    runs-on: 
+    runs-on:
       - self-hosted
       - dev
 
@@ -79,12 +79,15 @@ jobs:
 
       - name: Run container
         run: |
+          HOSTNAME=$(hostname)
+
           sudo docker run \
             --name ahmadda-dev-server \
             --restart unless-stopped \
             --network ahmadda-net \
             -p 8080:8080 \
             -e PROFILE=dev \
+            -e HOSTNAME=$HOSTNAME \
             -v /home/ubuntu/pinpoint-agent-2.5.3:/pinpoint-agent-2.5.3 \
             -d ahmadda1234/ahmadda_server:$TAG
             # --log-driver=awslogs \

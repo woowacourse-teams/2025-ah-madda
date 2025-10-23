@@ -3,10 +3,12 @@ package com.ahmadda.application;
 import com.ahmadda.application.dto.AnswerCreateRequest;
 import com.ahmadda.application.dto.EventParticipateRequest;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Answer;
 import com.ahmadda.domain.event.Event;
+import com.ahmadda.domain.event.EventOrganizer;
+import com.ahmadda.domain.event.EventOrganizerRepository;
 import com.ahmadda.domain.event.EventRepository;
 import com.ahmadda.domain.event.Guest;
 import com.ahmadda.domain.event.GuestRepository;
@@ -33,22 +35,20 @@ public class EventGuestService {
     private final EventRepository eventRepository;
     private final QuestionRepository questionRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
+    private final EventOrganizerRepository eventOrganizerRepository;
     private final OrganizationGroupRepository organizationGroupRepository;
 
     @Transactional(readOnly = true)
-    public List<Guest> getGuests(final Long eventId, final LoginMember loginMember) {
+    public List<Guest> getGuests(final Long eventId) {
         Event event = getEvent(eventId);
-        Organization organization = event.getOrganization();
-        validateOrganizationAccess(loginMember, organization);
 
         return event.getGuests();
     }
 
     @Transactional(readOnly = true)
-    public List<OrganizationMember> getNonGuestOrganizationMembers(final Long eventId, final LoginMember loginMember) {
+    public List<OrganizationMember> getNonGuestOrganizationMembers(final Long eventId) {
         Event event = getEvent(eventId);
         Organization organization = event.getOrganization();
-        validateOrganizationAccess(loginMember, organization);
 
         List<OrganizationMember> allMembers = organization.getOrganizationMembers();
 
@@ -58,12 +58,10 @@ public class EventGuestService {
     @Transactional(readOnly = true)
     public List<OrganizationMember> getGroupNonGuestOrganizationMembers(
             final Long eventId,
-            final Long groupId,
-            final LoginMember loginMember
+            final Long groupId
     ) {
         Event event = getEvent(eventId);
         Organization organization = event.getOrganization();
-        validateOrganizationAccess(loginMember, organization);
 
         if (!organizationGroupRepository.existsById(groupId)) {
             throw new NotFoundException("존재하지 않는 그룹입니다.");
@@ -129,13 +127,32 @@ public class EventGuestService {
         return guest.viewAnswersAs(organizer);
     }
 
-    private void validateOrganizationAccess(final LoginMember loginMember, final Organization organization) {
-        if (!organizationMemberRepository.existsByOrganizationIdAndMemberId(
-                organization.getId(),
-                loginMember.memberId()
-        )) {
-            throw new ForbiddenException("이벤트 스페이스의 구성원만 접근할 수 있습니다.");
-        }
+    @Transactional
+    public void receiveApprovalFromOrganizer(final Long eventId, final Long guestId, final LoginMember loginMember) {
+        Event event = getEvent(eventId);
+        Organization organization = event.getOrganization();
+        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), loginMember.memberId());
+        Guest guest = getGuest(guestId);
+
+        EventOrganizer eventOrganizer =
+                eventOrganizerRepository.findByEventAndOrganizationMember(event, organizationMember)
+                        .orElseThrow(() -> new UnprocessableEntityException("주최자만 게스트를 승인할 수 있습니다."));
+
+        eventOrganizer.approve(guest);
+    }
+
+    @Transactional
+    public void receiveRejectFromOrganizer(final Long eventId, final Long guestId, final LoginMember loginMember) {
+        Event event = getEvent(eventId);
+        Organization organization = event.getOrganization();
+        OrganizationMember organizationMember = getOrganizationMember(organization.getId(), loginMember.memberId());
+        Guest guest = getGuest(guestId);
+
+        EventOrganizer eventOrganizer =
+                eventOrganizerRepository.findByEventAndOrganizationMember(event, organizationMember)
+                        .orElseThrow(() -> new UnprocessableEntityException("주최자만 게스트를 거절할 수 있습니다."));
+
+        eventOrganizer.reject(guest);
     }
 
     private Event getEvent(final Long eventId) {

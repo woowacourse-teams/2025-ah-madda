@@ -231,7 +231,8 @@ class OrganizationTest {
                         eventStart, eventEnd,
                         registrationStart.minusDays(1)
                 ),
-                50
+                50,
+                false
         );
     }
 }

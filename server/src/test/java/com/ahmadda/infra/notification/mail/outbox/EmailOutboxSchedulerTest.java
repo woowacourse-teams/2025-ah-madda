@@ -1,10 +1,8 @@
-package com.ahmadda.infra.notification.mail;
+package com.ahmadda.infra.notification.mail.outbox;
 
-import com.ahmadda.annotation.IntegrationTest;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,8 +12,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-@IntegrationTest
-class EmailOutboxSchedulerTest {
+class EmailOutboxSchedulerTest extends IntegrationTest {
 
     @Autowired
     private EmailOutboxScheduler sut;
@@ -25,10 +22,6 @@ class EmailOutboxSchedulerTest {
 
     @Autowired
     private EmailOutboxRecipientRepository emailOutboxRecipientRepository;
-
-    @MockitoBean
-    @Qualifier("failoverEmailSender")
-    private EmailSender emailSender;
 
     @Test
     void 수신자가_존재하는_아웃박스는_재전송된다() {

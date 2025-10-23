@@ -4,7 +4,7 @@ import com.ahmadda.application.EventStatisticService;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.domain.event.EventViewMetric;
 import com.ahmadda.presentation.dto.EventViewMetricResponse;
-import com.ahmadda.presentation.resolver.AuthMember;
+import com.ahmadda.presentation.resolver.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -116,7 +116,7 @@ public class EventStatisticController {
     @GetMapping
     public ResponseEntity<List<EventViewMetricResponse>> eventStatisticResponses(
             @PathVariable final Long eventId,
-            @AuthMember final LoginMember loginMember
+            @Auth final LoginMember loginMember
     ) {
         List<EventViewMetric> metrics = eventStatisticService.getEventStatistic(eventId, loginMember);
         List<EventViewMetricResponse> metricResponses = metrics.stream()

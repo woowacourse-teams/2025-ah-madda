@@ -1,13 +1,12 @@
 package com.ahmadda.application;
 
-import com.ahmadda.annotation.IntegrationTest;
 import com.ahmadda.application.dto.AnswerCreateRequest;
 import com.ahmadda.application.dto.EventParticipateRequest;
 import com.ahmadda.application.dto.LoginMember;
-import com.ahmadda.common.exception.ForbiddenException;
 import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.event.Answer;
+import com.ahmadda.domain.event.ApprovalStatus;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.event.EventOperationPeriod;
 import com.ahmadda.domain.event.EventRepository;
@@ -23,6 +22,7 @@ import com.ahmadda.domain.organization.OrganizationMember;
 import com.ahmadda.domain.organization.OrganizationMemberRepository;
 import com.ahmadda.domain.organization.OrganizationMemberRole;
 import com.ahmadda.domain.organization.OrganizationRepository;
+import com.ahmadda.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,8 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-@IntegrationTest
-class EventGuestServiceTest {
+class EventGuestServiceTest extends IntegrationTest {
 
     @Autowired
     private EventGuestService sut;
@@ -70,7 +69,7 @@ class EventGuestServiceTest {
                         organization,
                         group
                 );
-        var event = createAndSaveEvent(organizer, organization);
+        var event = createAndSaveEvent(organizer, organization, false);
 
         var guest1 = createAndSaveGuest(
                 event,
@@ -92,7 +91,7 @@ class EventGuestServiceTest {
         );
 
         // when
-        var result = sut.getGuests(event.getId(), createLoginMember(organizer));
+        var result = sut.getGuests(event.getId());
 
         // then
         assertSoftly(softly -> {
@@ -115,40 +114,11 @@ class EventGuestServiceTest {
                         organization,
                         group
                 );
-        var loginMember = createLoginMember(organizer);
 
         // when // then
-        assertThatThrownBy(() -> sut.getGuests(999L, loginMember))
+        assertThatThrownBy(() -> sut.getGuests(999L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 이벤트입니다.");
-    }
-
-    @Test
-    void 이벤트가_생성된_이벤트_스페이스의_구성원이_아닐때_게스트_조회시_예외가_발생한다() {
-        // given
-        var organization1 = createAndSaveOrganization();
-        var organization2 = createAndSaveOrganization();
-        var group = createGroup();
-        var organizer =
-                createAndSaveOrganizationMember(
-                        "주최자",
-                        createAndSaveMember("홍길동", "host@email.com"),
-                        organization1,
-                        group
-                );
-        var otherMember =
-                createAndSaveOrganizationMember(
-                        "다른사람",
-                        createAndSaveMember("user", "user@email.com"),
-                        organization2,
-                        group
-                );
-        var event = createAndSaveEvent(organizer, organization1);
-
-        // when // then
-        assertThatThrownBy(() -> sut.getGuests(event.getId(), createLoginMember(otherMember)))
-                .isInstanceOf(ForbiddenException.class)
-                .hasMessage("이벤트 스페이스의 구성원만 접근할 수 있습니다.");
     }
 
     @Test
@@ -158,7 +128,7 @@ class EventGuestServiceTest {
         var group = createGroup();
         var organizer =
                 createAndSaveOrganizationMember("주최자", createAndSaveMember("홍길동", "host@email.com"), org, group);
-        var event = createAndSaveEvent(organizer, org);
+        var event = createAndSaveEvent(organizer, org, false);
 
         var guest = createAndSaveOrganizationMember("게스트", createAndSaveMember("게스트", "g@email.com"), org, group);
         var nonGuest1 =
@@ -168,7 +138,7 @@ class EventGuestServiceTest {
         createAndSaveGuest(event, guest);
 
         // when
-        var result = sut.getNonGuestOrganizationMembers(event.getId(), createLoginMember(organizer));
+        var result = sut.getNonGuestOrganizationMembers(event.getId());
 
         // then
         assertSoftly(softly -> {
@@ -181,50 +151,10 @@ class EventGuestServiceTest {
 
     @Test
     void 존재하지_않는_이벤트로_비게스트_조회시_예외가_발생한다() {
-        // given
-        var organization = organizationRepository.save(Organization.create("이벤트 스페이스명", "설명", "img.png"));
-        var group = createGroup();
-        var organizer =
-                createAndSaveOrganizationMember(
-                        "주최자",
-                        createAndSaveMember("주최자", "host@email.com"),
-                        organization,
-                        group
-                );
-        var loginMember = createLoginMember(organizer);
-
         // when // then
-        assertThatThrownBy(() -> sut.getNonGuestOrganizationMembers(999L, loginMember))
+        assertThatThrownBy(() -> sut.getNonGuestOrganizationMembers(999L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 이벤트입니다.");
-    }
-
-    @Test
-    void 이벤트가_생성된_이벤트_스페이스의_구성원이_아닐때_비게스트_조회시_예외가_발생한다() {
-        // given
-        var organization1 = createAndSaveOrganization();
-        var organization2 = createAndSaveOrganization();
-        var group = createGroup();
-        var organizer =
-                createAndSaveOrganizationMember(
-                        "주최자",
-                        createAndSaveMember("홍길동", "host@email.com"),
-                        organization1,
-                        group
-                );
-        var otherMember =
-                createAndSaveOrganizationMember(
-                        "다른사람",
-                        createAndSaveMember("user", "user@email.com"),
-                        organization2,
-                        group
-                );
-        var event = createAndSaveEvent(organizer, organization1);
-
-        // when // then
-        assertThatThrownBy(() -> sut.getNonGuestOrganizationMembers(event.getId(), createLoginMember(otherMember)))
-                .isInstanceOf(ForbiddenException.class)
-                .hasMessage("이벤트 스페이스의 구성원만 접근할 수 있습니다.");
     }
 
     @Test
@@ -237,7 +167,7 @@ class EventGuestServiceTest {
                 "주최자",
                 createAndSaveMember("홍길동", "host@email.com"), organization, group1
         );
-        var event = createAndSaveEvent(organizer, organization);
+        var event = createAndSaveEvent(organizer, organization, false);
 
         var guestInGroup1 = createAndSaveOrganizationMember(
                 "게스트1",
@@ -259,7 +189,7 @@ class EventGuestServiceTest {
 
         // when
         var result =
-                sut.getGroupNonGuestOrganizationMembers(event.getId(), group1.getId(), createLoginMember(organizer));
+                sut.getGroupNonGuestOrganizationMembers(event.getId(), group1.getId());
 
         // then
         assertSoftly(softly -> {
@@ -275,43 +205,14 @@ class EventGuestServiceTest {
     @Test
     void 존재하지_않는_이벤트로_비게스트를_조회하면_예외가_발생한다() {
         // given
-        var organization = createAndSaveOrganization();
         var group = createGroup();
-        var organizationMember = createAndSaveOrganizationMember(
-                "주최자",
-                createAndSaveMember("홍길동", "host@email.com"), organization, group
-        );
 
         // when // then
         assertThatThrownBy(() ->
-                sut.getGroupNonGuestOrganizationMembers(999L, group.getId(), createLoginMember(organizationMember))
+                sut.getGroupNonGuestOrganizationMembers(999L, group.getId())
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 이벤트입니다.");
-    }
-
-    @Test
-    void 이벤트_스페이스의_구성원이_아닐때_그룹_비게스트_조회시_예외가_발생한다() {
-        // given
-        var organization1 = createAndSaveOrganization();
-        var organization2 = createAndSaveOrganization();
-        var group = createGroup();
-        var organizer = createAndSaveOrganizationMember(
-                "주최자",
-                createAndSaveMember("홍길동", "host@email.com"), organization1, group
-        );
-        var outsider = createAndSaveOrganizationMember(
-                "다른사람",
-                createAndSaveMember("외부", "other@email.com"), organization2, group
-        );
-        var event = createAndSaveEvent(organizer, organization1);
-
-        // when // then
-        assertThatThrownBy(() ->
-                sut.getGroupNonGuestOrganizationMembers(event.getId(), group.getId(), createLoginMember(outsider))
-        )
-                .isInstanceOf(ForbiddenException.class)
-                .hasMessage("이벤트 스페이스의 구성원만 접근할 수 있습니다.");
     }
 
     @Test
@@ -323,11 +224,11 @@ class EventGuestServiceTest {
                 "주최자",
                 createAndSaveMember("홍길동", "host@email.com"), organization, group
         );
-        var event = createAndSaveEvent(organizer, organization);
+        var event = createAndSaveEvent(organizer, organization, false);
 
         // when // then
         assertThatThrownBy(() ->
-                sut.getGroupNonGuestOrganizationMembers(event.getId(), 999L, createLoginMember(organizer))
+                sut.getGroupNonGuestOrganizationMembers(event.getId(), 999L)
         )
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 그룹입니다.");
@@ -342,7 +243,7 @@ class EventGuestServiceTest {
         var group = createGroup();
         var organizationMember1 = createAndSaveOrganizationMember("surf1", member1, organization, group);
         var organizationMember2 = createAndSaveOrganizationMember("surf2", member2, organization, group);
-        var event = createAndSaveEvent(organizationMember1, organization);
+        var event = createAndSaveEvent(organizationMember1, organization, false);
 
         // when
         sut.participantEvent(
@@ -377,7 +278,7 @@ class EventGuestServiceTest {
 
         var question1 = Question.create("필수 질문", true, 0);
         var question2 = Question.create("선택 질문", false, 1);
-        var event = createAndSaveEvent(organizer, organization, question1, question2);
+        var event = createAndSaveEvent(organizer, organization, false, question1, question2);
 
 
         var request = new EventParticipateRequest(List.of(
@@ -414,7 +315,7 @@ class EventGuestServiceTest {
         Question question2 = Question.create("선택 질문", false, 1);
         var event = createAndSaveEvent(
                 organizer,
-                organization,
+                organization, false,
                 question1,
                 question2
         );
@@ -445,7 +346,7 @@ class EventGuestServiceTest {
         var group = createGroup();
         var organizer = createAndSaveOrganizationMember("organizer", member1, organization, group);
         var participant = createAndSaveOrganizationMember("parti", member2, organization, group);
-        var event = createAndSaveEvent(organizer, organization);
+        var event = createAndSaveEvent(organizer, organization, false);
 
         var invalidQuestionId = 999L;
 
@@ -481,7 +382,7 @@ class EventGuestServiceTest {
         var organizationMember3 =
                 createAndSaveOrganizationMember("om2", member3, organization, group);
 
-        var event = createAndSaveEvent(organizationMember1, organization);
+        var event = createAndSaveEvent(organizationMember1, organization, false);
         createAndSaveGuest(event, organizationMember2);
 
         //when
@@ -506,7 +407,7 @@ class EventGuestServiceTest {
         var organizationMember2 =
                 createAndSaveOrganizationMember("om2", member2, organization, group);
 
-        var event = createAndSaveEvent(organizationMember1, organization);
+        var event = createAndSaveEvent(organizationMember1, organization, false);
         createAndSaveGuest(event, organizationMember2);
 
         // when // then
@@ -528,7 +429,7 @@ class EventGuestServiceTest {
         var question2 = Question.create("2", true, 2);
         var event = createAndSaveEvent(
                 organizer,
-                organization,
+                organization, false,
                 question1,
                 question2
         );
@@ -576,7 +477,7 @@ class EventGuestServiceTest {
         var question2 = Question.create("2", true, 2);
         var event = createAndSaveEvent(
                 organizer,
-                organization,
+                organization, false,
                 question1,
                 question2
         );
@@ -603,7 +504,7 @@ class EventGuestServiceTest {
         var question2 = Question.create("2", true, 2);
         var event = createAndSaveEvent(
                 organizer,
-                organization,
+                organization, false,
                 question1,
                 question2
         );
@@ -612,6 +513,106 @@ class EventGuestServiceTest {
         assertThatThrownBy(() -> sut.getAnswers(event.getId(), 999L, new LoginMember(organizerMember.getId())))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 게스트입니다.");
+    }
+
+    @Test
+    void 게스트를_승인할_수_있다() {
+        //given
+        var organization = createAndSaveOrganization();
+        var member1 = createAndSaveMember("test1", "ahmadda1@ahmadda.com");
+        var member2 = createAndSaveMember("test2", "ahmadda2@ahmadda.com");
+        var group = createGroup();
+        var organizationMember1 =
+                createAndSaveOrganizationMember("om1", member1, organization, group);
+        var organizationMember2 =
+                createAndSaveOrganizationMember("om2", member2, organization, group);
+
+        var event = createAndSaveEvent(organizationMember1, organization, true);
+        Guest guest = createAndSaveGuest(event, organizationMember2);
+
+        //when
+        sut.receiveApprovalFromOrganizer(event.getId(), guest.getId(), new LoginMember(member1.getId()));
+
+        //then
+        assertThat(guest.getApprovalStatus()).isEqualTo(ApprovalStatus.APPROVED);
+    }
+
+    @Test
+    void 주최자가_아닌_다른_구성원이_게스트를_승인하면_예외가_발생한다() {
+        //given
+        var organization = createAndSaveOrganization();
+        var member1 = createAndSaveMember("test1", "ahmadda1@ahmadda.com");
+        var member2 = createAndSaveMember("test2", "ahmadda2@ahmadda.com");
+        var member3 = createAndSaveMember("test3", "ahmadda3@ahmadda.com");
+        var group = createGroup();
+        var organizationMember1 =
+                createAndSaveOrganizationMember("om1", member1, organization, group);
+        var organizationMember2 =
+                createAndSaveOrganizationMember("om2", member2, organization, group);
+        var organizationMember3 =
+                createAndSaveOrganizationMember("om3", member3, organization, group);
+
+        var event = createAndSaveEvent(organizationMember1, organization, true);
+        Guest guest = createAndSaveGuest(event, organizationMember2);
+
+        //when //then
+        assertThatThrownBy(() -> sut.receiveApprovalFromOrganizer(
+                event.getId(),
+                guest.getId(),
+                new LoginMember(member3.getId())
+        ))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("주최자만 게스트를 승인할 수 있습니다.");
+    }
+
+    @Test
+    void 게스트를_거절할_수_있다() {
+        //given
+        var organization = createAndSaveOrganization();
+        var member1 = createAndSaveMember("test1", "ahmadda1@ahmadda.com");
+        var member2 = createAndSaveMember("test2", "ahmadda2@ahmadda.com");
+        var group = createGroup();
+        var organizationMember1 =
+                createAndSaveOrganizationMember("om1", member1, organization, group);
+        var organizationMember2 =
+                createAndSaveOrganizationMember("om2", member2, organization, group);
+
+        var event = createAndSaveEvent(organizationMember1, organization, true);
+        Guest guest = createAndSaveGuest(event, organizationMember2);
+
+        //when
+        sut.receiveRejectFromOrganizer(event.getId(), guest.getId(), new LoginMember(member1.getId()));
+
+        //then
+        assertThat(guest.getApprovalStatus()).isEqualTo(ApprovalStatus.REJECTED);
+    }
+
+    @Test
+    void 주최자가_아닌_다른_구성원이_게스트를_거절하면_예외가_발생한다() {
+        //given
+        var organization = createAndSaveOrganization();
+        var member1 = createAndSaveMember("test1", "ahmadda1@ahmadda.com");
+        var member2 = createAndSaveMember("test2", "ahmadda2@ahmadda.com");
+        var member3 = createAndSaveMember("test3", "ahmadda3@ahmadda.com");
+        var group = createGroup();
+        var organizationMember1 =
+                createAndSaveOrganizationMember("om1", member1, organization, group);
+        var organizationMember2 =
+                createAndSaveOrganizationMember("om2", member2, organization, group);
+        var organizationMember3 =
+                createAndSaveOrganizationMember("om3", member3, organization, group);
+
+        var event = createAndSaveEvent(organizationMember1, organization, true);
+        Guest guest = createAndSaveGuest(event, organizationMember2);
+
+        //when //then
+        assertThatThrownBy(() -> sut.receiveRejectFromOrganizer(
+                event.getId(),
+                guest.getId(),
+                new LoginMember(member3.getId())
+        ))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("주최자만 게스트를 거절할 수 있습니다.");
     }
 
     private Member createAndSaveMember(String name, String email) {
@@ -637,7 +638,12 @@ class EventGuestServiceTest {
         ));
     }
 
-    private Event createAndSaveEvent(OrganizationMember organizer, Organization organization, Question... questions) {
+    private Event createAndSaveEvent(
+            OrganizationMember organizer,
+            Organization organization,
+            boolean isApprovalRequired,
+            Question... questions
+    ) {
         var now = LocalDateTime.now();
         var event = Event.create(
                 "이벤트",
@@ -651,6 +657,7 @@ class EventGuestServiceTest {
                         now.minusDays(6)
                 ),
                 100,
+                isApprovalRequired,
                 questions
         );
 
@@ -681,6 +688,7 @@ class EventGuestServiceTest {
                         creationTime
                 ),
                 100,
+                false,
                 questions
         );
 
