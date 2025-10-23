@@ -230,7 +230,16 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     latestGetterRef.current = () => ({ basicEventForm, questions });
   }, [basicEventForm, questions]);
 
+  const isModalOpen =
+    isOpen('eventDateRange') ||
+    isOpen('registrationEnd') ||
+    isCapacityModalOpen ||
+    isCohostModalOpen ||
+    isTemplateModalOpen;
+
   useEffect(() => {
+    if (isModalOpen) return;
+
     const id = setInterval(() => {
       const current = latestGetterRef.current();
       const snapshot = JSON.stringify(current);
@@ -244,7 +253,7 @@ export const EventCreateForm = ({ isEdit, eventId }: EventCreateFormProps) => {
     }, 5000);
 
     return () => clearInterval(id);
-  }, [save]);
+  }, [isModalOpen, save]);
 
   const submitCreate = async (payload: ReturnType<typeof buildPayload>) => {
     const { eventId } = await addEvent(payload);
