@@ -91,13 +91,13 @@ export const OrganizationInfo = ({
             />
 
             <Flex dir="column" gap="8px">
-              <Text type="Display" weight="bold" aria-hidden="true">
+              <StyledText type="Display" weight="bold" aria-hidden="true">
                 {name}
-              </Text>
+              </StyledText>
               <Spacing height="4px" />
-              <Text as="h2" type="Heading" aria-hidden="true">
+              <StyledText as="h2" type="Heading" aria-hidden="true">
                 {description}
-              </Text>
+              </StyledText>
               {organizationMember?.isAdmin && (
                 <Text type="Body" color={theme.colors.gray500}>
                   {`초대 코드: ${inviteCode}`}
@@ -114,6 +114,15 @@ export const OrganizationInfo = ({
     </Flex>
   );
 };
+
+const StyledText = styled(Text)`
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+  word-break: break-word;
+`;
 
 const ThumbImg = styled.img`
   border-radius: 12px;
