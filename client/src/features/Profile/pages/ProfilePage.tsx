@@ -24,7 +24,7 @@ export const ProfilePage = () => {
           </Text>
 
           <ProfileAvatar email={profile.email} src={profile.picture || DEFAULT_AVATAR_URL} />
-          <ProfileForm profile={profile} group={group} />
+          <ProfileForm profile={profile} totalGroup={group} />
         </Flex>
       </Flex>
     </PageLayout>
