@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 
 import { ThemeProvider } from '@emotion/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { HelmetProvider } from 'react-helmet-async';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
 import { ToastProvider } from '@/shared/components/Toast/ToastContext';
@@ -30,21 +31,23 @@ export const RouterWithQueryClient = ({
   const queryClient = createTestQueryClient();
 
   return (
-    <ThemeProvider theme={theme}>
-      <QueryClientProviderWrapper queryClient={queryClient}>
-        <MemoryRouter initialEntries={[initialRoute]}>
-          <Suspense fallback={<div>Loading...</div>}>
-            <ToastProvider>
-              <Routes>
-                {routes.map((route, index) => (
-                  <Route key={index} path={route.path} element={route.element} />
-                ))}
-              </Routes>
-            </ToastProvider>
-          </Suspense>
-        </MemoryRouter>
-      </QueryClientProviderWrapper>
-    </ThemeProvider>
+    <HelmetProvider>
+      <ThemeProvider theme={theme}>
+        <QueryClientProviderWrapper queryClient={queryClient}>
+          <MemoryRouter initialEntries={[initialRoute]}>
+            <Suspense fallback={<div>Loading...</div>}>
+              <ToastProvider>
+                <Routes>
+                  {routes.map((route, index) => (
+                    <Route key={index} path={route.path} element={route.element} />
+                  ))}
+                </Routes>
+              </ToastProvider>
+            </Suspense>
+          </MemoryRouter>
+        </QueryClientProviderWrapper>
+      </ThemeProvider>
+    </HelmetProvider>
   );
 };
 
