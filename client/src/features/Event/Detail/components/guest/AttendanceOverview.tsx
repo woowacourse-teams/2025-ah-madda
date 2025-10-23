@@ -34,7 +34,7 @@ export const AttendanceOverview = ({ eventId }: { eventId: number }) => {
   });
 
   return (
-    <Flex as="section" width="100%" dir="column" gap="8px">
+    <Flex as="section" width="100%" dir="column" gap="8px" padding="0 0 40px 0">
       <Flex justifyContent="flex-end" padding="12px 0 0 0">
         <Tooltip
           placement="left-bottom"
