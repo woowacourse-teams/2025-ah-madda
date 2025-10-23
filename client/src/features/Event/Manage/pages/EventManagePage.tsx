@@ -6,6 +6,7 @@ import { eventQueryOptions } from '@/api/queries/event';
 import { PageLayout } from '@/shared/components/PageLayout';
 import { Tabs } from '@/shared/components/Tabs';
 
+import { EventManageFooter } from '../components/EventManageFooter';
 import { GuestManageSection } from '../components/guest/GuestManageSection';
 import { PreAnswersSection } from '../components/guest/PreAnswersSection';
 import { EventHeader } from '../components/info/EventHeader';
@@ -64,6 +65,8 @@ export const EventManagePage = () => {
           )}
         </Tabs>
       </EventManageContainer>
+
+      <EventManageFooter eventId={eventId} registrationEnd={event.registrationEnd} />
     </PageLayout>
   );
 };

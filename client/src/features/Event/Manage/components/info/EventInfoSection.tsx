@@ -22,7 +22,7 @@ export const EventInfoSection = ({ event, statistics }: EventInfoSectionProps) =
     event.currentGuestCount
   );
   return (
-    <Flex as="section" dir="column" gap="36px" margin="40px 0" padding="0 16px">
+    <Flex as="section" dir="column" gap="36px" margin="40px 0 20px 0" padding="0 16px">
       <Flex dir="column" alignItems="flex-start" gap="12px">
         <Text as="h2" type="Heading" weight="semibold">
           이벤트 소개
