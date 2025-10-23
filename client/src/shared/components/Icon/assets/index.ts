@@ -14,6 +14,7 @@ import { Location } from './location';
 import { Logo } from './logo';
 import { Next } from './next';
 import { Plus } from './plus';
+import { QuestionMark } from './questionmark';
 import { Save } from './save';
 import { Setting } from './setting';
 import { Share } from './share';
@@ -38,6 +39,7 @@ export const Icons = {
   dropdownDown: DropdownDown,
   dropdownUp: DropdownUp,
   next: Next,
+  queueMicrotask: QuestionMark,
   save: Save,
   setting: Setting,
 };
