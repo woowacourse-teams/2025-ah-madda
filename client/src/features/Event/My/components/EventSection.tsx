@@ -1,13 +1,13 @@
 import styled from '@emotion/styled';
 
+import { ParticipateEventAPIResponse } from '@/api/types/my';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
 
 import { EventCard } from '../../components/EventCard';
-import { Event } from '../../types/Event';
 
 type EventSectionProps = {
-  events: Event[];
+  events: ParticipateEventAPIResponse[];
   date: string;
   cardType: 'host' | 'participate';
 };

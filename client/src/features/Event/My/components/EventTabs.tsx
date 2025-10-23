@@ -1,6 +1,5 @@
 import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom';
 
 import { myQueryOptions } from '@/api/queries/my';
 import { Flex } from '@/shared/components/Flex';
@@ -14,19 +13,11 @@ import { EventSection } from './EventSection';
 import { EventTabsList } from './EventTabsList';
 
 export const EventTabs = () => {
-  const { organizationId } = useParams();
-
-  const { data: hostEvents = [] } = useQuery(
-    myQueryOptions.event.hostEvents(Number(organizationId))
-  );
-
-  const { data: participateEvents = [] } = useQuery(
-    myQueryOptions.event.participateEvents(Number(organizationId))
-  );
+  const { data: hostEvents = [] } = useQuery(myQueryOptions.event.hostEvents());
+  const { data: participateEvents = [] } = useQuery(myQueryOptions.event.participateEvents());
 
   const groupedHostEvents = groupEventsByDate(hostEvents);
   const groupedParticipateEvents = groupEventsByDate(participateEvents);
-
   return (
     <Tabs
       defaultValue={TAB_VALUES.HOST}

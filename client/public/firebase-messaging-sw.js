@@ -3,7 +3,7 @@ importScripts('https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js'
 importScripts('https://www.gstatic.com/firebasejs/12.0.0/firebase-messaging-compat.js');
 
 const CACHE_NAME = 'ah-madda-cache-v1';
-const urlsToCache = ['/manifest.json', '/icon-192x192.png', '/icon-512x512.png', '/offline.html'];
+const urlsToCache = ['/manifest.json', '/icon-192x192.png', '/offline.html'];
 
 const firebaseConfig = {
   apiKey: 'AIzaSyA1LwhH1JhJBBOlIC3F9RreoGIjo5RgV7Q',
@@ -16,22 +16,6 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-const messaging = firebase.messaging();
-
-messaging.onBackgroundMessage((payload) => {
-  const notificationTitle = payload.notification?.title || '새 알림';
-
-  const notificationOptions = {
-    body: payload.notification?.body || '내용 없음',
-    icon: '/icon-512x512.png',
-    data: payload.data,
-    tag: payload.data.eventId || 'default',
-    requireInteraction: true,
-    renotify: false,
-  };
-
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -67,25 +51,21 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('push', (event) => {
-  if (!event.data) return;
+  const payload = event.data?.json();
 
-  const resultData = event.data.json().notification;
-  const notificationTitle = resultData.title;
+  const notificationTitle = payload.data?.title || '새 알림';
   const notificationOptions = {
-    body: resultData.body,
-    icon: '/icon-512x512.png',
-    data: resultData.data,
-    tag: resultData.eventId || 'default',
-    requireInteraction: true,
-    renotify: false,
+    body: payload.data?.body || '내용 없음',
+    icon: '/icon-192x192.png',
+    data: payload.data,
   };
 
-  event.waitUntil(self.registration.showNotification(notificationTitle, notificationOptions));
+  self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
 self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  const urlToOpen = event.notification.data?.redirectUrl || '/';
+  event.data.close();
+  const urlToOpen = event.data?.redirectUrl || '/';
 
   event.waitUntil(
     clients.matchAll({ type: 'window' }).then((clientList) => {

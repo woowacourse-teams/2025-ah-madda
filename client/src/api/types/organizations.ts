@@ -1,11 +1,16 @@
+export type OrganizationAPIResponse = {
+  organizationId: number;
+  name: string;
+  description: string;
+  imageUrl: string;
+};
+
 export type InviteCodeAPIResponse = {
   inviteCode: string;
   expiresAt: string;
 };
 
 export type OrganizationParticipateAPIRequest = {
-  nickname: string;
-  groupId: number;
   inviteCode: string;
 };
 
@@ -20,8 +25,6 @@ export type CreateOrganizationAPIRequest = {
   organization: {
     name: string;
     description: string;
-    nickname: string;
-    groupId: number;
   };
   thumbnail: File;
 };
@@ -41,4 +44,8 @@ export type UpdateOrganizationMemberRolesAPIRequest = {
 export type OrganizationGroupAPIResponse = {
   groupId: number;
   name: string;
+};
+
+export type OrganizationJoinedStatusAPIResponse = {
+  isMember: boolean;
 };

@@ -1,3 +1,5 @@
+import { Event } from './event';
+import { OrganizationAPIResponse } from './organizations';
 export type GuestAnswerAPIResponse = {
   questionId: number;
   questionText: string;
@@ -5,3 +7,5 @@ export type GuestAnswerAPIResponse = {
   answerText: string;
   orderIndex: number;
 };
+
+export type ParticipateEventAPIResponse = Event & { organization?: OrganizationAPIResponse };

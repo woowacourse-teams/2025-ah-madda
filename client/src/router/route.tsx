@@ -7,7 +7,7 @@ import { EventDetailPage } from '@/features/Event/Detail/pages/EventDetailPage';
 import { MyEventPage } from '@/features/Event/My/pages/MyEventPage';
 import { OverviewPage } from '@/features/Event/Overview/pages/OverviewPage';
 import { HomePage } from '@/features/Home/page/HomePage';
-import { OrganizationSelectPage } from '@/features/Organization/Select/pages/SelectOrganizationPage';
+import { OrganizationOverviewPage } from '@/features/Organization/Overview/pages/OrganizationOverviewPage';
 import { Flex } from '@/shared/components/Flex';
 import { Loading } from '@/shared/components/Loading';
 
@@ -21,13 +21,13 @@ const ErrorPage = lazy(() =>
   }))
 );
 
-const InvitePage = lazy(() =>
-  import(/* webpackChunkName: "invite-pages" */ '@/features/Invite/page/InvitePage').then(
-    (module) => ({
-      default: module.InvitePage,
-    })
-  )
-);
+// const InvitePage = lazy(() =>
+//   import(/* webpackChunkName: "invite-pages" */ '@/features/Invite/page/InvitePage').then(
+//     (module) => ({
+//       default: module.InvitePage,
+//     })
+//   )
+// );
 
 const NewEventPage = lazy(() =>
   import(/* webpackChunkName: "new-event-pages" */ '@/features/Event/New/pages/NewEventPage').then(
@@ -83,9 +83,29 @@ export const router = createBrowserRouter(
           index: true,
           Component: HomePage,
         },
+        // {
+        //   path: '/invite',
+        //   element: withSuspense(InvitePage),
+        // },
         {
-          path: '/invite',
-          element: withSuspense(InvitePage),
+          path: '/profile',
+          Component: ProtectRoute,
+          children: [
+            {
+              index: true,
+              element: withSuspense(ProfilePage),
+            },
+          ],
+        },
+        {
+          path: '/my',
+          Component: ProtectRoute,
+          children: [
+            {
+              index: true,
+              Component: MyEventPage,
+            },
+          ],
         },
         {
           path: '/auth',
@@ -93,7 +113,6 @@ export const router = createBrowserRouter(
         },
         {
           path: '/:organizationId/event',
-          Component: ProtectRoute,
           children: [
             {
               index: true,
@@ -104,20 +123,22 @@ export const router = createBrowserRouter(
               element: withSuspense(NewEventPage),
             },
             {
-              path: 'edit/:eventId',
+              path: ':eventId/edit',
               element: withSuspense(NewEventPage),
-            },
-            {
-              path: 'my',
-              Component: MyEventPage,
             },
             {
               path: ':eventId',
               Component: EventDetailPage,
             },
             {
-              path: 'manage/:eventId',
-              element: withSuspense(EventManagePage),
+              path: ':eventId/manage',
+              Component: ProtectRoute,
+              children: [
+                {
+                  index: true,
+                  element: withSuspense(EventManagePage),
+                },
+              ],
             },
             {
               path: ':eventId/invite',
@@ -127,29 +148,30 @@ export const router = createBrowserRouter(
         },
         {
           path: '/organization',
-          Component: ProtectRoute,
           children: [
             {
               index: true,
-              Component: OrganizationSelectPage,
+              Component: OrganizationOverviewPage,
             },
             {
               path: 'new',
-              element: withSuspense(NewOrganizationPage),
+              Component: ProtectRoute,
+              children: [
+                {
+                  index: true,
+                  element: withSuspense(NewOrganizationPage),
+                },
+              ],
             },
             {
-              path: 'edit/:organizationId',
-              element: withSuspense(NewOrganizationPage),
-            },
-          ],
-        },
-        {
-          path: '/:organizationId/profile',
-          Component: ProtectRoute,
-          children: [
-            {
-              index: true,
-              element: withSuspense(ProfilePage),
+              path: ':organizationId/edit',
+              Component: ProtectRoute,
+              children: [
+                {
+                  index: true,
+                  element: withSuspense(NewOrganizationPage),
+                },
+              ],
             },
           ],
         },

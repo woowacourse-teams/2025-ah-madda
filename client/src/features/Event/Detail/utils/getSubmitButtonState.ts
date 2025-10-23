@@ -1,4 +1,3 @@
-// utils/eventButtonState.ts
 export type EventButtonState = {
   text: string;
   color: 'primary' | 'tertiary';

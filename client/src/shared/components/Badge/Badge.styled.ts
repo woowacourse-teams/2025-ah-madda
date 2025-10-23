@@ -28,6 +28,7 @@ export const BADGE_VARIANTS: Record<string, BadgeVariant> = {
 
 export const StyledBadge = styled.div<BadgeVariant>`
   width: fit-content;
+  height: fit-content;
   display: flex;
   align-items: center;
   justify-content: center;

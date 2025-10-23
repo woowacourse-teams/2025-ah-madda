@@ -4,17 +4,12 @@ import { useEditProfile } from '@/api/mutations/useEditProfile';
 import { useToast } from '@/shared/components/Toast/ToastContext';
 
 type UseProfileFormProps = {
-  organizationId: number;
   initialNickname: string;
   initialGroupID: number;
 };
 
-export const useProfileForm = ({
-  organizationId,
-  initialNickname,
-  initialGroupID,
-}: UseProfileFormProps) => {
-  const { success: successToast, error: errorToast } = useToast();
+export const useProfileForm = ({ initialNickname, initialGroupID }: UseProfileFormProps) => {
+  const { success, error } = useToast();
   const [nickname, setNickname] = useState(initialNickname);
   const [selectedGroup, setSelectedGroup] = useState<number>(initialGroupID);
   const { mutate: editProfile, isPending } = useEditProfile();
@@ -29,13 +24,13 @@ export const useProfileForm = ({
 
   const handleSaveProfile = () => {
     editProfile(
-      { organizationId, nickname, groupId: selectedGroup },
+      { nickname, groupId: selectedGroup },
       {
         onSuccess: () => {
-          successToast('프로필이 성공적으로 변경되었어요.');
+          success('프로필이 성공적으로 변경되었어요.');
         },
-        onError: (error) => {
-          errorToast(error.message);
+        onError: () => {
+          error('프로필 변경에 실패했어요.');
         },
       }
     );

@@ -19,6 +19,8 @@ html {
   -moz-text-size-adjust: none;
   -webkit-text-size-adjust: none;
   text-size-adjust: none;
+  scrollbar-width: thin;
+  scrollbar-color: #d9dadb transparent;
 }
 
 body,
@@ -42,6 +44,20 @@ ol[role='list'] {
 body {
   min-height: 100vh;
   line-height: 1.5;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background: #d9dadb;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 h1,
