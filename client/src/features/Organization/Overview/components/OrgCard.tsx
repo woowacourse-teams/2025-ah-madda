@@ -21,8 +21,16 @@ export const OrgCard = ({ organization, onJoin, position, total }: OrgCardProps)
     description ? ` 스페이스 설명은 ${description}입니다.` : ' 설명 정보가 없습니다.'
   } 엔터 키를 눌러 구경하세요.`;
 
-  const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
+  const onKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
+    if (e.currentTarget !== e.target) return;
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      onJoin();
+    }
+  };
+  const onKeyUp: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
+    if (e.currentTarget !== e.target) return;
+    if (e.key === ' ') {
       e.preventDefault();
       onJoin();
     }
@@ -39,7 +47,8 @@ export const OrgCard = ({ organization, onJoin, position, total }: OrgCardProps)
       gap="4px"
       aria-label={ariaLabel}
       onClick={onJoin}
-      onKeyDown={handleKeyDown}
+      onKeyDown={onKeyDown}
+      onKeyUp={onKeyUp}
     >
       <StyledImageWrapper
         justifyContent="center"
