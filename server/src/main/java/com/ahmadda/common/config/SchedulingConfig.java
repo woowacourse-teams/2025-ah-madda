@@ -1,4 +1,4 @@
-package com.ahmadda.infra.config;
+package com.ahmadda.common.config;
 
 import net.javacrumbs.shedlock.core.LockProvider;
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;

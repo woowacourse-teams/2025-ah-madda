@@ -1,9 +1,6 @@
-package com.ahmadda.infra.database;
+package com.ahmadda.common.config;
 
 import com.zaxxer.hikari.HikariDataSource;
-import java.util.HashMap;
-import java.util.Map;
-import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -12,6 +9,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
+import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import java.util.HashMap;
+import java.util.Map;
+import javax.sql.DataSource;
 
 @Configuration
 public class DataSourceConfig {
@@ -63,5 +66,16 @@ public class DataSourceConfig {
         return DataSourceBuilder.create()
                 .type(HikariDataSource.class)
                 .build();
+    }
+
+    static class ReplicationRoutingDataSource extends AbstractRoutingDataSource {
+
+        @Override
+        protected Object determineCurrentLookupKey() {
+            if (TransactionSynchronizationManager.isCurrentTransactionReadOnly()) {
+                return "reader";
+            }
+            return "writer";
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.ahmadda.infra.logger;
+package com.ahmadda.common.logging;
 
 import org.slf4j.MDC;
 import org.springframework.core.task.TaskDecorator;
