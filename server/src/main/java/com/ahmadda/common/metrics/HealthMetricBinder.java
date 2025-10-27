@@ -1,4 +1,4 @@
-package com.ahmadda.infra.metric;
+package com.ahmadda.common.metrics;
 
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -20,7 +20,7 @@ public class HealthMetricBinder implements MeterBinder {
     @Override
     public void bindTo(final MeterRegistry registry) {
         Gauge.builder(
-                "app.health.status", () -> {
+                        "app.health.status", () -> {
                             HealthComponent health = healthEndpoint.health();
                             Status status = health.getStatus();
 
