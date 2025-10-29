@@ -2,6 +2,7 @@ package com.ahmadda.domain.organization;
 
 
 import com.ahmadda.common.exception.ForbiddenException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.BaseEntity;
 import com.ahmadda.domain.event.Event;
 import com.ahmadda.domain.member.Member;
@@ -63,6 +64,8 @@ public class OrganizationMember extends BaseEntity {
             final OrganizationMemberRole role,
             final OrganizationGroup group
     ) {
+        validateNickname(nickname);
+
         this.nickname = nickname;
         this.member = member;
         this.organization = organization;
@@ -112,16 +115,20 @@ public class OrganizationMember extends BaseEntity {
         }
     }
 
-    public void rename(final String newNickname) {
-        this.nickname = newNickname;
-    }
-
     public void update(final String nickname, final OrganizationGroup group) {
+        validateNickname(nickname);
+
         this.nickname = nickname;
         this.group = group;
     }
 
     public boolean isEqualNickname(final String nickname) {
         return this.nickname.equals(nickname);
+    }
+
+    private void validateNickname(final String nickname) {
+        if (nickname.length() > MAX_NICKNAME_LENGTH) {
+            throw new UnprocessableEntityException("최대 닉네임 길이는 " + MAX_NICKNAME_LENGTH + "자 입니다.");
+        }
     }
 }

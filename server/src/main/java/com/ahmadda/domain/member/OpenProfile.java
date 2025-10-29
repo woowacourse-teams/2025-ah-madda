@@ -25,7 +25,7 @@ import org.hibernate.annotations.SQLRestriction;
 @SQLRestriction("deleted_at IS NULL")
 public class OpenProfile extends BaseEntity {
 
-    private static final int MAX_NICKNAME_LENGTH = 10;
+    public static final int MAX_NICKNAME_LENGTH = 10;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,6 +48,8 @@ public class OpenProfile extends BaseEntity {
             final String nickname,
             final OrganizationGroup organizationGroup
     ) {
+        validateNickname(nickname);
+
         this.member = member;
         this.nickname = nickname;
         this.organizationGroup = organizationGroup;
@@ -55,21 +57,14 @@ public class OpenProfile extends BaseEntity {
 
     public static OpenProfile create(
             final Member member,
+            final String nickname,
             final OrganizationGroup organizationGroup
     ) {
-        if (isNicknameTooLong(member.getName())) {
-            String modifiedNickname = member.getName()
-                    .substring(0, MAX_NICKNAME_LENGTH);
-            return new OpenProfile(member, modifiedNickname, organizationGroup);
-        }
-
-        return new OpenProfile(member, member.getName(), organizationGroup);
+        return new OpenProfile(member, nickname, organizationGroup);
     }
 
     public void updateProfile(final String nickname, final OrganizationGroup organizationGroup) {
-        if (isNicknameTooLong(nickname)) {
-            throw new UnprocessableEntityException("최대 닉네임 길이는 " + MAX_NICKNAME_LENGTH + "자입니다.");
-        }
+        validateNickname(nickname);
 
         this.nickname = nickname;
         this.organizationGroup = organizationGroup;
@@ -83,7 +78,9 @@ public class OpenProfile extends BaseEntity {
         return member.getProfileImageUrl();
     }
 
-    private static boolean isNicknameTooLong(final String nickname) {
-        return nickname.length() > MAX_NICKNAME_LENGTH;
+    private void validateNickname(final String nickname) {
+        if (nickname.length() > MAX_NICKNAME_LENGTH) {
+            throw new UnprocessableEntityException("최대 닉네임 길이는 " + MAX_NICKNAME_LENGTH + "자 입니다.");
+        }
     }
 }

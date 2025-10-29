@@ -132,7 +132,7 @@ class OpenProfileServiceTest extends IntegrationTest {
                 loginMember,
                 request
         )).isInstanceOf(UnprocessableEntityException.class)
-                .hasMessage("최대 닉네임 길이는 10자입니다.");
+                .hasMessage("최대 닉네임 길이는 10자 입니다.");
     }
 
     @Test
@@ -204,7 +204,7 @@ class OpenProfileServiceTest extends IntegrationTest {
     }
 
     private OpenProfile createOpenProfile(Member member, OrganizationGroup group) {
-        return openProfileRepository.save(OpenProfile.create(member, group));
+        return openProfileRepository.save(OpenProfile.create(member, member.getName(), group));
     }
 
     private Organization createOrganization(String name) {

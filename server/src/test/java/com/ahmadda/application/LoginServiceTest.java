@@ -24,6 +24,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.BDDMockito.given;
 
 class LoginServiceTest extends IntegrationTest {
@@ -65,6 +66,27 @@ class LoginServiceTest extends IntegrationTest {
 
         // then
         assertThat(memberRepository.findByEmail(email)).isPresent();
+    }
+
+    @Test
+    void 회원가입_시_이름이_길어도_예외가_발생하지_않는다() {
+        // given
+        var code = "code";
+        var name = "이_닉네임은_엄청나게_긴_닉네임_입니다.";
+        var email = "test@example.com";
+        var userAgent = createUserAgent();
+
+        var redirectUri = "redirectUri";
+        var testPicture = "testPicture";
+
+        given(googleOAuthProvider.getUserInfo(code, redirectUri))
+                .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
+
+        // when
+        sut.login(code, redirectUri, userAgent);
+
+        // then
+        assertDoesNotThrow(() -> sut.login(code, redirectUri, userAgent));
     }
 
     @Test
@@ -264,30 +286,6 @@ class LoginServiceTest extends IntegrationTest {
         assertThatThrownBy(() -> sut.logout(loginMember, "invalidRefreshToken", userAgent))
                 .isInstanceOf(UnauthorizedException.class)
                 .hasMessage("리프레시 토큰이 유효하지 않습니다.");
-    }
-
-    @Test
-    void 회원가입_시_이름_제한을_넘어가면_이름_제한만큼만_프로필이_생긴다() {
-        // given
-        var code = "code";
-        var name = "01234567891234";
-        var email = "test@example.com";
-        var userAgent = createUserAgent();
-
-        var redirectUri = "redirectUri";
-        var testPicture = "testPicture";
-
-        given(googleOAuthProvider.getUserInfo(code, redirectUri))
-                .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
-
-
-        // when
-        sut.login(code, redirectUri, userAgent);
-
-        // then
-        assertThat(openProfileRepository.findAll()
-                .getFirst()
-                .getNickname()).isEqualTo("0123456789");
     }
 
     private String createUserAgent() {
