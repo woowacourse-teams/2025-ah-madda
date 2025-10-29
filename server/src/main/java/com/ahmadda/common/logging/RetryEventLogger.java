@@ -1,4 +1,4 @@
-package com.ahmadda.infra.logger;
+package com.ahmadda.common.logging;
 
 import io.github.resilience4j.core.registry.EntryAddedEvent;
 import io.github.resilience4j.core.registry.EntryRemovedEvent;
