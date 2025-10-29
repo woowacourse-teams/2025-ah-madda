@@ -1,5 +1,6 @@
 package com.ahmadda.domain.member;
 
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.BaseEntity;
 import com.ahmadda.domain.organization.OrganizationGroup;
 import jakarta.persistence.Column;
@@ -23,6 +24,8 @@ import org.hibernate.annotations.SQLRestriction;
 @SQLDelete(sql = "UPDATE open_profile SET deleted_at = CURRENT_TIMESTAMP WHERE open_profile_id = ?")
 @SQLRestriction("deleted_at IS NULL")
 public class OpenProfile extends BaseEntity {
+
+    private static final int MAX_NICKNAME_LENGTH = 10;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,10 +57,20 @@ public class OpenProfile extends BaseEntity {
             final Member member,
             final OrganizationGroup organizationGroup
     ) {
+        if (isNicknameTooLong(member.getName())) {
+            String modifiedNickname = member.getName()
+                    .substring(0, MAX_NICKNAME_LENGTH);
+            return new OpenProfile(member, modifiedNickname, organizationGroup);
+        }
+
         return new OpenProfile(member, member.getName(), organizationGroup);
     }
 
     public void updateProfile(final String nickname, final OrganizationGroup organizationGroup) {
+        if (isNicknameTooLong(nickname)) {
+            throw new UnprocessableEntityException("최대 닉네임 길이는 " + MAX_NICKNAME_LENGTH + "자입니다.");
+        }
+
         this.nickname = nickname;
         this.organizationGroup = organizationGroup;
     }
@@ -68,5 +81,9 @@ public class OpenProfile extends BaseEntity {
 
     public String getProfileImageUrl() {
         return member.getProfileImageUrl();
+    }
+
+    private static boolean isNicknameTooLong(final String nickname) {
+        return nickname.length() > MAX_NICKNAME_LENGTH;
     }
 }

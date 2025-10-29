@@ -3,6 +3,7 @@ package com.ahmadda.application;
 import com.ahmadda.application.dto.LoginMember;
 import com.ahmadda.application.dto.OpenProfileUpdateRequest;
 import com.ahmadda.common.exception.NotFoundException;
+import com.ahmadda.common.exception.UnprocessableEntityException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
 import com.ahmadda.domain.member.OpenProfile;
@@ -112,6 +113,26 @@ class OpenProfileServiceTest extends IntegrationTest {
             assertThat(updated.getNickname())
                     .isEqualTo("새닉네임");
         });
+    }
+
+    @Test
+    void 변경하려는_닉네임이_닉네임_제한을_넘어서면_예외가_발생한다() {
+        // given
+        var oldGroup = createGroup("프론트엔드");
+        var newGroup = createGroup("백엔드");
+
+        var member = createMember("홍길동", "hong@email.com");
+        var openProfile = createOpenProfile(member, oldGroup);
+        var loginMember = new LoginMember(member.getId());
+
+        var request = new OpenProfileUpdateRequest("새닉네임은_10글자가_넘습니다", newGroup.getId());
+
+        // when
+        assertThatThrownBy(() -> sut.updateProfile(
+                loginMember,
+                request
+        )).isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("최대 닉네임 길이는 10자입니다.");
     }
 
     @Test

@@ -125,6 +125,18 @@ public class OpenProfileController {
                                                       "instance": "/api/open-profiles"
                                                     }
                                                     """
+                                    ),
+                                    @ExampleObject(
+                                            name = "변경 닉네임 10자 초과",
+                                            value = """
+                                                    {
+                                                      "type": "about:blank",
+                                                      "title": "Unprocessable Entity",
+                                                      "status": 422,
+                                                      "detail": "최대 닉네임 길이는 10자입니다.",
+                                                      "instance": "/api/open-profiles"
+                                                    }
+                                                    """
                                     )
                             }
                     )

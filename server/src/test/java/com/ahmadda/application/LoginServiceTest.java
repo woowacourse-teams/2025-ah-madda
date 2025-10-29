@@ -5,6 +5,7 @@ import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnauthorizedException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
+import com.ahmadda.domain.member.OpenProfileRepository;
 import com.ahmadda.infra.auth.HashEncoder;
 import com.ahmadda.infra.auth.RefreshTokenRepository;
 import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
@@ -41,6 +42,9 @@ class LoginServiceTest extends IntegrationTest {
 
     @Autowired
     private HashEncoder hashEncoder;
+
+    @Autowired
+    private OpenProfileRepository openProfileRepository;
 
     @Test
     void 신규회원이면_저장한다() {
@@ -260,6 +264,30 @@ class LoginServiceTest extends IntegrationTest {
         assertThatThrownBy(() -> sut.logout(loginMember, "invalidRefreshToken", userAgent))
                 .isInstanceOf(UnauthorizedException.class)
                 .hasMessage("리프레시 토큰이 유효하지 않습니다.");
+    }
+
+    @Test
+    void 회원가입_시_이름_제한을_넘어가면_이름_제한만큼만_프로필이_생긴다() {
+        // given
+        var code = "code";
+        var name = "01234567891234";
+        var email = "test@example.com";
+        var userAgent = createUserAgent();
+
+        var redirectUri = "redirectUri";
+        var testPicture = "testPicture";
+
+        given(googleOAuthProvider.getUserInfo(code, redirectUri))
+                .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
+
+
+        // when
+        sut.login(code, redirectUri, userAgent);
+
+        // then
+        assertThat(openProfileRepository.findAll()
+                .getFirst()
+                .getNickname()).isEqualTo("0123456789");
     }
 
     private String createUserAgent() {
