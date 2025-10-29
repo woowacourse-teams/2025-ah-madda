@@ -471,7 +471,7 @@ class OrganizationServiceTest extends IntegrationTest {
         }
 
         var cannotParticipateUser =
-                memberRepository.save(Member.create("cannotparticipate", "cannotparticiapteuser@test.com", "pic"));
+                memberRepository.save(Member.create("memberName", "cannotparticiapteuser@test.com", "pic"));
         var openProfile = createOpenProfile(cannotParticipateUser, group);
         var loginMember = new LoginMember(cannotParticipateUser.getId());
 
@@ -574,7 +574,7 @@ class OrganizationServiceTest extends IntegrationTest {
     }
 
     private OpenProfile createOpenProfile(Member member, OrganizationGroup group) {
-        return openProfileRepository.save(OpenProfile.create(member, group));
+        return openProfileRepository.save(OpenProfile.create(member, member.getName(), group));
     }
 
     private Event createEvent(

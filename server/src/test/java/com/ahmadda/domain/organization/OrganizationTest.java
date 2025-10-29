@@ -86,6 +86,24 @@ class OrganizationTest {
     }
 
     @Test
+    void 이벤트_스페이스_참여시_닉네임이_제한을_넘어가면_예외가_발생한다() {
+        //given
+        var member = Member.create("주최자 회원", "organizer@example.com", "testPicture");
+        var inviteCode = InviteCode.create("code", sut, organizer, LocalDateTime.now());
+
+        //when
+        assertThatThrownBy(() ->
+                sut.participate(
+                        member,
+                        "매우_긴_닉네임_입니다",
+                        inviteCode,
+                        OrganizationGroup.create("백엔드"),
+                        LocalDateTime.now()
+                )).isInstanceOf(UnprocessableEntityException.class)
+                .hasMessage("최대 닉네임 길이는 10자 입니다.");
+    }
+
+    @Test
     void 이벤트_스페이스의_초대코드가_아닌_초대코드로_이벤트_스페이스에_참여한다면_예외가_발생한다() {
         //given
         var organization = Organization.create("테스트 이벤트 스페이스2", "이벤트 스페이스 설명", "image.png");
