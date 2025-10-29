@@ -115,13 +115,9 @@ public class OrganizationMember extends BaseEntity {
         }
     }
 
-    public void rename(final String newNickname) {
-        validateNickname(newNickname);
-
-        this.nickname = newNickname;
-    }
-
     public void update(final String nickname, final OrganizationGroup group) {
+        validateNickname(nickname);
+
         this.nickname = nickname;
         this.group = group;
     }
@@ -132,7 +128,7 @@ public class OrganizationMember extends BaseEntity {
 
     private void validateNickname(final String nickname) {
         if (nickname.length() > MAX_NICKNAME_LENGTH) {
-            throw new UnprocessableEntityException("최대 닉네임 길이는 10자입니다.");
+            throw new UnprocessableEntityException("최대 닉네임 길이는 " + MAX_NICKNAME_LENGTH + "자 입니다.");
         }
     }
 }

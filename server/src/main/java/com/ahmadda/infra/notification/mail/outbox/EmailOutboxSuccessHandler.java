@@ -16,7 +16,7 @@ public class EmailOutboxSuccessHandler {
     @Transactional
     public void handleSuccess(final String recipientEmail, final String subject, final String body) {
         EmailOutbox outbox = emailOutboxRepository
-                .findBySubjectAndBody(subject, body)
+                .findTopBySubjectAndBodyOrderByCreatedAtDesc(subject, body)
                 .orElseThrow(() -> new EmailOutboxException("존재하지 않는 아웃박스입니다."));
 
         int deletedCount = emailOutboxRecipientRepository
