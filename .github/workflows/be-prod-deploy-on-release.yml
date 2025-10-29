@@ -91,8 +91,8 @@ jobs:
         run: |
           mkdir deploy-artifact
           cp server/build/libs/*[!plain].jar deploy-artifact/ahmadda-server-prod.jar
-          cp codedeploy/be/appspec.yml deploy-artifact/
-          cp -r codedeploy/be/scripts/ deploy-artifact/
+          cp server/codedeploy/appspec.yml deploy-artifact/
+          cp -r server/codedeploy/scripts/ deploy-artifact/
 
       - name: Upload artifact for deploy job
         uses: actions/upload-artifact@v4
