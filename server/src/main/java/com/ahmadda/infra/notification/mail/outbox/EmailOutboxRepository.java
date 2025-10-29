@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface EmailOutboxRepository extends JpaRepository<EmailOutbox, Long> {
 
-    Optional<EmailOutbox> findBySubjectAndBody(final String subject, final String body);
+    Optional<EmailOutbox> findTopBySubjectAndBodyOrderByCreatedAtDesc(final String subject, final String body);
 
     /**
      * 지정된 시각(threshold) 이전에 locked_at이 만료된 Outbox 레코드를 조회하고 잠근다.
