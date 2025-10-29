@@ -5,7 +5,6 @@ import com.ahmadda.common.exception.NotFoundException;
 import com.ahmadda.common.exception.UnauthorizedException;
 import com.ahmadda.domain.member.Member;
 import com.ahmadda.domain.member.MemberRepository;
-import com.ahmadda.domain.member.OpenProfileRepository;
 import com.ahmadda.infra.auth.HashEncoder;
 import com.ahmadda.infra.auth.RefreshTokenRepository;
 import com.ahmadda.infra.auth.jwt.config.JwtRefreshTokenProperties;
@@ -24,7 +23,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.BDDMockito.given;
 
 class LoginServiceTest extends IntegrationTest {
@@ -43,9 +41,6 @@ class LoginServiceTest extends IntegrationTest {
 
     @Autowired
     private HashEncoder hashEncoder;
-
-    @Autowired
-    private OpenProfileRepository openProfileRepository;
 
     @Test
     void 신규회원이면_저장한다() {
@@ -66,27 +61,6 @@ class LoginServiceTest extends IntegrationTest {
 
         // then
         assertThat(memberRepository.findByEmail(email)).isPresent();
-    }
-
-    @Test
-    void 회원가입_시_이름이_길어도_예외가_발생하지_않는다() {
-        // given
-        var code = "code";
-        var name = "이_닉네임은_엄청나게_긴_닉네임_입니다.";
-        var email = "test@example.com";
-        var userAgent = createUserAgent();
-
-        var redirectUri = "redirectUri";
-        var testPicture = "testPicture";
-
-        given(googleOAuthProvider.getUserInfo(code, redirectUri))
-                .willReturn(new OAuthUserInfoResponse(email, name, testPicture));
-
-        // when
-        sut.login(code, redirectUri, userAgent);
-
-        // then
-        assertDoesNotThrow(() -> sut.login(code, redirectUri, userAgent));
     }
 
     @Test

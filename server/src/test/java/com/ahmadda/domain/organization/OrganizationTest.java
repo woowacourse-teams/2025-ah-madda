@@ -86,7 +86,7 @@ class OrganizationTest {
     }
 
     @Test
-    void 닉네임이_제한을_넘어가면_예외가_발생한다() {
+    void 이벤트_스페이스_참여시_닉네임이_제한을_넘어가면_예외가_발생한다() {
         //given
         var member = Member.create("주최자 회원", "organizer@example.com", "testPicture");
         var inviteCode = InviteCode.create("code", sut, organizer, LocalDateTime.now());
