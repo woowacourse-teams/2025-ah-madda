@@ -23,6 +23,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@channel.io/channel-web-sdk-loader": "^2.0.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@sentry/react": "^10.0.0",
