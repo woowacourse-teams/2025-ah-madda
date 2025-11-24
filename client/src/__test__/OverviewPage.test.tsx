@@ -7,8 +7,15 @@ import { RouterWithQueryClient } from './customRender';
 import { mockHostEvents } from './mocks/event';
 import { mockOrganization } from './mocks/organization';
 
+vi.mock('@/api/mutations/useCreateInviteCode', () => ({
+  useCreateInviteCode: () => ({
+    mutateAsync: vi.fn(() => Promise.resolve({ inviteCode: 'MOCK123' })),
+  }),
+}));
+
 vi.mock('@/api/fetcher', () => ({
   fetcher: {
+    post: vi.fn(),
     get: vi.fn(),
   },
 }));
@@ -29,7 +36,7 @@ describe('OverView 페이지 테스트', () => {
     vi.clearAllMocks();
   });
 
-  test('이벤트 전체 조회 시 조직 정보를 노출시킨다.', async () => {
+  test('이벤트 전체 조회 시 이벤트 스페이스 정보를 노출시킨다.', async () => {
     mockFetcher.get.mockImplementation((url: string) => {
       if (url.includes('organizations/1/events')) {
         return Promise.resolve(mockHostEvents);
@@ -42,8 +49,8 @@ describe('OverView 페이지 테스트', () => {
 
     renderOverviewPage();
 
-    expect(await screen.findByText('테스트 조직')).toBeInTheDocument();
-    expect(await screen.findByText('테스트 조직 설명입니다.')).toBeInTheDocument();
+    expect(await screen.findByText('테스트 이벤트 스페이스')).toBeInTheDocument();
+    expect(await screen.findByText('테스트 이벤트 스페이스 설명입니다.')).toBeInTheDocument();
   });
 
   test('이벤트 전체 조회 시 제목, 설명, 주최, 수용인원을 노출시킨다.', async () => {

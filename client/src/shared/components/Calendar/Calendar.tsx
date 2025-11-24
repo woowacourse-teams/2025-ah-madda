@@ -25,6 +25,7 @@ type CalendarProps = {
   onSelectDate?: (date: Date) => void;
   onSelectDateRange?: (startDate: Date, endDate: Date) => void;
   mode?: 'single' | 'range';
+  disabledDates?: Date[];
 };
 
 export const Calendar = ({
@@ -33,6 +34,7 @@ export const Calendar = ({
   onSelectDate,
   onSelectDateRange,
   mode = 'single',
+  disabledDates = [],
 }: CalendarProps) => {
   const { year, month, calendarDays, goToPreviousMonth, goToNextMonth, handleDateClick } =
     useCalendar({
@@ -49,7 +51,18 @@ export const Calendar = ({
     const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const dateStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-    return dateStart < todayStart;
+    if (dateStart < todayStart) {
+      return true;
+    }
+
+    return disabledDates.some((disabledDate) => {
+      const disabledDateStart = new Date(
+        disabledDate.getFullYear(),
+        disabledDate.getMonth(),
+        disabledDate.getDate()
+      );
+      return dateStart > disabledDateStart;
+    });
   };
 
   return (
@@ -89,20 +102,23 @@ export const Calendar = ({
       </WeekDayHeader>
 
       <DateContainer>
-        {calendarDays.map((date) => (
-          <DateButton
-            key={date.toISOString()}
-            onClick={() => handleDateClick(date)}
-            isToday={isToday(date)}
-            isSelected={isSelectedDate(date, selectedDate || null, selectedEndDate || null)}
-            isInRange={isInDateRange(date, selectedDate || null, selectedEndDate || null)}
-            isCurrentMonth={isCurrentMonth(date, month)}
-            isWeekend={isWeekend(date)}
-            disabled={isDisabled(date)}
-          >
-            {date.getDate()}
-          </DateButton>
-        ))}
+        {calendarDays.map((date) => {
+          const disabled = isDisabled(date);
+          return (
+            <DateButton
+              key={date.toISOString()}
+              onClick={() => !disabled && handleDateClick(date)}
+              isToday={isToday(date)}
+              isSelected={isSelectedDate(date, selectedDate || null, selectedEndDate || null)}
+              isInRange={isInDateRange(date, selectedDate || null, selectedEndDate || null)}
+              isCurrentMonth={isCurrentMonth(date, month)}
+              isWeekend={isWeekend(date)}
+              disabled={disabled}
+            >
+              {date.getDate()}
+            </DateButton>
+          );
+        })}
       </DateContainer>
     </Card>
   );

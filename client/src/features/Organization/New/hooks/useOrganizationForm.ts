@@ -31,7 +31,7 @@ export const useOrganizationForm = (
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setField(name as keyof OrgFormFields, value as any);
+    setField(name as keyof OrgFormFields, value as OrgFormFields[keyof OrgFormFields]);
   };
 
   const handleLogoChange = (file: File | null) => {

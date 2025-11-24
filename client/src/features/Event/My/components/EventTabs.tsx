@@ -1,6 +1,5 @@
 import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom';
 
 import { myQueryOptions } from '@/api/queries/my';
 import { Flex } from '@/shared/components/Flex';
@@ -14,19 +13,11 @@ import { EventSection } from './EventSection';
 import { EventTabsList } from './EventTabsList';
 
 export const EventTabs = () => {
-  const { organizationId } = useParams();
-
-  const { data: hostEvents = [] } = useQuery(
-    myQueryOptions.event.hostEvents(Number(organizationId))
-  );
-
-  const { data: participateEvents = [] } = useQuery(
-    myQueryOptions.event.participateEvents(Number(organizationId))
-  );
+  const { data: hostEvents = [] } = useQuery(myQueryOptions.event.hostEvents());
+  const { data: participateEvents = [] } = useQuery(myQueryOptions.event.participateEvents());
 
   const groupedHostEvents = groupEventsByDate(hostEvents);
   const groupedParticipateEvents = groupEventsByDate(participateEvents);
-
   return (
     <Tabs
       defaultValue={TAB_VALUES.HOST}
@@ -50,9 +41,11 @@ export const EventTabs = () => {
           </Flex>
         ) : (
           <Flex dir="column" width="100%" gap="20px">
-            {groupedHostEvents.map(({ label, events }) => (
-              <EventSection key={label} date={label} events={events} cardType={TAB_VALUES.HOST} />
-            ))}
+            {groupedHostEvents
+              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+              .map(({ label, events }) => (
+                <EventSection key={label} date={label} events={events} cardType={TAB_VALUES.HOST} />
+              ))}
           </Flex>
         )}
       </Tabs.Content>
@@ -71,14 +64,16 @@ export const EventTabs = () => {
           </Flex>
         ) : (
           <Flex dir="column" width="100%" gap="20px">
-            {groupedParticipateEvents.map(({ label, events }) => (
-              <EventSection
-                key={label}
-                date={label}
-                events={events}
-                cardType={TAB_VALUES.PARTICIPATE}
-              />
-            ))}
+            {groupedParticipateEvents
+              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+              .map(({ label, events }) => (
+                <EventSection
+                  key={label}
+                  date={label}
+                  events={events}
+                  cardType={TAB_VALUES.PARTICIPATE}
+                />
+              ))}
           </Flex>
         )}
       </Tabs.Content>

@@ -1,87 +1,129 @@
+import { useState } from 'react';
+
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useQuery } from '@tanstack/react-query';
+import { useParams } from 'react-router-dom';
 
-import { HttpError } from '@/api/fetcher';
-import { usePoke } from '@/api/mutations/usePoke';
+import { isAuthenticated } from '@/api/auth';
+import { organizationQueryOptions } from '@/api/queries/organization';
 import { Flex } from '@/shared/components/Flex';
 import { Text } from '@/shared/components/Text';
-import { useToast } from '@/shared/components/Toast/ToastContext';
+import { useModal } from '@/shared/hooks/useModal';
 import { theme } from '@/shared/styles/theme';
 
-import { Guest, NonGuest } from '../../../Manage/types';
-import { useBouncingMessages } from '../../hooks/useBouncingMessages';
+import type { Guest, NonGuest } from '../../../Manage/types';
+
+import { PokeModal } from './PokeModal';
 
 type GuestListProps = {
   eventId: number;
   title: string;
   titleColor: string;
-  guests: Guest[] | NonGuest[];
+  guests: (Guest | NonGuest)[];
+  memberIdToGroup: Map<number, { groupId: number; name: string }>;
 };
 
-export const GuestList = ({ eventId, title, titleColor, guests }: GuestListProps) => {
-  const { error } = useToast();
-  const { mutate: pokeMutate } = usePoke(eventId);
-  const { bouncingMessages, addBouncingMessage } = useBouncingMessages();
+export const GuestList = ({
+  eventId,
+  title,
+  titleColor,
+  guests,
+  memberIdToGroup,
+}: GuestListProps) => {
+  const { organizationId } = useParams();
+  const { isOpen, open, close } = useModal();
+  const [receiverGuest, setReceiverGuest] = useState<NonGuest | null>(null);
+  const { data: joinedMember } = useQuery({
+    ...organizationQueryOptions.joinedStatus(Number(organizationId)),
+    enabled: isAuthenticated(),
+  });
 
-  const handlePokeAlarm = (memberId: number, event: React.MouseEvent) => {
-    pokeMutate(
-      { receiptOrganizationMemberId: memberId },
-
-      {
-        onSuccess: () => {
-          addBouncingMessage(event);
-        },
-        onError: (err) => {
-          if (err instanceof HttpError) {
-            error(err.message);
-          }
-        },
-      }
-    );
+  const handleGuestClick = (guest: NonGuest) => {
+    if (!isAuthenticated() || !joinedMember?.isMember) return;
+    setReceiverGuest(guest);
+    open();
   };
+
+  const grouped = (() => {
+    if (memberIdToGroup.size === 0) return [];
+
+    type GuestItem = Guest | NonGuest;
+    const groupMap = new Map<string, { name: string; id: number; members: GuestItem[] }>();
+
+    for (const guest of guests) {
+      const info = memberIdToGroup.get(guest.organizationMemberId);
+      if (!info) continue;
+      const { groupId, name } = info;
+
+      if (!groupMap.has(name)) groupMap.set(name, { name, id: groupId, members: [] });
+      groupMap.get(name)!.members.push(guest);
+    }
+
+    const groupArr = Array.from(groupMap.values());
+    groupArr.sort((g1, g2) => g1.id - g2.id);
+    groupArr.forEach((group) =>
+      group.members.sort((m1, m2) => (m1.nickname ?? '').localeCompare(m2.nickname ?? '', 'ko'))
+    );
+
+    return groupArr;
+  })();
 
   return (
     <>
-      <Flex dir="column" margin="40px 0 0 0" padding="0 16px" gap="16px">
+      <Flex dir="column" margin="0" padding="0 16px">
         <Flex alignItems="center" gap="8px">
           <Text type="Heading" weight="semibold" color={titleColor}>
             {title}
           </Text>
         </Flex>
-        <Flex
-          as="ul"
-          dir="row"
-          alignItems="flex-start"
-          gap="8px"
-          css={css`
-            flex-wrap: wrap;
-            list-style: none;
-          `}
-        >
-          {guests.map((guest) => (
-            <GuestBadge
-              key={guest.organizationMemberId}
-              onClick={(e) => handlePokeAlarm(guest.organizationMemberId, e)}
-            >
-              {guest.nickname}
-            </GuestBadge>
+
+        <Flex dir="column" gap="20px">
+          {grouped.map((group) => (
+            <section key={`${group.id}:${group.name}`}>
+              <Text
+                as="h3"
+                type="Body"
+                weight="semibold"
+                color={theme.colors.gray700}
+                css={css`
+                  margin: 4px 0 10px;
+                `}
+              >
+                {group.name}
+              </Text>
+
+              <Flex
+                as="ul"
+                dir="row"
+                alignItems="flex-start"
+                gap="8px"
+                css={css`
+                  flex-wrap: wrap;
+                  list-style: none;
+                `}
+              >
+                {group.members.map((guest) => (
+                  <GuestBadge
+                    key={guest.organizationMemberId}
+                    onClick={() => handleGuestClick(guest)}
+                  >
+                    {guest.nickname}
+                  </GuestBadge>
+                ))}
+              </Flex>
+            </section>
           ))}
         </Flex>
       </Flex>
-
-      {bouncingMessages.map((msg) => (
-        <BouncingMessageElement
-          key={msg.id}
-          css={css`
-            left: ${msg.x}px;
-            top: ${msg.y}px;
-            --move-x: ${msg.moveX}px;
-            --move-y: ${msg.moveY}px;
-          `}
-        >
-          {msg.message}
-        </BouncingMessageElement>
-      ))}
+      {receiverGuest && (
+        <PokeModal
+          eventId={eventId}
+          receiverGuest={receiverGuest}
+          isOpen={isOpen}
+          onClose={close}
+        />
+      )}
     </>
   );
 };
@@ -98,30 +140,8 @@ const GuestBadge = styled.li`
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
-`;
 
-const BouncingMessageElement = styled.span`
-  position: fixed;
-  font-size: 16px;
-  font-weight: bold;
-  color: ${theme.colors.gray900};
-  z-index: 1000;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  animation: shootStraight 0.5s ease-out forwards;
-
-  @keyframes shootStraight {
-    0% {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-    }
-    20% {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1.2);
-    }
-    100% {
-      opacity: 0;
-      transform: translate(calc(-50% + var(--move-x)), calc(-50% + var(--move-y))) scale(0.5);
-    }
+  &:hover {
+    background-color: ${theme.colors.gray200};
   }
 `;

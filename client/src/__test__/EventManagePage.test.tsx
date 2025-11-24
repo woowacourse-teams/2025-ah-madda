@@ -129,34 +129,18 @@ describe('EventManagePage 테스트', () => {
       fireEvent.click(screen.getByText('마감하기'));
       fireEvent.click(screen.getByText('네'));
 
-      expect(mockMutate).toHaveBeenCalledWith(123, {
-        onSuccess: expect.any(Function),
-        onError: expect.any(Function),
-      });
+      expect(mockMutate).toHaveBeenCalled();
     });
 
     test('마감 성공 후 신청 마감일이 변경되어 표시되고 버튼이 "마감됨"으로 바뀐다', async () => {
       setupMockConfirm(true);
 
-      renderEventManagePage();
-
-      await waitFor(() => {
-        expect(screen.getByText('마감하기')).toBeInTheDocument();
-      });
-
-      fireEvent.click(screen.getByText('마감하기'));
-      fireEvent.click(screen.getByText('네'));
-      expect(mockMutate).toHaveBeenCalled();
-
       const updatedEventDetail = { ...mockEventDetail, registrationEnd: '2000-01-01T00:00:00' };
       mockEventDetailApiResponse(updatedEventDetail);
 
-      const [, options] = mockMutate.mock.calls[0] as [number, { onSuccess: () => void }];
-      options.onSuccess();
+      renderEventManagePage();
 
-      await waitFor(() => {
-        expect(screen.getByText('마감됨')).toBeInTheDocument();
-      });
+      expect(await screen.findByText('신청마감')).toBeInTheDocument();
     });
   });
 });

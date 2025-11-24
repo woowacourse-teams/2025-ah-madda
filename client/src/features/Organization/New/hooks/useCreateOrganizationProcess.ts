@@ -17,7 +17,7 @@ export const useCreateOrganizationProcess = ({
 }: CreateOrganizationProcessArgs) => {
   const { mutate, isPending } = useCreateOrganization();
 
-  const handleCreate = (nickname: string) => {
+  const handleOrganizationCreateClick = () => {
     if (!thumbnail) {
       return;
     }
@@ -27,7 +27,6 @@ export const useCreateOrganizationProcess = ({
         organization: {
           name: name.trim(),
           description: description.trim(),
-          nickname: nickname.trim(),
         },
         thumbnail,
       },
@@ -43,5 +42,5 @@ export const useCreateOrganizationProcess = ({
     onClose?.();
   };
 
-  return { handleCreate, handleClose, isSubmitting: isPending };
+  return { handleOrganizationCreateClick, handleClose, isSubmitting: isPending };
 };

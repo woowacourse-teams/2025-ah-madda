@@ -1,9 +1,9 @@
 @font-face {
   font-family: Pretendard;
-  font-weight: 45 920;
+  font-weight: 400 700;
   font-style: normal;
   font-display: swap;
-  src: url('assets/font/PretendardVariable.woff2') format('woff2-variations');
+  src: url('./assets/font/PretendardVariable.core.woff2') format('woff2');
 }
 
 *,
@@ -19,6 +19,8 @@ html {
   -moz-text-size-adjust: none;
   -webkit-text-size-adjust: none;
   text-size-adjust: none;
+  scrollbar-width: thin;
+  scrollbar-color: #d9dadb transparent;
 }
 
 body,
@@ -42,6 +44,20 @@ ol[role='list'] {
 body {
   min-height: 100vh;
   line-height: 1.5;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background: #d9dadb;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 h1,

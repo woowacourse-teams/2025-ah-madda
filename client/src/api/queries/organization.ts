@@ -1,10 +1,12 @@
 import { queryOptions } from '@tanstack/react-query';
 
-import { Event } from '@/features/Event/types/Event';
-import { Organization } from '@/features/Organization/types/Organization';
-
 import { fetcher } from '../fetcher';
-import { OrganizationProfileAPIResponse } from '../types/organizations';
+import {
+  OrganizationAPIResponse,
+  OrganizationJoinedStatusAPIResponse,
+  OrganizationMember,
+} from '../types/organizations';
+import { OrganizationGroupAPIResponse } from '../types/organizations';
 
 export const organizationQueryKeys = {
   all: () => ['organization'],
@@ -12,19 +14,22 @@ export const organizationQueryKeys = {
   profile: () => [...organizationQueryKeys.all(), 'profile'],
   preview: () => [...organizationQueryKeys.all(), 'preview'],
   joined: () => [...organizationQueryKeys.all(), 'participated'],
+  members: () => [...organizationQueryKeys.all(), 'organization-members'],
+  group: () => [...organizationQueryKeys.all(), 'group'],
+  joinedStatus: () => [...organizationQueryKeys.all(), 'joined-status'],
 };
+
 export const organizationQueryOptions = {
+  all: () =>
+    queryOptions({
+      queryKey: organizationQueryKeys.all(),
+      queryFn: () => getAllOrganizations(),
+    }),
   // S.TODO : 추후 수정 ':organizationId' : number
   organizations: (organizationId: string) =>
     queryOptions({
       queryKey: [...organizationQueryKeys.event(), organizationId],
       queryFn: () => getOrganization({ organizationId }),
-    }),
-
-  event: (organizationId: number) =>
-    queryOptions({
-      queryKey: [...organizationQueryKeys.event(), organizationId],
-      queryFn: () => getAllEventAPI({ organizationId }),
     }),
 
   profile: (organizationId: number) =>
@@ -38,12 +43,33 @@ export const organizationQueryOptions = {
       queryKey: [...organizationQueryKeys.all(), 'preview', inviteCode],
       queryFn: () => getOrganizationPreview(inviteCode),
     }),
-
   joined: () =>
     queryOptions({
       queryKey: organizationQueryKeys.joined(),
       queryFn: getParticipatedOrganizations,
     }),
+
+  members: (organizationId: number) =>
+    queryOptions({
+      queryKey: [...organizationQueryKeys.members(), organizationId],
+      queryFn: () => getOrganizationMembers({ organizationId }),
+    }),
+
+  group: () =>
+    queryOptions({
+      queryKey: organizationQueryKeys.group(),
+      queryFn: getOrganizationGroups,
+    }),
+
+  joinedStatus: (organizationId: number) =>
+    queryOptions({
+      queryKey: [...organizationQueryKeys.joinedStatus(), organizationId],
+      queryFn: () => getOrganizationJoinedStatus({ organizationId }),
+    }),
+};
+
+const getAllOrganizations = () => {
+  return fetcher.get<OrganizationAPIResponse[]>(`organizations/popular`);
 };
 
 const getAllEventAPI = ({ organizationId }: { organizationId: number }) => {
@@ -51,17 +77,31 @@ const getAllEventAPI = ({ organizationId }: { organizationId: number }) => {
 };
 
 export const getOrganization = ({ organizationId }: { organizationId: string }) => {
-  return fetcher.get<Organization>(`organizations/${organizationId}`);
+  return fetcher.get<OrganizationAPIResponse>(`organizations/${organizationId}`);
 };
 
 const getOrganizationProfile = ({ organizationId }: { organizationId: number }) => {
-  return fetcher.get<OrganizationProfileAPIResponse>(`organizations/${organizationId}/profile`);
+  return fetcher.get<OrganizationMember>(`organizations/${organizationId}/profile`);
 };
 
 export const getOrganizationPreview = (inviteCode: string) => {
-  return fetcher.get<Organization>(`organizations/preview?inviteCode=${inviteCode}`);
+  return fetcher.get<OrganizationAPIResponse>(`organizations/preview?inviteCode=${inviteCode}`);
 };
 
 export const getParticipatedOrganizations = () => {
-  return fetcher.get<Organization[]>(`organizations/participated`);
+  return fetcher.get<OrganizationAPIResponse[]>(`organizations/participated`);
+};
+
+const getOrganizationMembers = ({ organizationId }: { organizationId: number }) => {
+  return fetcher.get<OrganizationMember[]>(`organizations/${organizationId}/organization-members`);
+};
+
+const getOrganizationJoinedStatus = ({ organizationId }: { organizationId: number }) => {
+  return fetcher.get<OrganizationJoinedStatusAPIResponse>(
+    `organizations/${organizationId}/organization-member-status`
+  );
+};
+
+export const getOrganizationGroups = () => {
+  return fetcher.get<OrganizationGroupAPIResponse[]>(`organization-groups`);
 };

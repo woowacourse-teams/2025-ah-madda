@@ -1,10 +1,6 @@
 import { ComponentProps, useRef } from 'react';
 
-import { css } from '@emotion/react';
-
 import { Icon } from '@/shared/components/Icon';
-import { IconButton } from '@/shared/components/IconButton';
-import { computeCounter } from '@/shared/utils/computeCounter';
 
 import {
   StyledWrapper,
@@ -12,6 +8,7 @@ import {
   StyledHelperText,
   StyledFieldWrapper,
   StyledCalendarButton,
+  StyledClearButton,
   StyledCounterText,
   StyledFooterRow,
 } from './Input.styled';
@@ -21,14 +18,12 @@ export type InputProps = {
    * Unique id to link the label and input for accessibility.
    */
   id: string;
-
   /**
    * Helper text displayed below the input field.
    * Useful for showing hints or validation messages.
    * @type {string}
    */
   helperText?: string;
-
   /**
    * Whether the input is required.
    * When true, a red asterisk (*) will be shown next to the label.
@@ -36,15 +31,16 @@ export type InputProps = {
    * @default false
    */
   isRequired?: boolean;
-
   /**
    * Message displayed when the input is invalid.
    */
   errorMessage?: string;
-
-  /** Show character counter (uses maxLength) */
+  /**
+   * Whether to show the character counter.
+   * When true, the character counter will be shown below the input.
+   * @default false
+   */
   showCounter?: boolean;
-
   /**
    * Callback function when clear button is clicked.
    * When provided, a clear button will be shown on the right side of the input.
@@ -63,14 +59,7 @@ export const Input = ({
 }: InputProps) => {
   const isError = !!errorMessage;
   const isDateLike = props.type === 'datetime-local';
-
-  const { hasMax, displayLength } = computeCounter(
-    props.value,
-    props.defaultValue,
-    props.maxLength
-  );
-  const hasContent = displayLength > 0;
-  const shouldShowCounter = showCounter && hasMax && !isDateLike;
+  const shouldShowCounter = showCounter && props.maxLength && !isDateLike;
 
   const inputRef = useRef<HTMLInputElement>(null);
   const openPicker = () => {
@@ -96,23 +85,10 @@ export const Input = ({
           aria-invalid={isError || undefined}
           {...props}
         />
-        {onClear && hasContent && (
-          <IconButton
-            name="close"
-            size={14}
-            color="gray500"
-            onClick={onClear}
-            aria-label="초기화"
-            css={css`
-              position: absolute;
-              right: 12px;
-              top: 50%;
-              transform: translateY(-50%);
-              border: 0;
-              background: transparent;
-              padding: 0;
-            `}
-          />
+        {onClear && props.value && (
+          <StyledClearButton type="button" onClick={onClear} aria-label="초기화">
+            <Icon name="close" size={16} color="gray500" />
+          </StyledClearButton>
         )}
       </StyledFieldWrapper>
 
@@ -123,7 +99,7 @@ export const Input = ({
 
         {shouldShowCounter && (
           <StyledCounterText>
-            ({displayLength}/{props.maxLength})
+            ({props.value?.toString().length ?? 0}/{props.maxLength})
           </StyledCounterText>
         )}
       </StyledFooterRow>

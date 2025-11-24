@@ -1,7 +1,7 @@
 import { queryOptions } from '@tanstack/react-query';
 
 import { fetcher } from '../fetcher';
-import { Profile } from '../types/profile';
+import { ProfileAPIResponse } from '../types/profile';
 
 export const profileQueryKeys = {
   all: () => ['profile'],
@@ -16,5 +16,5 @@ export const profileQueryOptions = {
 };
 
 const getProfile = async () => {
-  return await fetcher.get<Profile>('members/profile');
+  return await fetcher.get<ProfileAPIResponse>('open-profiles');
 };

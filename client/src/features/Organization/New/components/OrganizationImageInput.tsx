@@ -150,7 +150,7 @@ export const OrganizationImageInput = ({
 const StyledPreviewImage = styled.img`
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: scale-down;
   display: block;
 `;
 

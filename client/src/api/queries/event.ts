@@ -1,9 +1,10 @@
-import { queryOptions } from '@tanstack/react-query';
+import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 
 import { Guest, NonGuest } from '../../features/Event/Manage/types';
-import { CreateEventAPIRequest, EventDetail } from '../../features/Event/types/Event';
+import { CreateEventAPIRequest } from '../../features/Event/types/Event';
 import { fetcher } from '../fetcher';
 import { postAlarm } from '../mutations/useAddAlarm';
+import { Event, EventDetail } from '../types/event';
 import {
   GuestStatusAPIResponse,
   OrganizerStatusAPIResponse,
@@ -13,6 +14,7 @@ import {
   NotifyHistoryAPIResponse,
   TemplateListAPIResponse,
   TemplateDetailAPIResponse,
+  PastEventAPIResponse,
 } from '../types/event';
 import { NotificationAPIRequest } from '../types/notification';
 
@@ -24,6 +26,8 @@ export type NotificationOptOutState = { optedOut: boolean };
 
 export const eventQueryKeys = {
   all: () => ['event'],
+  ongoing: () => [...eventQueryKeys.all(), 'ongoing'],
+  past: () => [...eventQueryKeys.all(), 'past'],
   detail: () => [...eventQueryKeys.all(), 'detail'],
   alarm: () => [...eventQueryKeys.all(), 'alarm'],
   guests: () => [...eventQueryKeys.all(), 'guests'],
@@ -46,6 +50,23 @@ export const eventQueryOptions = {
     queryOptions({
       queryKey: [...eventQueryKeys.detail(), eventId],
       queryFn: () => getEventDetailAPI(eventId),
+    }),
+  ongoing: (organizationId: number) =>
+    queryOptions({
+      queryKey: [...eventQueryKeys.ongoing(), organizationId],
+      queryFn: () => getOngoingEventAPI({ organizationId }),
+    }),
+  past: (organizationId: number, lastEventId?: number) =>
+    infiniteQueryOptions({
+      queryKey: [...eventQueryKeys.past(), organizationId, lastEventId],
+      queryFn: ({ pageParam }) =>
+        getPastEventAPI({ organizationId, lastEventId: pageParam ?? undefined }),
+      getNextPageParam: (data: Event[]) => {
+        if (data.length > 0) {
+          return data[data.length - 1].eventId;
+        }
+      },
+      initialPageParam: null,
     }),
   alarms: (eventId: number) => ({
     mutationKey: [...eventQueryKeys.alarm(), eventId],
@@ -112,6 +133,15 @@ export const eventQueryOptions = {
       queryKey: [...eventQueryKeys.templateDetail(), templateId],
       queryFn: () => getTemplateDetail(templateId),
     }),
+};
+
+const getOngoingEventAPI = ({ organizationId }: { organizationId: number }) => {
+  return fetcher.get<Event[]>(`organizations/${organizationId}/events`);
+};
+
+const getPastEventAPI = ({ organizationId, lastEventId }: PastEventAPIResponse) => {
+  const params = lastEventId ? `?lastEventId=${lastEventId}` : '';
+  return fetcher.get<Event[]>(`organizations/${organizationId}/events/past${params}`);
 };
 
 const getGuests = async (eventId: number) => {

@@ -1,4 +1,4 @@
-import { MAX_LENGTH } from '../constants/validationRules';
+import { IMAGE, MAX_LENGTH } from '../constants/validationRules';
 
 export type OrgFormFields = {
   name: string;
@@ -10,11 +10,12 @@ type ValidationRule = {
   label: string;
   required?: boolean;
   maxLength?: number;
+  maxBytes?: number;
 };
 
 export const ORG_VALIDATION_RULES: Record<keyof OrgFormFields, ValidationRule> = {
   name: {
-    label: '조직 이름',
+    label: '이벤트 스페이스 이름',
     required: true,
     maxLength: MAX_LENGTH.NAME,
   },
@@ -24,7 +25,8 @@ export const ORG_VALIDATION_RULES: Record<keyof OrgFormFields, ValidationRule> =
     maxLength: MAX_LENGTH.DESCRIPTION,
   },
   thumbnail: {
-    label: '조직 이미지',
+    label: '이벤트 스페이스 이미지',
     required: true,
+    maxBytes: IMAGE.MAX_BYTES,
   },
 };

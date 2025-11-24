@@ -1,7 +1,6 @@
-import React from 'react';
-
 import { ThemeProvider } from '@emotion/react';
 import ReactDOM from 'react-dom/client';
+import { HelmetProvider } from 'react-helmet-async';
 import { RouterProvider } from 'react-router-dom';
 
 import './reset.css';
@@ -32,8 +31,10 @@ if (GA_ID) {
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <ClientQueryProvider>
-    <ThemeProvider theme={theme}>
-      <RouterProvider router={router} />
-    </ThemeProvider>
+    <HelmetProvider>
+      <ThemeProvider theme={theme}>
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </HelmetProvider>
   </ClientQueryProvider>
 );

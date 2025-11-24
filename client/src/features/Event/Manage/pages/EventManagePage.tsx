@@ -1,148 +1,72 @@
 import { css } from '@emotion/react';
-import { useQuery, useSuspenseQueries } from '@tanstack/react-query';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { useParams } from 'react-router-dom';
 
-import { HttpError } from '@/api/fetcher';
-import { useCloseEventRegistration } from '@/api/mutations/useCloseEventRegistration';
 import { eventQueryOptions } from '@/api/queries/event';
-import { profileQueryOptions } from '@/api/queries/profile';
-import { Badge } from '@/shared/components/Badge';
-import { Button } from '@/shared/components/Button';
-import { Flex } from '@/shared/components/Flex';
-import { Header } from '@/shared/components/Header';
-import { Icon } from '@/shared/components/Icon';
 import { PageLayout } from '@/shared/components/PageLayout';
-import { Spacing } from '@/shared/components/Spacing';
 import { Tabs } from '@/shared/components/Tabs';
-import { Text } from '@/shared/components/Text';
-import { useToast } from '@/shared/components/Toast/ToastContext';
-import { useModal } from '@/shared/hooks/useModal';
-import { theme } from '@/shared/styles/theme';
 
-import { formatDateTime } from '../../My/utils/date';
-import { badgeText } from '../../utils/badgeText';
-import { DeadlineModal } from '../components/DeadlineModal';
-import { EventInfoSection } from '../components/EventInfoSection';
-import { GuestManageSection } from '../components/GuestManageSection';
+import { EventManageFooter } from '../components/EventManageFooter';
+import { GuestManageSection } from '../components/guest/GuestManageSection';
+import { PreAnswersSection } from '../components/guest/PreAnswersSection';
+import { EventHeader } from '../components/info/EventHeader';
+import { EventInfoSection } from '../components/info/EventInfoSection';
 import { EventManageContainer } from '../containers/EventManageContainer';
 
 export const EventManagePage = () => {
-  const navigate = useNavigate();
-  const { eventId: eventIdParam, organizationId } = useParams();
+  const { eventId: eventIdParam } = useParams();
   const eventId = Number(eventIdParam);
-  const { success, error } = useToast();
-  const { isOpen, open, close } = useModal();
-  const { data: event, refetch } = useQuery(eventQueryOptions.detail(eventId));
-  const [{ data: profile }, { data: statistics = [] }] = useSuspenseQueries({
-    queries: [profileQueryOptions.profile(), eventQueryOptions.statistic(eventId)],
-  });
-  const { mutate: closeEventRegistration } = useCloseEventRegistration();
 
-  const isClosed = event?.registrationEnd ? new Date(event.registrationEnd) < new Date() : false;
-
-  const handleDeadlineChangeClick = () => {
-    closeEventRegistration(eventId, {
-      onSuccess: () => {
-        success('이벤트가 마감되었습니다.');
-        refetch();
-        close();
-      },
-      onError: (err) => {
-        if (err instanceof HttpError) {
-          error(err.message);
-        }
-      },
-    });
-  };
+  const { data: event } = useQuery(eventQueryOptions.detail(eventId));
+  const { data: statistics = [] } = useQuery(eventQueryOptions.statistic(eventId));
 
   if (!event) return null;
 
+  const hasPreQuestions = event.questions.length > 0;
+
   return (
-    <>
-      <PageLayout
-        header={
-          <Header
-            left={
-              <Icon
-                name="logo"
-                size={55}
-                onClick={() => navigate(`/${organizationId}/event`)}
-                css={css`
-                  cursor: pointer;
-                `}
-              />
-            }
-            right={
-              <Button size="sm" onClick={() => navigate(`/${organizationId}/event/my`)}>
-                내 이벤트
-              </Button>
-            }
-          />
-        }
-      >
-        <EventManageContainer>
-          <Spacing height="56px" />
-          <Flex dir="column" gap="12px">
-            <Badge variant={badgeText(event.registrationEnd).color}>
-              {badgeText(event.registrationEnd).text}
-            </Badge>
-            <Flex dir="row" justifyContent="space-between">
-              <Text type="Title" weight="bold" color={theme.colors.gray900}>
-                {event.title}
-              </Text>
+    <PageLayout>
+      <EventManageContainer>
+        <EventHeader
+          eventId={event.eventId}
+          title={event.title}
+          place={event.place}
+          eventStart={event.eventStart}
+          eventEnd={event.eventEnd}
+          registrationEnd={event.registrationEnd}
+        />
 
-              {isClosed ? (
-                <Button size="sm" color="tertiary" variant="solid" disabled>
-                  마감됨
-                </Button>
-              ) : (
-                <Button size="sm" color="tertiary" variant="solid" onClick={open}>
-                  마감하기
-                </Button>
-              )}
-            </Flex>
+        <Tabs defaultValue="detail">
+          <Tabs.List
+            css={css`
+              width: 40%;
+              @media (max-width: 768px) {
+                width: 100%;
+              }
+            `}
+          >
+            <Tabs.Trigger value="detail">이벤트 정보</Tabs.Trigger>
+            <Tabs.Trigger value="applications">참여 현황</Tabs.Trigger>
+            {hasPreQuestions && <Tabs.Trigger value="preanswers">사전 질문</Tabs.Trigger>}
+          </Tabs.List>
 
-            <Flex dir="column" gap="4px">
-              <Flex dir="row" gap="4px" alignItems="center">
-                <Icon name="location" size={16} color="gray500" />
-                <Text type="Label" weight="medium" color={theme.colors.gray500}>
-                  {event.place}
-                </Text>
-              </Flex>
-              <Flex dir="row" gap="4px" alignItems="center">
-                <Icon name="calendar" size={16} color="gray500" />
-                <Text type="Label" weight="medium" color={theme.colors.gray500}>
-                  {formatDateTime(event.eventStart)} ~ {formatDateTime(event.eventEnd)}
-                </Text>
-              </Flex>
-            </Flex>
-          </Flex>
-          <Spacing height="80px" />
+          <Tabs.Content value="detail">
+            <EventInfoSection event={event} statistics={statistics} />
+          </Tabs.Content>
 
-          <Tabs defaultValue="detail">
-            <Tabs.List
-              css={css`
-                width: 40%;
-                @media (max-width: 768px) {
-                  width: 100%;
-                }
-              `}
-            >
-              <Tabs.Trigger value="detail">이벤트 정보</Tabs.Trigger>
-              <Tabs.Trigger value="applications">참여 현황</Tabs.Trigger>
-            </Tabs.List>
+          <Tabs.Content value="applications">
+            <GuestManageSection />
+          </Tabs.Content>
 
-            <Tabs.Content value="detail">
-              <EventInfoSection event={event} profile={profile} statistics={statistics} />
+          {hasPreQuestions && (
+            <Tabs.Content value="preanswers">
+              <PreAnswersSection eventId={eventId} />
             </Tabs.Content>
+          )}
+        </Tabs>
+      </EventManageContainer>
 
-            <Tabs.Content value="applications">
-              <GuestManageSection />
-            </Tabs.Content>
-          </Tabs>
-        </EventManageContainer>
-      </PageLayout>
-      <DeadlineModal isOpen={isOpen} onClose={close} onDeadlineChange={handleDeadlineChangeClick} />
-    </>
+      <EventManageFooter eventId={eventId} registrationEnd={event.registrationEnd} />
+    </PageLayout>
   );
 };

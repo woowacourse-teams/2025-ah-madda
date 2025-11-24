@@ -29,10 +29,10 @@ export const QuestionItem = ({
   };
 
   return (
-    <>
-      <label htmlFor={`question-${orderIndex}`}>
-        <Text type="Body">{`질문${orderIndex + 1}`}</Text>
-      </label>
+    <Flex dir="column" gap="8px" padding="8px">
+      <Text as="label" htmlFor={`question-${orderIndex}`} type="Body">
+        {`질문${orderIndex + 1}`}
+      </Text>
       <Input
         id={`question-${orderIndex}`}
         placeholder="질문을 입력해주세요."
@@ -55,6 +55,6 @@ export const QuestionItem = ({
         </Flex>
         <IconButton name="delete" color="red" onClick={onDelete} />
       </Flex>
-    </>
+    </Flex>
   );
 };

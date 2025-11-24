@@ -7,6 +7,7 @@ import {
   Children,
   ReactElement,
   isValidElement,
+  useRef,
 } from 'react';
 
 import { StyledTabs, StyledTabsContent, StyledTabsList, StyledTabsTrigger } from './Tabs.styled';
@@ -70,15 +71,23 @@ export const Tabs = ({ defaultValue, children, ...props }: TabsProps) => {
 
 export const TabsList = ({ children, ...props }: TabsListProps) => {
   const { activeTab } = useTabsContext();
+  const listRef = useRef<HTMLDivElement | null>(null);
+
   const tabValues = Children.toArray(children)
     .filter((child): child is ReactElement<{ value: string }> => isValidElement(child))
     .map((child) => child.props?.value);
 
-  const activeTabIndex = tabValues.indexOf(activeTab);
+  const activeTabIndex = Math.max(0, tabValues.indexOf(activeTab));
   const tabCount = tabValues.length;
 
   return (
-    <StyledTabsList role="tablist" tabCount={tabCount} activeTabIndex={activeTabIndex} {...props}>
+    <StyledTabsList
+      ref={listRef}
+      role="tablist"
+      tabCount={tabCount}
+      activeTabIndex={activeTabIndex}
+      {...props}
+    >
       {children}
     </StyledTabsList>
   );
@@ -88,10 +97,6 @@ export const TabsTrigger = ({ value, children, ...props }: TabsTriggerProps) => 
   const { activeTab, setActiveTab } = useTabsContext();
   const isActive = activeTab === value;
 
-  const handleClick = () => {
-    setActiveTab(value);
-  };
-
   return (
     <StyledTabsTrigger
       type="button"
@@ -99,8 +104,9 @@ export const TabsTrigger = ({ value, children, ...props }: TabsTriggerProps) => 
       aria-selected={isActive}
       aria-controls={`tabpanel-${value}`}
       id={`tab-${value}`}
-      onClick={handleClick}
+      onClick={() => setActiveTab(value)}
       data-active={isActive}
+      isActive={isActive}
       {...props}
     >
       {children}
@@ -110,9 +116,7 @@ export const TabsTrigger = ({ value, children, ...props }: TabsTriggerProps) => 
 
 export const TabsContent = ({ value, children, ...props }: TabsContentProps) => {
   const { activeTab } = useTabsContext();
-  const isActive = activeTab === value;
-
-  if (!isActive) return null;
+  if (activeTab !== value) return null;
 
   return (
     <StyledTabsContent

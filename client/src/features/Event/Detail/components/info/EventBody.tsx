@@ -1,16 +1,22 @@
 import { GuestStatusAPIResponse, OrganizerStatusAPIResponse } from '@/api/types/event';
+import { EventDetail } from '@/api/types/event';
+import { OrganizationJoinedStatusAPIResponse } from '@/api/types/organizations';
 import { Flex } from '@/shared/components/Flex';
 
-import { EventDetail } from '../../../types/Event';
 import { useAnswers } from '../../hooks/useAnswers';
 import { SubmitButtonCard } from '../SubmitButtonCard';
 
 import { EventDetails } from './EventDetails';
 import { PreQuestionSection } from './PreQuestionSection';
 
-type EventBodyProps = EventDetail & GuestStatusAPIResponse & OrganizerStatusAPIResponse;
+type EventBodyProps = { organizationId: number } & EventDetail &
+  GuestStatusAPIResponse &
+  OrganizerStatusAPIResponse &
+  OrganizationJoinedStatusAPIResponse;
 
 export const EventBody = ({
+  organizationId,
+  isMember,
   isOrganizer,
   eventId,
   registrationEnd,
@@ -19,7 +25,7 @@ export const EventBody = ({
   description,
   questions,
   isGuest,
-  organizerName,
+  organizerNicknames,
 }: EventBodyProps) => {
   const { answers, handleChangeAnswer, resetAnswers, isRequiredAnswerComplete } =
     useAnswers(questions);
@@ -27,7 +33,7 @@ export const EventBody = ({
   return (
     <Flex dir="column" gap="24px" width="100%">
       <EventDetails
-        organizerName={organizerName}
+        organizerNicknames={organizerNicknames}
         description={description}
         currentGuestCount={currentGuestCount}
         maxCapacity={maxCapacity}
@@ -42,7 +48,9 @@ export const EventBody = ({
       )}
       {!isOrganizer && (
         <SubmitButtonCard
+          organizationId={organizationId}
           isGuest={isGuest}
+          isMember={isMember}
           eventId={eventId}
           registrationEnd={registrationEnd}
           answers={answers}

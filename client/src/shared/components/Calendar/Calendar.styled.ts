@@ -11,6 +11,7 @@ type DateButtonProps = {
   isCurrentMonth: boolean;
   isWeekend: boolean;
   isInRange?: boolean;
+  disabled?: boolean;
 };
 
 export const DateButton = styled(Button)<DateButtonProps>`
@@ -23,7 +24,8 @@ export const DateButton = styled(Button)<DateButtonProps>`
     if (isToday) return theme.colors.gray100;
     return 'white';
   }};
-  color: ${({ isCurrentMonth, isWeekend, isToday, isSelected, isInRange }) => {
+  color: ${({ isCurrentMonth, isWeekend, isToday, isSelected, isInRange, disabled }) => {
+    if (disabled) return theme.colors.gray400;
     if (isSelected) return 'white';
     if (isInRange) return theme.colors.primary600;
     if (isToday) return theme.colors.gray900;
@@ -31,9 +33,14 @@ export const DateButton = styled(Button)<DateButtonProps>`
     return isWeekend ? theme.colors.red500 : theme.colors.gray900;
   }};
 
-  &:hover {
+  &:hover:not(:disabled) {
     background-color: ${({ isSelected }) =>
       isSelected ? theme.colors.primary300 : theme.colors.gray100};
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
   }
 `;
 

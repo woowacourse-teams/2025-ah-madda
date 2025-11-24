@@ -1,19 +1,77 @@
+import { lazy, Suspense } from 'react';
+
 import { createBrowserRouter } from 'react-router-dom';
 
 import { App } from '@/App';
-import { ErrorPage } from '@/features/Error/pages/ErrorPage';
 import { EventDetailPage } from '@/features/Event/Detail/pages/EventDetailPage';
-import { EventManagePage } from '@/features/Event/Manage/pages/EventManagePage';
 import { MyEventPage } from '@/features/Event/My/pages/MyEventPage';
-import { NewEventPage } from '@/features/Event/New/pages/NewEventPage';
 import { OverviewPage } from '@/features/Event/Overview/pages/OverviewPage';
 import { HomePage } from '@/features/Home/page/HomePage';
-import { InvitePage } from '@/features/Invite/page/InvitePage';
-import { NewOrganizationPage } from '@/features/Organization/New/pages/NewOrganizationPage';
-import { OrganizationSelectPage } from '@/features/Organization/Select/pages/SelectOrganizationPage';
+import { OrganizationOverviewPage } from '@/features/Organization/Overview/pages/OrganizationOverviewPage';
+import { Flex } from '@/shared/components/Flex';
+import { Loading } from '@/shared/components/Loading';
 
 import { AuthCallback } from './AuthCallback';
+import { InviteRedirect } from './InviteRedirect';
 import { ProtectRoute } from './ProtectRoute';
+
+const ErrorPage = lazy(() =>
+  import('@/features/Error/pages/ErrorPage').then((module) => ({
+    default: module.ErrorPage,
+  }))
+);
+
+// const InvitePage = lazy(() =>
+//   import(/* webpackChunkName: "invite-pages" */ '@/features/Invite/page/InvitePage').then(
+//     (module) => ({
+//       default: module.InvitePage,
+//     })
+//   )
+// );
+
+const NewEventPage = lazy(() =>
+  import(/* webpackChunkName: "new-event-pages" */ '@/features/Event/New/pages/NewEventPage').then(
+    (module) => ({
+      default: module.NewEventPage,
+    })
+  )
+);
+
+const EventManagePage = lazy(() =>
+  import(
+    /* webpackChunkName: "event-manage-pages" */ '@/features/Event/Manage/pages/EventManagePage'
+  ).then((module) => ({
+    default: module.EventManagePage,
+  }))
+);
+
+const NewOrganizationPage = lazy(() =>
+  import(
+    /* webpackChunkName: "organization-pages" */ '@/features/Organization/New/pages/NewOrganizationPage'
+  ).then((module) => ({
+    default: module.NewOrganizationPage,
+  }))
+);
+
+const ProfilePage = lazy(() =>
+  import(/* webpackChunkName: "profile-page" */ '@/features/Profile/pages/ProfilePage').then(
+    (module) => ({
+      default: module.ProfilePage,
+    })
+  )
+);
+
+const withSuspense = (Component: React.ComponentType) => (
+  <Suspense
+    fallback={
+      <Flex width="100%" height="100dvh" alignItems="center" justifyContent="center">
+        <Loading />
+      </Flex>
+    }
+  >
+    <Component />
+  </Suspense>
+);
 
 export const router = createBrowserRouter(
   [
@@ -25,9 +83,29 @@ export const router = createBrowserRouter(
           index: true,
           Component: HomePage,
         },
+        // {
+        //   path: '/invite',
+        //   element: withSuspense(InvitePage),
+        // },
         {
-          path: '/invite',
-          Component: InvitePage,
+          path: '/profile',
+          Component: ProtectRoute,
+          children: [
+            {
+              index: true,
+              element: withSuspense(ProfilePage),
+            },
+          ],
+        },
+        {
+          path: '/my',
+          Component: ProtectRoute,
+          children: [
+            {
+              index: true,
+              Component: MyEventPage,
+            },
+          ],
         },
         {
           path: '/auth',
@@ -35,7 +113,6 @@ export const router = createBrowserRouter(
         },
         {
           path: '/:organizationId/event',
-          Component: ProtectRoute,
           children: [
             {
               index: true,
@@ -43,47 +120,64 @@ export const router = createBrowserRouter(
             },
             {
               path: 'new',
-              Component: NewEventPage,
+              element: withSuspense(NewEventPage),
             },
             {
-              path: 'edit/:eventId',
-              Component: NewEventPage,
-            },
-            {
-              path: 'my',
-              Component: MyEventPage,
+              path: ':eventId/edit',
+              element: withSuspense(NewEventPage),
             },
             {
               path: ':eventId',
               Component: EventDetailPage,
             },
             {
-              path: 'manage/:eventId',
-              Component: EventManagePage,
+              path: ':eventId/manage',
+              Component: ProtectRoute,
+              children: [
+                {
+                  index: true,
+                  element: withSuspense(EventManagePage),
+                },
+              ],
+            },
+            {
+              path: ':eventId/invite',
+              Component: InviteRedirect,
             },
           ],
         },
         {
           path: '/organization',
-          Component: ProtectRoute,
           children: [
             {
               index: true,
-              Component: OrganizationSelectPage,
+              Component: OrganizationOverviewPage,
             },
             {
               path: 'new',
-              Component: NewOrganizationPage,
+              Component: ProtectRoute,
+              children: [
+                {
+                  index: true,
+                  element: withSuspense(NewOrganizationPage),
+                },
+              ],
             },
             {
-              path: 'edit/:organizationId',
-              Component: NewOrganizationPage,
+              path: ':organizationId/edit',
+              Component: ProtectRoute,
+              children: [
+                {
+                  index: true,
+                  element: withSuspense(NewOrganizationPage),
+                },
+              ],
             },
           ],
         },
         {
           path: '*',
-          Component: ErrorPage,
+          element: withSuspense(ErrorPage),
         },
       ],
     },

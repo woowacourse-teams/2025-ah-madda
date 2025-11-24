@@ -2,38 +2,16 @@ import { css, keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
-import { isAuthenticated } from '@/api/auth';
 import Ahmadda from '@/assets/icon/ahmadda.webp';
 import Point from '@/assets/icon/point.webp';
 import { Button } from '@/shared/components/Button';
 import { Flex } from '@/shared/components/Flex';
 import { Icon } from '@/shared/components/Icon';
 import { Text } from '@/shared/components/Text';
-import { useModal } from '@/shared/hooks/useModal';
-
-import { useToast } from '../../../shared/components/Toast/ToastContext';
-
-import { GuideModal } from './GuideModal';
 
 export const Info = () => {
-  const { error } = useToast();
-  const { isOpen, open, close } = useModal();
   const navigate = useNavigate();
-
-  const handelGuideOpenClick = () => {
-    if (!isAuthenticated()) {
-      error(`로그인이 필요한 서비스입니다.\n먼저 로그인해 주세요.`, {
-        duration: 3000,
-      });
-      return;
-    }
-    open();
-  };
-
-  const handleEnterClick = () => {
-    navigate(`/organization`);
-  };
-
+  const goOverview = () => navigate(`/organization`);
   return (
     <>
       <Flex
@@ -49,11 +27,11 @@ export const Info = () => {
           alignItems="center"
           gap="30px"
           width="100%"
-          padding="60px 10px"
+          padding="0 10px"
           css={css`
             @media (max-width: 768px) {
               flex-direction: column-reverse;
-              padding: 40px 0px;
+              padding: 0 0 30px 0;
               gap: 0px;
             }
           `}
@@ -73,10 +51,14 @@ export const Info = () => {
               css={css`
                 width: 170px;
                 height: 100px;
+
+                @media (max-width: 768px) {
+                  width: 130px;
+                  height: 80px;
               `}
             />
-            <Text as="h2" type="Heading" weight="medium">
-              조직 내 이벤트를 더 잘 참여하게!
+            <Text as="h1" type="Heading" weight="medium">
+              이벤트 스페이스 내 이벤트를 더 잘 참여하게!
             </Text>
           </Flex>
           <Flex
@@ -86,25 +68,23 @@ export const Info = () => {
               position: relative;
             `}
           >
-            <Logo src={Ahmadda} alt="아마다 로고" />
-            <PointIcon src={Point} alt="Point" className="point1" />
-            <PointIcon src={Point} alt="Point" className="point2" />
-            <PointIcon src={Point} alt="Point" className="point3" />
+            <Logo
+              src={Ahmadda}
+              alt="아맞다 곰돌이가 깜짝 놀라며 느낌표 2개를 표시하는 애니메이션"
+              width={150}
+              height={220}
+            />
+            <PointIcon src={Point} alt="" className="point1" width={40} height={100} />
+            <PointIcon src={Point} alt="" className="point2" width={40} height={100} />
           </Flex>
         </Flex>
-        <Button size="full" onClick={handelGuideOpenClick}>
-          이벤트 보러가기
+        <Button size="full" onClick={goOverview}>
+          이벤트 스페이스 보러가기
         </Button>
       </Flex>
-      <GuideModal isOpen={isOpen} onClose={close} onEnter={handleEnterClick} />
     </>
   );
 };
-
-const Logo = styled.img`
-  width: 150px;
-  height: 220px;
-`;
 
 const pop = keyframes`
   0% {
@@ -115,35 +95,55 @@ const pop = keyframes`
     opacity: 1;
     transform: scale(1.1);
   }
-
   100% {
     opacity: 1;
     transform: scale(1);
   }
 `;
 
+const Logo = styled.img`
+  width: 200px;
+  height: 300px;
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    width: 180px;
+    height: 250px;
+  }
+`;
+
 const PointIcon = styled.img`
   position: absolute;
-  width: 40px;
-  height: 100px;
+  width: 55px;
+  height: 90px;
   opacity: 0;
   animation: ${pop} 0.6s ease-out forwards;
 
   &.point1 {
-    top: 30px;
-    right: 0px;
+    top: 40px;
+    right: 10px;
     animation-delay: 0s;
   }
 
   &.point2 {
-    top: 20px;
-    right: -30px;
+    top: 30px;
+    right: -20px;
     animation-delay: 0.6s;
   }
 
-  &.point3 {
-    top: 35px;
-    right: -60px;
-    animation-delay: 1.2s;
+  @media (max-width: 768px) {
+    width: 55px;
+    height: 90px;
+
+    &.point1 {
+      top: 30px;
+      right: 10px;
+      animation-delay: 0s;
+    }
+
+    &.point2 {
+      top: 20px;
+      right: -20px;
+      animation-delay: 0.6s;
   }
 `;

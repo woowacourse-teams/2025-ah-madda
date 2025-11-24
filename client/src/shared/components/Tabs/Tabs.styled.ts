@@ -19,18 +19,15 @@ export const StyledTabsList = styled.div<StyledTabsListProps>`
     content: '';
     position: absolute;
     bottom: 0;
-    left: 0;
     height: 3px;
     background-color: ${({ theme }) => theme.colors.primary600};
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-    transform: translateX(calc(${({ activeTabIndex }) => activeTabIndex} * 100%));
-    width: calc(100% / ${({ tabCount }) => tabCount});
+    width: ${({ tabCount }) => `${100 / tabCount}%`};
+    left: ${({ activeTabIndex, tabCount }) => `${(activeTabIndex * 100) / tabCount}%`};
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 `;
 
-export const StyledTabsTrigger = styled.button`
-  border-radius: 0;
+export const StyledTabsTrigger = styled.button<{ isActive: boolean }>`
   padding: 16px 20px;
   font-size: 16px;
   font-weight: 600;
@@ -42,6 +39,7 @@ export const StyledTabsTrigger = styled.button`
     color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   color: ${({ theme }) => theme.colors.gray500};
+  margin: 0;
 
   &:hover {
     color: ${({ theme }) => theme.colors.primary600};
