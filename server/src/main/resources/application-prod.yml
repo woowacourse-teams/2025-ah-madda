@@ -75,32 +75,3 @@ aws:
   s3:
     bucket: ${aws.prod.s3.bucket}
     folder: ${aws.prod.s3.folder}
-
-management:
-  metrics:
-    tags:
-      hostname: ${HOSTNAME}
-    enable:
-      system.cpu.usage: true
-      jvm.memory.used: true
-      jvm.memory.max: true
-      http.server.requests: true
-      tomcat.threads: true
-      app.health.status: true
-      executor: true
-      hikaricp.connections.active: true
-      hikaricp.connections.pending: true
-      hikaricp.connections.max: true
-      hikaricp.connections.timeout: true
-      logback.events: true
-      resilience4j.circuitbreaker.state: true
-      resilience4j.circuitbreaker.failure.rate: true
-      resilience4j.circuitbreaker.slow.call.rate: true
-      resilience4j.circuitbreaker.not.permitted.calls: true
-      resilience4j.retry.calls: true
-  cloudwatch:
-    metrics:
-      export:
-        enabled: true
-        step: 1m
-        namespace: EC2/ahmadda-api
