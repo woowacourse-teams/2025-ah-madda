@@ -18,8 +18,8 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Component
-@EnableConfigurationProperties(JwtAccessTokenProperties.class)
 @RequiredArgsConstructor
+@EnableConfigurationProperties(JwtAccessTokenProperties.class)
 public class AuthLoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtAccessTokenProperties jwtAccessTokenProperties;
