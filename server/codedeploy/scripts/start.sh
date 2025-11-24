@@ -14,7 +14,7 @@ if [ -n "$PIDS" ]; then
   sleep 2
 fi
 
-nohup java -jar $APP_DIR/$JAR_NAME \
+nohup java -Duser.timezone=Asia/Seoul -jar $APP_DIR/$JAR_NAME \
   --server.port=$APP_PORT \
   --spring.profiles.active=prod \
   > $LOG_FILE 2>&1 < /dev/null &
