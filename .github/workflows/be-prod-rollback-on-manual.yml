@@ -63,6 +63,6 @@ jobs:
           sudo docker run -v /home/ubuntu/app/logs:/app/logs \
             --name ahmadda-prod-server \
             --restart unless-stopped \
-            -p 80:8080 \
+            -p 8080:8080 \
             -e PROFILE=prod \
             -d amadda/ahmadda_server:$TAG
