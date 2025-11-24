@@ -7,31 +7,14 @@ server:
 
 spring:
   datasource:
-    replication:
-      enabled: true
-    writer:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: jdbc:mysql://${db.prod.writer.host}:${db.prod.writer.port}/${db.prod.writer.name}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-      username: ${db.prod.writer.username}
-      password: ${db.prod.writer.password}
-      hikari:
-        minimum-idle: 10
-        maximum-pool-size: 10
-        connection-timeout: 3000
-    reader:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: jdbc:mysql://${db.prod.reader.host}:${db.prod.reader.port}/${db.prod.reader.name}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-      username: ${db.prod.reader.username}
-      password: ${db.prod.reader.password}
-      hikari:
-        minimum-idle: 10
-        maximum-pool-size: 10
-        connection-timeout: 3000
-
-  flyway:
-    url: jdbc:mysql://${db.prod.writer.host}:${db.prod.writer.port}/${db.prod.writer.name}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    user: ${db.prod.writer.username}
-    password: ${db.prod.writer.password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${db.prod.host}:${db.prod.port}/${db.prod.name}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${db.prod.username}
+    password: ${db.prod.password}
+    hikari:
+      minimum-idle: 10
+      maximum-pool-size: 10
+      connection-timeout: 3000
 
   jpa:
     hibernate:
@@ -75,32 +58,3 @@ aws:
   s3:
     bucket: ${aws.prod.s3.bucket}
     folder: ${aws.prod.s3.folder}
-
-management:
-  metrics:
-    tags:
-      hostname: ${HOSTNAME}
-    enable:
-      system.cpu.usage: true
-      jvm.memory.used: true
-      jvm.memory.max: true
-      http.server.requests: true
-      tomcat.threads: true
-      app.health.status: true
-      executor: true
-      hikaricp.connections.active: true
-      hikaricp.connections.pending: true
-      hikaricp.connections.max: true
-      hikaricp.connections.timeout: true
-      logback.events: true
-      resilience4j.circuitbreaker.state: true
-      resilience4j.circuitbreaker.failure.rate: true
-      resilience4j.circuitbreaker.slow.call.rate: true
-      resilience4j.circuitbreaker.not.permitted.calls: true
-      resilience4j.retry.calls: true
-  cloudwatch:
-    metrics:
-      export:
-        enabled: true
-        step: 1m
-        namespace: EC2/ahmadda-api
